@@ -61,9 +61,9 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
       {error && (
         <div className="bg-red-50 text-red-600 p-4 rounded-md">{error}</div>
       )}
-      <div className="flex items-center justify-between">
+      {/* <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold">Customer Reviews</h2>
-      </div>
+      </div> */}
 
       {/* Purchased Items Section */}
       {purchasedSkus.length > 0 && (
