@@ -8,7 +8,7 @@
 # =====================================================================
 
 databases:
-  - name: ecommerce-db
+  - name: db
     databaseName: ecommerce
     user: ecommerce_db
     plan: free
@@ -16,13 +16,13 @@ databases:
 services:
   # 1. Redis Service (Internal)
   - type: redis
-    name: ecommerce-redis
+    name: redis
     ipAllowList: []
     plan: free
 
   # 2. API Service (NestJS)
   - type: web
-    name: ecommerce-api
+    name: api
     env: node
     plan: free
     rootDir: api
@@ -35,23 +35,23 @@ services:
         value: 10000
       - key: DATABASE_URL
         fromDatabase:
-          name: ecommerce-db
+          name: db
           property: connectionString
       - key: REDIS_URL
         fromService:
           type: redis
-          name: ecommerce-redis
+          name: redis
           property: connectionString
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
         generateValue: true
       - key: FRONTEND_URL
-        value: https://ecommerce-web.onrender.com # Placeholder - Update after web deploy
+        value: https://web.onrender.com # Placeholder - Update after web deploy
 
   # 3. Web Service (Next.js)
   - type: web
-    name: ecommerce-web
+    name: web
     env: node
     plan: free
     rootDir: web
@@ -63,7 +63,7 @@ services:
       - key: PORT
         value: 10000
       - key: API_URL
-        value: http://ecommerce-api:10000/api/v1
+        value: http://api:10000/api/v1
       - key: NEXT_PUBLIC_API_URL
         sync: false # Set this in Render dashboard after API service is live
-        placeholder: "https://ecommerce-api.onrender.com/api/v1"
+        placeholder: "https://api.onrender.com/api/v1"
