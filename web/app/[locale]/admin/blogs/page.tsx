@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 async function getBlogs() {
   try {
     const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api/v1";
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
     const res = await fetch(`${baseUrl}/blogs?limit=100`, {
       cache: "no-store",
     });
@@ -29,7 +29,7 @@ async function getBlogs() {
 async function getCategories() {
   try {
     const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080/api/v1";
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
     const res = await fetch(`${baseUrl}/categories`, {
       cache: "no-store",
     });
