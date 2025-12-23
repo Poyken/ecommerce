@@ -25,9 +25,9 @@ services:
     name: api
     env: node
     plan: free
-    rootDir: api
-    buildCommand: npm install && npx prisma generate && npm run build
-    startCommand: npx prisma db push && node dist/src/main.js
+    # rootDir: api  <-- Removed to fix ENOENT
+    buildCommand: cd api && npm install && npx prisma generate && npm run build
+    startCommand: cd api && npx prisma db push && node dist/src/main.js
     envVars:
       - key: NODE_ENV
         value: production
@@ -54,9 +54,9 @@ services:
     name: web
     env: node
     plan: free
-    rootDir: web
-    buildCommand: npm install && npm run build
-    startCommand: npm start
+    # rootDir: web <-- Removed to fix ENOENT
+    buildCommand: cd web && npm install && npm run build
+    startCommand: cd web && npm start
     envVars:
       - key: NODE_ENV
         value: production
