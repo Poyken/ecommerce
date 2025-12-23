@@ -25,7 +25,6 @@ services:
     name: api
     env: node
     plan: free
-    # rootDir: api  <-- Removed to fix ENOENT
     buildCommand: cd api && npm install && npx prisma generate && npm run build
     startCommand: cd api && npx prisma db push && node dist/src/main.js
     envVars:
@@ -54,7 +53,6 @@ services:
     name: web
     env: node
     plan: free
-    # rootDir: web <-- Removed to fix ENOENT
     buildCommand: cd web && npm install && npm run build
     startCommand: cd web && npm start
     envVars:
