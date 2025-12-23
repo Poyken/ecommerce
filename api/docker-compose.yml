@@ -1,0 +1,83 @@
+# =====================================================================
+# DOCKER COMPOSE - API SERVICE
+# =====================================================================
+# Build và chạy API + dependencies (Postgres, Redis)
+#
+# Sử dụng từ folder api/:
+#   docker compose up -d --build
+#
+# Hoặc từ root:
+#   docker compose -f api/docker-compose.yml up -d --build
+# =====================================================================
+
+services:
+  # 1. Database Service (PostgreSQL)
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-123456}
+      POSTGRES_DB: ${POSTGRES_DB:-ecommerce}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ecommerce_network
+    restart: always
+
+  # 2. Cache Service (Redis)
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    networks:
+      - ecommerce_network
+    restart: always
+
+  # 3. API Service (NestJS)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api
+    ports:
+      - '8080:8080'
+    environment:
+      DATABASE_URL: postgres://postgres:123456@postgres:5432/ecommerce?schema=public
+      REDIS_URL: redis://redis:6379
+      PORT: 8080
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-your-super-secret-jwt-key-change-this-in-production}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-refresh-key-change-this-in-production}
+      JWT_ACCESS_EXPIRATION: ${JWT_ACCESS_EXPIRATION:-15m}
+      JWT_REFRESH_EXPIRATION: ${JWT_REFRESH_EXPIRATION:-7d}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-ddpbahxp6}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-463557752242447}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-HhNkzENWTFX2mLkFwHCcMvfHJNA}
+    command: /bin/sh -c "until pg_isready -h postgres -p 5432 -U postgres; do echo 'Waiting for postgres...'; sleep 2; done; npx prisma db push && node dist/seeds/seed.js && node dist/seeds/seed-products.js && node dist/seeds/seed-blog.js && node dist/src/main"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - ecommerce_network
+    restart: always
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  ecommerce_network:
+    driver: bridge

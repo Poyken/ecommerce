@@ -1,0 +1,447 @@
+/**
+ * =====================================================================
+ * GLOBALS.CSS - Cấu hình Style toàn cục (Tailwind CSS 4)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. TAILWIND CSS 4:
+ * - Sử dụng engine mới nhất của Tailwind, cấu hình trực tiếp trong file CSS thay vì tailwind.config.js.
+ * - `@theme` block định nghĩa các biến màu, font, và animation dùng chung toàn app.
+ *
+ * 2. DESIGN SYSTEM (OKLCH):
+ * - Hệ thống sử dụng không gian màu OKLCH để đảm bảo màu sắc hiển thị đồng nhất và đẹp mắt trên mọi thiết bị.
+ * - Hỗ trợ đầy đủ Dark Mode thông qua class `.dark`.
+ *
+ * 3. CUSTOM UTILITIES:
+ * - `.glass`: Hiệu ứng kính mờ (Glassmorphism).
+ * - `.text-gradient`: Chữ có hiệu ứng màu gradient.
+ * - `.safe-area-pb`: Xử lý khoảng trống phía dưới cho các thiết bị có "tai thỏ" (iPhone).
+ * =====================================================================
+ */
+
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-outfit), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-serif: var(--font-playfair), serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fade-in: fade-in 0.5s ease-out forwards;
+  --animate-slide-up: slide-up 0.5s ease-out forwards;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slide-up {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  --animate-shimmer: shimmer 1.5s ease-in-out infinite;
+}
+
+:root {
+  --radius: 0.75rem;
+
+  /* ═══════════════════════════════════════════════════════════════════
+   * LUXURY FURNITURE PALETTE (Light Mode)
+   * Concept: "Architectural Warmth"
+   * Inspired by: Restoration Hardware, Minotti, Poliform, Rove Concepts
+   * ═══════════════════════════════════════════════════════════════════ */
+
+  /* Background: Natural Linen - Warm, organic, inviting */
+  --background: oklch(0.975 0.006 90);
+
+  /* Foreground: Deep Espresso - Rich, grounded, readable */
+  --foreground: oklch(0.18 0.02 60);
+
+  /* Card: Warm White - Like Italian marble */
+  --card: oklch(0.995 0.004 90);
+  --card-foreground: oklch(0.18 0.02 60);
+
+  --popover: oklch(0.995 0.004 90);
+  --popover-foreground: oklch(0.18 0.02 60);
+
+  /* Primary: Warm Charcoal - Timeless elegance */
+  --primary: oklch(0.22 0.02 60);
+  --primary-foreground: oklch(0.97 0.006 90);
+
+  /* Secondary: Soft Greige - Sophisticated neutral */
+  --secondary: oklch(0.92 0.008 80);
+  --secondary-foreground: oklch(0.22 0.02 60);
+
+  /* Muted: Warm Stone */
+  --muted: oklch(0.93 0.006 80);
+  --muted-foreground: oklch(0.50 0.015 60);
+
+  /* Accent: Terracotta - Warm, earthy, luxurious */
+  --accent: oklch(0.62 0.14 45);
+  --accent-foreground: oklch(0.98 0 0);
+
+  /* === SEMANTIC COLORS - Natural Luxury === */
+
+  /* Destructive: Muted Burgundy */
+  --destructive: oklch(0.52 0.16 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  /* Success: Sage Green - Organic, calming */
+  --success: oklch(0.58 0.10 145);
+  --success-foreground: oklch(0.98 0 0);
+
+  /* Info: Dusty Blue - Serene, trustworthy */
+  --info: oklch(0.58 0.10 240);
+  --info-foreground: oklch(0.98 0 0);
+
+  /* Warning: Warm Amber - Like natural wood */
+  --warning: oklch(0.72 0.12 75);
+  --warning-foreground: oklch(0.18 0.02 60);
+
+  /* === DESIGN SYSTEM COLORS === */
+  --chart-1: oklch(0.62 0.14 45);  /* Terracotta */
+  --chart-2: oklch(0.58 0.10 145); /* Sage */
+  --chart-3: oklch(0.58 0.10 240); /* Dusty Blue */
+  --chart-4: oklch(0.72 0.12 75);  /* Warm Amber */
+
+  /* Borders & Rings */
+  --border: oklch(0.90 0.006 80);
+  --input: oklch(0.92 0.006 80);
+  --ring: oklch(0.62 0.14 45); /* Terracotta focus ring */
+}
+
+.dark {
+  /* ═══════════════════════════════════════════════════════════════════
+   * LUXURY FURNITURE PALETTE (Dark Mode)
+   * Concept: "Evening Showroom"
+   * Inspired by: RH Gallery at night, Minotti Milano
+   * ═══════════════════════════════════════════════════════════════════ */
+
+  /* Background: Deep Walnut - Like rich wood at night */
+  --background: oklch(0.08 0.015 60);
+
+  /* Foreground: Warm Ivory */
+  --foreground: oklch(0.92 0.008 90);
+
+  /* Card: Elevated Dark Wood */
+  --card: oklch(0.12 0.015 60);
+  --card-foreground: oklch(0.92 0.008 90);
+
+  --popover: oklch(0.12 0.015 60);
+  --popover-foreground: oklch(0.92 0.008 90);
+
+  /* Primary: Warm Ivory - Elegant contrast */
+  --primary: oklch(0.92 0.008 90);
+  --primary-foreground: oklch(0.12 0.015 60);
+
+  /* Secondary: Deep Espresso */
+  --secondary: oklch(0.18 0.015 60);
+  --secondary-foreground: oklch(0.92 0.008 90);
+
+  --muted: oklch(0.20 0.012 60);
+  --muted-foreground: oklch(0.60 0.01 80);
+
+  /* Accent: Bright Terracotta - Warm glow */
+  --accent: oklch(0.68 0.16 45);
+  --accent-foreground: oklch(0.10 0.015 60);
+
+  /* === SEMANTIC COLORS - Dark Luxury === */
+
+  /* Destructive: Warm Crimson */
+  --destructive: oklch(0.58 0.18 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  /* Success: Vibrant Sage */
+  --success: oklch(0.62 0.12 145);
+  --success-foreground: oklch(0.98 0 0);
+
+  /* Info: Bright Dusty Blue */
+  --info: oklch(0.62 0.12 240);
+  --info-foreground: oklch(0.98 0 0);
+
+  /* Warning: Warm Honey */
+  --warning: oklch(0.76 0.14 75);
+  --warning-foreground: oklch(0.12 0.015 60);
+
+  /* === DESIGN SYSTEM COLORS === */
+  --chart-1: oklch(0.68 0.16 45);  /* Terracotta */
+  --chart-2: oklch(0.62 0.12 145); /* Sage */
+  --chart-3: oklch(0.62 0.12 240); /* Dusty Blue */
+  --chart-4: oklch(0.76 0.14 75);  /* Warm Honey */
+
+  /* Borders & Rings */
+  --border: oklch(0.20 0.012 60);
+  --input: oklch(0.22 0.012 60);
+  --ring: oklch(0.68 0.16 45); /* Terracotta focus ring */
+}
+
+@theme inline {
+  --font-sans: var(--font-outfit), system-ui, sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
+  --color-ring: var(--ring);
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg;
+  }
+
+  .glass-card {
+    @apply bg-white/50 dark:bg-black/20 backdrop-blur-md border border-neutral-200/50 dark:border-white/5 shadow-xl hover:bg-white/60 dark:hover:bg-black/30 transition-all duration-300;
+  }
+
+  /* Premium Glow Effects */
+  .glow-accent {
+    box-shadow: 0 0 40px -10px var(--accent), 0 0 80px -20px var(--accent);
+  }
+
+  .glow-accent-soft {
+    box-shadow: 0 25px 50px -12px oklch(0.62 0.14 45 / 0.25);
+  }
+
+  /* Animated Border Gradient */
+  .border-gradient {
+    position: relative;
+    background: linear-gradient(var(--background), var(--background)) padding-box,
+                linear-gradient(135deg, var(--accent) 0%, transparent 50%, var(--accent) 100%) border-box;
+    border: 1px solid transparent;
+  }
+
+  /* Shimmer Overlay */
+  .shimmer-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
+  /* Premium Text Gradients */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-linear-to-r from-white to-gray-400;
+  }
+
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #C2614B 0%, #E8A090 50%, #C2614B 100%);
+  }
+
+  .text-gradient-luxury {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, var(--foreground) 0%, var(--accent) 50%, var(--foreground) 100%);
+    background-size: 200% auto;
+    animation: gradient-shift 3s ease infinite;
+  }
+
+  /* Floating Animation */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: float 6s ease-in-out 1s infinite;
+  }
+
+  /* Pulse Glow */
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  /* Subtle Grain Texture */
+  .texture-grain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    opacity: 0.03;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+  }
+
+  /* Premium Card Hover */
+  .card-hover-lift {
+    @apply transition-all duration-500 ease-out;
+  }
+  .card-hover-lift:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 32px 64px -16px oklch(0.62 0.14 45 / 0.15);
+  }
+
+  /* Gradient Border on Hover */
+  .hover-border-gradient {
+    position: relative;
+    z-index: 1;
+  }
+  .hover-border-gradient::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, var(--accent) 0%, transparent 40%, transparent 60%, var(--accent) 100%);
+    border-radius: inherit;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .hover-border-gradient:hover::before {
+    opacity: 1;
+  }
+
+  /* Safe area padding for iOS devices */
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+/* Additional Keyframe Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px -5px var(--accent);
+  }
+  50% {
+    box-shadow: 0 0 40px -5px var(--accent);
+  }
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    /* scroll-behavior: smooth; - Handled by SmoothScroll component to avoid page transition issues */
+  }
+  body {
+    @apply bg-background text-foreground tracking-tight leading-relaxed;
+  }
+}
