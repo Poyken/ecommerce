@@ -1,3 +1,4 @@
+import { env } from "@/lib/env";
 import { Metadata } from "next";
 import { BlogsClient } from "./blogs-client";
 
@@ -8,8 +9,7 @@ export const metadata: Metadata = {
 
 async function getBlogs() {
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+    const baseUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
     const res = await fetch(`${baseUrl}/blogs?limit=100`, {
       cache: "no-store",
     });
@@ -28,8 +28,7 @@ async function getBlogs() {
 
 async function getCategories() {
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+    const baseUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
     const res = await fetch(`${baseUrl}/categories`, {
       cache: "no-store",
     });
