@@ -757,7 +757,7 @@ async function main() {
                 ? 1.2
                 : 1;
           const price = getRandomPrice(
-            template.basePrice * sizeMultiplier,
+            template.basePrice * 1000 * sizeMultiplier,
             0.1,
           );
           const salePrice =

@@ -16,8 +16,8 @@
 
 "use client";
 
-import { usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 /**

@@ -5,8 +5,7 @@ import { cn } from "@/lib/utils";
 import { Brand, Category } from "@/types/models";
 import { Filter, Loader2, Tag } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useTransition } from "react";
+import { useSearchParams } from "next/navigation";
 
 /**
  * =====================================================================
@@ -19,6 +18,12 @@ interface FilterSidebarProps {
   brands: Brand[];
   className?: string;
   hideTitle?: boolean;
+  onFilterChange: (
+    type: "categoryId" | "brandId",
+    value: string | null
+  ) => void;
+  isPending?: boolean;
+  onClearAll?: () => void;
 }
 
 export function FilterSidebar({
@@ -26,34 +31,18 @@ export function FilterSidebar({
   brands,
   className,
   hideTitle,
+  onFilterChange,
+  isPending,
+  onClearAll,
 }: FilterSidebarProps) {
   const t = useTranslations("common");
-  const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
-
-  const createQueryString = useCallback(
-    (name: string, value: string | null) => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (value === null) {
-        params.delete(name);
-      } else {
-        params.set(name, value);
-      }
-      return params.toString();
-    },
-    [searchParams]
-  );
 
   const handleFilter = (
     type: "categoryId" | "brandId",
     value: string | null
   ) => {
-    startTransition(() => {
-      const queryString = createQueryString(type, value);
-      router.replace(`${pathname}?${queryString}` as any, { scroll: false });
-    });
+    onFilterChange(type, value);
   };
 
   const currentCategory = searchParams.get("categoryId");
@@ -156,11 +145,7 @@ export function FilterSidebar({
         <GlassButton
           variant="ghost"
           className="w-full text-xs font-black uppercase tracking-widest border-2 border-destructive/20 text-destructive hover:bg-destructive/5 hover:border-destructive/40 transition-all duration-300 mt-6 rounded-xl py-3"
-          onClick={() => {
-            startTransition(() => {
-              router.replace(pathname as any, { scroll: false });
-            });
-          }}
+          onClick={onClearAll}
           disabled={isPending}
         >
           {t("resetAllFilters")}

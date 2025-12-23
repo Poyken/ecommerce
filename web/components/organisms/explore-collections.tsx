@@ -103,24 +103,24 @@ export function ExploreCollections({
                 <Image
                   src={
                     cat.name.toLowerCase().includes("sofa")
-                      ? "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop"
+                      ? "/images/categories/sofa.jpg"
                       : cat.name.toLowerCase().includes("chair")
-                      ? "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=600&h=400&fit=crop"
+                      ? "/images/categories/chair.jpg"
                       : cat.name.toLowerCase().includes("table")
-                      ? "https://images.unsplash.com/photo-1611269154421-4e27233ac5c7?w=600&h=400&fit=crop"
+                      ? "/images/categories/table.jpg"
                       : cat.name.toLowerCase().includes("bed")
-                      ? "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600&h=400&fit=crop"
+                      ? "/images/categories/bed.jpg"
                       : cat.name.toLowerCase().includes("storage")
-                      ? "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=600&h=400&fit=crop"
+                      ? "/images/categories/storage.jpg"
                       : cat.name.toLowerCase().includes("outdoor")
-                      ? "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600&h=400&fit=crop"
+                      ? "/images/categories/outdoor.jpg"
                       : cat.name.toLowerCase().includes("rug")
-                      ? "https://images.unsplash.com/photo-1600166898405-da9535204843?w=600&h=400&fit=crop"
+                      ? "/images/categories/rug.jpg"
                       : cat.name.toLowerCase().includes("light")
-                      ? "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&h=400&fit=crop"
+                      ? "/images/categories/light.jpg"
                       : cat.name.toLowerCase().includes("accessor")
-                      ? "https://images.unsplash.com/photo-1612372606404-0ab33e7187ee?w=600&h=400&fit=crop"
-                      : "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?w=600&h=400&fit=crop"
+                      ? "/images/categories/accessor.jpg"
+                      : "/images/categories/default.jpg"
                   }
                   alt={cat.name}
                   fill
@@ -152,10 +152,10 @@ export function ExploreCollections({
                 <Image
                   src={
                     [
-                      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=600&h=400&fit=crop",
-                      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=600&h=400&fit=crop",
-                      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=600&h=400&fit=crop",
-                      "https://images.unsplash.com/photo-1600566752355-35792bedcfea?w=600&h=400&fit=crop",
+                      "/images/brands/brand1.jpg",
+                      "/images/brands/brand2.jpg",
+                      "/images/brands/brand3.jpg",
+                      "/images/brands/brand4.jpg",
                     ][index % 4]
                   }
                   alt={brand.name}

@@ -40,7 +40,7 @@ export function Footer() {
 
   return (
     <footer className="relative bg-[#1A1612] text-white pt-24 pb-12 overflow-hidden">
-      {/* Background Depth - Terracotta warm glow effects */}
+      {/* Background Depth - Refined Bronze warm glow effects */}
       <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-accent/6 rounded-full blur-[150px] pointer-events-none opacity-40" />
       <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-accent/4 rounded-full blur-[150px] pointer-events-none opacity-30" />
 

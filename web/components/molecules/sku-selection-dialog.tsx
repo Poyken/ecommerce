@@ -83,7 +83,67 @@ export function SkuSelectionDialog({
   }, [selectedOptions, skus, options]);
 
   const handleSelect = (optionId: string, valueId: string) => {
-    setSelectedOptions((prev) => ({ ...prev, [optionId]: valueId }));
+    const nextOptions = { ...selectedOptions, [optionId]: valueId };
+
+    // Attempt to find an exact match first
+    let bestSku = skus.find((sku) => {
+      if (!sku.optionValues || sku.optionValues.length === 0) return false;
+      return sku.optionValues.every((ov) => {
+        return nextOptions[ov.optionValue.optionId] === ov.optionValue.id;
+      });
+    });
+
+    // If no exact match, try to find a compatible SKU
+    if (!bestSku) {
+      const compatibleSkus = skus.filter(
+        (s) =>
+          s.optionValues &&
+          s.optionValues.some(
+            (ov) =>
+              ov.optionValue.optionId === optionId &&
+              ov.optionValue.id === valueId
+          )
+      );
+
+      if (compatibleSkus.length > 0) {
+        // Simple logic: just take the first one, or use the sophisticated matching from ProductVariantSelector
+        // Using "most matching" logic:
+        bestSku = compatibleSkus.reduce((best, current) => {
+          const countMatches = (sku: Sku) => {
+            if (!sku.optionValues) return 0;
+            return sku.optionValues.reduce((cnt, ov) => {
+              if (ov.optionValue.optionId === optionId) return cnt;
+              if (
+                selectedOptions[ov.optionValue.optionId] === ov.optionValue.id
+              )
+                return cnt + 1;
+              return cnt;
+            }, 0);
+          };
+
+          const currentMatches = countMatches(current);
+          const bestMatches = countMatches(best);
+
+          if (currentMatches > bestMatches) return current;
+          if (currentMatches === bestMatches) {
+            if (current.stock > 0 && best.stock <= 0) return current;
+          }
+          return best;
+        }, compatibleSkus[0]);
+      }
+    }
+
+    // Apply the selection
+    if (bestSku && bestSku.optionValues) {
+      const newResolvedOptions: Record<string, string> = {};
+      bestSku.optionValues.forEach((ov) => {
+        newResolvedOptions[ov.optionValue.optionId] = ov.optionValue.id;
+      });
+      setSelectedOptions(newResolvedOptions);
+    } else {
+      // Fallback: just set the specific option if we somehow didn't find a sku (unlikely with correct data)
+      setSelectedOptions((prev) => ({ ...prev, [optionId]: valueId }));
+    }
   };
 
   const getOptionValueStatus = (optionId: string, valueId: string) => {

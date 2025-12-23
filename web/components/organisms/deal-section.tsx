@@ -119,7 +119,7 @@ export function DealSection({ targetDate }: DealSectionProps) {
             <div className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-105">
               <div className="absolute inset-0 bg-linear-to-r from-secondary/30 to-transparent z-10 pointer-events-none" />
               <Image
-                src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&q=90"
+                src="/images/home/deal-sofa.jpg"
                 alt="Luxury Living Room Collection"
                 fill
                 priority

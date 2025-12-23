@@ -140,13 +140,13 @@ export function HomeContent({
               variants={fadeInLeft}
             >
               <Image
-                src="https://images.unsplash.com/photo-1483985988355-763728e1935b?q=80&w=2000&auto=format&fit=crop"
+                src="/images/home/promo-women.jpg"
                 alt="Promo 1"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
               <div className="absolute inset-0 flex flex-col justify-end items-start p-10 text-white z-10">
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] mb-3 opacity-80">
                   Exclusive
@@ -177,13 +177,13 @@ export function HomeContent({
               variants={fadeInRight}
             >
               <Image
-                src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=2000&auto=format&fit=crop"
+                src="/images/home/promo-men.jpg"
                 alt="Promo 2"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
               <div className="absolute inset-0 flex flex-col justify-end items-start p-10 text-white z-10">
                 <span className="text-[10px] font-black uppercase tracking-[0.3em] mb-3 opacity-80">
                   Essentials
@@ -240,7 +240,7 @@ export function HomeContent({
                     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
                   },
                 }}
-                className="group relative text-center p-8 rounded-[2rem] bg-foreground/[0.02] border border-foreground/5 hover:border-primary/20 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5"
+                className="group relative text-center p-8 rounded-4xl bg-foreground/2 border border-foreground/5 hover:border-primary/20 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5"
               >
                 <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-primary/20 group-hover:scale-150 transition-transform duration-500" />
                 <h3
@@ -262,7 +262,7 @@ export function HomeContent({
         </section>
 
         {/* 6. Testimonials - Luxe Style */}
-        <section className="bg-foreground/[0.02] py-24 border-y border-foreground/5 overflow-hidden">
+        <section className="bg-foreground/2 py-24 border-y border-foreground/5 overflow-hidden">
           <div className="container mx-auto px-4">
             <motion.div
               className="text-center mb-16"
@@ -323,7 +323,7 @@ export function HomeContent({
           viewport={{ once: true, margin: "-100px" }}
           variants={scaleUp}
         >
-          <div className="relative overflow-hidden bg-foreground/[0.02] rounded-[3rem] p-12 md:p-24 text-center border border-foreground/5 shadow-2xl backdrop-blur-xl">
+          <div className="relative overflow-hidden bg-foreground/2 rounded-[3rem] p-12 md:p-24 text-center border border-foreground/5 shadow-2xl backdrop-blur-xl">
             {/* Minimalist decorative elements */}
             <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2 pointer-events-none" />

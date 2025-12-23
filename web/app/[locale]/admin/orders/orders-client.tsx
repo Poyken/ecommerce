@@ -1,7 +1,7 @@
 "use client";
+import { Checkbox } from "@/components/atoms/checkbox";
 import { OrderDetailsDialog } from "@/components/organisms/admin/order-details-dialog";
 import { UpdateOrderStatusDialog } from "@/components/organisms/admin/update-order-status-dialog";
-import { Checkbox } from "@/components/atoms/checkbox";
 import { Download, Trash2 } from "lucide-react";
 
 import { Button } from "@/components/atoms/button";
@@ -9,12 +9,12 @@ import { GlassCard } from "@/components/atoms/glass-card";
 import { Input } from "@/components/atoms/input";
 import { StatusBadge } from "@/components/atoms/status-badge";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/atoms/table";
 import { useDebounce } from "@/hooks/use-debounce";
 import { formatCurrency, formatDate } from "@/lib/utils";
@@ -307,7 +307,7 @@ export function OrdersClient({
                     {formatCurrency(Number(order.totalAmount))}
                   </TableCell>
                   <TableCell>
-<StatusBadge status={order.status} />
+                    <StatusBadge status={order.status} />
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {formatDate(order.createdAt)}
@@ -336,7 +336,7 @@ export function OrdersClient({
                             }
                             className="text-purple-400 hover:text-purple-300 hover:bg-purple-400/10 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            {t("edit")}
+                            {t("update")}
                           </Button>
                         )}
                       </div>

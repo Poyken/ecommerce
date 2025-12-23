@@ -3,6 +3,8 @@
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 
+import { cn } from "@/lib/utils";
+
 /**
  * =====================================================================
  * LOADING SCREEN - Hiệu ứng chờ tinh tế (Elegant Loading)
@@ -23,22 +25,26 @@ import { useTranslations } from "next-intl";
 interface LoadingScreenProps {
   message?: string;
   fullScreen?: boolean;
+  className?: string;
 }
 
 export function LoadingScreen({
   message,
   fullScreen = true,
+  className,
 }: LoadingScreenProps) {
   const t = useTranslations("loading");
   const displayMessage = message || t("message");
 
   return (
     <div
-      className={`flex flex-col items-center justify-center ${
+      className={cn(
+        "flex flex-col items-center justify-center",
         fullScreen
-          ? "fixed inset-0 z-[100] bg-background/80 backdrop-blur-xl"
-          : "w-full py-20 bg-transparent"
-      }`}
+          ? "fixed inset-0 z-100 bg-background/80 backdrop-blur-xl"
+          : "w-full min-h-[60vh] bg-transparent",
+        className
+      )}
     >
       <div className="relative">
         {/* Outer Glow - Subtle */}

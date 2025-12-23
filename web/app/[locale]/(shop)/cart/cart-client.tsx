@@ -138,6 +138,21 @@ export function CartClient({ cart }: CartClientProps) {
               const res = await getGuestCartDetailsAction(skuIds);
 
               if (res.success && res.data) {
+                // Check for invalid items (present in local storage but not returned by API)
+                const validSkuIds = new Set(res.data.map((sku: Sku) => sku.id));
+                const validLocalItems = parsed.filter((p) =>
+                  validSkuIds.has(p.skuId)
+                );
+
+                if (validLocalItems.length < parsed.length) {
+                  // Some items are invalid/inactive/deleted, remove them
+                  localStorage.setItem(
+                    "guest_cart",
+                    JSON.stringify(validLocalItems)
+                  );
+                  window.dispatchEvent(new Event("guest_cart_updated"));
+                }
+
                 let t = 0;
                 // Map API response to PopulatedCartItem
                 // We use 'any' briefly here because mapping from SkuDetail to PopulatedCartItem is complex to strictly type without mapped types
@@ -190,10 +205,16 @@ export function CartClient({ cart }: CartClientProps) {
                 setGuestItems(mappedItems);
                 setTotalGuest(t);
               }
+            } else {
+              setGuestItems([]);
+              setTotalGuest(0);
             }
           } catch (e) {
             console.error("Error loading guest cart", e);
           }
+        } else {
+          setGuestItems([]);
+          setTotalGuest(0);
         }
       };
 
@@ -434,7 +455,7 @@ export function CartClient({ cart }: CartClientProps) {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel className="bg-transparent border-white/10 hover:bg-white/10">
+                  <AlertDialogCancel className="bg-transparent border border-input text-foreground hover:bg-black/5 hover:text-foreground">
                     {t("cancel")}
                   </AlertDialogCancel>
                   <AlertDialogAction
@@ -537,7 +558,9 @@ export function CartClient({ cart }: CartClientProps) {
                         }
                       }}
                     />
-                    <span>{t("selectAll")}</span>
+                    <span className="text-base font-medium">
+                      {t("selectAll")}
+                    </span>
                   </div>
                 </div>
 
@@ -752,9 +775,9 @@ export function CartClient({ cart }: CartClientProps) {
                         }
                       >
                         {isCheckoutBlocked ? (
-                          <RefreshCcw className="w-4 h-4 mr-2 animate-spin" />
+                          <RefreshCcw className="w-5 h-5 mr-3 animate-spin" />
                         ) : (
-                          <Lock className="w-4 h-4 mr-2" />
+                          <Lock className="w-5 h-5 mr-3" />
                         )}
                         {isCheckoutBlocked
                           ? t("checkingStock")

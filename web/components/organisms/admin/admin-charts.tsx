@@ -1,21 +1,26 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/atoms/card";
 import { formatCurrency } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import {
-    Bar,
-    BarChart,
-    Cell,
-    Legend,
-    Line,
-    LineChart,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
+  Bar,
+  BarChart,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 
 /**
@@ -43,9 +48,11 @@ import {
 export function SalesTrendChart({ data }: { data: any[] }) {
   const t = useTranslations("admin");
   return (
-    <Card className="h-full rounded-[2rem] border-foreground/5">
+    <Card className="h-full rounded-4xl border-foreground/5">
       <CardHeader>
-        <CardTitle className="text-xl font-black tracking-tight">{t("salesTrends")}</CardTitle>
+        <CardTitle className="text-xl font-black tracking-tight">
+          {t("salesTrends")}
+        </CardTitle>
       </CardHeader>
       <CardContent className="pl-2">
         <ResponsiveContainer width="100%" height={350}>
@@ -64,18 +71,19 @@ export function SalesTrendChart({ data }: { data: any[] }) {
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) =>
-                formatCurrency(value, { notation: "compact", maximumFractionDigits: 1 })
+                formatCurrency(value, {
+                  notation: "compact",
+                  maximumFractionDigits: 1,
+                })
               }
               className="font-medium"
             />
             <Tooltip
-              formatter={(value: any) =>
-                formatCurrency(value)
-              }
-              contentStyle={{ 
-                borderRadius: "1rem", 
+              formatter={(value: any) => formatCurrency(value)}
+              contentStyle={{
+                borderRadius: "1rem",
                 border: "1px solid hsl(var(--foreground) / 0.1)",
-                backgroundColor: "hsl(var(--background))"
+                backgroundColor: "hsl(var(--background))",
               }}
             />
             <Line
@@ -95,9 +103,11 @@ export function SalesTrendChart({ data }: { data: any[] }) {
 export function BestSellersChart({ data }: { data: any[] }) {
   const t = useTranslations("admin");
   return (
-    <Card className="h-full rounded-[2rem] border-foreground/5">
+    <Card className="h-full rounded-4xl border-foreground/5">
       <CardHeader>
-        <CardTitle className="text-xl font-black tracking-tight">{t("bestSellers")}</CardTitle>
+        <CardTitle className="text-xl font-black tracking-tight">
+          {t("bestSellers")}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={350}>
@@ -119,13 +129,18 @@ export function BestSellersChart({ data }: { data: any[] }) {
             />
             <Tooltip
               cursor={{ fill: "hsl(var(--foreground) / 0.05)" }}
-              contentStyle={{ 
+              contentStyle={{
                 borderRadius: "1rem",
                 border: "1px solid hsl(var(--foreground) / 0.1)",
-                backgroundColor: "hsl(var(--background))"
+                backgroundColor: "hsl(var(--background))",
               }}
             />
-            <Bar dataKey="sales" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
+            <Bar
+              dataKey="sales"
+              fill="hsl(var(--accent))"
+              radius={[8, 8, 0, 0]}
+              activeBar={false}
+            />
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
@@ -136,9 +151,11 @@ export function BestSellersChart({ data }: { data: any[] }) {
 export function OrderStatusChart({ data }: { data: any[] }) {
   const t = useTranslations("admin");
   return (
-    <Card className="h-full rounded-[2rem] border-foreground/5">
+    <Card className="h-full rounded-4xl border-foreground/5">
       <CardHeader>
-        <CardTitle className="text-xl font-black tracking-tight">{t("orderStatus")}</CardTitle>
+        <CardTitle className="text-xl font-black tracking-tight">
+          {t("orderStatus")}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={350}>
@@ -156,18 +173,18 @@ export function OrderStatusChart({ data }: { data: any[] }) {
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip 
-              contentStyle={{ 
+            <Tooltip
+              contentStyle={{
                 borderRadius: "1rem",
                 border: "1px solid hsl(var(--foreground) / 0.1)",
                 backgroundColor: "hsl(var(--background))",
-                fontWeight: 600
+                fontWeight: 600,
               }}
             />
-            <Legend 
-              wrapperStyle={{ 
+            <Legend
+              wrapperStyle={{
                 fontSize: "12px",
-                fontWeight: 600
+                fontWeight: 600,
               }}
             />
           </PieChart>

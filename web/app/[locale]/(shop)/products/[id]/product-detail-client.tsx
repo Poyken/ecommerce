@@ -223,7 +223,7 @@ export function ProductDetailClient({
             <WishlistButton
               productId={product.id}
               initialIsWishlisted={false}
-              className="mt-2"
+              className="mt-2 text-foreground"
             />
           </div>
 
@@ -254,7 +254,7 @@ export function ProductDetailClient({
         </motion.div>
 
         <div>
-          <GlassCard className="p-6 md:p-8 space-y-4 backdrop-blur-xl bg-gradient-to-br from-emerald-500/5 via-blue-500/5 to-purple-500/5 border-emerald-500/10">
+          <GlassCard className="p-6 md:p-8 space-y-4 backdrop-blur-xl bg-linear-to-br from-emerald-500/5 via-blue-500/5 to-purple-500/5 border-emerald-500/10">
             <ProductVariantSelector
               options={product.options || []}
               skus={product.skus || []}

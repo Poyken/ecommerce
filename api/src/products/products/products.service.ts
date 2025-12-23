@@ -1,5 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import type { Cache } from 'cache-manager';
 import slugify from 'slugify';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -39,6 +41,7 @@ export class ProductsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly skuManager: SkuManagerService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   /**
@@ -105,6 +108,8 @@ export class ProductsService {
     // 4. Auto-generate SKUs (Delegated to SkuManager)
     await this.skuManager.generateSkusForNewProduct(product);
 
+    // await (this.cacheManager.store as any).reset();
+
     return product;
   }
 
@@ -116,6 +121,12 @@ export class ProductsService {
    * Lấy danh sách sản phẩm với bộ lọc nâng cao (Search, Filter, Sort, Pagination).
    */
   async findAll(query: FilterProductDto) {
+    const cacheKey = `products_filter_${JSON.stringify(query)}`;
+    const cachedResult = await this.cacheManager.get(cacheKey);
+    if (cachedResult) {
+      return cachedResult;
+    }
+
     const {
       page = 1,
       limit = 10,
@@ -263,7 +274,7 @@ export class ProductsService {
       this.prisma.product.count({ where }),
     ]);
 
-    return {
+    const result = {
       data: products,
       meta: {
         total,
@@ -272,6 +283,9 @@ export class ProductsService {
         lastPage: Math.ceil(total / limit),
       },
     };
+
+    await this.cacheManager.set(cacheKey, result);
+    return result;
   }
 
   /**
@@ -408,6 +422,8 @@ export class ProductsService {
       );
     }
 
+    // await (this.cacheManager.store as any).reset();
+
     return freshProduct;
   }
 
@@ -429,6 +445,8 @@ export class ProductsService {
 
       return product;
     });
+
+    // await (this.cacheManager.store as any).reset();
   }
   /**
    * Lấy thông tin chi tiết của nhiều SKU cùng lúc (Dùng cho Guest Cart)

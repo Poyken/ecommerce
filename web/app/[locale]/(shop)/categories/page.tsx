@@ -11,24 +11,16 @@ import Image from "next/image";
 
 // Category images mapping based on category name
 const CATEGORY_IMAGES: Record<string, string> = {
-  sofas:
-    "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop",
-  chairs:
-    "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=600&h=400&fit=crop",
-  tables:
-    "https://images.unsplash.com/photo-1611269154421-4e27233ac5c7?w=600&h=400&fit=crop",
-  storage:
-    "https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=600&h=400&fit=crop",
-  beds: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600&h=400&fit=crop",
-  outdoor:
-    "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=600&h=400&fit=crop",
-  rugs: "https://images.unsplash.com/photo-1600166898405-da9535204843?w=600&h=400&fit=crop",
-  lighting:
-    "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&h=400&fit=crop",
-  accessories:
-    "https://images.unsplash.com/photo-1612372606404-0ab33e7187ee?w=600&h=400&fit=crop",
-  outlet:
-    "https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=600&h=400&fit=crop",
+  sofas: "/images/categories/sofa.jpg",
+  chairs: "/images/categories/chair.jpg",
+  tables: "/images/categories/table.jpg",
+  storage: "/images/categories/storage.jpg",
+  beds: "/images/categories/bed.jpg",
+  outdoor: "/images/categories/outdoor.jpg",
+  rugs: "/images/categories/rug.jpg",
+  lighting: "/images/categories/light.jpg",
+  accessories: "/images/categories/accessor.jpg",
+  outlet: "/images/categories/outlet.jpg",
 };
 
 function getCategoryImage(
@@ -37,10 +29,7 @@ function getCategoryImage(
 ): string {
   if (imageUrl) return imageUrl;
   const key = categoryName.toLowerCase();
-  return (
-    CATEGORY_IMAGES[key] ||
-    "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?w=600&h=400&fit=crop"
-  );
+  return CATEGORY_IMAGES[key] || "/images/categories/default.jpg";
 }
 
 export default async function CategoriesPage() {
@@ -99,7 +88,8 @@ export default async function CategoriesPage() {
                       {category.name}
                     </h3>
                     <p className="text-white/60 text-sm mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {t("browseAllProducts")} →
+                      {t("browseAllProducts")} ({category._count?.products || 0}{" "}
+                      items) →
                     </p>
                   </div>
                 </div>

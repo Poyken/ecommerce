@@ -42,7 +42,7 @@ export function CategoryCard({
       href={`/categories/${id}`}
       name={name}
       count={count}
-      imageUrl={imageUrl || `https://picsum.photos/seed/${id}/200/200`}
+      imageUrl={imageUrl || "/images/placeholders/category-placeholder.jpg"}
       variant="category"
       className={className}
     />

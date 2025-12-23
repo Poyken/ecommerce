@@ -136,6 +136,9 @@ model Product {
   @@index([categoryId, name])
   @@index([slug])
   @@index([minPrice, maxPrice])
+  @@index([brandId])
+  @@index([createdAt])
+  @@index([deletedAt])
 }
 
 model ProductOption {

@@ -34,7 +34,7 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      "fixed top-0 z-[500] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px] gap-2",
+      "fixed top-0 z-500 flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px] gap-2",
       className
     )}
     {...props}
@@ -48,14 +48,14 @@ const toastVariants = cva(
     variants: {
       variant: {
         default:
-          "border-white/20 bg-white/10 dark:bg-black/40 backdrop-blur-xl text-foreground shadow-white/5",
+          "border-border/50 bg-card backdrop-blur-xl text-card-foreground shadow-lg",
         destructive:
-          "destructive group border-destructive/40 bg-destructive/10 backdrop-blur-xl text-destructive shadow-destructive/20 ring-1 ring-destructive/20",
+          "destructive group border-destructive/30 bg-destructive/15 dark:bg-destructive/20 backdrop-blur-xl text-destructive dark:text-destructive-foreground shadow-lg ring-1 ring-destructive/10",
         success:
-          "success group border-success/40 bg-success/10 backdrop-blur-xl text-success shadow-success/20 ring-1 ring-success/20",
-        info: "info group border-info/40 bg-info/10 backdrop-blur-xl text-info shadow-info/20 ring-1 ring-info/20",
+          "success group border-success/30 bg-success/15 dark:bg-success/20 backdrop-blur-xl text-success dark:text-success-foreground shadow-lg ring-1 ring-success/10",
+        info: "info group border-info/30 bg-info/15 dark:bg-info/20 backdrop-blur-xl text-info dark:text-info-foreground shadow-lg ring-1 ring-info/10",
         warning:
-          "warning group border-warning/40 bg-warning/10 backdrop-blur-xl text-warning shadow-warning/20 ring-1 ring-warning/20",
+          "warning group border-warning/30 bg-warning/15 dark:bg-warning/20 backdrop-blur-xl text-warning dark:text-warning-foreground shadow-lg ring-1 ring-warning/10",
       },
     },
     defaultVariants: {

@@ -121,22 +121,22 @@
 
   /* ═══════════════════════════════════════════════════════════════════
    * LUXURY FURNITURE PALETTE (Light Mode)
-   * Concept: "Architectural Warmth"
+   * Concept: "Refined Modernism"
    * Inspired by: Restoration Hardware, Minotti, Poliform, Rove Concepts
    * ═══════════════════════════════════════════════════════════════════ */
 
   /* Background: Natural Linen - Warm, organic, inviting */
   --background: oklch(0.975 0.006 90);
 
-  /* Foreground: Deep Espresso - Rich, grounded, readable */
-  --foreground: oklch(0.18 0.02 60);
+  /* Foreground: Warm Charcoal - Soft, refined, readable */
+  --foreground: oklch(0.28 0.02 60);
 
   /* Card: Warm White - Like Italian marble */
   --card: oklch(0.995 0.004 90);
-  --card-foreground: oklch(0.18 0.02 60);
+  --card-foreground: oklch(0.28 0.02 60);
 
   --popover: oklch(0.995 0.004 90);
-  --popover-foreground: oklch(0.18 0.02 60);
+  --popover-foreground: oklch(0.28 0.02 60);
 
   /* Primary: Warm Charcoal - Timeless elegance */
   --primary: oklch(0.22 0.02 60);
@@ -148,10 +148,10 @@
 
   /* Muted: Warm Stone */
   --muted: oklch(0.93 0.006 80);
-  --muted-foreground: oklch(0.50 0.015 60);
+  --muted-foreground: oklch(0.5 0.015 60);
 
-  /* Accent: Terracotta - Warm, earthy, luxurious */
-  --accent: oklch(0.62 0.14 45);
+  /* Accent: Refined Bronze - Sophisticated, warm, luxurious */
+  --accent: oklch(0.55 0.09 65);
   --accent-foreground: oklch(0.98 0 0);
 
   /* === SEMANTIC COLORS - Natural Luxury === */
@@ -161,11 +161,11 @@
   --destructive-foreground: oklch(0.98 0 0);
 
   /* Success: Sage Green - Organic, calming */
-  --success: oklch(0.58 0.10 145);
+  --success: oklch(0.58 0.1 145);
   --success-foreground: oklch(0.98 0 0);
 
   /* Info: Dusty Blue - Serene, trustworthy */
-  --info: oklch(0.58 0.10 240);
+  --info: oklch(0.58 0.1 240);
   --info-foreground: oklch(0.98 0 0);
 
   /* Warning: Warm Amber - Like natural wood */
@@ -173,15 +173,15 @@
   --warning-foreground: oklch(0.18 0.02 60);
 
   /* === DESIGN SYSTEM COLORS === */
-  --chart-1: oklch(0.62 0.14 45);  /* Terracotta */
-  --chart-2: oklch(0.58 0.10 145); /* Sage */
-  --chart-3: oklch(0.58 0.10 240); /* Dusty Blue */
-  --chart-4: oklch(0.72 0.12 75);  /* Warm Amber */
+  --chart-1: oklch(0.55 0.09 65); /* Refined Bronze */
+  --chart-2: oklch(0.58 0.1 145); /* Sage */
+  --chart-3: oklch(0.58 0.1 240); /* Dusty Blue */
+  --chart-4: oklch(0.72 0.12 75); /* Warm Amber */
 
   /* Borders & Rings */
-  --border: oklch(0.90 0.006 80);
+  --border: oklch(0.9 0.006 80);
   --input: oklch(0.92 0.006 80);
-  --ring: oklch(0.62 0.14 45); /* Terracotta focus ring */
+  --ring: oklch(0.55 0.09 65); /* Bronze focus ring */
 }
 
 .dark {
@@ -212,12 +212,12 @@
   --secondary: oklch(0.18 0.015 60);
   --secondary-foreground: oklch(0.92 0.008 90);
 
-  --muted: oklch(0.20 0.012 60);
-  --muted-foreground: oklch(0.60 0.01 80);
+  --muted: oklch(0.2 0.012 60);
+  --muted-foreground: oklch(0.6 0.01 80);
 
-  /* Accent: Bright Terracotta - Warm glow */
-  --accent: oklch(0.68 0.16 45);
-  --accent-foreground: oklch(0.10 0.015 60);
+  /* Accent: Champagne Gold - Elegant glow */
+  --accent: oklch(0.65 0.11 70);
+  --accent-foreground: oklch(0.1 0.015 60);
 
   /* === SEMANTIC COLORS - Dark Luxury === */
 
@@ -238,15 +238,15 @@
   --warning-foreground: oklch(0.12 0.015 60);
 
   /* === DESIGN SYSTEM COLORS === */
-  --chart-1: oklch(0.68 0.16 45);  /* Terracotta */
+  --chart-1: oklch(0.65 0.11 70); /* Champagne Gold */
   --chart-2: oklch(0.62 0.12 145); /* Sage */
   --chart-3: oklch(0.62 0.12 240); /* Dusty Blue */
-  --chart-4: oklch(0.76 0.14 75);  /* Warm Honey */
+  --chart-4: oklch(0.76 0.14 75); /* Warm Honey */
 
   /* Borders & Rings */
-  --border: oklch(0.20 0.012 60);
+  --border: oklch(0.2 0.012 60);
   --input: oklch(0.22 0.012 60);
-  --ring: oklch(0.68 0.16 45); /* Terracotta focus ring */
+  --ring: oklch(0.65 0.11 70); /* Champagne Gold focus ring */
 }
 
 @theme inline {
@@ -301,20 +301,27 @@
   }
 
   .glow-accent-soft {
-    box-shadow: 0 25px 50px -12px oklch(0.62 0.14 45 / 0.25);
+    box-shadow: 0 25px 50px -12px oklch(0.55 0.09 65 / 0.25);
   }
 
   /* Animated Border Gradient */
   .border-gradient {
     position: relative;
-    background: linear-gradient(var(--background), var(--background)) padding-box,
-                linear-gradient(135deg, var(--accent) 0%, transparent 50%, var(--accent) 100%) border-box;
+    background: linear-gradient(var(--background), var(--background))
+        padding-box,
+      linear-gradient(
+          135deg,
+          var(--accent) 0%,
+          transparent 50%,
+          var(--accent) 100%
+        )
+        border-box;
     border: 1px solid transparent;
   }
 
   /* Shimmer Overlay */
   .shimmer-overlay::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     background: linear-gradient(
@@ -332,14 +339,27 @@
     @apply bg-clip-text text-transparent bg-linear-to-r from-white to-gray-400;
   }
 
-  .text-gradient-gold {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #C2614B 0%, #E8A090 50%, #C2614B 100%);
+  .text-gradient-bronze {
+    background: linear-gradient(
+      135deg,
+      oklch(0.55 0.09 65) 0%,
+      oklch(0.65 0.10 70) 50%,
+      oklch(0.55 0.09 65) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-fill-color: transparent;
   }
 
   .text-gradient-luxury {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, var(--foreground) 0%, var(--accent) 50%, var(--foreground) 100%);
+    background-image: linear-gradient(
+      135deg,
+      var(--foreground) 0%,
+      var(--accent) 50%,
+      var(--foreground) 100%
+    );
     background-size: 200% auto;
     animation: gradient-shift 3s ease infinite;
   }
@@ -360,7 +380,7 @@
 
   /* Subtle Grain Texture */
   .texture-grain::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
@@ -375,7 +395,7 @@
   }
   .card-hover-lift:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 32px 64px -16px oklch(0.62 0.14 45 / 0.15);
+    box-shadow: 0 32px 64px -16px oklch(0.55 0.09 65 / 0.15);
   }
 
   /* Gradient Border on Hover */
@@ -384,10 +404,16 @@
     z-index: 1;
   }
   .hover-border-gradient::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: -2px;
-    background: linear-gradient(135deg, var(--accent) 0%, transparent 40%, transparent 60%, var(--accent) 100%);
+    background: linear-gradient(
+      135deg,
+      var(--accent) 0%,
+      transparent 40%,
+      transparent 60%,
+      var(--accent) 100%
+    );
     border-radius: inherit;
     z-index: -1;
     opacity: 0;
@@ -405,7 +431,8 @@
 
 /* Additional Keyframe Animations */
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0px);
   }
   50% {
@@ -414,7 +441,8 @@
 }
 
 @keyframes pulse-glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 20px -5px var(--accent);
   }
   50% {
@@ -440,8 +468,10 @@
   }
   html {
     /* scroll-behavior: smooth; - Handled by SmoothScroll component to avoid page transition issues */
+    scrollbar-gutter: stable;
   }
   body {
     @apply bg-background text-foreground tracking-tight leading-relaxed;
   }
 }
+

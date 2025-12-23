@@ -41,8 +41,7 @@ export function HeroSection() {
 
   useEffect(() => {
     const img = new window.Image();
-    img.src =
-      "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?w=1200&q=90";
+    img.src = "/images/home/hero-luxury.jpg";
     img.onload = () => setIsImageReady(true);
   }, []);
 
@@ -92,7 +91,7 @@ export function HeroSection() {
               {t("redefining")}
             </span>
             <span className="relative inline-block">
-              <span className="relative z-10 text-gradient-gold">
+              <span className="relative z-10 text-gradient-bronze">
                 {t("luxuryStyle")}
               </span>
               <motion.span
@@ -186,7 +185,7 @@ export function HeroSection() {
             </AnimatePresence>
 
             <Image
-              src="https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?w=1200&q=90"
+              src="/images/home/hero-luxury.jpg"
               alt="Luxury Living Room Interior"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"

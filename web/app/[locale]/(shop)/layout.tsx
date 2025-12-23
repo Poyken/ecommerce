@@ -1,11 +1,12 @@
 import { getCartCountAction } from "@/actions/cart";
 import {
-    getNotificationsAction,
-    getUnreadCountAction,
+  getNotificationsAction,
+  getUnreadCountAction,
 } from "@/actions/notifications";
 import { getProfileAction } from "@/actions/profile";
 import { getWishlistAction } from "@/actions/wishlist";
 import { SocialProofToast } from "@/components/molecules/purchase-toast";
+import { ConditionalFooter } from "@/components/organisms/conditional-footer";
 import { Footer } from "@/components/organisms/footer";
 import { Header, HeaderFallback } from "@/components/organisms/header";
 import { MobileBottomNav } from "@/components/organisms/mobile-nav";
@@ -16,8 +17,6 @@ import { cookies } from "next/headers";
 import { Suspense } from "react";
 
 import Loading from "./loading";
-
-
 
 /**
  * =====================================================================
@@ -43,19 +42,14 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
   // Fetch user data ONCE for the entire layout
   // We also try to fetch cart and wishlist counts securely on the server to avoid client waterfalls
   const cookieStore = await cookies();
-  const [
-    profile,
-    cartRes,
-    wishlistItems,
-    notificationsRes,
-    unreadCountRes,
-  ] = await Promise.all([
-    getProfileAction(),
-    getCartCountAction().catch(() => ({ count: 0 })),
-    getWishlistAction().catch(() => []),
-    getNotificationsAction(10).catch(() => ({ data: [] })),
-    getUnreadCountAction().catch(() => ({ count: 0 })),
-  ]);
+  const [profile, cartRes, wishlistItems, notificationsRes, unreadCountRes] =
+    await Promise.all([
+      getProfileAction(),
+      getCartCountAction().catch(() => ({ count: 0 })),
+      getWishlistAction().catch(() => []),
+      getNotificationsAction(10).catch(() => ({ data: [] })),
+      getUnreadCountAction().catch(() => ({ count: 0 })),
+    ]);
   const user = profile.data;
   const token = cookieStore.get("accessToken")?.value;
 
@@ -89,7 +83,7 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
           initialWishlistCount={initialWishlistCount}
         />
         <main className="flex-1">{children}</main>
-        <Footer />
+        <ConditionalFooter />
         <MobileBottomNav
           initialUser={user}
           initialCartCount={initialCartCount}
@@ -111,7 +105,6 @@ function ShopLayoutFallback({ children }: { children: React.ReactNode }) {
     </>
   );
 }
-
 
 export default async function ShopLayout({
   children,

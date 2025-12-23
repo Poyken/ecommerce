@@ -71,7 +71,7 @@ export function ShopContent({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   // Unwrap categories and brands for sidebar and active filters
   const categories = use(categoriesPromise);
@@ -109,6 +109,19 @@ export function ShopContent({
       return params.toString();
     },
     [searchParams]
+  );
+
+  const handleFilter = useCallback(
+    (type: "categoryId" | "brandId", value: string | null) => {
+      // Avoid redundant navigation if value hasn't changed
+      if (searchParams.get(type) === value) return;
+
+      startTransition(() => {
+        const queryString = createQueryString(type, value);
+        router.replace(`${pathname}?${queryString}`, { scroll: false });
+      });
+    },
+    [createQueryString, pathname, router]
   );
 
   const handleSortChange = (value: string) => {
@@ -188,6 +201,9 @@ export function ShopContent({
                         categories={categories}
                         brands={brands}
                         hideTitle
+                        onFilterChange={handleFilter}
+                        isPending={isPending}
+                        onClearAll={handleClearAllFilters}
                       />
                     </SheetContent>
                   </Sheet>
@@ -253,17 +269,24 @@ export function ShopContent({
               categories={categories}
               brands={brands}
               className="hidden lg:block lg:col-span-1 sticky top-24 h-fit"
+              onFilterChange={handleFilter}
+              isPending={isPending}
+              onClearAll={handleClearAllFilters}
             />
 
             {/* Product Grid - 80% width (4/5) */}
             <div className="lg:col-span-4 space-y-8">
-              <Suspense fallback={<ProductsSkeleton count={12} />}>
-                <ShopGrid
-                  productsPromise={productsPromise}
-                  suggestedProductsPromise={suggestedProductsPromise}
-                  wishlistItems={wishlistItems}
-                />
-              </Suspense>
+              {isPending ? (
+                <ProductsSkeleton count={12} />
+              ) : (
+                <Suspense fallback={<ProductsSkeleton count={12} />}>
+                  <ShopGrid
+                    productsPromise={productsPromise}
+                    suggestedProductsPromise={suggestedProductsPromise}
+                    wishlistItems={wishlistItems}
+                  />
+                </Suspense>
+              )}
             </div>
           </div>
         </section>

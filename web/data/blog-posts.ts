@@ -53,7 +53,7 @@ export const blogPosts: BlogPost[] = [
       
       <p>Building a capsule wardrobe takes time, but starting with these essentials ensures you're ready for whatever 2025 brings. Remember, true style is about quality over quantity.</p>
     `,
-    image: "https://picsum.photos/seed/blog1/800/600",
+    image: "/images/blog/blog1.jpg",
     category: "Style Guide",
     categoryColor: "emerald",
     author: "Sarah Chen",
@@ -79,7 +79,7 @@ export const blogPosts: BlogPost[] = [
       
       <p>The future of fashion is green, and we invite you to join us on this journey towards a more sustainable world.</p>
     `,
-    image: "https://picsum.photos/seed/blog2/800/600",
+    image: "/images/blog/blog2.jpg",
     category: "Sustainability",
     categoryColor: "blue",
     author: "Alex Morgan",
@@ -105,7 +105,7 @@ export const blogPosts: BlogPost[] = [
       
       <p>Experiment with proportions and lengths. Let your shirt tail peek out from under a sweater, or wear a cropped jacket over a long dress. The possibilities are endless.</p>
     `,
-    image: "https://picsum.photos/seed/blog3/800/600",
+    image: "/images/blog/blog3.jpg",
     category: "Tips & Tricks",
     categoryColor: "purple",
     author: "Emma Wilson",
@@ -131,7 +131,7 @@ export const blogPosts: BlogPost[] = [
       
       <p>We hope you love wearing this collection as much as we loved creating it.</p>
     `,
-    image: "https://picsum.photos/seed/blog4/800/600",
+    image: "/images/blog/blog4.jpg",
     category: "Behind the Scenes",
     categoryColor: "amber",
     author: "Marcus Johnson",
@@ -157,7 +157,7 @@ export const blogPosts: BlogPost[] = [
       
       <p>Remember, the golden rule of accessorizing: before you leave the house, look in the mirror and take one thing off. Less is often more.</p>
     `,
-    image: "https://picsum.photos/seed/blog5/800/600",
+    image: "/images/blog/blog5.jpg",
     category: "Style Guide",
     categoryColor: "emerald",
     author: "Sarah Chen",
@@ -183,7 +183,7 @@ export const blogPosts: BlogPost[] = [
       
       <p>With a little love and care, your leather pieces will become cherished heirlooms.</p>
     `,
-    image: "https://picsum.photos/seed/blog6/800/600",
+    image: "/images/blog/blog6.jpg",
     category: "Care Guide",
     categoryColor: "emerald",
     author: "Alex Morgan",
@@ -197,7 +197,7 @@ export const blogPosts: BlogPost[] = [
       "Why less is more in modern fashion. How to build a minimalist wardrobe that speaks volumes.",
     content:
       "<p>Minimalism is not about deprivation; it's about intentionality...</p>",
-    image: "https://picsum.photos/seed/blog7/800/600",
+    image: "/images/blog/blog7.jpg",
     category: "Style Guide",
     categoryColor: "blue",
     author: "Sarah Chen",
@@ -211,7 +211,7 @@ export const blogPosts: BlogPost[] = [
       "Get ahead of the curve with our predictions for next summer's hottest trends.",
     content:
       "<p>From bold prints to sheer fabrics, summer 2025 is set to be exciting...</p>",
-    image: "https://picsum.photos/seed/blog8/800/600",
+    image: "/images/blog/blog8.jpg",
     category: "Trends",
     categoryColor: "amber",
     author: "Emma Wilson",
@@ -225,7 +225,7 @@ export const blogPosts: BlogPost[] = [
       "A deep dive into the materials that are changing the fashion industry for the better.",
     content:
       "<p>Understanding the difference between Tencel, Modal, and Organic Cotton...</p>",
-    image: "https://picsum.photos/seed/blog9/800/600",
+    image: "/images/blog/blog9.jpg",
     category: "Sustainability",
     categoryColor: "emerald",
     author: "Alex Morgan",
@@ -239,7 +239,7 @@ export const blogPosts: BlogPost[] = [
       "The oversized blazer is a versatile staple. Here are 5 ways to wear it for any occasion.",
     content:
       "<p>Whether you're going to the office or out for drinks, the oversized blazer works...</p>",
-    image: "https://picsum.photos/seed/blog10/800/600",
+    image: "/images/blog/blog10.jpg",
     category: "Tips & Tricks",
     categoryColor: "purple",
     author: "Sarah Chen",
@@ -253,7 +253,7 @@ export const blogPosts: BlogPost[] = [
       "We sit down with our creative director to discuss inspiration, challenges, and the future of Luxe.",
     content:
       "<p>Q: What was the main inspiration behind the new collection?...</p>",
-    image: "https://picsum.photos/seed/blog11/800/600",
+    image: "/images/blog/blog11.jpg",
     category: "Behind the Scenes",
     categoryColor: "amber",
     author: "Marcus Johnson",
@@ -267,7 +267,7 @@ export const blogPosts: BlogPost[] = [
       "The ultimate packing list for a stylish and stress-free weekend trip.",
     content:
       "<p>Don't overpack. Here are the essentials you actually need...</p>",
-    image: "https://picsum.photos/seed/blog12/800/600",
+    image: "/images/blog/blog12.jpg",
     category: "Travel",
     categoryColor: "blue",
     author: "Emma Wilson",

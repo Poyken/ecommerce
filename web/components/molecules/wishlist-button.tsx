@@ -152,10 +152,10 @@ export function WishlistButton({
       onClick={handleToggle}
       animation="scale"
       className={cn(
-        "p-2.5 rounded-2xl transition-all duration-300 h-auto w-auto shadow-lg",
+        "p-2.5 rounded-2xl transition-all duration-300 h-auto w-auto shadow-sm border",
         isWishlisted
-          ? "bg-red-50 dark:bg-red-950/20 text-red-500 hover:bg-red-100 dark:hover:bg-red-950/30 shadow-red-500/20"
-          : "bg-white/10 dark:bg-black/20 text-white hover:bg-white/20 dark:hover:bg-black/30 backdrop-blur-xl border border-white/10",
+          ? "bg-red-50 dark:bg-red-950/30 text-red-500 border-red-200 dark:border-red-900"
+          : "bg-background text-foreground border-input hover:bg-accent hover:text-accent-foreground",
         className
       )}
       disabled={isPending}

@@ -4,16 +4,16 @@ import { logoutAction } from "@/actions/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/atoms/avatar";
 import { Button } from "@/components/atoms/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "@/components/atoms/dropdown-menu";
 import { LanguageSwitcher } from "@/components/molecules/language-switcher";
 import { NotificationBell } from "@/components/molecules/notification-bell";
@@ -61,7 +61,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
   const tCommon = useTranslations("common");
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-foreground/5 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 w-full border-b border-foreground/5 bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60">
       <div className="flex h-16 items-center justify-between px-8">
         <div className="flex items-center gap-4">
           {/* Page Title / Breadcrumbs - Refined */}
@@ -69,7 +69,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
             {t("adminPanel")}
           </h2>
         </div>
-        
+
         <div className="flex items-center gap-2 md:gap-5">
           <div className="flex items-center gap-2 pr-4 border-r border-foreground/10">
             <NotificationBell />
@@ -82,7 +82,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
                 variant="ghost"
                 className="flex items-center gap-3 px-2 h-10 hover:bg-foreground/5 rounded-full transition-all"
               >
-                <div className="flex flex-col items-end hidden lg:flex">
+                <div className="hidden lg:flex flex-col items-end">
                   <span className="text-xs font-black uppercase tracking-wider text-foreground">
                     {user.firstName} {user.lastName}
                   </span>
@@ -99,7 +99,10 @@ export function AdminHeader({ user }: AdminHeaderProps) {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64 p-2 rounded-2xl border-foreground/10 shadow-2xl">
+            <DropdownMenuContent
+              align="end"
+              className="w-64 p-2 rounded-2xl border-foreground/10 shadow-2xl"
+            >
               <DropdownMenuLabel className="px-3 pt-3 pb-2">
                 <div className="flex flex-col space-y-1">
                   <p className="text-xs font-black uppercase tracking-widest leading-none">
@@ -111,38 +114,55 @@ export function AdminHeader({ user }: AdminHeaderProps) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator className="my-2 bg-foreground/5" />
-              
+
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger className="rounded-lg h-9">
-                  <Palette className="mr-3 h-4 w-4 text-muted-foreground" />
+                  <Palette className="mr-3 h-4 w-4" />
                   <span className="text-xs font-bold">{tCommon("theme")}</span>
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent className="p-1 rounded-xl shadow-xl">
-                    <DropdownMenuItem onClick={() => setTheme("light")} className="rounded-lg h-9">
-                      <Sun className="mr-3 h-4 w-4 text-amber-500" />
-                      <span className="text-xs font-bold">{tCommon("light")}</span>
+                    <DropdownMenuItem
+                      onClick={() => setTheme("light")}
+                      className="rounded-lg h-9"
+                    >
+                      <Sun className="mr-3 h-4 w-4" />
+                      <span className="text-xs font-bold">
+                        {tCommon("light")}
+                      </span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setTheme("dark")} className="rounded-lg h-9">
-                      <Moon className="mr-3 h-4 w-4 text-primary" />
-                      <span className="text-xs font-bold">{tCommon("dark")}</span>
+                    <DropdownMenuItem
+                      onClick={() => setTheme("dark")}
+                      className="rounded-lg h-9"
+                    >
+                      <Moon className="mr-3 h-4 w-4" />
+                      <span className="text-xs font-bold">
+                        {tCommon("dark")}
+                      </span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setTheme("system")} className="rounded-lg h-9">
-                      <Laptop className="mr-3 h-4 w-4 text-primary/70" />
-                      <span className="text-xs font-bold">{tCommon("system")}</span>
+                    <DropdownMenuItem
+                      onClick={() => setTheme("system")}
+                      className="rounded-lg h-9"
+                    >
+                      <Laptop className="mr-3 h-4 w-4" />
+                      <span className="text-xs font-bold">
+                        {tCommon("system")}
+                      </span>
                     </DropdownMenuItem>
                   </DropdownMenuSubContent>
                 </DropdownMenuPortal>
               </DropdownMenuSub>
-              
+
               <DropdownMenuSeparator className="my-2 bg-foreground/5" />
-              
-              <DropdownMenuItem 
+
+              <DropdownMenuItem
                 onClick={() => logoutAction()}
                 className="rounded-lg h-9 text-red-500 focus:text-red-500 focus:bg-red-500/10 cursor-pointer"
               >
                 <LogOut className="mr-3 h-4 w-4" />
-                <span className="text-xs font-black uppercase tracking-wider">{tCommon("logout")}</span>
+                <span className="text-xs font-black uppercase tracking-wider">
+                  {tCommon("logout")}
+                </span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

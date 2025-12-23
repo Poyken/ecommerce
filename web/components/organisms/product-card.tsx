@@ -140,10 +140,10 @@ export function ProductCard({
   return (
     <div
       className={cn(
-        "group relative bg-white dark:bg-card rounded-4xl overflow-hidden border border-neutral-100 dark:border-white/5 transition-all duration-500",
-        "hover:shadow-[0_32px_64px_-16px_rgba(194,97,75,0.15)] dark:hover:shadow-accent/10",
-        "hover:border-accent/20 dark:hover:border-accent/20",
-        !isCompact && "hover:-translate-y-3 hover:scale-[1.02]",
+        "group relative bg-white dark:bg-card rounded-3xl overflow-hidden border border-neutral-100 dark:border-white/5 transition-all duration-300",
+        "hover:shadow-xl hover:shadow-accent/5 dark:hover:shadow-accent/10",
+        "hover:border-accent/30 dark:hover:border-accent/20",
+        !isCompact && "hover:-translate-y-2",
         className
       )}
     >
@@ -163,7 +163,7 @@ export function ProductCard({
           </AnimatePresence>
 
           <Image
-            src={imageUrl || `https://picsum.photos/seed/${id}/400/600`}
+            src={imageUrl || "/images/placeholders/product-placeholder.jpg"}
             alt={name}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

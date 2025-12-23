@@ -11,35 +11,22 @@ import Image from "next/image";
 
 // Brand images mapping based on brand name
 const BRAND_IMAGES: Record<string, string> = {
-  minotti:
-    "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop",
-  "b&b italia":
-    "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=600&h=400&fit=crop",
-  "roche bobois":
-    "https://images.unsplash.com/photo-1567016432779-094069958ea5?w=600&h=400&fit=crop",
-  poliform:
-    "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=600&h=400&fit=crop",
-  cassina:
-    "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&h=400&fit=crop",
-  "fendi casa":
-    "https://images.unsplash.com/photo-1611269154421-4e27233ac5c7?w=600&h=400&fit=crop",
-  "versace home":
-    "https://images.unsplash.com/photo-1618220179428-22790b461013?w=600&h=400&fit=crop",
-  "restoration hardware":
-    "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=600&h=400&fit=crop",
-  knoll:
-    "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=600&h=400&fit=crop",
-  "herman miller":
-    "https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=600&h=400&fit=crop",
+  minotti: "/images/brands/brand1.jpg",
+  "b&b italia": "/images/brands/brand2.jpg",
+  "roche bobois": "/images/brands/brand3.jpg",
+  poliform: "/images/brands/brand4.jpg",
+  cassina: "/images/brands/cassina.jpg",
+  "fendi casa": "/images/brands/brand1.jpg",
+  "versace home": "/images/brands/brand2.jpg",
+  "restoration hardware": "/images/brands/brand3.jpg",
+  knoll: "/images/brands/brand4.jpg",
+  "herman miller": "/images/brands/herman_miller.jpg",
 };
 
 function getBrandImage(brandName: string, imageUrl?: string | null): string {
   if (imageUrl) return imageUrl;
   const key = brandName.toLowerCase();
-  return (
-    BRAND_IMAGES[key] ||
-    "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?w=600&h=400&fit=crop"
-  );
+  return BRAND_IMAGES[key] || "/images/categories/default.jpg";
 }
 
 export default async function BrandsPage() {
@@ -98,7 +85,8 @@ export default async function BrandsPage() {
                       {brand.name}
                     </h3>
                     <p className="text-white/60 text-sm mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      {t("browseAllProducts")} →
+                      {t("browseAllProducts")} ({brand._count?.products || 0}{" "}
+                      items) →
                     </p>
                   </div>
                 </div>

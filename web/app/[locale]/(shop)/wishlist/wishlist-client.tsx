@@ -30,6 +30,7 @@ import { useAuth } from "@/providers/auth-provider";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Product } from "@/types/models";
@@ -51,6 +52,19 @@ export function WishlistClient({
   const guestWishlist = useGuestWishlist();
   const [items, setItems] = useState<WishlistItem[]>(initialItems || []);
 
+  const router = useRouter();
+
+  useEffect(() => {
+    const handleWishlistUpdate = () => {
+      router.refresh();
+    };
+
+    window.addEventListener("wishlist_updated", handleWishlistUpdate);
+    return () => {
+      window.removeEventListener("wishlist_updated", handleWishlistUpdate);
+    };
+  }, [router]);
+
   useEffect(() => {
     // If authenticated, we trust server items (initialItems)
     if (isAuthenticated) {
@@ -60,10 +74,6 @@ export function WishlistClient({
 
     // If guest, we fetch from localStorage IDs
     const fetchGuestProducts = async () => {
-      console.log(
-        "[WishlistClient] guestWishlist.wishlistIds:",
-        guestWishlist.wishlistIds
-      );
       if (guestWishlist.wishlistIds.length === 0) {
         setItems([]);
         return;
@@ -73,14 +83,12 @@ export function WishlistClient({
         const res = await getGuestWishlistDetailsAction(
           guestWishlist.wishlistIds
         );
-        console.log("[WishlistClient] fetchGuestProducts result:", res);
         if (res.success && res.data) {
           // Map to wishlist format { id, product: ... }
           const mappedItems = res.data.map((p: Product) => ({
             id: p.id, // Wishlist item ID (virtual)
             product: p,
           }));
-          console.log("[WishlistClient] mappedItems:", mappedItems);
           setItems(mappedItems);
         }
       } catch (e) {
@@ -119,7 +127,7 @@ export function WishlistClient({
 
         <div>
           {items.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {items
                 .filter((item) => item.product)
                 .map((item) => {

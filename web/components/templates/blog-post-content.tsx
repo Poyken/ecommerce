@@ -283,7 +283,12 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                     placeholder="Enter your email"
                     className="w-full bg-black/5 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
                   />
-                  <GlassButton className="w-full bg-primary text-primary-foreground">
+                  <GlassButton
+                    className="w-full bg-primary text-primary-foreground"
+                    onClick={() => {
+                      alert("Subscribed! (Demo functionality)");
+                    }}
+                  >
                     {tCommon("subscribe")}
                   </GlassButton>
                 </div>

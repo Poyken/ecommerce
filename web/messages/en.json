@@ -636,7 +636,6 @@
     "sessionExpired": "Session Expired",
     "sessionExpiredDesc": "Please log in again to access your profile and order history.",
     "login": "Log In"
-
   },
   "addressForm": {
     "add": "Add Shipping Address",
@@ -799,6 +798,7 @@
     "cancelled": "Cancelled",
     "actions": "Actions",
     "edit": "Edit",
+    "update": "Update",
     "delete": "Delete",
     "create": "Create",
     "save": "Save",
@@ -893,15 +893,25 @@
     },
     "blogs": {
       "title": "Blogs",
+      "management": "Blog Posts Management",
       "allPosts": "All Posts",
       "totalPosts": "{count} posts total",
       "createButton": "Create Post",
+      "createPost": "Create Post",
+      "createBlog": "Create Blog Post",
+      "createDescription": "Create a new blog post to engage your audience.",
+      "description": "Create a new blog post",
       "noPosts": "No blog posts found.",
+      "noFound": "No posts found",
       "deleteTitle": "Delete Post",
-      "deleteConfirm": "Are you sure you want to delete \"{title}\"?",
-      "delete": "Delete",
+      "deleteConfirm": "Are you sure you want to delete this post? This action cannot be undone.",
+      "delete": "Delete Post",
       "deleteSuccess": "Post deleted successfully",
+      "successDelete": "Post deleted successfully",
+      "successCreate": "Post created successfully",
+      "successUpdate": "Post updated successfully",
       "draft": "Draft",
+      "published": "Published",
       "table": {
         "title": "Title",
         "category": "Category",
@@ -910,15 +920,30 @@
         "published": "Published",
         "actions": "Actions"
       },
-      "edit": "Edit Blog",
-      "description": "Create a new blog post",
+      "edit": "Edit Post",
       "editDescription": "Update blog post details",
-      "successDelete": "Blog post deleted successfully",
       "titleRequired": "Title is required",
+      "slug": "Slug",
       "slugRequired": "Slug is required",
+      "excerpt": "Excerpt",
+      "excerptPlaceholder": "Brief summary of the post...",
+      "content": "Content",
+      "contentPlaceholder": "Write your post content here...",
       "contentRequired": "Content is required",
+      "category": "Category",
       "categoryRequired": "Category is required",
-      "authorRequired": "Author is required"
+      "language": "Language",
+      "languages": {
+        "en": "English",
+        "vi": "Vietnamese"
+      },
+      "author": "Author",
+      "authorRequired": "Author is required",
+      "readTime": "Read Time",
+      "minutes": "mins",
+      "relatedProducts": "Related Products",
+      "featuredImage": "Featured Image",
+      "searchPlaceholder": "Search posts..."
     },
     "processing": "Processing...",
     "products": {
@@ -1157,6 +1182,7 @@
       "details": "Payload Details",
       "searchPlaceholder": "Search actions or resources..."
     },
+
     "sidebar": {
       "overview": "OVERVIEW",
       "dashboard": "Dashboard",
