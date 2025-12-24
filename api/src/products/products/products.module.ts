@@ -27,17 +27,8 @@ import { InventoryService } from '../skus/inventory.service';
 
 import { NotificationsModule } from 'src/notifications/notifications.module';
 
-import { CacheModule } from '@nestjs/cache-manager';
-
 @Module({
-  imports: [
-    PrismaModule,
-    NotificationsModule,
-    CacheModule.register({
-      ttl: 30000, // 30 seconds
-      max: 100, // maximum number of items in cache
-    }),
-  ],
+  imports: [PrismaModule, NotificationsModule],
   controllers: [ProductsController],
   providers: [ProductsService, SkuManagerService, InventoryService],
   exports: [ProductsService, SkuManagerService, InventoryService],

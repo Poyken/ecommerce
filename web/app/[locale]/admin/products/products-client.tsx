@@ -12,18 +12,44 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/atoms/table";
-import { CreateProductDialog } from "@/components/organisms/admin/create-product-dialog";
-import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
-import { EditProductDialog } from "@/components/organisms/admin/edit-product-dialog";
-import { ProductTranslationDialog } from "@/components/organisms/admin/product-translation-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/providers/auth-provider";
 import { Product } from "@/types/models";
 import { Languages } from "lucide-react";
 import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+
+const CreateProductDialog = dynamic(
+  () =>
+    import("@/components/organisms/admin/create-product-dialog").then(
+      (mod) => mod.CreateProductDialog
+    ),
+  { ssr: false }
+);
+const DeleteConfirmDialog = dynamic(
+  () =>
+    import("@/components/organisms/admin/delete-confirm-dialog").then(
+      (mod) => mod.DeleteConfirmDialog
+    ),
+  { ssr: false }
+);
+const EditProductDialog = dynamic(
+  () =>
+    import("@/components/organisms/admin/edit-product-dialog").then(
+      (mod) => mod.EditProductDialog
+    ),
+  { ssr: false }
+);
+const ProductTranslationDialog = dynamic(
+  () =>
+    import("@/components/organisms/admin/product-translation-dialog").then(
+      (mod) => mod.ProductTranslationDialog
+    ),
+  { ssr: false }
+);
 
 export function ProductsClient({
   products,

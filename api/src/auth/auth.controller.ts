@@ -84,7 +84,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Đăng xuất (Revoke Refresh Token)' })
   @ApiResponse({ status: 200, description: 'Đăng xuất thành công.' })
   async logout(@Request() req: any) {
-    const data = await this.authService.logout(req.user.userId);
+    const accessToken = req.headers.authorization?.split(' ')[1];
+    const data = await this.authService.logout(req.user.userId, accessToken);
     return { data };
   }
 

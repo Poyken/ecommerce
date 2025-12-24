@@ -330,8 +330,12 @@ export class AuthService {
   /**
    * Đăng xuất.
    * - Xóa Refresh Token trong Redis -> User không thể xin Access Token mới được nữa.
+   * - Blacklist Access Token hiện tại trong 15 phút.
    */
-  async logout(userId: string) {
+  async logout(userId: string, accessToken?: string) {
+    if (accessToken) {
+      await this.redisService.set(`bl:${accessToken}`, userId, 'EX', 900); // 15 mins
+    }
     await this.redisService.del(`refreshToken:${userId}`);
     return { message: 'Logged out successfully' };
   }

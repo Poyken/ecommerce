@@ -1,4 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import type { Cache } from 'cache-manager';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
@@ -36,6 +38,7 @@ export class ReviewsService {
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
     private readonly notificationsGateway: NotificationsGateway,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   /**
@@ -63,6 +66,23 @@ export class ReviewsService {
         reviewCount: aggregate._count,
       },
     });
+
+    // Invalidate caches
+    try {
+      // 1. Invalidate Product Detail
+      await this.cacheManager.del(`/api/products/${productId}`);
+
+      // 2. Invalidate Product Lists (because sorting by rating might change)
+      const store = (this.cacheManager as any).store;
+      if (store.keys) {
+        const keys = await store.keys('products_filter_*');
+        if (Array.isArray(keys) && keys.length > 0) {
+          await Promise.all(keys.map((k: string) => this.cacheManager.del(k)));
+        }
+      }
+    } catch (error) {
+      console.error('Cache invalidation failed', error);
+    }
   }
 
   /**

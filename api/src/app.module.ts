@@ -26,7 +26,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import * as Joi from 'joi';
 import { AddressesModule } from './addresses/addresses.module';
 import { AdminModule } from './admin/admin.module';
@@ -38,6 +38,7 @@ import { BlogModule } from './blog/blog.module';
 import { CartModule } from './cart/cart.module';
 import { CloudinaryModule } from './common/cloudinary/cloudinary.module';
 import { CommonModule } from './common/common.module';
+import { AppThrottlerGuard } from './common/guards/app.throttler.guard';
 import { SitemapModule } from './common/sitemap/sitemap.module';
 import { CouponsModule } from './coupons/coupons.module';
 import { HealthController } from './health.controller';
@@ -57,8 +58,15 @@ import { ShippingModule } from './shipping/shipping.module';
 import { UsersModule } from './users/users.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 
+import { CacheModule } from '@nestjs/cache-manager';
+
 @Module({
   imports: [
+    CacheModule.register({
+      isGlobal: true,
+      ttl: 30000, // 30 seconds
+      max: 100, // maximum number of items in cache
+    }),
     // 1. ConfigModule - Quản lý biến môi trường (.env)
     // isGlobal: true => Có thể inject ConfigService ở bất kỳ module nào
     ConfigModule.forRoot({
@@ -178,7 +186,7 @@ import { WishlistModule } from './wishlist/wishlist.module';
     // Tự động chặn request vượt quá rate limit
     {
       provide: APP_GUARD,
-      useClass: ThrottlerGuard,
+      useClass: AppThrottlerGuard,
     },
     {
       provide: APP_INTERCEPTOR,
