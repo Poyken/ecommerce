@@ -27,6 +27,9 @@ import { InvoiceService } from './invoice.service';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 
+import { BullModule } from '@nestjs/bullmq';
+import { OrdersProcessor } from './orders.processor';
+
 @Module({
   imports: [
     PrismaModule,
@@ -35,9 +38,12 @@ import { OrdersService } from './orders.service';
     CouponsModule,
     ShippingModule,
     ProductsModule,
+    BullModule.registerQueue({
+      name: 'orders-queue',
+    }),
   ],
   controllers: [OrdersController],
-  providers: [OrdersService, InvoiceService],
-  exports: [InvoiceService],
+  providers: [OrdersService, InvoiceService, OrdersProcessor],
+  exports: [InvoiceService, BullModule],
 })
 export class OrdersModule {}

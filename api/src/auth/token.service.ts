@@ -1,26 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import * as crypto from 'crypto';
 
 /**
  * =====================================================================
  * TOKEN SERVICE - Dịch vụ quản lý mã định danh (JWT)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ACCESS TOKEN VS REFRESH TOKEN:
- * - `Access Token`: Dùng để xác thực các request thông thường. Có thời hạn ngắn (VD: 15 phút) để tăng tính bảo mật.
- * - `Refresh Token`: Dùng để lấy Access Token mới khi cái cũ hết hạn. Có thời hạn dài (VD: 7 ngày).
- *
- * 2. JWT PAYLOAD:
- * - Payload chứa `userId` và `permissions`. Đây là thông tin ta có thể tin tưởng vì nó đã được ký (Sign) bằng một Secret Key bí mật trên server.
- *
- * 3. DURATION PARSING:
- * - Hàm `parseDuration` giúp chuyển đổi các chuỗi cấu hình như "7d", "1h" thành số giây tương ứng để lưu vào Redis hoặc tính toán thời gian hết hạn.
- *
- * 4. SECURITY:
- * - Ta sử dụng các Secret Key khác nhau cho Access và Refresh Token (`JWT_ACCESS_SECRET` vs `JWT_REFRESH_SECRET`) để cô lập rủi ro nếu một trong hai bị lộ.
  * =====================================================================
  */
 
@@ -31,19 +16,39 @@ export class TokenService {
     private readonly configService: ConfigService,
   ) {}
 
-  generateTokens(userId: string, permissions: string[] = []) {
-    const payload = { userId, permissions };
-    const accessToken = this.jwtService.sign(payload, {
+  generateTokens(
+    userId: string,
+    permissions: string[] = [],
+    fingerprint?: string,
+  ) {
+    const jti = crypto.randomUUID();
+
+    // Access Token Payload
+    const accessPayload = {
+      userId,
+      permissions,
+      jti,
+      fp: fingerprint, // Fingerprint (Hash of IP + UserAgent)
+    };
+
+    const accessToken = this.jwtService.sign(accessPayload, {
       secret: this.configService.get('JWT_ACCESS_SECRET'),
       expiresIn: this.configService.get('JWT_ACCESS_EXPIRED'),
     });
-    const refreshToken = this.jwtService.sign(
-      { userId },
-      {
-        secret: this.configService.get('JWT_REFRESH_SECRET'),
-        expiresIn: this.configService.get('JWT_REFRESH_EXPIRED'),
-      },
-    );
+
+    // Refresh Token Payload
+    // Also include fingerprint to bind refresh token to the device
+    const refreshPayload = {
+      userId,
+      jti: crypto.randomUUID(),
+      fp: fingerprint,
+    };
+
+    const refreshToken = this.jwtService.sign(refreshPayload, {
+      secret: this.configService.get('JWT_REFRESH_SECRET'),
+      expiresIn: this.configService.get('JWT_REFRESH_EXPIRED'),
+    });
+
     return { accessToken, refreshToken };
   }
 

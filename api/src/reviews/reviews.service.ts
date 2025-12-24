@@ -2,6 +2,8 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import type { Cache } from 'cache-manager';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
+import { NotificationsService } from '../notifications/notifications.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 
@@ -9,28 +11,7 @@ import { UpdateReviewDto } from './dto/update-review.dto';
  * =====================================================================
  * REVIEWS SERVICE - Dịch vụ quản lý đánh giá sản phẩm
  * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REVIEW ELIGIBILITY (Điều kiện đánh giá):
- * - Đây là logic quan trọng nhất để đảm bảo tính trung thực của đánh giá.
- * - Hệ thống kiểm tra: User phải mua sản phẩm đó (`OrderHistory`) và đơn hàng phải ở trạng thái `DELIVERED`.
- *
- * 2. ANTI-SPAM:
- * - Mỗi người dùng chỉ được đánh giá một lần cho mỗi biến thể sản phẩm (`skuId`).
- * - Sử dụng `findFirst` để kiểm tra sự tồn tại trước khi cho phép tạo mới.
- *
- * 3. AGGREGATION (Tổng hợp dữ liệu):
- * - Sử dụng `prisma.review.aggregate` để tính điểm trung bình (`averageRating`) và tổng số đánh giá của một sản phẩm.
- * - Dữ liệu này cực kỳ quan trọng để hiển thị Social Proof trên Frontend.
- *
- * 4. MODERATION (Kiểm duyệt):
- * - Mặc dù hiện tại `isApproved` đang mặc định là `true`, nhưng cấu trúc đã sẵn sàng để Admin có thể kiểm duyệt nội dung trước khi hiển thị công khai.
- * =====================================================================
  */
-
-import { NotificationsGateway } from '../notifications/notifications.gateway';
-import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class ReviewsService {
@@ -41,14 +22,6 @@ export class ReviewsService {
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
-  /**
-   * Cập nhật cached avgRating và reviewCount trên Product
-   * Gọi sau khi tạo/sửa/xóa review để sync dữ liệu
-   */
-  /**
-   * Cập nhật cached avgRating và reviewCount trên Product
-   * Chạy trong transaction để đảm bảo consistency
-   */
   private async updateProductRatingCache(
     productId: string,
     tx: any = this.prisma,
@@ -67,12 +40,8 @@ export class ReviewsService {
       },
     });
 
-    // Invalidate caches
     try {
-      // 1. Invalidate Product Detail
       await this.cacheManager.del(`/api/products/${productId}`);
-
-      // 2. Invalidate Product Lists (because sorting by rating might change)
       const store = (this.cacheManager as any).store;
       if (store.keys) {
         const keys = await store.keys('products_filter_*');
@@ -85,16 +54,7 @@ export class ReviewsService {
     }
   }
 
-  /**
-   * Tạo đánh giá sản phẩm.
-   * Điều kiện bắt buộc:
-   * 1. User đã từng mua sản phẩm này.
-   * 2. Đơn hàng chứa sản phẩm phải có trạng thái 'DELIVERED'.
-   * 3. Mỗi User chỉ được đánh giá 1 lần cho 1 sản phẩm (tránh spam).
-   */
   async create(userId: string, dto: CreateReviewDto) {
-    // 1. Kiểm tra User đã đánh giá chưa
-    // Check if review exists for this product and sku (or no sku)
     const existing = await this.prisma.review.findFirst({
       where: {
         userId,
@@ -109,8 +69,6 @@ export class ReviewsService {
       );
     }
 
-    // 2. Kiểm tra lịch sử mua hàng
-    // Tìm đơn hàng của User này, có chứa Product này (và SKU này nếu có), và trạng thái là DELIVERED
     const whereOrderItems: any = {
       sku: {
         productId: dto.productId,
@@ -137,8 +95,6 @@ export class ReviewsService {
       );
     }
 
-    // 3. Tạo Review
-    // 3. Tạo Review & Update Cache trong Transaction
     const review = await this.prisma.$transaction(async (tx) => {
       const newReview = await tx.review.create({
         data: {
@@ -152,7 +108,6 @@ export class ReviewsService {
         },
       });
 
-      // 4. Update cached rating trên Product (dùng tx)
       await this.updateProductRatingCache(dto.productId, tx);
 
       return newReview;
@@ -162,7 +117,7 @@ export class ReviewsService {
   }
 
   async checkEligibility(userId: string, productId: string) {
-    // Find all delivered order items for this user and product
+    // Optimized Query: Select only necessary fields
     const orderItems = await this.prisma.orderItem.findMany({
       where: {
         order: {
@@ -173,9 +128,12 @@ export class ReviewsService {
           productId,
         },
       },
-      include: {
+      select: {
         sku: {
-          include: {
+          select: {
+            id: true,
+            skuCode: true,
+            price: true,
             optionValues: {
               include: {
                 optionValue: {
@@ -188,15 +146,14 @@ export class ReviewsService {
       },
     });
 
-    // Find existing reviews
     const reviews = await this.prisma.review.findMany({
       where: {
         userId,
         productId,
       },
+      select: { skuId: true, id: true, rating: true }, // Select minimal fields
     });
 
-    // Map SKU ID to Review
     const reviewMap = new Map<string, any>();
     reviews.forEach((r) => {
       if (r.skuId) {
@@ -204,7 +161,6 @@ export class ReviewsService {
       }
     });
 
-    // Deduplicate SKUs and attach review status
     const skuMap = new Map<string, any>();
 
     orderItems.forEach((item) => {
@@ -219,46 +175,54 @@ export class ReviewsService {
     const purchasedSkus = Array.from(skuMap.values());
 
     return {
-      canReview: purchasedSkus.some((s) => !s.review), // Can review if there's at least one unreviewed SKU
-      purchasedSkus, // Return all purchased SKUs with their review status
+      canReview: purchasedSkus.some((s) => !s.review),
+      purchasedSkus,
     };
   }
 
-  /**
-   * Lấy danh sách đánh giá của 1 sản phẩm
-   */
-  async findAllByProduct(productId: string, page: number, limit: number) {
-    const skip = (page - 1) * limit;
-
-    const [reviews, total] = await Promise.all([
-      this.prisma.review.findMany({
-        where: { productId, isApproved: true },
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          user: {
-            select: { firstName: true, lastName: true },
-          },
-          sku: {
-            include: {
-              optionValues: {
-                include: {
-                  optionValue: {
-                    include: { option: true },
-                  },
+  // Optimized findAllByProduct with Cursor Pagination
+  async findAllByProduct(productId: string, cursor?: string, limit = 10) {
+    // 1. Fetch Reviews with optimization
+    const reviews = await this.prisma.review.findMany({
+      where: { productId, isApproved: true },
+      take: limit + 1, // Take one extra to check if there are more
+      skip: cursor ? 1 : 0,
+      cursor: cursor ? { id: cursor } : undefined,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        user: {
+          select: { firstName: true, lastName: true, avatarUrl: true }, // Explicit selection (already handled but ensuring avatar)
+        },
+        sku: {
+          include: {
+            optionValues: {
+              include: {
+                optionValue: {
+                  include: { option: true },
                 },
               },
             },
           },
         },
-      }),
-      this.prisma.review.count({
-        where: { productId, isApproved: true },
-      }),
-    ]);
+      },
+    });
 
-    // Tính điểm trung bình (Tùy chọn)
+    let nextCursor: string | undefined = undefined;
+    if (reviews.length > limit) {
+      const nextItem = reviews.pop();
+      nextCursor = nextItem!.id;
+    }
+
+    // 2. Aggregate stats (Cached separately ideally, but fast enough via index)
+    // Note: This aggregate is "heavy" if table is huge.
+    // Optimization: Should be cached in Redis or Product Table (which we do in updateProductRatingCache).
+    // So we can just fetch from Product table instead of aggregating each time.
+    // However, the controller might want latest live data?
+    // Let's rely on the Cache logic inside UpdateReview.
+    // To strictly avoid N+1/Heavy Agg, we fetch product stats.
+
+    // Fallback if product table stats are missing/outdated?
+    // Let's stick to simple aggregation for now as postgres is fast with proper index.
     const aggregate = await this.prisma.review.aggregate({
       where: { productId, isApproved: true },
       _avg: { rating: true },
@@ -268,22 +232,13 @@ export class ReviewsService {
     return {
       data: reviews,
       meta: {
-        total,
-        page,
-        limit,
-        lastPage: Math.ceil(total / limit),
-        averageRating: aggregate._avg.rating || 0,
         totalReviews: aggregate._count,
+        averageRating: aggregate._avg.rating || 0,
+        nextCursor,
       },
     };
   }
 
-  /**
-   * Lấy tất cả đánh giá (Admin)
-   */
-  /**
-   * Lấy tất cả đánh giá (Admin)
-   */
   async findAll(page: number, limit: number, rating?: number) {
     const skip = (page - 1) * limit;
     const where: any = {};
@@ -349,14 +304,12 @@ export class ReviewsService {
         },
       });
 
-      // Update cached rating nếu rating thay đổi (hoặc luôn chạy cho chắc chắn)
       await this.updateProductRatingCache(review.productId, tx);
 
       return updatedReview;
     });
   }
 
-  // Dành cho Admin: Duyệt hoặc Xóa review
   async remove(id: string) {
     const review = await this.prisma.review.findUnique({ where: { id } });
     if (!review) {
@@ -365,8 +318,6 @@ export class ReviewsService {
 
     await this.prisma.$transaction(async (tx) => {
       await tx.review.delete({ where: { id } });
-
-      // Update cached rating
       await this.updateProductRatingCache(review.productId, tx);
     });
 
@@ -388,17 +339,12 @@ export class ReviewsService {
 
     await this.prisma.$transaction(async (tx) => {
       await tx.review.delete({ where: { id } });
-
-      // Update cached rating
       await this.updateProductRatingCache(review.productId, tx);
     });
 
     return { success: true };
   }
 
-  /**
-   * Admin trả lời đánh giá
-   */
   async replyToReview(id: string, reply: string) {
     const review = await this.prisma.review.findUnique({
       where: { id },
@@ -417,7 +363,6 @@ export class ReviewsService {
       },
     });
 
-    // Gửi thông báo cho user
     try {
       const notification = await this.notificationsService.create({
         userId: review.userId,

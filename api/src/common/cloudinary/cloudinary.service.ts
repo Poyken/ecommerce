@@ -10,24 +10,38 @@ import * as streamifier from 'streamifier';
  * =====================================================================
  * CLOUDINARY SERVICE - Dịch vụ tải ảnh lên đám mây
  * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CLOUD STORAGE:
- * - Thay vì lưu ảnh trực tiếp trên server (làm nặng server và khó scale), ta sử dụng Cloudinary - một dịch vụ chuyên dụng để lưu trữ và tối ưu hình ảnh.
- *
- * 2. STREAM UPLOADING:
- * - Ta sử dụng `upload_stream` kết hợp với `streamifier`.
- * - Thay vì ghi file tạm ra ổ cứng, ta đẩy trực tiếp dữ liệu từ bộ nhớ (Buffer) lên Cloudinary qua luồng (Stream).
- * - Cách này nhanh hơn và an toàn hơn cho hệ thống.
- *
- * 3. PROMISE WRAPPER:
- * - Do thư viện Cloudinary sử dụng Callback, ta bọc nó lại trong một `Promise` để có thể sử dụng `async/await` mượt mà trong NestJS.
- * =====================================================================
  */
 
 @Injectable()
 export class CloudinaryService {
+  /**
+   * Generates a signed upload URL/parameters for client-side uploading.
+   * This is more secure and performant as file data doesn't pass through our backend.
+   */
+  generateSignature(folder = 'ecommerce-reviews') {
+    const timestamp = Math.round(new Date().getTime() / 1000);
+
+    // Parameters to sign. MUST match what client sends exactly.
+    const paramsToSign = {
+      timestamp,
+      folder,
+      // Optional: Add transformations or tags here if needed
+    };
+
+    const signature = cloudinary.utils.api_sign_request(
+      paramsToSign,
+      process.env.CLOUDINARY_API_SECRET || '',
+    );
+
+    return {
+      timestamp,
+      signature,
+      apiKey: process.env.CLOUDINARY_API_KEY,
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+      folder,
+    };
+  }
+
   async uploadImage(
     file: any,
     folder = 'ecommerce-skus',

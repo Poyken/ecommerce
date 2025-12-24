@@ -8,31 +8,17 @@ import {
   Post,
   Request,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { Throttle } from '@nestjs/throttler';
+import * as crypto from 'crypto';
+import { Response } from 'express';
 
 /**
  * =====================================================================
  * AUTH CONTROLLER - Cổng xác thực và quản lý tài khoản
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. AUTHENTICATION FLOWS:
- * - `register/login`: Các API cơ bản để bắt đầu phiên làm việc.
- * - `refresh`: Cơ chế lấy token mới mà không bắt người dùng đăng nhập lại (Silent Refresh).
- * - `forgot/reset password`: Quy trình khôi phục mật khẩu an toàn qua Token.
- *
- * 2. SECURITY WITH GUARDS:
- * - `@UseGuards(JwtAuthGuard)`: Được áp dụng cho các API nhạy cảm như `logout`, `me` (lấy profile).
- * - Đảm bảo chỉ những người đã đăng nhập mới có thể truy cập hoặc thay đổi thông tin cá nhân.
- *
- * 3. HTTP STATUS CODES:
- * - `@HttpCode(HttpStatus.OK)`: Mặc định POST trả về 201 (Created). Ta dùng 200 (OK) cho các hành động như Login/Refresh để đúng ngữ nghĩa hơn.
- *
- * 4. SWAGGER DOCUMENTATION:
- * - `@ApiResponse`: Mô tả chi tiết các trường hợp thành công và thất bại, giúp Frontend biết chính xác lỗi gì có thể xảy ra.
  * =====================================================================
  */
 import {
@@ -47,8 +33,24 @@ import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict' as const,
+  path: '/',
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
+
+function getFingerprint(req: any) {
+  const ua = req.headers['user-agent'] || '';
+  const ip = req.ip || (req.connection && req.connection.remoteAddress) || '';
+  return crypto
+    .createHash('sha256')
+    .update(ip + ua)
+    .digest('hex');
+}
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -59,32 +61,56 @@ export class AuthController {
   @ApiOperation({ summary: 'Đăng ký tài khoản mới' })
   @ApiResponse({ status: 201, description: 'Đăng ký thành công.' })
   @ApiResponse({ status: 409, description: 'Email đã tồn tại.' })
-  async register(@Body() dto: RegisterDto) {
-    const data = await this.authService.register(dto);
-    return { data };
+  async register(
+    @Body() dto: RegisterDto,
+    @Res({ passthrough: true }) res: Response,
+    @Request() req: any,
+  ) {
+    const fp = getFingerprint(req);
+    const data = await this.authService.register(dto, fp);
+
+    res.cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { refreshToken, ...response } = data;
+    return { data: response };
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 10, ttl: 60000 } })
   @ApiOperation({ summary: 'Đăng nhập' })
   @ApiResponse({
     status: 200,
-    description: 'Đăng nhập thành công, trả về Tokens và User Info.',
+    description: 'Đăng nhập thành công, trả về Access Token và User Info.',
   })
   @ApiResponse({ status: 401, description: 'Sai email hoặc mật khẩu.' })
-  async login(@Body() dto: LoginDto) {
-    const data = await this.authService.login(dto);
-    return { data };
+  async login(
+    @Body() dto: LoginDto,
+    @Res({ passthrough: true }) res: Response,
+    @Request() req: any,
+  ) {
+    const fp = getFingerprint(req);
+    const data = await this.authService.login(dto, fp);
+
+    res.cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { refreshToken, ...response } = data;
+    return { data: response };
   }
 
   @Post('logout')
-  @UseGuards(JwtAuthGuard) // Bắt buộc phải có Token hợp lệ mới được Logout
-  @ApiBearerAuth() // Hiển thị nút nhập Token trên Swagger
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Đăng xuất (Revoke Refresh Token)' })
   @ApiResponse({ status: 200, description: 'Đăng xuất thành công.' })
-  async logout(@Request() req: any) {
+  async logout(@Request() req: any, @Res({ passthrough: true }) res: Response) {
     const accessToken = req.headers.authorization?.split(' ')[1];
+
+    res.clearCookie('refreshToken', { ...COOKIE_OPTIONS, maxAge: 0 });
+
     const data = await this.authService.logout(req.user.userId, accessToken);
     return { data };
   }
@@ -111,24 +137,34 @@ export class AuthController {
 
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Lấy Access Token mới bằng Refresh Token' })
+  @ApiOperation({
+    summary: 'Lấy Access Token mới bằng Refresh Token từ Cookie',
+  })
   @ApiResponse({ status: 200, description: 'Cấp lại token thành công.' })
   @ApiResponse({
     status: 401,
     description: 'Refresh token không hợp lệ hoặc đã hết hạn.',
   })
-  async refresh(@Body() dto: RefreshTokenDto) {
-    const data = await this.authService.refreshTokens(dto.refreshToken);
-    return { data };
+  async refresh(
+    @Request() req: any,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const tokenFromCookie = req.cookies['refreshToken'];
+    const fp = getFingerprint(req);
+
+    if (!tokenFromCookie) {
+      throw new UnauthorizedException('No refresh token in cookies');
+    }
+
+    const data = await this.authService.refreshTokens(tokenFromCookie, fp);
+
+    res.cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
+
+    return { data: { accessToken: data.accessToken } };
   }
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Yêu cầu đặt lại mật khẩu' })
-  @ApiResponse({
-    status: 200,
-    description: 'Email đặt lại mật khẩu đã được gửi.',
-  })
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
     const data = await this.authService.forgotPassword(dto.email);
     return { data };
@@ -136,8 +172,6 @@ export class AuthController {
 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Đặt lại mật khẩu mới' })
-  @ApiResponse({ status: 200, description: 'Mật khẩu đã được cập nhật.' })
   async resetPassword(@Body() dto: ResetPasswordDto) {
     const data = await this.authService.resetPassword(
       dto.token,
@@ -145,6 +179,7 @@ export class AuthController {
     );
     return { data };
   }
+
   @Get('google')
   @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Login with Google' })
@@ -155,17 +190,21 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Google Callback' })
-  async googleCallback(@Request() req, @Res() res) {
-    const data = await this.authService.validateSocialLogin({
-      ...req.user,
-      provider: 'google',
-      socialId: req.user.googleId,
-    });
+  async googleCallback(@Request() req, @Res() res: Response) {
+    const fp = getFingerprint(req);
+    const data = await this.authService.validateSocialLogin(
+      {
+        ...req.user,
+        provider: 'google',
+        socialId: req.user.googleId,
+      },
+      fp,
+    );
 
-    // Redirect to frontend with tokens
-    // Security Note: In production, consider using cookies or a temporary code exchange
+    res.cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
+
     res.redirect(
-      `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/social-callback?accessToken=${data.accessToken}&refreshToken=${data.refreshToken}`,
+      `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/social-callback?accessToken=${data.accessToken}`,
     );
   }
 
@@ -179,15 +218,21 @@ export class AuthController {
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
   @ApiOperation({ summary: 'Facebook Callback' })
-  async facebookCallback(@Request() req, @Res() res) {
-    const data = await this.authService.validateSocialLogin({
-      ...req.user,
-      provider: 'facebook',
-      socialId: req.user.facebookId,
-    });
+  async facebookCallback(@Request() req, @Res() res: Response) {
+    const fp = getFingerprint(req);
+    const data = await this.authService.validateSocialLogin(
+      {
+        ...req.user,
+        provider: 'facebook',
+        socialId: req.user.facebookId,
+      },
+      fp,
+    );
+
+    res.cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
 
     res.redirect(
-      `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/social-callback?accessToken=${data.accessToken}&refreshToken=${data.refreshToken}`,
+      `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/social-callback?accessToken=${data.accessToken}`,
     );
   }
 }

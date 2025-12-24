@@ -12,6 +12,7 @@ import {
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import compression from 'compression';
+import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -57,6 +58,9 @@ async function bootstrap() {
       crossOriginResourcePolicy: { policy: 'cross-origin' }, // Hỗ trợ CDN/Image
     }),
   );
+
+  // Use cookie-parser middleware
+  app.use(cookieParser());
 
   // ============================================================================
   // 2. PERFORMANCE - Tối ưu hiệu năng với Compression

@@ -39,25 +39,35 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 interface ProductReviewsProps {
   productId: string;
+  initialReviews?: any[];
+  initialMeta?: any;
+  initialPurchasedSkus?: any[];
 }
 
-export function ProductReviews({ productId }: ProductReviewsProps) {
+export function ProductReviews({
+  productId,
+  initialReviews = [],
+  initialMeta = null,
+  initialPurchasedSkus = [],
+}: ProductReviewsProps) {
   const t = useTranslations("reviews");
-  const [reviews, setReviews] = useState<any[]>([]);
-  const [meta, setMeta] = useState<any>(null);
-  const [purchasedSkus, setPurchasedSkus] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>(initialReviews);
+  const [meta, setMeta] = useState<any>(initialMeta);
+  const [purchasedSkus, setPurchasedSkus] =
+    useState<any[]>(initialPurchasedSkus);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [selectedSkuForReview, setSelectedSkuForReview] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(initialReviews.length === 0);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const hasFetched = useRef(false);
+  const hasFetched = useRef(initialReviews.length > 0);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const [reviewsRes, eligibilityRes] = await Promise.all([
-        getReviewsAction(productId),
+        getReviewsAction(productId), // Initial fetch (limit 5)
         checkReviewEligibilityAction(productId),
       ]);
 
@@ -68,9 +78,6 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
 
       if (eligibilityRes.success && eligibilityRes.data) {
         setPurchasedSkus(eligibilityRes.data.purchasedSkus || []);
-      } else if (!eligibilityRes.success) {
-        console.error("Eligibility check failed:", eligibilityRes.error);
-        setError(`Eligibility check failed: ${eligibilityRes.error}`);
       }
     } catch (e) {
       console.error(e);
@@ -79,11 +86,24 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
     setLoading(false);
   }, [productId]);
 
+  const loadMore = async () => {
+    if (!meta?.nextCursor || loadingMore) return;
+    setLoadingMore(true);
+    try {
+      const res = await getReviewsAction(productId, meta.nextCursor);
+      if (res.success && res.data) {
+        setReviews((prev) => [...prev, ...res.data]);
+        setMeta(res.meta);
+      }
+    } catch (e) {
+      console.error("Failed to load more reviews", e);
+    }
+    setLoadingMore(false);
+  };
+
   useEffect(() => {
-    // Prevent duplicate calls in StrictMode
     if (hasFetched.current) return;
     hasFetched.current = true;
-
     fetchData();
   }, [productId]);
 
@@ -94,9 +114,6 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
           {error}
         </div>
       )}
-      {/* <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">{t("title")}</h2>
-      </div> */}
 
       {/* Purchased Items Section */}
       {purchasedSkus.length > 0 && (
@@ -193,59 +210,75 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
               {t("noReviews")}
             </div>
           ) : (
-            reviews.map((review, index) => (
-              <motion.div
-                key={review.id}
-                className="border-b border-foreground/5 pb-8 last:border-0"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-4">
-                    <Avatar>
-                      <AvatarFallback>
-                        {review.user.firstName?.[0]}
-                        {review.user.lastName?.[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="font-black text-base">
-                        {review.user.firstName} {review.user.lastName}
-                      </div>
-                      <div className="text-xs text-muted-foreground/60 font-medium mt-0.5">
-                        {format(new Date(review.createdAt), "MMM d, yyyy")}
+            <>
+              {reviews.map((review, index) => (
+                <motion.div
+                  key={review.id}
+                  className="border-b border-foreground/5 pb-8 last:border-0"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-4">
+                      <Avatar>
+                        <AvatarFallback>
+                          {review.user.firstName?.[0]}
+                          {review.user.lastName?.[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div className="font-black text-base">
+                          {review.user.firstName} {review.user.lastName}
+                        </div>
+                        <div className="text-xs text-muted-foreground/60 font-medium mt-0.5">
+                          {format(new Date(review.createdAt), "MMM d, yyyy")}
+                        </div>
                       </div>
                     </div>
+                    <div className="flex gap-0.5">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-5 h-5 ${
+                            star <= review.rating
+                              ? "fill-amber-400 text-amber-400"
+                              : "text-foreground/10"
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex gap-0.5">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`w-5 h-5 ${
-                          star <= review.rating
-                            ? "fill-amber-400 text-amber-400"
-                            : "text-foreground/10"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
 
-                {review.sku && (
-                  <div className="mt-3 text-xs text-muted-foreground/60 font-medium">
-                    {t("purchased")}:{" "}
-                    {review.sku.optionValues
-                      ?.map((ov: any) => ov.optionValue?.value)
-                      .join(" / ")}
-                  </div>
-                )}
+                  {review.sku && (
+                    <div className="mt-3 text-xs text-muted-foreground/60 font-medium">
+                      {t("purchased")}:{" "}
+                      {review.sku.optionValues
+                        ?.map((ov: any) => ov.optionValue?.value)
+                        .join(" / ")}
+                    </div>
+                  )}
 
-                <div className="mt-4 text-foreground/80 leading-relaxed">
-                  {review.content}
+                  <div className="mt-4 text-foreground/80 leading-relaxed">
+                    {review.content}
+                  </div>
+                </motion.div>
+              ))}
+
+              {/* Load More Button */}
+              {meta?.nextCursor && (
+                <div className="flex justify-center pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={loadMore}
+                    disabled={loadingMore}
+                    className="w-full md:w-auto"
+                  >
+                    {loadingMore ? "Loading..." : t("loadMore")}
+                  </Button>
                 </div>
-              </motion.div>
-            ))
+              )}
+            </>
           )}
         </div>
       </div>
@@ -257,7 +290,6 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
         onOpenChange={setShowReviewDialog}
         onSuccess={() => {
           fetchData();
-          // Optionally refresh page data if needed
         }}
       />
     </div>

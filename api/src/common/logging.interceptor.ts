@@ -10,24 +10,7 @@ import { LoggerService } from './logger.service';
 
 /**
  * =====================================================================
- * LOGGING INTERCEPTOR - Giám sát và ghi nhật ký yêu cầu HTTP
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. INTERCEPTOR PATTERN:
- * - Interceptor cho phép ta "chặn" yêu cầu trước khi nó đến Controller và sau khi nó rời khỏi Controller.
- * - Rất hữu ích để xử lý các tác vụ xuyên suốt (Cross-cutting concerns) như Logging, Transform dữ liệu.
- *
- * 2. OBSERVABLES (RxJS):
- * - `next.handle()` trả về một Observable. Ta dùng toán tử `tap` để thực hiện hành động phụ (ghi log) mà không làm thay đổi dữ liệu trả về.
- *
- * 3. PERFORMANCE MONITORING:
- * - Bằng cách tính toán `startTime` và `Date.now()`, ta biết được chính xác mỗi API mất bao lâu để xử lý.
- * - Giúp phát hiện các "nút thắt cổ chai" (Bottlenecks) trong hệ thống.
- *
- * 4. DEBUGGING INFORMATION:
- * - Ghi lại Method, URL, Status Code, IP và User Agent để phục vụ việc điều tra lỗi hoặc phân tích hành vi người dùng.
+ * LOGGING INTERCEPTOR - Giám sát và ghi nhật ký yêu cầu HTTP (P2 Optimized)
  * =====================================================================
  */
 @Injectable()
@@ -48,31 +31,38 @@ export class LoggingInterceptor implements NestInterceptor {
           const statusCode = response.statusCode;
           const duration = Date.now() - startTime;
 
+          // Production Grade Structured Log
           this.logger.log(
             `${method} ${url} ${statusCode} - ${duration}ms`,
-            'HTTP',
-          );
-
-          // Log debug chi tiết
-          this.logger.debug(
             JSON.stringify({
+              type: 'access',
               method,
               url,
               statusCode,
-              duration: `${duration}ms`,
+              duration,
               userId,
               ip,
-              userAgent: userAgent.substring(0, 50),
+              userAgent: userAgent.substring(0, 100),
             }),
-            'HTTP',
           );
         },
         error: (error) => {
           const duration = Date.now() - startTime;
+          const statusCode = error.status || 500;
+
           this.logger.error(
-            `${method} ${url} ${error.status || 500} - ${duration}ms - ${error.message}`,
+            `${method} ${url} ${statusCode} - ${duration}ms - ${error.message}`,
             error.stack,
-            'HTTP',
+            JSON.stringify({
+              type: 'error',
+              method,
+              url,
+              statusCode,
+              duration,
+              userId,
+              ip,
+              error: error.message,
+            }),
           );
         },
       }),

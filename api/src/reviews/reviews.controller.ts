@@ -99,14 +99,18 @@ export class ReviewsController {
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(60000) // 1 minute
   @ApiOperation({ summary: 'Lấy đánh giá theo sản phẩm' })
+  @Get('product/:productId')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(60000) // 1 minute
+  @ApiOperation({ summary: 'Lấy đánh giá theo sản phẩm' })
   findAllByProduct(
     @Param('productId') productId: string,
-    @Query('page') page = 1,
+    @Query('cursor') cursor?: string,
     @Query('limit') limit = 10,
   ) {
     return this.reviewsService.findAllByProduct(
       productId,
-      Number(page),
+      cursor,
       Number(limit),
     );
   }

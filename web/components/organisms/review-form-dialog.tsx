@@ -5,7 +5,6 @@ import {
   deleteReviewAction,
   updateReviewAction,
 } from "@/actions/review";
-import { uploadReviewImagesAction } from "@/actions/review-upload";
 import { Button } from "@/components/atoms/button";
 import {
   Dialog,
@@ -143,15 +142,18 @@ function ReviewForm({
     let imageUrls: string[] = [];
     if (files.length > 0) {
       const formData = new FormData();
-      files.forEach((f) => formData.append("images", f));
+      // files.forEach((f) => formData.append("images", f)); // Old server logic
 
       try {
-        // Use Server Action for upload
-        const uploadRes = await uploadReviewImagesAction(formData);
-        if (!uploadRes.success || !uploadRes.urls) {
-          throw new Error(uploadRes.error || "Upload failed");
-        }
-        imageUrls = uploadRes.urls;
+        // Use Client-Side Signed Upload
+        const { uploadToCloudinary } = await import("@/lib/cloudinary");
+
+        // Parallel uploads
+        const uploadedUrls = await Promise.all(
+          files.map((file) => uploadToCloudinary(file))
+        );
+
+        imageUrls = uploadedUrls;
       } catch (e) {
         console.error("Upload failed", e);
         toast({

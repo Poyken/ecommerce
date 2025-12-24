@@ -3,37 +3,25 @@
  * PRODUCT DETAIL PAGE - Trang chi tiết sản phẩm (Server Component)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DYNAMIC RENDERING & SEO:
- * - Sử dụng `generateMetadata` để tạo tiêu đề và mô tả động cho từng sản phẩm, giúp tối ưu SEO.
- * - `generateStaticParams`: Cho phép Next.js pre-render các trang sản phẩm phổ biến tại thời điểm build (SSG).
- *
- * 2. DATA FETCHING:
- * - Fetch dữ liệu sản phẩm từ `productService`.
- * - Tổng hợp tất cả hình ảnh từ sản phẩm chính và các SKU (biến thể) để hiển thị trong gallery.
- *
- * 3. STRUCTURED DATA (JSON-LD):
- * - Tự động tạo script `application/ld+json` để Google Search hiểu rõ hơn về sản phẩm (giá, thương hiệu, tình trạng kho hàng).
- * =====================================================================
+ * [REFACTOR P1]: Implement True Streaming
+ * - Metadata and initial layout are rendered immediately.
+ * - Product details and Reviews are streamed in via Suspense.
  */
 
 import { getProfileAction } from "@/actions/profile";
+import { BreadcrumbNav } from "@/components/atoms/breadcrumb-nav";
+import { ProductDetailSkeleton } from "@/components/organisms/skeletons/product-detail-skeleton";
 import { productService } from "@/services/product.service";
-import { Product } from "@/types/models";
+import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ProductDetailClient } from "./product-detail-client";
 
 export async function generateStaticParams() {
   try {
     const ids = await productService.getProductIds();
-    // Next.js 16 with cacheComponents requires at least one result
-    if (ids.length === 0) {
-      return [{ id: "fallback" }];
-    }
+    if (ids.length === 0) return [{ id: "fallback" }];
     return ids.map((id) => ({ id }));
   } catch (error) {
-    console.warn("Failed to generate static params (API likely down):", error);
     return [{ id: "fallback" }];
   }
 }
@@ -46,11 +34,7 @@ export async function generateMetadata({
   const { id } = await params;
   const product = await productService.getProduct(id);
 
-  if (!product) {
-    return {
-      title: "Product Not Found",
-    };
-  }
+  if (!product) return { title: "Product Not Found" };
 
   const images = product.images || [];
   const firstImage = images.length > 0 ? images[0] : null;
@@ -66,70 +50,31 @@ export async function generateMetadata({
     openGraph: {
       title: product.name,
       description: product.description,
-      images: [
-        {
-          url: imageUrl,
-          width: 800,
-          height: 600,
-          alt: product.name,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: product.name,
-      description: product.description,
-      images: [imageUrl],
+      images: [{ url: imageUrl }],
     },
   };
 }
 
-async function DynamicProductDetail({
-  product,
-  images,
-}: {
-  product: Product;
-  images: string[];
-}) {
-  const { data: user } = await getProfileAction();
-  const isLoggedIn = !!user;
-
-  // Adapt Product to the props expected by Client if needed,
-  // or update Client to accept strict Product.
-  // The client expects 'price' on product. We might need to extend it.
-  // But for now, let's cast or better yet, assume Client handles it?
-  // Checking client... Client likely needs refactoring too if it expects product.price.
-  // For now let's pass it simply.
-
-  return (
-    <ProductDetailClient
-      product={product}
-      initialImages={images}
-      isLoggedIn={isLoggedIn}
-    />
+/**
+ * [RSC] ProductLoader fetches the heavy product data.
+ * This can be awaited inside Suspense to enable streaming.
+ */
+async function ProductDetailStreamer({ id }: { id: string }) {
+  const { checkReviewEligibilityAction, getReviewsAction } = await import(
+    "@/actions/review"
   );
-}
 
-import { ProductDetailSkeleton } from "@/components/organisms/skeletons/product-detail-skeleton";
+  const [product, { data: user }, reviewsData, eligibilityData] =
+    await Promise.all([
+      productService.getProduct(id),
+      getProfileAction(),
+      getReviewsAction(id),
+      checkReviewEligibilityAction(id),
+    ]);
 
-import { BreadcrumbNav } from "@/components/atoms/breadcrumb-nav";
-import { notFound } from "next/navigation";
+  if (!product) notFound();
 
-export default async function ProductDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-
-  // Fetch product data - this part can be cached
-  const productData = await productService.getProduct(id);
-
-  if (!productData) {
-    notFound();
-  }
-
-  const product = productData;
+  const isLoggedIn = !!user;
 
   // Collect all images from product and SKUs
   const productImages = (product.images || []).map((img) =>
@@ -140,83 +85,74 @@ export default async function ProductDetailPage({
       ?.map((sku) => sku.imageUrl)
       .filter((url): url is string => !!url) || [];
 
-  // Combine and remove duplicates
-  const allImages = Array.from(new Set([...productImages, ...skuImages]));
+  const images = Array.from(new Set([...productImages, ...skuImages]));
+  if (images.length === 0) {
+    images.push(`https://picsum.photos/seed/${product.id}/600/800`);
+  }
 
-  // Fallback if no images found
-  const images: string[] =
-    allImages.length > 0
-      ? allImages
-      : [`https://picsum.photos/seed/${product.id}/600/800`];
+  return (
+    <ProductDetailClient
+      product={product}
+      initialImages={images}
+      isLoggedIn={isLoggedIn}
+      initialReviews={reviewsData.success ? reviewsData.data : []}
+      initialMeta={reviewsData.success ? reviewsData.meta : null}
+      initialPurchasedSkus={
+        eligibilityData.success ? eligibilityData.data?.purchasedSkus : []
+      }
+    />
+  );
+}
+
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/30">
       <div className="container mx-auto px-4 md:px-8 py-8 lg:py-12">
-        {/* Breadcrumb Navigation */}
+        {/* Breadcrumb renders immediately */}
         <div className="mb-6 lg:mb-8">
-          <BreadcrumbNav
-            items={[
-              { label: "Shop", href: "/shop" },
-              ...(product.category?.name
-                ? [
-                    {
-                      label: product.category.name,
-                      href: `/shop?categoryId=${product.category.id}`,
-                    },
-                  ]
-                : []),
-              { label: product.name },
-            ]}
-            className="text-sm"
-          />
+          <Suspense
+            fallback={
+              <div className="h-5 w-32 bg-muted animate-pulse rounded" />
+            }
+          >
+            <BreadcrumbStreamer id={id} />
+          </Suspense>
         </div>
 
+        {/* Heavy content streams in */}
         <Suspense fallback={<ProductDetailSkeleton />}>
-          <DynamicProductDetail product={product} images={images} />
+          <ProductDetailStreamer id={id} />
         </Suspense>
       </div>
-
-      {/* JSON-LD Structured Data for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            name: product.name,
-            image: images,
-            description: product.description,
-            brand: {
-              "@type": "Brand",
-              name: product.brand?.name || "Luxe",
-            },
-            offers: {
-              "@type": "AggregateOffer",
-              priceCurrency: "VND",
-              lowPrice:
-                (product.skus?.length ?? 0) > 0
-                  ? Math.min(
-                      ...(product.skus || []).map((s) =>
-                        Number(s.salePrice || s.price || 0)
-                      )
-                    )
-                  : 0,
-              highPrice:
-                (product.skus?.length ?? 0) > 0
-                  ? Math.max(
-                      ...(product.skus || []).map((s) =>
-                        Number(s.salePrice || s.price || 0)
-                      )
-                    )
-                  : 0,
-              offerCount: product.skus?.length || 0,
-              availability: (product.skus || []).some((s) => s.stock > 0)
-                ? "https://schema.org/InStock"
-                : "https://schema.org/OutOfStock",
-            },
-          }),
-        }}
-      />
     </div>
+  );
+}
+
+async function BreadcrumbStreamer({ id }: { id: string }) {
+  const product = await productService.getProduct(id);
+  if (!product) return null;
+
+  return (
+    <BreadcrumbNav
+      items={[
+        { label: "Shop", href: "/shop" },
+        ...(product.category?.name
+          ? [
+              {
+                label: product.category.name,
+                href: `/shop?categoryId=${product.category.id}`,
+              },
+            ]
+          : []),
+        { label: product.name },
+      ]}
+      className="text-sm"
+    />
   );
 }

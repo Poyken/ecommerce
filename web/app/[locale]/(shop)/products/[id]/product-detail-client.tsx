@@ -44,12 +44,18 @@ interface ProductDetailClientProps {
   product: Product;
   initialImages: string[];
   isLoggedIn: boolean;
+  initialReviews?: any[];
+  initialMeta?: any;
+  initialPurchasedSkus?: any[];
 }
 
 export function ProductDetailClient({
   product,
   initialImages,
   isLoggedIn,
+  initialReviews = [],
+  initialMeta = null,
+  initialPurchasedSkus = [],
 }: ProductDetailClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -290,7 +296,12 @@ export function ProductDetailClient({
               Customer Reviews
             </h3>
           </div>
-          <ProductReviews productId={product.id} />
+          <ProductReviews
+            productId={product.id}
+            initialReviews={initialReviews}
+            initialMeta={initialMeta}
+            initialPurchasedSkus={initialPurchasedSkus}
+          />
         </div>
       </div>
 

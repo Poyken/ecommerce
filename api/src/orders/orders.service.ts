@@ -12,32 +12,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
-/**
- * =====================================================================
- * ORDERS SERVICE - Dịch vụ quản lý đơn hàng (Trái tim của hệ thống)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DATABASE TRANSACTIONS (Tính nguyên tử):
- * - Khi tạo đơn hàng, ta dùng `this.prisma.$transaction`.
- * - Đảm bảo: Hoặc là tất cả thành công (Tạo đơn + Trừ kho + Xóa giỏ), hoặc là không có gì thay đổi nếu có lỗi xảy ra.
- * - Tránh tình trạng: Đơn hàng đã tạo nhưng kho không trừ, hoặc ngược lại.
- *
- * 2. ATOMIC STOCK CHECK:
- * - Trong transaction, ta dùng `updateMany` kèm điều kiện `stock: { gte: item.quantity }`.
- * - Đây là cách chống "Race Condition" (2 người cùng mua 1 món hàng cuối cùng tại 1 thời điểm) hiệu quả nhất ở tầng DB.
- *
- * 3. BACKGROUND JOBS (BullMQ):
- * - Gửi email xác nhận là một tác vụ tốn thời gian và có thể lỗi (do SMTP).
- * - Ta không bắt user đợi gửi mail xong mới trả kết quả. Thay vào đó, ta đẩy vào `emailQueue` để xử lý ngầm.
- *
- * 4. STATE MACHINE (Máy trạng thái):
- * - Trạng thái đơn hàng (`PENDING`, `SHIPPED`, v.v.) được quản lý chặt chẽ.
- * - Chỉ cho phép chuyển đổi trạng thái theo đúng quy trình (VD: Không thể chuyển từ `CANCELLED` sang `DELIVERED`).
- * =====================================================================
- */
-
 import { EmailService } from '../common/email/email.service';
 import { CouponsService } from '../coupons/coupons.service';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
@@ -51,6 +25,7 @@ export class OrdersService {
     private readonly prisma: PrismaService,
     private readonly paymentService: PaymentService,
     @InjectQueue('email-queue') private readonly emailQueue: Queue,
+    @InjectQueue('orders-queue') private readonly ordersQueue: Queue, // Added orders-queue
     private readonly couponsService: CouponsService,
     private readonly shippingService: ShippingService,
     private readonly inventoryService: InventoryService,
@@ -59,14 +34,10 @@ export class OrdersService {
     private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
-  // ... (Bắt đầu hàm xử lý tạo đơn hàng) ...
-
   async create(userId: string, createOrderDto: CreateOrderDto) {
-    // 0. Lấy thông tin User để gửi mail
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new BadRequestException('User không tồn tại');
 
-    // 1. Lấy giỏ hàng của user
     const cart = await this.prisma.cart.findUnique({
       where: { userId },
       include: {
@@ -80,7 +51,6 @@ export class OrdersService {
       throw new BadRequestException('Giỏ hàng trống');
     }
 
-    // 2. Chuẩn bị dữ liệu sơ bộ
     let totalAmount = 0;
     const orderItemsData: {
       skuId: string;
@@ -98,8 +68,6 @@ export class OrdersService {
     }
 
     for (const item of itemsToProcess) {
-      // Kiểm tra nhanh (Fail-fast) - Giảm tải cho DB, nhưng không thay thế được atomic check
-
       if (item.sku.stock < item.quantity) {
         throw new BadRequestException(
           `Sản phẩm ${item.sku.skuCode} không đủ số lượng (Yêu cầu: ${item.quantity}, Còn: ${item.sku.stock}).`,
@@ -116,7 +84,6 @@ export class OrdersService {
       });
     }
 
-    // Apply Coupon if provided
     let couponId: string | null = null;
     let discountAmount = 0;
     if (createOrderDto.couponCode) {
@@ -131,7 +98,6 @@ export class OrdersService {
       totalAmount = Math.max(0, totalAmount - discountAmount);
     }
 
-    // 2.a Tính phí vận chuyển (Shipping Fee)
     let shippingFee = 0;
     if (createOrderDto.addressId) {
       const address = await this.prisma.address.findUnique({
@@ -146,10 +112,7 @@ export class OrdersService {
     }
     totalAmount += shippingFee;
 
-    // 3. Thực thi Transaction (Nguyên tử - Đảm bảo nhất quán dữ liệu)
     const order = await this.prisma.$transaction(async (tx) => {
-      // ... (Transaction logic unchanged) ...
-      // A. Tạo Order (Trạng thái PENDING)
       const newOrder = await tx.order.create({
         data: {
           userId,
@@ -168,27 +131,33 @@ export class OrdersService {
         include: { items: true },
       });
 
-      // B. Trừ tồn kho (Reserve Stock)
       for (const item of itemsToProcess) {
         await this.inventoryService.reserveStock(item.skuId, item.quantity, tx);
       }
 
-      // C. Xóa items đã mua khỏi giỏ hàng
       const itemIdsToDelete = itemsToProcess.map((i) => i.id);
-      console.log(
-        `[Orders] Deleting cart items: ${itemIdsToDelete.join(', ')} from cart ${cart.id}`,
-      );
-
-      const deleteResult = await tx.cartItem.deleteMany({
+      await tx.cartItem.deleteMany({
         where: {
           cartId: cart.id,
           id: { in: itemIdsToDelete },
         },
       });
-      console.log(`[Orders] Deleted ${deleteResult.count} items.`);
 
-      // D. Cập nhật usedCount của coupon
       if (couponId) {
+        // [P0] Atomic re-verify usageLimit inside transaction to prevent race conditions
+        const coupon = await tx.coupon.findUnique({
+          where: { id: couponId },
+          select: { id: true, usageLimit: true, usedCount: true },
+        });
+
+        if (
+          coupon &&
+          coupon.usageLimit !== null &&
+          coupon.usedCount >= coupon.usageLimit
+        ) {
+          throw new BadRequestException('Mã giảm giá vừa hết lượt sử dụng');
+        }
+
         await tx.coupon.update({
           where: { id: couponId },
           data: { usedCount: { increment: 1 } },
@@ -198,33 +167,40 @@ export class OrdersService {
       return newOrder;
     });
 
-    let paymentUrl: string | undefined;
+    // --- SCHEDULE STOCK RELEASE JOB (15 Minutes) ---
+    try {
+      await this.ordersQueue.add(
+        'check-stock-release',
+        { orderId: order.id },
+        {
+          delay: 15 * 60 * 1000, // 15 mins delay
+        },
+      );
+    } catch (e) {
+      console.error(
+        `Failed to schedule stock release check for order ${order.id}`,
+        e,
+      );
+    }
+    // -----------------------------------------------
 
-    // 4. Xử lý Thanh toán (Payment Integration)
-    // ... (Payment logic unchanged) ...
+    let paymentUrl: string | undefined;
 
     try {
       if (createOrderDto.paymentMethod) {
-        // ... payment processing ...
         const paymentResult = await this.paymentService.processPayment(
           createOrderDto.paymentMethod,
           {
             amount: Number(order.totalAmount),
             orderId: order.id,
-            returnUrl: createOrderDto.returnUrl, // Ensure DTO has this or default used in Strategy
+            returnUrl: createOrderDto.returnUrl,
           },
         );
 
         if (paymentResult.success) {
           paymentUrl = paymentResult.paymentUrl;
 
-          // Only mark as PAID if it is immediate success (like Token payment),
-          // For Redirect (VNPay), status usually remains PENDING/AWAITING until IPN.
-          // But current MockStripe returns success immediately.
-          // VNPayStrategy returns success: true, paymentUrl: "..."
-
           if (!paymentUrl) {
-            // Immediate success (Mock Stripe)
             await this.prisma.order.update({
               where: { id: order.id },
               data: {
@@ -240,24 +216,12 @@ export class OrdersService {
       console.error(`Payment failed for order ${order.id}`, error);
     }
 
-    // 5. Gửi Email xác nhận (Background Job or Direct Mock)
     try {
-      // Mock Email Service
       await this.emailService.sendOrderConfirmation(order);
-
-      // Existing BullMQ job (keep for backward compatibility if needed)
-      /*
-      await this.emailQueue.add('send-confirmation', {
-        orderId: order.id,
-        email: user.email,
-        totalAmount: order.totalAmount,
-      });
-      */
     } catch (error) {
       console.error(`Gửi email thất bại`, error);
     }
 
-    // 6. Tạo thông báo (Notification) + Push real-time
     try {
       const notification = await this.notificationsService.create({
         userId: userId,
@@ -267,7 +231,6 @@ export class OrdersService {
         link: `/orders/${order.id}`,
       });
 
-      // Push real-time notification via WebSocket
       this.notificationsGateway.sendNotificationToUser(userId, notification);
     } catch (error) {
       console.error('Failed to create notification', error);
@@ -276,9 +239,6 @@ export class OrdersService {
     return { ...order, paymentUrl };
   }
 
-  /**
-   * Xem lịch sử đơn hàng của User.
-   */
   async findAllByUser(userId: string, page = 1, limit = 10) {
     const skip = (page - 1) * limit;
     const [orders, total] = await Promise.all([
@@ -336,15 +296,12 @@ export class OrdersService {
 
     if (!order) throw new NotFoundException('Không tìm thấy đơn hàng');
 
-    // Check quyền sở hữu (Security)
     if (order.userId !== userId) {
-      // Có thể throw ForbiddenException
     }
 
     return order;
   }
 
-  // Dành cho Admin: Xem tất cả đơn
   async findAll(search?: string, page = 1, limit = 10, includeItems = false) {
     const skip = (page - 1) * limit;
     const where: any = {};
@@ -393,7 +350,6 @@ export class OrdersService {
     };
   }
 
-  // Dành cho Admin: Xem chi tiết bất kỳ
   async findOneAdmin(id: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
@@ -412,10 +368,6 @@ export class OrdersService {
     return order;
   }
 
-  /**
-   * Cập nhật trạng thái đơn hàng (Admin).
-   * PENDING -> CONFIRMED -> SHIPPED -> DELIVERED
-   */
   async updateStatus(id: string, dto: UpdateOrderStatusDto) {
     const order = await this.prisma.order.findUnique({
       where: { id },
@@ -425,13 +377,6 @@ export class OrdersService {
 
     const currentStatus = order.status;
     const newStatus = dto.status;
-
-    // Các Quy tắc chuyển trạng thái:
-    // 1. PENDING (Chờ) -> CONFIRMED (Đã xác nhận), CANCELLED (Hủy)
-    // 2. CONFIRMED -> SHIPPED (Đã gửi), CANCELLED
-    // 3. SHIPPED -> DELIVERED (Đã giao)
-    // 4. DELIVERED -> (Không thể đổi tiếp - Trạng thái cuối)
-    // 5. CANCELLED -> (Không thể đổi tiếp - Trạng thái cuối)
 
     let isValid = false;
 
@@ -459,7 +404,7 @@ export class OrdersService {
         break;
       case OrderStatus.DELIVERED:
       case OrderStatus.CANCELLED:
-        isValid = false; // Cannot change
+        isValid = false;
         break;
       default:
         isValid = false;
@@ -472,7 +417,6 @@ export class OrdersService {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      // Nếu trạng thái mới là CANCELLED, hoàn lại tồn kho (Release Stock)
       if (newStatus === OrderStatus.CANCELLED) {
         for (const item of order.items) {
           await this.inventoryService.releaseStock(
@@ -493,7 +437,6 @@ export class OrdersService {
         await this.emailService.sendShippingUpdate(updatedOrder);
       }
 
-      // Create notification for user + Push real-time
       try {
         let title = 'Cập nhật đơn hàng';
         let message = `Đơn hàng #${id.slice(-8)} đã chuyển sang trạng thái ${newStatus}`;
@@ -535,7 +478,6 @@ export class OrdersService {
           link: `/orders/${id}`,
         });
 
-        // Push real-time notification via WebSocket
         this.notificationsGateway.sendNotificationToUser(
           updatedOrder.userId,
           notification,

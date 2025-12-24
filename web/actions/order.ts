@@ -1,31 +1,22 @@
-/**
- * =====================================================================
- * ORDER SERVER ACTIONS - Quản lý đơn hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * File này chứa các actions quan trọng nhất liên quan đến quy trình mua hàng.
- * Từ việc đặt hàng, thanh toán đến quản lý lịch sử đơn hàng.
- *
- * QUY TRÌNH ĐẶT HÀNG (CHECKOUT FLOW):
- * 1. User điền thông tin giao hàng và chọn phương thức thanh toán.
- * 2. `placeOrderAction` được gọi để tạo đơn hàng trong DB.
- * 3. Nếu chọn VNPAY, action trả về `paymentUrl` để redirect user.
- * 4. Nếu chọn COD, đơn hàng được tạo thành công ngay lập tức.
- * 5. Giỏ hàng được tự động xóa sau khi đặt hàng thành công.
- *
- * ⚠️ LƯU Ý: Backend xử lý việc trừ tồn kho và xóa giỏ hàng trong một Transaction.
- * =====================================================================
- */
-
 "use server";
 
 import { http } from "@/lib/http";
+import { protectedActionClient } from "@/lib/safe-action";
 import { CheckoutSchema } from "@/lib/schemas";
 import { ApiResponse } from "@/types/dtos";
 import { Order } from "@/types/models";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
+
+/**
+ * =====================================================================
+ * ORDER SERVER ACTIONS - Quản lý đơn hàng
+ * =====================================================================
+ */
+
+const CancelOrderSchema = z.object({
+  orderId: z.string(),
+});
 
 /**
  * Dữ liệu cần thiết để đặt hàng.
@@ -41,9 +32,52 @@ interface PlaceOrderData {
   returnUrl?: string;
 }
 
-/**
- * Lấy danh sách đơn hàng của người dùng hiện tại.
- */
+// --- SAFE ACTIONS ---
+
+const safePlaceOrder = protectedActionClient
+  .schema(CheckoutSchema)
+  .action(async ({ parsedInput }) => {
+    try {
+      const res = await http<
+        ApiResponse<{
+          id: string;
+          paymentUrl?: string;
+        }>
+      >("/orders", {
+        method: "POST",
+        body: JSON.stringify(parsedInput),
+      });
+
+      const paymentUrl = res.data?.paymentUrl;
+      const orderId = res.data?.id;
+
+      revalidatePath("/cart");
+      revalidatePath("/orders");
+
+      return { success: true, paymentUrl, orderId };
+    } catch (error: unknown) {
+      throw error;
+    }
+  });
+
+const safeCancelOrder = protectedActionClient
+  .schema(CancelOrderSchema)
+  .action(async ({ parsedInput }) => {
+    try {
+      await http(`/orders/${parsedInput.orderId}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: "CANCELLED" }),
+      });
+      revalidatePath("/orders");
+      revalidatePath(`/orders/${parsedInput.orderId}`);
+      return { success: true };
+    } catch (error) {
+      throw error;
+    }
+  });
+
+// --- EXPORTS ---
+
 export async function getMyOrdersAction(page = 1, limit = 10) {
   try {
     const res = await http<ApiResponse<Order[]>>(
@@ -55,62 +89,24 @@ export async function getMyOrdersAction(page = 1, limit = 10) {
   }
 }
 
-/**
- * Thực hiện đặt hàng.
- *
- * @param data - Thông tin đơn hàng và thanh toán
- * @returns Thông tin đơn hàng đã tạo và URL thanh toán (nếu có)
- */
 export async function placeOrderAction(data: PlaceOrderData) {
-  try {
-    const validated = CheckoutSchema.parse(data);
-    const res = await http<
-      ApiResponse<{
-        id: string;
-        paymentUrl?: string;
-      }>
-    >("/orders", {
-      method: "POST",
-      body: JSON.stringify(validated),
-    });
+  // @ts-ignore - CheckoutSchema matches PlaceOrderData roughly but Zod strictness might vary
+  const result = await safePlaceOrder(data);
 
-    // URL thanh toán cho các cổng như VNPay
-    const paymentUrl = res.data?.paymentUrl;
-
-    // Làm mới cache để cập nhật giỏ hàng (đã trống) và danh sách đơn hàng
-    revalidatePath("/cart");
-    revalidatePath("/orders");
-
-    if (paymentUrl) {
-      return { success: true, paymentUrl, orderId: res.data.id };
-    }
-
-    return { success: true, orderId: res.data.id };
-  } catch (error: unknown) {
-    return {
-      error: (error as Error).message || "Failed to place order",
-    };
+  if (result?.serverError || result?.validationErrors) {
+    return { error: result.serverError || "Invalid order data" };
   }
+
+  // result.data contains { success, paymentUrl, orderId }
+  return result.data;
 }
 
-/**
- * Hủy đơn hàng (chỉ áp dụng cho đơn hàng chưa xử lý).
- *
- * @param orderId - ID của đơn hàng cần hủy
- */
 export async function cancelOrderAction(orderId: string) {
-  try {
-    await http(`/orders/${orderId}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status: "CANCELLED" }),
-    });
+  const result = await safeCancelOrder({ orderId });
 
-    revalidatePath("/orders");
-    revalidatePath(`/orders/${orderId}`);
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      error: (error as Error).message || "Failed to cancel order",
-    };
+  if (result?.serverError) {
+    return { error: result.serverError };
   }
+
+  return { success: true };
 }

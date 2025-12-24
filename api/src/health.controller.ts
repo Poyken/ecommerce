@@ -1,25 +1,13 @@
+import { InjectQueue } from '@nestjs/bullmq';
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Queue } from 'bullmq';
 import { PrismaService } from './prisma/prisma.service';
 import { RedisService } from './redis/redis.service';
 
 /**
  * =====================================================================
- * HEALTH CONTROLLER - Kiểm tra sức khỏe hệ thống
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. LIVENESS VS READINESS:
- * - `Liveness` (API `/health`): Kiểm tra xem ứng dụng có còn "sống" hay không. Nếu chết, hệ thống quản lý (như Kubernetes) sẽ khởi động lại nó.
- * - `Readiness` (API `/health/ready`): Kiểm tra xem ứng dụng đã sẵn sàng phục vụ chưa (đã kết nối được DB, Redis chưa). Nếu chưa, nó sẽ không nhận request từ người dùng.
- *
- * 2. SYSTEM MONITORING (Giám sát):
- * - API `/health/info` cung cấp các thông số kỹ thuật như mức chiếm dụng RAM (`memory`), thời gian đã chạy (`uptime`).
- * - Giúp đội ngũ vận hành (DevOps) theo dõi tình trạng "sức khỏe" của server theo thời gian thực.
- *
- * 3. DATABASE & REDIS PING:
- * - Ta thực hiện các câu lệnh đơn giản (`SELECT 1`, `ping`) để xác nhận kết nối tới các dịch vụ bên thứ ba vẫn đang hoạt động tốt.
+ * HEALTH CONTROLLER - Kiểm tra sức khỏe hệ thống (P2 Enhanced)
  * =====================================================================
  */
 @ApiTags('Health')
@@ -28,12 +16,10 @@ export class HealthController {
   constructor(
     private readonly prisma: PrismaService,
     private readonly redis: RedisService,
+    @InjectQueue('email-queue') private readonly emailQueue: Queue,
+    @InjectQueue('orders-queue') private readonly ordersQueue: Queue,
   ) {}
 
-  /**
-   * Basic health check - kiểm tra server có chạy không
-   * Dùng cho liveness probe
-   */
   @Get()
   @ApiOperation({ summary: 'Kiểm tra sức khỏe cơ bản' })
   check() {
@@ -44,19 +30,19 @@ export class HealthController {
     };
   }
 
-  /**
-   * Readiness check - kiểm tra tất cả dependencies
-   * Dùng cho readiness probe
-   */
   @Get('ready')
-  @ApiOperation({ summary: 'Kiểm tra sẵn sàng với database và Redis' })
+  @ApiOperation({ summary: 'Kiểm tra sẵn sàng với database, Redis và Queues' })
   async ready() {
-    const checks = {
+    const checks: any = {
       database: false,
       redis: false,
+      queues: {
+        email: false,
+        orders: false,
+      },
     };
 
-    // Kiểm tra Database
+    // 1. Database Check
     try {
       await this.prisma.$queryRaw`SELECT 1`;
       checks.database = true;
@@ -64,7 +50,7 @@ export class HealthController {
       checks.database = false;
     }
 
-    // Kiểm tra Redis
+    // 2. Redis Check
     try {
       await this.redis.ping();
       checks.redis = true;
@@ -72,7 +58,23 @@ export class HealthController {
       checks.redis = false;
     }
 
-    const isReady = checks.database && checks.redis;
+    // 3. Queues Check (BullMQ)
+    try {
+      const [emailStatus, orderStatus] = await Promise.all([
+        this.emailQueue.client.then((c) => c.ping()),
+        this.ordersQueue.client.then((c) => c.ping()),
+      ]);
+      checks.queues.email = emailStatus === 'PONG';
+      checks.queues.orders = orderStatus === 'PONG';
+    } catch (error) {
+      checks.queues.queuesError = error.message;
+    }
+
+    const isReady =
+      checks.database &&
+      checks.redis &&
+      checks.queues.email &&
+      checks.queues.orders;
 
     return {
       status: isReady ? 'ready' : 'not_ready',
@@ -81,23 +83,23 @@ export class HealthController {
     };
   }
 
-  /**
-   * Thông tin chi tiết hệ thống - cho giám sát
-   */
   @Get('info')
-  @ApiOperation({ summary: 'Thông tin hệ thống' })
+  @ApiOperation({ summary: 'Thông tin hệ thống chi tiết' })
   info() {
+    const mem = process.memoryUsage();
     return {
       status: 'ok',
       timestamp: new Date().toISOString(),
       version: process.env.npm_package_version || '1.0.0',
       node: process.version,
+      platform: process.platform,
       memory: {
-        heapUsed:
-          Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + 'MB',
-        heapTotal:
-          Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + 'MB',
+        heapUsed: Math.round(mem.heapUsed / 1024 / 1024) + 'MB',
+        heapTotal: Math.round(mem.heapTotal / 1024 / 1024) + 'MB',
+        rss: Math.round(mem.rss / 1024 / 1024) + 'MB',
+        external: Math.round(mem.external / 1024 / 1024) + 'MB',
       },
+      cpuUsage: process.cpuUsage(),
       uptime: Math.round(process.uptime()) + 's',
     };
   }
