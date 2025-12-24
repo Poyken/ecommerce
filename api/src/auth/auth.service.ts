@@ -160,6 +160,7 @@ export class AuthService {
         },
       })) as any;
 
+      if (!user) throw new UnauthorizedException('Failed to create user');
       await this.ensureGuestRoleAndAssign(user.id);
 
       const reloaded = await this.prisma.user.findUnique({
@@ -175,11 +176,15 @@ export class AuthService {
           },
         },
       });
+
+      if (!reloaded) throw new UnauthorizedException('Failed to reload user');
       user = reloaded as any;
 
-      await this.grantWelcomeVoucher(user.id).catch((err) =>
-        console.error('Failed to grant social welcome voucher', err),
-      );
+      if (user) {
+        await this.grantWelcomeVoucher(user.id).catch((err) =>
+          console.error('Failed to grant social welcome voucher', err),
+        );
+      }
     }
 
     if (!user) {
@@ -277,9 +282,10 @@ export class AuthService {
     };
   }
 
-  async logout(userId: string, accessToken?: string) {
-    if (accessToken) {
-      await this.redisService.set(`bl:${accessToken}`, userId, 'EX', 900); // 15 mins
+  async logout(userId: string, jti?: string) {
+    if (jti) {
+      // Blacklist the specific token JTI for security
+      await this.redisService.set(`jwt:revoked:${jti}`, 'true', 'EX', 900); // 15 mins matches common access token life
     }
     await this.redisService.del(`refreshToken:${userId}`);
     return { message: 'Logged out successfully' };

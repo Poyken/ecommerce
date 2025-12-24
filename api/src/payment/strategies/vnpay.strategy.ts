@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
 import * as querystring from 'qs';
@@ -10,9 +10,22 @@ import {
 
 @Injectable()
 export class VNPayStrategy implements PaymentStrategy {
+  private readonly logger = new Logger(VNPayStrategy.name);
+
   constructor(private readonly configService: ConfigService) {}
 
+  private maskIP(ip: string): string {
+    if (!ip) return 'unknown';
+    const parts = ip.split('.');
+    if (parts.length < 4) return '***.***.***.***';
+    return `${parts[0]}.${parts[1]}.***.***`;
+  }
+
   async processPayment(dto: CreatePaymentDto): Promise<PaymentResult> {
+    this.logger.log(`Processing payment for order ${dto.orderId}`, {
+      amount: dto.amount,
+      ipAddr: this.maskIP(dto.ipAddr || ''),
+    });
     const tmnCode = this.configService.get('VNPAY_TMN_CODE');
     const secretKey = this.configService.get('VNPAY_HASH_SECRET');
     const vnpUrl =

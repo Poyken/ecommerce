@@ -111,7 +111,11 @@ export function LoginPageContent() {
                 );
                 const mergeRes = await mergeGuestCartAction(minimalItems);
 
-                if (mergeRes.success && Array.isArray(mergeRes.results)) {
+                if (
+                  mergeRes.success &&
+                  "results" in mergeRes &&
+                  Array.isArray(mergeRes.results)
+                ) {
                   const results = mergeRes.results as {
                     success: boolean;
                     data?: { capped?: boolean };
@@ -192,7 +196,9 @@ export function LoginPageContent() {
           <h2 className="text-4xl font-serif font-normal tracking-tight">
             {t("heroTitle")}
           </h2>
-          <p className="text-lg text-white/70 font-light">{t("heroSubtitle")}</p>
+          <p className="text-lg text-white/70 font-light">
+            {t("heroSubtitle")}
+          </p>
         </div>
       </div>
 
@@ -227,7 +233,9 @@ export function LoginPageContent() {
               <h1 className="text-3xl font-serif font-normal tracking-tight text-foreground">
                 {t("title")}
               </h1>
-              <p className="text-muted-foreground font-light">{t("subtitle")}</p>
+              <p className="text-muted-foreground font-light">
+                {t("subtitle")}
+              </p>
             </div>
 
             <motion.form

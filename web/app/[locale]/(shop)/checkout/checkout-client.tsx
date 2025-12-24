@@ -238,7 +238,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
         couponCode: appliedCoupon?.code,
       });
 
-      if (res.success) {
+      if (res && "success" in res) {
         if (res.paymentUrl) {
           window.location.href = res.paymentUrl;
           return;
@@ -255,7 +255,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
       } else {
         toast({
           title: t("failed"),
-          description: res.error || t("error"),
+          description: res && "error" in res ? res.error : t("error"),
           variant: "destructive",
         });
       }

@@ -66,16 +66,44 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
    * - Payload: Nội dung giải mã từ token.
    * - Return: Object này sẽ được gán vào `req.user`.
    */
-  async validate(req: any, payload: { userId: string; permissions: string[] }) {
-    const token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
-    if (token) {
-      const isBlacklisted = await this.redisService.get(`bl:${token}`);
-      if (isBlacklisted) throw new Error('Token revoked');
+  async validate(
+    req: any,
+    payload: {
+      userId: string;
+      permissions: string[];
+      jti: string;
+      fp?: string;
+    },
+  ) {
+    const { userId, permissions, jti, fp } = payload;
+
+    // 1. Check for Revoked Token (Blacklist) via JTI
+    const isRevoked = await this.redisService.get(`jwt:revoked:${jti}`);
+    if (isRevoked) {
+      throw new Error('Token revoked');
     }
+
+    // 2. Validate Device Fingerprint (Binding)
+    if (fp) {
+      const userAgent = req.headers['user-agent'] || '';
+      const ip = req.ip || '';
+      // Simple hash to compare with stored fp
+      const currentFp = Buffer.from(`${ip}${userAgent}`)
+        .toString('base64')
+        .substring(0, 32);
+
+      if (fp !== currentFp) {
+        // [P0] Critical security risk: Potential token theft/abuse
+        await this.redisService.set(`jwt:revoked:${jti}`, 'true', 'EX', 3600);
+        throw new Error('Device fingerprint mismatch');
+      }
+    }
+
     return {
-      id: payload.userId, // Map userId to id for consistency
-      userId: payload.userId,
-      permissions: payload.permissions, // Gán permissions để dùng trong PermissionsGuard
+      id: userId,
+      userId,
+      permissions,
+      jti,
     };
   }
 }

@@ -109,7 +109,11 @@ export function RegisterPageContent() {
                 );
                 const mergeRes = await mergeGuestCartAction(minimalItems);
 
-                if (mergeRes.success && Array.isArray(mergeRes.results)) {
+                if (
+                  mergeRes.success &&
+                  "results" in mergeRes &&
+                  Array.isArray(mergeRes.results)
+                ) {
                   const results = mergeRes.results as {
                     success: boolean;
                     data?: { capped?: boolean };

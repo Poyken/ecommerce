@@ -1,9 +1,10 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { Cache } from 'cache-manager';
 import slugify from 'slugify';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { RedisService } from 'src/redis/redis.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto, SortOption } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -47,9 +48,12 @@ const CACHE_TTL = {
 
 @Injectable()
 export class ProductsService {
+  private readonly logger = new Logger(ProductsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly skuManager: SkuManagerService,
+    private readonly redisService: RedisService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -345,30 +349,42 @@ export class ProductsService {
     const product = await this.prisma.product.findUnique({
       where: { id },
       include: {
-        category: true,
-        brand: true,
+        category: {
+          select: { id: true, name: true, slug: true },
+        },
+        brand: {
+          select: { id: true, name: true },
+        },
         images: {
           orderBy: { displayOrder: 'asc' },
         },
-        // Load options để hiển thị bộ lọc (chọn màu, chọn size)
+        // Load options to display filters (color, size)
         options: {
           include: { values: true },
           orderBy: { displayOrder: 'asc' },
         },
-        // Load SKUs để biết giá và tồn kho của từng biến thể
+        // Load SKUs with variants - Optimized Inclusion
         skus: {
           where: { status: 'ACTIVE' },
           include: {
             optionValues: {
               include: { optionValue: { include: { option: true } } },
             },
+            images: {
+              orderBy: { displayOrder: 'asc' },
+            },
           },
+        },
+        // Aggregate directly in Product model (using cached columns or _count)
+        _count: {
+          select: { reviews: { where: { isApproved: true } } },
         },
       },
     });
 
     if (!product || product.deletedAt)
       throw new NotFoundException('Không tìm thấy sản phẩm');
+
     return product;
   }
 
@@ -470,31 +486,21 @@ export class ProductsService {
       );
     }
 
-    // Invalidate product list cache
-    const store = (this.cacheManager as any).store;
-    if (store.keys) {
-      const keys = await store.keys('products_filter_*');
-      if (Array.isArray(keys)) {
-        await Promise.all(keys.map((k: string) => this.cacheManager.del(k)));
-      }
-    }
-    // Invalidate detail cache (assuming default key pattern /api/products/:id)
-    await this.cacheManager.del(`/api/products/${id}`);
+    // [P1] Targeted Cache Invalidation with Warming
+    await this.invalidateProductCache(id);
+
+    return freshProduct;
 
     return freshProduct;
   }
 
   async remove(id: string) {
-    // Soft delete: Cập nhật deletedAt thay vì xóa vĩnh viễn
-    // Đồng thời hủy kích hoạt tất cả SKU liên quan
-    return await this.prisma.$transaction(async (tx) => {
-      // 1. Soft delete Product
+    const result = await this.prisma.$transaction(async (tx) => {
       const product = await tx.product.update({
         where: { id },
         data: { deletedAt: new Date() },
       });
 
-      // 2. Deactivate all SKUs
       await tx.sku.updateMany({
         where: { productId: id },
         data: { status: 'INACTIVE' },
@@ -503,16 +509,8 @@ export class ProductsService {
       return product;
     });
 
-    // Invalidate product list cache
-    const store = (this.cacheManager as any).store;
-    if (store.keys) {
-      const keys = await store.keys('products_filter_*');
-      if (Array.isArray(keys)) {
-        await Promise.all(keys.map((k: string) => this.cacheManager.del(k)));
-      }
-    }
-    // Invalidate detail cache
-    await this.cacheManager.del(`/api/products/${id}`);
+    await this.invalidateProductCache(id);
+    return result;
   }
   /**
    * Lấy thông tin chi tiết của nhiều SKU cùng lúc (Dùng cho Guest Cart)
@@ -573,5 +571,29 @@ export class ProductsService {
         description,
       },
     });
+  }
+
+  /**
+   * [P1] Targeted Cache Invalidation with Warming
+   * Instead of waiting for next request to trigger slow fetch, we pre-warm Cache.
+   */
+  async invalidateProductCache(productId: string) {
+    const cacheKey = `product:${productId}`;
+
+    // 1. Fetch Fresh Data (Warming)
+    const freshData = await this.findOne(productId).catch(() => null);
+
+    if (freshData) {
+      await Promise.all([
+        this.redisService.del(cacheKey),
+        // Set main cache (1 hour)
+        this.redisService.set(cacheKey, JSON.stringify(freshData), 'EX', 3600),
+        // Set stale-indicator key (5 mins) - can be used for SWR logic in gateways
+        this.redisService.set(`${cacheKey}:stale`, '1', 'EX', 300),
+      ]);
+      this.logger.log(`Cache warmed for product ${productId}`);
+    } else {
+      await this.redisService.del(cacheKey);
+    }
   }
 }

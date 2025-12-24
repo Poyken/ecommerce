@@ -14,7 +14,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
 import * as crypto from 'crypto';
-import { Response } from 'express';
+import type { Response } from 'express';
 
 /**
  * =====================================================================
@@ -107,11 +107,9 @@ export class AuthController {
   @ApiOperation({ summary: 'Đăng xuất (Revoke Refresh Token)' })
   @ApiResponse({ status: 200, description: 'Đăng xuất thành công.' })
   async logout(@Request() req: any, @Res({ passthrough: true }) res: Response) {
-    const accessToken = req.headers.authorization?.split(' ')[1];
-
     res.clearCookie('refreshToken', { ...COOKIE_OPTIONS, maxAge: 0 });
 
-    const data = await this.authService.logout(req.user.userId, accessToken);
+    const data = await this.authService.logout(req.user.userId, req.user.jti);
     return { data };
   }
 

@@ -12,6 +12,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
+import { Logger } from '@nestjs/common';
 import { EmailService } from '../common/email/email.service';
 import { CouponsService } from '../coupons/coupons.service';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
@@ -21,6 +22,8 @@ import { ShippingService } from '../shipping/shipping.service';
 
 @Injectable()
 export class OrdersService {
+  private readonly logger = new Logger(OrdersService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly paymentService: PaymentService,
@@ -213,27 +216,20 @@ export class OrdersService {
         }
       }
     } catch (error) {
-      console.error(`Payment failed for order ${order.id}`, error);
+      this.logger.error(`Payment failed for order ${order.id}`, error);
     }
 
+    // --- SCHEDULE POST-PROCESS JOB (Side Effects: Email, Noti) ---
     try {
-      await this.emailService.sendOrderConfirmation(order);
-    } catch (error) {
-      console.error(`Gửi email thất bại`, error);
-    }
-
-    try {
-      const notification = await this.notificationsService.create({
+      await this.ordersQueue.add('order-created-post-process', {
+        orderId: order.id,
         userId: userId,
-        type: 'ORDER_PLACED',
-        title: 'Đặt hàng thành công',
-        message: `Đơn hàng #${order.id.slice(-8)} đã được tạo thành công. Tổng cộng: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(Number(order.totalAmount))}`,
-        link: `/orders/${order.id}`,
       });
-
-      this.notificationsGateway.sendNotificationToUser(userId, notification);
-    } catch (error) {
-      console.error('Failed to create notification', error);
+    } catch (e) {
+      this.logger.error(
+        `Failed to schedule post-process for order ${order.id}`,
+        e,
+      );
     }
 
     return { ...order, paymentUrl };

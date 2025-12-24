@@ -106,11 +106,15 @@ const safeReorder = protectedActionClient
       if (!order || !order.items) {
         throw new Error("Order not found or has no items");
       }
-      const promises = order.items.map((item) =>
-        http("/cart", {
-          method: "POST",
-          body: JSON.stringify({ skuId: item.skuId, quantity: item.quantity }),
-        })
+      const promises = order.items.map(
+        (item: { skuId: string; quantity: number }) =>
+          http("/cart", {
+            method: "POST",
+            body: JSON.stringify({
+              skuId: item.skuId,
+              quantity: item.quantity,
+            }),
+          })
       );
       await Promise.allSettled(promises);
       revalidatePath("/cart");
