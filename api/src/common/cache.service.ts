@@ -25,8 +25,25 @@ import { RedisService } from '../redis/redis.service';
 @Injectable()
 export class CacheService {
   private readonly DEFAULT_TTL = 300; // 5 phút
+  private readonly JITTER_PERCENTAGE = 0.1; // ±10% variance
 
   constructor(private readonly redis: RedisService) {}
+
+  /**
+   * [P1 OPTIMIZATION] Thêm jitter vào TTL để tránh Cache Stampede
+   *
+   * Cache Stampede xảy ra khi nhiều cache cùng hết hạn một lúc,
+   * gây ra đợt request đồng loạt vào database.
+   * Jitter phân tán thời gian hết hạn để giảm tải.
+   *
+   * @param ttl - TTL gốc (seconds)
+   * @returns TTL với random jitter ±10%
+   */
+  private applyJitter(ttl: number): number {
+    const jitterRange = ttl * this.JITTER_PERCENTAGE;
+    const jitter = Math.random() * jitterRange * 2 - jitterRange; // Range: -10% to +10%
+    return Math.round(ttl + jitter);
+  }
 
   /**
    * Lấy giá trị đã cache
@@ -45,14 +62,19 @@ export class CacheService {
   /**
    * Đặt giá trị cache với TTL tùy chọn
    */
+  /**
+   * [P1 OPTIMIZED] Set với random jitter để tránh cache stampede
+   */
   async set(
     key: string,
     value: unknown,
     ttl: number = this.DEFAULT_TTL,
+    useJitter: boolean = true,
   ): Promise<void> {
     const serialized =
       typeof value === 'string' ? value : JSON.stringify(value);
-    await this.redis.set(key, serialized, 'EX', ttl);
+    const effectiveTtl = useJitter ? this.applyJitter(ttl) : ttl;
+    await this.redis.set(key, serialized, 'EX', effectiveTtl);
   }
 
   /**
@@ -78,10 +100,16 @@ export class CacheService {
    * Nếu key tồn tại, trả về giá trị đã cache
    * Ngược lại, gọi hàm factory và cache kết quả
    */
+  /**
+   * [P1 OPTIMIZED] Lấy hoặc đặt cache với jitter
+   * Nếu key tồn tại, trả về giá trị đã cache
+   * Ngược lại, gọi hàm factory và cache kết quả với jitter TTL
+   */
   async getOrSet<T>(
     key: string,
     factory: () => Promise<T>,
     ttl: number = this.DEFAULT_TTL,
+    useJitter: boolean = true,
   ): Promise<T> {
     const cached = await this.get<T>(key);
     if (cached !== null) {
@@ -89,7 +117,7 @@ export class CacheService {
     }
 
     const value = await factory();
-    await this.set(key, value, ttl);
+    await this.set(key, value, ttl, useJitter);
     return value;
   }
 }

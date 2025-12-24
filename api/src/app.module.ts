@@ -61,6 +61,9 @@ import { UsersModule } from './users/users.module';
 import { WishlistModule } from './wishlist/wishlist.module';
 
 import { CacheModule } from '@nestjs/cache-manager';
+import { RedisThrottlerStorageService } from './common/throttler/redis-throttler.storage';
+import { RedisService } from './redis/redis.service';
+import { WorkerModule } from './worker/worker.module';
 
 @Module({
   imports: [
@@ -99,12 +102,22 @@ import { CacheModule } from '@nestjs/cache-manager';
 
     // 2. ThrottlerModule - Rate Limiting (Chống spam request)
     // Giới hạn: 100 requests mỗi 60 giây (1 phút)
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60000, // Thời gian sống: 60 giây
-        limit: 100, // Tối đa 100 yêu cầu mỗi cửa sổ TTL
-      },
-    ]),
+
+    // 2. ThrottlerModule - Rate Limiting (Chống spam request)
+    // Sử dụng Redis Storage để đồng bộ giữa các instances
+    ThrottlerModule.forRootAsync({
+      imports: [RedisModule],
+      inject: [RedisService],
+      useFactory: (redisService: RedisService) => ({
+        throttlers: [
+          {
+            ttl: 60000, // 60 giây
+            limit: 100, // 100 requests
+          },
+        ],
+        storage: new RedisThrottlerStorageService(redisService),
+      }),
+    }),
 
     // 3. BullModule - Quản lý hàng đợi (Xử lý công việc nền)
     // Sử dụng Redis làm message broker
@@ -182,6 +195,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 
     BlogModule,
     FeatureFlagsModule,
+    WorkerModule,
   ],
   controllers: [HealthController],
   providers: [

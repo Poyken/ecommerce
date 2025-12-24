@@ -114,23 +114,26 @@ export function NotificationProvider({
     }
   }, [userId]);
 
-  const markAsRead = async (id: string) => {
-    try {
-      // Optimistic update
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
-      );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
+  const markAsRead = useCallback(
+    async (id: string) => {
+      try {
+        // Optimistic update
+        setNotifications((prev) =>
+          prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+        );
+        setUnreadCount((prev) => Math.max(0, prev - 1));
 
-      await markAsReadServerAction(id);
-    } catch (error) {
-      console.error("Failed to mark notification as read", error);
-      // Revert on error? For now, just log.
-      fetchNotifications();
-    }
-  };
+        await markAsReadServerAction(id);
+      } catch (error) {
+        console.error("Failed to mark notification as read", error);
+        // Revert on error? For now, just log.
+        fetchNotifications();
+      }
+    },
+    [fetchNotifications]
+  );
 
-  const markAllAsRead = async () => {
+  const markAllAsRead = useCallback(async () => {
     try {
       // Optimistic update
       setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
@@ -141,7 +144,7 @@ export function NotificationProvider({
       console.error("Failed to mark all as read", error);
       fetchNotifications();
     }
-  };
+  }, [fetchNotifications]);
 
   // Initial fetch and re-fetch on userId change
   useEffect(() => {

@@ -85,7 +85,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
         if (isStateChanging) {
           csrfToken = cookieStore.get("csrf-token")?.value;
         }
-      } catch (e) {
+      } catch {
         // If we are inside "use cache", cookies() throws. We just proceed without tokens.
       }
     }

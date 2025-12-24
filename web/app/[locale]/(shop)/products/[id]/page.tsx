@@ -21,7 +21,7 @@ export async function generateStaticParams() {
     const ids = await productService.getProductIds();
     if (ids.length === 0) return [{ id: "fallback" }];
     return ids.map((id) => ({ id }));
-  } catch (error) {
+  } catch {
     return [{ id: "fallback" }];
   }
 }

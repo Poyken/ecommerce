@@ -90,7 +90,6 @@ export async function getMyOrdersAction(page = 1, limit = 10) {
 }
 
 export async function placeOrderAction(data: PlaceOrderData) {
-  // @ts-ignore - CheckoutSchema matches PlaceOrderData roughly but Zod strictness might vary
   const result = await safePlaceOrder(data);
 
   if (result?.serverError || result?.validationErrors) {

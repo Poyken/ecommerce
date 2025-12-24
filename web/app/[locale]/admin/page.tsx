@@ -11,9 +11,9 @@ import {
 } from "@/components/atoms/table";
 import { AdminAlerts } from "@/components/organisms/admin/admin-alerts";
 import {
-  BestSellersChart,
-  SalesTrendChart,
-} from "@/components/organisms/admin/admin-charts";
+  LazyBestSellersChart as BestSellersChart,
+  LazySalesTrendChart as SalesTrendChart,
+} from "@/components/organisms/admin/lazy-admin-charts";
 import { QuickActions } from "@/components/organisms/admin/quick-actions";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";

@@ -30,8 +30,6 @@ const ReorderSchema = z.object({
 
 const MergeCartSchema = z.array(CartItemSchema);
 
-const GuestCartDetailsSchema = z.object({ skuIds: z.array(z.string()) });
-
 // --- SAFE ACTIONS ---
 
 const safeAddToCart = protectedActionClient

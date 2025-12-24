@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "@/components/atoms/select";
 import { Textarea } from "@/components/atoms/textarea";
-import { RichTextEditor } from "@/components/molecules/rich-text-editor";
+import { LazyRichTextEditor as RichTextEditor } from "@/components/molecules/lazy-rich-text-editor";
 import { useToast } from "@/hooks/use-toast";
 import { BlogWithProducts, Category, Product } from "@/types/models";
 import { AnimatePresence, motion } from "framer-motion";

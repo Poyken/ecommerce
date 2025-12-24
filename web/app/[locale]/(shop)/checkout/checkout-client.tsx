@@ -153,8 +153,8 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
           ? res.data
           : [];
         setAvailableCoupons(list);
-      } catch (e) {
-        console.error("Failed to fetch coupons", e);
+      } catch {
+        console.error("Failed to fetch coupons");
       }
     };
     fetchCoupons();

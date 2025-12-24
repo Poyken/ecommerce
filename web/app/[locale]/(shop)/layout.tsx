@@ -106,7 +106,7 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ShopLayoutFallback({ children }: { children: React.ReactNode }) {
+function ShopLayoutFallback() {
   return (
     <>
       <HeaderFallback />
@@ -125,7 +125,7 @@ export default async function ShopLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
-      <Suspense fallback={<ShopLayoutFallback>{children}</ShopLayoutFallback>}>
+      <Suspense fallback={<ShopLayoutFallback />}>
         <DynamicShopContent>{children}</DynamicShopContent>
       </Suspense>
     </div>
