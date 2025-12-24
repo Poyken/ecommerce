@@ -117,7 +117,16 @@ export class ProductsService {
     // 4. Auto-generate SKUs (Delegated to SkuManager)
     await this.skuManager.generateSkusForNewProduct(product);
 
-    // await (this.cacheManager.store as any).reset();
+    // Invalidate product list cache
+    const store = (this.cacheManager as any).store;
+    if (store.keys) {
+      const keys = await store.keys('products_filter_*');
+      if (Array.isArray(keys)) {
+        await Promise.all(keys.map((k) => this.cacheManager.del(k)));
+      }
+    }
+    // Also reset if unclear to be safe, or just trust the keys?
+    // User asked for specific invalidation. The above is specific.
 
     return product;
   }
@@ -461,7 +470,16 @@ export class ProductsService {
       );
     }
 
-    // await (this.cacheManager.store as any).reset();
+    // Invalidate product list cache
+    const store = (this.cacheManager as any).store;
+    if (store.keys) {
+      const keys = await store.keys('products_filter_*');
+      if (Array.isArray(keys)) {
+        await Promise.all(keys.map((k: string) => this.cacheManager.del(k)));
+      }
+    }
+    // Invalidate detail cache (assuming default key pattern /api/products/:id)
+    await this.cacheManager.del(`/api/products/${id}`);
 
     return freshProduct;
   }
@@ -485,7 +503,16 @@ export class ProductsService {
       return product;
     });
 
-    // await (this.cacheManager.store as any).reset();
+    // Invalidate product list cache
+    const store = (this.cacheManager as any).store;
+    if (store.keys) {
+      const keys = await store.keys('products_filter_*');
+      if (Array.isArray(keys)) {
+        await Promise.all(keys.map((k: string) => this.cacheManager.del(k)));
+      }
+    }
+    // Invalidate detail cache
+    await this.cacheManager.del(`/api/products/${id}`);
   }
   /**
    * Lấy thông tin chi tiết của nhiều SKU cùng lúc (Dùng cho Guest Cart)

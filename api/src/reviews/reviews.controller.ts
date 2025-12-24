@@ -1,3 +1,4 @@
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import {
   Body,
   Controller,
@@ -95,6 +96,8 @@ export class ReviewsController {
   }
 
   @Get('product/:productId')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(60000) // 1 minute
   @ApiOperation({ summary: 'Lấy đánh giá theo sản phẩm' })
   findAllByProduct(
     @Param('productId') productId: string,

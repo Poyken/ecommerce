@@ -1,5 +1,21 @@
-import { Body, Controller, Get, Header, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  Header,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/permissions.guard';
@@ -22,6 +38,18 @@ export class BulkController {
     return this.bulkService.exportSkusToCsv();
   }
 
+  @Get('export/skus/excel')
+  @Permissions('sku:read')
+  @Header(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  )
+  @Header('Content-Disposition', 'attachment; filename=skus-export.xlsx')
+  @ApiOperation({ summary: 'Xuất danh sách SKU ra Excel (XLSX)' })
+  async exportSkusExcel(): Promise<Buffer> {
+    return this.bulkService.exportSkusToExcel();
+  }
+
   @Get('export/skus/json')
   @Permissions('sku:read')
   @ApiOperation({ summary: 'Xuất danh sách SKU ra JSON' })
@@ -35,6 +63,34 @@ export class BulkController {
   @ApiOperation({ summary: 'Nhập dữ liệu SKU từ JSON (có hỗ trợ dry-run)' })
   async importSkus(@Body() body: ImportSkusDto) {
     return this.bulkService.importSkus(body.rows, body.dryRun);
+  }
+
+  @Post('import/skus/excel')
+  @Permissions('sku:update')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+        dryRun: {
+          type: 'boolean',
+        },
+      },
+    },
+  })
+  @ApiOperation({ summary: 'Nhập dữ liệu SKU từ Excel' })
+  async importSkusExcel(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('dryRun') dryRun?: string, // Multer returns body as string
+  ) {
+    // Parse dryRun boolean from string
+    const isDryRun = dryRun === 'true';
+    return this.bulkService.importSkusFromExcel(file.buffer, isDryRun);
   }
 
   @Post('update')

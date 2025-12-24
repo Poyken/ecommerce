@@ -55,7 +55,7 @@ export class AuditInterceptor implements NestInterceptor {
                 body: request.body,
                 params: request.params,
                 query: request.query,
-                // response: data // Có thể log cả response nếu cần
+                response: data, // Có thể log cả response nếu cần
               },
               ipAddress: ip,
               userAgent,

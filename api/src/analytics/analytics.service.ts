@@ -116,42 +116,27 @@ export class AnalyticsService {
   async getSalesData(startDate?: string, endDate?: string) {
     const { start, end } = this.getDateRange(startDate, endDate);
 
-    const orders = await this.prisma.order.findMany({
-      where: {
-        status: 'DELIVERED',
-        createdAt: { gte: start, lte: end },
-      },
-      select: {
-        createdAt: true,
-        totalAmount: true,
-      },
-      orderBy: { createdAt: 'asc' },
-    });
+    // Optimized: Use raw SQL to group by date directly in database
+    // This avoids fetching thousands of order objects into memory
+    const salesData: any[] = await this.prisma.$queryRaw`
+      SELECT 
+        DATE("createdAt") as date, 
+        SUM("totalAmount") as amount
+      FROM "Order"
+      WHERE "status" = 'DELIVERED'
+      AND "createdAt" >= ${start} 
+      AND "createdAt" <= ${end}
+      GROUP BY DATE("createdAt")
+      ORDER BY date ASC
+    `;
 
-    // Group by day
-    const dailySales: Record<string, number> = {};
-    const dayCount = Math.ceil(
-      (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24),
-    );
-
-    // Initialize all days with 0
-    for (let i = 0; i < dayCount; i++) {
-      const date = new Date(start);
-      date.setDate(date.getDate() + i);
-      const dateStr = date.toISOString().split('T')[0];
-      dailySales[dateStr] = 0;
-    }
-
-    orders.forEach((order) => {
-      const dateStr = order.createdAt.toISOString().split('T')[0];
-      if (dailySales[dateStr] !== undefined) {
-        dailySales[dateStr] += Number(order.totalAmount);
-      }
-    });
-
-    return Object.entries(dailySales).map(([date, amount]) => ({
-      date,
-      amount,
+    // Map result to expected format (ensure date is string yyyy-mm-dd)
+    return salesData.map((row) => ({
+      date:
+        typeof row.date === 'string'
+          ? row.date
+          : row.date.toISOString().split('T')[0],
+      amount: Number(row.amount || 0),
     }));
   }
 

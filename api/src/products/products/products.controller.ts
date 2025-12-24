@@ -23,6 +23,7 @@
  * =====================================================================
  */
 
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import {
   Body,
   Controller,
@@ -33,6 +34,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from 'src/auth/decorators/permissions.decorator';
@@ -82,8 +84,12 @@ export class ProductsController {
    * Public API - Dùng cho trang Chi tiết sản phẩm (PDP).
    *
    * Trả về: Thông tin product, Options, và tất cả SKUs biến thể.
+   *
+   * Đã kích hoạt Caching (Redis) - TTL 5 phút.
    */
   @Get(':id')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000) // 5 minutes
   @ApiOperation({ summary: 'Lấy chi tiết sản phẩm' })
   async findOne(@Param('id') id: string) {
     const data = await this.productsService.findOne(id);
@@ -153,6 +159,7 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @ApiBearerAuth()
   @Permissions('product:update')
+  @ApiOperation({ summary: 'Dịch thông tin sản phẩm' })
   async translate(
     @Param('id') id: string,
     @Body() body: { locale: string; name: string; description?: string },

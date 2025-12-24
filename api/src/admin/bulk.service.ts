@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import * as ExcelJS from 'exceljs';
 import { PrismaService } from '../prisma/prisma.service';
 
 /**
@@ -10,6 +11,7 @@ import { PrismaService } from '../prisma/prisma.service';
  *
  * 1. EXPORT:
  * - Xuất danh sách sản phẩm/SKU ra định dạng CSV/JSON để tải về.
+ * - Hỗ trợ thêm Excel (XLSX) chuyên nghiệp hơn.
  *
  * 2. IMPORT:
  * - Nhập dữ liệu từ file CSV/JSON và cập nhật vào database.
@@ -109,6 +111,35 @@ export class BulkService {
     );
 
     return [headers, ...rows].join('\n');
+  }
+
+  /**
+   * Xuất danh sách SKU ra Excel Buffer
+   */
+  async exportSkusToExcel(): Promise<Buffer> {
+    const data = await this.exportSkus();
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('SKUs');
+
+    // Define columns
+    sheet.columns = [
+      { header: 'SKU Code', key: 'skuCode', width: 20 },
+      { header: 'Product Name', key: 'productName', width: 40 },
+      { header: 'Variants', key: 'variants', width: 30 },
+      { header: 'Price', key: 'price', width: 15 },
+      { header: 'Sale Price', key: 'salePrice', width: 15 },
+      { header: 'Stock', key: 'stock', width: 10 },
+      { header: 'Status', key: 'status', width: 15 },
+    ];
+
+    // Add rows
+    sheet.addRows(data);
+
+    // Style header
+    sheet.getRow(1).font = { bold: true };
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    return buffer as any;
   }
 
   /**
@@ -225,6 +256,68 @@ export class BulkService {
     }
 
     return result;
+  }
+
+  /**
+   * Parse Excel buffer and import
+   */
+  async importSkusFromExcel(
+    buffer: any,
+    dryRun: boolean,
+  ): Promise<ImportResult & { changes?: any[] }> {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(buffer);
+    const sheet = workbook.getWorksheet(1);
+    const rows: ImportRow[] = [];
+
+    if (!sheet) {
+      throw new Error('Excel file must have at least one sheet');
+    }
+
+    // Assume header is row 1
+    // Map headers: SKU Code -> skuCode, Price -> price, etc.
+    const headerMap: Record<number, string> = {};
+    const headerRow = sheet.getRow(1);
+
+    headerRow.eachCell((cell, colNumber) => {
+      const val = cell.value?.toString().toLowerCase().trim();
+      if (val === 'sku code') headerMap[colNumber] = 'skuCode';
+      else if (val === 'price') headerMap[colNumber] = 'price';
+      else if (val === 'sale price') headerMap[colNumber] = 'salePrice';
+      else if (val === 'stock') headerMap[colNumber] = 'stock';
+      else if (val === 'status') headerMap[colNumber] = 'status';
+    });
+
+    if (!Object.values(headerMap).includes('skuCode')) {
+      throw new Error('Missing "SKU Code" column in Excel');
+    }
+
+    sheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return; // skip header
+      const rowData: any = {};
+      let hasData = false;
+
+      row.eachCell((cell, colNumber) => {
+        const key = headerMap[colNumber];
+        if (key) {
+          let value: any = cell.value;
+          // Handle potential rich text or formula results if simpler
+          if (key === 'price' || key === 'salePrice' || key === 'stock') {
+            value = Number(value);
+          }
+          if (value !== null && value !== undefined && value !== '') {
+            rowData[key] = value;
+            hasData = true;
+          }
+        }
+      });
+
+      if (hasData && rowData.skuCode) {
+        rows.push(rowData);
+      }
+    });
+
+    return this.importSkus(rows, dryRun);
   }
 
   /**

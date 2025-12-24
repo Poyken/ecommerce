@@ -41,7 +41,22 @@ async function bootstrap() {
   // - XSS (Cross-Site Scripting)
   // - Clickjacking
   // - MIME type sniffing
-  app.use(helmet());
+  // Helmet thiết lập các HTTP headers bảo mật
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: ["'self'"],
+          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Cần điều chỉnh nếu có inline script
+          styleSrc: ["'self'", "'unsafe-inline'"],
+          imgSrc: ["'self'", 'data:', 'https:'],
+          connectSrc: ["'self'"],
+        },
+      },
+      crossOriginEmbedderPolicy: false,
+      crossOriginResourcePolicy: { policy: 'cross-origin' }, // Hỗ trợ CDN/Image
+    }),
+  );
 
   // ============================================================================
   // 2. PERFORMANCE - Tối ưu hiệu năng với Compression
