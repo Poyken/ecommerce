@@ -24,21 +24,19 @@ import { RolesPageClient } from "./roles-client";
 export default async function RolesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string }>;
+  searchParams: Promise<{ search?: string; page?: string; limit?: string }>;
 }) {
   const params = await searchParams;
   const search = params.search || "";
-  const result = await getRolesAction(1, 100, search);
+  const page = Number(params.page) || 1;
+  const limit = Number(params.limit) || 10;
+  const result = await getRolesAction(page, limit, search);
 
-  if (!("data" in result)) {
+  if ("error" in result) {
     return (
-      <div className="text-red-600">
-        Error loading roles: {(result as any).error}
-      </div>
+      <div className="text-red-600">Error loading roles: {result.error}</div>
     );
   }
 
-  const roles = result.data;
-
-  return <RolesPageClient roles={roles || []} />;
+  return <RolesPageClient roles={result.data || []} meta={result.meta} />;
 }

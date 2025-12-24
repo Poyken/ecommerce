@@ -54,13 +54,27 @@ export type Order = Pick<
   items: { quantity: number }[];
 };
 
+// ... imports
+import { PaginationMeta } from "@/types/dtos";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+
 interface OrdersClientProps {
   orders: Order[];
+  meta: PaginationMeta | null; // Add meta
 }
 
-export function OrdersClient({ orders }: OrdersClientProps) {
+export function OrdersClient({ orders, meta }: OrdersClientProps) {
   const t = useTranslations("orders");
   const tCommon = useTranslations("common");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`?${params.toString()}`);
+  };
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-primary/30 pt-24 pb-24 relative overflow-hidden">
@@ -90,108 +104,138 @@ export function OrdersClient({ orders }: OrdersClientProps) {
           variants={staggerContainer}
         >
           {orders.length > 0 ? (
-            orders.map((order) => (
-              <motion.div key={order.id} variants={itemVariant}>
-                <GlassCard className="p-6 transition-all hover:bg-white/10 group border border-transparent hover:border-primary/20 hover:shadow-lg hover:shadow-primary/10">
-                  <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
-                    <div className="space-y-4 flex-1">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className="font-mono text-lg font-bold text-primary">
-                          {t("orderNumber")}
-                          {order.orderNumber ||
-                            order.id.substring(0, 8).toUpperCase()}
-                        </span>
-                        <StatusBadge
-                          status={order.status}
-                          label={t(`status.${order.status}`)}
-                        />
+            <>
+              {orders.map((order) => (
+                <motion.div key={order.id} variants={itemVariant}>
+                  <GlassCard className="p-6 transition-all hover:bg-white/10 group border border-transparent hover:border-primary/20 hover:shadow-lg hover:shadow-primary/10">
+                    <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
+                      <div className="space-y-4 flex-1">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <span className="font-mono text-lg font-bold text-primary">
+                            {t("orderNumber")}
+                            {order.orderNumber ||
+                              order.id.substring(0, 8).toUpperCase()}
+                          </span>
+                          <StatusBadge
+                            status={order.status}
+                            label={t(`status.${order.status}`)}
+                          />
+                        </div>
+
+                        <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <Calendar size={16} />
+                            <span>
+                              {format(new Date(order.createdAt), "PPP")}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <CreditCard size={16} />
+                            <span className="text-foreground font-medium">
+                              {formatCurrency(Number(order.totalAmount))}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Box size={16} />
+                            <span>
+                              {t("items", {
+                                count:
+                                  order.items?.reduce(
+                                    (acc, item) => acc + item.quantity,
+                                    0
+                                  ) || 0,
+                              })}
+                            </span>
+                          </div>
+                        </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          <Calendar size={16} />
-                          <span>
-                            {format(new Date(order.createdAt), "PPP")}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <CreditCard size={16} />
-                          <span className="text-foreground font-medium">
-                            {formatCurrency(Number(order.totalAmount))}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Box size={16} />
-                          <span>
-                            {t("items", {
-                              count:
-                                order.items?.reduce(
-                                  (acc, item) => acc + item.quantity,
-                                  0
-                                ) || 0,
-                            })}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="w-full md:w-auto flex flex-col md:flex-row gap-2">
-                      {order.status === "PENDING" && (
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              variant="destructive"
-                              className="w-full md:w-auto"
-                            >
-                              {t("cancelOrder")}
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="bg-background/95 backdrop-blur-xl border-border shadow-2xl">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                {t("confirmCancel")}
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone. This will
-                                permanently cancel your order.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="bg-transparent border-white/10 hover:bg-white/10">
-                                {tCommon("cancel")}
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={async () => {
-                                  await import("@/actions/order").then((mod) =>
-                                    mod.cancelOrderAction(order.id)
-                                  );
-                                }}
-                                className="bg-destructive hover:bg-destructive/90 text-destructive-foreground border-none"
+                      <div className="w-full md:w-auto flex flex-col md:flex-row gap-2">
+                        {order.status === "PENDING" && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                variant="destructive"
+                                className="w-full md:w-auto"
                               >
                                 {t("cancelOrder")}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      )}
-                      {order.status === "DELIVERED" && (
-                        <ReorderButton orderId={order.id} />
-                      )}
-                      <Link href={`/orders/${order.id}`}>
-                        <Button
-                          variant="outline"
-                          className="w-full md:w-auto group-hover:border-primary/50 group-hover:text-primary transition-colors"
-                        >
-                          {t("viewDetails")}
-                          <ArrowRight size={16} className="ml-2" />
-                        </Button>
-                      </Link>
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent className="bg-background/95 backdrop-blur-xl border-border shadow-2xl">
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  {t("confirmCancel")}
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action cannot be undone. This will
+                                  permanently cancel your order.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel className="bg-transparent border-white/10 hover:bg-white/10">
+                                  {tCommon("cancel")}
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={async () => {
+                                    await import("@/actions/order").then(
+                                      (mod) => mod.cancelOrderAction(order.id)
+                                    );
+                                  }}
+                                  className="bg-destructive hover:bg-destructive/90 text-destructive-foreground border-none"
+                                >
+                                  {t("cancelOrder")}
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
+                        {order.status === "DELIVERED" && (
+                          <ReorderButton orderId={order.id} />
+                        )}
+                        <Link href={`/orders/${order.id}`}>
+                          <Button
+                            variant="outline"
+                            className="w-full md:w-auto group-hover:border-primary/50 group-hover:text-primary transition-colors"
+                          >
+                            {t("viewDetails")}
+                            <ArrowRight size={16} className="ml-2" />
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
-                  </div>
-                </GlassCard>
-              </motion.div>
-            ))
+                  </GlassCard>
+                </motion.div>
+              ))}
+
+              {/* Pagination Controls */}
+              {meta && meta.lastPage > 1 && (
+                <div className="flex justify-center items-center gap-4 pt-8">
+                  <GlassButton
+                    variant="outline"
+                    disabled={meta.page <= 1}
+                    onClick={() => handlePageChange(meta.page - 1)}
+                    className="backdrop-blur-md bg-white/5 border-white/10"
+                  >
+                    <ChevronLeft className="w-4 h-4 mr-2" />
+                    {tCommon("previous")}
+                  </GlassButton>
+                  <span className="text-sm text-muted-foreground">
+                    Page {meta.page} / {meta.lastPage}
+                  </span>
+                  <GlassButton
+                    variant="outline"
+                    disabled={meta.page >= meta.lastPage}
+                    onClick={() => handlePageChange(meta.page + 1)}
+                    className="backdrop-blur-md bg-white/5 border-white/10"
+                  >
+                    {tCommon("next")}
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  </GlassButton>
+                </div>
+              )}
+            </>
           ) : (
+            // ... empty state ...
             <motion.div
               className="flex flex-col items-center justify-center py-24 px-4 text-center space-y-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm"
               variants={itemVariant}

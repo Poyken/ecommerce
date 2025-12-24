@@ -24,21 +24,24 @@ import { CategoriesPageClient } from "./categories-client";
 export default async function CategoriesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string }>;
+  searchParams: Promise<{ search?: string; page?: string; limit?: string }>;
 }) {
   const params = await searchParams;
   const search = params.search || "";
-  const result = await getCategoriesAction(search);
+  const page = Number(params.page) || 1;
+  const limit = Number(params.limit) || 10;
 
-  if (!("data" in result)) {
+  const result = await getCategoriesAction(page, limit, search);
+
+  if ("error" in result) {
     return (
       <div className="text-red-600">
-        Error loading categories: {(result as any).error}
+        Error loading categories: {result.error}
       </div>
     );
   }
 
-  const categories = result.data;
-
-  return <CategoriesPageClient categories={categories || []} />;
+  return (
+    <CategoriesPageClient categories={result.data || []} meta={result.meta} />
+  );
 }

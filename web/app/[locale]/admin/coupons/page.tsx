@@ -2,8 +2,17 @@ import { getCouponsAction } from "@/actions/admin";
 import { getTranslations } from "next-intl/server";
 import { CouponsClient } from "./coupons-client";
 
-export default async function CouponsPage() {
-  const result = await getCouponsAction();
+export default async function CouponsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string; page?: string; limit?: string }>;
+}) {
+  const params = await searchParams;
+  const search = params.search || "";
+  const page = Number(params.page) || 1;
+  const limit = Number(params.limit) || 10;
+
+  const result = await getCouponsAction(page, limit, search);
   const t = await getTranslations("admin.coupons");
 
   if ("error" in result) {
@@ -16,7 +25,7 @@ export default async function CouponsPage() {
 
   return (
     <div className="p-6">
-      <CouponsClient initialCoupons={result.data || []} />
+      <CouponsClient initialCoupons={result.data || []} meta={result.meta} />
     </div>
   );
 }

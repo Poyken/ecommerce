@@ -56,19 +56,36 @@ export class BrandsService {
    * Lấy danh sách thương hiệu.
    * Sắp xếp theo tên A-Z để dễ tìm kiếm.
    */
-  async findAll(search?: string) {
+  async findAll(search?: string, page = 1, limit = 10) {
     const where = search
       ? { name: { contains: search, mode: 'insensitive' as const } }
       : {};
-    return this.prisma.brand.findMany({
-      where,
-      orderBy: { name: 'asc' },
-      include: {
-        _count: {
-          select: { products: true },
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await Promise.all([
+      this.prisma.brand.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        skip,
+        take: limit,
+        include: {
+          _count: {
+            select: { products: true },
+          },
         },
+      }),
+      this.prisma.brand.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        lastPage: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async findOne(id: string) {

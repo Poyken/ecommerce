@@ -77,6 +77,13 @@ export class BlogController {
     return result; // Already returns { data, meta }
   }
 
+  @Get('categories')
+  @ApiOperation({ summary: 'Get blog category statistics' })
+  async getCategoryStats() {
+    const data = await this.blogService.getCategoryStats();
+    return { data };
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a single blog post by ID or slug' })
   async findOne(@Param('id') id: string) {

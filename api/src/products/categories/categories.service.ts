@@ -82,7 +82,7 @@ export class CategoriesService {
    * Lấy danh sách tất cả danh mục.
    * Hiện tại đang lấy flat list (danh sách phẳng), sắp xếp mới nhất lên đầu.
    */
-  async findAll(search?: string) {
+  async findAll(search?: string, page = 1, limit = 100) {
     const where = search
       ? {
           OR: [
@@ -91,20 +91,37 @@ export class CategoriesService {
           ],
         }
       : {};
-    const categories = await this.prisma.category.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        _count: {
-          select: { products: true },
-        },
-      },
-    });
+    const skip = (page - 1) * limit;
 
-    return categories.map((c) => ({
+    const [categories, total] = await Promise.all([
+      this.prisma.category.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: limit,
+        include: {
+          _count: {
+            select: { products: true },
+          },
+        },
+      }),
+      this.prisma.category.count({ where }),
+    ]);
+
+    const data = categories.map((c) => ({
       ...c,
       productCount: c._count.products,
     }));
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        lastPage: Math.ceil(total / limit),
+      },
+    };
   }
 
   /**

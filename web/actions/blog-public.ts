@@ -8,10 +8,14 @@ import { BlogWithProducts } from "@/types/models";
  * Fetch danh sách bài viết blog (Public access).
  * Server Action này dùng cho Client Component để Load More.
  */
-export async function getBlogsAction(page: number, limit: number = 12) {
+export async function getBlogsAction(
+  page: number,
+  limit: number = 12,
+  category?: string
+) {
   try {
     const res = await http<ApiResponse<BlogWithProducts[]>>("/blogs", {
-      params: { page, limit },
+      params: { page, limit, category },
       skipAuth: true,
       next: { revalidate: 60 }, // Cache ngắn hạn cho load more
     });

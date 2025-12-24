@@ -54,18 +54,34 @@ export class RolesService {
     return this.prisma.role.create({ data: createRoleDto });
   }
 
-  async findAll(search?: string) {
+  async findAll(search?: string, page = 1, limit = 10) {
     const where = search
       ? { name: { contains: search, mode: 'insensitive' as const } }
       : {};
+    const skip = (page - 1) * limit;
 
-    return this.prisma.role.findMany({
-      where,
-      include: {
-        permissions: { select: { permission: true } },
+    const [data, total] = await Promise.all([
+      this.prisma.role.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          permissions: { select: { permission: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.role.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        lastPage: Math.ceil(total / limit),
       },
-      orderBy: { createdAt: 'desc' },
-    });
+    };
   }
 
   async findOne(id: string) {

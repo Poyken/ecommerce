@@ -1,37 +1,45 @@
 "use client";
 import { deleteRoleAction } from "@/actions/admin";
-import { AssignPermissionsDialog } from "@/components/organisms/admin/assign-permissions-dialog";
-import { CreateRoleDialog } from "@/components/organisms/admin/create-role-dialog";
-import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
-import { EditRoleDialog } from "@/components/organisms/admin/edit-role-dialog";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
+import { DataTablePagination } from "@/components/atoms/data-table-pagination";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/atoms/dropdown-menu";
 import { GlassCard } from "@/components/atoms/glass-card";
 import { Input } from "@/components/atoms/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/atoms/table";
+import { AssignPermissionsDialog } from "@/components/organisms/admin/assign-permissions-dialog";
+import { CreateRoleDialog } from "@/components/organisms/admin/create-role-dialog";
+import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
+import { EditRoleDialog } from "@/components/organisms/admin/edit-role-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useAuth } from "@/providers/auth-provider";
+import { PaginationMeta } from "@/types/dtos";
 import { MoreHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export function RolesPageClient({ roles }: { roles: any[] }) {
+export function RolesPageClient({
+  roles,
+  meta,
+}: {
+  roles: any[];
+  meta?: PaginationMeta;
+}) {
   /**
    * =====================================================================
    * ADMIN ROLES CLIENT - Quản lý chuẩn bị
@@ -257,6 +265,14 @@ export function RolesPageClient({ roles }: { roles: any[] }) {
           </TableBody>
         </Table>
       </GlassCard>
+
+      {meta && (
+        <DataTablePagination
+          page={meta.page}
+          total={meta.total}
+          limit={meta.limit}
+        />
+      )}
 
       <CreateRoleDialog
         open={createDialogOpen}

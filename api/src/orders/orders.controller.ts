@@ -62,9 +62,16 @@ export class OrdersController {
 
   @Get('my-orders')
   @ApiOperation({ summary: 'Lấy lịch sử đơn hàng của người dùng hiện tại' })
-  async findMyOrders(@Request() req) {
-    const data = await this.ordersService.findAllByUser(req.user.id);
-    return { data };
+  async findMyOrders(
+    @Request() req,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    return this.ordersService.findAllByUser(
+      req.user.id,
+      Number(page),
+      Number(limit),
+    );
   }
 
   @Get('my-orders/:id')

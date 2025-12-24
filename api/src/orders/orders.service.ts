@@ -279,20 +279,36 @@ export class OrdersService {
   /**
    * Xem lịch sử đơn hàng của User.
    */
-  async findAllByUser(userId: string) {
-    return this.prisma.order.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      include: {
-        items: {
-          include: {
-            sku: {
-              include: { product: true },
+  async findAllByUser(userId: string, page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    const [orders, total] = await Promise.all([
+      this.prisma.order.findMany({
+        where: { userId },
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          items: {
+            include: {
+              sku: {
+                include: { product: true },
+              },
             },
           },
         },
+      }),
+      this.prisma.order.count({ where: { userId } }),
+    ]);
+
+    return {
+      data: orders,
+      meta: {
+        total,
+        page,
+        limit,
+        lastPage: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async findOne(id: string, userId: string) {

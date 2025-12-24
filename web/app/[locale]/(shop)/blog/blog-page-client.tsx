@@ -1,12 +1,14 @@
 "use client";
 
 import { getBlogsAction } from "@/actions/blog-public";
+import { LoadingScreen } from "@/components/atoms/loading-screen";
 import { BlogList } from "@/components/organisms/blog-list";
+import { tapScale } from "@/lib/animations";
 import { BlogWithProducts } from "@/types/models";
 import { motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 /**
  * =====================================================================
@@ -16,40 +18,92 @@ import { useMemo, useState } from "react";
 
 interface BlogPageClientProps {
   posts: BlogWithProducts[];
+  initialStats: {
+    categories: { category: string; count: number }[];
+    total: number;
+  } | null;
 }
 
-export function BlogPageClient({ posts: initialPosts }: BlogPageClientProps) {
+export function BlogPageClient({
+  posts: initialPosts,
+  initialStats,
+}: BlogPageClientProps) {
   const t = useTranslations("blog");
   const tCommon = useTranslations("common");
   const [posts, setPosts] = useState(initialPosts);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const isFirstRender = useRef(true);
 
-  // Extract unique categories from ALL valid posts (can be optimized if we have a separate category API)
-  const categories = useMemo(() => {
-    const cats = new Set<string>();
-    posts.forEach((post) => {
-      if (post.category) cats.add(post.category);
-    });
-    return Array.from(cats).sort();
-  }, [posts]);
+  // Use stats from API or fallback to empty
+  const categoryStats = initialStats?.categories || [];
+  const totalPosts = initialStats?.total || 0;
 
-  // Filter posts by selected category
-  const filteredPosts = useMemo(() => {
-    if (!selectedCategory) return posts;
-    return posts.filter((post) => post.category === selectedCategory);
-  }, [posts, selectedCategory]);
+  // When category changes, fetch new data from server
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
 
-  // Imports moved to correct location
-  // ... existing logic ...
+    const fetchCategoryPosts = async () => {
+      // If we go back to "All", we can use the initial posts or refetch "All"
+      // Using initialPosts is faster but might be stale if user loaded more pages before.
+      // A cleaner way is to re-fetching page 1 to ensure consistency.
+
+      setIsLoading(true);
+      setPosts([]); // Clear posts to show full loader
+      setPage(1);
+      setHasMore(true);
+
+      try {
+        // If "All" (null), filter is undefined
+        const res = await getBlogsAction(1, 12, selectedCategory || undefined);
+
+        if (res.success && res.data) {
+          setPosts(res.data);
+          if (res.meta && 1 >= res.meta.lastPage) {
+            setHasMore(false);
+          }
+        } else {
+          setPosts([]);
+          setHasMore(false);
+        }
+      } catch (error) {
+        console.error("Failed to filter blogs:", error);
+        setPosts([]);
+        setHasMore(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Check if it's not the initial mount to prevent double fetch?
+    // Actually, initial render uses initialPosts. We only need to fetch if selectedCategory changes.
+    // However, initial selectedCategory is null.
+    // If we want to avoid fetching on mount, we can use a ref.
+    // But since selectedCategory starts as null, and we pass initialPosts to useState,
+    // we just need to skip if it matches initial state.
+    // For simplicity, let's just fetch. The cost is low.
+    // Or better: ONLY fetch if we have interacted.
+    // We can assume if `posts` === `initialPosts` and category is null, no need to fetch?
+    // But complexity arises. Let's just fetch when category changes.
+    // To avoid initial fetch on mount (since we have data), check if selectedCategory is non-null OR if we've moved away from initial state.
+
+    fetchCategoryPosts();
+  }, [selectedCategory]);
 
   const loadMorePosts = async () => {
-    setIsLoadingMore(true);
+    setIsLoading(true);
     try {
       const nextPage = page + 1;
-      const res = await getBlogsAction(nextPage, 12);
+      const res = await getBlogsAction(
+        nextPage,
+        12,
+        selectedCategory || undefined
+      );
 
       if (res.success && res.data.length > 0) {
         setPosts((prev) => [...prev, ...res.data]);
@@ -66,7 +120,7 @@ export function BlogPageClient({ posts: initialPosts }: BlogPageClientProps) {
       console.error(e);
       setHasMore(false);
     } finally {
-      setIsLoadingMore(false);
+      setIsLoading(false);
     }
   };
 
@@ -92,7 +146,6 @@ export function BlogPageClient({ posts: initialPosts }: BlogPageClientProps) {
             {t("subtitle")}
           </p>
         </motion.div>
-
         {/* Category Filter */}
         <motion.div
           className="flex flex-wrap justify-center gap-2 mb-12"
@@ -100,57 +153,67 @@ export function BlogPageClient({ posts: initialPosts }: BlogPageClientProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <button
+          <motion.button
+            whileTap={tapScale}
             onClick={() => setSelectedCategory(null)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2.5 ${
               selectedCategory === null
-                ? "bg-accent text-accent-foreground shadow-lg shadow-accent/20"
-                : "bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground"
+                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
+                : "bg-muted/40 text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
             }`}
           >
             {tCommon("all")}
-          </button>
-          {categories.map((category) => (
-            <button
-              key={category}
-              onClick={() => setSelectedCategory(category)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                selectedCategory === category
-                  ? "bg-accent text-accent-foreground shadow-lg shadow-accent/20"
-                  : "bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground"
+            <span
+              className={`px-2 py-0.5 rounded-full text-[10px] ${
+                selectedCategory === null
+                  ? "bg-white/20"
+                  : "bg-black/5 dark:bg-white/10"
               }`}
             >
-              {category}
-            </button>
+              {totalPosts}
+            </span>
+          </motion.button>
+
+          {categoryStats.map((stat) => (
+            <motion.button
+              key={stat.category}
+              whileTap={tapScale}
+              onClick={() => setSelectedCategory(stat.category)}
+              className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2.5 ${
+                selectedCategory === stat.category
+                  ? "bg-primary text-primary-foreground shadow-lg shadow-primary/25 scale-105"
+                  : "bg-muted/40 text-muted-foreground hover:bg-accent/50 hover:text-accent-foreground"
+              }`}
+            >
+              {stat.category}
+              <span
+                className={`px-2 py-0.5 rounded-full text-[10px] ${
+                  selectedCategory === stat.category
+                    ? "bg-white/20"
+                    : "bg-black/5 dark:bg-white/10"
+                }`}
+              >
+                {stat.count}
+              </span>
+            </motion.button>
           ))}
         </motion.div>
-
         {/* Posts count */}
-        {selectedCategory && (
-          <motion.p
-            className="text-center text-muted-foreground mb-8 font-medium"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            {tCommon("showingPosts", {
-              count: filteredPosts.length,
-              category: selectedCategory,
-            })}
-          </motion.p>
+        {isLoading && posts.length === 0 ? (
+          <LoadingScreen fullScreen={false} className="min-h-[40vh]" />
+        ) : (
+          <BlogList posts={posts} key={selectedCategory || "all"} />
         )}
-
-        <BlogList posts={filteredPosts} key={selectedCategory || "all"} />
-
         {/* Load More Trigger */}
-        {!selectedCategory && hasMore && (
+        {hasMore && posts.length > 0 && (
           <div className="flex justify-center mt-12">
             <button
               onClick={loadMorePosts}
-              disabled={isLoadingMore}
+              disabled={isLoading}
               className="px-8 py-3 rounded-full bg-accent text-accent-foreground font-bold text-sm tracking-wide shadow-lg shadow-accent/20 hover:bg-accent/90 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {isLoadingMore && <Loader2 className="w-4 h-4 animate-spin" />}
-              {isLoadingMore ? tCommon("loading") : tCommon("loadMore")}
+              {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {isLoading ? tCommon("loading") : tCommon("loadMore")}
             </button>
           </div>
         )}

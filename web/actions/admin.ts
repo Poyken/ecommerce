@@ -197,7 +197,7 @@ export async function getRolesAction(page = 1, limit = 100, search?: string) {
       url += `&search=${encodeURIComponent(search)}`;
     }
     const res = await http<ApiResponse<Role[]>>(url);
-    return { data: res.data };
+    return res;
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }
@@ -298,14 +298,14 @@ export async function deletePermissionAction(
 /**
  * Lấy danh sách thương hiệu.
  */
-export async function getBrandsAction(search?: string) {
+export async function getBrandsAction(page = 1, limit = 100, search?: string) {
   try {
-    let url = `/brands`;
+    let url = `/brands?page=${page}&limit=${limit}`;
     if (search) {
-      url += `?search=${encodeURIComponent(search)}`;
+      url += `&search=${encodeURIComponent(search)}`;
     }
     const res = await http<ApiResponse<Brand[]>>(url);
-    return { data: res.data };
+    return res;
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }
@@ -363,14 +363,18 @@ export async function deleteBrandAction(
 /**
  * Lấy danh sách danh mục sản phẩm.
  */
-export async function getCategoriesAction(search?: string) {
+export async function getCategoriesAction(
+  page = 1,
+  limit = 100,
+  search?: string
+) {
   try {
-    let url = `/categories`;
+    let url = `/categories?page=${page}&limit=${limit}`;
     if (search) {
-      url += `?search=${encodeURIComponent(search)}`;
+      url += `&search=${encodeURIComponent(search)}`;
     }
     const res = await http<ApiResponse<Category[]>>(url);
-    return { data: res.data };
+    return res;
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }
@@ -578,10 +582,14 @@ export async function getOrderDetailsAction(orderId: string) {
 /**
  * Lấy danh sách tất cả mã giảm giá (Coupons).
  */
-export async function getCouponsAction() {
+export async function getCouponsAction(page = 1, limit = 10, search?: string) {
   try {
-    const res = await http<ApiResponse<Coupon[]>>("/coupons");
-    return { data: res.data };
+    let url = `/coupons?page=${page}&limit=${limit}`;
+    if (search) {
+      url += `&search=${encodeURIComponent(search)}`;
+    }
+    const res = await http<ApiResponse<Coupon[]>>(url);
+    return res;
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }

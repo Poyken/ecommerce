@@ -77,9 +77,14 @@ export class CategoriesController {
   @Get()
   @ApiOperation({ summary: 'Get all categories' })
   @ApiQuery({ name: 'search', required: false, type: String })
-  async findAll(@Query('search') search?: string) {
-    const data = await this.categoriesService.findAll(search);
-    return { data };
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async findAll(
+    @Query('search') search?: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 100,
+  ) {
+    return this.categoriesService.findAll(search, Number(page), Number(limit));
   }
 
   @Get(':id')

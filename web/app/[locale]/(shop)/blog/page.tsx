@@ -29,12 +29,17 @@ export const metadata: Metadata = {
 
 export default async function BlogPage() {
   let posts: Blog[] = [];
+  let stats = null;
   try {
-    const result = await blogService.getBlogs({ limit: 12 });
-    posts = result.data;
+    const [postsResult, statsResult] = await Promise.all([
+      blogService.getBlogs({ limit: 12 }),
+      blogService.getCategoryStats(),
+    ]);
+    posts = postsResult.data;
+    stats = statsResult;
   } catch (error) {
     console.error("Failed to fetch blogs:", error);
   }
 
-  return <BlogPageClient posts={posts} />;
+  return <BlogPageClient posts={posts} initialStats={stats} />;
 }

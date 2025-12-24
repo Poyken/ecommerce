@@ -5,9 +5,15 @@ import {
   Post,
   Query,
   Req,
+  Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { WishlistService } from './wishlist.service';
 
@@ -31,9 +37,19 @@ export class WishlistController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get current user wishlist' })
-  findAll(@Req() req) {
-    return this.wishlistService.findAll(req.user.id);
+  @ApiOperation({ summary: 'Lấy danh sách yêu thích' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  async findAll(
+    @Request() req,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    return this.wishlistService.findAll(
+      req.user.id,
+      Number(page),
+      Number(limit),
+    );
   }
 
   @Get('check')

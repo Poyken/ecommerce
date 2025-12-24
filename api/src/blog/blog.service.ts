@@ -139,6 +139,37 @@ export class BlogService {
     };
   }
 
+  async getCategoryStats() {
+    const stats = await this.prisma.blog.groupBy({
+      by: ['category'],
+      where: {
+        publishedAt: { not: null },
+        deletedAt: null,
+      },
+      _count: {
+        category: true,
+      },
+      orderBy: {
+        category: 'asc',
+      },
+    });
+
+    const total = await this.prisma.blog.count({
+      where: {
+        publishedAt: { not: null },
+        deletedAt: null,
+      },
+    });
+
+    return {
+      categories: stats.map((s) => ({
+        category: s.category,
+        count: s._count.category,
+      })),
+      total,
+    };
+  }
+
   async update(id: string, updateBlogDto: UpdateBlogDto): Promise<Blog> {
     const { productIds, ...blogData } = updateBlogDto;
 

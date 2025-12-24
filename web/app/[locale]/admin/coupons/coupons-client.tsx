@@ -4,6 +4,7 @@ import { deleteCouponAction } from "@/actions/admin";
 import { Button } from "@/components/atoms/button";
 import { Card } from "@/components/atoms/card";
 import { DataTableEmptyRow } from "@/components/atoms/data-table-empty-row";
+import { DataTablePagination } from "@/components/atoms/data-table-pagination";
 import { StatusBadge } from "@/components/atoms/status-badge";
 import {
   Table,
@@ -19,6 +20,7 @@ import { EditCouponDialog } from "@/components/organisms/admin/edit-coupon-dialo
 import { useToast } from "@/hooks/use-toast";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
+import { PaginationMeta } from "@/types/dtos";
 import { Coupon } from "@/types/models";
 import { Copy, Edit, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -26,9 +28,10 @@ import { useState } from "react";
 
 interface CouponsClientProps {
   initialCoupons: Coupon[];
+  meta?: PaginationMeta;
 }
 
-export function CouponsClient({ initialCoupons }: CouponsClientProps) {
+export function CouponsClient({ initialCoupons, meta }: CouponsClientProps) {
   const t = useTranslations("admin");
   const { hasPermission } = useAuth();
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
@@ -177,6 +180,14 @@ export function CouponsClient({ initialCoupons }: CouponsClientProps) {
           </TableBody>
         </Table>
       </Card>
+
+      {meta && (
+        <DataTablePagination
+          page={meta.page}
+          total={meta.total}
+          limit={meta.limit}
+        />
+      )}
 
       {selectedCoupon && (
         <>

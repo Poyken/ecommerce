@@ -65,8 +65,14 @@ export class RolesController {
   @Permissions('role:read')
   @ApiOperation({ summary: 'Lấy tất cả vai trò' })
   @ApiQuery({ name: 'search', required: false, type: String })
-  findAll(@Query('search') search?: string) {
-    return this.rolesService.findAll(search);
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  findAll(
+    @Query('search') search?: string,
+    @Query('page') page = 1,
+    @Query('limit') limit = 10,
+  ) {
+    return this.rolesService.findAll(search, Number(page), Number(limit));
   }
 
   // ============= QUẢN LÝ QUYỀN HẠN =============

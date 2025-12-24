@@ -50,22 +50,22 @@ export function HeroSection() {
       <div className="absolute inset-0 z-0">
         {/* Top Champagne Glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[60vh] bg-accent/10 rounded-full blur-[150px] opacity-60" />
-        
+
         {/* Bottom Gradient */}
         <div className="absolute bottom-0 inset-x-0 h-[40vh] bg-gradient-to-t from-background via-background/50 to-transparent" />
-        
+
         {/* Subtle Grid Pattern */}
-        <div 
+        <div
           className="absolute inset-0 opacity-[0.02]"
           style={{
             backgroundImage: `linear-gradient(to right, var(--foreground) 1px, transparent 1px),
                               linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)`,
-            backgroundSize: "80px 80px"
+            backgroundSize: "80px 80px",
           }}
         />
       </div>
 
-      <div className="container relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center px-6 md:px-12 max-w-7xl mx-auto py-32 lg:py-0">
+      <div className="container relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center   md:px-12 max-w-8xl mx-auto   lg:py-0">
         {/* Text Content - Editorial & Minimal */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -89,9 +89,7 @@ export function HeroSection() {
           {/* Main Headline - Serif Editorial */}
           <div className="space-y-4">
             <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-normal tracking-[-0.03em] leading-[0.9]">
-              <span className="block text-foreground">
-                {t("redefining")}
-              </span>
+              <span className="block text-foreground">{t("redefining")}</span>
               <span className="relative inline-block mt-2">
                 <span className="text-gradient-champagne italic">
                   {t("luxuryStyle")}
@@ -158,9 +156,7 @@ export function HeroSection() {
           className="relative h-[60vh] lg:h-[80vh] min-h-[500px] order-1 lg:order-2 group"
         >
           {/* Main Image Container */}
-          <motion.div
-            className="relative h-full w-full rounded-3xl lg:rounded-[2.5rem] overflow-hidden shadow-2xl shadow-accent/10"
-          >
+          <motion.div className="relative h-full w-full rounded-3xl lg:rounded-[2.5rem] overflow-hidden shadow-2xl shadow-accent/10">
             <AnimatePresence mode="wait">
               {!isImageReady && (
                 <motion.div
@@ -190,7 +186,11 @@ export function HeroSection() {
             <motion.div
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 1.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              transition={{
+                delay: 1.2,
+                duration: 0.8,
+                ease: [0.16, 1, 0.3, 1],
+              }}
               className="absolute bottom-6 left-6 right-6 md:left-8 md:right-8 md:bottom-8"
             >
               <div className="glass-luxury p-5 md:p-6 rounded-2xl flex items-center justify-between">
@@ -203,7 +203,9 @@ export function HeroSection() {
                   </p>
                 </div>
                 <div className="text-right">
-                  <span className="text-xl md:text-2xl font-medium text-accent">$1,299</span>
+                  <span className="text-xl md:text-2xl font-medium text-foreground">
+                    $1,299
+                  </span>
                 </div>
               </div>
             </motion.div>

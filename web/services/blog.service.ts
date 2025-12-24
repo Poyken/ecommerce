@@ -82,4 +82,24 @@ export const blogService = {
       return [];
     }
   },
+  async getCategoryStats(): Promise<{
+    categories: { category: string; count: number }[];
+    total: number;
+  } | null> {
+    try {
+      const response = await http<
+        ApiResponse<{
+          categories: { category: string; count: number }[];
+          total: number;
+        }>
+      >("/blogs/categories", {
+        skipAuth: true,
+        next: { revalidate: 900 },
+      });
+      return response?.data || null;
+    } catch (error) {
+      console.warn("Lấy thống kê danh mục thất bại:", error);
+      return null;
+    }
+  },
 };

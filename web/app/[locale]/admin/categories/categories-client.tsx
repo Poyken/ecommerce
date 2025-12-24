@@ -2,6 +2,7 @@
 
 import { deleteCategoryAction, getCategoriesAction } from "@/actions/admin";
 import { Button } from "@/components/atoms/button";
+import { DataTablePagination } from "@/components/atoms/data-table-pagination";
 import { GlassCard } from "@/components/atoms/glass-card";
 import { Input } from "@/components/atoms/input";
 import {
@@ -18,6 +19,7 @@ import { EditCategoryDialog } from "@/components/organisms/admin/edit-category-d
 import { useDebounce } from "@/hooks/use-debounce";
 import { useAdminCategories } from "@/providers/admin-metadata-provider";
 import { useAuth } from "@/providers/auth-provider";
+import { PaginationMeta } from "@/types/dtos";
 import { Category } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -26,8 +28,10 @@ import useSWR from "swr";
 
 export function CategoriesPageClient({
   categories: initialCategories,
+  meta,
 }: {
   categories: Category[];
+  meta?: PaginationMeta;
 }) {
   const t = useTranslations("admin");
   const { hasPermission } = useAuth();
@@ -50,12 +54,20 @@ export function CategoriesPageClient({
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
+  const page = Number(searchParams.get("page")) || 1;
+  const limit = Number(searchParams.get("limit")) || 10;
+
   // Hybrid Fetching: SWR for the table list
   const { data: categoriesRes, mutate: mutateLocalCategories } = useSWR(
-    ["admin-categories-list", debouncedSearchTerm],
-    () => getCategoriesAction(debouncedSearchTerm),
+    ["admin-categories-list", page, limit, debouncedSearchTerm],
+    () => getCategoriesAction(page, limit, debouncedSearchTerm),
     {
-      fallbackData: { data: initialCategories },
+      fallbackData: {
+        data: initialCategories,
+        meta: meta!,
+        statusCode: 200,
+        message: "Success",
+      },
       revalidateOnFocus: false,
     }
   );
@@ -199,6 +211,14 @@ export function CategoriesPageClient({
           </TableBody>
         </Table>
       </GlassCard>
+
+      {categoriesRes?.meta && (
+        <DataTablePagination
+          page={categoriesRes.meta.page}
+          total={categoriesRes.meta.total}
+          limit={categoriesRes.meta.limit}
+        />
+      )}
 
       <CreateCategoryDialog
         categories={categories}

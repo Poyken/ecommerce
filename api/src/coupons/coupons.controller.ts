@@ -31,9 +31,8 @@ export class CouponsController {
   @Get()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Permissions('coupon:read')
-  async findAll() {
-    const data = await this.couponsService.findAll();
-    return { data };
+  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
+    return this.couponsService.findAll(Number(page), Number(limit));
   }
 
   @Get('validate')

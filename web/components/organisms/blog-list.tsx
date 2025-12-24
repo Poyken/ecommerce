@@ -1,6 +1,5 @@
 "use client";
 
-import { GlassButton } from "@/components/atoms/glass-button";
 import { GlassCard } from "@/components/atoms/glass-card";
 import { BlogWithProducts } from "@/types/models";
 import { motion } from "framer-motion";
@@ -8,7 +7,6 @@ import { ArrowRight, Calendar, Clock, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 
 /**
  * =====================================================================
@@ -41,23 +39,8 @@ interface BlogListProps {
 export function BlogList({ posts }: BlogListProps) {
   const t = useTranslations("blog");
   const tCommon = useTranslations("common");
-  const [visibleCount, setVisibleCount] = useState(7); // 1 featured + 6 grid
-
-  if (!posts || posts.length === 0) {
-    return (
-      <div className="text-center py-16">
-        <p className="text-muted-foreground">{t("noPosts")}</p>
-      </div>
-    );
-  }
-
   const firstPost = posts[0];
-  const gridPosts = posts.slice(1, visibleCount);
-  const hasMore = visibleCount < posts.length;
-
-  const handleLoadMore = () => {
-    setVisibleCount((prev) => prev + 6);
-  };
+  const gridPosts = posts.slice(1);
 
   return (
     <>
@@ -81,8 +64,8 @@ export function BlogList({ posts }: BlogListProps) {
               priority
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-          <div className="absolute bottom-0 left-0 p-10 md:p-14 max-w-4xl">
+          <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/50 to-transparent" />
+          <div className="absolute bottom-0 left-0 p-8 md:p-14 max-w-4xl w-full">
             <div className="flex items-center gap-4 text-xs font-black uppercase tracking-[0.2em] mb-5">
               <span className="text-primary">{firstPost.category}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
@@ -90,7 +73,7 @@ export function BlogList({ posts }: BlogListProps) {
                 <Clock size={14} /> {firstPost.readTime}
               </span>
             </div>
-            <h2 className="text-4xl md:text-6xl font-black text-white mb-5 group-hover:text-primary transition-colors tracking-tighter">
+            <h2 className="text-4xl md:text-6xl font-black text-white mb-5 group-hover:text-accent transition-colors tracking-tighter">
               {firstPost.title}
             </h2>
             <p className="text-lg text-white/80 line-clamp-2 mb-8 font-medium">
@@ -134,7 +117,7 @@ export function BlogList({ posts }: BlogListProps) {
             <Link key={post.id} href={`/blog/${post.slug}`} className="group">
               <GlassCard
                 variant="hover"
-                className="h-full flex flex-col overflow-hidden rounded-[2rem] border-foreground/5"
+                className="h-full flex flex-col overflow-hidden rounded-4xl border-foreground/5"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: Math.min(i * 0.05, 0.3) }}
@@ -194,20 +177,6 @@ export function BlogList({ posts }: BlogListProps) {
           );
         })}
       </div>
-
-      {/* Load More Button */}
-      {hasMore && (
-        <div className="flex justify-center pb-12">
-          <GlassButton
-            onClick={handleLoadMore}
-            size="lg"
-            variant="secondary"
-            className="min-w-[200px] font-black uppercase tracking-widest text-xs rounded-2xl"
-          >
-            {tCommon("loadMore", { defaultMessage: "Load More" })}
-          </GlassButton>
-        </div>
-      )}
     </>
   );
 }

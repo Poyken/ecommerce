@@ -1,31 +1,39 @@
 "use client";
 
 import { deleteBrandAction, getBrandsAction } from "@/actions/admin";
+import { Button } from "@/components/atoms/button";
+import { DataTableEmptyRow } from "@/components/atoms/data-table-empty-row";
+import { DataTablePagination } from "@/components/atoms/data-table-pagination";
+import { GlassCard } from "@/components/atoms/glass-card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/atoms/table";
 import { AdminSearchInput } from "@/components/organisms/admin/admin-search-input";
 import { CreateBrandDialog } from "@/components/organisms/admin/create-brand-dialog";
 import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
 import { EditBrandDialog } from "@/components/organisms/admin/edit-brand-dialog";
-import { Button } from "@/components/atoms/button";
-import { DataTableEmptyRow } from "@/components/atoms/data-table-empty-row";
-import { GlassCard } from "@/components/atoms/glass-card";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/atoms/table";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useAdminBrands } from "@/providers/admin-metadata-provider";
 import { useAuth } from "@/providers/auth-provider";
+import { PaginationMeta } from "@/types/dtos";
 import { Brand } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
-export function BrandsPageClient({ brands: initialBrands }: { brands: Brand[] }) {
+export function BrandsPageClient({
+  brands: initialBrands,
+  meta,
+}: {
+  brands: Brand[];
+  meta?: PaginationMeta;
+}) {
   const t = useTranslations("admin");
   const { hasPermission } = useAuth();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -45,12 +53,20 @@ export function BrandsPageClient({ brands: initialBrands }: { brands: Brand[] })
 
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
+  const page = Number(searchParams.get("page")) || 1;
+  const limit = Number(searchParams.get("limit")) || 10;
+
   // Hybrid Fetching: SWR for the table list
   const { data: brandsRes, mutate: mutateLocalBrands } = useSWR(
-    ["admin-brands-list", debouncedSearchTerm],
-    () => getBrandsAction(debouncedSearchTerm),
+    ["admin-brands-list", page, limit, debouncedSearchTerm],
+    () => getBrandsAction(page, limit, debouncedSearchTerm),
     {
-      fallbackData: { data: initialBrands },
+      fallbackData: {
+        data: initialBrands,
+        meta: meta!,
+        statusCode: 200,
+        message: "Success",
+      },
       revalidateOnFocus: false,
     }
   );
@@ -177,12 +193,22 @@ export function BrandsPageClient({ brands: initialBrands }: { brands: Brand[] })
             ) : (
               <DataTableEmptyRow
                 colSpan={canUpdate || canDelete ? 3 : 2}
-                message={t("noFound", { item: t("brands.title").toLowerCase() })}
+                message={t("noFound", {
+                  item: t("brands.title").toLowerCase(),
+                })}
               />
             )}
           </TableBody>
         </Table>
       </GlassCard>
+
+      {brandsRes?.meta && (
+        <DataTablePagination
+          page={brandsRes.meta.page}
+          total={brandsRes.meta.total}
+          limit={brandsRes.meta.limit}
+        />
+      )}
 
       <CreateBrandDialog
         open={createDialogOpen}

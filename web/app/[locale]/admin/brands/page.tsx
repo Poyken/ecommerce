@@ -24,21 +24,20 @@ import { BrandsPageClient } from "./brands-client";
 export default async function BrandsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string }>;
+  searchParams: Promise<{ search?: string; page?: string; limit?: string }>;
 }) {
   const params = await searchParams;
   const search = params.search || "";
-  const result = await getBrandsAction(search);
+  const page = Number(params.page) || 1;
+  const limit = Number(params.limit) || 10;
 
-  if (!("data" in result)) {
+  const result = await getBrandsAction(page, limit, search);
+
+  if ("error" in result) {
     return (
-      <div className="text-red-600">
-        Error loading brands: {(result as any).error}
-      </div>
+      <div className="text-red-600">Error loading brands: {result.error}</div>
     );
   }
 
-  const brands = result.data;
-
-  return <BrandsPageClient brands={brands || []} />;
+  return <BrandsPageClient brands={result.data || []} meta={result.meta} />;
 }

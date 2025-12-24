@@ -31,26 +31,42 @@ export class WishlistService {
     }
   }
 
-  async findAll(userId: string) {
-    return this.prisma.wishlist.findMany({
-      where: { userId },
-      include: {
-        product: {
-          include: {
-            images: {
-              orderBy: { displayOrder: 'asc' },
-              take: 1,
+  async findAll(userId: string, page = 1, limit = 10) {
+    const skip = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.prisma.wishlist.findMany({
+        where: { userId },
+        skip,
+        take: limit,
+        include: {
+          product: {
+            include: {
+              images: {
+                orderBy: { displayOrder: 'asc' },
+                take: 1,
+              },
+              skus: {
+                take: 1,
+                orderBy: { price: 'asc' },
+              },
+              category: true,
             },
-            skus: {
-              take: 1,
-              orderBy: { price: 'asc' },
-            },
-            category: true,
           },
         },
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.prisma.wishlist.count({ where: { userId } }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        lastPage: Math.ceil(total / limit),
       },
-      orderBy: { createdAt: 'desc' },
-    });
+    };
   }
 
   async checkStatus(userId: string, productId: string) {

@@ -44,10 +44,12 @@ interface PlaceOrderData {
 /**
  * Lấy danh sách đơn hàng của người dùng hiện tại.
  */
-export async function getMyOrdersAction() {
+export async function getMyOrdersAction(page = 1, limit = 10) {
   try {
-    const res = await http<ApiResponse<Order[]>>("/orders/my-orders");
-    return { data: res.data };
+    const res = await http<ApiResponse<Order[]>>(
+      `/orders/my-orders?page=${page}&limit=${limit}`
+    );
+    return res;
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }
