@@ -36,7 +36,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Eye, ShoppingBag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
 interface ProductCardProps {
   id: string;
@@ -57,7 +57,7 @@ interface ProductCardProps {
   options?: ProductOption[];
 }
 
-export function ProductCard({
+export const ProductCard = memo(function ProductCard({
   id,
   name,
   price,
@@ -326,4 +326,4 @@ export function ProductCard({
       )}
     </div>
   );
-}
+});

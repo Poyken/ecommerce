@@ -10,6 +10,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 /**
@@ -201,28 +202,59 @@ export function NotificationProvider({
     };
   }, [userId, accessToken]);
 
-  // Polling every 30 seconds (backup to WebSocket)
+  // Polling every 60 seconds (backup to WebSocket, only when tab is visible)
   useEffect(() => {
     if (!userId) return;
 
-    const interval = setInterval(() => {
-      fetchNotifications();
-    }, 30000);
+    let interval: ReturnType<typeof setInterval>;
 
-    return () => clearInterval(interval);
+    const startPolling = () => {
+      // Only poll if document is visible and WebSocket might be disconnected
+      interval = setInterval(() => {
+        if (document.visibilityState === "visible") {
+          fetchNotifications();
+        }
+      }, 60000); // Increased from 30s to 60s as WebSocket is primary
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        // Refresh when tab becomes visible again
+        fetchNotifications();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    startPolling();
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      clearInterval(interval);
+    };
   }, [userId, fetchNotifications]);
 
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(
+    () => ({
+      notifications,
+      unreadCount,
+      isLoading,
+      markAsRead,
+      markAllAsRead,
+      refetch: fetchNotifications,
+    }),
+    [
+      notifications,
+      unreadCount,
+      isLoading,
+      markAsRead,
+      markAllAsRead,
+      fetchNotifications,
+    ]
+  );
+
   return (
-    <NotificationContext.Provider
-      value={{
-        notifications,
-        unreadCount,
-        isLoading,
-        markAsRead,
-        markAllAsRead,
-        refetch: fetchNotifications,
-      }}
-    >
+    <NotificationContext.Provider value={contextValue}>
       {children}
     </NotificationContext.Provider>
   );

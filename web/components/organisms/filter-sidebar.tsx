@@ -6,11 +6,16 @@ import { Brand, Category } from "@/types/models";
 import { Filter, Loader2, Tag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
+import { memo, useCallback } from "react";
 
 /**
  * =====================================================================
  * FILTER SIDEBAR - Thanh lọc sản phẩm (Category, Brand)
  * =====================================================================
+ *
+ * PERFORMANCE:
+ * - React.memo để prevent re-render khi props không thay đổi
+ * - useCallback cho handleFilter
  */
 
 interface FilterSidebarProps {
@@ -26,7 +31,7 @@ interface FilterSidebarProps {
   onClearAll?: () => void;
 }
 
-export function FilterSidebar({
+export const FilterSidebar = memo(function FilterSidebar({
   categories,
   brands,
   className,
@@ -38,12 +43,12 @@ export function FilterSidebar({
   const t = useTranslations("common");
   const searchParams = useSearchParams();
 
-  const handleFilter = (
-    type: "categoryId" | "brandId",
-    value: string | null
-  ) => {
-    onFilterChange(type, value);
-  };
+  const handleFilter = useCallback(
+    (type: "categoryId" | "brandId", value: string | null) => {
+      onFilterChange(type, value);
+    },
+    [onFilterChange]
+  );
 
   const currentCategory = searchParams.get("categoryId");
   const currentBrand = searchParams.get("brandId");
@@ -153,4 +158,4 @@ export function FilterSidebar({
       )}
     </aside>
   );
-}
+});

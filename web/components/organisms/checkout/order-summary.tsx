@@ -14,6 +14,9 @@
  *
  * 3. ITEM LIST:
  * - Hiển thị danh sách sản phẩm rút gọn kèm theo ảnh, tên, số lượng và các tùy chọn (size, color).
+ *
+ * 4. PERFORMANCE:
+ * - React.memo để prevent unnecessary re-renders
  * =====================================================================
  */
 
@@ -25,7 +28,7 @@ import { cn, formatCurrency } from "@/lib/utils";
 import { CartItem } from "@/types/models"; // Shared type
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { ReactNode } from "react";
+import { memo, ReactNode } from "react";
 
 interface OrderSummaryProps {
   items: CartItem[];
@@ -39,7 +42,7 @@ interface OrderSummaryProps {
   isLoadingFee?: boolean;
 }
 
-export function OrderSummary({
+export const OrderSummary = memo(function OrderSummary({
   items,
   subtotal,
   shippingFee,
@@ -172,4 +175,4 @@ export function OrderSummary({
       )}
     </GlassCard>
   );
-}
+});

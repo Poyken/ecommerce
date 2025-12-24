@@ -133,7 +133,7 @@ export const productService = {
         params: params as Record<string, string | number | boolean>,
         skipAuth: true,
         next: {
-          revalidate: 0, // Disable cache to ensure fresh data
+          revalidate: 60, // Cache 60 giây - cân bằng giữa fresh data và performance
           tags: ["products"],
           ...options?.next,
         },
@@ -196,7 +196,7 @@ export const productService = {
       const response = await http<ApiResponse<Category[]>>("/categories", {
         skipAuth: true,
         next: {
-          revalidate: 0,
+          revalidate: 3600, // Cache 1 giờ - categories ít thay đổi
           tags: ["categories"],
           ...options?.next,
         },
@@ -226,7 +226,7 @@ export const productService = {
       >("/brands", {
         skipAuth: true,
         next: {
-          revalidate: 0,
+          revalidate: 3600, // Cache 1 giờ - brands ít thay đổi
           tags: ["brands"],
           ...options?.next,
         },
@@ -253,7 +253,7 @@ export const productService = {
       const response = await http<ApiResponse<Product>>(`/products/${id}`, {
         skipAuth: true,
         next: {
-          revalidate: 0,
+          revalidate: 300, // Cache 5 phút - product detail ít thay đổi
           tags: [`product-${id}`],
         },
       });

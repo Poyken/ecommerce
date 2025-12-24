@@ -123,6 +123,9 @@ model Product {
   metaTitle       String?
   maxPrice        Decimal?             @db.Decimal(10, 2)
   minPrice        Decimal?             @db.Decimal(10, 2)
+  // Cached aggregate fields for performance
+  avgRating       Float?               @default(0)
+  reviewCount     Int                  @default(0)
   products        BlogProduct[]
   brand           Brand                @relation(fields: [brandId], references: [id])
   category        Category             @relation(fields: [categoryId], references: [id])

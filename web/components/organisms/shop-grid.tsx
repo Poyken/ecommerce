@@ -30,7 +30,7 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { use, useState, useTransition } from "react";
+import { use, useEffect, useState, useTransition } from "react";
 
 interface ShopGridProps {
   productsPromise: Promise<ApiResponse<Product[]>>;
@@ -85,6 +85,28 @@ export function ShopGrid({
       );
     });
   };
+
+  // Prefetch adjacent pages for faster navigation
+  useEffect(() => {
+    if (pagination) {
+      // Prefetch next page
+      if (pagination.page < pagination.lastPage) {
+        const nextPageUrl = `${pathname}?${createQueryString(
+          "page",
+          (pagination.page + 1).toString()
+        )}`;
+        router.prefetch(nextPageUrl);
+      }
+      // Prefetch previous page
+      if (pagination.page > 1) {
+        const prevPageUrl = `${pathname}?${createQueryString(
+          "page",
+          (pagination.page - 1).toString()
+        )}`;
+        router.prefetch(prevPageUrl);
+      }
+    }
+  }, [pagination, pathname, router, createQueryString]);
 
   const [now] = useState(() => Date.now());
   const NEW_PRODUCT_THRESHOLD = 14 * 24 * 60 * 60 * 1000;

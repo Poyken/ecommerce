@@ -11,6 +11,10 @@
  *
  * 2. REAL-TIME EVENTS:
  * - Lắng nghe các event `wishlist_updated` và `guest_wishlist_updated` để cập nhật con số ngay lập tức khi user nhấn nút Tim.
+ *
+ * 3. PERFORMANCE:
+ * - React.memo để prevent unnecessary re-renders
+ * - useCallback để stabilize event handlers
  * =====================================================================
  */
 
@@ -18,50 +22,50 @@
 
 import { getWishlistCountAction } from "@/actions/wishlist";
 import { useGuestWishlist } from "@/hooks/use-guest-wishlist";
-import { useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 
 interface WishlistBadgeProps {
-  initialUser?: any;
+  initialUser?: unknown;
   initialCount?: number;
 }
 
-export function WishlistBadge({
+export const WishlistBadge = memo(function WishlistBadge({
   initialUser,
   initialCount,
 }: WishlistBadgeProps) {
   const [count, setCount] = useState(initialCount || 0);
   const isFetching = useRef(false);
-  const initialized = useRef(initialCount !== undefined);
-  const guestWishlist = useGuestWishlist();
+  const { wishlistIds } = useGuestWishlist();
 
-  useEffect(() => {
-    // Case 1: Guest Sync
-    if (!initialUser) {
-      setCount(guestWishlist.wishlistIds.length);
-      return;
+  const fetchCount = useCallback(async () => {
+    if (isFetching.current || !initialUser) return;
+
+    try {
+      isFetching.current = true;
+      const countValue = await getWishlistCountAction();
+      setCount(countValue);
+    } catch (error) {
+      console.error("Failed to fetch wishlist count", error);
+    } finally {
+      isFetching.current = false;
     }
+  }, [initialUser]);
 
-    // Case 2: User Sync
-    const fetchCount = async (initial = false) => {
-      if (isFetching.current) return;
+  // Sync with guest wishlist for guest users
+  useEffect(() => {
+    if (!initialUser) {
+      setCount(wishlistIds.length);
+    }
+  }, [wishlistIds.length, initialUser]);
 
-      // If we already have a count from server, and it's the first client run,
-      // we can skip the fetch to save a request.
-      // BUT if count is 0, we fetch once anyway to be sure (in case server missed sync)
-      if (initial && count > 0) return;
+  // Fetch and listen for updates for logged-in users
+  useEffect(() => {
+    if (!initialUser) return;
 
-      try {
-        isFetching.current = true;
-        const countValue = await getWishlistCountAction();
-        setCount(countValue);
-      } catch (error) {
-        console.error("Failed to fetch wishlist count", error);
-      } finally {
-        isFetching.current = false;
-      }
-    };
-
-    fetchCount(true); // First run check
+    // Initial fetch only if we don't have a count
+    if (count === 0 || initialCount === undefined) {
+      fetchCount();
+    }
 
     const handleUpdate = () => fetchCount();
     window.addEventListener("wishlist_updated", handleUpdate);
@@ -71,14 +75,7 @@ export function WishlistBadge({
       window.removeEventListener("wishlist_updated", handleUpdate);
       window.removeEventListener("guest_wishlist_updated", handleUpdate);
     };
-  }, [initialUser?.id]); // Re-run if user changes
-
-  // Sync with guest list length in real-time
-  useEffect(() => {
-    if (!initialUser) {
-      setCount(guestWishlist.wishlistIds.length);
-    }
-  }, [guestWishlist.wishlistIds.length, !!initialUser]);
+  }, [initialUser, fetchCount, count, initialCount]);
 
   if (count === 0) return null;
 
@@ -87,4 +84,4 @@ export function WishlistBadge({
       {count}
     </span>
   );
-}
+});

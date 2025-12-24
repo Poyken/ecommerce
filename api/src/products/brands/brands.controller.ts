@@ -1,3 +1,4 @@
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import {
   Body,
   Controller,
@@ -29,6 +30,9 @@ import {
  *
  * 3. SWAGGER DOCUMENTATION:
  * - Sử dụng `@ApiTags('Product Brands')` để nhóm các API liên quan đến thương hiệu lại với nhau trên giao diện Swagger.
+ *
+ * 4. CACHING:
+ * - GET /brands được cache 5 phút để giảm tải database.
  * =====================================================================
  */
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -75,7 +79,9 @@ export class BrandsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all brands' })
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000) // Cache 5 phút (300,000ms)
+  @ApiOperation({ summary: 'Get all brands (cached 5 mins)' })
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })

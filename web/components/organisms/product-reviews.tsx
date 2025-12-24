@@ -11,7 +11,7 @@ import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * =====================================================================
@@ -30,6 +30,10 @@ import { useEffect, useRef, useState } from "react";
  *
  * 3. DYNAMIC FETCHING:
  * - Dữ liệu được fetch ở Client (`useEffect`) để đảm bảo tính realtime và không làm chậm quá trình render trang sản phẩm chính.
+ *
+ * 4. PERFORMANCE OPTIMIZATIONS:
+ * - useRef để prevent duplicate fetches in StrictMode
+ * - useCallback để stabilize fetchData reference
  * =====================================================================
  */
 
@@ -45,10 +49,10 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
   const [showReviewDialog, setShowReviewDialog] = useState(false);
   const [selectedSkuForReview, setSelectedSkuForReview] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState<string | null>(null);
+  const hasFetched = useRef(false);
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -73,16 +77,13 @@ export function ProductReviews({ productId }: ProductReviewsProps) {
       setError("Failed to load reviews");
     }
     setLoading(false);
-  };
-
-  const hasFetched = useRef(false);
+  }, [productId]);
 
   useEffect(() => {
     // Prevent duplicate calls in StrictMode
     if (hasFetched.current) return;
     hasFetched.current = true;
 
-    console.log(`[ProductReviews] Fetching data for productId: ${productId}`);
     fetchData();
   }, [productId]);
 

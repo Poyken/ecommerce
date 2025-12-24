@@ -64,18 +64,27 @@ import {
   Sku,
   User,
 } from "@/types/models";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 /**
  * Helper chuẩn để xử lý các Server Actions trong Admin.
- * Giúp giảm boilerplate code try/catch và revalidatePath.
+ * Giúp giảm boilerplate code try/catch và revalidatePath/revalidateTag.
+ *
+ * @param fn - Async function để thực thi
+ * @param revalidatePaths - Danh sách paths cần revalidate
+ * @param revalidateTags - Danh sách cache tags cần invalidate
  */
 async function handleAdminAction<T>(
   fn: () => Promise<T>,
-  revalidatePaths: string[] = []
+  revalidatePaths: string[] = [],
+  revalidateTags: string[] = []
 ): Promise<ActionResult<T>> {
   try {
     const result = await fn();
+    // Invalidate cache tags (for Next.js fetch cache)
+    // Next.js 16 requires 2nd argument: "max" = stale-while-revalidate pattern
+    revalidateTags.forEach((tag) => revalidateTag(tag, "max"));
+    // Revalidate paths (for page cache)
     revalidatePaths.forEach((path) => revalidatePath(path));
     return { success: true, data: result };
   } catch (error: unknown) {
@@ -449,7 +458,8 @@ export async function createProductAction(
 ): Promise<ActionResult> {
   return handleAdminAction(
     () => http("/products", { method: "POST", body: JSON.stringify(data) }),
-    ["/admin/products"]
+    ["/admin/products", "/shop"],
+    ["products"]
   );
 }
 
@@ -463,7 +473,8 @@ export async function updateProductAction(
         method: "PATCH",
         body: JSON.stringify(data),
       }),
-    ["/admin/products"]
+    ["/admin/products", "/shop"],
+    ["products", `product-${productId}`]
   );
 }
 
@@ -472,7 +483,8 @@ export async function deleteProductAction(
 ): Promise<ActionResult> {
   return handleAdminAction(
     () => http(`/products/${productId}`, { method: "DELETE" }),
-    ["/admin/products"]
+    ["/admin/products", "/shop"],
+    ["products", `product-${productId}`]
   );
 }
 

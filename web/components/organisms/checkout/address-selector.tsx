@@ -14,6 +14,9 @@
  *
  * 3. QUICK ACTIONS:
  * - Cho phép thêm địa chỉ mới hoặc chỉnh sửa địa chỉ hiện có trực tiếp trong quy trình thanh toán.
+ *
+ * 4. PERFORMANCE:
+ * - React.memo để prevent unnecessary re-renders
  * =====================================================================
  */
 
@@ -27,6 +30,7 @@ import { Address } from "@/types/models";
 import { Label } from "@radix-ui/react-label";
 import { MapPin, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { memo } from "react";
 
 interface AddressSelectorProps {
   addresses: Address[];
@@ -36,7 +40,7 @@ interface AddressSelectorProps {
   onEdit: (address: Address) => void;
 }
 
-export function AddressSelector({
+export const AddressSelector = memo(function AddressSelector({
   addresses,
   selectedAddressId,
   onSelect,
@@ -115,4 +119,4 @@ export function AddressSelector({
       )}
     </GlassCard>
   );
-}
+});

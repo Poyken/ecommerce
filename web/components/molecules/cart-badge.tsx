@@ -14,19 +14,24 @@
  *
  * 3. ANIMATION:
  * - Sử dụng các utility classes của Tailwind (`animate-in zoom-in`) để tạo hiệu ứng xuất hiện sinh động.
+ *
+ * 4. PERFORMANCE:
+ * - Sử dụng React.memo để prevent unnecessary re-renders
  * =====================================================================
  */
 
 "use client";
 
 import { useCartContext } from "@/providers/cart-provider";
+import { memo } from "react";
 
+// Props kept for compatibility with parent component, but not used internally
 interface CartBadgeProps {
-  initialUser?: any;
+  initialUser?: unknown;
   initialCount?: number;
 }
 
-export function CartBadge({ initialUser, initialCount }: CartBadgeProps) {
+export const CartBadge = memo(function CartBadge(_props: CartBadgeProps) {
   const { count } = useCartContext();
 
   // Không hiển thị badge nếu giỏ hàng trống
@@ -37,4 +42,4 @@ export function CartBadge({ initialUser, initialCount }: CartBadgeProps) {
       {count}
     </span>
   );
-}
+});

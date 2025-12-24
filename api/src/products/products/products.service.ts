@@ -10,6 +10,15 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { SkuManagerService } from './sku-manager.service';
 
 /**
+ * CACHE TTL CONFIGURATION (seconds)
+ * Cấu hình thời gian cache cho các loại dữ liệu khác nhau
+ */
+const CACHE_TTL = {
+  PRODUCT_LIST: 60, // 1 phút - listing có thể thay đổi do stock, price
+  PRODUCT_DETAIL: 300, // 5 phút - chi tiết ít thay đổi hơn
+} as const;
+
+/**
  * =====================================================================
  * PRODUCTS SERVICE - Trái tim của hệ thống quản lý hàng hóa
  * =====================================================================
@@ -208,8 +217,14 @@ export class ProductsService {
           slug: true,
           description: true,
           createdAt: true,
-          categoryId: true, // Cần cho giá trị mặc định form sửa
-          brandId: true, // Cần cho giá trị mặc định form sửa
+          categoryId: true,
+          brandId: true,
+          // Cached price columns - no need to compute from SKUs
+          minPrice: true,
+          maxPrice: true,
+          // Cached rating columns - no need to aggregate from Reviews
+          avgRating: true,
+          reviewCount: true,
 
           category: {
             select: { id: true, name: true, slug: true },
@@ -223,18 +238,22 @@ export class ProductsService {
             take: 1,
           },
 
-          options: {
-            select: {
-              name: true,
-              values: {
-                select: { value: true },
-              },
-            },
-            orderBy: { displayOrder: 'asc' },
-          },
+          // Options - chỉ load khi cần (admin/wishlist)
+          ...(query.includeSkus === 'true'
+            ? {
+                options: {
+                  select: {
+                    name: true,
+                    values: {
+                      select: { value: true },
+                    },
+                  },
+                  orderBy: { displayOrder: 'asc' },
+                },
+              }
+            : {}),
 
-          // Load SKUs - For PLP we usually only need 1 (the lowest price).
-          // For Wishlist or other detailed views, we load all via includeSkus=true.
+          // SKUs - tối ưu: chỉ load 1 SKU cho PLP, giảm nested relations
           skus: {
             take: query.includeSkus === 'true' ? undefined : 1,
             where: {
@@ -247,28 +266,35 @@ export class ProductsService {
               salePrice: true,
               imageUrl: true,
               stock: true,
-              optionValues: {
-                include: {
-                  optionValue: {
-                    include: {
-                      option: true,
+              // Chỉ load optionValues khi cần (wishlist/cart)
+              ...(query.includeSkus === 'true'
+                ? {
+                    optionValues: {
+                      select: {
+                        optionValue: {
+                          select: {
+                            id: true,
+                            value: true,
+                            option: {
+                              select: { id: true, name: true },
+                            },
+                          },
+                        },
+                      },
                     },
-                  },
-                },
-              },
+                  }
+                : {}),
             },
           },
 
+          // Chỉ cần count reviews, không cần load từng review
           _count: {
             select: {
               reviews: true,
             },
           },
-          reviews: {
-            select: {
-              rating: true,
-            },
-          },
+          // REMOVED: Không load reviews chi tiết cho listing
+          // Frontend sẽ tính avgRating từ Product Detail API
         },
       }),
       this.prisma.product.count({ where }),
@@ -284,7 +310,11 @@ export class ProductsService {
       },
     };
 
-    await this.cacheManager.set(cacheKey, result);
+    await this.cacheManager.set(
+      cacheKey,
+      result,
+      CACHE_TTL.PRODUCT_LIST * 1000,
+    );
     return result;
   }
 

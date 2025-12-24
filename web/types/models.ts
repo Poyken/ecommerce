@@ -225,6 +225,14 @@ export interface Product {
   brandId: string;
   /** Metadata tùy chỉnh */
   metadata?: unknown;
+  /** Cached min price from SKUs */
+  minPrice?: number | string | null;
+  /** Cached max price from SKUs */
+  maxPrice?: number | string | null;
+  /** Cached average rating (computed from reviews) */
+  avgRating?: number | null;
+  /** Cached review count */
+  reviewCount?: number;
 
   // Relations (Partial - có thể không được include)
   category?: Category;

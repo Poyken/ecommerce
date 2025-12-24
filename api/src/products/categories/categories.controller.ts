@@ -1,3 +1,4 @@
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import {
   Body,
   Controller,
@@ -29,6 +30,9 @@ import {
  *
  * 3. QUERY PARAMETERS:
  * - `findAll(@Query('search'))`: Hỗ trợ tìm kiếm danh mục theo từ khóa ngay từ URL.
+ *
+ * 4. CACHING:
+ * - GET /categories được cache 5 phút để giảm tải database cho dữ liệu ít thay đổi.
  * =====================================================================
  */
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -75,7 +79,9 @@ export class CategoriesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all categories' })
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000) // Cache 5 phút (300,000ms)
+  @ApiOperation({ summary: 'Get all categories (cached 5 mins)' })
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })

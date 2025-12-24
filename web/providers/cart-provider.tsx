@@ -7,6 +7,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -29,6 +30,11 @@ import {
  * 3. EVENT-DRIVEN UPDATES:
  * - Lắng nghe các event `storage`, `guest_cart_updated`, và `cart_updated`.
  * - Khi giỏ hàng thay đổi ở một nơi (vd: trang chi tiết sản phẩm), Provider sẽ tự động cập nhật lại số lượng.
+ *
+ * 4. PERFORMANCE OPTIMIZATIONS:
+ * - useMemo cho context value để tránh re-render children khi reference thay đổi
+ * - useCallback cho tất cả functions để stabilize references
+ * - useRef để prevent concurrent fetches
  * =====================================================================
  */
 
@@ -120,28 +126,30 @@ export function CartProvider({
     };
   }, [initialUser, fetchCount]);
 
-  const refreshCart = async () => {
+  const refreshCart = useCallback(async () => {
     await fetchCount();
-  };
+  }, [fetchCount]);
 
-  const updateCount = (newCount: number) => {
+  const updateCount = useCallback((newCount: number) => {
     setCount(newCount);
-  };
+  }, []);
 
-  const increment = (amount = 1) => {
+  const increment = useCallback((amount = 1) => {
     setCount((prev) => prev + amount);
-  };
+  }, []);
 
-  const decrement = (amount = 1) => {
+  const decrement = useCallback((amount = 1) => {
     setCount((prev) => Math.max(0, prev - amount));
-  };
+  }, []);
+
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(
+    () => ({ count, refreshCart, updateCount, increment, decrement }),
+    [count, refreshCart, updateCount, increment, decrement]
+  );
 
   return (
-    <CartContext.Provider
-      value={{ count, refreshCart, updateCount, increment, decrement }}
-    >
-      {children}
-    </CartContext.Provider>
+    <CartContext.Provider value={contextValue}>{children}</CartContext.Provider>
   );
 }
 

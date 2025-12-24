@@ -105,6 +105,7 @@ export function Header({
           </Link>
           <Link
             href="/cart"
+            prefetch={true}
             className="transition-all hover:text-primary text-foreground/70 relative w-10 h-10 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-white/5 rounded-full group"
           >
             <span className="relative inline-flex">

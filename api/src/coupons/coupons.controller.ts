@@ -1,3 +1,4 @@
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import {
   Body,
   Controller,
@@ -8,6 +9,7 @@ import {
   Post,
   Query,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
@@ -41,7 +43,13 @@ export class CouponsController {
     return { data };
   }
 
+  /**
+   * Get available public coupons - Cached for 5 minutes
+   * Data ít thay đổi, cache để giảm tải database
+   */
   @Get('available')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000) // 5 minutes
   async findAvailable() {
     const data = await this.couponsService.findAvailable();
     return { data };

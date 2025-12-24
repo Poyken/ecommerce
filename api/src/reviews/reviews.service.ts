@@ -39,6 +39,26 @@ export class ReviewsService {
   ) {}
 
   /**
+   * Cập nhật cached avgRating và reviewCount trên Product
+   * Gọi sau khi tạo/sửa/xóa review để sync dữ liệu
+   */
+  private async updateProductRatingCache(productId: string) {
+    const aggregate = await this.prisma.review.aggregate({
+      where: { productId, isApproved: true },
+      _avg: { rating: true },
+      _count: true,
+    });
+
+    await this.prisma.product.update({
+      where: { id: productId },
+      data: {
+        avgRating: aggregate._avg.rating || 0,
+        reviewCount: aggregate._count,
+      },
+    });
+  }
+
+  /**
    * Tạo đánh giá sản phẩm.
    * Điều kiện bắt buộc:
    * 1. User đã từng mua sản phẩm này.
@@ -91,7 +111,7 @@ export class ReviewsService {
     }
 
     // 3. Tạo Review
-    return this.prisma.review.create({
+    const review = await this.prisma.review.create({
       data: {
         userId,
         productId: dto.productId,
@@ -102,6 +122,11 @@ export class ReviewsService {
         isApproved: true,
       },
     });
+
+    // 4. Update cached rating trên Product
+    await this.updateProductRatingCache(dto.productId);
+
+    return review;
   }
 
   async checkEligibility(userId: string, productId: string) {
@@ -295,7 +320,17 @@ export class ReviewsService {
 
   // Dành cho Admin: Duyệt hoặc Xóa review
   async remove(id: string) {
-    return this.prisma.review.delete({ where: { id } });
+    const review = await this.prisma.review.findUnique({ where: { id } });
+    if (!review) {
+      throw new BadRequestException('Đánh giá không tồn tại');
+    }
+
+    await this.prisma.review.delete({ where: { id } });
+
+    // Update cached rating
+    await this.updateProductRatingCache(review.productId);
+
+    return { success: true };
   }
 
   async removeOwn(userId: string, id: string) {
@@ -311,7 +346,12 @@ export class ReviewsService {
       throw new BadRequestException('Bạn không có quyền xóa đánh giá này');
     }
 
-    return this.prisma.review.delete({ where: { id } });
+    await this.prisma.review.delete({ where: { id } });
+
+    // Update cached rating
+    await this.updateProductRatingCache(review.productId);
+
+    return { success: true };
   }
 
   /**
