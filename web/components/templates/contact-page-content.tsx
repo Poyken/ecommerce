@@ -36,10 +36,10 @@ export function ContactPageContent() {
   };
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-12 font-sans selection:bg-primary/30 relative overflow-clip">
-      {/* Background Gradients - Luxe Theme */}
-      <div className="absolute top-0 left-1/4 w-[800px] h-[800px] bg-primary/10 rounded-full blur-[180px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[800px] h-[800px] bg-accent/10 rounded-full blur-[180px] pointer-events-none" />
+    <div className="min-h-screen bg-background pt-28 pb-16 font-sans selection:bg-accent/30 relative overflow-clip">
+      {/* Background Gradients - Quiet Luxury */}
+      <div className="absolute top-0 left-1/4 w-[800px] h-[800px] bg-accent/5 rounded-full blur-[200px] pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[800px] h-[800px] bg-secondary/30 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         {/* Header Section */}
@@ -49,13 +49,13 @@ export function ContactPageContent() {
           animate="visible"
           variants={sectionVariants}
         >
-          <div className="inline-block mb-6 px-6 py-2.5 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-black tracking-[0.25em] uppercase shadow-lg shadow-accent/10 backdrop-blur-md">
+          <div className="inline-block mb-4 px-4 py-2 rounded-full bg-secondary border border-border text-[10px] font-medium tracking-[0.2em] uppercase text-muted-foreground">
             {t("badge", { defaultMessage: "Get in Touch" })}
           </div>
-          <h1 className="text-5xl md:text-7xl font-black text-foreground mb-8 tracking-tighter">
+          <h1 className="text-5xl md:text-7xl font-serif font-normal text-foreground mb-8 tracking-tight">
             {t("title")}
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground/70 max-w-3xl mx-auto leading-relaxed font-medium">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
             {t("subtitle")}
           </p>
         </motion.div>
@@ -97,10 +97,10 @@ export function ContactPageContent() {
           variants={sectionVariants}
         >
           <div className="text-center mb-12">
-            <span className="text-accent font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">
+            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent mb-3 block">
               {t("faq.subtitle")}
             </span>
-            <h2 className="text-4xl font-black mb-6 tracking-tight text-foreground">
+            <h2 className="text-4xl font-serif font-normal mb-6 tracking-tight text-foreground">
               {t("faq.title")}
             </h2>
           </div>

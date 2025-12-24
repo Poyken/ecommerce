@@ -81,12 +81,15 @@ export function ForgotPasswordPageContent() {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-black/40" /> {/* Overlay */}
-        <div className="relative z-10 text-white p-10 max-w-lg text-center space-y-6">
-          <h2 className="text-5xl font-black tracking-tight">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
+        <div className="relative z-10 text-white p-10 max-w-lg text-center space-y-4">
+          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/70 block">
+            Account Recovery
+          </span>
+          <h2 className="text-5xl font-serif font-normal tracking-tight">
             {t("heroTitle")}
           </h2>
-          <p className="text-xl text-white/90 font-medium">
+          <p className="text-xl text-white/70 font-light">
             {t("heroSubtitle")}
           </p>
         </div>
@@ -95,8 +98,8 @@ export function ForgotPasswordPageContent() {
       {/* Right Side - Form */}
       <div className="flex items-center justify-center p-8 h-full relative">
         {/* Background Gradients for Right Side */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[150px] pointer-events-none opacity-50" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px] pointer-events-none opacity-50" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[200px] pointer-events-none opacity-50" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/30 rounded-full blur-[150px] pointer-events-none opacity-50" />
 
         <motion.div
           initial="hidden"
@@ -109,10 +112,13 @@ export function ForgotPasswordPageContent() {
             variant="default"
           >
             <div className="mb-8 text-center space-y-3">
-              <h1 className="text-4xl font-black tracking-tight text-foreground">
+              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
+                Password Recovery
+              </span>
+              <h1 className="text-4xl font-serif font-normal tracking-tight text-foreground">
                 {t("title")}
               </h1>
-              <p className="text-muted-foreground/70 font-medium">
+              <p className="text-muted-foreground font-light">
                 {t("subtitle")}
               </p>
             </div>

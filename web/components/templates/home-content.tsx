@@ -1,6 +1,6 @@
 "use client";
 
-import { BackgroundBlob } from "@/components/atoms/background-blob";
+import { FloatingCart } from "@/components/atoms/floating-cart";
 import { DealSection } from "@/components/organisms/deal-section";
 import { FAQAccordion } from "@/components/organisms/faq-accordion";
 import { FeaturedBrands } from "@/components/organisms/featured-brands";
@@ -9,18 +9,18 @@ import { HeroSection } from "@/components/organisms/hero-section";
 import { NewArrivals } from "@/components/organisms/new-arrivals";
 import { NewsletterForm } from "@/components/organisms/newsletter-form";
 import {
-  CategoriesSkeleton,
-  ProductsSkeleton,
+    CategoriesSkeleton,
+    ProductsSkeleton,
 } from "@/components/organisms/skeletons/home-skeleton";
 import { TestimonialsCarousel } from "@/components/organisms/testimonials-carousel";
 import { TrendingProducts } from "@/components/organisms/trending-products";
 import { Link } from "@/i18n/routing";
 import {
-  fadeInLeft,
-  fadeInRight,
-  fadeInUp,
-  scaleUp,
-  zoomIn,
+    fadeInLeft,
+    fadeInRight,
+    fadeInUp,
+    scaleUp,
+    zoomIn,
 } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { Brand, Category, Product } from "@/types/models";
@@ -67,18 +67,17 @@ export function HomeContent({
   const t = useTranslations("home");
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30 relative overflow-hidden">
-      <BackgroundBlob
-        variant="primary"
-        position="center-left"
-        className="top-0 bottom-auto -translate-x-1/2 blur-[160px] opacity-20"
-      />
-      <BackgroundBlob
-        variant="secondary"
-        position="center-right"
-        className="top-1/4 blur-[160px] opacity-20"
-      />
+    <div className="min-h-screen bg-background font-sans selection:bg-accent/30 relative overflow-hidden">
+      {/* Subtle Background Elements */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 left-1/4 w-[60vw] h-[40vh] bg-accent/5 rounded-full blur-[200px]" />
+        <div className="absolute bottom-1/4 right-0 w-[40vw] h-[30vh] bg-secondary/30 rounded-full blur-[150px]" />
+      </div>
+
       <HeroSection />
+
+      {/* Floating Cart */}
+      <FloatingCart />
 
       <main className="space-y-16 pb-16">
         {/* 1. Featured Categories */}

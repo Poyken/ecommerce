@@ -1,39 +1,38 @@
 "use client";
 
-import { BackgroundBlob } from "@/components/atoms/background-blob";
 import { GlassButton } from "@/components/atoms/glass-button";
+import { Skeleton } from "@/components/atoms/skeleton";
 import { Link } from "@/i18n/routing";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { ArrowRight, Lock, Shield, Sparkles, Truck } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 
 /**
  * =====================================================================
- * HERO SECTION - Section đầu trang (First Impression)
+ * HERO SECTION - Quiet Luxury Edition
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ * 📚 DESIGN CONCEPT:
  *
- * 1. VISUAL HIERARCHY:
- * - Sử dụng Headline lớn (`text-5xl lg:text-7xl`) với gradient text để thu hút sự chú ý ngay lập tức.
- * - Nút CTA (Call to Action) chính có màu Emerald nổi bật, nút phụ dùng Outline.
+ * 1. QUIET LUXURY AESTHETIC:
+ * - Immersive full-viewport design with cinematic lighting
+ * - Bone white, champagne, and deep charcoal palette
+ * - Editorial serif typography for headings
+ * - Ultra-minimal, airy layout with premium whitespace
  *
- * 2. BACKGROUND AESTHETICS:
- * - Kết hợp nhiều lớp `blur-full` và `animate-pulse` để tạo nền động (Dynamic background).
- * - Tạo cảm giác không gian 3D và chiều sâu cho trang web.
+ * 2. VISUAL HIERARCHY:
+ * - Large serif headline with champagne text gradient
+ * - Subtle floating elements with glassmorphism
+ * - Cinematic radial gradient overlay for depth
  *
- * 3. FRAMER MOTION:
- * - `initial={{ opacity: 0, x: -50 }}`: Hiệu ứng trượt từ trái sang phải khi load trang.
- * - `type: "spring"`: Sử dụng hiệu ứng lò xo cho ảnh bên phải để tạo cảm giác "nảy" tự nhiên.
+ * 3. MICRO-INTERACTIONS:
+ * - Smooth parallax scrolling effects
+ * - Gentle hover states with champagne glow
+ * - Refined scroll indicator at bottom
  * =====================================================================
  */
-
-import { useTranslations } from "next-intl";
-
-import { Skeleton } from "@/components/atoms/skeleton";
-import { AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
 
 export function HeroSection() {
   const t = useTranslations("hero");
@@ -46,131 +45,121 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background pt-24 pb-12">
-      {/* Background Elements - Multi-layered Depth */}
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background pt-28">
+      {/* Cinematic Background Lighting */}
       <div className="absolute inset-0 z-0">
-        <BackgroundBlob
-          variant="warning"
-          position="top-right"
-          size="xl"
-          opacity="low"
-          className="blur-[180px]"
+        {/* Top Champagne Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[60vh] bg-accent/10 rounded-full blur-[150px] opacity-60" />
+        
+        {/* Bottom Gradient */}
+        <div className="absolute bottom-0 inset-x-0 h-[40vh] bg-gradient-to-t from-background via-background/50 to-transparent" />
+        
+        {/* Subtle Grid Pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.02]"
+          style={{
+            backgroundImage: `linear-gradient(to right, var(--foreground) 1px, transparent 1px),
+                              linear-gradient(to bottom, var(--foreground) 1px, transparent 1px)`,
+            backgroundSize: "80px 80px"
+          }}
         />
-        <BackgroundBlob
-          variant="primary"
-          position="bottom-left"
-          size="lg"
-          opacity="low"
-          className="blur-[150px]"
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.02)_0%,transparent_100%)]" />
       </div>
 
-      <div className="container relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center px-4 md:px-8 max-w-[95vw] lg:max-w-[90vw] mx-auto">
-        {/* Text Content - Elegant & Powerful */}
+      <div className="container relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center px-6 md:px-12 max-w-7xl mx-auto py-32 lg:py-0">
+        {/* Text Content - Editorial & Minimal */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="space-y-8 lg:space-y-10 text-center lg:text-left"
+          transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+          className="space-y-10 text-center lg:text-left order-2 lg:order-1"
         >
+          {/* Subtle Badge */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-accent/10 border border-accent/20 backdrop-blur-xl shadow-lg shadow-accent/10 animate-pulse-glow"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border"
           >
-            <Sparkles className="w-4 h-4 text-accent animate-pulse" />
-            <span className="text-xs font-bold text-accent uppercase tracking-[0.2em]">
+            <Sparkles className="w-3.5 h-3.5 text-accent" />
+            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-[0.2em]">
               {t("newCollection")}
             </span>
           </motion.div>
 
-          <h1 className="text-5xl md:text-6xl lg:text-[5.5vw] font-sans font-black tracking-tighter leading-[0.95] lg:leading-[0.9]">
-            <span className="block text-foreground mb-2">
-              {t("redefining")}
-            </span>
-            <span className="relative inline-block">
-              <span className="relative z-10 text-gradient-bronze">
-                {t("luxuryStyle")}
+          {/* Main Headline - Serif Editorial */}
+          <div className="space-y-4">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-normal tracking-[-0.03em] leading-[0.9]">
+              <span className="block text-foreground">
+                {t("redefining")}
               </span>
-              <motion.span
-                initial={{ width: 0 }}
-                animate={{ width: "100%" }}
-                transition={{ delay: 1, duration: 1.2, ease: "easeInOut" }}
-                className="absolute bottom-2 left-0 h-3 bg-accent/30 -z-1 rounded-full"
-              />
-            </span>
-          </h1>
+              <span className="relative inline-block mt-2">
+                <span className="text-gradient-champagne italic">
+                  {t("luxuryStyle")}
+                </span>
+              </span>
+            </h1>
+          </div>
 
-          <p className="text-lg lg:text-xl text-muted-foreground max-w-md mx-auto lg:mx-0 leading-relaxed font-medium">
+          {/* Subheadline */}
+          <p className="text-lg text-muted-foreground max-w-md mx-auto lg:mx-0 leading-relaxed font-light">
             {t("description")}
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start pt-4">
+          {/* CTA Buttons - Quiet Luxury Style */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4">
             <Link href="/shop">
-              <GlassButton
-                size="lg"
-                variant="primary"
-                className="group h-14 lg:h-16 px-8 lg:px-10 rounded-full border-none shadow-2xl shadow-primary/30"
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="group h-14 px-10 rounded-full bg-primary text-primary-foreground font-medium text-sm tracking-wider uppercase transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20"
               >
-                <span className="font-bold tracking-wide">
+                <span className="flex items-center gap-3">
                   {t("shopCollection")}
+                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </span>
-                <ArrowRight className="ml-3 w-5 h-5 transition-transform group-hover:translate-x-2" />
-              </GlassButton>
+              </motion.button>
             </Link>
             <Link href="/about">
               <GlassButton
                 variant="outline"
                 size="lg"
-                className="h-14 lg:h-16 px-8 lg:px-10 rounded-full border-2 border-foreground/10 text-foreground hover:bg-foreground/5 hover:border-foreground/30 font-bold"
+                className="h-14 px-10 rounded-full border border-border text-foreground hover:bg-secondary hover:border-accent/30 font-medium text-sm tracking-wider uppercase"
               >
                 {t("ourStory")}
               </GlassButton>
             </Link>
           </div>
 
-          {/* Trust Badges - Refined & Minimal */}
+          {/* Minimal Trust Indicators */}
           <motion.div
-            className="grid grid-cols-2 md:flex md:flex-wrap gap-x-8 gap-y-4 pt-8 border-t border-foreground/5 justify-center lg:justify-start"
+            className="flex items-center gap-8 pt-8 border-t border-border/50 justify-center lg:justify-start"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
           >
-            <TrustBadge
-              icon={<Truck className="w-4 h-4" />}
-              label={t("freeShipping")}
-              color="accent"
-            />
-            <TrustBadge
-              icon={<Lock className="w-4 h-4" />}
-              label={t("securePayments")}
-              color="accent"
-            />
-            <TrustBadge
-              icon={<Shield className="w-4 h-4" />}
-              label={t("premiumQuality")}
-              color="accent"
-            />
+            {[
+              { label: t("freeShipping"), value: "Free Shipping" },
+              { label: t("premiumQuality"), value: "Premium Quality" },
+            ].map((item, idx) => (
+              <div key={idx} className="text-center lg:text-left">
+                <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-medium">
+                  {item.label}
+                </span>
+              </div>
+            ))}
           </motion.div>
         </motion.div>
 
-        {/* Visual Content - Statement Image */}
+        {/* Visual Content - Statement Image with Glassmorphism Overlay */}
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="relative h-[50vh] lg:h-[85vh] hidden lg:block group"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="relative h-[60vh] lg:h-[80vh] min-h-[500px] order-1 lg:order-2 group"
         >
-          {/* Circular Accent */}
-          <div className="absolute -top-12 -right-12 w-[30vw] h-[30vw] bg-accent/10 rounded-full blur-[80px] group-hover:bg-accent/20 transition-colors duration-1000" />
-
+          {/* Main Image Container */}
           <motion.div
-            initial={{ scale: 0.9, rotate: -2 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ duration: 1.5, type: "spring", bounce: 0.3 }}
-            className="relative h-full w-full rounded-[3.5rem] overflow-hidden border border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] bg-neutral-900 group-hover:shadow-accent/10 transition-shadow duration-700"
+            className="relative h-full w-full rounded-3xl lg:rounded-[2.5rem] overflow-hidden shadow-2xl shadow-accent/10"
           >
             <AnimatePresence mode="wait">
               {!isImageReady && (
@@ -186,68 +175,62 @@ export function HeroSection() {
 
             <Image
               src="/images/home/hero-luxury.jpg"
-              alt="Luxury Living Room Interior"
+              alt="Luxury Collection"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover object-center group-hover:scale-105 transition-transform duration-1000 ease-out"
+              className="object-cover object-center transition-transform duration-[2s] ease-[0.16,1,0.3,1] group-hover:scale-105"
               priority
               onLoad={() => setIsImageReady(true)}
             />
 
-            {/* Glass Overlay Card */}
+            {/* Subtle Gradient Overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
+
+            {/* Floating Product Card - Glassmorphism */}
             <motion.div
-              initial={{ y: 50, opacity: 0 }}
+              initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 1, duration: 0.8 }}
-              className="absolute bottom-8 left-8 right-8 p-6 bg-black/40 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-2xl flex items-center justify-between"
+              transition={{ delay: 1.2, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="absolute bottom-6 left-6 right-6 md:left-8 md:right-8 md:bottom-8"
             >
-              <div className="space-y-1">
-                <p className="text-[10px] text-white/50 font-bold uppercase tracking-[0.2em]">
-                  {t("featuredLook")}
-                </p>
-                <p className="text-xl font-serif italic text-white">
-                  {t("silkEveningDress")}
-                </p>
-              </div>
-              <div className="text-right">
-                <span className="text-2xl font-black text-warning">$1,299</span>
+              <div className="glass-luxury p-5 md:p-6 rounded-2xl flex items-center justify-between">
+                <div className="space-y-1">
+                  <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-[0.2em]">
+                    {t("featuredLook")}
+                  </p>
+                  <p className="text-lg md:text-xl font-serif text-foreground">
+                    {t("silkEveningDress")}
+                  </p>
+                </div>
+                <div className="text-right">
+                  <span className="text-xl md:text-2xl font-medium text-accent">$1,299</span>
+                </div>
               </div>
             </motion.div>
           </motion.div>
+
+          {/* Decorative Elements */}
+          <div className="absolute -z-10 -top-8 -right-8 w-32 h-32 border border-accent/20 rounded-full" />
+          <div className="absolute -z-10 -bottom-4 -left-4 w-24 h-24 border border-accent/10 rounded-full" />
         </motion.div>
       </div>
-    </section>
-  );
-}
 
-function TrustBadge({
-  icon,
-  label,
-  color,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  color: "warning" | "primary" | "accent";
-}) {
-  const colors = {
-    warning: "text-warning bg-warning/10 border-warning/20",
-    primary: "text-primary bg-primary/10 border-primary/20",
-    accent: "text-accent bg-accent/10 border-accent/20",
-  };
-
-  return (
-    <div className="flex items-center gap-3">
-      <div
-        className={cn(
-          "p-2 rounded-xl border backdrop-blur-sm shadow-xs",
-          colors[color]
-        )}
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.5, duration: 0.8 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
-        {icon}
-      </div>
-      <span className="text-sm font-bold text-muted-foreground/80 tracking-wide uppercase">
-        {label}
-      </span>
-    </div>
+        <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-medium">
+          Scroll
+        </span>
+        <motion.div
+          animate={{ y: [0, 6, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          className="w-px h-8 bg-gradient-to-b from-accent/50 to-transparent"
+        />
+      </motion.div>
+    </section>
   );
 }

@@ -3,18 +3,18 @@
 import { BreadcrumbNav } from "@/components/atoms/breadcrumb-nav";
 import { Button } from "@/components/atoms/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/atoms/select";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
 } from "@/components/atoms/sheet";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { SearchInput } from "@/components/molecules/search-input";
@@ -159,8 +159,8 @@ export function ShopContent({
   };
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30">
-      <main className="container mx-auto px-4 pt-24 pb-12 space-y-6">
+    <div className="min-h-screen bg-background font-sans selection:bg-accent/30">
+      <main className="container mx-auto px-4 md:px-8 pt-28 pb-16 space-y-8">
         {/* Breadcrumb Navigation */}
         <BreadcrumbNav items={[{ label: t("title") }]} className="text-sm" />
 
@@ -169,10 +169,13 @@ export function ShopContent({
           <div className="space-y-4 border-b border-foreground/5 pb-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
               <div className="space-y-3">
-                <h1 className="text-4xl md:text-5xl font-black tracking-tight">
+                <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
+                  Curated Selection
+                </span>
+                <h1 className="text-4xl md:text-5xl font-serif font-normal tracking-tight">
                   {t("title")}
                 </h1>
-                <p className="text-muted-foreground/70 text-base font-medium">
+                <p className="text-muted-foreground text-base font-light max-w-md">
                   {t("subtitle")}
                 </p>
               </div>

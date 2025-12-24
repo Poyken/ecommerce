@@ -64,9 +64,9 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
   }, [post.image]);
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30 pt-24 pb-24 relative overflow-hidden">
-      {/* Ambient Background - Luxe Theme */}
-      <div className="fixed inset-0 bg-linear-to-br from-primary/5 via-secondary/5 to-primary/5 -z-20" />
+    <div className="min-h-screen bg-background font-sans selection:bg-accent/30 pt-28 pb-24 relative overflow-hidden">
+      {/* Ambient Background - Quiet Luxury */}
+      <div className="fixed inset-0 bg-gradient-to-br from-accent/3 via-secondary/5 to-accent/3 -z-20" />
       <BackgroundBlob
         variant="primary"
         position="top-left"
@@ -113,7 +113,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                 const colorClass = colors[(post.category?.length || 0) % 4];
                 return (
                   <span
-                    className={`px-3 py-1 rounded-full backdrop-blur-md text-xs font-black uppercase tracking-[0.2em] border shadow-sm ${colorClass}`}
+                    className={`px-3 py-1 rounded-full backdrop-blur-md text-[10px] font-medium uppercase tracking-[0.2em] border shadow-sm ${colorClass}`}
                   >
                     {post.category || "Uncategorized"}
                   </span>
@@ -121,7 +121,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
               })()}
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-normal tracking-tight text-foreground leading-tight">
               {post.title || "Untitled Post"}
             </h1>
 

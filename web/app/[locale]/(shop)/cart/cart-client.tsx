@@ -24,21 +24,21 @@
 "use client";
 
 import {
-  clearCartAction,
-  getGuestCartDetailsAction,
-  removeFromCartAction,
-  updateCartItemAction,
+    clearCartAction,
+    getGuestCartDetailsAction,
+    removeFromCartAction,
+    updateCartItemAction,
 } from "@/actions/cart";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
 } from "@/components/atoms/alert-dialog";
 import { Checkbox } from "@/components/atoms/checkbox";
 import { GlassButton } from "@/components/atoms/glass-button";
@@ -49,15 +49,15 @@ import { Link } from "@/i18n/routing";
 import { Cart, CartItem, Sku } from "@/types/models";
 import { motion } from "framer-motion";
 import {
-  Lock,
-  Minus,
-  Plus,
-  RefreshCcw,
-  ShieldCheck,
-  ShoppingBag,
-  Trash2,
-  Truck,
-  X,
+    Lock,
+    Minus,
+    Plus,
+    RefreshCcw,
+    ShieldCheck,
+    ShoppingBag,
+    Trash2,
+    Truck,
+    X,
 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import Image from "next/image";
@@ -415,9 +415,9 @@ export function CartClient({ cart }: CartClientProps) {
   const isFreeShipping = total >= shippingThreshold;
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-12 font-sans selection:bg-primary/30 relative overflow-hidden">
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-success/10 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-info/10 rounded-full blur-[150px] pointer-events-none" />
+    <div className="min-h-screen bg-background pt-28 pb-16 font-sans selection:bg-accent/30 relative overflow-hidden">
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[200px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-secondary/30 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <motion.div
@@ -425,11 +425,14 @@ export function CartClient({ cart }: CartClientProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="space-y-2">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">
+          <div className="space-y-3">
+            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
+              Your Selection
+            </span>
+            <h1 className="text-4xl md:text-5xl font-serif font-normal text-foreground tracking-tight">
               {t("title")}
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-lg font-light">
               {localItems.length} {t("items")} {t("inCart")}
             </p>
           </div>

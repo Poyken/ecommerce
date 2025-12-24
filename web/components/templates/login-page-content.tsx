@@ -184,12 +184,15 @@ export function LoginPageContent() {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-black/40" /> {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
         <div className="relative z-10 text-white p-10 max-w-lg text-center space-y-4">
-          <h2 className="text-4xl font-bold tracking-tight">
+          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/70 block">
+            Welcome Back
+          </span>
+          <h2 className="text-4xl font-serif font-normal tracking-tight">
             {t("heroTitle")}
           </h2>
-          <p className="text-lg text-white/80">{t("heroSubtitle")}</p>
+          <p className="text-lg text-white/70 font-light">{t("heroSubtitle")}</p>
         </div>
       </div>
 
@@ -217,11 +220,14 @@ export function LoginPageContent() {
             className="p-8 border-none shadow-none bg-transparent"
             variant="default"
           >
-            <div className="mb-8 text-center space-y-2">
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            <div className="mb-8 text-center space-y-3">
+              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
+                Account Access
+              </span>
+              <h1 className="text-3xl font-serif font-normal tracking-tight text-foreground">
                 {t("title")}
               </h1>
-              <p className="text-muted-foreground">{t("subtitle")}</p>
+              <p className="text-muted-foreground font-light">{t("subtitle")}</p>
             </div>
 
             <motion.form

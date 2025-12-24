@@ -80,7 +80,7 @@ export function ResetPasswordPageContent() {
 
   if (!token) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background selection:bg-primary/30">
+      <div className="min-h-screen flex items-center justify-center bg-background selection:bg-accent/30">
         <GlassCard
           className="p-10 max-w-md w-full text-center rounded-4xl border-foreground/5 shadow-xl"
           variant="heavy"
@@ -88,8 +88,8 @@ export function ResetPasswordPageContent() {
           <div className="w-20 h-20 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-6">
             <AlertCircle className="w-12 h-12 text-red-500" />
           </div>
-          <h1 className="text-3xl font-black mb-3">{t("invalidLinkTitle")}</h1>
-          <p className="text-muted-foreground/70 mb-8 font-medium">
+          <h1 className="text-3xl font-serif font-normal mb-3">{t("invalidLinkTitle")}</h1>
+          <p className="text-muted-foreground mb-8 font-light">
             {t("invalidLinkDescription")}
           </p>
           <Link href="/forgot-password">
@@ -114,12 +114,15 @@ export function ResetPasswordPageContent() {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-black/40" /> {/* Overlay */}
-        <div className="relative z-10 text-white p-10 max-w-lg text-center space-y-6">
-          <h2 className="text-5xl font-black tracking-tight">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
+        <div className="relative z-10 text-white p-10 max-w-lg text-center space-y-4">
+          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/70 block">
+            Secure Reset
+          </span>
+          <h2 className="text-5xl font-serif font-normal tracking-tight">
             {t("heroTitle")}
           </h2>
-          <p className="text-xl text-white/90 font-medium">
+          <p className="text-xl text-white/70 font-light">
             {t("heroSubtitle")}
           </p>
         </div>
@@ -128,8 +131,8 @@ export function ResetPasswordPageContent() {
       {/* Right Side - Form */}
       <div className="flex items-center justify-center p-8 h-full relative">
         {/* Background Gradients for Right Side */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[150px] pointer-events-none opacity-50" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[150px] pointer-events-none opacity-50" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[200px] pointer-events-none opacity-50" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/30 rounded-full blur-[150px] pointer-events-none opacity-50" />
 
         <motion.div
           initial="hidden"
@@ -142,10 +145,13 @@ export function ResetPasswordPageContent() {
             variant="default"
           >
             <div className="mb-8 text-center space-y-3">
-              <h1 className="text-4xl font-black tracking-tight text-foreground">
+              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
+                New Password
+              </span>
+              <h1 className="text-4xl font-serif font-normal tracking-tight text-foreground">
                 {t("title")}
               </h1>
-              <p className="text-muted-foreground/70 font-medium">
+              <p className="text-muted-foreground font-light">
                 {t("subtitle")}
               </p>
             </div>

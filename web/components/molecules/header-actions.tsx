@@ -1,30 +1,30 @@
 "use client";
 
 import { logoutAction } from "@/actions/auth";
-import { ThemeToggle } from "@/components/molecules/theme-toggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/atoms/avatar";
 import { Button } from "@/components/atoms/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
 } from "@/components/atoms/dropdown-menu";
+import { ThemeToggle } from "@/components/molecules/theme-toggle";
 import { Link } from "@/i18n/routing";
 import {
-  Laptop,
-  Loader2,
-  LogOut,
-  Moon,
-  Palette,
-  Sun,
-  User,
+    Laptop,
+    Loader2,
+    LogOut,
+    Moon,
+    Palette,
+    Sun,
+    User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -96,10 +96,10 @@ export function HeaderActions({ initialUser }: HeaderActionsProps) {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={user.avatar} alt={user.firstName} />
+              <AvatarImage src={user.avatar} alt={user.firstName || "User"} />
               <AvatarFallback>
-                {user.firstName[0]}
-                {user.lastName[0]}
+                {user.firstName?.[0] || ""}
+                {user.lastName?.[0] || "U"}
               </AvatarFallback>
             </Avatar>
           </Button>

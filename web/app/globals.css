@@ -120,133 +120,142 @@
   --radius: 0.75rem;
 
   /* ═══════════════════════════════════════════════════════════════════
-   * LUXURY FURNITURE PALETTE (Light Mode)
-   * Concept: "Refined Modernism"
-   * Inspired by: Restoration Hardware, Minotti, Poliform, Rove Concepts
+   * QUIET LUXURY PALETTE (Light Mode)
+   * Concept: "Editorial Minimalism"
+   * Inspired by: The Row, Bottega Veneta, Celine, Loro Piana
+   * Trending: Behance, Dribbble, Awwwards
    * ═══════════════════════════════════════════════════════════════════ */
 
-  /* Background: Natural Linen - Warm, organic, inviting */
-  --background: oklch(0.975 0.006 90);
+  /* Background: Bone White - Ultra-clean, gallery-like */
+  --background: oklch(0.985 0.003 90);
 
-  /* Foreground: Warm Charcoal - Soft, refined, readable */
-  --foreground: oklch(0.28 0.02 60);
+  /* Foreground: Deep Charcoal - Sophisticated, editorial */
+  --foreground: oklch(0.18 0.012 75);
 
-  /* Card: Warm White - Like Italian marble */
-  --card: oklch(0.995 0.004 90);
-  --card-foreground: oklch(0.28 0.02 60);
+  /* Card: Pure White - Like museum display */
+  --card: oklch(0.995 0.002 90);
+  --card-foreground: oklch(0.18 0.012 75);
 
-  --popover: oklch(0.995 0.004 90);
-  --popover-foreground: oklch(0.28 0.02 60);
+  --popover: oklch(0.995 0.002 90);
+  --popover-foreground: oklch(0.18 0.012 75);
 
-  /* Primary: Warm Charcoal - Timeless elegance */
-  --primary: oklch(0.22 0.02 60);
-  --primary-foreground: oklch(0.97 0.006 90);
+  /* Primary: Obsidian - Timeless, bold */
+  --primary: oklch(0.15 0.01 75);
+  --primary-foreground: oklch(0.98 0.003 90);
 
-  /* Secondary: Soft Greige - Sophisticated neutral */
-  --secondary: oklch(0.92 0.008 80);
-  --secondary-foreground: oklch(0.22 0.02 60);
+  /* Secondary: Whisper Gray - Ultra-subtle */
+  --secondary: oklch(0.96 0.003 85);
+  --secondary-foreground: oklch(0.18 0.012 75);
 
-  /* Muted: Warm Stone */
-  --muted: oklch(0.93 0.006 80);
-  --muted-foreground: oklch(0.5 0.015 60);
+  /* Muted: Cloud Gray */
+  --muted: oklch(0.94 0.004 85);
+  --muted-foreground: oklch(0.45 0.01 75);
 
-  /* Accent: Refined Bronze - Sophisticated, warm, luxurious */
-  --accent: oklch(0.55 0.09 65);
-  --accent-foreground: oklch(0.98 0 0);
+  /* Accent: Soft Champagne - Subtle warmth, luxury whisper */
+  --accent: oklch(0.82 0.055 85);
+  --accent-foreground: oklch(0.15 0.01 75);
 
-  /* === SEMANTIC COLORS - Natural Luxury === */
+  /* Champagne: The signature Quiet Luxury color */
+  --champagne: oklch(0.88 0.045 85);
+  --champagne-foreground: oklch(0.25 0.015 75);
 
-  /* Destructive: Muted Burgundy */
-  --destructive: oklch(0.52 0.16 25);
+  /* === SEMANTIC COLORS - Quiet Luxury === */
+
+  /* Destructive: Muted Rose */
+  --destructive: oklch(0.55 0.14 15);
   --destructive-foreground: oklch(0.98 0 0);
 
-  /* Success: Sage Green - Organic, calming */
-  --success: oklch(0.58 0.1 145);
+  /* Success: Sage - Organic elegance */
+  --success: oklch(0.55 0.08 150);
   --success-foreground: oklch(0.98 0 0);
 
-  /* Info: Dusty Blue - Serene, trustworthy */
-  --info: oklch(0.58 0.1 240);
+  /* Info: Steel Blue - Refined, trustworthy */
+  --info: oklch(0.55 0.08 240);
   --info-foreground: oklch(0.98 0 0);
 
-  /* Warning: Warm Amber - Like natural wood */
-  --warning: oklch(0.72 0.12 75);
-  --warning-foreground: oklch(0.18 0.02 60);
+  /* Warning: Warm Sand */
+  --warning: oklch(0.75 0.1 80);
+  --warning-foreground: oklch(0.18 0.012 75);
 
   /* === DESIGN SYSTEM COLORS === */
-  --chart-1: oklch(0.55 0.09 65); /* Refined Bronze */
-  --chart-2: oklch(0.58 0.1 145); /* Sage */
-  --chart-3: oklch(0.58 0.1 240); /* Dusty Blue */
-  --chart-4: oklch(0.72 0.12 75); /* Warm Amber */
+  --chart-1: oklch(0.82 0.055 85); /* Champagne */
+  --chart-2: oklch(0.55 0.08 150); /* Sage */
+  --chart-3: oklch(0.55 0.08 240); /* Steel Blue */
+  --chart-4: oklch(0.75 0.1 80); /* Warm Sand */
 
   /* Borders & Rings */
-  --border: oklch(0.9 0.006 80);
-  --input: oklch(0.92 0.006 80);
-  --ring: oklch(0.55 0.09 65); /* Bronze focus ring */
+  --border: oklch(0.92 0.003 85);
+  --input: oklch(0.94 0.003 85);
+  --ring: oklch(0.82 0.055 85); /* Champagne focus ring */
 }
 
 .dark {
   /* ═══════════════════════════════════════════════════════════════════
-   * LUXURY FURNITURE PALETTE (Dark Mode)
-   * Concept: "Evening Showroom"
-   * Inspired by: RH Gallery at night, Minotti Milano
+   * QUIET LUXURY PALETTE (Dark Mode)
+   * Concept: "Midnight Gallery"
+   * Inspired by: Bottega Veneta stores, Art Basel evenings
    * ═══════════════════════════════════════════════════════════════════ */
 
-  /* Background: Deep Walnut - Like rich wood at night */
-  --background: oklch(0.08 0.015 60);
+  /* Background: True Black - Cinematic depth */
+  --background: oklch(0.08 0.008 75);
 
-  /* Foreground: Warm Ivory */
-  --foreground: oklch(0.92 0.008 90);
+  /* Foreground: Bone White */
+  --foreground: oklch(0.92 0.006 90);
 
-  /* Card: Elevated Dark Wood */
-  --card: oklch(0.12 0.015 60);
-  --card-foreground: oklch(0.92 0.008 90);
+  /* Card: Elevated Charcoal */
+  --card: oklch(0.12 0.008 75);
+  --card-foreground: oklch(0.92 0.006 90);
 
-  --popover: oklch(0.12 0.015 60);
-  --popover-foreground: oklch(0.92 0.008 90);
+  --popover: oklch(0.12 0.008 75);
+  --popover-foreground: oklch(0.92 0.006 90);
 
-  /* Primary: Warm Ivory - Elegant contrast */
-  --primary: oklch(0.92 0.008 90);
-  --primary-foreground: oklch(0.12 0.015 60);
+  /* Primary: Pure White - Maximum contrast */
+  --primary: oklch(0.95 0.004 90);
+  --primary-foreground: oklch(0.1 0.008 75);
 
-  /* Secondary: Deep Espresso */
-  --secondary: oklch(0.18 0.015 60);
-  --secondary-foreground: oklch(0.92 0.008 90);
+  /* Secondary: Deep Graphite */
+  --secondary: oklch(0.16 0.008 75);
+  --secondary-foreground: oklch(0.92 0.006 90);
 
-  --muted: oklch(0.2 0.012 60);
-  --muted-foreground: oklch(0.6 0.01 80);
+  --muted: oklch(0.18 0.006 75);
+  --muted-foreground: oklch(0.58 0.008 85);
 
-  /* Accent: Champagne Gold - Elegant glow */
-  --accent: oklch(0.65 0.11 70);
-  --accent-foreground: oklch(0.1 0.015 60);
+  /* Accent: Champagne Glow - Warm, inviting */
+  --accent: oklch(0.75 0.08 85);
+  --accent-foreground: oklch(0.1 0.008 75);
+
+  /* Champagne: The signature Quiet Luxury color */
+  --champagne: oklch(0.8 0.065 85);
+  --champagne-foreground: oklch(0.15 0.01 75);
 
   /* === SEMANTIC COLORS - Dark Luxury === */
 
-  /* Destructive: Warm Crimson */
-  --destructive: oklch(0.58 0.18 25);
+  /* Destructive: Muted Coral */
+  --destructive: oklch(0.6 0.15 20);
   --destructive-foreground: oklch(0.98 0 0);
 
-  /* Success: Vibrant Sage */
-  --success: oklch(0.62 0.12 145);
+  /* Success: Mint Sage */
+  --success: oklch(0.6 0.1 150);
   --success-foreground: oklch(0.98 0 0);
 
-  /* Info: Bright Dusty Blue */
-  --info: oklch(0.62 0.12 240);
+  /* Info: Soft Azure */
+  --info: oklch(0.6 0.1 240);
   --info-foreground: oklch(0.98 0 0);
 
-  /* Warning: Warm Honey */
-  --warning: oklch(0.76 0.14 75);
-  --warning-foreground: oklch(0.12 0.015 60);
+  /* Warning: Warm Gold */
+  --warning: oklch(0.78 0.12 80);
+  --warning-foreground: oklch(0.1 0.008 75);
 
   /* === DESIGN SYSTEM COLORS === */
-  --chart-1: oklch(0.65 0.11 70); /* Champagne Gold */
-  --chart-2: oklch(0.62 0.12 145); /* Sage */
-  --chart-3: oklch(0.62 0.12 240); /* Dusty Blue */
-  --chart-4: oklch(0.76 0.14 75); /* Warm Honey */
+  --chart-1: oklch(0.75 0.08 85); /* Champagne */
+  --chart-2: oklch(0.6 0.1 150); /* Sage */
+  --chart-3: oklch(0.6 0.1 240); /* Azure */
+  --chart-4: oklch(0.78 0.12 80); /* Gold */
 
   /* Borders & Rings */
-  --border: oklch(0.2 0.012 60);
-  --input: oklch(0.22 0.012 60);
-  --ring: oklch(0.65 0.11 70); /* Champagne Gold focus ring */
+  --border: oklch(0.18 0.006 75);
+  --input: oklch(0.2 0.006 75);
+  --ring: oklch(0.75 0.08 85); /* Champagne focus ring */
 }
 
 @theme inline {
@@ -343,7 +352,7 @@
     background: linear-gradient(
       135deg,
       oklch(0.55 0.09 65) 0%,
-      oklch(0.65 0.10 70) 50%,
+      oklch(0.65 0.1 70) 50%,
       oklch(0.55 0.09 65) 100%
     );
     -webkit-background-clip: text;
@@ -427,6 +436,179 @@
   .safe-area-pb {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+
+  /* ═══════════════════════════════════════════════════════════════════
+   * QUIET LUXURY - Editorial Utilities
+   * ═══════════════════════════════════════════════════════════════════ */
+
+  /* Enhanced Glassmorphism with Champagne Tint */
+  .glass-luxury {
+    background: linear-gradient(
+      135deg,
+      oklch(0.98 0.02 85 / 0.7) 0%,
+      oklch(0.99 0.01 90 / 0.5) 100%
+    );
+    backdrop-filter: blur(24px) saturate(1.2);
+    border: 1px solid oklch(0.88 0.045 85 / 0.3);
+    box-shadow: 
+      0 8px 32px oklch(0.82 0.055 85 / 0.1),
+      inset 0 1px 0 oklch(1 0 0 / 0.1);
+  }
+
+  .dark .glass-luxury {
+    background: linear-gradient(
+      135deg,
+      oklch(0.15 0.01 75 / 0.6) 0%,
+      oklch(0.12 0.008 75 / 0.4) 100%
+    );
+    border: 1px solid oklch(0.75 0.08 85 / 0.2);
+    box-shadow: 
+      0 8px 32px oklch(0 0 0 / 0.3),
+      inset 0 1px 0 oklch(1 0 0 / 0.05);
+  }
+
+  /* Editorial Text Gradient - Champagne Shimmer */
+  .text-gradient-champagne {
+    background: linear-gradient(
+      135deg,
+      oklch(0.88 0.045 85) 0%,
+      oklch(0.92 0.035 90) 50%,
+      oklch(0.88 0.045 85) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 200% auto;
+    animation: gradient-shift 4s ease infinite;
+  }
+
+  /* Bento Grid Cell */
+  .bento-cell {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.5rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bento-cell:hover {
+    border-color: oklch(0.82 0.055 85 / 0.5);
+    box-shadow: 
+      0 24px 48px -12px oklch(0.82 0.055 85 / 0.15),
+      inset 0 1px 0 oklch(1 0 0 / 0.1);
+    transform: translateY(-4px);
+  }
+
+  .bento-cell::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      transparent 40%,
+      oklch(0.15 0.01 75 / 0.6) 100%
+    );
+    opacity: 0.8;
+    pointer-events: none;
+  }
+
+  /* Editorial Hover Lift */
+  .hover-lift {
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px -15px oklch(0.82 0.055 85 / 0.2);
+  }
+
+  /* Champagne Shimmer Animation */
+  .shimmer-champagne::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(0.88 0.045 85 / 0.15) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  /* Editorial Typography Sizing */
+  .font-editorial {
+    font-family: var(--font-serif);
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+
+  .font-editorial-bold {
+    font-family: var(--font-serif);
+    letter-spacing: -0.03em;
+    font-weight: 600;
+  }
+
+  /* Quiet Luxury Button */
+  .btn-quiet-luxury {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+    padding: 1rem 2.5rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .btn-quiet-luxury:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -8px oklch(0.15 0.01 75 / 0.4);
+  }
+
+  /* Subtle Image Zoom */
+  .img-zoom-subtle {
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .img-zoom-subtle:hover {
+    transform: scale(1.05);
+  }
+
+  /* Floating Cart Animation */
+  @keyframes cart-bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+
+  .animate-cart-bounce {
+    animation: cart-bounce 0.6s ease-in-out;
+  }
+
+  /* Cinematic Radial Gradient */
+  .bg-cinematic {
+    background: radial-gradient(
+      ellipse 80% 50% at 50% 0%,
+      oklch(0.88 0.045 85 / 0.15) 0%,
+      transparent 60%
+    );
+  }
+
+  .dark .bg-cinematic {
+    background: radial-gradient(
+      ellipse 80% 50% at 50% 0%,
+      oklch(0.75 0.08 85 / 0.1) 0%,
+      transparent 60%
+    );
+  }
 }
 
 /* Additional Keyframe Animations */
@@ -474,4 +656,3 @@
     @apply bg-background text-foreground tracking-tight leading-relaxed;
   }
 }
-

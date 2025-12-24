@@ -5,11 +5,11 @@ import { ProgressiveImage } from "@/components/atoms/progressive-image";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { Link } from "@/i18n/routing";
 import {
-  fadeInLeft,
-  fadeInRight,
-  fadeInUp,
-  itemVariant,
-  staggerContainer,
+    fadeInLeft,
+    fadeInRight,
+    fadeInUp,
+    itemVariant,
+    staggerContainer,
 } from "@/lib/animations";
 import { AnimatePresence, motion } from "framer-motion";
 import { Heart, ShieldCheck, Truck, Users } from "lucide-react";
@@ -57,9 +57,9 @@ export function AboutPageContent() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30  overflow-x-hidden">
+    <div className="min-h-screen bg-background font-sans selection:bg-accent/30 overflow-x-hidden">
       {/* Hero Section */}
-      <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
+      <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden pt-28">
         {/* Background Image - shows after preloaded */}
         <AnimatePresence>
           {isHeroReady && (
@@ -115,22 +115,22 @@ export function AboutPageContent() {
               variants={staggerContainer}
             >
               <motion.div
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 backdrop-blur-xl border border-primary/30 text-xs font-black uppercase tracking-widest text-primary shadow-lg shadow-primary/10"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground shadow-sm"
                 variants={fadeInUp}
               >
                 <span>{t("established")}</span>
               </motion.div>
               <motion.h1
-                className="text-6xl md:text-8xl font-black tracking-tighter text-foreground"
+                className="text-6xl md:text-8xl font-serif font-normal tracking-tight text-foreground"
                 variants={fadeInUp}
               >
                 {t("weAre")}{" "}
-                <span className="text-transparent bg-clip-text bg-linear-to-r from-primary via-accent to-primary animate-gradient-x">
+                <span className="text-gradient-champagne italic">
                   {t("visionaries")}
                 </span>
               </motion.h1>
               <motion.p
-                className="text-xl md:text-2xl text-muted-foreground/70 max-w-3xl mx-auto font-medium leading-relaxed"
+                className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed"
                 variants={fadeInUp}
               >
                 {t("heroSubtitle")}
@@ -151,7 +151,10 @@ export function AboutPageContent() {
             variants={fadeInLeft}
           >
             <div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6">
+              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block mb-3">
+                Our Purpose
+              </span>
+              <h2 className="text-4xl md:text-5xl font-serif font-normal tracking-tight mb-6">
                 {t("missionTitle")}
               </h2>
               <p className="text-lg text-muted-foreground leading-relaxed">
@@ -213,7 +216,7 @@ export function AboutPageContent() {
         {/* Core Values */}
         <section>
           <motion.h2
-            className="text-4xl md:text-5xl font-black tracking-tight text-center mb-20 bg-clip-text text-transparent bg-linear-to-r from-primary via-accent to-primary"
+            className="text-4xl md:text-5xl font-serif font-normal tracking-tight text-center mb-20 text-gradient-champagne"
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
@@ -298,10 +301,13 @@ export function AboutPageContent() {
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <h2 className="text-4xl font-bold tracking-tight">
+            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block mb-3">
+              The People
+            </span>
+            <h2 className="text-4xl font-serif font-normal tracking-tight">
               {t("meetTeam")}
             </h2>
-            <p className="text-muted-foreground">{t("teamSubtitle")}</p>
+            <p className="text-muted-foreground font-light">{t("teamSubtitle")}</p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -363,12 +369,12 @@ export function AboutPageContent() {
           viewport={{ once: true }}
           variants={fadeInUp}
         >
-          <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-accent/10 to-primary/10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/5 via-secondary to-accent/5" />
           <div className="relative p-12 md:p-24 text-center space-y-8">
-            <h2 className="text-4xl md:text-5xl font-bold tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-serif font-normal tracking-tight">
               {t("readyToJoin")}
             </h2>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-xl text-muted-foreground font-light max-w-2xl mx-auto">
               {t("ctaSubtitle")}
             </p>
             <div className="flex justify-center gap-4">
