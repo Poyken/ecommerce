@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect, createContext, useContext } from "react";
 import { http } from "@/lib/http";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type FeatureFlagContextType = {
   enabledFlags: string[];
@@ -26,12 +26,21 @@ export function FeatureFlagProvider({
   useEffect(() => {
     async function fetchFlags() {
       try {
-        const flags = await http<string[]>("/feature-flags", {
+        const response = await http<string[]>("/feature-flags", {
           skipAuth: false,
         });
-        setEnabledFlags(flags || []);
+
+        // Ensure we always have an array
+        // The http helper might return a mock response structure on error
+        if (Array.isArray(response)) {
+          setEnabledFlags(response);
+        } else {
+          console.warn("Feature flags response is not an array:", response);
+          setEnabledFlags([]);
+        }
       } catch (error) {
         console.error("Failed to fetch feature flags:", error);
+        setEnabledFlags([]);
       } finally {
         setIsLoading(false);
       }
