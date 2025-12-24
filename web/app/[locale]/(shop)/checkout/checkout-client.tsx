@@ -34,8 +34,8 @@ import { AddressSelector } from "@/components/organisms/checkout/address-selecto
 import { CouponInput } from "@/components/organisms/checkout/coupon-input";
 import { OrderSummary } from "@/components/organisms/checkout/order-summary";
 import {
-  PaymentMethodSelector,
-  PaymentMethodType,
+    PaymentMethodSelector,
+    PaymentMethodType,
 } from "@/components/organisms/checkout/payment-method-selector";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useRouter } from "@/i18n/routing";
@@ -304,9 +304,9 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
           animate="visible"
           variants={sectionVariants}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-success/10 border border-success/20 mb-4">
-            <Lock className="w-4 h-4 text-success" />
-            <span className="text-sm text-success font-medium">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4">
+            <Lock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
               {t("secureCheckout")}
             </span>
           </div>
@@ -377,7 +377,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
               }
               footerSlot={
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <ShieldCheck className="w-4 h-4 text-success" />
+                  <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   <span>{t("secureTransaction")}</span>
                 </div>
               }

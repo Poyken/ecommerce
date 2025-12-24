@@ -1,9 +1,6 @@
 "use client";
 
 import { deleteUserAction } from "@/actions/admin";
-import { AssignRolesDialog } from "@/components/organisms/admin/assign-roles-dialog";
-import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
-import { EditUserDialog } from "@/components/organisms/admin/edit-user-dialog";
 import { Button } from "@/components/atoms/button";
 import {
     DropdownMenu,
@@ -13,6 +10,9 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/atoms/dropdown-menu";
+import { AssignRolesDialog } from "@/components/organisms/admin/assign-roles-dialog";
+import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
+import { EditUserDialog } from "@/components/organisms/admin/edit-user-dialog";
 import { useAuth } from "@/providers/auth-provider";
 import { MoreHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -59,7 +59,7 @@ export function UserActions({ user }: UserActionsProps) {
 
   return (
     <>
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="h-8 w-8 p-0">
             <span className="sr-only">{t("openMenu")}</span>

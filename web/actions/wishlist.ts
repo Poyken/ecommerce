@@ -59,6 +59,12 @@ export async function toggleWishlistAction(productId: string) {
     if (msg.includes("401") || msg.includes("Unauthorized")) {
       return { success: false, requiresAuth: true, error: "Unauthorized" };
     }
+    console.error("toggleWishlistAction error details:", {
+      productId,
+      message: (error as Error).message,
+      stack: (error as Error).stack,
+      error,
+    });
     return { success: false, error: "Failed to update wishlist" };
   }
 }

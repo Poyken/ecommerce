@@ -20,6 +20,8 @@ import { NotificationBell } from "@/components/molecules/notification-bell";
 import { Laptop, LogOut, Moon, Palette, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
+import { useState } from "react";
+
 
 interface AdminHeaderProps {
   user: {
@@ -59,6 +61,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
   const { setTheme } = useTheme();
   const t = useTranslations("admin");
   const tCommon = useTranslations("common");
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-foreground/5 bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60">
@@ -76,23 +79,16 @@ export function AdminHeader({ user }: AdminHeaderProps) {
             <LanguageSwitcher />
           </div>
 
-          <DropdownMenu>
+          <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
-                className="flex items-center gap-3 px-2 h-10 hover:bg-foreground/5 rounded-full transition-all"
+                size="icon"
+                className="relative h-10 w-10 rounded-full p-0 overflow-hidden"
               >
-                <div className="hidden lg:flex flex-col items-end">
-                  <span className="text-xs font-black uppercase tracking-wider text-foreground">
-                    {user.firstName} {user.lastName}
-                  </span>
-                  <span className="text-[10px] text-muted-foreground font-bold">
-                    {user.email}
-                  </span>
-                </div>
-                <Avatar className="h-8 w-8 border border-foreground/10 shadow-sm">
+                <Avatar className="h-10 w-10">
                   <AvatarImage src={user.avatar} alt={user.firstName} />
-                  <AvatarFallback className="bg-primary/10 text-primary font-black text-[10px]">
+                  <AvatarFallback className="text-sm">
                     {user.firstName[0]}
                     {user.lastName[0]}
                   </AvatarFallback>
@@ -101,51 +97,48 @@ export function AdminHeader({ user }: AdminHeaderProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="w-64 p-2 rounded-2xl border-foreground/10 shadow-2xl"
+              className="w-56"
             >
-              <DropdownMenuLabel className="px-3 pt-3 pb-2">
+              <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
-                  <p className="text-xs font-black uppercase tracking-widest leading-none">
-                    {t("myAccount")}
+                  <p className="text-sm font-medium leading-none">
+                    {user.firstName} {user.lastName}
                   </p>
-                  <p className="text-[10px] leading-none text-muted-foreground font-medium">
+                  <p className="text-xs leading-none text-muted-foreground truncate">
                     {user.email}
                   </p>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="my-2 bg-foreground/5" />
+              <DropdownMenuSeparator />
 
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger className="rounded-lg h-9">
-                  <Palette className="mr-3 h-4 w-4" />
-                  <span className="text-xs font-bold">{tCommon("theme")}</span>
+                <DropdownMenuSubTrigger>
+                  <Palette className="h-4 w-4" />
+                  <span>{tCommon("theme")}</span>
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
-                  <DropdownMenuSubContent className="p-1 rounded-xl shadow-xl">
+                  <DropdownMenuSubContent>
                     <DropdownMenuItem
                       onClick={() => setTheme("light")}
-                      className="rounded-lg h-9"
                     >
-                      <Sun className="mr-3 h-4 w-4" />
-                      <span className="text-xs font-bold">
+                      <Sun className="h-4 w-4" />
+                      <span>
                         {tCommon("light")}
                       </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => setTheme("dark")}
-                      className="rounded-lg h-9"
                     >
-                      <Moon className="mr-3 h-4 w-4" />
-                      <span className="text-xs font-bold">
+                      <Moon className="h-4 w-4" />
+                      <span>
                         {tCommon("dark")}
                       </span>
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onClick={() => setTheme("system")}
-                      className="rounded-lg h-9"
                     >
-                      <Laptop className="mr-3 h-4 w-4" />
-                      <span className="text-xs font-bold">
+                      <Laptop className="h-4 w-4" />
+                      <span>
                         {tCommon("system")}
                       </span>
                     </DropdownMenuItem>
@@ -153,14 +146,23 @@ export function AdminHeader({ user }: AdminHeaderProps) {
                 </DropdownMenuPortal>
               </DropdownMenuSub>
 
-              <DropdownMenuSeparator className="my-2 bg-foreground/5" />
+              <DropdownMenuSeparator />
 
               <DropdownMenuItem
-                onClick={() => logoutAction()}
-                className="rounded-lg h-9 text-red-500 focus:text-red-500 focus:bg-red-500/10 cursor-pointer"
+                disabled={isLoggingOut}
+                onClick={async (e) => {
+                  e.preventDefault();
+                  if (isLoggingOut) return;
+                  setIsLoggingOut(true);
+                  try {
+                    await logoutAction();
+                  } finally {
+                    // Redirect will handle it
+                  }
+                }}
               >
-                <LogOut className="mr-3 h-4 w-4" />
-                <span className="text-xs font-black uppercase tracking-wider">
+                <LogOut className="h-4 w-4" />
+                <span>
                   {tCommon("logout")}
                 </span>
               </DropdownMenuItem>

@@ -129,6 +129,7 @@ export const productService = {
     options?: { next?: NextFetchRequestConfig }
   ): Promise<ApiResponse<Product[]>> {
     try {
+      console.log("[ProductService] Fetching products with params:", params);
       const response = await http<ApiResponse<Product[]>>("/products", {
         params: params as Record<string, string | number | boolean>,
         skipAuth: true,
@@ -253,7 +254,7 @@ export const productService = {
       const response = await http<ApiResponse<Product>>(`/products/${id}`, {
         skipAuth: true,
         next: {
-          revalidate: 300, // Cache 5 phút - product detail ít thay đổi
+          revalidate: 0, // Disable cache to ensure real-time stock
           tags: [`product-${id}`],
         },
       });

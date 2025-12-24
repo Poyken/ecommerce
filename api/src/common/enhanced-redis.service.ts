@@ -191,7 +191,7 @@ export class EnhancedRedisService {
   }
 
   async subscribe(channel: string, callback: (message: string) => void) {
-    this.subscriber.subscribe(channel);
+    await this.subscriber.subscribe(channel);
     this.subscriber.on('message', (ch, msg) => {
       if (ch === channel) {
         callback(msg);

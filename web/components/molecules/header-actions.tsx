@@ -92,14 +92,14 @@ export function HeaderActions({ initialUser }: HeaderActionsProps) {
   return (
     <div className="flex items-center gap-4">
       <LanguageSwitcher />
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+          <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full p-0 overflow-hidden">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={user.avatar} alt={user.firstName || "User"} />
-              <AvatarFallback>
-                {user.firstName?.[0] || ""}
-                {user.lastName?.[0] || "U"}
+              <AvatarImage src={user?.avatar} alt={user?.firstName || "User"} />
+              <AvatarFallback className="text-sm">
+                {user?.firstName?.[0] || ""}
+                {user?.lastName?.[0] || "U"}
               </AvatarFallback>
             </Avatar>
           </Button>
@@ -108,10 +108,10 @@ export function HeaderActions({ initialUser }: HeaderActionsProps) {
           <DropdownMenuLabel>
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">
-                {user.firstName} {user.lastName}
+                {user?.firstName || ""} {user?.lastName || ""}
               </p>
-              <p className="text-xs leading-none text-muted-foreground">
-                {user.email}
+              <p className="text-xs leading-none text-muted-foreground truncate">
+                {user?.email || ""}
               </p>
             </div>
           </DropdownMenuLabel>

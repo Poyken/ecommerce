@@ -66,6 +66,8 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   // ========================================
   let csrfToken: string | undefined;
   let accessToken: string | undefined;
+  let forwardedUserAgent: string | undefined;
+  let forwardedIp: string | undefined;
 
   const isStateChanging = ["POST", "PUT", "PATCH", "DELETE"].includes(
     rest.method?.toUpperCase() || "GET"
@@ -75,21 +77,34 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   if (typeof window === "undefined") {
     // P0 Optimization: Only call cookies() if we actually need accessToken or csrfToken
     // This prevents breaking "use cache" for public GET requests.
-    if (!skipAuth || isStateChanging) {
+    if (!skipAuth || isStateChanging || true) {
+      // Always try to get headers for fingerprinting
       try {
-        const { cookies } = await import("next/headers");
+        const { cookies, headers } = await import("next/headers");
         const cookieStore = await cookies();
+        const headersList = await headers();
+
         if (!skipAuth) {
           accessToken = cookieStore.get("accessToken")?.value;
         }
         if (isStateChanging) {
           csrfToken = cookieStore.get("csrf-token")?.value;
         }
+
+        // Get headers for fingerprinting
+        forwardedUserAgent = headersList.get("user-agent") || undefined;
+        forwardedIp = headersList.get("x-forwarded-for") || undefined;
       } catch {
         // If we are inside "use cache", cookies() throws. We just proceed without tokens.
       }
     }
   }
+
+  // ... (URL construction code remains mainly effectively same but ensure variable scope) ...
+  // Need to be careful not to break existing logic.
+  // The structure of the original function had these sections interleaved.
+  // I will replace the whole block starting from section 3 down to headers construction.
+
   // ========================================
   // 2. XÂY DỰNG URL ĐẦY ĐỦ
   // ========================================
@@ -114,6 +129,13 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     Authorization: accessToken ? `Bearer ${accessToken}` : "",
     // Đính kèm CSRF token cho security (P0 compliance)
     "X-CSRF-Token": csrfToken || "",
+    // Backend yêu cầu Double Submit Cookie: Phải có cả Header VÀ Cookie
+    Cookie: csrfToken ? `csrf-token=${csrfToken}` : "",
+
+    // Forward headers for Fingerprinting
+    ...(forwardedUserAgent ? { "User-Agent": forwardedUserAgent } : {}),
+    ...(forwardedIp ? { "X-Forwarded-For": forwardedIp } : {}),
+
     ...(headers as Record<string, string>),
   };
 
@@ -150,6 +172,9 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     // 401 Unauthorized → Chuyển về trang login
     // (Middleware nên refresh token, nếu đến đây nghĩa là refresh thất bại)
     if (res.status === 401 && !options.skipRedirectOn401) {
+      console.warn(
+        `[HTTP 401] Unauthorized request to: ${url}. Redirecting to /login.`
+      );
       redirect("/login");
     }
 

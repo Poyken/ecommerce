@@ -1,12 +1,12 @@
 "use client";
 
 import {
-  Toast,
-  ToastClose,
-  ToastDescription,
-  ToastProvider,
-  ToastTitle,
-  ToastViewport,
+    Toast,
+    ToastClose,
+    ToastDescription,
+    ToastProvider,
+    ToastTitle,
+    ToastViewport,
 } from "@/components/atoms/toast";
 import { useToast } from "@/hooks/use-toast";
 
@@ -39,26 +39,26 @@ export function Toaster() {
     switch (variant) {
       case "success":
         return (
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success/10 shadow-[0_0_15px_rgba(var(--success),0.2)] ring-1 ring-success/20">
-            <CheckCircle2 className="h-6 w-6 text-success" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.2)] ring-1 ring-emerald-500/20">
+            <CheckCircle2 className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
           </div>
         );
       case "destructive":
         return (
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10 shadow-[0_0_15px_rgba(var(--destructive),0.2)] ring-1 ring-destructive/20">
-            <AlertCircle className="h-6 w-6 text-destructive" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-500/10 shadow-[0_0_15px_rgba(244,63,94,0.2)] ring-1 ring-rose-500/20">
+            <AlertCircle className="h-6 w-6 text-rose-600 dark:text-rose-400" />
           </div>
         );
       case "warning":
         return (
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-warning/10 shadow-[0_0_15px_rgba(var(--warning),0.2)] ring-1 ring-warning/20">
-            <AlertTriangle className="h-6 w-6 text-warning" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 shadow-[0_0_15px_rgba(245,158,11,0.2)] ring-1 ring-amber-500/20">
+            <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
           </div>
         );
       case "info":
         return (
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-info/10 shadow-[0_0_15px_rgba(var(--info),0.2)] ring-1 ring-info/20">
-            <Info className="h-6 w-6 text-info" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 shadow-[0_0_15px_rgba(59,130,246,0.2)] ring-1 ring-blue-500/20">
+            <Info className="h-6 w-6 text-blue-600 dark:text-blue-400" />
           </div>
         );
       default:

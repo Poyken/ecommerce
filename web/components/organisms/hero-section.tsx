@@ -49,7 +49,7 @@ export function HeroSection() {
       {/* Cinematic Background Lighting */}
       <div className="absolute inset-0 z-0">
         {/* Top Champagne Glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] h-[60vh] bg-accent/10 rounded-full blur-[150px] opacity-60" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[60vh] bg-accent/10 rounded-full blur-[150px] opacity-60" />
 
         {/* Bottom Gradient */}
         <div className="absolute bottom-0 inset-x-0 h-[40vh] bg-gradient-to-t from-background via-background/50 to-transparent" />
@@ -90,8 +90,8 @@ export function HeroSection() {
           <div className="space-y-4">
             <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-normal tracking-[-0.03em] leading-[0.9]">
               <span className="block text-foreground">{t("redefining")}</span>
-              <span className="relative inline-block mt-2">
-                <span className="text-gradient-champagne italic">
+              <span className="relative inline-block mt-2 w-full">
+                <span className="text-gradient-champagne italic w-full block">
                   {t("luxuryStyle")}
                 </span>
               </span>
@@ -174,7 +174,7 @@ export function HeroSection() {
               alt="Luxury Collection"
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
-              className="object-cover object-center transition-transform duration-[2s] ease-[0.16,1,0.3,1] group-hover:scale-105"
+              className="object-cover object-center transition-transform duration-700 ease-[0.16,1,0.3,1] group-hover:scale-105"
               priority
               onLoad={() => setIsImageReady(true)}
             />

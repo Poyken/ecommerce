@@ -33,28 +33,28 @@ export interface BlogPost {
 export const blogPosts: BlogPost[] = [
   {
     id: 1,
-    title: "Essential Wardrobe Staples for 2025",
+    title: "Essential Living Room Staples for 2025",
     excerpt:
-      "Discover the timeless pieces that will define your style for the upcoming year. From classic cuts to sustainable materials, here's what you need.",
+      "Discover the timeless pieces that will define your home for the upcoming year. From sculptural seating to sustainable woods, here's what you need.",
     content: `
-      <p>As we look towards 2025, the fashion landscape is shifting towards a blend of timeless elegance and sustainable innovation. Building a wardrobe that stands the test of time is not just about style; it's about making conscious choices that reflect your values.</p>
+      <p>As we look towards 2025, the interior landscape is shifting towards a blend of timeless elegance and sustainable innovation. Building a home that stands the test of time is not just about aesthetics; it's about making conscious choices that reflect your values.</p>
       
-      <h2>1. The Classic White Shirt</h2>
-      <p>No wardrobe is complete without a crisp white shirt. In 2025, look for organic cotton blends that offer breathability and durability. The silhouette is slightly oversized, allowing for versatility in styling – tuck it into high-waisted trousers for a professional look or wear it loose over denim for a casual weekend vibe.</p>
+      <h2>1. The Sculptural Armchair</h2>
+      <p>No living room is complete without a statement armchair. In 2025, look for organic shapes that offer comfort and visual intrigue. The silhouette is slightly bold, allowing for a focal point in any room – place it in a sunlit corner for a reading nook or pair it with a sleek sofa for a sophisticated lounge.</p>
       
-      <h2>2. Tailored Trousers</h2>
-      <p>Gone are the days of restrictive skinny jeans. The new era embraces wide-leg tailored trousers that offer comfort without compromising on sophistication. Neutral tones like beige, charcoal, and navy remain staples, but don't be afraid to experiment with deep forest greens or rich burgundies.</p>
+      <h2>2. Solid Wood Dining Tables</h2>
+      <p>Gone are the days of flimsy, mass-produced furniture. The new era embraces solid wood tables that offer longevity without compromising on modern lines. Natural tones like walnut, oak, and charred cedar remain staples, bringing warmth and character to your dining space.</p>
       
-      <h2>3. The Sustainable Trench Coat</h2>
-      <p>A trench coat is the ultimate transitional piece. This year, the focus is on recycled materials and water-resistant coatings derived from natural sources. It's a piece that adds instant polish to any outfit, rain or shine.</p>
+      <h2>3. Minimalist Coffee Tables</h2>
+      <p>A coffee table is the heart of the seating area. This year, the focus is on natural stone tops and slender metal frames. It's a piece that adds instant polish and functional elegance to your home.</p>
       
-      <h2>4. Quality Knitwear</h2>
-      <p>Invest in high-quality cashmere or merino wool sweaters. These pieces are perfect for layering and provide warmth without bulk. Opt for classic crew necks or turtlenecks in monochromatic shades to maximize mix-and-match potential.</p>
+      <h2>4. Statement Lighting</h2>
+      <p>Invest in high-quality brass or glass pendants. These pieces provide more than just light; they are pieces of art that define the atmosphere. Opt for warm dimmable sources to maximize the cozy-luxury potential of your space.</p>
       
-      <p>Building a capsule wardrobe takes time, but starting with these essentials ensures you're ready for whatever 2025 brings. Remember, true style is about quality over quantity.</p>
+      <p>Curating a home collection takes time, but starting with these essentials ensures your space is ready for whatever 2025 brings. Remember, true luxury is about quality over quantity.</p>
     `,
     image: "/images/blog/blog1.jpg",
-    category: "Style Guide",
+    category: "Design Guide",
     categoryColor: "emerald",
     author: "Sarah Chen",
     date: "Oct 12, 2024",
@@ -62,22 +62,22 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 2,
-    title: "The Future of Sustainable Fashion",
+    title: "The Future of Sustainable Design",
     excerpt:
-      "How we're reducing our carbon footprint and why it matters. Learn about our new eco-friendly initiatives and materials.",
+      "How we're reducing our carbon footprint and why it matters. Learn about our new eco-friendly initiatives and materials for home furniture.",
     content: `
-      <p>Sustainability is no longer just a buzzword; it's a necessity. The fashion industry is undergoing a radical transformation, and at Luxe, we are proud to be at the forefront of this change.</p>
+      <p>Sustainability is no longer just a buzzword; it's a necessity. The furniture industry is undergoing a radical transformation, and at Luxe, we are proud to be at the forefront of this change.</p>
       
-      <h2>Circular Fashion</h2>
-      <p>The concept of circular fashion is gaining momentum. It's about designing products with their end-of-life in mind. We are implementing take-back programs and designing clothes that can be easily recycled or upcycled.</p>
+      <h2>Circular Design</h2>
+      <p>The concept of circular design is gaining momentum. It's about designing products with their end-of-life in mind. We are implementing take-back programs and designing furniture that can be easily refurbished or recycled.</p>
       
       <h2>Innovative Materials</h2>
-      <p>From mushroom leather to fabrics made from ocean plastic, the innovation in materials is astounding. These alternatives not only reduce reliance on traditional resources but also offer new textures and properties that enhance the garment's performance.</p>
+      <p>From mushroom leather to recycled hardwoods, the innovation in materials is astounding. These alternatives not only reduce reliance on traditional resources but also offer new textures and properties that enhance the furniture's durability and beauty.</p>
       
       <h2>Transparency</h2>
-      <p>Consumers are demanding to know where their clothes come from. We are committed to full transparency in our supply chain, ensuring fair wages and safe working conditions for all artisans involved in creating our collections.</p>
+      <p>Consumers are demanding to know where their furniture comes from. We are committed to full transparency in our supply chain, ensuring fair wages and safe working conditions for all artisans involved in crafting our collections.</p>
       
-      <p>The future of fashion is green, and we invite you to join us on this journey towards a more sustainable world.</p>
+      <p>The future of design is green, and we invite you to join us on this journey towards a more sustainable world.</p>
     `,
     image: "/images/blog/blog2.jpg",
     category: "Sustainability",
@@ -140,25 +140,25 @@ export const blogPosts: BlogPost[] = [
   },
   {
     id: 5,
-    title: "Accessorizing 101",
+    title: "Interior Accents 101",
     excerpt:
-      "The complete guide to choosing the right accessories for any occasion. Make a statement with the perfect details.",
+      "The complete guide to choosing the right finishing touches for any room. Make a statement with the perfect details.",
     content: `
-      <p>Accessories are the exclamation point of a woman's outfit. They can transform a simple look into something spectacular. Here is your guide to getting it right.</p>
+      <p>Accessories are the exclamation point of a room's interior. They can transform a simple space into something spectacular. Here is your guide to getting it right.</p>
       
-      <h2>Statement Jewelry</h2>
-      <p>A bold necklace or a pair of chandelier earrings can be the focal point of your outfit. If you're wearing statement jewelry, keep the rest of your look simple to let the pieces shine.</p>
+      <h2>Statement Lighting & Art</h2>
+      <p>A bold lamp or a piece of sculptural art can be the focal point of your outfit. If you're using statement accents, keep the rest of your decor simple to let the pieces shine.</p>
       
-      <h2>Scarves & Belts</h2>
-      <p>A silk scarf tied around the neck or a bag handle adds a touch of Parisian chic. A belt can cinch a waist and define a silhouette, instantly updating a dress or oversized shirt.</p>
+      <h2>Textiles & Rugs</h2>
+      <p>A silk cushion or a hand-woven rug adds a touch of warmth and texture. A well-placed rug can define a seating area and add a layer of sophistication to any room.</p>
       
-      <h2>Bags & Shoes</h2>
-      <p>Invest in quality leather goods. A structured handbag and a pair of classic pumps will never go out of style. For a more modern look, try a sculptural heel or a textured bag.</p>
+      <h2>Vases & Sculptures</h2>
+      <p>Invest in quality ceramic and glass goods. A structured vase and a pair of classic bookends will never go out of style. For a more modern look, try a sculptural object or a textured bowl.</p>
       
-      <p>Remember, the golden rule of accessorizing: before you leave the house, look in the mirror and take one thing off. Less is often more.</p>
+      <p>Remember, the golden rule of decorating: before you finish a room, look around and consider the balance. Less is often more.</p>
     `,
     image: "/images/blog/blog5.jpg",
-    category: "Style Guide",
+    category: "Design Guide",
     categoryColor: "emerald",
     author: "Sarah Chen",
     date: "Aug 15, 2024",

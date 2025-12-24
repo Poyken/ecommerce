@@ -21,13 +21,22 @@ export class WishlistService {
       });
       return { isWishlisted: false };
     } else {
-      await this.prisma.wishlist.create({
-        data: {
+      try {
+        await this.prisma.wishlist.create({
+          data: {
+            userId,
+            productId,
+          },
+        });
+        return { isWishlisted: true };
+      } catch (err) {
+        console.error('[WishlistService] create error details:', {
           userId,
           productId,
-        },
-      });
-      return { isWishlisted: true };
+          error: err,
+        });
+        throw err;
+      }
     }
   }
 

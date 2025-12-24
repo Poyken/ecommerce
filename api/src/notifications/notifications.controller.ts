@@ -61,12 +61,23 @@ export class NotificationsController {
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ) {
-    const data = await this.notificationsService.findAll(
-      req.user.userId,
-      limit ? parseInt(limit) : 20,
-      offset ? parseInt(offset) : 0,
-    );
-    return { data };
+    try {
+      const userId = req.user.userId || req.user.id;
+      if (!userId) {
+        console.warn('[NotificationsController] No userId found in request', {
+          user: req.user,
+        });
+      }
+      const data = await this.notificationsService.findAll(
+        userId,
+        limit ? parseInt(limit) : 20,
+        offset ? parseInt(offset) : 0,
+      );
+      return { data };
+    } catch (err) {
+      console.error('[NotificationsController] findAll error:', err);
+      throw err;
+    }
   }
 
   /**
@@ -151,23 +162,28 @@ export class NotificationsController {
   @UseGuards(PermissionsGuard)
   @Permissions('notification:create')
   async sendToUser(@Body(ValidationPipe) data: SendToUserDto) {
-    const result = await this.notificationsService.create({
-      userId: data.userId,
-      type: data.type,
-      title: data.title,
-      message: data.message,
-      link: data.link,
-    });
+    try {
+      const result = await this.notificationsService.create({
+        userId: data.userId,
+        type: data.type,
+        title: data.title,
+        message: data.message,
+        link: data.link,
+      });
 
-    if (data.sendEmail && data.email) {
-      await this.emailService.sendCustomEmail(
-        data.email,
-        data.title,
-        data.message,
-      );
+      if (data.sendEmail && data.email) {
+        await this.emailService.sendCustomEmail(
+          data.email,
+          data.title,
+          data.message,
+        );
+      }
+
+      return { data: result };
+    } catch (err) {
+      console.error('[NotificationsController] sendToUser error:', err);
+      throw err;
     }
-
-    return { data: result };
   }
 
   /**

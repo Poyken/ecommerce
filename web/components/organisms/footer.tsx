@@ -105,7 +105,7 @@ export function Footer() {
               {[
                 { label: t("helpCenter"), href: "#" },
                 { label: t("shippingReturns"), href: "#" },
-                { label: t("sizeGuide"), href: "#" },
+                { label: t("careGuide"), href: "/care-guide" },
                 { label: t("trackOrder"), href: "/orders" },
                 { label: t("faq"), href: "#" },
               ].map((item) => (

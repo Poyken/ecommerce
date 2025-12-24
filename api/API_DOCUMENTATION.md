@@ -3,7 +3,7 @@
 ## Tài liệu Hướng dẫn Toàn bộ Dự án API
 
 **Phiên bản:** 2.0  
-**Cập nhật lần cuối:** 18/12/2025  
+**Cập nhật lần cuối:** 25/12/2025  
 **Trạng thái:** ✅ SẴN SÀNG TRIỂN KHAI
 
 ---
@@ -133,19 +133,22 @@ Trạng thái Build:   ✅ THÀNH CÔNG
         ┌─────────┴─────────┐
         ▼                   ▼
 ┌──────────────┐    ┌──────────────┐
-│  PostgreSQL  │    │    Redis     │
 │  (Database)  │    │   (Cache)    │
-└──────────────┘    └──────────────┘
+│  PostgreSQL  │    │   Redis      │
+└──────┬───────┘    └──────┬───────┘
+       │                   │
+       └────[Decimal]──────┘
+       (Money Protection)
 ```
 
 ## 2.2. Các mẫu thiết kế (Design Patterns)
 
-- **Dependency Injection**: NestJS IoC Container
-- **Repository Pattern**: Prisma Service
-- **DTO Pattern**: Data Transfer Objects với validation
-- **Guard Pattern**: Authentication & Authorization
-- **Interceptor Pattern**: Response transformation
-- **Filter Pattern**: Global exception handling
+- **Dependency Injection**: NestJS IoC Container quản lý dependencies, giúp code lỏng lẻo (loose coupling) và dễ test.
+- **Repository Pattern**: Prisma Service đóng vai trò là lớp truy xuất dữ liệu, tách biệt logic nghiệp vụ khỏi câu lệnh DB.
+- **DTO Pattern**: Sử dụng `class-validator` để kiểm tra dữ liệu đầu vào chặt chẽ trước khi xử lý.
+- **Guard Pattern**: Bảo vệ endpoints bằng JWT Guard và Permissions Guard.
+- **Interceptor Pattern**: `TransformInterceptor` chuẩn hóa mọi response về dạng `{ statusCode, message, data }`.
+- **Filter Pattern**: `AllExceptionsFilter` bắt mọi lỗi và trả về format lỗi chuẩn, giấu stack trace ở production.
 
 ## 2.3. Luồng xử lý ứng dụng
 
@@ -370,10 +373,28 @@ api/
 
 - Password hashing với bcrypt (10 rounds)
 - JWT với secret key
-- Refresh token rotation (revoke old token)
 - Redis-based session management
 - Permission-based authorization
 - RBAC Hybrid Model
+
+### 🛑 Cơ chế bảo mật nâng cao (Advanced Security)
+
+#### 1. Device Fingerprinting (Chống trộm Token)
+
+Mỗi khi đăng nhập, hệ thống tạo một "vân tay" (fingerprint) duy nhất dựa trên:
+
+- **IP Address**: Địa chỉ mạng của người dùng.
+- **User-Agent**: Trình duyệt và hệ điều hành.
+
+Fingerprint này được hash (SHA256) và lưu vào Redis cùng với Refresh Token.
+Khi refresh token, hệ thống kiểm tra fingerprint hiện tại có khớp với fingerprint đã lưu không.
+-> **Nếu không khớp:** Token bị thu hồi ngay lập tức (Cảnh báo: Token theft detected).
+
+#### 2. Refresh Token Rotation
+
+- Mỗi lần sử dụng Refresh Token để lấy Access Token mới, Refresh Token cũ sẽ bị hủy (revoked).
+- Một Refresh Token mới được cấp phát.
+- Nếu hacker lấy được Refresh Token cũ, họ cũng không thể sử dụng được.
 
 ### Code Example
 
@@ -498,6 +519,10 @@ products/
 - Một Product có nhiều SKUs
 
 **Product Options:**
+
+> [!NOTE]
+> **Database Schema Update (25/12/2025):**
+> Tất cả các trường tiền tệ (Price, Amount) trong Database đã được cập nhật độ chính xác lên `Decimal(20, 2)` để hỗ trợ mệnh giá lớn (VND) và tránh lỗi `Numeric Field Overflow`.
 
 ```typescript
 // Ví dụ: iPhone có 2 options
@@ -795,9 +820,32 @@ await emailService.sendEmail({
 
 ### PrismaService
 
-- Singleton database connection
-- Query builder
-- Transaction support
+- **Singleton**: Chỉ khởi tạo một kết nối database duy nhất trong suốt vòng đời ứng dụng.
+- **Soft Delete**: (Cần implement) Sử dụng Middleware của Prisma để chặn lệnh `delete` và chuyển thành `update({ deletedAt: new Date() })`.
+- **Decimal Precision**:
+  - Mặc định Prisma/Postgres dùng `Decimal(65, 30)`.
+  - Dự án cấu hình `Decimal(20, 2)` cho tiền tệ.
+  - **Lý do**: Hỗ trợ tiền Việt Nam (VND) lên tới hàng trăm tỷ mà không bị lỗi `Numeric Field Overflow` (lỗi 22003) như `Decimal(10,2)` cũ.
+
+### 🐛 Troubleshooting & Common Errors
+
+#### 1. Lỗi `EADDRINUSE: address already in use`
+
+- **Nguyên nhân**: Port 8080 đã bị chiếm dụng bởi một instance API khác đang chạy ngầm.
+- **Khắc phục**:
+  - Tìm process ID (PID): `netstat -ano | findstr :8080`
+  - Kill process: `taskkill /PID <PID> /F`
+
+#### 2. Lỗi `Numeric Field Overflow` (Prisma code: P2020/22003)
+
+- **Nguyên nhân**: Cố gắng lưu số tiền lớn (VD: 100.000.000) vào cột có độ chính xác thấp (Decimal(10,2)).
+- **Khắc phục**: Chạy migration để update column lên `Decimal(20, 2)`.
+
+#### 3. Lỗi `Async method has no 'await'` (Lint)
+
+- **Nguyên nhân**: Quên từ khóa `await` khi gọi hàm trả về Promise (thường gặp trong loops hoặc subscribers).
+- **Hậu quả**: Code chạy không tuần tự, không bắt được lỗi (try/catch vô dụng).
+- **Khắc phục**: Luôn thêm `await` hoặc `return` cho Promise.
 - Migration management
 
 ### Best Practices

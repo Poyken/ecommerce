@@ -1,8 +1,9 @@
 import { PrismaClient } from '@prisma/client';
+import { randomUUID } from 'crypto';
 
 /**
  * =====================================================================
- * PRODUCT SEED - Tạo dữ liệu sản phẩm nội thất cao cấp
+ * PRODUCT SEED - Optimized for Speed
  * =====================================================================
  *
  * File này tạo ra nhiều sản phẩm nội thất luxury với:
@@ -669,169 +670,190 @@ async function main() {
 
     for (const template of templates) {
       const brand = getRandomElement(brands);
-      const productSlug = slugify(
-        `${template.name}-${brand.name}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-      );
+      // Create duplicate products to reach 1000 products total
+      // 10 categories * 5 templates * 20 duplicates = 1000 products
+      for (let pInit = 0; pInit < 20; pInit++) {
+        const productSlug = slugify(
+          `${template.name}-${brand.name}-${pInit}-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+        );
 
-      // Create product
-      const product = await prisma.product.create({
-        data: {
-          name: template.name,
-          slug: productSlug,
-          description: `${template.desc}\n\nCrafted with precision by ${brand.name}, this ${category.name.toLowerCase()} piece embodies the essence of luxury living. Features premium materials and exceptional attention to detail.`,
-          categoryId: category.id,
-          brandId: brand.id,
-          metaTitle: `${template.name} | ${brand.name} | Luxury Furniture`,
-          metaDescription: template.desc,
-          metaKeywords: `${category.name}, ${brand.name}, luxury furniture, premium, ${template.name}`,
-        },
-      });
-
-      productCount++;
-
-      // Add product images
-      for (let i = 0; i < Math.min(3, images.length); i++) {
-        await prisma.productImage.create({
+        // Create product
+        const product = await prisma.product.create({
           data: {
-            productId: product.id,
-            url: images[i % images.length],
-            alt: `${template.name} - Image ${i + 1}`,
-            displayOrder: i,
+            name: `${template.name} ${pInit + 1}`,
+            slug: productSlug,
+            description: `${template.desc}\n\nCrafted with precision by ${brand.name}, this ${category.name.toLowerCase()} piece embodies the essence of luxury living. Features premium materials and exceptional attention to detail.`,
+            categoryId: category.id,
+            brandId: brand.id,
+            metaTitle: `${template.name} | ${brand.name} | Luxury Furniture`,
+            metaDescription: template.desc,
+            metaKeywords: `${category.name}, ${brand.name}, luxury furniture, premium, ${template.name}`,
           },
         });
-      }
 
-      // Create options
-      const colorOption = await prisma.productOption.create({
-        data: {
-          productId: product.id,
-          name: 'Color',
-          displayOrder: 1,
-        },
-      });
+        productCount++;
 
-      const sizeOption = await prisma.productOption.create({
-        data: {
-          productId: product.id,
-          name: 'Size',
-          displayOrder: 2,
-        },
-      });
-
-      // Create color option values
-      const selectedColors = COLORS.slice(0, 3 + Math.floor(Math.random() * 3));
-      const colorValues: { id: string; value: string }[] = [];
-      for (const color of selectedColors) {
-        const optionValue = await prisma.optionValue.create({
-          data: {
-            optionId: colorOption.id,
-            value: color,
-          },
-        });
-        colorValues.push(optionValue);
-      }
-
-      // Create size option values
-      const sizeValues: { id: string; value: string }[] = [];
-      for (const size of sizes) {
-        const optionValue = await prisma.optionValue.create({
-          data: {
-            optionId: sizeOption.id,
-            value: size,
-          },
-        });
-        sizeValues.push(optionValue);
-      }
-
-      // Create SKUs for each combination
-      let minPrice = Infinity;
-      let maxPrice = 0;
-
-      for (const colorVal of colorValues) {
-        for (const sizeVal of sizeValues) {
-          // Price varies by size
-          const sizeMultiplier =
-            sizes.indexOf(sizeVal.value) === 0
-              ? 0.9
-              : sizes.indexOf(sizeVal.value) === sizes.length - 1
-                ? 1.2
-                : 1;
-          const price = getRandomPrice(
-            template.basePrice * 1000 * sizeMultiplier,
-            0.1,
-          );
-          const salePrice =
-            Math.random() > 0.7 ? Math.round(price * 0.85 * 100) / 100 : null;
-          const stock = Math.floor(Math.random() * 20) + 5;
-
-          const skuCode = `${slugify(template.name).toUpperCase().slice(0, 6)}-${colorVal.value.slice(0, 3).toUpperCase()}-${sizeVal.value.slice(0, 3).toUpperCase()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
-
-          const sku = await prisma.sku.create({
+        // Add product images
+        for (let i = 0; i < Math.min(3, images.length); i++) {
+          await prisma.productImage.create({
             data: {
-              skuCode,
               productId: product.id,
-              price,
-              salePrice,
-              stock,
-              status: stock > 0 ? 'ACTIVE' : 'INACTIVE',
-              imageUrl: getRandomElement(images),
-              metadata: {
-                color: colorVal.value,
-                size: sizeVal.value,
-                material: getRandomElement(MATERIALS),
-              },
+              url: images[i % images.length],
+              alt: `${template.name} - Image ${i + 1}`,
+              displayOrder: i,
             },
           });
-
-          // Link SKU to option values
-          await prisma.skuToOptionValue.createMany({
-            data: [
-              { skuId: sku.id, optionValueId: colorVal.id },
-              { skuId: sku.id, optionValueId: sizeVal.id },
-            ],
-          });
-
-          // Add SKU images
-          await prisma.skuImage.create({
-            data: {
-              skuId: sku.id,
-              url: getRandomElement(images),
-              alt: `${template.name} - ${colorVal.value} - ${sizeVal.value}`,
-              displayOrder: 0,
-            },
-          });
-
-          // Track min/max price
-          const effectivePrice = salePrice || price;
-          if (effectivePrice < minPrice) minPrice = effectivePrice;
-          if (effectivePrice > maxPrice) maxPrice = effectivePrice;
-
-          skuCount++;
         }
-      }
 
-      // Update product min/max price
-      await prisma.product.update({
-        where: { id: product.id },
-        data: {
-          minPrice,
-          maxPrice,
-        },
-      });
+        // Create options: Color, Size, Material
+        const colorOption = await prisma.productOption.create({
+          data: { productId: product.id, name: 'Color', displayOrder: 1 },
+        });
 
-      // Add Vietnamese translation
-      await prisma.productTranslation.create({
-        data: {
-          productId: product.id,
-          locale: 'vi',
-          name: `${template.name} (VI)`,
-          description: `Mô tả tiếng Việt: ${template.desc}`,
-        },
-      });
+        const sizeOption = await prisma.productOption.create({
+          data: { productId: product.id, name: 'Size', displayOrder: 2 },
+        });
 
-      console.log(
-        `  ✅ ${template.name} - ${colorValues.length * sizeValues.length} SKUs`,
-      );
+        const materialOption = await prisma.productOption.create({
+          data: { productId: product.id, name: 'Material', displayOrder: 3 },
+        });
+
+        // Create Option Values
+        // Target: ~100 SKUs per product for 1000 products => 100k SKUs
+        // Combo: 4 Colors * 5 Sizes * 5 Materials = 100 SKUs
+
+        const expandedColors = [
+          ...COLORS,
+          'Gold',
+          'Silver',
+          'Bronze',
+          'Platinum',
+          'Rose Gold',
+          'Matte Black',
+        ];
+        // Ensure we have enough colors
+        // while (expandedColors.length < 10)
+        //   expandedColors.push(`Custom Color ${expandedColors.length}`);
+
+        const expandedSizes = [...(SIZES[categorySlug] || SIZES.accessories)];
+        // while (expandedSizes.length < 10)
+        //   expandedSizes.push(`Size Config ${expandedSizes.length}`);
+        const expandedMaterials = [
+          ...MATERIALS,
+          'Silk',
+          'Cotton',
+          'Teak',
+          'Mahogany',
+        ];
+        // while (expandedMaterials.length < 10)
+        //   expandedMaterials.push(`Material ${expandedMaterials.length}`);
+
+        // Create Values in DB - Slice to strict numbers
+        const colorValuesObj: { id: string; value: string }[] = [];
+        for (const val of expandedColors.slice(0, 4)) {
+          colorValuesObj.push(
+            await prisma.optionValue.create({
+              data: { optionId: colorOption.id, value: val },
+            }),
+          );
+        }
+
+        const sizeValuesObj: { id: string; value: string }[] = [];
+        for (const val of expandedSizes.slice(0, 5)) {
+          sizeValuesObj.push(
+            await prisma.optionValue.create({
+              data: { optionId: sizeOption.id, value: val },
+            }),
+          );
+        }
+
+        const materialValuesObj: { id: string; value: string }[] = [];
+        for (const val of expandedMaterials.slice(0, 5)) {
+          materialValuesObj.push(
+            await prisma.optionValue.create({
+              data: { optionId: materialOption.id, value: val },
+            }),
+          );
+        }
+
+        // Create SKUs - BATCH OPTIMIZED
+        const skuData: any[] = [];
+        const relationsData: any[] = [];
+        let minPrice = Infinity;
+        let maxPrice = 0;
+
+        for (const colorVal of colorValuesObj) {
+          for (const sizeVal of sizeValuesObj) {
+            for (const matVal of materialValuesObj) {
+              const price = getRandomPrice(
+                template.basePrice * 1000 * 1000,
+                0.1,
+              );
+              const salePrice =
+                Math.random() > 0.8 ? Math.round(price * 0.9) : null;
+              const stock = Math.floor(Math.random() * 50) + 1;
+
+              // Generate ID locally
+              const skuId = randomUUID();
+
+              const skuCode = `SKU-${skuCount + 1}-${Date.now().toString().slice(-4)}-${Math.random().toString(36).substr(2, 3).toUpperCase()}`;
+
+              // Accumulate SKU Data
+              skuData.push({
+                id: skuId, // Explicit ID
+                skuCode,
+                productId: product.id,
+                price,
+                salePrice,
+                stock,
+                status: 'ACTIVE',
+                imageUrl: getRandomElement(images),
+              });
+
+              // Accumulate Relations Data
+              relationsData.push(
+                { skuId, optionValueId: colorVal.id },
+                { skuId, optionValueId: sizeVal.id },
+                { skuId, optionValueId: matVal.id },
+              );
+
+              skuCount++;
+
+              // Track min/max
+              const effectivePrice = salePrice || price;
+              if (effectivePrice < minPrice) minPrice = effectivePrice;
+              if (effectivePrice > maxPrice) maxPrice = effectivePrice;
+            }
+          }
+        }
+
+        // Execute Batch Insert for this Product (approx 100 items)
+        // Insert SKUs first
+        if (skuData.length > 0) {
+          await prisma.sku.createMany({
+            data: skuData,
+            skipDuplicates: true, // Safety
+          });
+
+          // Insert Relations
+          await prisma.skuToOptionValue.createMany({
+            data: relationsData,
+            skipDuplicates: true,
+          });
+
+          if (skuCount % 5000 === 0)
+            console.log(`  ...Generated ${skuCount} SKUs (Verified Batch)`);
+        }
+
+        // Update product min/max price
+        await prisma.product.update({
+          where: { id: product.id },
+          data: {
+            minPrice: minPrice === Infinity ? 0 : minPrice,
+            maxPrice: maxPrice === 0 && minPrice === Infinity ? 0 : maxPrice,
+          },
+        });
+      } // End duplicate loop
     }
   }
 

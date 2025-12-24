@@ -4,9 +4,9 @@ import { productService } from "@/services/product.service";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Luxe | Premium Fashion Store",
+  title: "Luxe | Premium Furniture Store",
   description:
-    "Discover the latest trends in luxury fashion. Shop premium clothing, accessories, and more.",
+    "Discover the latest trends in luxury home decor. Shop premium furniture, accessories, and more.",
 };
 
 /**
@@ -32,11 +32,9 @@ export const metadata: Metadata = {
  * =====================================================================
  */
 export default async function Home() {
-  "use cache";
-  // Revalidate every hour (3600 seconds)
-  // Note: In Next.js 16 with cacheComponents, we use revalidateTag or just let it be static
-  // but we can also use unstable_cache for time-based.
-  // For now, "use cache" makes it static.
+  // Use standard ISR or static rendering
+  // Note: For now, we rely on the revalidate constant if specified,
+  // or just default dynamic behavior.
 
   let productsPromise;
   let categoriesPromise;

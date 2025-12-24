@@ -19,9 +19,9 @@
 
 import { Button } from "@/components/atoms/button";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/atoms/popover";
 import { ScrollArea } from "@/components/atoms/scroll-area";
 import { useNotifications } from "@/contexts/notification-context";
@@ -46,7 +46,7 @@ export function NotificationBell() {
   };
 
   return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
+    <Popover open={open} onOpenChange={handleOpenChange} modal={false}>
       <PopoverTrigger asChild>
         <button className="transition-all hover:text-primary text-foreground/70 relative w-10 h-10 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-white/5 rounded-full group">
           <Bell

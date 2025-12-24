@@ -60,7 +60,7 @@ export function MobileBottomNav({ initialUser, initialCartCount }: MobileBottomN
   return (
     <>
       {/* Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-[102] md:hidden bg-background/98 backdrop-blur-2xl border-t border-foreground/5 safe-area-pb shadow-2xl">
+      <nav data-fixed-element className="fixed bottom-0 left-0 right-0 z-[102] md:hidden bg-background/98 backdrop-blur-2xl border-t border-foreground/5 safe-area-pb shadow-2xl">
         <div className="flex items-center justify-around h-16 px-2">
           {navItems.map((item) => {
             const isActive =
@@ -127,6 +127,7 @@ export function MobileBottomNav({ initialUser, initialCartCount }: MobileBottomN
           <>
             {/* Backdrop */}
             <motion.div
+              data-fixed-element
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -136,6 +137,7 @@ export function MobileBottomNav({ initialUser, initialCartCount }: MobileBottomN
 
             {/* Menu Sheet */}
             <motion.div
+              data-fixed-element
               variants={slideInFromBottom}
               initial="hidden"
               animate="visible"

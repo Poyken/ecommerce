@@ -34,6 +34,8 @@ export function FeatureFlagProvider({
         // The http helper might return a mock response structure on error
         if (Array.isArray(response)) {
           setEnabledFlags(response);
+        } else if (response && typeof response === "object" && "data" in response && Array.isArray((response as any).data)) {
+          setEnabledFlags((response as any).data);
         } else {
           console.warn("Feature flags response is not an array:", response);
           setEnabledFlags([]);

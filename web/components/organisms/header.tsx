@@ -62,7 +62,10 @@ function HeaderContentSkeleton() {
 
 export function HeaderFallback() {
   return (
-    <header className="border-b bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60 w-full z-50 sticky top-0 transition-all duration-300">
+    <header 
+      data-fixed-element
+      className="border-b bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60 w-full z-50 sticky top-0 transition-[background-color,border-color,transform,box-shadow,backdrop-filter] duration-300"
+    >
       <div className="container flex h-20 items-center justify-between max-w-7xl mx-auto px-4 md:px-8">
         <Logo />
         <HeaderContentSkeleton />

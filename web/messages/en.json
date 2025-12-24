@@ -61,6 +61,8 @@
     "allCategories": "All Categories",
     "brands": "Brands",
     "allBrands": "All Brands",
+    "showMore": "Show More",
+    "showLess": "Show Less",
     "resetAllFilters": "Reset All Filters",
     "backToHome": "Back to Home",
     "backToCategories": "Back to Categories",
@@ -222,6 +224,7 @@
     "addedToCart": "Added to cart",
     "addedToCartDesc": "{name} has been added to your cart",
     "outOfStock": "Out of Stock",
+    "lowStock": "Low Stock",
     "error": "Error",
     "errorMissingInfo": "Cannot add to cart - missing product info",
     "errorGeneric": "Failed to add to cart, please try again",
@@ -230,7 +233,8 @@
     "reviews": "Verified Reviews",
     "adding": "Adding...",
     "authenticityVerified": "Authenticity Verified",
-    "freeGlobalShipping": "Free Global Shipping"
+    "freeGlobalShipping": "Free Global Shipping",
+    "quickView": "Quick View"
   },
   "reorder": {
     "button": "Buy Again",
@@ -285,8 +289,8 @@
     }
   },
   "home": {
-    "heroTitle": "Premium Fashion Store",
-    "heroSubtitle": "Discover the latest trends in luxury fashion.",
+    "heroTitle": "Premium Furniture Store",
+    "heroSubtitle": "Discover the latest trends in luxury interior design.",
     "featuredCollections": "Featured Collections",
     "featuredCategories": "Featured Categories",
     "featuredBrands": "Featured Brands",
@@ -378,10 +382,10 @@
       ]
     },
     "allProducts": "All Products",
-    "womensCollection": "Women's Collection",
-    "mensEssentials": "Men's Essentials",
-    "exploreTrends": "Explore the latest trends",
-    "timelessClassics": "Timeless classics for every occasion",
+    "womensCollection": "Living Room",
+    "mensEssentials": "Dining Space",
+    "exploreTrends": "Elevate your daily living",
+    "timelessClassics": "Masterpieces of modern craft",
     "shopNow": "Shop Now",
     "discover": "Discover",
     "happyCustomers": "Happy Customers",
@@ -393,15 +397,15 @@
   "hero": {
     "newCollection": "New Collection 2025",
     "redefining": "Redefining",
-    "luxuryStyle": "Luxury Style",
-    "description": "Experience the epitome of elegance with our curated selection of premium essentials. Designed for those who appreciate the finer details.",
+    "luxuryStyle": "Luxury Living",
+    "description": "Experience the epitome of elegance with our curated selection of bespoke furniture. Designed for those who appreciate the finer details.",
     "shopCollection": "Shop Collection",
     "ourStory": "Our Story",
-    "freeShipping": "Free Shipping",
+    "freeShipping": "White Glove Delivery",
     "securePayments": "Secure Payments",
-    "premiumQuality": "Premium Quality",
-    "featuredLook": "Featured Look",
-    "silkEveningDress": "Silk Evening Dress"
+    "premiumQuality": "Premium Craftsmanship",
+    "featuredLook": "Featured Piece",
+    "silkEveningDress": "Velvet Emerald Sofa"
   },
   "nav": {
     "home": "Home",
@@ -429,7 +433,7 @@
     "collections": "Collections",
     "helpCenter": "Help Center",
     "shippingReturns": "Shipping & Returns",
-    "sizeGuide": "Size Guide",
+    "careGuide": "Care Guide",
     "trackOrder": "Track Order",
     "faq": "FAQ",
     "aboutUs": "About Us",
@@ -481,7 +485,7 @@
     "priceAsc": "Price: Low to High",
     "priceDesc": "Price: High to Low",
     "oldest": "Oldest",
-    "showing": "Showing",
+    "showing": "Showing {from}-{to} of {total} products",
     "results": "results",
     "of": "of",
     "clearAll": "Clear all",

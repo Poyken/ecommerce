@@ -163,6 +163,7 @@ export function LoginPageContent() {
                 targetUrl === "/" ? "" : targetUrl
               }`;
             }
+            router.refresh();
             window.location.href = targetUrl;
           }
         };

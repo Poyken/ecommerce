@@ -21,12 +21,12 @@
 "use client";
 
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi,
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+    type CarouselApi,
 } from "@/components/atoms/carousel";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { cn } from "@/lib/utils";
@@ -50,6 +50,7 @@ interface ProductImageGalleryProps {
   onImageClick?: (image: string) => void;
   skus?: any[];
   options?: any[];
+  onLightboxChange?: (isOpen: boolean) => void;
 }
 
 // ... (imports)
@@ -61,6 +62,7 @@ export function ProductImageGallery({
   onImageClick,
   skus,
   options,
+  onLightboxChange,
 }: ProductImageGalleryProps) {
   // ... (existing logic)
   const [api, setApi] = useState<CarouselApi>();
@@ -88,7 +90,10 @@ export function ProductImageGallery({
         className="relative aspect-4/5 lg:aspect-auto lg:h-[70vh] w-full rounded-3xl overflow-hidden shadow-2xl border border-white/5 bg-neutral-900/50 group backdrop-blur-sm cursor-zoom-in"
         onMouseEnter={() => setIsZoomed(true)}
         onMouseLeave={() => setIsZoomed(false)}
-        onClick={() => setIsLightboxOpen(true)}
+        onClick={() => {
+          setIsLightboxOpen(true);
+          onLightboxChange?.(true);
+        }}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
@@ -205,7 +210,10 @@ export function ProductImageGallery({
 
       <ProductImageLightbox
         isOpen={isLightboxOpen}
-        onClose={() => setIsLightboxOpen(false)}
+        onClose={() => {
+          setIsLightboxOpen(false);
+          onLightboxChange?.(false);
+        }}
         images={images}
         activeImage={activeImage || images[0]}
         onImageChange={(img) => onImageClick?.(img)}

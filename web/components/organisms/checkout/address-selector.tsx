@@ -96,11 +96,6 @@ export const AddressSelector = memo(function AddressSelector({
                 />
               </Label>
               <div className="flex flex-col items-end gap-2">
-                {addr.isDefault && (
-                  <span className="text-[10px] bg-primary/10 text-primary px-3 py-1 rounded-full font-black uppercase tracking-widest">
-                    {t("default") || "Default"}
-                  </span>
-                )}
                 <GlassButton
                   size="sm"
                   variant="outline"

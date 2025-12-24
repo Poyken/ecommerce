@@ -1,9 +1,8 @@
-import { Badge } from "@/components/atoms/badge";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
 } from "@/components/atoms/card";
 import { Separator } from "@/components/atoms/separator";
 import { StatusBadge } from "@/components/atoms/status-badge";
@@ -74,6 +73,7 @@ interface Order {
   orderDate: string;
   items: OrderItem[];
   paymentMethod?: string;
+  paymentStatus?: string;
 }
 
 import { Metadata } from "next";
@@ -283,25 +283,14 @@ async function DynamicOrderDetail({ id }: { id: string }) {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-600">{t("statusLabel")}</span>
-                    <Badge
-                      variant={
-                        order.status === "COMPLETED" ||
-                        order.status === "DELIVERED"
-                          ? "default"
-                          : "outline"
+                    <StatusBadge
+                      status={order.paymentStatus || "UNPAID"}
+                      label={
+                        order.paymentStatus
+                          ? t(`status.${order.paymentStatus}`)
+                          : t("status.UNPAID")
                       }
-                      className={
-                        order.status === "COMPLETED" ||
-                        order.status === "DELIVERED"
-                          ? "bg-green-100 text-green-700 hover:bg-green-200 border-transparent"
-                          : "bg-yellow-50 text-yellow-700 hover:bg-yellow-100 border-yellow-200"
-                      }
-                    >
-                      {order.status === "COMPLETED" ||
-                      order.status === "DELIVERED"
-                        ? t("paid")
-                        : t("pending")}
-                    </Badge>
+                    />
                   </div>
                 </div>
               </div>

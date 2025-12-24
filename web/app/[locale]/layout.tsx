@@ -70,6 +70,7 @@ async function RootProviders({
 }) {
   const messages = await getMessages({ locale });
   const accessToken = await getSession();
+  console.log(`[RootLayout] accessToken present: ${!!accessToken}, locale: ${locale}`);
   const initialPermissions = getPermissionsFromToken(accessToken);
 
   return (

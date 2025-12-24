@@ -3,10 +3,10 @@
 import { GlassButton } from "@/components/atoms/glass-button";
 import { cn } from "@/lib/utils";
 import { Brand, Category } from "@/types/models";
-import { Filter, Loader2, Tag } from "lucide-react";
+import { ChevronDown, ChevronUp, Filter, Loader2, Tag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { memo, useCallback } from "react";
+import { memo, useCallback, useState } from "react";
 
 /**
  * =====================================================================
@@ -42,6 +42,8 @@ export const FilterSidebar = memo(function FilterSidebar({
 }: FilterSidebarProps) {
   const t = useTranslations("common");
   const searchParams = useSearchParams();
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  const [showAllBrands, setShowAllBrands] = useState(false);
 
   const handleFilter = useCallback(
     (type: "categoryId" | "brandId", value: string | null) => {
@@ -90,7 +92,8 @@ export const FilterSidebar = memo(function FilterSidebar({
           >
             {t("allCategories")}
           </button>
-          {categories.map((cat) => (
+          
+          {(showAllCategories ? categories : categories.slice(0, 6)).map((cat) => (
             <button
               key={cat.id}
               onClick={() => handleFilter("categoryId", cat.id)}
@@ -105,6 +108,23 @@ export const FilterSidebar = memo(function FilterSidebar({
               {cat.name}
             </button>
           ))}
+          
+          {categories.length > 6 && (
+            <button
+              onClick={() => setShowAllCategories(!showAllCategories)}
+              className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-primary transition-colors px-4 py-1"
+            >
+              {showAllCategories ? (
+                <>
+                  {t("showLess")} <ChevronUp size={14} />
+                </>
+              ) : (
+                <>
+                  {t("showMore")} <ChevronDown size={14} />
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
 
@@ -127,7 +147,8 @@ export const FilterSidebar = memo(function FilterSidebar({
           >
             {t("allBrands")}
           </button>
-          {brands.map((brand) => (
+          
+          {(showAllBrands ? brands : brands.slice(0, 6)).map((brand) => (
             <button
               key={brand.id}
               onClick={() => handleFilter("brandId", brand.id)}
@@ -142,6 +163,23 @@ export const FilterSidebar = memo(function FilterSidebar({
               {brand.name}
             </button>
           ))}
+          
+          {brands.length > 6 && (
+             <button
+              onClick={() => setShowAllBrands(!showAllBrands)}
+              className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 transition-colors px-4 py-1"
+            >
+              {showAllBrands ? (
+                <>
+                  {t("showLess")} <ChevronUp size={14} />
+                </>
+              ) : (
+                <>
+                  {t("showMore")} <ChevronDown size={14} />
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
 

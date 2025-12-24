@@ -137,6 +137,10 @@ export class CartService {
       });
       if (!sku) throw new NotFoundException('Sản phẩm (SKU) không tồn tại');
 
+      console.log(
+        `[AddToCart] Checking SKU ${sku.skuCode}: stock=${sku.stock}, reqQty=${dto.quantity}`,
+      );
+
       // Kiểm tra tồn kho
       if (sku.stock < dto.quantity) {
         throw new BadRequestException(
@@ -218,6 +222,9 @@ export class CartService {
     }
 
     // Check tồn kho cho số lượng MỚI
+    console.log(
+      `[UpdateItem] Checking SKU ${item.sku.skuCode}: stock=${item.sku.stock}, newQty=${dto.quantity}`,
+    );
     if (item.sku.stock < dto.quantity) {
       throw new BadRequestException({
         message: `Không đủ hàng trong kho. Còn lại: ${item.sku.stock}`,

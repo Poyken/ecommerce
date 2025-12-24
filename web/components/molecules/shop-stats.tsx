@@ -29,14 +29,18 @@ export function ShopStats({ productsPromise }: ShopStatsProps) {
 
   return (
     <p className="text-sm text-muted-foreground">
-      {t("showing")}{" "}
-      <span className="font-semibold text-foreground">{items.length}</span>{" "}
-      {t("results")}
-      {meta && (
-        <span>
-          {" "}
-          {t("of")} {meta.total}
-        </span>
+      {meta ? (
+        t("showing", {
+          from: (meta.page - 1) * meta.limit + 1,
+          to: Math.min(meta.page * meta.limit, meta.total),
+          total: meta.total,
+        })
+      ) : (
+        <>
+          {t("showing")}{" "}
+          <span className="font-semibold text-foreground">{items.length}</span>{" "}
+          {t("results")}
+        </>
       )}
     </p>
   );

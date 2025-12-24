@@ -3,7 +3,7 @@
 ## Dành cho Thực tập sinh và Lập trình viên mới
 
 **Phiên bản:** 2.0  
-**Cập nhật lần cuối:** 18/12/2025  
+**Cập nhật lần cuối:** 25/12/2025  
 **Trạng thái:** ✅ SẴN SÀNG TRIỂN KHAI
 
 ---
@@ -72,6 +72,29 @@ Hỗ trợ ngôn ngữ:         Tiếng Việt, Tiếng Anh
 | **Shadcn/UI**     | Component library (dựa trên Radix UI) |
 | **Framer Motion** | Animation library                     |
 | **Lucide React**  | Icon library                          |
+
+### ⚜️ Luxury Design System (Luxe UI 2.0)
+
+Hệ thống thiết kế tập trung vào sự tối giản, sang trọng và không gian trắng (white space).
+
+#### 1. Color Palette (Bảng màu)
+
+- **Primary**: `Gold` (Vàng kim) - Dùng cho nút chính, điểm nhấn.
+- **Background**: `Zinc-50` (Trắng ngà) - Tạo cảm giác ấm áp hơn trắng tinh.
+- **Success**: `Emerald` (Xanh ngọc) - Thông báo thành công, trạng thái tích cực.
+- **Error**: `Rose` (Đỏ hồng) - Thông báo lỗi.
+- **Warning**: `Amber` (Vàng hổ phách) - Cảnh báo.
+- **Info**: `Blue` / `Slate` - Thông tin chung.
+
+#### 2. Typography (Kiểu chữ)
+
+- **Headings**: Font Serif (có chân) - Tạo vẻ cổ điển, sang trọng (VD: `Playfair Display`).
+- **Body**: Font Sans-serif (không chân) - Hiện đại, dễ đọc (VD: `Inter` hoặc `Geist`).
+
+#### 3. Principles
+
+- **Glassmorphism**: Hiệu ứng kính mờ cho các card, overlay.
+- **Micro-interactions**: Animation nhẹ nhàng khi hover, focus.
 
 ## 2.3. Dữ liệu và Trạng thái (Data & State)
 
@@ -478,18 +501,26 @@ useEffect(() => {
 }, [debouncedSearch]);
 ```
 
-## 8.4. useToast Hook
+## 8.4. useToast Hook (`components/ui/use-toast.ts`)
+
+Dùng để hiển thị thông báo (Notification) ở góc màn hình. Đã được style lại theo **Luxe UI**:
 
 ```tsx
 const { toast } = useToast();
 
-// Hiển thị toast
 toast({
-  title: "Thành công!",
-  description: "Đã thêm vào giỏ hàng",
-  variant: "default", // hoặc "destructive"
+  title: "Đơn hàng đã được tạo!",
+  description: "Chúng tôi sẽ liên hệ sớm.",
+  variant: "success", // Emerald background
 });
+// Các variants: default, destructive (Rose), success (Emerald), warning (Amber), info (Blue)
 ```
+
+## 8.5. Virtualization (`useVirtualizer`)
+
+Sử dụng trong các bảng dữ liệu lớn (VD: Admin Products) để chỉ render những item đang hiển thị trên màn hình -> **Performance tối ưu**.
+
+**Lưu ý quan trọng**: Khi dùng với Table (`<table>`), phải sử dụng kỹ thuật "Padding Row" để tránh lỗi Hydration. Xem `products-client.tsx` để biết mẫu implement chuẩn.
 
 ---
 
@@ -796,6 +827,42 @@ export function ProductCard() {
 ```bash
 # Xem network requests
 Mở DevTools → Network tab → Lọc "Fetch/XHR"
+
+### "Invalid order data" hoặc "Numeric Field Overflow"
+
+- **Nguyên nhân**: Giá trị tiền tệ quá lớn (VD: 1 tỷ VND) vượt quá giới hạn `Decimal(10,2)` của Database.
+- **Khắc phục**:
+  - Database schema đã được update lên `Decimal(20, 2)` (Ngày 25/12).
+  - Kiểm tra `schema.prisma`.
+  - Nếu vẫn bị, kiểm tra validation Zod (`min`, `max`) có quá chặt không.
+
+### "Hydration Error" trong Admin Table (Virtualization)
+
+- **Triệu chứng**: Console báo lỗi `Text content does not match server-rendered HTML` hoặc `<div> cannot appear as a child of <tbody>`.
+- **Nguyên nhân**: Thư viện virtualization thường dùng `div` để bọc content, nhưng `table` > `tbody` chỉ chấp nhận `tr`.
+- **Khắc phục**:
+  - KHÔNG render `div` trực tiếp trong `tbody`.
+  - Sử dụng 2 dòng `tr` đệm (padding rows) ở đầu và cuối list để giả lập chiều cao scroll.
+  - Xem file `admin/products/products-client.tsx` làm mẫu.
+
+### "Async method has no 'await'" (Lint Error)
+
+- **Nguyên nhân**: Quên `await` khi gọi hàm async, đặc biệt là trong vòng lặp hoặc subscribe callback.
+- **Hậu quả**: Code chạy sai thứ tự, biến chưa có giá trị đã bị sử dụng.
+- **Khắc phục**: Thêm `await` hoặc `void` nếu thực sự muốn chạy background (fire-and-forget).
+
+### "Invalid order data" hoặc "Numeric Field Overflow"
+
+- **Nguyên nhân**: Giá trị tiền tệ quá lớn (VD: VND) vượt quá giới hạn Decimal(10,2) mặc định hoặc validation quá chặt (số điện thoại, địa chỉ).
+- **Khắc phục**:
+  - Database schema đã được update lên `Decimal(20, 2)`.
+  - Validation rules đã được nới lỏng (Phone min 3, Address min 5).
+  - Kiểm tra lại data input từ form.
+
+### "Hydration Error" trong Admin Table
+
+- **Nguyên nhân**: Cấu trúc HTML không hợp lệ (VD: `div` nằm trong `tbody` khi dùng virtualization).
+- **Khắc phục**: Chuyển sang dùng `padding-row` với thẻ `tr` và `td` chuẩn thay vì div wrapper.
 
 # Xem component tree
 Cài đặt React DevTools extension

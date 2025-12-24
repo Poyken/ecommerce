@@ -59,6 +59,7 @@ export function MobileStickyCart({
 
   return (
     <motion.div
+      data-fixed-element
       initial={{ y: 100 }}
       animate={{ y: isVisible ? 0 : 100 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}

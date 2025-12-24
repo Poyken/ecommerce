@@ -93,6 +93,12 @@ export async function placeOrderAction(data: PlaceOrderData) {
   const result = await safePlaceOrder(data);
 
   if (result?.serverError || result?.validationErrors) {
+    if (result.validationErrors) {
+      console.error(
+        "Validation Errors:",
+        JSON.stringify(result.validationErrors, null, 2)
+      );
+    }
     return { error: result.serverError || "Invalid order data" };
   }
 

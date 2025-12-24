@@ -39,11 +39,17 @@ const statusMap: Record<string, StatusVariant> = {
   // Order Statuses
   PENDING: "warning",
   PROCESSING: "info",
-  SHIPPED: "purple",
+  SHIPPED: "purple", // Delivery related -> Violet/Purple
   DELIVERED: "success",
   COMPLETED: "success",
   CANCELLED: "error",
-  REFUNDED: "secondary",
+  RETURNED: "secondary",
+
+  // Payment Statuses
+  UNPAID: "secondary",
+  PAID: "success",
+  FAILED: "error",
+  REFUNDED: "info", // Refund -> Blue/Info
 
   // Stock/Product Statuses
   ACTIVE: "success",
@@ -60,15 +66,15 @@ const variantStyles: Record<StatusVariant, string> = {
   default:
     "bg-foreground/5 text-foreground/60 dark:bg-foreground/10 dark:text-foreground/80 border-foreground/10",
   success:
-    "bg-success/10 text-success border-success/30 shadow-sm shadow-success/10",
+    "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 shadow-sm shadow-emerald-500/5",
   warning:
-    "bg-warning/10 text-warning border-warning/30 shadow-sm shadow-warning/10",
+    "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 shadow-sm shadow-amber-500/5",
   error:
-    "bg-destructive/10 text-destructive border-destructive/30 shadow-sm shadow-destructive/10",
-  info: "bg-info/10 text-info border-info/30 shadow-sm shadow-info/10",
-  secondary: "bg-muted text-muted-foreground border-border",
+    "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20 shadow-sm shadow-rose-500/5",
+  info: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20 shadow-sm shadow-blue-500/5",
+  secondary: "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
   purple:
-    "bg-accent/10 text-accent border-accent/30 shadow-sm shadow-accent/10",
+    "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20 shadow-sm shadow-violet-500/5",
 };
 
 export function StatusBadge({

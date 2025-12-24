@@ -26,7 +26,7 @@ import { useCallback, useState } from "react";
  */
 
 interface ProgressiveImageProps
-  extends Omit<ImageProps, "onLoad" | "onLoadingComplete"> {
+  extends Omit<ImageProps, "onLoad"> {
   skeletonClassName?: string;
   wrapperClassName?: string;
 }

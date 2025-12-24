@@ -1,4 +1,4 @@
-import { ProductCard } from "@/components/organisms/product-card";
+import { ProductGridView } from "@/components/organisms/product-grid-view";
 import { Link } from "@/i18n/routing";
 import { productService } from "@/services/product.service";
 import { getTranslations } from "next-intl/server";
@@ -43,19 +43,34 @@ export async function generateMetadata({
 
 export default async function BrandProductsPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const { id } = await params;
-  const [products, t] = await Promise.all([
+  const resolvedSearchParams = await searchParams;
+  const page = Number(resolvedSearchParams.page) || 1;
+  const limit = 12;
+
+  const [productsResponse, t] = await Promise.all([
     productService.getProducts({
       brandId: id,
-      limit: 100,
+      limit,
+      page,
     }),
     getTranslations("common"),
   ]);
 
-  const brandName = products?.data?.[0]?.brand?.name || "Brand";
+  const productsData = productsResponse?.data || [];
+  const productsMeta = productsResponse?.meta || {
+      total: productsData.length,
+      page: 1,
+      limit,
+      lastPage: 1,
+  };
+
+  const brandName = productsData?.[0]?.brand?.name || "Brand";
 
   return (
     <div className="min-h-screen bg-background pt-24 pb-16">
@@ -78,42 +93,15 @@ export default async function BrandProductsPage({
               </h1>
             </div>
             <p className="text-muted-foreground text-lg">
-              {t("productsFound", { count: products.data.length })}
+              {t("productsFound", { count: productsMeta.total })}
             </p>
           </div>
           <div className="w-24 h-1 bg-accent/40 rounded-full mt-4" />
         </div>
 
         {/* Products Grid */}
-        {products.data.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-            {products.data.map((product) => {
-              const imageUrl =
-                (typeof product.images?.[0] === "string"
-                  ? product.images?.[0]
-                  : product.images?.[0]?.url) ||
-                product.skus?.[0]?.imageUrl ||
-                "";
-
-              return (
-                <ProductCard
-                  key={product.id}
-                  id={product.id}
-                  name={product.name}
-                  price={Number(product.skus?.[0]?.price || 0)}
-                  originalPrice={
-                    product.skus?.[0]?.originalPrice
-                      ? Number(product.skus?.[0]?.originalPrice)
-                      : undefined
-                  }
-                  imageUrl={imageUrl}
-                  category={product.category?.name}
-                  skus={product.skus}
-                  options={product.options}
-                />
-              );
-            })}
-          </div>
+        {productsData.length > 0 ? (
+          <ProductGridView products={productsData} pagination={productsMeta} />
         ) : (
           <div className="text-center py-24 px-4 bg-muted/30 rounded-3xl border border-border/50">
             <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">

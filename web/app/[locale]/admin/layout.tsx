@@ -1,7 +1,7 @@
 import { getBrandsAction, getCategoriesAction } from "@/actions/admin";
 import {
-  getNotificationsAction,
-  getUnreadCountAction,
+    getNotificationsAction,
+    getUnreadCountAction,
 } from "@/actions/notifications";
 import { getProfileAction } from "@/actions/profile";
 import { LoadingScreen } from "@/components/atoms/loading-screen";
@@ -53,7 +53,19 @@ async function DynamicAdminContent({
       getCategoriesAction().catch(() => ({ data: [] })),
     ]);
   const user = profile.data;
+  const token = cookieStore.get("accessToken")?.value;
+  const permissions = getPermissionsFromToken(token);
+
+  console.log("[AdminLayout] Data check:", {
+    hasUser: !!user,
+    hasToken: !!token,
+    roles: user?.roles?.map((r: any) => r.role?.name),
+    permissionsCount: permissions.length,
+    profileError: (profile as any).error,
+  });
+
   if (!user) {
+    console.warn("[AdminLayout] No user found, redirecting to /login");
     redirect("/login");
   }
 
@@ -67,9 +79,6 @@ async function DynamicAdminContent({
       : [];
   const initialUnreadCount =
     unreadCountRes && "count" in unreadCountRes ? unreadCountRes.count || 0 : 0;
-
-  const token = cookieStore.get("accessToken")?.value;
-  const permissions = getPermissionsFromToken(token);
 
   return (
     <AuthProvider initialPermissions={permissions}>

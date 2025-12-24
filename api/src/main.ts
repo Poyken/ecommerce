@@ -22,10 +22,19 @@ import { LoggerService } from './common/logger.service';
 /**
  * Hàm Bootstrap - Khởi tạo và cấu hình ứng dụng
  */
+import { NestExpressApplication } from '@nestjs/platform-express';
+
+// ...
+
 async function bootstrap() {
   // Tạo instance ứng dụng NestJS
   // bufferLogs: true => Chỉ ghi log sau khi logger custom đã khởi tạo xong
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
+
+  // Enable trust proxy for X-Forwarded-For headers
+  app.set('trust proxy', 1); // Trust the first proxy (e.g. Next.js server / Nginx)
 
   // Khởi tạo LoggerService
   const logger = app.get(LoggerService);
@@ -109,6 +118,7 @@ async function bootstrap() {
       // Danh sách domain được phép (whitelist)
       const allowedOrigins = [
         process.env.FRONTEND_URL || 'http://localhost:3000', // Frontend URL
+        'http://localhost:3000', // Explicitly allow localhost:3000
         'http://localhost:8080', // Cho phép chính server gọi (Swagger UI)
       ];
 

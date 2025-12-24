@@ -68,17 +68,18 @@ export function ProductImageLightbox({
     setMounted(true);
   }, []);
 
-  // Lock Body Scroll
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, [isOpen]);
+  // Note: Scroll lock is handled by parent Quick View Dialog
+  // We don't lock scroll here to avoid conflicting with parent's padding compensation
+  // useEffect(() => {
+  //   if (isOpen) {
+  //     document.body.style.overflow = "hidden";
+  //   } else {
+  //     document.body.style.overflow = "unset";
+  //   }
+  //   return () => {
+  //     document.body.style.overflow = "unset";
+  //   };
+  // }, [isOpen]);
 
   // Sync Carousel with Active Image
   useEffect(() => {
@@ -149,20 +150,34 @@ export function ProductImageLightbox({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm pointer-events-auto"
+          onClick={(e) => {
+            // Only close if clicking directly on the overlay (not on content)
+            if (e.target === e.currentTarget) {
+              e.stopPropagation();
+              onClose();
+            }
+          }}
         >
           {/* Close Button */}
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-4 right-4 z-50 text-white/70 hover:text-white hover:bg-white/10 rounded-full h-12 w-12"
-            onClick={onClose}
+            className="absolute top-4 right-4 z-[10000] text-white/70 hover:text-white hover:bg-white/10 rounded-full h-12 w-12 pointer-events-auto"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClose();
+            }}
           >
             <X className="h-6 w-6" />
           </Button>
 
           {/* Carousel */}
-          <div className="w-full h-full flex items-center justify-center p-4 md:p-10">
+          <div 
+            className="w-full h-full flex items-center justify-center p-4 md:p-10"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Carousel
               setApi={setApi}
               className="w-full h-full max-w-7xl mx-auto [&_[data-slot=carousel-content]]:h-full"
@@ -178,66 +193,79 @@ export function ProductImageLightbox({
                     key={index}
                     className="relative w-full h-full flex items-center justify-center"
                   >
-                    <div className="w-full h-full flex items-center justify-center">
-                      <TransformWrapper
-                        ref={(ref) => {
-                          if (index === images.indexOf(activeImage)) {
-                            zoomRef.current = ref;
-                          }
-                        }}
-                        initialScale={1}
-                        minScale={1}
-                        maxScale={8}
-                        wheel={{ step: 0.2 }}
-                        doubleClick={{ disabled: true }}
-                        onTransformed={onTransformed}
-                      >
-                        {({ zoomIn, zoomOut, resetTransform, ...rest }) => {
-                          // Manual double-click detection
-                          const handleClick = (e: React.MouseEvent) => {
-                            const now = Date.now();
-                            if (now - lastClickTime.current < 300) {
-                              // Double click detected
-                              const scale = rest.instance.transformState.scale;
-
-                              if (scale < 1.5) {
-                                zoomIn(1, 300);
-                              } else if (scale < 3.5) {
-                                zoomIn(2, 300);
-                              } else {
-                                resetTransform(300);
-                              }
+                    <div 
+                      className="w-full h-full flex items-center justify-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                        <TransformWrapper
+                          ref={(ref) => {
+                            if (index === images.indexOf(activeImage)) {
+                              zoomRef.current = ref;
                             }
-                            lastClickTime.current = now;
-                          };
+                          }}
+                          initialScale={1}
+                          minScale={1}
+                          maxScale={8}
+                          wheel={{ step: 0.2 }}
+                          doubleClick={{ disabled: true }}
+                          onTransformed={onTransformed}
+                        >
+                          {({ zoomIn, zoomOut, resetTransform, ...rest }) => {
+                            const handleClick = (e: React.MouseEvent) => {
+                              e.stopPropagation();
+                              
+                              const now = Date.now();
+                              const DOUBLE_CLICK_TIME = 350;
+                              
+                              if (now - lastClickTime.current < DOUBLE_CLICK_TIME) {
+                                // Double click detected
+                                const scale = rest.instance.transformState.scale;
+                                if (scale >= 3.9) {
+                                  // If at 4x or higher, reset to 1x
+                                  resetTransform(300);
+                                } else if (scale >= 1.9) {
+                                  // If at 2x, zoom to 4x
+                                  zoomIn(2, 300);
+                                } else {
+                                  // If at 1x, zoom to 2x
+                                  zoomIn(2, 300);
+                                }
+                              }
+                              lastClickTime.current = now;
+                            };
 
-                          return (
-                            <TransformComponent
-                              wrapperStyle={{ width: "100%", height: "100%" }}
-                              contentStyle={{
-                                width: "100%",
-                                height: "100%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                              }}
-                            >
-                              <div
-                                className="relative w-full h-full flex items-center justify-center cursor-zoom-in"
-                                onClick={handleClick}
+                            const currentScale = rest.instance.transformState.scale;
+
+                            return (
+                              <TransformComponent
+                                wrapperStyle={{ width: "100%", height: "100%" }}
+                                contentStyle={{
+                                  width: "100%",
+                                  height: "100%",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                }}
                               >
-                                <Image
-                                  src={img}
-                                  alt={`Product image ${index + 1}`}
-                                  fill
-                                  className="object-contain"
-                                  priority={
-                                    index === images.indexOf(activeImage)
-                                  }
-                                  unoptimized
-                                  sizes="100vw"
-                                />
-                              </div>
+                                <div
+                                  className={cn(
+                                    "relative w-full h-full flex items-center justify-center",
+                                    currentScale > 1 ? "cursor-grab active:cursor-grabbing" : "cursor-zoom-in"
+                                  )}
+                                  onClick={handleClick}
+                                >
+                                  <Image
+                                    src={img}
+                                    alt={`Product image ${index + 1}`}
+                                    fill
+                                    className="object-contain"
+                                    priority={
+                                      index === images.indexOf(activeImage)
+                                    }
+                                    unoptimized
+                                    sizes="100vw"
+                                  />
+                                </div>
                             </TransformComponent>
                           );
                         }}

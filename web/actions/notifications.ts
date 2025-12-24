@@ -58,7 +58,11 @@ export async function getNotificationsAction(limit = 10) {
     if (message.includes("401") || message.includes("Unauthorized")) {
       return { data: [] };
     }
-    console.error("getNotificationsAction error:", error);
+    console.error("getNotificationsAction error details:", {
+      message: (error as Error).message,
+      stack: (error as Error).stack,
+      error,
+    });
     return { data: [], error: message };
   }
 }

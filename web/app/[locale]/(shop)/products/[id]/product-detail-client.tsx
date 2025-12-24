@@ -108,6 +108,7 @@ export function ProductDetailClient({
   const [currentSkuId, setCurrentSkuId] = useState<string | undefined>(
     initialSkuId || undefined
   );
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   const updateUrlCheck = useCallback(
     (skuId: string) => {
@@ -191,7 +192,10 @@ export function ProductDetailClient({
   const isOutOfStock = currentSku ? currentSku.stock <= 0 : false;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+    <div className={cn(
+      "grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start",
+      isLightboxOpen && "pointer-events-none"
+    )}>
       {/* Immersive Image Gallery (Sticky) */}
       <div className="lg:col-span-7">
         <ProductImageGallery
@@ -201,6 +205,7 @@ export function ProductDetailClient({
           onImageClick={handleImageClick}
           skus={product.skus || []}
           options={product.options || []}
+          onLightboxChange={setIsLightboxOpen}
         />
       </div>
 

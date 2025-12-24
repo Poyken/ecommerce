@@ -20,14 +20,15 @@
 
 "use client";
 
-import { Button } from "@/components/atoms/button";
+import { DataTablePagination } from "@/components/atoms/data-table-pagination";
 import { GlassButton } from "@/components/atoms/glass-button";
 import { ProductCard } from "@/components/organisms/product-card";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 import { ApiResponse } from "@/types/dtos";
 import { Product } from "@/types/models";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { use, useEffect, useState, useTransition } from "react";
@@ -51,6 +52,9 @@ export function ShopGrid({
 
   const { data: products, meta: pagination } = use(productsPromise);
   const suggestedProducts = use(suggestedProductsPromise);
+  const [columns, setColumns] = useState<3 | 4 | 5 | 6>(4);
+  const [now] = useState(() => Date.now());
+  const NEW_PRODUCT_THRESHOLD = 14 * 24 * 60 * 60 * 1000;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -108,13 +112,62 @@ export function ShopGrid({
     }
   }, [pagination, pathname, router, createQueryString]);
 
-  const [now] = useState(() => Date.now());
-  const NEW_PRODUCT_THRESHOLD = 14 * 24 * 60 * 60 * 1000;
+  // Map column count to grid classes
+  const gridClasses = {
+    3: "lg:grid-cols-3",
+    4: "lg:grid-cols-4",
+    5: "lg:grid-cols-5",
+    6: "lg:grid-cols-6",
+  };
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6">
+       {/* View Options & Stats */}
+       <div className="flex flex-col sm:flex-row justify-between items-center bg-background/50 backdrop-blur-sm p-4 rounded-xl border border-border/50 gap-4">
+        <div className="flex items-center gap-2 order-2 sm:order-1">
+          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground mr-2 hidden sm:inline-block">
+            View
+          </span>
+          <div className="flex bg-muted/50 p-1 rounded-lg">
+             {[3, 4, 5, 6].map((col) => (
+                <button
+                  key={col}
+                  onClick={() => setColumns(col as 3 | 4 | 5 | 6)}
+                  className={cn(
+                    "p-2 rounded-md transition-all duration-200 hover:bg-background/80 hover:text-foreground hover:shadow-sm",
+                    columns === col
+                      ? "bg-background text-primary shadow-sm ring-1 ring-black/5 dark:ring-white/10"
+                      : "text-muted-foreground"
+                  )}
+                  title={`${col} Columns`}
+                >
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: Math.min(col, 3) }).map((_, i) => (
+                      <div key={i} className="w-1 h-3 bg-current rounded-full" />
+                    ))}
+                    {col > 3 && <div className="w-0.5 h-3 bg-current rounded-full" />}
+                  </div>
+                </button>
+             ))}
+          </div>
+        </div>
+        
+        {/* Helper text / Showing X of Y */}
+        <div className="text-sm text-muted-foreground font-medium order-1 sm:order-2">
+            {products.length > 0 && pagination && t("showing", {
+                from: (pagination.page - 1) * (pagination.limit || 12) + 1,
+                to: Math.min(pagination.page * (pagination.limit || 12), pagination.total),
+                total: pagination.total
+            })}
+        </div>
+      </div>
+
       <motion.div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+        className={cn(
+            "grid grid-cols-2 gap-4 md:gap-6 lg:gap-8",
+             // Mobile always 2, md always 3 or 4? No, let's respect lg choice
+             gridClasses[columns] // Applies on lg screens
+        )}
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
@@ -214,33 +267,14 @@ export function ShopGrid({
         )}
       </motion.div>
 
+
       {/* Pagination Controls */}
       {pagination && pagination.lastPage > 1 && (
-        <div className="flex items-center justify-center gap-6 pt-6 border-t border-foreground/5">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePageChange(pagination.page - 1)}
-            disabled={pagination.page <= 1 || isPending}
-            className="gap-2 pl-3 font-bold"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            {t("previous")}
-          </Button>
-          <div className="text-sm font-black tracking-tight">
-            {t("page")} {pagination.page} {t("of")} {pagination.lastPage}
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePageChange(pagination.page + 1)}
-            disabled={pagination.page >= pagination.lastPage || isPending}
-            className="gap-2 pr-3 font-bold"
-          >
-            {t("next")}
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
+        <DataTablePagination
+          page={pagination.page}
+          total={pagination.total}
+          limit={pagination.limit || 12}
+        />
       )}
     </div>
   );

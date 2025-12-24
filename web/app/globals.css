@@ -450,8 +450,7 @@
     );
     backdrop-filter: blur(24px) saturate(1.2);
     border: 1px solid oklch(0.88 0.045 85 / 0.3);
-    box-shadow: 
-      0 8px 32px oklch(0.82 0.055 85 / 0.1),
+    box-shadow: 0 8px 32px oklch(0.82 0.055 85 / 0.1),
       inset 0 1px 0 oklch(1 0 0 / 0.1);
   }
 
@@ -462,9 +461,7 @@
       oklch(0.12 0.008 75 / 0.4) 100%
     );
     border: 1px solid oklch(0.75 0.08 85 / 0.2);
-    box-shadow: 
-      0 8px 32px oklch(0 0 0 / 0.3),
-      inset 0 1px 0 oklch(1 0 0 / 0.05);
+    box-shadow: 0 8px 32px oklch(0 0 0 / 0.3), inset 0 1px 0 oklch(1 0 0 / 0.05);
   }
 
   /* Editorial Text Gradient - Champagne Shimmer */
@@ -494,8 +491,7 @@
 
   .bento-cell:hover {
     border-color: oklch(0.82 0.055 85 / 0.5);
-    box-shadow: 
-      0 24px 48px -12px oklch(0.82 0.055 85 / 0.15),
+    box-shadow: 0 24px 48px -12px oklch(0.82 0.055 85 / 0.15),
       inset 0 1px 0 oklch(1 0 0 / 0.1);
     transform: translateY(-4px);
   }
@@ -581,7 +577,8 @@
 
   /* Floating Cart Animation */
   @keyframes cart-bounce {
-    0%, 100% {
+    0%,
+    100% {
       transform: translateY(0);
     }
     50% {
@@ -608,6 +605,14 @@
       oklch(0.75 0.08 85 / 0.1) 0%,
       transparent 60%
     );
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }
 
@@ -649,10 +654,40 @@
     @apply border-border outline-ring/50;
   }
   html {
-    /* scroll-behavior: smooth; - Handled by SmoothScroll component to avoid page transition issues */
-    scrollbar-gutter: stable;
+    /* 
+     * ABSOLUTE LAYOUT STABILITY 
+     * Force the scrollbar gutter to be stable so the viewport width NEVER changes.
+     * This is the only way to prevent fixed elements (Header, Cart) from shifting.
+     */
+    scrollbar-gutter: stable !important;
+    background-color: var(--background);
   }
+
   body {
     @apply bg-background text-foreground tracking-tight leading-relaxed;
+  }
+
+  /* 
+   * JITTER-FREE SCROLL LOCK
+   * When using scrollbar-gutter: stable, we MUST prevent Radix UI from 
+   * adding its own padding-right. Adding padding on top of a gutter 
+   * causes a "double shift" jump.
+   */
+  html[data-scroll-locked],
+  body[data-scroll-locked],
+  [data-scroll-locked],
+  [data-fixed-element] {
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Target Webkit scrollbars when locked - make them invisible but keep the space */
+  html:has([data-scroll-locked])::-webkit-scrollbar-thumb,
+  body[data-scroll-locked]::-webkit-scrollbar-thumb {
+    background-color: transparent !important;
+  }
+
+  [data-fixed-element] {
+    transition: none !important;
   }
 }

@@ -11,8 +11,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AdminNotificationsPage() {
-  const usersResult = await getUsersAction(1, 100); // Get first 100 users for selection
+  const usersResult = await getUsersAction(1, 100).catch((err) => {
+    console.error("[AdminNotificationsPage] Failed to fetch users:", err);
+    return { data: [] };
+  });
   const users = "data" in usersResult ? usersResult.data : [];
 
-  return <NotificationsAdminClient users={users || []} />;
+  return <NotificationsAdminClient users={(users as any) || []} />;
 }

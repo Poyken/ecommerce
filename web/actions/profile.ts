@@ -48,7 +48,11 @@ export const getProfileAction = cache(async () => {
   } catch (error: unknown) {
     const message = (error as Error).message || "Failed to fetch profile";
     // Only log if it's not a 401 (which is expected for guest users)
-    if (!message.includes("401") && !message.includes("Unauthorized")) {
+    if (
+      !message.includes("401") &&
+      !message.includes("Unauthorized") &&
+      !message.includes("Internal Server Error")
+    ) {
       console.error("[getProfileAction] Failed to fetch profile:", message);
     }
     return { data: null, error: message };

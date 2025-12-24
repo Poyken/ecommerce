@@ -26,6 +26,7 @@ import { MotionButton } from "@/components/atoms/motion-button";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { CompactRating } from "@/components/molecules/review-preview";
 import { WishlistButton } from "@/components/molecules/wishlist-button";
+import { ProductQuickViewDialog } from "@/components/organisms/product-quick-view-dialog";
 import { useCart } from "@/hooks/use-cart";
 import { useFeatureFlags } from "@/hooks/use-feature-flags";
 import { useStock } from "@/hooks/use-stock";
@@ -34,19 +35,10 @@ import { Link } from "@/i18n/routing";
 import { cn, formatCurrency } from "@/lib/utils";
 import { ProductOption, Sku } from "@/types/models";
 import { AnimatePresence, motion } from "framer-motion";
-import { Eye, ShoppingBag } from "lucide-react";
+import { Eye } from "lucide-react";
 import { useTranslations } from "next-intl";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import { memo, useEffect, useState } from "react";
-
-const SkuSelectionDialog = dynamic(
-  () =>
-    import("@/components/molecules/sku-selection-dialog").then(
-      (mod) => mod.SkuSelectionDialog
-    ),
-  { ssr: false }
-);
 
 interface ProductCardProps {
   id: string;
@@ -89,7 +81,7 @@ export const ProductCard = memo(function ProductCard({
   const tToast = useTranslations("common.toast");
   const [isImageReady, setIsImageReady] = useState(false);
   const { toast } = useToast();
-  const [isSkuDialogOpen, setIsSkuDialogOpen] = useState(false);
+  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
   // Use custom hook for cart operations
   const { addToCart, isAdding } = useCart(name);
@@ -114,44 +106,10 @@ export const ProductCard = memo(function ProductCard({
     }
   }, [imageUrl]);
 
-  // ... (rest of the logic)
-
   const discountPercentage =
     originalPrice && originalPrice > price
       ? Math.round(((originalPrice - price) / originalPrice) * 100)
       : 0;
-
-  const handleAddToCart = async (e: React.MouseEvent) => {
-    // ... (handler logic)
-    e.preventDefault();
-    if (isAdding) return;
-
-    const defaultSku = skus?.[0];
-
-    // If multiple SKUs or default is out of stock, show dialog
-    if ((skus && skus.length > 1) || (defaultSku && defaultSku.stock <= 0)) {
-      setIsSkuDialogOpen(true);
-      return;
-    }
-
-    if (!defaultSku?.id) {
-      toast({
-        title: tToast("error"),
-        description: t("errorMissingInfo"),
-        variant: "destructive",
-      });
-      return;
-    }
-
-    await addToCart(defaultSku.id, 1);
-  };
-
-  const handleConfirmSku = async (skuId: string) => {
-    const success = await addToCart(skuId, 1);
-    if (success) {
-      setIsSkuDialogOpen(false);
-    }
-  };
 
   return (
     <div
@@ -164,7 +122,7 @@ export const ProductCard = memo(function ProductCard({
       )}
     >
       {/* Image Container */}
-      <div className="relative aspect-3/4 overflow-hidden bg-neutral-50 dark:bg-neutral-900">
+      <div className="relative aspect-[4/5] overflow-hidden bg-neutral-50 dark:bg-neutral-900">
         <Link href={`/products/${id}`} className="relative block w-full h-full">
           <AnimatePresence mode="wait">
             {!isImageReady && (
@@ -184,12 +142,12 @@ export const ProductCard = memo(function ProductCard({
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover transition-transform duration-1000 ease-[0.16,1,0.3,1] group-hover:scale-110"
-            onLoadingComplete={() => setIsImageReady(true)}
+            onLoad={() => setIsImageReady(true)}
           />
         </Link>
 
         {/* Overlays */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
         {/* Badges - Glassmorphism style */}
         <div
@@ -240,28 +198,20 @@ export const ProductCard = memo(function ProductCard({
           />
         </div>
 
-        {/* Quick Actions */}
+        {/* Quick View Action */}
         {!isCompact && (
-          <div className="absolute bottom-6 left-6 right-6 flex gap-3 translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-[0.16,1,0.3,1] z-20">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 z-20 translate-y-4 group-hover:translate-y-0">
             <MotionButton
               animation="scale"
-              className="flex-2 bg-white text-foreground hover:bg-accent hover:text-accent-foreground h-12 rounded-full font-bold text-xs tracking-wider uppercase shadow-2xl border-none hover:shadow-accent/30 hover:shadow-2xl transition-all duration-300"
-              onClick={handleAddToCart}
-              disabled={isAdding}
-              loading={isAdding}
+              className="pointer-events-auto min-w-[140px] bg-white text-foreground hover:bg-accent hover:text-accent-foreground h-12 rounded-full font-bold text-xs tracking-wider uppercase shadow-2xl border-none hover:shadow-accent/30 hover:shadow-2xl transition-all duration-300 px-6 backdrop-blur-md"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsQuickViewOpen(true);
+              }}
             >
-              {!isAdding && <ShoppingBag size={16} className="mr-2" />}
-              {isAdding ? "..." : t("addToCart")}
+              <Eye size={16} className="mr-2 shrink-0" />
+              <span>{t("quickView") || "Quick View"}</span>
             </MotionButton>
-            <Link href={`/products/${id}`} className="flex-1">
-              <motion.div
-                whileHover={{ scale: 1.1, rotate: 2 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full h-12 flex items-center justify-center bg-white/90 dark:bg-black/60 backdrop-blur-xl border border-white/20 dark:border-white/10 text-foreground rounded-full transition-all duration-300 hover:bg-accent hover:text-accent-foreground hover:border-accent/50 hover:shadow-xl hover:shadow-accent/20 cursor-pointer"
-              >
-                <Eye size={18} />
-              </motion.div>
-            </Link>
           </div>
         )}
 
@@ -270,10 +220,12 @@ export const ProductCard = memo(function ProductCard({
             <Button
               size="sm"
               className="w-full bg-white/95 backdrop-blur-xl text-foreground border-none hover:bg-accent hover:text-accent-foreground rounded-full text-[10px] font-black h-9 shadow-xl hover:shadow-accent/20 transition-all duration-300"
-              onClick={handleAddToCart}
-              disabled={isAdding}
+              onClick={(e) => {
+                e.preventDefault();
+                setIsQuickViewOpen(true);
+              }}
             >
-              {isAdding ? "..." : t("addToCart")}
+              {t("quickView") || "Quick View"}
             </Button>
           </div>
         )}
@@ -335,20 +287,17 @@ export const ProductCard = memo(function ProductCard({
         </div>
       </div>
 
-      {skus && skus.length > 0 && (
-        <SkuSelectionDialog
-          isOpen={isSkuDialogOpen}
-          onOpenChange={setIsSkuDialogOpen}
-          productName={name}
-          skus={skus}
-          options={options}
-          onConfirm={handleConfirmSku}
-          isAdding={isAdding}
-          category={category}
-          rating={rating}
-          reviewCount={reviewCount}
-        />
-      )}
+      <ProductQuickViewDialog
+        isOpen={isQuickViewOpen}
+        onOpenChange={setIsQuickViewOpen}
+        productId={id}
+        initialData={{
+          name,
+          price,
+          imageUrl,
+          category,
+        }}
+      />
     </div>
   );
 });

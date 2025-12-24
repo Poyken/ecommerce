@@ -49,7 +49,11 @@ export async function createSession(accessToken: string, refreshToken: string) {
     path: "/", // Gửi với mọi request
     maxAge: 15 * 60, // 15 phút (seconds)
   });
-  console.log("[Session] accessToken cookie set");
+  console.log(
+    `[Session] accessToken set (Secure: ${
+      process.env.NODE_ENV === "production"
+    })`
+  );
 
   // Refresh Token - Dùng để lấy accessToken mới khi hết hạn
   // Thời hạn dài hơn (7 ngày) để user không phải login lại

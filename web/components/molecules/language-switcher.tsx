@@ -36,6 +36,9 @@ export function LanguageSwitcher() {
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
 
+  // Note: Dropdown doesn't lock scroll or hide scrollbar, 
+  // so no padding compensation needed here
+
   const handleLanguageChange = (newLocale: "en" | "vi") => {
     if (newLocale === locale) {
       setOpen(false);
@@ -51,7 +54,7 @@ export function LanguageSwitcher() {
   };
 
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu open={open} onOpenChange={setOpen} modal={false}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"

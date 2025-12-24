@@ -5,12 +5,12 @@ import { Button } from "@/components/atoms/button";
 import { GlassCard } from "@/components/atoms/glass-card";
 import { Input } from "@/components/atoms/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/atoms/table";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useRouter } from "@/i18n/routing";
@@ -135,7 +135,8 @@ export function ProductsClient({
     setTranslateDialogOpen(true);
   };
 
-  // Virtualization for large lists
+
+  // Virtualization
   const parentRef = useRef<HTMLDivElement>(null);
   const rowVirtualizer = useVirtualizer({
     count: products.length,
@@ -143,6 +144,14 @@ export function ProductsClient({
     estimateSize: () => 73,
     overscan: 5,
   });
+
+  const virtualItems = rowVirtualizer.getVirtualItems();
+  const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
+  const paddingBottom =
+    virtualItems.length > 0
+      ? rowVirtualizer.getTotalSize() -
+        virtualItems[virtualItems.length - 1].end
+      : 0;
 
   return (
     <div className="space-y-6">
@@ -173,132 +182,135 @@ export function ProductsClient({
         />
       </div>
 
-      <GlassCard className="p-6">
-        <div className="mb-6">
+      <GlassCard className="p-0 overflow-hidden">
+        <div className="p-6 pb-0 mb-4">
           <h2 className="text-xl font-bold text-foreground">
             {t("all", { item: t("products.title") })}
           </h2>
         </div>
-        <Table>
-          <TableHeader>
-            <TableRow className="border-white/10 hover:bg-white/5">
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("name")}
-              </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("category")}
-              </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("brand")}
-              </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("created")}
-              </TableHead>
-              {(canTranslate || canUpdate || canDelete) && (
-                <TableHead className="text-right text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                  {t("actions")}
+        
+        <div 
+          ref={parentRef} 
+          className="h-[600px] overflow-auto relative"
+        >
+          <Table>
+            <TableHeader className="sticky top-0 bg-background/95 backdrop-blur-sm z-10 shadow-sm">
+              <TableRow className="border-white/10 hover:bg-transparent">
+                <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
+                  {t("name")}
                 </TableHead>
-              )}
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {products && products.length > 0 ? (
-              <div
-                ref={parentRef}
-                style={{
-                  height: `${Math.min(products.length * 73, 600)}px`,
-                  overflow: "auto",
-                }}
-              >
-                <div
-                  style={{
-                    height: `${rowVirtualizer.getTotalSize()}px`,
-                    width: "100%",
-                    position: "relative",
-                  }}
-                >
-                  {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
+                  {t("category")}
+                </TableHead>
+                <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
+                  {t("brand")}
+                </TableHead>
+                <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
+                  {t("created")}
+                </TableHead>
+                {(canTranslate || canUpdate || canDelete) && (
+                  <TableHead className="text-right text-muted-foreground uppercase tracking-wider text-xs font-bold">
+                    {t("actions")}
+                  </TableHead>
+                )}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {products.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={canTranslate || canUpdate || canDelete ? 5 : 4}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    {t("noFound", { item: t("products.title").toLowerCase() })}
+                  </TableCell>
+                </TableRow>
+              ) : (
+                <>
+                  {paddingTop > 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={canTranslate || canUpdate || canDelete ? 5 : 4}
+                        style={{ height: `${paddingTop}px`, padding: 0 }}
+                        className="border-0 p-0"
+                      />
+                    </TableRow>
+                  )}
+                  {virtualItems.map((virtualRow) => {
                     const product = products[virtualRow.index];
                     return (
-                      <div
+                      <TableRow
                         key={product.id}
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          width: "100%",
-                          height: `${virtualRow.size}px`,
-                          transform: `translateY(${virtualRow.start}px)`,
-                        }}
+                        className="border-white/10 hover:bg-white/5 transition-colors"
+                        ref={rowVirtualizer.measureElement}
+                        data-index={virtualRow.index}
                       >
-                        <TableRow className="border-white/10 hover:bg-white/5 transition-colors">
-                          <TableCell className="font-medium text-foreground">
-                            {product.name}
+                        <TableCell className="font-medium text-foreground">
+                          {product.name}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {product.category?.name || "N/A"}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {product.brand?.name || "N/A"}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {new Date(product.createdAt).toLocaleDateString()}
+                        </TableCell>
+                        {(canTranslate || canUpdate || canDelete) && (
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              {canTranslate && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => openTranslate(product)}
+                                  className="text-amber-400 hover:text-amber-300 hover:bg-amber-400/10"
+                                  title={t("products.translate")}
+                                >
+                                  <Languages className="h-4 w-4" />
+                                </Button>
+                              )}
+                              {canUpdate && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => openEdit(product)}
+                                  className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10"
+                                >
+                                  {t("edit")}
+                                </Button>
+                              )}
+                              {canDelete && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => openDelete(product)}
+                                  className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
+                                >
+                                  {t("delete")}
+                                </Button>
+                              )}
+                            </div>
                           </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            {product.category?.name || "N/A"}
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            {product.brand?.name || "N/A"}
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">
-                            {new Date(product.createdAt).toLocaleDateString()}
-                          </TableCell>
-                          {(canTranslate || canUpdate || canDelete) && (
-                            <TableCell className="text-right">
-                              <div className="flex justify-end gap-2">
-                                {canTranslate && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => openTranslate(product)}
-                                    className="text-amber-400 hover:text-amber-300 hover:bg-amber-400/10"
-                                    title={t("products.translate")}
-                                  >
-                                    <Languages className="h-4 w-4" />
-                                  </Button>
-                                )}
-                                {canUpdate && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => openEdit(product)}
-                                    className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10"
-                                  >
-                                    {t("edit")}
-                                  </Button>
-                                )}
-                                {canDelete && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => openDelete(product)}
-                                    className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
-                                  >
-                                    {t("delete")}
-                                  </Button>
-                                )}
-                              </div>
-                            </TableCell>
-                          )}
-                        </TableRow>
-                      </div>
+                        )}
+                      </TableRow>
                     );
                   })}
-                </div>
-              </div>
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={canTranslate || canUpdate || canDelete ? 5 : 4}
-                  className="text-center py-8 text-muted-foreground"
-                >
-                  {t("noFound", { item: t("products.title").toLowerCase() })}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                  {paddingBottom > 0 && (
+                    <TableRow>
+                      <TableCell
+                        colSpan={canTranslate || canUpdate || canDelete ? 5 : 4}
+                        style={{ height: `${paddingBottom}px`, padding: 0 }}
+                        className="border-0 p-0"
+                      />
+                    </TableRow>
+                  )}
+                </>
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
         {/* Pagination */}
         {totalPages > 1 && (

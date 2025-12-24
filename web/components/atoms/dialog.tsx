@@ -151,15 +151,31 @@ function DialogDescription({
   );
 }
 
+function VisuallyHidden({
+  children,
+  ...props
+}: React.ComponentProps<"span">) {
+  return (
+    <span
+      {...props}
+      className="sr-only"
+    >
+      {children}
+    </span>
+  );
+}
+
 export {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger,
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogOverlay,
+    DialogPortal,
+    DialogTitle,
+    DialogTrigger,
+    VisuallyHidden
 };
+

@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import * as crypto from 'crypto';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { RedisService } from '../redis/redis.service';
 
@@ -80,22 +81,24 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     // 1. Check for Revoked Token (Blacklist) via JTI
     const isRevoked = await this.redisService.get(`jwt:revoked:${jti}`);
     if (isRevoked) {
-      throw new Error('Token revoked');
+      throw new UnauthorizedException('Token revoked');
     }
 
     // 2. Validate Device Fingerprint (Binding)
     if (fp) {
       const userAgent = req.headers['user-agent'] || '';
-      const ip = req.ip || '';
-      // Simple hash to compare with stored fp
-      const currentFp = Buffer.from(`${ip}${userAgent}`)
-        .toString('base64')
-        .substring(0, 32);
+      const ip =
+        req.ip || (req.connection && req.connection.remoteAddress) || '';
+      // Use SAME hash logic as AuthController
+      const currentFp = crypto
+        .createHash('sha256')
+        .update(ip + userAgent)
+        .digest('hex');
 
       if (fp !== currentFp) {
         // [P0] Critical security risk: Potential token theft/abuse
         await this.redisService.set(`jwt:revoked:${jti}`, 'true', 'EX', 3600);
-        throw new Error('Device fingerprint mismatch');
+        throw new UnauthorizedException('Device fingerprint mismatch');
       }
     }
 

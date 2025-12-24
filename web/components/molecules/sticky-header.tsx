@@ -59,8 +59,9 @@ export function StickyHeader({ children, className }: StickyHeaderProps) {
 
   return (
     <header
+      data-fixed-element
       className={cn(
-        "w-full z-50 transition-all duration-300 ease-in-out",
+        "w-full z-50 transition-[background-color,border-color,transform,box-shadow,backdrop-filter] duration-300 ease-in-out",
         // Base positioning
         isHome
           ? isScrolled

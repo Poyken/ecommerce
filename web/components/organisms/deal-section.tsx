@@ -115,7 +115,7 @@ export function DealSection({ targetDate }: DealSectionProps) {
           </div>
 
           {/* Image */}
-          <div className="w-full md:w-1/2 relative h-[60vh] md:h-[75vh] min-h-[500px] group overflow-hidden">
+          <div className="w-full md:w-1/2 relative min-h-[500px] md:min-h-[600px] group overflow-hidden">
             <div className="absolute inset-0 w-full h-full transition-transform duration-700 group-hover:scale-105">
               <div className="absolute inset-0 bg-linear-to-r from-secondary/30 to-transparent z-10 pointer-events-none" />
               <Image

@@ -176,7 +176,7 @@
   },
   "blog": {
     "title": "Tạp chí",
-    "subtitle": "Câu chuyện, hướng dẫn phong cách và tin tức từ thế giới thời trang.",
+    "subtitle": "Câu chuyện, hướng dẫn phong cách và tin tức từ thế giới nội thất.",
     "featuredProducts": "Sản phẩm nổi bật",
     "featuredProductsDesc": "Sản phẩm được làm nổi bật trong bài viết này",
     "newsletterDesc": "Nhận các bản cập nhật và câu chuyện mới nhất được gửi đến hộp thư đến của bạn.",
@@ -279,8 +279,8 @@
     }
   },
   "home": {
-    "heroTitle": "Cửa hàng thời trang cao cấp",
-    "heroSubtitle": "Khám phá những xu hướng thời trang sang trọng mới nhất.",
+    "heroTitle": "Cửa hàng nội thất cao cấp",
+    "heroSubtitle": "Khám phá những xu hướng nội thất sang trọng mới nhất.",
     "featuredCollections": "Bộ sưu tập nổi bật",
     "featuredCategories": "Danh mục nổi bật",
     "viewAllCategories": "Xem tất cả danh mục",
@@ -372,10 +372,10 @@
       ]
     },
     "allProducts": "Tất cả sản phẩm",
-    "womensCollection": "Bộ sưu tập nữ",
-    "mensEssentials": "Đồ nam cơ bản",
-    "exploreTrends": "Khám phá các xu hướng mới nhất",
-    "timelessClassics": "Vẻ đẹp vượt thời gian cho mọi dịp",
+    "womensCollection": "Phòng khách",
+    "mensEssentials": "Phòng ăn",
+    "exploreTrends": "Nâng tầm không gian sống",
+    "timelessClassics": "Kiệt tác nội thất hiện đại",
     "shopNow": "Mua ngay",
     "discover": "Khám phá",
     "happyCustomers": "Khách hàng hài lòng",
@@ -387,15 +387,15 @@
   "hero": {
     "newCollection": "Bộ sưu tập mới 2025",
     "redefining": "Tái định nghĩa",
-    "luxuryStyle": "Phong cách sang\u00A0trọng",
-    "description": "Trải nghiệm đỉnh cao của sự sang trọng với bộ sưu tập tinh tuyển của chúng tôi. Dành cho những ai trân trọng từng chi tiết nhỏ nhất.",
+    "luxuryStyle": "Không gian sống",
+    "description": "Trải nghiệm đỉnh cao của sự sang trọng với bộ sưu tập nội thất tinh tuyển của chúng tôi. Dành cho những ai trân trọng từng chi tiết nhỏ nhất.",
     "shopCollection": "Mua sắm ngay",
     "ourStory": "Câu chuyện của chúng tôi",
-    "freeShipping": "Miễn phí vận chuyển",
+    "freeShipping": "Giao hàng tận nơi",
     "securePayments": "Thanh toán bảo mật",
     "premiumQuality": "Chất lượng cao cấp",
-    "featuredLook": "Phong cách nổi bật",
-    "silkEveningDress": "Váy lụa dạ hội"
+    "featuredLook": "Tác phẩm tiêu biểu",
+    "silkEveningDress": "Sofa nhung lục bảo"
   },
   "nav": {
     "home": "Trang chủ",
@@ -423,7 +423,7 @@
     "collections": "Bộ sưu tập",
     "helpCenter": "Trung tâm trợ giúp",
     "shippingReturns": "Giao hàng & Trả hàng",
-    "sizeGuide": "Hướng dẫn chọn size",
+    "careGuide": "Hướng dẫn bảo quản",
     "trackOrder": "Theo dõi đơn hàng",
     "faq": "Câu hỏi thường gặp",
     "aboutUs": "Về chúng tôi",

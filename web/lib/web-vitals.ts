@@ -6,11 +6,20 @@
 // Extend Window interface for gtag
 declare global {
   interface Window {
-    gtag?: (...args: any[]) => void;
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
-export function reportWebVitals(metric: any) {
+interface Metric {
+  id: string;
+  name: string;
+  startTime: number;
+  value: number;
+  label: "web-vital" | "custom";
+  delta: number;
+}
+
+export function reportWebVitals(metric: Metric) {
   // Log to console in development
   if (process.env.NODE_ENV === "development") {
     console.log("[Web Vitals]", metric);

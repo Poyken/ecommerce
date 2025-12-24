@@ -297,6 +297,7 @@ export class ProductsService {
                           select: {
                             id: true,
                             value: true,
+                            optionId: true,
                             option: {
                               select: { id: true, name: true },
                             },
@@ -409,6 +410,7 @@ export class ProductsService {
                     id: true,
                     value: true,
                     imageUrl: true,
+                    optionId: true,
                     option: {
                       select: { id: true, name: true },
                     },

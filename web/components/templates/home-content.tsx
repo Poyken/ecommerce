@@ -69,9 +69,9 @@ export function HomeContent({
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-accent/30 relative overflow-hidden">
       {/* Subtle Background Elements */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-1/4 w-[60vw] h-[40vh] bg-accent/5 rounded-full blur-[200px]" />
-        <div className="absolute bottom-1/4 right-0 w-[40vw] h-[30vh] bg-secondary/30 rounded-full blur-[150px]" />
+      <div data-fixed-element className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-0 left-1/4 w-3/4 h-[40vh] bg-accent/5 rounded-full blur-[200px]" />
+        <div className="absolute bottom-1/4 right-0 w-1/2 h-[30vh] bg-secondary/30 rounded-full blur-[150px]" />
       </div>
 
       <HeroSection />
@@ -139,7 +139,7 @@ export function HomeContent({
               variants={fadeInLeft}
             >
               <Image
-                src="/images/home/promo-women.jpg"
+                src="/images/home/promo-living.jpg"
                 alt="Promo 1"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -157,7 +157,7 @@ export function HomeContent({
                   {t("exploreTrends")}
                 </p>
                 <Link
-                  href="/shop?categoryId=women"
+                  href="/shop?categoryId=living-room"
                   className="group/btn inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all duration-300 shadow-xl"
                 >
                   {t("shopNow")}
@@ -176,7 +176,7 @@ export function HomeContent({
               variants={fadeInRight}
             >
               <Image
-                src="/images/home/promo-men.jpg"
+                src="/images/home/promo-dining.jpg"
                 alt="Promo 2"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
@@ -194,7 +194,7 @@ export function HomeContent({
                   {t("timelessClassics")}
                 </p>
                 <Link
-                  href="/shop?categoryId=men"
+                  href="/shop?categoryId=dining-space"
                   className="group/btn inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all duration-300 shadow-xl"
                 >
                   {t("discover")}
