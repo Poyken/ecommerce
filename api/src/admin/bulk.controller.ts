@@ -32,9 +32,9 @@ export class BulkController {
 
   @Post('import/skus')
   @Permissions('sku:update')
-  @ApiOperation({ summary: 'Nhập dữ liệu SKU từ JSON' })
+  @ApiOperation({ summary: 'Nhập dữ liệu SKU từ JSON (có hỗ trợ dry-run)' })
   async importSkus(@Body() body: ImportSkusDto) {
-    return this.bulkService.importSkus(body.rows);
+    return this.bulkService.importSkus(body.rows, body.dryRun);
   }
 
   @Post('update')

@@ -177,34 +177,38 @@ export class AnalyticsService {
       take: limit,
     });
 
-    const productsWithDetails = await Promise.all(
-      topItems.map(async (item) => {
-        const sku = await this.prisma.sku.findUnique({
-          where: { id: item.skuId },
-          include: {
-            product: {
-              select: { name: true, slug: true },
-            },
-            optionValues: {
-              include: { optionValue: true },
-            },
-          },
-        });
+    const skuIds = topItems.map((item) => item.skuId);
+    const skus = await this.prisma.sku.findMany({
+      where: {
+        id: { in: skuIds },
+      },
+      include: {
+        product: {
+          select: { name: true, slug: true },
+        },
+        optionValues: {
+          include: { optionValue: true },
+        },
+      },
+    });
 
-        const variants = sku?.optionValues
-          .map((ov) => ov.optionValue.value)
-          .join(', ');
+    const skuMap = new Map(skus.map((s) => [s.id, s]));
 
-        return {
-          skuId: item.skuId,
-          skuCode: sku?.skuCode || 'Unknown',
-          productName: sku?.product?.name || 'Unknown',
-          variants,
-          quantity: item._sum.quantity || 0,
-          revenue: Number(sku?.price || 0) * (item._sum.quantity || 0),
-        };
-      }),
-    );
+    const productsWithDetails = topItems.map((item) => {
+      const sku = skuMap.get(item.skuId);
+      const variants = sku?.optionValues
+        .map((ov) => ov.optionValue.value)
+        .join(', ');
+
+      return {
+        skuId: item.skuId,
+        skuCode: sku?.skuCode || 'Unknown',
+        productName: sku?.product?.name || 'Unknown',
+        variants,
+        quantity: item._sum.quantity || 0,
+        revenue: Number(sku?.price || 0) * (item._sum.quantity || 0),
+      };
+    });
 
     return productsWithDetails;
   }

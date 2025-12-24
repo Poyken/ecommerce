@@ -37,6 +37,10 @@ export class ImportSkusDto {
   @ApiProperty({ type: [ImportRowDto] })
   @IsArray()
   rows: ImportRowDto[];
+
+  @ApiProperty({ required: false, default: false })
+  @IsOptional()
+  dryRun?: boolean;
 }
 
 export class PriceChangeDto {

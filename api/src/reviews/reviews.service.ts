@@ -42,14 +42,21 @@ export class ReviewsService {
    * Cập nhật cached avgRating và reviewCount trên Product
    * Gọi sau khi tạo/sửa/xóa review để sync dữ liệu
    */
-  private async updateProductRatingCache(productId: string) {
-    const aggregate = await this.prisma.review.aggregate({
+  /**
+   * Cập nhật cached avgRating và reviewCount trên Product
+   * Chạy trong transaction để đảm bảo consistency
+   */
+  private async updateProductRatingCache(
+    productId: string,
+    tx: any = this.prisma,
+  ) {
+    const aggregate = await tx.review.aggregate({
       where: { productId, isApproved: true },
       _avg: { rating: true },
       _count: true,
     });
 
-    await this.prisma.product.update({
+    await tx.product.update({
       where: { id: productId },
       data: {
         avgRating: aggregate._avg.rating || 0,
@@ -111,20 +118,25 @@ export class ReviewsService {
     }
 
     // 3. Tạo Review
-    const review = await this.prisma.review.create({
-      data: {
-        userId,
-        productId: dto.productId,
-        skuId: dto.skuId || null,
-        rating: dto.rating,
-        content: dto.content,
-        images: dto.images || [],
-        isApproved: true,
-      },
-    });
+    // 3. Tạo Review & Update Cache trong Transaction
+    const review = await this.prisma.$transaction(async (tx) => {
+      const newReview = await tx.review.create({
+        data: {
+          userId,
+          productId: dto.productId,
+          skuId: dto.skuId || null,
+          rating: dto.rating,
+          content: dto.content,
+          images: dto.images || [],
+          isApproved: true,
+        },
+      });
 
-    // 4. Update cached rating trên Product
-    await this.updateProductRatingCache(dto.productId);
+      // 4. Update cached rating trên Product (dùng tx)
+      await this.updateProductRatingCache(dto.productId, tx);
+
+      return newReview;
+    });
 
     return review;
   }
@@ -307,14 +319,20 @@ export class ReviewsService {
       );
     }
 
-    return this.prisma.review.update({
-      where: { id },
-      data: {
-        rating: dto.rating,
-        content: dto.content,
-        images: dto.images,
-        // Usually we don't allow changing SKU or Product ID after creation
-      },
+    return this.prisma.$transaction(async (tx) => {
+      const updatedReview = await tx.review.update({
+        where: { id },
+        data: {
+          rating: dto.rating,
+          content: dto.content,
+          images: dto.images,
+        },
+      });
+
+      // Update cached rating nếu rating thay đổi (hoặc luôn chạy cho chắc chắn)
+      await this.updateProductRatingCache(review.productId, tx);
+
+      return updatedReview;
     });
   }
 
@@ -325,10 +343,12 @@ export class ReviewsService {
       throw new BadRequestException('Đánh giá không tồn tại');
     }
 
-    await this.prisma.review.delete({ where: { id } });
+    await this.prisma.$transaction(async (tx) => {
+      await tx.review.delete({ where: { id } });
 
-    // Update cached rating
-    await this.updateProductRatingCache(review.productId);
+      // Update cached rating
+      await this.updateProductRatingCache(review.productId, tx);
+    });
 
     return { success: true };
   }
@@ -346,10 +366,12 @@ export class ReviewsService {
       throw new BadRequestException('Bạn không có quyền xóa đánh giá này');
     }
 
-    await this.prisma.review.delete({ where: { id } });
+    await this.prisma.$transaction(async (tx) => {
+      await tx.review.delete({ where: { id } });
 
-    // Update cached rating
-    await this.updateProductRatingCache(review.productId);
+      // Update cached rating
+      await this.updateProductRatingCache(review.productId, tx);
+    });
 
     return { success: true };
   }

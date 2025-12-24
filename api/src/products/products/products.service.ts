@@ -155,13 +155,22 @@ export class ProductsService {
       deletedAt: null, // Chỉ lấy sản phẩm chưa bị xóa
       AND: [
         // 1. Search text (Tên hoặc Mô tả)
+        // 1. Search text (Full Text Search)
         search
-          ? {
+          ? ({
               OR: [
-                { name: { contains: search, mode: 'insensitive' } },
-                { description: { contains: search, mode: 'insensitive' } },
+                {
+                  name: {
+                    search: search.trim().split(/\s+/).join(' & '),
+                  },
+                },
+                {
+                  description: {
+                    search: search.trim().split(/\s+/).join(' & '),
+                  },
+                },
               ],
-            }
+            } as any)
           : {},
         // 1.1 Filter by IDs
         ids

@@ -42,6 +42,13 @@ export interface ImportResult {
   success: number;
   failed: number;
   errors: { row: number; message: string }[];
+  changes?: {
+    skuCode: string;
+    status: string;
+    diff?: any;
+    error?: string;
+    message?: string;
+  }[];
 }
 
 export interface BulkUpdateDto {
@@ -106,9 +113,22 @@ export class BulkService {
 
   /**
    * Import SKUs từ JSON data
+   * @param rows Danh sách SKU cần update
+   * @param dryRun Nếu true, chỉ kiểm tra và trả về kế hoạch thay đổi, không commit vào DB.
    */
-  async importSkus(rows: ImportRow[]): Promise<ImportResult> {
-    const result: ImportResult = { success: 0, failed: 0, errors: [] };
+  async importSkus(
+    rows: ImportRow[],
+    dryRun: boolean = false,
+  ): Promise<ImportResult & { changes?: any[] }> {
+    const result: ImportResult & { changes?: any[] } = {
+      success: 0,
+      failed: 0,
+      errors: [],
+      changes: [],
+    };
+
+    // Optimization: Fetch all SKUs first if list is small, or just loop.
+    // Loop is safer for consistency if list is huge, but here we go row by row.
 
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
@@ -125,21 +145,82 @@ export class BulkService {
           throw new Error(`SKU ${row.skuCode} not found`);
         }
 
+        // Calculate changes
+        const changes: any = { skuCode: row.skuCode, diff: {} };
         const updateData: any = {};
-        if (row.price !== undefined) updateData.price = row.price;
-        if (row.salePrice !== undefined) updateData.salePrice = row.salePrice;
-        if (row.stock !== undefined) updateData.stock = row.stock;
-        if (row.status !== undefined) updateData.status = row.status;
+        let hasChange = false;
 
-        await this.prisma.sku.update({
-          where: { skuCode: row.skuCode },
-          data: updateData,
-        });
+        if (
+          row.price !== undefined &&
+          Number(row.price) !== Number(existing.price)
+        ) {
+          updateData.price = row.price;
+          changes.diff.price = { from: Number(existing.price), to: row.price };
+          hasChange = true;
+        }
+
+        if (
+          row.salePrice !== undefined &&
+          Number(row.salePrice) !== Number(existing.salePrice)
+        ) {
+          updateData.salePrice = row.salePrice;
+          changes.diff.salePrice = {
+            from: Number(existing.salePrice),
+            to: row.salePrice,
+          };
+          hasChange = true;
+        }
+
+        if (row.stock !== undefined && row.stock !== existing.stock) {
+          updateData.stock = row.stock;
+          changes.diff.stock = { from: existing.stock, to: row.stock };
+          hasChange = true;
+        }
+
+        if (row.status !== undefined && row.status !== existing.status) {
+          updateData.status = row.status;
+          changes.diff.status = { from: existing.status, to: row.status };
+          hasChange = true;
+        }
+
+        if (!hasChange) {
+          // No change needed
+          result.changes?.push({
+            skuCode: row.skuCode,
+            status: 'SKIPPED',
+            message: 'No changes',
+          });
+          result.success++; // Considered success? Or neutral?
+          continue;
+        }
+
+        if (!dryRun) {
+          await this.prisma.sku.update({
+            where: { skuCode: row.skuCode },
+            data: updateData,
+          });
+          result.changes?.push({
+            skuCode: row.skuCode,
+            status: 'UPDATED',
+            diff: changes.diff,
+          });
+        } else {
+          result.changes?.push({
+            skuCode: row.skuCode,
+            status: 'PENDING',
+            diff: changes.diff,
+          });
+        }
 
         result.success++;
       } catch (error: any) {
         result.failed++;
         result.errors.push({ row: i + 1, message: error.message });
+        result.changes?.push({
+          skuCode: row?.skuCode || 'UNKNOWN',
+          status: 'FAILED',
+          error: error.message,
+        });
       }
     }
 

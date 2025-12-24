@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearchPostgres"]
 }
 
 datasource db {
@@ -10,6 +11,7 @@ datasource db {
 model User {
   id            String           @id @default(uuid())
   email         String           @unique
+
   firstName     String?
   lastName      String?
   password      String?          @db.VarChar(255)
@@ -142,6 +144,8 @@ model Product {
   @@index([brandId])
   @@index([createdAt])
   @@index([deletedAt])
+  // Optimized composite index for filtering
+  @@index([categoryId, brandId, minPrice, maxPrice])
 }
 
 model ProductOption {
