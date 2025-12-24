@@ -72,8 +72,11 @@ export class ProductsController {
    * Public API - Dùng cho trang Danh sách sản phẩm (PLP).
    *
    * Hỗ trợ: search, categoryId, brandId, minPrice, maxPrice, sort, pagination
+   * 🚀 CACHED: 2 minutes TTL
    */
   @Get()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(120000) // 2 minutes
   @ApiOperation({ summary: 'Lấy danh sách sản phẩm (có phân trang & lọc)' })
   findAll(@Query() query: FilterProductDto) {
     return this.productsService.findAll(query);

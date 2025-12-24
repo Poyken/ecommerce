@@ -62,18 +62,40 @@ export class CartService {
       });
     }
 
-    // Lấy items riêng
+    // Load items with optimized selects
     const items = await this.prisma.cartItem.findMany({
       where: { cartId: cart.id },
-      include: {
+      select: {
+        id: true,
+        quantity: true,
+        createdAt: true,
         sku: {
-          include: {
-            product: true,
+          select: {
+            id: true,
+            skuCode: true,
+            price: true,
+            salePrice: true,
+            stock: true,
+            imageUrl: true,
+            product: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+              },
+            },
             optionValues: {
-              include: {
+              select: {
                 optionValue: {
-                  include: {
-                    option: true,
+                  select: {
+                    id: true,
+                    value: true,
+                    option: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
+                    },
                   },
                 },
               },

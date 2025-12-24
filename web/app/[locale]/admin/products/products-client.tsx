@@ -16,11 +16,12 @@ import { useDebounce } from "@/hooks/use-debounce";
 import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/providers/auth-provider";
 import { Product } from "@/types/models";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { Languages } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const CreateProductDialog = dynamic(
   () =>
@@ -134,6 +135,15 @@ export function ProductsClient({
     setTranslateDialogOpen(true);
   };
 
+  // Virtualization for large lists
+  const parentRef = useRef<HTMLDivElement>(null);
+  const rowVirtualizer = useVirtualizer({
+    count: products.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 73,
+    overscan: 5,
+  });
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -193,62 +203,90 @@ export function ProductsClient({
           </TableHeader>
           <TableBody>
             {products && products.length > 0 ? (
-              products.map((product) => (
-                <TableRow
-                  key={product.id}
-                  className="border-white/10 hover:bg-white/5 transition-colors"
+              <div
+                ref={parentRef}
+                style={{
+                  height: `${Math.min(products.length * 73, 600)}px`,
+                  overflow: "auto",
+                }}
+              >
+                <div
+                  style={{
+                    height: `${rowVirtualizer.getTotalSize()}px`,
+                    width: "100%",
+                    position: "relative",
+                  }}
                 >
-                  <TableCell className="font-medium text-foreground">
-                    {product.name}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {product.category?.name || "N/A"}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {product.brand?.name || "N/A"}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {new Date(product.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  {(canTranslate || canUpdate || canDelete) && (
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        {canTranslate && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => openTranslate(product)}
-                            className="text-amber-400 hover:text-amber-300 hover:bg-amber-400/10"
-                            title={t("products.translate")}
-                          >
-                            <Languages className="h-4 w-4" />
-                          </Button>
-                        )}
-                        {canUpdate && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => openEdit(product)}
-                            className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10"
-                          >
-                            {t("edit")}
-                          </Button>
-                        )}
-                        {canDelete && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => openDelete(product)}
-                            className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
-                          >
-                            {t("delete")}
-                          </Button>
-                        )}
+                  {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                    const product = products[virtualRow.index];
+                    return (
+                      <div
+                        key={product.id}
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: `${virtualRow.size}px`,
+                          transform: `translateY(${virtualRow.start}px)`,
+                        }}
+                      >
+                        <TableRow className="border-white/10 hover:bg-white/5 transition-colors">
+                          <TableCell className="font-medium text-foreground">
+                            {product.name}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {product.category?.name || "N/A"}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {product.brand?.name || "N/A"}
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">
+                            {new Date(product.createdAt).toLocaleDateString()}
+                          </TableCell>
+                          {(canTranslate || canUpdate || canDelete) && (
+                            <TableCell className="text-right">
+                              <div className="flex justify-end gap-2">
+                                {canTranslate && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => openTranslate(product)}
+                                    className="text-amber-400 hover:text-amber-300 hover:bg-amber-400/10"
+                                    title={t("products.translate")}
+                                  >
+                                    <Languages className="h-4 w-4" />
+                                  </Button>
+                                )}
+                                {canUpdate && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => openEdit(product)}
+                                    className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10"
+                                  >
+                                    {t("edit")}
+                                  </Button>
+                                )}
+                                {canDelete && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => openDelete(product)}
+                                    className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
+                                  >
+                                    {t("delete")}
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                          )}
+                        </TableRow>
                       </div>
-                    </TableCell>
-                  )}
-                </TableRow>
-              ))
+                    );
+                  })}
+                </div>
+              </div>
             ) : (
               <TableRow>
                 <TableCell

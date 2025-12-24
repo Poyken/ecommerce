@@ -27,14 +27,26 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   constructor() {
-    super();
+    super({
+      log: ['error', 'warn'],
+      errorFormat: 'pretty',
+    });
   }
 
-  onModuleInit() {
-    this.$connect();
+  /**
+   * 🚀 OPTIMIZED: Enhanced connection management với logging
+   * Connection pooling được quản lý tự động bởi Prisma qua DATABASE_URL
+   */
+  async onModuleInit() {
+    await this.$connect();
+    console.log('✅ Database connected successfully');
+    console.log(
+      `📊 Connection pool size: ${process.env.DATABASE_POOL_SIZE || '10 (default)'}`,
+    );
   }
 
-  onModuleDestroy() {
-    this.$disconnect();
+  async onModuleDestroy() {
+    await this.$disconnect();
+    console.log('🔌 Database disconnected');
   }
 }

@@ -249,8 +249,9 @@ export class OrdersService {
           status: true,
           paymentStatus: true,
           createdAt: true,
+          shippingFee: true,
           items: {
-            take: 3, // Only show first few items in the list view
+            take: 3,
             select: {
               id: true,
               quantity: true,
@@ -264,6 +265,7 @@ export class OrdersService {
                     select: {
                       id: true,
                       name: true,
+                      slug: true,
                     },
                   },
                 },

@@ -25,7 +25,6 @@ import { Button } from "@/components/atoms/button";
 import { MotionButton } from "@/components/atoms/motion-button";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { CompactRating } from "@/components/molecules/review-preview";
-import { SkuSelectionDialog } from "@/components/molecules/sku-selection-dialog";
 import { WishlistButton } from "@/components/molecules/wishlist-button";
 import { useCart } from "@/hooks/use-cart";
 import { useFeatureFlags } from "@/hooks/use-feature-flags";
@@ -37,8 +36,17 @@ import { ProductOption, Sku } from "@/types/models";
 import { AnimatePresence, motion } from "framer-motion";
 import { Eye, ShoppingBag } from "lucide-react";
 import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { memo, useEffect, useState } from "react";
+
+const SkuSelectionDialog = dynamic(
+  () =>
+    import("@/components/molecules/sku-selection-dialog").then(
+      (mod) => mod.SkuSelectionDialog
+    ),
+  { ssr: false }
+);
 
 interface ProductCardProps {
   id: string;
