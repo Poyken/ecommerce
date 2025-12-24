@@ -1,8 +1,8 @@
 import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
 } from "@/components/atoms/card";
 import { Separator } from "@/components/atoms/separator";
 import { StatusBadge } from "@/components/atoms/status-badge";
@@ -57,6 +57,7 @@ interface OrderItem {
       };
     }[];
     skuCode?: string;
+    image?: string | null;
   };
   quantity: number;
   priceAtPurchase: number;
@@ -113,7 +114,7 @@ async function DynamicOrderDetail({ id }: { id: string }) {
 
   if (error || !order) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 pt-24 pb-8">
         <h1 className="text-2xl font-bold mb-4">{t("orderDetail")}</h1>
         <div className="bg-red-50 text-red-600 p-4 rounded-md">
           {error || t("orderNotFound")}
@@ -129,7 +130,7 @@ async function DynamicOrderDetail({ id }: { id: string }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl font-sans">
+    <div className="container mx-auto px-4 pt-24 pb-8 max-w-4xl font-sans">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">
           {t("orderNumber")}
@@ -161,21 +162,16 @@ async function DynamicOrderDetail({ id }: { id: string }) {
                     className="flex gap-4 p-4 rounded-xl transition-all duration-300 hover:bg-black/5 dark:hover:bg-white/5 group border border-transparent hover:border-black/5 dark:hover:border-white/10"
                   >
                     <div className="shrink-0 w-20 h-20 bg-gray-100 rounded-md overflow-hidden relative border border-black/5 dark:border-white/5">
-                      {item.sku.product.images?.[0] ? (
-                        <Image
-                          src={item.sku.product.images[0]}
-                          alt={item.sku.product.name}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                      ) : (
-                        <Image
-                          src={`https://picsum.photos/seed/${item.sku.product.id}/200`}
-                          alt={item.sku.product.name}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                      )}
+                      <Image
+                        src={
+                          item.sku.image ||
+                          item.sku.product.images?.[0] ||
+                          `https://picsum.photos/seed/${item.sku.product.id}/200`
+                        }
+                        alt={item.sku.product.name}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
                     </div>
                     <div className="grow">
                       <h3 className="font-semibold text-primary group-hover:text-primary/80 transition-colors">
@@ -229,7 +225,7 @@ async function DynamicOrderDetail({ id }: { id: string }) {
           </Card>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-6 sticky top-24 h-fit">
           <Card>
             <CardHeader>
               <CardTitle>{t("summary")}</CardTitle>

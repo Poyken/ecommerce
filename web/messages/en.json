@@ -263,7 +263,8 @@
       "DELIVERED": "Delivered",
       "CANCELLED": "Cancelled",
       "COMPLETED": "Completed",
-      "RETURNED": "Returned"
+      "RETURNED": "Returned",
+      "PAID": "Paid"
     },
     "orderDetail": "Order Detail",
     "orderNotFound": "Order not found",
@@ -748,7 +749,12 @@
         "sending": "Sending...",
         "success": "Notification sent successfully",
         "error": "Failed to send notification"
-      }
+      },
+      "history": "History",
+      "refresh": "Refresh",
+      "noHistory": "No notification history found",
+      "createdAt": "Sent At",
+      "send": "Send Notification"
     },
     "languages": {
       "en": "English",

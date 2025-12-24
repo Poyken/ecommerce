@@ -160,3 +160,24 @@ export async function sendNotificationToUserAction(data: {
     return { error: (error as Error).message };
   }
 }
+
+/**
+ * [ADMIN] Lấy danh sách tất cả thông báo hệ thống.
+ */
+export async function getAdminNotificationsAction(
+  page: number = 1,
+  limit: number = 50,
+  userId?: string,
+  type?: string
+) {
+  try {
+    let url = `/notifications/admin/all?page=${page}&limit=${limit}`;
+    if (userId) url += `&userId=${userId}`;
+    if (type) url += `&type=${type}`;
+
+    const res = await http<ApiResponse<Notification[]>>(url);
+    return { data: res.data, meta: res.meta };
+  } catch (error: unknown) {
+    return { error: (error as Error).message };
+  }
+}

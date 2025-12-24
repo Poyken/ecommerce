@@ -77,7 +77,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   if (typeof window === "undefined") {
     // P0 Optimization: Only call cookies() if we actually need accessToken or csrfToken
     // This prevents breaking "use cache" for public GET requests.
-    if (!skipAuth || isStateChanging || true) {
+    if (!skipAuth || isStateChanging) {
       // Always try to get headers for fingerprinting
       try {
         const { cookies, headers } = await import("next/headers");

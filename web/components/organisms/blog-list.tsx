@@ -42,6 +42,8 @@ export function BlogList({ posts }: BlogListProps) {
   const firstPost = posts[0];
   const gridPosts = posts.slice(1);
 
+  if (!firstPost) return null;
+
   return (
     <>
       {/* Featured Post */}

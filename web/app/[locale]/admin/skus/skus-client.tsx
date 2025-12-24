@@ -1,9 +1,9 @@
 "use client";
 
-import { EditSkuDialog } from "@/components/organisms/admin/edit-sku-dialog";
-import { SearchInput } from "@/components/molecules/search-input";
 import { Button } from "@/components/atoms/button";
+import { Checkbox } from "@/components/atoms/checkbox";
 import { GlassCard } from "@/components/atoms/glass-card";
+import { Label } from "@/components/atoms/label";
 import {
     Select,
     SelectContent,
@@ -20,33 +20,14 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/atoms/table";
+import { SearchInput } from "@/components/molecules/search-input";
+import { EditSkuDialog } from "@/components/organisms/admin/edit-sku-dialog";
 import { formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
 import { Sku } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-
-/**
- * =====================================================================
- * ADMIN SKUS CLIENT - Giao diện quản lý biến thể sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SKU DATA VISUALIZATION:
- * - Hiển thị chi tiết từng biến thể bao gồm: Mã SKU, Tên sản phẩm, Giá (VND) và Số lượng tồn kho.
- * - `font-mono`: Dùng cho mã SKU để dễ đọc và phân biệt các ký tự tương tự nhau.
- *
- * 2. STATUS-BASED UI:
- * - `opacity-60`: Làm mờ các SKU đang ở trạng thái `INACTIVE` để admin dễ dàng nhận biết.
- * - Badge màu xanh cho `ACTIVE` và màu xám cho các trạng thái khác.
- *
- * 3. DYNAMIC SEARCH & FILTER:
- * - Kết hợp `SearchInput` và `Select` filter để tìm kiếm nhanh SKU.
- * - Mọi thay đổi đều được đẩy lên URL (`router.push`) để giữ trạng thái đồng bộ.
- * =====================================================================
- */
 
 export function SkusClient({
   skus,
@@ -94,10 +75,30 @@ export function SkusClient({
           </p>
         </div>
         <div className="flex gap-2">
+
           <SearchInput
             placeholder={t("skus.searchPlaceholder")}
             className="w-[300px] bg-white border-input text-foreground placeholder:text-muted-foreground focus:bg-white transition-colors"
           />
+          <div className="flex items-center space-x-2 bg-white px-3 border rounded-md h-10 border-input">
+            <Checkbox
+              id="low-stock"
+              checked={!!searchParams.get("stockLimit")}
+              onCheckedChange={(checked) => {
+                const params = new URLSearchParams(searchParams.toString());
+                if (checked) {
+                  params.set("stockLimit", "10");
+                } else {
+                  params.delete("stockLimit");
+                }
+                params.set("page", "1");
+                router.push(`/admin/skus?${params.toString()}` as any);
+              }}
+            />
+            <Label htmlFor="low-stock" className="cursor-pointer whitespace-nowrap">
+              Low Stock
+            </Label>
+          </div>
           <Select
             defaultValue={(searchParams.get("status") || "ALL").toUpperCase()}
             onValueChange={(value) => {

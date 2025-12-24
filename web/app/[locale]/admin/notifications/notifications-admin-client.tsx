@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/atoms/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/atoms/tabs";
 import { Textarea } from "@/components/atoms/textarea";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useToast } from "@/hooks/use-toast";
@@ -29,6 +30,7 @@ import { Coupon, Order, Product } from "@/types/models";
 import { Bell, Mail, Send, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
+import { NotificationHistoryTab } from "./notification-history-tab";
 
 interface User {
   id: string;
@@ -173,6 +175,9 @@ export function NotificationsAdminClient({
     }
   };
 
+// ... imports moved to top ...
+// ... inside NotificationsAdminClient component ...
+
   return (
     <div className="space-y-8">
       <div>
@@ -180,235 +185,248 @@ export function NotificationsAdminClient({
         <p className="text-muted-foreground">{t("subtitle")}</p>
       </div>
 
-      <div className="flex gap-4">
-        <Button
-          variant={mode === "broadcast" ? "default" : "outline"}
-          onClick={() => setMode("broadcast")}
-          className="flex items-center gap-2"
-        >
-          <Users className="w-4 h-4" />
-          {t("broadcast")}
-        </Button>
-        <Button
-          variant={mode === "individual" ? "default" : "outline"}
-          onClick={() => setMode("individual")}
-          className="flex items-center gap-2"
-        >
-          <Send className="w-4 h-4" />
-          {t("sendToUser")}
-        </Button>
-      </div>
+      <Tabs defaultValue="send" className="w-full">
+        <TabsList className="grid w-[400px] grid-cols-2 mb-6">
+          <TabsTrigger value="send">{t("send")}</TabsTrigger>
+          <TabsTrigger value="history">{t("history")}</TabsTrigger>
+        </TabsList>
 
-      <GlassCard className="p-8 max-w-2xl">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {mode === "individual" && (
-            <div className="space-y-2">
-              <Label htmlFor="user">{t("form.user")}</Label>
-              <Combobox
-                options={userOptions}
-                value={formData.userId}
-                onValueChange={(val) =>
-                  setFormData({ ...formData, userId: val })
-                }
-                placeholder={t("form.selectUser") || "Select user..."}
-                searchPlaceholder={t("form.searchUser") || "Search users..."}
-                emptyText={t("form.noUsers") || "No users found."}
-              />
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="type">{t("form.type")}</Label>
-              <Select
-                value={formData.type}
-                onValueChange={(val: string) =>
-                  setFormData({ ...formData, type: val })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="SYSTEM">System</SelectItem>
-                  <SelectItem value="PROMO">Promotion</SelectItem>
-                  <SelectItem value="ORDER">Order</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="title">{t("form.title")}</Label>
-              <Input
-                id="title"
-                required
-                value={formData.title}
-                onChange={(e) =>
-                  setFormData({ ...formData, title: e.target.value })
-                }
-              />
-            </div>
+        <TabsContent value="send" className="space-y-6">
+          <div className="flex gap-4">
+            <Button
+              variant={mode === "broadcast" ? "default" : "outline"}
+              onClick={() => setMode("broadcast")}
+              className="flex items-center gap-2"
+            >
+              <Users className="w-4 h-4" />
+              {t("broadcast")}
+            </Button>
+            <Button
+              variant={mode === "individual" ? "default" : "outline"}
+              onClick={() => setMode("individual")}
+              className="flex items-center gap-2"
+            >
+              <Send className="w-4 h-4" />
+              {t("sendToUser")}
+            </Button>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="message">{t("form.message")}</Label>
-            <Textarea
-              id="message"
-              required
-              rows={4}
-              value={formData.message}
-              onChange={(e) =>
-                setFormData({ ...formData, message: e.target.value })
-              }
-            />
-          </div>
+          <GlassCard className="p-8 max-w-2xl">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {mode === "individual" && (
+                <div className="space-y-2">
+                  <Label htmlFor="user">{t("form.user")}</Label>
+                  <Combobox
+                    options={userOptions}
+                    value={formData.userId}
+                    onValueChange={(val) =>
+                      setFormData({ ...formData, userId: val })
+                    }
+                    placeholder={t("form.selectUser") || "Select user..."}
+                    searchPlaceholder={t("form.searchUser") || "Search users..."}
+                    emptyText={t("form.noUsers") || "No users found."}
+                  />
+                </div>
+              )}
 
-          <div className="grid grid-cols-3 gap-4">
-            <div className="col-span-1 space-y-2">
-              <Label>{t("form.linkType") || "Link Type"}</Label>
-              <Select
-                value={linkType}
-                onValueChange={(
-                  val: "custom" | "product" | "order" | "coupon"
-                ) => {
-                  setLinkType(val);
-                  setSearchQuery("");
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="custom">
-                    {t("form.customUrl") || "Custom URL"}
-                  </SelectItem>
-                  <SelectItem value="product">
-                    {t("form.product") || "Product"}
-                  </SelectItem>
-                  <SelectItem value="order">
-                    {t("form.order") || "Order"}
-                  </SelectItem>
-                  <SelectItem value="coupon">
-                    {t("form.coupon") || "Coupon"}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="type">{t("form.type")}</Label>
+                  <Select
+                    value={formData.type}
+                    onValueChange={(val: string) =>
+                      setFormData({ ...formData, type: val })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="SYSTEM">System</SelectItem>
+                      <SelectItem value="PROMO">Promotion</SelectItem>
+                      <SelectItem value="ORDER">Order</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            <div className="col-span-2 space-y-2">
-              <Label htmlFor="link">{t("form.link")}</Label>
-              {linkType === "custom" && (
-                <Input
-                  id="link"
-                  placeholder="/products/..."
-                  value={formData.link}
+                <div className="space-y-2">
+                  <Label htmlFor="title">{t("form.title")}</Label>
+                  <Input
+                    id="title"
+                    required
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="message">{t("form.message")}</Label>
+                <Textarea
+                  id="message"
+                  required
+                  rows={4}
+                  value={formData.message}
                   onChange={(e) =>
-                    setFormData({ ...formData, link: e.target.value })
+                    setFormData({ ...formData, message: e.target.value })
                   }
                 />
-              )}
-              {linkType === "product" && (
-                <Combobox
-                  options={products.map((p) => ({
-                    value: `/products/${p.id}`,
-                    label: p.name,
-                    description: p.slug,
-                  }))}
-                  value={formData.link}
-                  onValueChange={(val) =>
-                    setFormData({ ...formData, link: val })
-                  }
-                  searchValue={searchQuery}
-                  onSearchChange={setSearchQuery}
-                  placeholder={t("form.selectProduct") || "Select Product..."}
-                  searchPlaceholder={
-                    t("form.searchProduct") || "Search product..."
-                  }
-                  emptyText={t("form.noProducts") || "No products found."}
-                />
-              )}
-              {linkType === "order" && (
-                <Combobox
-                  options={orders.map((o) => ({
-                    value: `/orders/${o.id}`,
-                    label: `Order #${o.id.slice(0, 8).toUpperCase()}`,
-                    description: `${o.totalAmount} - ${o.status}`,
-                  }))}
-                  value={formData.link}
-                  onValueChange={(val) =>
-                    setFormData({ ...formData, link: val })
-                  }
-                  searchValue={searchQuery}
-                  onSearchChange={setSearchQuery}
-                  placeholder={t("form.selectOrder") || "Select Order..."}
-                  searchPlaceholder={t("form.searchOrder") || "Search order..."}
-                  emptyText={t("form.noOrders") || "No orders found."}
-                />
-              )}
-              {linkType === "coupon" && (
-                <Combobox
-                  options={coupons.map((c) => ({
-                    value: `/shop?coupon=${c.code}`,
-                    label: `${c.code} - ${c.discountValue}${
-                      c.discountType === "PERCENTAGE" ? "%" : ""
-                    } OFF`,
-                    description: c.description || "No description",
-                  }))}
-                  value={formData.link}
-                  onValueChange={(val) =>
-                    setFormData({ ...formData, link: val })
-                  }
-                  searchValue={searchQuery}
-                  onSearchChange={setSearchQuery}
-                  placeholder={t("form.selectCoupon") || "Select Coupon..."}
-                  searchPlaceholder={
-                    t("form.searchCoupon") || "Search coupon..."
-                  }
-                  emptyText={t("form.noCoupons") || "No coupons found."}
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center justify-between p-4 rounded-xl bg-muted/50 border border-border">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                <Mail className="w-5 h-5" />
               </div>
-              <div className="space-y-0.5">
-                <Label className="text-base">{t("form.sendEmail")}</Label>
-                <p className="text-xs text-muted-foreground">
-                  Send a copy of this message to the user's email address
-                </p>
-              </div>
-            </div>
-            <Checkbox
-              checked={formData.sendEmail}
-              onCheckedChange={(val: boolean | "indeterminate") =>
-                setFormData({ ...formData, sendEmail: val === true })
-              }
-            />
-          </div>
 
-          <Button
-            type="submit"
-            className="w-full h-12 text-lg font-bold"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <span className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                {t("form.sending")}
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <Bell className="w-5 h-5" />
-                {t("form.submit")}
-              </span>
-            )}
-          </Button>
-        </form>
-      </GlassCard>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="col-span-1 space-y-2">
+                  <Label>{t("form.linkType") || "Link Type"}</Label>
+                  <Select
+                    value={linkType}
+                    onValueChange={(
+                      val: "custom" | "product" | "order" | "coupon"
+                    ) => {
+                      setLinkType(val);
+                      setSearchQuery("");
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="custom">
+                        {t("form.customUrl") || "Custom URL"}
+                      </SelectItem>
+                      <SelectItem value="product">
+                        {t("form.product") || "Product"}
+                      </SelectItem>
+                      <SelectItem value="order">
+                        {t("form.order") || "Order"}
+                      </SelectItem>
+                      <SelectItem value="coupon">
+                        {t("form.coupon") || "Coupon"}
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="col-span-2 space-y-2">
+                  <Label htmlFor="link">{t("form.link")}</Label>
+                  {linkType === "custom" && (
+                    <Input
+                      id="link"
+                      placeholder="/products/..."
+                      value={formData.link}
+                      onChange={(e) =>
+                        setFormData({ ...formData, link: e.target.value })
+                      }
+                    />
+                  )}
+                  {linkType === "product" && (
+                    <Combobox
+                      options={products.map((p) => ({
+                        value: `/products/${p.id}`,
+                        label: p.name,
+                        description: p.slug,
+                      }))}
+                      value={formData.link}
+                      onValueChange={(val) =>
+                        setFormData({ ...formData, link: val })
+                      }
+                      searchValue={searchQuery}
+                      onSearchChange={setSearchQuery}
+                      placeholder={t("form.selectProduct") || "Select Product..."}
+                      searchPlaceholder={
+                        t("form.searchProduct") || "Search product..."
+                      }
+                      emptyText={t("form.noProducts") || "No products found."}
+                    />
+                  )}
+                  {linkType === "order" && (
+                    <Combobox
+                      options={orders.map((o) => ({
+                        value: `/orders/${o.id}`,
+                        label: `Order #${o.id.slice(0, 8).toUpperCase()}`,
+                        description: `${o.totalAmount} - ${o.status}`,
+                      }))}
+                      value={formData.link}
+                      onValueChange={(val) =>
+                        setFormData({ ...formData, link: val })
+                      }
+                      searchValue={searchQuery}
+                      onSearchChange={setSearchQuery}
+                      placeholder={t("form.selectOrder") || "Select Order..."}
+                      searchPlaceholder={t("form.searchOrder") || "Search order..."}
+                      emptyText={t("form.noOrders") || "No orders found."}
+                    />
+                  )}
+                  {linkType === "coupon" && (
+                    <Combobox
+                      options={coupons.map((c) => ({
+                        value: `/shop?coupon=${c.code}`,
+                        label: `${c.code} - ${c.discountValue}${
+                          c.discountType === "PERCENTAGE" ? "%" : ""
+                        } OFF`,
+                        description: c.description || "No description",
+                      }))}
+                      value={formData.link}
+                      onValueChange={(val) =>
+                        setFormData({ ...formData, link: val })
+                      }
+                      searchValue={searchQuery}
+                      onSearchChange={setSearchQuery}
+                      placeholder={t("form.selectCoupon") || "Select Coupon..."}
+                      searchPlaceholder={
+                        t("form.searchCoupon") || "Search coupon..."
+                      }
+                      emptyText={t("form.noCoupons") || "No coupons found."}
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 rounded-xl bg-muted/50 border border-border">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <div className="space-y-0.5">
+                    <Label className="text-base">{t("form.sendEmail")}</Label>
+                    <p className="text-xs text-muted-foreground">
+                      Send a copy of this message to the user's email address
+                    </p>
+                  </div>
+                </div>
+                <Checkbox
+                  checked={formData.sendEmail}
+                  onCheckedChange={(val: boolean | "indeterminate") =>
+                    setFormData({ ...formData, sendEmail: val === true })
+                  }
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-12 text-lg font-bold"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <span className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    {t("form.sending")}
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Bell className="w-5 h-5" />
+                    {t("form.submit")}
+                  </span>
+                )}
+              </Button>
+            </form>
+          </GlassCard>
+        </TabsContent>
+
+        <TabsContent value="history">
+          <NotificationHistoryTab />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

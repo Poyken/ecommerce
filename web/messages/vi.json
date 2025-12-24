@@ -23,6 +23,7 @@
     "back": "Quay lại cửa hàng",
     "cancel": "Hủy",
     "delete": "Xóa",
+    "deleting": "Đang xóa...",
     "save": "Lưu",
     "close": "Đóng",
     "backToJournal": "Quay lại Journal",
@@ -60,6 +61,8 @@
     "allCategories": "Tất cả danh mục",
     "brands": "Thương hiệu",
     "allBrands": "Tất cả thương hiệu",
+    "showMore": "Xem thêm",
+    "showLess": "Thu gọn",
     "resetAllFilters": "Đặt lại bộ lọc",
     "backToHome": "Quay lại trang chủ",
     "backToCategories": "Quay lại danh mục",
@@ -227,7 +230,9 @@
     "reviews": "Đánh giá xác thực",
     "adding": "Đang thêm...",
     "authenticityVerified": "Xác thực chính hãng",
-    "freeGlobalShipping": "Miễn phí vận chuyển"
+    "freeGlobalShipping": "Miễn phí vận chuyển",
+    "lowStock": "Sắp hết hàng",
+    "quickView": "Xem nhanh"
   },
   "reorder": {
     "button": "Mua lại",
@@ -253,7 +258,8 @@
       "DELIVERED": "Đã giao hàng",
       "CANCELLED": "Đã hủy",
       "COMPLETED": "Hoàn thành",
-      "RETURNED": "Đã hoàn trả"
+      "RETURNED": "Đã hoàn trả",
+      "PAID": "Đã thanh toán"
     },
     "orderDetail": "Chi tiết đơn hàng",
     "orderNotFound": "Không tìm thấy đơn hàng",
