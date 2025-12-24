@@ -74,7 +74,8 @@ export function CategoriesPageClient({
 
   const { mutate: mutateGlobalCategories } = useAdminCategories();
 
-  const categories = categoriesRes?.data || [];
+  const categories =
+    categoriesRes && "data" in categoriesRes ? categoriesRes.data || [] : [];
 
   // Helper to mutate both local and global cache
   const refreshData = () => {
@@ -212,7 +213,7 @@ export function CategoriesPageClient({
         </Table>
       </GlassCard>
 
-      {categoriesRes?.meta && (
+      {categoriesRes && "meta" in categoriesRes && categoriesRes.meta && (
         <DataTablePagination
           page={categoriesRes.meta.page}
           total={categoriesRes.meta.total}

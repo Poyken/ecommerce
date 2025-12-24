@@ -40,73 +40,68 @@ export class CartService {
    * Nếu chưa có giỏ hàng, tự động tạo mới.
    */
   async getCart(userId: string) {
-    try {
-      // Tìm hoặc tạo giỏ hàng (Truy vấn tối thiểu - Minimal query)
-      let cart = await this.prisma.cart.findFirst({
-        where: { userId: userId },
+    // Tìm hoặc tạo giỏ hàng (Truy vấn tối thiểu - Minimal query)
+    let cart = await this.prisma.cart.findFirst({
+      where: { userId: userId },
+    });
+
+    // Kiểm tra user có tồn tại không trước khi tạo cart
+    const userExists = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!userExists) {
+      throw new NotFoundException('User không tồn tại');
+    }
+
+    if (!cart) {
+      cart = await this.prisma.cart.create({
+        data: {
+          userId: userId,
+        },
       });
+    }
 
-      // Kiểm tra user có tồn tại không trước khi tạo cart
-      const userExists = await this.prisma.user.findUnique({
-        where: { id: userId },
-      });
-
-      if (!userExists) {
-        throw new NotFoundException('User không tồn tại');
-      }
-
-      if (!cart) {
-        cart = await this.prisma.cart.create({
-          data: {
-            userId: userId,
-          },
-        });
-      }
-
-      // Lấy items riêng
-      const items = await this.prisma.cartItem.findMany({
-        where: { cartId: cart.id },
-        include: {
-          sku: {
-            include: {
-              product: true,
-              optionValues: {
-                include: {
-                  optionValue: {
-                    include: {
-                      option: true,
-                    },
+    // Lấy items riêng
+    const items = await this.prisma.cartItem.findMany({
+      where: { cartId: cart.id },
+      include: {
+        sku: {
+          include: {
+            product: true,
+            optionValues: {
+              include: {
+                optionValue: {
+                  include: {
+                    option: true,
                   },
                 },
               },
             },
           },
         },
-        orderBy: { createdAt: 'desc' },
-      });
+      },
+      orderBy: { createdAt: 'desc' },
+    });
 
-      // Tính tổng tiền
-      let totalAmount = 0;
-      let totalItems = 0;
+    // Tính tổng tiền
+    let totalAmount = 0;
+    let totalItems = 0;
 
-      for (const item of items) {
-        // Chuyển đổi kiểu Decimal an toàn (Safe Decimal casting)
-        const p = item.sku?.salePrice ?? item.sku?.price ?? 0;
-        const price = Number(p);
-        totalAmount += price * item.quantity;
-        totalItems += item.quantity;
-      }
-
-      return {
-        ...cart,
-        items,
-        totalAmount,
-        totalItems,
-      };
-    } catch (error) {
-      // Logger.error('Lỗi CartService.getCart:', error);
-      throw error;
+    for (const item of items) {
+      // Chuyển đổi kiểu Decimal an toàn (Safe Decimal casting)
+      const p = item.sku?.salePrice ?? item.sku?.price ?? 0;
+      const price = Number(p);
+      totalAmount += price * item.quantity;
+      totalItems += item.quantity;
     }
+
+    return {
+      ...cart,
+      items,
+      totalAmount,
+      totalItems,
+    };
   }
 
   /**

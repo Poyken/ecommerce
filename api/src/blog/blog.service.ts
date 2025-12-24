@@ -107,7 +107,7 @@ export class BlogService {
     };
   }
 
-  async findOne(idOrSlug: string): Promise<any | null> {
+  async findOne(idOrSlug: string): Promise<any> {
     const blog = await this.prisma.blog.findFirst({
       where: {
         OR: [{ id: idOrSlug }, { slug: idOrSlug }],

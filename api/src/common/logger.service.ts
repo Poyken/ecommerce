@@ -44,11 +44,19 @@ export class LoggerService implements NestLoggerService {
               winston.format.colorize(),
               winston.format.printf(
                 ({ level, message, timestamp, context, ...meta }) => {
-                  const contextStr = context ? ` [${context}]` : '';
+                  const safeContext = context
+                    ? typeof context === 'string'
+                      ? context
+                      : JSON.stringify(context)
+                    : '';
+                  const contextStr = safeContext ? ` [${safeContext}]` : '';
                   const metaStr = Object.keys(meta).length
                     ? ` ${JSON.stringify(meta)}`
                     : '';
-                  return `${timestamp} [${level}]${contextStr} ${message}${metaStr}`;
+                  const safeTimestamp = String(timestamp);
+                  const safeLevel = String(level);
+                  const safeMessage = String(message);
+                  return `${safeTimestamp} [${safeLevel}]${contextStr} ${safeMessage}${metaStr}`;
                 },
               ),
             ),

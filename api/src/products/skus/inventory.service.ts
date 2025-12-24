@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { NotificationsService } from 'src/notifications/notifications.service';
+import { StockGateway } from './stock.gateway';
 
 @Injectable()
 export class InventoryService {
@@ -12,6 +13,7 @@ export class InventoryService {
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
     private readonly notificationsGateway: NotificationsGateway,
+    private readonly stockGateway: StockGateway,
   ) {}
 
   /**
@@ -37,6 +39,7 @@ export class InventoryService {
       throw new Error(`Not enough stock for SKU ${skuId}`);
     }
 
+    this.notifyStockUpdate(skuId);
     this.checkLowStock(skuId);
   }
 
@@ -54,6 +57,8 @@ export class InventoryService {
         reservedStock: { decrement: quantity },
       },
     });
+
+    this.notifyStockUpdate(skuId);
   }
 
   /**
@@ -119,6 +124,26 @@ export class InventoryService {
           );
         }
       }
+    }
+  }
+
+  /**
+   * Fetch current stock and notify via WebSocket
+   */
+  private async notifyStockUpdate(skuId: string) {
+    try {
+      const sku = await this.prisma.sku.findUnique({
+        where: { id: skuId },
+        select: { stock: true, productId: true },
+      });
+
+      if (sku) {
+        this.stockGateway.emitStockUpdate(sku.productId, skuId, sku.stock);
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to notify stock update for SKU ${skuId}: ${error.message}`,
+      );
     }
   }
 }

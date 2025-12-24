@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/atoms/toaster";
 import { SmoothScroll } from "@/components/molecules/smooth-scroll";
+import { FeatureFlagProvider } from "@/hooks/use-feature-flags";
 import { routing } from "@/i18n/routing";
 import { AuthProvider } from "@/providers/auth-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -83,9 +84,11 @@ async function RootProviders({
           enableSystem
           disableTransitionOnChange
         >
-          <SmoothScroll />
-          {children}
-          <Toaster />
+          <FeatureFlagProvider>
+            <SmoothScroll />
+            {children}
+            <Toaster />
+          </FeatureFlagProvider>
         </ThemeProvider>
       </AuthProvider>
     </NextIntlClientProvider>

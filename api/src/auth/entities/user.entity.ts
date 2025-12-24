@@ -55,7 +55,7 @@ export class UserEntity implements Partial<User> {
   @ApiProperty()
   updatedAt: Date;
 
-  constructor(partial: Partial<UserEntity> | any) {
+  constructor(partial: any) {
     Object.assign(this, partial);
     // Gán mảng thô một cách rõ ràng để đảm bảo chúng có sẵn cho các getter
     // ngay cả khi Object.assign có thể xử lý chúng khác nhau tùy thuộc vào cấu hình TS

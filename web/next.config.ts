@@ -22,6 +22,7 @@ const nextConfig: NextConfig = {
   typedRoutes: true, // Enable Typed Routes
 
   images: {
+    formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
         protocol: "https",
@@ -48,6 +49,16 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com",
       },
     ],
+  },
+
+  experimental: {
+    optimizePackageImports: ["lucide-react", "framer-motion"],
+  },
+
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
   },
 
   // Standalone output cho Docker (image nhỏ gọn)

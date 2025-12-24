@@ -73,7 +73,7 @@ export function BrandsPageClient({
 
   const { mutate: mutateGlobalBrands } = useAdminBrands();
 
-  const brands = brandsRes?.data || [];
+  const brands = brandsRes && "data" in brandsRes ? brandsRes.data || [] : [];
 
   // Helper to mutate both local and global cache
   const refreshData = () => {
@@ -202,7 +202,7 @@ export function BrandsPageClient({
         </Table>
       </GlassCard>
 
-      {brandsRes?.meta && (
+      {brandsRes && "meta" in brandsRes && brandsRes.meta && (
         <DataTablePagination
           page={brandsRes.meta.page}
           total={brandsRes.meta.total}

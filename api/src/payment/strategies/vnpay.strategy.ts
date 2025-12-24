@@ -21,7 +21,7 @@ export class VNPayStrategy implements PaymentStrategy {
     return `${parts[0]}.${parts[1]}.***.***`;
   }
 
-  async processPayment(dto: CreatePaymentDto): Promise<PaymentResult> {
+  processPayment(dto: CreatePaymentDto): Promise<PaymentResult> {
     this.logger.log(`Processing payment for order ${dto.orderId}`, {
       amount: dto.amount,
       ipAddr: this.maskIP(dto.ipAddr || ''),
@@ -78,11 +78,11 @@ export class VNPayStrategy implements PaymentStrategy {
     const finalUrl =
       vnpUrl + '?' + querystring.stringify(vnp_Params, { encode: false });
 
-    return {
+    return Promise.resolve({
       success: true,
       paymentUrl: finalUrl,
       message: 'Redirect to VNPay',
-    };
+    });
   }
 
   // Helper to format date YYYYMMDDHHmmss
@@ -104,7 +104,7 @@ export class VNPayStrategy implements PaymentStrategy {
     const str: string[] = [];
     let key;
     for (key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
         str.push(encodeURIComponent(key));
       }
     }

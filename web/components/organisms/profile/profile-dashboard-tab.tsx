@@ -58,9 +58,15 @@ export function ProfileDashboardTab({
         ]);
 
         setStats({
-          orders: ordersRes.data?.length || 0,
+          orders:
+            ordersRes && "data" in ordersRes && ordersRes.data
+              ? ordersRes.data.length
+              : 0,
           wishlist: wishlistCount || 0,
-          vouchers: vouchersRes.data?.length || 0,
+          vouchers:
+            vouchersRes && "data" in vouchersRes && vouchersRes.data
+              ? vouchersRes.data.length
+              : 0,
         });
       } catch (error) {
         console.error("Failed to fetch dashboard stats", error);

@@ -62,20 +62,34 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   const { params, headers, skipAuth, ...rest } = options;
 
   // ========================================
-  // 1. LẤY ACCESS TOKEN TỪ COOKIES
+  // 3. CẤU HÌNH HEADERS & CSRF & AUTH
   // ========================================
+  let csrfToken: string | undefined;
   let accessToken: string | undefined;
 
-  if (!skipAuth) {
-    if (typeof window === "undefined") {
-      const { cookies } = await import("next/headers");
-      const cookieStore = await cookies();
-      accessToken = cookieStore.get("accessToken")?.value;
-    } else {
-      // Client-side: get token from document.cookie or local storage if needed
+  const isStateChanging = ["POST", "PUT", "PATCH", "DELETE"].includes(
+    rest.method?.toUpperCase() || "GET"
+  );
+
+  // Only access cookies on server-side when necessary
+  if (typeof window === "undefined") {
+    // P0 Optimization: Only call cookies() if we actually need accessToken or csrfToken
+    // This prevents breaking "use cache" for public GET requests.
+    if (!skipAuth || isStateChanging) {
+      try {
+        const { cookies } = await import("next/headers");
+        const cookieStore = await cookies();
+        if (!skipAuth) {
+          accessToken = cookieStore.get("accessToken")?.value;
+        }
+        if (isStateChanging) {
+          csrfToken = cookieStore.get("csrf-token")?.value;
+        }
+      } catch (e) {
+        // If we are inside "use cache", cookies() throws. We just proceed without tokens.
+      }
     }
   }
-
   // ========================================
   // 2. XÂY DỰNG URL ĐẦY ĐỦ
   // ========================================
@@ -95,12 +109,11 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     });
   }
 
-  // ========================================
-  // 3. CẤU HÌNH HEADERS
-  // ========================================
   const requestHeaders: Record<string, string> = {
     // Đính kèm Bearer token nếu có
     Authorization: accessToken ? `Bearer ${accessToken}` : "",
+    // Đính kèm CSRF token cho security (P0 compliance)
+    "X-CSRF-Token": csrfToken || "",
     ...(headers as Record<string, string>),
   };
 
@@ -127,7 +140,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     return {
       data: [],
       meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
-    } as any;
+    } as T;
   }
 
   // ========================================

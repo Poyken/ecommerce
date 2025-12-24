@@ -23,7 +23,7 @@ async function main() {
   console.log('Orders found:', orders.length);
   orders.forEach((o) => {
     console.log(
-      `Order Date: ${o.createdAt}, Amount: ${o.totalAmount} (Type: ${typeof o.totalAmount})`,
+      `Order Date: ${o.createdAt.toISOString()}, Amount: ${o.totalAmount.toString()} (Type: ${typeof o.totalAmount})`,
     );
   });
 

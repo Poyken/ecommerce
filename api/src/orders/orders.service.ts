@@ -243,11 +243,30 @@ export class OrdersService {
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
-        include: {
+        select: {
+          id: true,
+          totalAmount: true,
+          status: true,
+          paymentStatus: true,
+          createdAt: true,
           items: {
-            include: {
+            take: 3, // Only show first few items in the list view
+            select: {
+              id: true,
+              quantity: true,
+              priceAtPurchase: true,
               sku: {
-                include: { product: true },
+                select: {
+                  id: true,
+                  skuCode: true,
+                  imageUrl: true,
+                  product: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
               },
             },
           },
@@ -293,6 +312,7 @@ export class OrdersService {
     if (!order) throw new NotFoundException('Không tìm thấy đơn hàng');
 
     if (order.userId !== userId) {
+      throw new BadRequestException('Bạn không có quyền xem đơn hàng này');
     }
 
     return order;

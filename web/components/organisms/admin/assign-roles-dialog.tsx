@@ -51,11 +51,11 @@ export function AssignRolesDialog({
 
   useEffect(() => {
     if (open) {
-      getRolesAction().then(({ data }) => {
-        if (data) {
-          setRoles(data);
+      getRolesAction().then((response) => {
+        if ("data" in response && response.data) {
+          setRoles(response.data);
           // Chuyển đổi ID vai trò hiện tại thành tên
-          const currentRoleNames = data
+          const currentRoleNames = response.data
             .filter((role: Role) => currentRoles.includes(role.id))
             .map((role: Role) => role.name);
           setSelectedRoleNames(currentRoleNames);
@@ -66,7 +66,7 @@ export function AssignRolesDialog({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     startTransition(async () => {
       const result = await assignRolesAction(userId, selectedRoleNames);
       if (result.success) {

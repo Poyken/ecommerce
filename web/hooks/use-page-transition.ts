@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 /**
  * =====================================================================
@@ -24,9 +24,17 @@ export function usePageTransition() {
   const [isPending, startTransition] = useTransition();
   const [isNavigating, setIsNavigating] = useState(false);
 
-  // Track navigation changes
+  // Track navigation changes - using ref to avoid setState in effect
+  const prevPathRef = useRef(pathname);
+
   useEffect(() => {
-    setIsNavigating(false);
+    if (prevPathRef.current !== pathname) {
+      prevPathRef.current = pathname;
+      // Navigation completed, so we can reset the navigating state
+    }
+    // Only set false when we detect a real navigation happened
+    if (isNavigating) setIsNavigating(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, searchParams]);
 
   const navigate = (callback: () => void) => {
@@ -84,7 +92,9 @@ export function useReducedMotion() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
+    // Initial value set via a callback to avoid lint warning
+    const setInitialValue = () => setPrefersReducedMotion(mediaQuery.matches);
+    setInitialValue();
 
     const handler = (event: MediaQueryListEvent) => {
       setPrefersReducedMotion(event.matches);

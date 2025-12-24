@@ -10,7 +10,10 @@ import { ConditionalFooter } from "@/components/organisms/conditional-footer";
 import { Footer } from "@/components/organisms/footer";
 import { Header, HeaderFallback } from "@/components/organisms/header";
 import { MobileBottomNav } from "@/components/organisms/mobile-nav";
-import { NotificationProvider } from "@/contexts/notification-context";
+import {
+  NotificationProvider,
+  type Notification,
+} from "@/contexts/notification-context";
 import { getPermissionsFromToken } from "@/lib/permission-utils";
 import { CartProvider } from "@/providers/cart-provider";
 import { cookies } from "next/headers";
@@ -41,32 +44,41 @@ import Loading from "./loading";
 async function DynamicShopContent({ children }: { children: React.ReactNode }) {
   // Fetch user data ONCE for the entire layout
   // We also try to fetch cart and wishlist counts securely on the server to avoid client waterfalls
-  const cookieStore = await cookies();
-  const [profile, cartRes, wishlistItems, notificationsRes, unreadCountRes] =
-    await Promise.all([
-      getProfileAction(),
-      getCartCountAction().catch(() => ({ count: 0 })),
-      getWishlistAction().catch(() => []),
-      getNotificationsAction(10).catch(() => ({ data: [] })),
-      getUnreadCountAction().catch(() => ({ count: 0 })),
-    ]);
-  const user = profile.data;
-  const token = cookieStore.get("accessToken")?.value;
+  let user = null;
+  let token = undefined;
+  let initialCartCount = 0;
+  let initialWishlistCount = 0;
+  let initialNotifications: Notification[] = [];
+  let initialUnreadCount = 0;
+  let permissions: string[] = [];
 
-  // Only extract permissions if user is successfully authenticated
-  // This prevents showing admin links if the token is stale but still exists
-  const permissions = user ? getPermissionsFromToken(token) : [];
+  try {
+    const cookieStore = await cookies();
+    const [profile, cartRes, wishlistItems, notificationsRes, unreadCountRes] =
+      await Promise.all([
+        getProfileAction(),
+        getCartCountAction().catch(() => ({ count: 0 })),
+        getWishlistAction().catch(() => []),
+        getNotificationsAction(10).catch(() => ({ data: [] })),
+        getUnreadCountAction().catch(() => ({ count: 0 })),
+      ]);
 
-  const initialCartCount =
-    user && cartRes && typeof cartRes.count === "number" ? cartRes.count : 0;
-  const initialWishlistCount =
-    user && Array.isArray(wishlistItems) ? wishlistItems.length : 0;
-
-  const initialNotifications = notificationsRes?.data || [];
-  const initialUnreadCount =
-    unreadCountRes && typeof unreadCountRes.count === "number"
-      ? unreadCountRes.count
-      : 0;
+    user = profile.data;
+    token = cookieStore.get("accessToken")?.value;
+    permissions = user ? getPermissionsFromToken(token) : [];
+    initialCartCount =
+      user && cartRes && typeof cartRes.count === "number" ? cartRes.count : 0;
+    initialWishlistCount =
+      user && Array.isArray(wishlistItems) ? wishlistItems.length : 0;
+    initialNotifications = (notificationsRes?.data || []) as Notification[];
+    initialUnreadCount =
+      unreadCountRes && typeof unreadCountRes.count === "number"
+        ? unreadCountRes.count
+        : 0;
+  } catch (e) {
+    // If cookies() or fetching fails during prerendering, we just use the default empty values.
+    // This allows the static shell of the layout to be built.
+  }
 
   return (
     <NotificationProvider

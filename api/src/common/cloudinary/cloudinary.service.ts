@@ -53,7 +53,7 @@ export class CloudinaryService {
           transformation: [{ quality: 'auto', fetch_format: 'auto' }],
         },
         (error, result) => {
-          if (error) return reject(error);
+          if (error) return reject(new Error(JSON.stringify(error)));
           if (!result) return reject(new Error('Upload failed'));
           resolve(result);
         },

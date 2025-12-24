@@ -33,7 +33,7 @@ export const blogService = {
   }): Promise<ApiResponse<BlogWithProducts[]>> {
     try {
       const response = await http<ApiResponse<BlogWithProducts[]>>("/blogs", {
-        params: params as any,
+        params: params as Record<string, string | number | boolean | undefined>,
         skipAuth: true,
         next: { revalidate: 900 }, // Cache for 15 minutes
       });
@@ -48,7 +48,7 @@ export const blogService = {
       return {
         data: [],
         meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
-      } as any;
+      } as unknown as ApiResponse<BlogWithProducts[]>;
     }
   },
 

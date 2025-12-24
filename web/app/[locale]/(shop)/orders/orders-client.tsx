@@ -51,7 +51,7 @@ export type Order = Pick<
   "id" | "totalAmount" | "status" | "createdAt"
 > & {
   orderNumber?: string;
-  items: { quantity: number }[];
+  items?: { quantity: number }[];
 };
 
 // ... imports

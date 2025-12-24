@@ -28,6 +28,8 @@ import { CompactRating } from "@/components/molecules/review-preview";
 import { SkuSelectionDialog } from "@/components/molecules/sku-selection-dialog";
 import { WishlistButton } from "@/components/molecules/wishlist-button";
 import { useCart } from "@/hooks/use-cart";
+import { useFeatureFlags } from "@/hooks/use-feature-flags";
+import { useStock } from "@/hooks/use-stock";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "@/i18n/routing";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -83,6 +85,12 @@ export const ProductCard = memo(function ProductCard({
 
   // Use custom hook for cart operations
   const { addToCart, isAdding } = useCart(name);
+  const { isEnabled } = useFeatureFlags();
+
+  // Real-time stock for the default/first variant
+  const defaultSku = skus?.[0];
+  const currentStock = useStock(defaultSku?.stock ?? 0, defaultSku?.id);
+  const isLowStock = currentStock > 0 && currentStock < 5;
 
   useEffect(() => {
     if (imageUrl) {
@@ -182,10 +190,19 @@ export const ProductCard = memo(function ProductCard({
             isCompact && "top-3 left-3"
           )}
         >
-          {isNew && (
+          {isEnabled("show_new_arrival_badge") && isNew && (
             <span className="bg-accent/90 text-accent-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg">
               {t("new")}
             </span>
+          )}
+          {isLowStock && (
+            <motion.span
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-orange-500/90 text-white text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg animate-pulse"
+            >
+              {t("lowStock") || "Low Stock"}
+            </motion.span>
           )}
           {!isNew && isHot && (
             <span className="bg-primary/90 text-primary-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg">

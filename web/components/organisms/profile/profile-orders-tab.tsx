@@ -41,7 +41,7 @@ export function ProfileOrdersTab() {
     const fetchOrders = async () => {
       try {
         const res = await getMyOrdersAction();
-        if (res.data) {
+        if ("data" in res && res.data) {
           setOrders(res.data);
         }
       } catch (error) {

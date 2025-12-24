@@ -44,7 +44,7 @@ import { NotificationsService } from './notifications.service';
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_ACCESS_SECRET'),
         signOptions: { expiresIn: '7d' },
       }),

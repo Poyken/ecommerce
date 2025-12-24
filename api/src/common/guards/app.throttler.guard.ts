@@ -15,8 +15,9 @@ export class AppThrottlerGuard extends ThrottlerGuard {
     const req = context.switchToHttp().getRequest();
     const isUser = !!req.user;
 
-    // Custom Limit Logic: User gets 100, Guest gets 20.
-    const effectiveLimit = isUser ? 100 : 20;
+    // Custom Limit Logic: Scaled up to support static site generation (SSG)
+    // P0 Optimization: Increased from 100/20 to 1000 to prevent build failures.
+    const effectiveLimit = isUser ? 2000 : 1000;
 
     return super.handleRequest({
       ...requestProps,

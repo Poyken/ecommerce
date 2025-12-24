@@ -15,7 +15,7 @@ export class PaymentController {
 
   @Get('vnpay_return')
   @ApiOperation({ summary: 'Handle VNPay Return URL' })
-  async vnpayReturn(@Query() query: any, @Res() res) {
+  vnpayReturn(@Query() query: any, @Res() res) {
     const vnp_Params = { ...query };
     const secureHash = vnp_Params['vnp_SecureHash'];
 
@@ -115,7 +115,7 @@ export class PaymentController {
     const str: string[] = [];
     let key;
     for (key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
         str.push(encodeURIComponent(key));
       }
     }

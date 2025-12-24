@@ -29,7 +29,7 @@ import { validateCouponAction } from "@/actions/coupon";
 import { placeOrderAction } from "@/actions/order";
 import { calculateShippingFeeAction } from "@/actions/shipping";
 import { GlassButton } from "@/components/atoms/glass-button";
-import { AddAddressDialog } from "@/components/organisms/admin/add-address-dialog";
+// import { AddAddressDialog } from "@/components/organisms/admin/add-address-dialog"; // Replaced with dynamic import
 import { AddressSelector } from "@/components/organisms/checkout/address-selector";
 import { CouponInput } from "@/components/organisms/checkout/coupon-input";
 import { OrderSummary } from "@/components/organisms/checkout/order-summary";
@@ -44,8 +44,17 @@ import { Address, Cart, CartItem, Coupon } from "@/types/models";
 import { motion } from "framer-motion";
 import { ArrowLeft, Lock, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
+
+const AddAddressDialog = dynamic(
+  () =>
+    import("@/components/organisms/admin/add-address-dialog").then(
+      (m) => m.AddAddressDialog
+    ),
+  { ssr: false }
+);
 
 interface CheckoutClientProps {
   cart: Cart | null;

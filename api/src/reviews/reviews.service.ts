@@ -213,27 +213,17 @@ export class ReviewsService {
       nextCursor = nextItem!.id;
     }
 
-    // 2. Aggregate stats (Cached separately ideally, but fast enough via index)
-    // Note: This aggregate is "heavy" if table is huge.
-    // Optimization: Should be cached in Redis or Product Table (which we do in updateProductRatingCache).
-    // So we can just fetch from Product table instead of aggregating each time.
-    // However, the controller might want latest live data?
-    // Let's rely on the Cache logic inside UpdateReview.
-    // To strictly avoid N+1/Heavy Agg, we fetch product stats.
-
-    // Fallback if product table stats are missing/outdated?
-    // Let's stick to simple aggregation for now as postgres is fast with proper index.
-    const aggregate = await this.prisma.review.aggregate({
-      where: { productId, isApproved: true },
-      _avg: { rating: true },
-      _count: true,
+    // 2. Fetch stats from cached Product columns (P0 Optimization)
+    const productStats = await this.prisma.product.findUnique({
+      where: { id: productId },
+      select: { avgRating: true, reviewCount: true },
     });
 
     return {
       data: reviews,
       meta: {
-        totalReviews: aggregate._count,
-        averageRating: aggregate._avg.rating || 0,
+        totalReviews: productStats?.reviewCount || 0,
+        averageRating: productStats?.avgRating || 0,
         nextCursor,
       },
     };

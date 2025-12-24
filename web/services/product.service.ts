@@ -149,7 +149,7 @@ export const productService = {
       return {
         data: [],
         meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
-      } as any;
+      } as unknown as ApiResponse<Product[]>;
     }
   },
 

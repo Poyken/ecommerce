@@ -475,3 +475,15 @@ enum DiscountType {
   PERCENTAGE
   FIXED_AMOUNT
 }
+
+model FeatureFlag {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  description String?
+  isEnabled   Boolean  @default(false)
+  rules       Json?    // For advanced targeting: { "userIds": [...], "percentage": 50, "environments": ["production"] }
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+}

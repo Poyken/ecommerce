@@ -174,7 +174,7 @@ export class CouponsService {
 
     if (coupon.minOrderAmount && orderAmount < Number(coupon.minOrderAmount)) {
       throw new BadRequestException(
-        `Đơn hàng tối thiểu ${coupon.minOrderAmount} để sử dụng mã này`,
+        `Đơn hàng tối thiểu ${coupon.minOrderAmount.toString()} để sử dụng mã này`,
       );
     }
 

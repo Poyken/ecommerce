@@ -280,7 +280,15 @@ export class BulkService {
     const headerRow = sheet.getRow(1);
 
     headerRow.eachCell((cell, colNumber) => {
-      const val = cell.value?.toString().toLowerCase().trim();
+      const val = (
+        cell.value
+          ? typeof cell.value === 'string'
+            ? cell.value
+            : JSON.stringify(cell.value)
+          : ''
+      )
+        .toLowerCase()
+        .trim();
       if (val === 'sku code') headerMap[colNumber] = 'skuCode';
       else if (val === 'price') headerMap[colNumber] = 'price';
       else if (val === 'sale price') headerMap[colNumber] = 'salePrice';

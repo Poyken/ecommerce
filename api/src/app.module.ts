@@ -38,7 +38,9 @@ import { BlogModule } from './blog/blog.module';
 import { CartModule } from './cart/cart.module';
 import { CloudinaryModule } from './common/cloudinary/cloudinary.module';
 import { CommonModule } from './common/common.module';
+import { FeatureFlagsModule } from './common/feature-flags/feature-flags.module';
 import { AppThrottlerGuard } from './common/guards/app.throttler.guard';
+import { CsrfGuard } from './common/guards/csrf.guard';
 import { SitemapModule } from './common/sitemap/sitemap.module';
 import { CouponsModule } from './coupons/coupons.module';
 import { HealthController } from './health.controller';
@@ -179,6 +181,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     WishlistModule,
 
     BlogModule,
+    FeatureFlagsModule,
   ],
   controllers: [HealthController],
   providers: [
@@ -187,6 +190,10 @@ import { CacheModule } from '@nestjs/cache-manager';
     {
       provide: APP_GUARD,
       useClass: AppThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: CsrfGuard,
     },
     {
       provide: APP_INTERCEPTOR,

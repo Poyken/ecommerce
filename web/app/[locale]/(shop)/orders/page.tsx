@@ -89,7 +89,7 @@ async function DynamicOrders({
     );
   }
 
-  return <OrdersClient orders={orders} meta={meta} />;
+  return <OrdersClient orders={orders} meta={meta ?? null} />;
 }
 
 import { getMyOrdersAction } from "@/actions/order"; // Import action

@@ -57,10 +57,16 @@ async function DynamicAdminContent({
     redirect("/login");
   }
 
-  const initialBrands = brandsRes?.data || [];
-  const initialCategories = categoriesRes?.data || [];
-  const initialNotifications = notificationsRes?.data || [];
-  const initialUnreadCount = unreadCountRes?.count || 0;
+  const initialBrands =
+    brandsRes && "data" in brandsRes ? brandsRes.data || [] : [];
+  const initialCategories =
+    categoriesRes && "data" in categoriesRes ? categoriesRes.data || [] : [];
+  const initialNotifications =
+    notificationsRes && "data" in notificationsRes
+      ? notificationsRes.data || []
+      : [];
+  const initialUnreadCount =
+    unreadCountRes && "count" in unreadCountRes ? unreadCountRes.count || 0 : 0;
 
   const token = cookieStore.get("accessToken")?.value;
   const permissions = getPermissionsFromToken(token);

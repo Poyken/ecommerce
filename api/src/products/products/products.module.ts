@@ -24,13 +24,19 @@ import { ProductsService } from './products.service';
 import { SkuManagerService } from './sku-manager.service';
 
 import { InventoryService } from '../skus/inventory.service';
+import { StockGateway } from '../skus/stock.gateway';
 
 import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [PrismaModule, NotificationsModule],
   controllers: [ProductsController],
-  providers: [ProductsService, SkuManagerService, InventoryService],
-  exports: [ProductsService, SkuManagerService, InventoryService],
+  providers: [
+    ProductsService,
+    SkuManagerService,
+    InventoryService,
+    StockGateway,
+  ],
+  exports: [ProductsService, SkuManagerService, InventoryService, StockGateway],
 })
 export class ProductsModule {}
