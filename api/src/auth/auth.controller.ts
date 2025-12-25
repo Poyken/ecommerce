@@ -31,6 +31,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
+import { TwoFactorService } from './two-factor.service';
 
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -55,7 +56,10 @@ function getFingerprint(req: any) {
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly twoFactorService: TwoFactorService,
+  ) {}
 
   @Post('register')
   @ApiOperation({ summary: 'Đăng ký tài khoản mới' })
@@ -234,5 +238,75 @@ export class AuthController {
     res.redirect(
       `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/social-callback?accessToken=${data.accessToken}`,
     );
+  }
+
+  // ============================================================================
+  // TWO-FACTOR AUTHENTICATION ENDPOINTS
+  // ============================================================================
+
+  @Post('2fa/generate')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Tạo mã 2FA secret & QR Code' })
+  async generate2FA(@Request() req: any) {
+    const user = await this.authService.getMe(req.user.userId);
+    const { secret, otpauthUrl } = await this.twoFactorService.generateSecret(
+      user.email,
+    );
+    const qrCode =
+      await this.twoFactorService.generateQrCodeDataURL(otpauthUrl);
+    return { data: { secret, qrCode } };
+  }
+
+  @Post('2fa/enable')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Kích hoạt 2FA' })
+  async enable2FA(
+    @Request() req: any,
+    @Body() body: { token: string; secret: string },
+  ) {
+    const isValid = this.twoFactorService.verifyToken(body.token, body.secret);
+    if (!isValid) {
+      throw new UnauthorizedException('Mã xác thực không hợp lệ');
+    }
+    await this.twoFactorService.enableTwoFactor(req.user.userId, body.secret);
+    return { message: 'Kích hoạt 2FA thành công' };
+  }
+
+  @Post('2fa/disable')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Vô hiệu hóa 2FA' })
+  async disable2FA(@Request() req: any, @Body() body: { token: string }) {
+    const user = await this.authService.getMe(req.user.userId);
+    const isValid = this.twoFactorService.verifyToken(
+      body.token,
+      user.twoFactorSecret as string,
+    );
+    if (!isValid) {
+      throw new UnauthorizedException('Mã xác thực không hợp lệ');
+    }
+    await this.twoFactorService.disableTwoFactor(req.user.userId);
+    return { message: 'Vô hiệu hóa 2FA thành công' };
+  }
+
+  @Post('2fa/login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Xác thực 2FA khi đăng nhập' })
+  async login2FA(
+    @Body() body: { userId: string; token: string },
+    @Res({ passthrough: true }) res: Response,
+    @Request() req: any,
+  ) {
+    const fp = getFingerprint(req);
+    const data = await this.authService.verify2FALogin(
+      body.userId,
+      body.token,
+      fp,
+    );
+
+    res.cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
+    return { data };
   }
 }

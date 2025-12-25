@@ -27,12 +27,14 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { TokenService } from './token.service';
+import { TwoFactorService } from './two-factor.service';
 
+import { EmailModule } from '../common/email/email.module';
 import { FacebookStrategy } from './strategies/facebook.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 
 @Module({
-  imports: [JwtModule.register({}), NotificationsModule],
+  imports: [JwtModule.register({}), NotificationsModule, EmailModule],
   controllers: [AuthController],
   providers: [
     AuthService,
@@ -40,6 +42,8 @@ import { GoogleStrategy } from './strategies/google.strategy';
     JwtStrategy,
     GoogleStrategy,
     FacebookStrategy,
+    TwoFactorService, // Added TwoFactorService
   ],
+  exports: [AuthService, TokenService, TwoFactorService], // Added exports array
 })
 export class AuthModule {}

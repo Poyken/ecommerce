@@ -24,6 +24,12 @@ import { ShippingService } from '../shipping/shipping.service';
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
 
+  // GHN Configuration defaults
+  private readonly DEFAULT_HEIGHT = 10;
+  private readonly DEFAULT_LENGTH = 10;
+  private readonly DEFAULT_WIDTH = 10;
+  private readonly DEFAULT_WEIGHT = 1000; // 1kg
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly paymentService: PaymentService,
@@ -127,10 +133,11 @@ export class OrdersService {
           paymentMethod: createOrderDto.paymentMethod || 'COD',
           status: OrderStatus.PENDING,
           couponId: couponId,
+          addressId: createOrderDto.addressId,
           items: {
             create: orderItemsData,
           },
-        },
+        } as any,
         include: { items: true },
       });
 
@@ -250,6 +257,7 @@ export class OrdersService {
           paymentStatus: true,
           createdAt: true,
           shippingFee: true,
+          shippingCode: true,
           items: {
             take: 3,
             select: {
@@ -454,15 +462,33 @@ export class OrdersService {
           );
         }
       }
-
       const updatedOrder = await tx.order.update({
         where: { id },
         data: { status: dto.status as OrderStatus },
-        include: { user: true },
+        include: {
+          user: true,
+          items: { include: { sku: { include: { product: true } } } },
+          address: true,
+        } as any,
       });
 
-      if (newStatus === OrderStatus.SHIPPED) {
-        await this.emailService.sendShippingUpdate(updatedOrder);
+      if (newStatus === OrderStatus.PROCESSING) {
+        // Automatically sync with GHN if addressId exists
+        if (updatedOrder.addressId) {
+          await this.syncWithGHN(updatedOrder);
+        }
+      }
+
+      // Send email notification for status changes
+      const emailStatuses = [
+        OrderStatus.PROCESSING,
+        OrderStatus.SHIPPED,
+        OrderStatus.DELIVERED,
+        OrderStatus.CANCELLED,
+      ];
+
+      if ((emailStatuses as any[]).includes(newStatus)) {
+        await this.emailService.sendOrderStatusUpdate(updatedOrder);
       }
 
       try {
@@ -491,7 +517,7 @@ export class OrdersService {
             message = `Đơn hàng #${id.slice(-8)} của bạn đã bị hủy.`;
             notiType = 'ORDER_CANCELLED';
             break;
-          case 'RETURNED' as OrderStatus:
+          case 'RETURNED' as any:
             title = 'Đơn hàng đã hoàn';
             message = `Đơn hàng #${id.slice(-8)} của bạn đã được hoàn trả.`;
             notiType = 'ORDER_RETURNED';
@@ -516,5 +542,65 @@ export class OrdersService {
 
       return updatedOrder;
     });
+  }
+
+  /**
+   * Đồng bộ đơn hàng sang Giao Hàng Nhanh (GHN)
+   */
+  private async syncWithGHN(order: any) {
+    try {
+      const address = await this.prisma.address.findUnique({
+        where: { id: order.addressId },
+      });
+
+      if (!address || !address.districtId || !address.wardCode) {
+        this.logger.warn(`Missing GHN address info for order ${order.id}`);
+        return;
+      }
+
+      const ghnOrderData = {
+        payment_type_id: order.paymentMethod === 'COD' ? 2 : 1, // 2: Guest pays shipping, 1: Shop pays shipping (adjusted by business)
+        note: `Don hang #${order.id.slice(-8)}`,
+        required_note: 'CHOXEMHANGKHONGTHU',
+        return_phone: address.phoneNumber,
+        return_address: address.street,
+        to_name: order.recipientName,
+        to_phone: order.phoneNumber,
+        to_address: order.shippingAddress,
+        to_ward_code: address.wardCode,
+        to_district_id: address.districtId,
+        cod_amount:
+          order.paymentStatus === 'PAID' ? 0 : Number(order.totalAmount),
+        content: `Don hang tu Poyken E-commerce`,
+        weight: this.DEFAULT_WEIGHT,
+        length: this.DEFAULT_LENGTH,
+        width: this.DEFAULT_WIDTH,
+        height: this.DEFAULT_HEIGHT,
+        service_type_id: 2, // E-commerce service
+        items: order.items.map((item) => ({
+          name: item.sku.product.name,
+          code: item.sku.skuCode,
+          quantity: item.quantity,
+          price: Number(item.priceAtPurchase),
+        })),
+      };
+
+      const ghnResponse =
+        await this.shippingService.ghnService.createShippingOrder(ghnOrderData);
+
+      // Save GHN Tracking Code to Order
+      await this.prisma.order.update({
+        where: { id: order.id },
+        data: {
+          shippingCode: ghnResponse.order_code,
+        } as any,
+      });
+
+      this.logger.log(
+        `Synced order ${order.id} with GHN: ${ghnResponse.order_code}`,
+      );
+    } catch (error) {
+      this.logger.error(`Failed to sync order ${order.id} with GHN`, error);
+    }
   }
 }

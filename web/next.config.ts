@@ -59,6 +59,7 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "10mb",
     },
+    useCache: true,
   },
 
   logging: {
@@ -69,8 +70,6 @@ const nextConfig: NextConfig = {
 
   // Standalone output cho Docker (image nhỏ gọn)
   output: "standalone",
-
-  cacheComponents: true,
 
   // Proxy API requests to Backend
   async rewrites() {

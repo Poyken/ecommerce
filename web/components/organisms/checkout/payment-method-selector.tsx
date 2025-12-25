@@ -25,7 +25,7 @@ import { Label } from "@radix-ui/react-label";
 import { Check, CreditCard, Landmark, Truck } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-export type PaymentMethodType = "COD" | "CARD" | "BANKING" | "VNPAY";
+export type PaymentMethodType = "COD" | "CARD" | "BANKING" | "VNPAY" | "MOMO";
 
 interface PaymentMethodSelectorProps {
   method: PaymentMethodType;
@@ -91,6 +91,19 @@ export function PaymentMethodSelector({
             />
           }
           checked={method === "VNPAY"}
+        />
+
+        {/* MoMo Option */}
+        <PaymentMethodOption
+          value="MOMO"
+          label={t("momo")}
+          description={t("momoDesc")}
+          icon={
+            <div className="w-7 h-7 flex items-center justify-center bg-[#A50064] text-white rounded-md text-[10px] font-bold">
+              M
+            </div>
+          }
+          checked={method === "MOMO"}
         />
 
         {/* Credit Card Option (Disabled) */}

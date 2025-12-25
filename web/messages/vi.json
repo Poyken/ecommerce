@@ -285,7 +285,9 @@
     "paymentMethods": {
       "COD": "Thanh toán khi nhận hàng",
       "BANKING": "Chuyển khoản ngân hàng",
-      "CARD": "Thẻ tín dụng"
+      "CARD": "Thẻ tín dụng",
+      "MOMO": "Ví MoMo",
+      "VNPAY": "VNPay"
     }
   },
   "home": {
@@ -565,6 +567,8 @@
     "couponInvalid": "Mã giảm giá không hợp lệ",
     "vnpay": "VNPay / QR Pay",
     "vnpayDesc": "Thanh toán qua ví điện tử / Mobile Banking",
+    "momo": "Ví điện tử MoMo",
+    "momoDesc": "Thanh toán qua ứng dụng MoMo",
     "freeShipping": "Miễn phí (Chọn địa chỉ)",
     "completeOrderWithTotal": "Hoàn tất đơn hàng • {total}",
     "edit": "Chỉnh sửa"

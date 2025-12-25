@@ -1,9 +1,19 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as crypto from 'crypto';
 import * as querystring from 'qs';
 import { PrismaService } from '../prisma/prisma.service';
+import { VNPayUtils } from './vnpay.utils';
 
 @ApiTags('Payment')
 @Controller('payment')
@@ -23,14 +33,13 @@ export class PaymentController {
     delete vnp_Params['vnp_SecureHashType'];
 
     // Sort params
-    const sortedParams = this.sortObject(vnp_Params);
+    const sortedParams = VNPayUtils.sortObject(vnp_Params);
 
     const secretKey = this.configService.get('VNPAY_HASH_SECRET');
     const signData = querystring.stringify(sortedParams, { encode: false });
-    const hmac = crypto.createHmac('sha512', secretKey);
-    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+    const isValid = VNPayUtils.verifySignature(secureHash, secretKey, signData);
 
-    if (secureHash === signed) {
+    if (isValid) {
       // Check transaction status
       if (vnp_Params['vnp_ResponseCode'] === '00') {
         // Success
@@ -61,13 +70,12 @@ export class PaymentController {
     delete vnp_Params['vnp_SecureHash'];
     delete vnp_Params['vnp_SecureHashType'];
 
-    const sortedParams = this.sortObject(vnp_Params);
+    const sortedParams = VNPayUtils.sortObject(vnp_Params);
     const secretKey = this.configService.get('VNPAY_HASH_SECRET');
     const signData = querystring.stringify(sortedParams, { encode: false });
-    const hmac = crypto.createHmac('sha512', secretKey);
-    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+    const isValid = VNPayUtils.verifySignature(secureHash, secretKey, signData);
 
-    if (secureHash === signed) {
+    if (isValid) {
       const orderId = vnp_Params['vnp_TxnRef'];
       const rspCode = vnp_Params['vnp_ResponseCode'];
 
@@ -110,19 +118,69 @@ export class PaymentController {
     }
   }
 
-  private sortObject(obj: any): any {
-    const sorted: Record<string, string> = {};
-    const str: string[] = [];
-    let key;
-    for (key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        str.push(encodeURIComponent(key));
+  @Post('momo_ipn')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Handle MoMo IPN (Server to Server)' })
+  async momoIpn(@Body() body: any) {
+    const {
+      partnerCode,
+      orderId,
+      requestId,
+      amount,
+      orderInfo,
+      orderType,
+      transId,
+      resultCode,
+      message,
+      payType,
+      responseTime,
+      extraData,
+      signature,
+    } = body;
+
+    const secretKey = this.configService.get('MOMO_SECRET_KEY');
+    const accessKey = this.configService.get('MOMO_ACCESS_KEY');
+
+    // MoMo IPN signature raw string format
+    const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData || ''}&message=${message}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&requestId=${requestId}&responseTime=${responseTime}&resultCode=${resultCode}&transId=${transId}`;
+
+    // Note: MoMo IPN signature validation might differ slightly by version/requestType.
+    // This is the standard captureWallet version.
+    const hmac = crypto.createHmac('sha256', secretKey);
+    const expectedSignature = hmac.update(rawSignature).digest('hex');
+
+    if (signature === expectedSignature) {
+      // Find Order
+      const order = await this.prisma.order.findUnique({
+        where: { id: orderId },
+      });
+      if (!order) {
+        return { message: 'Order not found' };
       }
+
+      if (resultCode === 0) {
+        // Success
+        await this.prisma.order.update({
+          where: { id: orderId },
+          data: {
+            status: 'PROCESSING',
+            paymentStatus: 'PAID',
+            transactionId: transId.toString(),
+          },
+        });
+      } else {
+        // Failed
+        await this.prisma.order.update({
+          where: { id: orderId },
+          data: {
+            status: 'CANCELLED',
+            paymentStatus: 'FAILED',
+          },
+        });
+      }
+      return { message: 'Success' };
+    } else {
+      return { message: 'Signature mismatch' };
     }
-    str.sort();
-    for (key = 0; key < str.length; key++) {
-      sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, '+');
-    }
-    return sorted;
   }
 }

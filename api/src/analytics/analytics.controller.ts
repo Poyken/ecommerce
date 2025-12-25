@@ -59,4 +59,14 @@ export class AnalyticsController {
   getInventoryAnalysis() {
     return this.analyticsService.getInventoryAnalysis();
   }
+
+  @Get('categories')
+  @Permissions('analytics:read')
+  @ApiOperation({ summary: 'Get revenue by category' })
+  getRevenueByCategory(
+    @Query('startDate') startDate?: string,
+    @Query('endDate') endDate?: string,
+  ) {
+    return this.analyticsService.getRevenueByCategory(startDate, endDate);
+  }
 }

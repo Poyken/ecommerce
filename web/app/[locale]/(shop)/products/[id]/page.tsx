@@ -7,6 +7,7 @@
  * - Metadata and initial layout are rendered immediately.
  * - Product details and Reviews are streamed in via Suspense.
  */
+export const revalidate = 3600; // 1 hour ISR
 
 import { getProfileAction } from "@/actions/profile";
 import { BreadcrumbNav } from "@/components/atoms/breadcrumb-nav";

@@ -220,6 +220,9 @@ export class UsersService {
         include: { roles: { include: { role: true } } },
       });
 
+      if (!updatedUser) {
+        throw new Error('Failed to fetch updated user');
+      }
       return new UserEntity(updatedUser);
     });
   }

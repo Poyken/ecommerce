@@ -19,6 +19,8 @@ import { PrismaModule } from 'src/prisma/prisma.module';
  * - Import `PrismaModule` để thực hiện các thao tác truy vấn và lưu trữ thông tin sản phẩm, danh mục, thương hiệu.
  * =====================================================================
  */
+import { ProductsExportService } from './products-export.service';
+import { ProductsImportService } from './products-import.service';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
 import { SkuManagerService } from './sku-manager.service';
@@ -36,6 +38,8 @@ import { NotificationsModule } from 'src/notifications/notifications.module';
     SkuManagerService,
     InventoryService,
     StockGateway,
+    ProductsExportService,
+    ProductsImportService,
   ],
   exports: [ProductsService, SkuManagerService, InventoryService, StockGateway],
 })

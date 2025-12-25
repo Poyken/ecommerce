@@ -31,16 +31,22 @@ export class UserEntity implements Partial<User> {
   email: string;
 
   @ApiProperty()
-  firstName: string;
+  firstName: string | null;
 
   @ApiProperty()
-  lastName: string;
+  lastName: string | null;
 
   @ApiProperty()
-  avatarUrl: string;
+  avatarUrl: string | null;
 
   @Exclude()
-  password: string;
+  password: string | null;
+
+  @ApiProperty()
+  twoFactorEnabled: boolean;
+
+  @Exclude()
+  twoFactorSecret: string | null;
 
   // 1. Ẩn dữ liệu thô từ Prisma
   @Exclude()
@@ -49,18 +55,25 @@ export class UserEntity implements Partial<User> {
   @Exclude()
   permissions: any[];
 
+  @Exclude()
+  addresses: any[];
+
   @ApiProperty()
   createdAt: Date;
 
   @ApiProperty()
   updatedAt: Date;
 
-  constructor(partial: any) {
+  constructor(partial: Partial<UserEntity>) {
     Object.assign(this, partial);
-    // Gán mảng thô một cách rõ ràng để đảm bảo chúng có sẵn cho các getter
-    // ngay cả khi Object.assign có thể xử lý chúng khác nhau tùy thuộc vào cấu hình TS
-    this.roles = partial?.roles;
-    this.permissions = partial?.permissions;
+    // Explicitly map relations if needed, but for simplicity:
+    if (partial.roles) {
+      this.roles = partial.roles.map((r) => r.role?.name || r);
+    }
+    // The original constructor had explicit assignments for roles and permissions
+    // which are now handled by the `if (partial.roles)` block and the new type definition.
+    // No need for `this.permissions = partial?.permissions;` here as it's handled by Object.assign
+    // and the getter will process the raw data if it's still an array of objects.
   }
 
   // 2. Tính toán Roles cho đầu ra JSON

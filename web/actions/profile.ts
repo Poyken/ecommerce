@@ -32,6 +32,7 @@ import { cache } from "react";
  *   console.log(`Hello, ${profile.data.firstName}!`);
  * }
  */
+import { deleteSession } from "@/lib/session";
 import { cookies } from "next/headers";
 
 export const getProfileAction = cache(async () => {
@@ -47,6 +48,17 @@ export const getProfileAction = cache(async () => {
     return { data: res.data };
   } catch (error: unknown) {
     const message = (error as Error).message || "Failed to fetch profile";
+
+    // Check for "User not found" specifically
+    if (
+      message.toLowerCase().includes("user") &&
+      message.toLowerCase().includes("not found")
+    ) {
+      // Session is stale (DB reset?), clear it so user is logged out
+      await deleteSession();
+      return { data: null, error: "Session expired" };
+    }
+
     // Only log if it's not a 401 (which is expected for guest users)
     if (
       !message.includes("401") &&

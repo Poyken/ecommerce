@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import * as crypto from 'crypto';
 import * as querystring from 'qs';
 import {
   CreatePaymentDto,
   PaymentResult,
   PaymentStrategy,
 } from '../interfaces/payment-strategy.interface';
+import { VNPayUtils } from '../vnpay.utils';
 
 @Injectable()
 export class VNPayStrategy implements PaymentStrategy {
@@ -63,14 +63,13 @@ export class VNPayStrategy implements PaymentStrategy {
     vnp_Params['vnp_CreateDate'] = createDate;
 
     // Sorting parameters alphabetically
-    const sortedParams = this.sortObject(vnp_Params);
+    const sortedParams = VNPayUtils.sortObject(vnp_Params);
 
     // Create query string
     const signData = querystring.stringify(sortedParams, { encode: false });
 
     // Create Secure Hash
-    const hmac = crypto.createHmac('sha512', secretKey);
-    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+    const signed = VNPayUtils.generateSignature(secretKey, signData);
 
     vnp_Params['vnp_SecureHash'] = signed;
 
@@ -96,22 +95,5 @@ export class VNPayStrategy implements PaymentStrategy {
       fn(date.getMinutes()) +
       fn(date.getSeconds())
     ).toString();
-  }
-
-  // Sort object keys
-  private sortObject(obj: any): any {
-    const sorted: Record<string, string> = {};
-    const str: string[] = [];
-    let key;
-    for (key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        str.push(encodeURIComponent(key));
-      }
-    }
-    str.sort();
-    for (key = 0; key < str.length; key++) {
-      sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, '+');
-    }
-    return sorted;
   }
 }

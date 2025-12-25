@@ -571,6 +571,8 @@
     "selectCoupon": "Select Coupon",
     "vnpay": "VNPay / QR Pay",
     "vnpayDesc": "Pay via E-wallet / Mobile Banking",
+    "momo": "MoMo E-Wallet",
+    "momoDesc": "Pay via MoMo App",
     "freeShipping": "Free (Select Address)",
     "completeOrderWithTotal": "Complete Order • {total}",
     "subtotal": "Subtotal",
@@ -932,7 +934,7 @@
       "deleteConfirm": "Are you sure you want to delete '{title}'?",
       "deleteSuccess": "Post deleted successfully",
       "delete": "Delete",
-      
+
       "published": "Published",
       "draft": "Draft",
       "searchPlaceholder": "Search posts...",
@@ -940,7 +942,7 @@
       "noPosts": "No posts found",
       "error": "Error",
       "errorMessage": "An error occurred",
-      
+
       "fields": {
         "title": "Title",
         "slug": "Slug",
@@ -954,16 +956,16 @@
         "featuredImage": "Featured Image"
       },
       "placeholders": {
-          "excerpt": "Brief summary...",
-          "content": "Write content..."
+        "excerpt": "Brief summary...",
+        "content": "Write content..."
       },
       "validation": {
-          "titleRequired": "Title is required",
-          "slugRequired": "Slug is required",
-          "excerptRequired": "Excerpt is required",
-          "contentRequired": "Content is required",
-          "categoryRequired": "Category is required",
-          "authorRequired": "Author is required"
+        "titleRequired": "Title is required",
+        "slugRequired": "Slug is required",
+        "excerptRequired": "Excerpt is required",
+        "contentRequired": "Content is required",
+        "categoryRequired": "Category is required",
+        "authorRequired": "Author is required"
       },
       "table": {
         "title": "Title",
@@ -979,7 +981,7 @@
       },
       "minutes": "min"
     },
-    "processing": "Processing...",
+
     "products": {
       "title": "Products",
       "createNew": "Create New Product",
@@ -1219,7 +1221,6 @@
       "details": "Payload Details",
       "searchPlaceholder": "Search actions or resources..."
     },
-
 
     "sidebar": {
       "overview": "OVERVIEW",

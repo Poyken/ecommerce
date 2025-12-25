@@ -26,7 +26,7 @@ interface PlaceOrderData {
   phoneNumber: string;
   shippingAddress: string;
   addressId?: string;
-  paymentMethod: "COD" | "CARD" | "BANKING" | "VNPAY";
+  paymentMethod: "COD" | "CARD" | "BANKING" | "VNPAY" | "MOMO";
   itemIds?: string[];
   couponCode?: string;
   returnUrl?: string;

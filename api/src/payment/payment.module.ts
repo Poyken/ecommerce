@@ -21,6 +21,7 @@ import { Module } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { CodPaymentStrategy } from './strategies/cod.strategy';
 import { MockStripeStrategy } from './strategies/mock-stripe.strategy';
+import { MoMoStrategy } from './strategies/momo.strategy';
 import { VNPayStrategy } from './strategies/vnpay.strategy';
 
 import { PaymentController } from './payment.controller';
@@ -32,7 +33,8 @@ import { PaymentController } from './payment.controller';
     CodPaymentStrategy,
     MockStripeStrategy,
     VNPayStrategy,
+    MoMoStrategy,
   ],
-  exports: [PaymentService],
+  exports: [PaymentService, MoMoStrategy],
 })
 export class PaymentModule {}

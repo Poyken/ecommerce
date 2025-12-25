@@ -19,6 +19,8 @@ model User {
   avatarUrl     String?
   provider      String?
   socialId      String?
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret  String?
   addresses     Address[]
   auditLogs     AuditLog[]
   cart          Cart?
@@ -221,6 +223,8 @@ model Address {
   wardCode      String?
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  orders        Order[]
+
   @@index([userId])
 }
 
@@ -282,7 +286,10 @@ model Order {
   updatedAt       DateTime      @updatedAt
   createdAt       DateTime      @default(now())
   couponId        String?
+  addressId       String?
+  shippingCode    String?
   coupon          Coupon?       @relation(fields: [couponId], references: [id])
+  address         Address?      @relation(fields: [addressId], references: [id])
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   items           OrderItem[]
 

@@ -172,16 +172,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   // 5. XỬ LÝ LỖI
   // ========================================
   if (!res.ok) {
-    // 401 Unauthorized → Chuyển về trang login
-    // (Middleware nên refresh token, nếu đến đây nghĩa là refresh thất bại)
-    if (res.status === 401 && !options.skipRedirectOn401) {
-      console.warn(
-        `[HTTP 401] Unauthorized request to: ${url}. Redirecting to /login.`
-      );
-      redirect("/login");
-    }
-
-    // Extract error message từ response body
+    // Extract error message từ response body first, as it's needed for isUserNotFound
     let errorMessage = `API Error: ${res.status} ${res.statusText}`;
     let errorBody: unknown = null;
 
@@ -214,6 +205,21 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
       // Keep default message if JSON parsing fails
     }
 
+    const isUserNotFound =
+      res.status === 404 &&
+      (errorMessage.toLowerCase().includes("user") ||
+        errorMessage.toLowerCase().includes("người dùng"));
+
+    // 401 Unauthorized OR 404 User Not Found → Chuyển về trang login
+    if ((res.status === 401 || isUserNotFound) && !options.skipRedirectOn401) {
+      console.warn(
+        `[HTTP ${res.status}] ${
+          isUserNotFound ? "User Not Found" : "Unauthorized"
+        } request to: ${url}. Redirecting to /login.`
+      );
+      redirect("/login");
+    }
+
     const error = new Error(errorMessage) as Error & {
       status: number;
       body: unknown;
@@ -221,11 +227,13 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     error.status = res.status;
     error.body = errorBody;
 
-    const isUnauthorized = res.status === 401;
+    const isUnauthorized = res.status === 401 || isUserNotFound;
     if (!isUnauthorized || options.skipRedirectOn401) {
       if (isUnauthorized) {
         console.warn(
-          `[HTTP 401 Received] Expected for guest, handled by client: ${url.toString()}`
+          `[HTTP ${
+            res.status
+          } Received] Expected for guest or stale session, handled by client: ${url.toString()}`
         );
       } else {
         console.error(

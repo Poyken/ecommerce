@@ -9,12 +9,14 @@ import {
 import * as bcrypt from 'bcrypt';
 import { Queue } from 'bullmq';
 import * as crypto from 'crypto';
+import { EmailService } from '../common/email/email.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UserEntity } from './entities/user.entity';
 import { TokenService } from './token.service';
+import { TwoFactorService } from './two-factor.service';
 
 /**
  * =====================================================================
@@ -31,7 +33,9 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly tokenService: TokenService,
     private readonly redisService: RedisService,
+    private readonly twoFactorService: TwoFactorService,
     @InjectQueue('email-queue') private readonly emailQueue: Queue,
+    private readonly emailService: EmailService,
     private readonly notificationsService: NotificationsService,
     private readonly notificationsGateway: NotificationsGateway,
   ) {}
@@ -255,12 +259,76 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const directPerms = user.permissions.map((up) => up.permission.name);
+    // 2FA CHECK
+    if ((user as any).twoFactorEnabled) {
+      return {
+        mfaRequired: true,
+        userId: user.id,
+      };
+    }
 
+    const directPerms = user.permissions.map((up) => up.permission.name);
     const rolePerms = user.roles.flatMap((ur) =>
       ur.role.permissions.map((rp) => rp.permission.name),
     );
+    const allPermissions = [...new Set([...directPerms, ...rolePerms])];
 
+    const { accessToken, refreshToken } = this.tokenService.generateTokens(
+      user.id,
+      allPermissions,
+      fingerprint,
+    );
+
+    await this.redisService.set(
+      `refreshToken:${user.id}`,
+      refreshToken,
+      'EX',
+      this.tokenService.getRefreshTokenExpirationTime(),
+    );
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  async verify2FALogin(userId: string, token: string, fingerprint?: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        permissions: { include: { permission: true } },
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: { include: { permission: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (
+      !user ||
+      !(user as any).twoFactorEnabled ||
+      !(user as any).twoFactorSecret
+    ) {
+      throw new UnauthorizedException('2FA không khả dụng cho tài khoản này');
+    }
+
+    const isValid = this.twoFactorService.verifyToken(
+      token,
+      (user as any).twoFactorSecret,
+    );
+    if (!isValid) {
+      throw new UnauthorizedException('Mã xác thực không hợp lệ');
+    }
+
+    const directPerms = user.permissions.map((up) => up.permission.name);
+    const rolePerms = user.roles.flatMap((ur) =>
+      ur.role.permissions.map((rp) => rp.permission.name),
+    );
     const allPermissions = [...new Set([...directPerms, ...rolePerms])];
 
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
@@ -385,6 +453,9 @@ export class AuthService {
         where: { id: userId },
         data: { password: hashedPassword },
       });
+
+      // Send confirmation email
+      await this.emailService.sendPasswordResetSuccess(user.email);
     }
 
     if (Object.keys(updateData).length > 0) {
@@ -419,7 +490,7 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    return new UserEntity(user);
+    return new UserEntity(user as any);
   }
 
   async forgotPassword(email: string) {
@@ -429,13 +500,9 @@ export class AuthService {
     }
 
     const token = crypto.randomBytes(32).toString('hex');
-    await this.redisService.set(`reset_password:${token}`, user.id, 'EX', 900);
+    await this.redisService.set(`reset_password:${token}`, user.id, 'EX', 3600); // 1 hour
 
-    await this.emailQueue.add('send-email', {
-      email: user.email,
-      type: 'reset-password',
-      token,
-    });
+    await this.emailService.sendPasswordReset(user.email, token);
 
     return { message: 'Email sent' };
   }
@@ -446,6 +513,11 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired token');
     }
 
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     await this.prisma.user.update({
       where: { id: userId },
@@ -453,6 +525,10 @@ export class AuthService {
     });
 
     await this.redisService.del(`reset_password:${token}`);
+
+    // Send confirmation email
+    await this.emailService.sendPasswordResetSuccess(user.email);
+
     return { message: 'Password updated' };
   }
 

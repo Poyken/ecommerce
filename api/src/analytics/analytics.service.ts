@@ -250,4 +250,48 @@ export class AnalyticsService {
         .slice(0, 5),
     };
   }
+
+  async getRevenueByCategory(startDate?: string, endDate?: string) {
+    const { start, end } = this.getDateRange(startDate, endDate);
+
+    const categories = await this.prisma.category.findMany({
+      include: {
+        products: {
+          include: {
+            skus: {
+              include: {
+                orderItems: {
+                  where: {
+                    order: {
+                      status: 'DELIVERED',
+                      createdAt: { gte: start, lte: end },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return categories
+      .map((category) => {
+        let revenue = 0;
+        category.products.forEach((product) => {
+          product.skus.forEach((sku) => {
+            sku.orderItems.forEach((item) => {
+              revenue += Number(item.priceAtPurchase) * item.quantity;
+            });
+          });
+        });
+
+        return {
+          name: category.name,
+          revenue,
+        };
+      })
+      .filter((c) => c.revenue > 0)
+      .sort((a, b) => b.revenue - a.revenue);
+  }
 }

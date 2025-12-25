@@ -33,22 +33,32 @@ import {
   Patch,
   Post,
   Query,
+  Res,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+// import { Response } from 'express';
 import { Permissions } from 'src/auth/decorators/permissions.decorator';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PermissionsGuard } from 'src/auth/permissions.guard';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductsExportService } from './products-export.service';
+import { ProductsImportService } from './products-import.service';
 import { ProductsService } from './products.service';
 
 @ApiTags('Products')
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+    private readonly exportService: ProductsExportService,
+    private readonly importService: ProductsImportService,
+  ) {}
 
   /**
    * Tạo sản phẩm mới.
@@ -168,6 +178,32 @@ export class ProductsController {
     @Body() body: { locale: string; name: string; description?: string },
   ) {
     const data = await this.productsService.translate(id, body);
+    return { data };
+  }
+
+  /**
+   * Export danh sách sản phẩm & SKUs ra file Excel.
+   */
+  @Get('export/excel')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @ApiBearerAuth()
+  @Permissions('product:read')
+  @ApiOperation({ summary: 'Export Products & SKUs to Excel' })
+  async export(@Res() res: any) {
+    return this.exportService.exportToExcel(res);
+  }
+
+  /**
+   * Import sản phẩm & SKUs từ file Excel.
+   */
+  @Post('import/excel')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @ApiBearerAuth()
+  @Permissions('product:create')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Import Products & SKUs from Excel' })
+  async import(@UploadedFile() file: any) {
+    const data = await this.importService.importFromExcel(file);
     return { data };
   }
 }

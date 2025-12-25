@@ -20,6 +20,11 @@
 
 "use server";
 
+import {
+  MOCK_DISTRICTS,
+  MOCK_PROVINCES,
+  MOCK_WARDS,
+} from "@/data/vn-locations";
 import { http } from "@/lib/http";
 import { ApiResponse } from "@/types/dtos";
 
@@ -52,11 +57,18 @@ export interface Ward {
  */
 export async function getProvinces(): Promise<Province[]> {
   try {
-    const res = await http<ApiResponse<Province[]>>("/shipping/provinces");
+    const res = await http<ApiResponse<Province[]>>("/shipping/provinces", {
+      skipAuth: true,
+    });
+    // Fallback to mock data if API returns empty
+    if (!res.data || res.data.length === 0) {
+      console.warn("Using Mock Data for Provinces");
+      return MOCK_PROVINCES;
+    }
     return res.data || [];
   } catch (error) {
-    console.error("Failed to fetch provinces:", error);
-    return [];
+    console.error("Failed to fetch provinces, using mock data:", error);
+    return MOCK_PROVINCES;
   }
 }
 
@@ -69,15 +81,19 @@ export async function getDistricts(provinceId: number): Promise<District[]> {
   if (!provinceId) return [];
   try {
     const res = await http<ApiResponse<District[]>>(
-      `/shipping/districts/${provinceId}`
+      `/shipping/districts/${provinceId}`,
+      { skipAuth: true }
     );
+    if (!res.data || res.data.length === 0) {
+      return MOCK_DISTRICTS.filter((d) => d.ProvinceID === provinceId);
+    }
     return res.data || [];
   } catch (error) {
     console.error(
-      `Failed to fetch districts for province ${provinceId}:`,
+      `Failed to fetch districts for province ${provinceId}, using mock data:`,
       error
     );
-    return [];
+    return MOCK_DISTRICTS.filter((d) => d.ProvinceID === provinceId);
   }
 }
 
@@ -90,12 +106,19 @@ export async function getWards(districtId: number): Promise<Ward[]> {
   if (!districtId) return [];
   try {
     const res = await http<ApiResponse<Ward[]>>(
-      `/shipping/wards/${districtId}`
+      `/shipping/wards/${districtId}`,
+      { skipAuth: true }
     );
+    if (!res.data || res.data.length === 0) {
+      return MOCK_WARDS.filter((w) => w.DistrictID === districtId);
+    }
     return res.data || [];
   } catch (error) {
-    console.error(`Failed to fetch wards for district ${districtId}:`, error);
-    return [];
+    console.error(
+      `Failed to fetch wards for district ${districtId}, using mock data:`,
+      error
+    );
+    return MOCK_WARDS.filter((w) => w.DistrictID === districtId);
   }
 }
 
