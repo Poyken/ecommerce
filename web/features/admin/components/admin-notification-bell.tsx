@@ -17,25 +17,25 @@
  * =====================================================================
  */
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/atoms/dialog";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { ScrollArea } from "@/components/ui/scroll-area";
+} from "@/components/atoms/popover";
+import { ScrollArea } from "@/components/atoms/scroll-area";
+import { Button } from "@/components/ui/button";
 import {
   Notification,
   useNotifications,
 } from "@/contexts/notification-context";
-import { Link } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/routing";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
 import { Bell, ExternalLink, Package, User } from "lucide-react";
@@ -49,6 +49,7 @@ export function AdminNotificationBell() {
   const t = useTranslations("notifications");
   const tAdmin = useTranslations("admin");
   const locale = useLocale();
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
@@ -63,8 +64,25 @@ export function AdminNotificationBell() {
 
   const handleNotificationClick = (notification: Notification) => {
     markAsRead(notification.id);
-    setSelectedNotification(notification);
-    setDialogOpen(true);
+    // If it's an order notification, go to admin order detail
+    if (notification.type?.includes("ORDER") && notification.link) {
+        const orderId = notification.link.match(/\/orders\/([a-zA-Z0-9-]+)/)?.[1];
+        if (orderId) {
+             router.push(`/admin/orders/${orderId}`);
+        } else {
+             router.push(notification.link);
+        }
+    } else if (notification.link) {
+      router.push(notification.link);
+    }
+    
+    // Don't show dialog if we navigated? 
+    // Actually user might want to see details.
+    // But user asked "action của order phải dẫn đến /admin/orders chứ".
+    // So navigation is priority.
+    
+    // setSelectedNotification(notification);
+    // setDialogOpen(true);
     setOpen(false);
   };
 
@@ -238,7 +256,7 @@ export function AdminNotificationBell() {
               {tAdmin("close")}
             </Button>
             {selectedNotification?.link && (
-              <Link href={selectedNotification.link as any}>
+              <Link href={selectedNotification.link}>
                 <Button onClick={() => setDialogOpen(false)}>
                   {tAdmin("orders.details")}
                   <ExternalLink className="h-4 w-4 ml-2" />

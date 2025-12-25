@@ -475,6 +475,17 @@ export class OrdersService {
       );
     }
 
+    // Additional Check: Prevent PROCESSING non-COD orders if not PAID
+    if (
+      newStatus === OrderStatus.PROCESSING &&
+      order.paymentMethod !== 'COD' &&
+      order.paymentStatus !== 'PAID'
+    ) {
+      throw new BadRequestException(
+        `Cannot process order with payment method ${order.paymentMethod} until payment is confirmed (Status: ${order.paymentStatus}).`,
+      );
+    }
+
     return this.prisma.$transaction(async (tx) => {
       if (newStatus === OrderStatus.CANCELLED) {
         for (const item of order.items) {

@@ -137,8 +137,8 @@ export async function getUsersAction(
 export async function createUserAction(
   data: CreateUserDto
 ): Promise<ActionResult> {
-  return handleAdminAction(
-    () => http("/users", { method: "POST", body: JSON.stringify(data) }),
+  return handleAdminAction<void>(
+    () => http<void>("/users", { method: "POST", body: JSON.stringify(data) }),
     ["/admin/users"]
   );
 }
@@ -153,9 +153,12 @@ export async function updateUserAction(
   userId: string,
   data: UpdateUserDto
 ): Promise<ActionResult> {
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/users/${userId}`, { method: "PATCH", body: JSON.stringify(data) }),
+      http<void>(`/users/${userId}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
     ["/admin/users"]
   );
 }
@@ -171,8 +174,8 @@ export async function deleteUserAction(userId: string): Promise<ActionResult> {
     return { error: "You cannot delete your own account." };
   }
 
-  return handleAdminAction(
-    () => http(`/users/${userId}`, { method: "DELETE" }),
+  return handleAdminAction<void>(
+    () => http<void>(`/users/${userId}`, { method: "DELETE" }),
     ["/admin/users"]
   );
 }
@@ -194,9 +197,9 @@ export async function assignRolesAction(
     return { error: "You cannot change your own roles." };
   }
 
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/users/${userId}/roles`, {
+      http<void>(`/users/${userId}/roles`, {
         method: "POST",
         body: JSON.stringify({ roles: roleIds }),
       }),
@@ -222,8 +225,9 @@ export async function getRolesAction(page = 1, limit = 100, search?: string) {
 }
 
 export async function createRoleAction(name: string): Promise<ActionResult> {
-  return handleAdminAction(
-    () => http("/roles", { method: "POST", body: JSON.stringify({ name }) }),
+  return handleAdminAction<void>(
+    () =>
+      http<void>("/roles", { method: "POST", body: JSON.stringify({ name }) }),
     ["/admin/roles"]
   );
 }
@@ -232,9 +236,9 @@ export async function updateRoleAction(
   roleId: string,
   name: string
 ): Promise<ActionResult> {
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/roles/${roleId}`, {
+      http<void>(`/roles/${roleId}`, {
         method: "PATCH",
         body: JSON.stringify({ name }),
       }),
@@ -243,8 +247,8 @@ export async function updateRoleAction(
 }
 
 export async function deleteRoleAction(roleId: string): Promise<ActionResult> {
-  return handleAdminAction(
-    () => http(`/roles/${roleId}`, { method: "DELETE" }),
+  return handleAdminAction<void>(
+    () => http<void>(`/roles/${roleId}`, { method: "DELETE" }),
     ["/admin/roles"]
   );
 }
@@ -253,9 +257,9 @@ export async function assignPermissionsAction(
   roleId: string,
   permissionIds: string[]
 ): Promise<ActionResult> {
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/roles/${roleId}/permissions`, {
+      http<void>(`/roles/${roleId}/permissions`, {
         method: "POST",
         body: JSON.stringify({ permissions: permissionIds }),
       }),
@@ -279,9 +283,9 @@ export async function getPermissionsAction() {
 export async function createPermissionAction(
   name: string
 ): Promise<ActionResult> {
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http("/roles/permissions", {
+      http<void>("/roles/permissions", {
         method: "POST",
         body: JSON.stringify({ name }),
       }),
@@ -293,9 +297,9 @@ export async function updatePermissionAction(
   permissionId: string,
   name: string
 ): Promise<ActionResult> {
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/roles/permissions/${permissionId}`, {
+      http<void>(`/roles/permissions/${permissionId}`, {
         method: "PATCH",
         body: JSON.stringify({ name }),
       }),
@@ -306,8 +310,9 @@ export async function updatePermissionAction(
 export async function deletePermissionAction(
   permissionId: string
 ): Promise<ActionResult> {
-  return handleAdminAction(
-    () => http(`/roles/permissions/${permissionId}`, { method: "DELETE" }),
+  return handleAdminAction<void>(
+    () =>
+      http<void>(`/roles/permissions/${permissionId}`, { method: "DELETE" }),
     ["/admin/permissions"]
   );
 }
@@ -337,9 +342,9 @@ export async function createBrandAction(
   data: CreateBrandDto | FormData
 ): Promise<ActionResult> {
   const isFormData = data instanceof FormData;
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http("/brands", {
+      http<void>("/brands", {
         method: "POST",
         body: isFormData ? data : JSON.stringify(data),
       }),
@@ -355,9 +360,9 @@ export async function updateBrandAction(
   data: UpdateBrandDto | FormData
 ): Promise<ActionResult> {
   const isFormData = data instanceof FormData;
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/brands/${brandId}`, {
+      http<void>(`/brands/${brandId}`, {
         method: "PATCH",
         body: isFormData ? data : JSON.stringify(data),
       }),
@@ -371,8 +376,8 @@ export async function updateBrandAction(
 export async function deleteBrandAction(
   brandId: string
 ): Promise<ActionResult> {
-  return handleAdminAction(
-    () => http(`/brands/${brandId}`, { method: "DELETE" }),
+  return handleAdminAction<void>(
+    () => http<void>(`/brands/${brandId}`, { method: "DELETE" }),
     ["/admin/brands"]
   );
 }
@@ -405,9 +410,9 @@ export async function createCategoryAction(
   data: CreateCategoryDto | FormData
 ): Promise<ActionResult> {
   const isFormData = data instanceof FormData;
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http("/categories", {
+      http<void>("/categories", {
         method: "POST",
         body: isFormData ? data : JSON.stringify(data),
       }),
@@ -423,9 +428,9 @@ export async function updateCategoryAction(
   data: UpdateCategoryDto | FormData
 ): Promise<ActionResult> {
   const isFormData = data instanceof FormData;
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/categories/${categoryId}`, {
+      http<void>(`/categories/${categoryId}`, {
         method: "PATCH",
         body: isFormData ? data : JSON.stringify(data),
       }),
@@ -439,8 +444,8 @@ export async function updateCategoryAction(
 export async function deleteCategoryAction(
   categoryId: string
 ): Promise<ActionResult> {
-  return handleAdminAction(
-    () => http(`/categories/${categoryId}`, { method: "DELETE" }),
+  return handleAdminAction<void>(
+    () => http<void>(`/categories/${categoryId}`, { method: "DELETE" }),
     ["/admin/categories"]
   );
 }
@@ -465,8 +470,9 @@ export async function getProductsAction(page = 1, limit = 10, search?: string) {
 export async function createProductAction(
   data: CreateProductDto
 ): Promise<ActionResult> {
-  return handleAdminAction(
-    () => http("/products", { method: "POST", body: JSON.stringify(data) }),
+  return handleAdminAction<void>(
+    () =>
+      http<void>("/products", { method: "POST", body: JSON.stringify(data) }),
     ["/admin/products", "/shop"],
     ["products"]
   );
@@ -476,9 +482,9 @@ export async function updateProductAction(
   productId: string,
   data: UpdateProductDto
 ): Promise<ActionResult> {
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/products/${productId}`, {
+      http<void>(`/products/${productId}`, {
         method: "PATCH",
         body: JSON.stringify(data),
       }),
@@ -490,8 +496,8 @@ export async function updateProductAction(
 export async function deleteProductAction(
   productId: string
 ): Promise<ActionResult> {
-  return handleAdminAction(
-    () => http(`/products/${productId}`, { method: "DELETE" }),
+  return handleAdminAction<void>(
+    () => http<void>(`/products/${productId}`, { method: "DELETE" }),
     ["/admin/products", "/shop"],
     ["products", `product-${productId}`]
   );
@@ -539,9 +545,9 @@ export async function updateSkuAction(
   data: UpdateSkuDto | FormData
 ): Promise<ActionResult> {
   const isFormData = data instanceof FormData;
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/skus/${skuId}`, {
+      http<void>(`/skus/${skuId}`, {
         method: "PATCH",
         body: isFormData ? data : JSON.stringify(data),
       }),
@@ -550,8 +556,8 @@ export async function updateSkuAction(
 }
 
 export async function deleteSkuAction(skuId: string): Promise<ActionResult> {
-  return handleAdminAction(
-    () => http(`/skus/${skuId}`, { method: "DELETE" }),
+  return handleAdminAction<void>(
+    () => http<void>(`/skus/${skuId}`, { method: "DELETE" }),
     ["/admin/skus"]
   );
 }
@@ -572,7 +578,7 @@ export async function getOrdersAction(
       url += `&search=${encodeURIComponent(search)}`;
     }
     if (status && status !== "all") {
-      url += `&status=${status}`;
+      url += `&status=${status.toUpperCase()}`;
     }
     const res = await http<ApiResponse<Order[]>>(url);
     return res;
@@ -587,9 +593,9 @@ export async function updateOrderStatusAction(
   notify = true,
   cancellationReason?: string
 ): Promise<ActionResult> {
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/orders/${orderId}/status`, {
+      http<void>(`/orders/${orderId}/status`, {
         method: "PATCH",
         body: JSON.stringify({ status, notify, cancellationReason }),
       }),
@@ -629,8 +635,9 @@ export async function getCouponsAction(page = 1, limit = 10, search?: string) {
 export async function createCouponAction(
   data: CreateCouponDto
 ): Promise<ActionResult> {
-  return handleAdminAction(
-    () => http("/coupons", { method: "POST", body: JSON.stringify(data) }),
+  return handleAdminAction<void>(
+    () =>
+      http<void>("/coupons", { method: "POST", body: JSON.stringify(data) }),
     ["/admin/coupons"]
   );
 }
@@ -639,9 +646,9 @@ export async function updateCouponAction(
   couponId: string,
   data: UpdateCouponDto
 ): Promise<ActionResult> {
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/coupons/${couponId}`, {
+      http<void>(`/coupons/${couponId}`, {
         method: "PATCH",
         body: JSON.stringify(data),
       }),
@@ -652,8 +659,8 @@ export async function updateCouponAction(
 export async function deleteCouponAction(
   couponId: string
 ): Promise<ActionResult> {
-  return handleAdminAction(
-    () => http(`/coupons/${couponId}`, { method: "DELETE" }),
+  return handleAdminAction<void>(
+    () => http<void>(`/coupons/${couponId}`, { method: "DELETE" }),
     ["/admin/coupons"]
   );
 }
@@ -734,9 +741,9 @@ export async function updateReviewAction(
   reviewId: string,
   data: { comment?: string; rating?: number; isPublished?: boolean }
 ): Promise<ActionResult> {
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/reviews/${reviewId}`, {
+      http<void>(`/reviews/${reviewId}`, {
         method: "PATCH",
         body: JSON.stringify(data),
       }),
@@ -749,7 +756,7 @@ export async function toggleReviewStatusAction(
   id: string,
   isApproved: boolean
 ) {
-  return handleAdminAction(
+  return handleAdminAction<void>(
     async () => {
       return http(`/reviews/${id}/status`, {
         method: "PATCH",
@@ -841,9 +848,9 @@ export async function updateProductTranslationAction(
   productId: string,
   data: { locale: string; name: string; description?: string }
 ): Promise<ActionResult> {
-  return handleAdminAction(
+  return handleAdminAction<void>(
     () =>
-      http(`/products/${productId}/translations`, {
+      http<void>(`/products/${productId}/translations`, {
         method: "POST",
         body: JSON.stringify(data),
       }),

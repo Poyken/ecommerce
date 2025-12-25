@@ -270,6 +270,8 @@
       "RETURNED": "Returned",
       "PAID": "Paid",
       "UNPAID": "Unpaid"
+      "PAID": "Paid",
+      "UNPAID": "Unpaid"
     },
     "orderDetail": "Order Detail",
     "orderNotFound": "Order not found",
@@ -291,11 +293,9 @@
     "paymentMethods": {
       "COD": "Cash on Delivery",
       "BANKING": "Bank Transfer",
-      "CARD": "Credit Card"
-    },
-    "scanToPay": "Scan to Pay",
-    "transferInfo": "Transfer Information",
-    "copied": "Copied"
+      "CARD": "Credit Card",
+      "VNPAY": "VNPay"
+    }
   },
   "home": {
     "heroTitle": "Premium Furniture Store",
@@ -812,6 +812,7 @@
       "uploadConstraints": "PNG, JPG, WEBP up to 5MB",
       "urlPlaceholder": "https://example.com/image.jpg"
     },
+    "back": "Back",
     "stats": {
       "revenue": "Total Revenue",
       "orders": "Total Orders",

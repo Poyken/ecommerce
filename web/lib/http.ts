@@ -230,7 +230,13 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
           isUserNotFound ? "User Not Found" : "Unauthorized"
         } request to: ${url}. Redirecting to /login.`
       );
-      redirect("/login");
+      if (typeof window !== "undefined") {
+        window.location.href = "/login";
+        // Stop execution to avoid throwing error downstream
+        return new Promise<T>(() => {});
+      } else {
+        redirect("/login");
+      }
     }
 
     const error = new Error(errorMessage) as Error & {

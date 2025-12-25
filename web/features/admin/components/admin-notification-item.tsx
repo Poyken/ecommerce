@@ -20,7 +20,6 @@
 import { Button } from "@/components/ui/button";
 import { Notification } from "@/contexts/notification-context";
 import { updateOrderStatusAction } from "@/features/admin/actions";
-import { markAsReadAction } from "@/features/notifications/actions";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
@@ -42,6 +41,7 @@ export function AdminNotificationItem({
   const locale = useLocale();
   const t = useTranslations("admin");
   const [isLoading, setIsLoading] = useState<"accept" | "reject" | null>(null);
+  const [hasActionTaken, setHasActionTaken] = useState(false);
 
   // Parse order ID from notification link (e.g., /orders/abc123)
   const getOrderIdFromLink = (link?: string): string | null => {
@@ -58,7 +58,8 @@ export function AdminNotificationItem({
     notification.title?.toLowerCase().includes("new order");
 
   // Check if this is a pending order that can be acted upon
-  const canTakeAction = isOrderNotification && orderId && !notification.isRead;
+  // Also hide if action taken locally
+  const canTakeAction = isOrderNotification && orderId && !notification.isRead && !hasActionTaken;
 
   const handleAccept = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -68,8 +69,7 @@ export function AdminNotificationItem({
     try {
       const result = await updateOrderStatusAction(orderId, "PROCESSING");
       if (result.success) {
-        // Mark as read immediately to hide buttons and update UI
-        await markAsReadAction(notification.id);
+        setHasActionTaken(true);
         onActionComplete?.();
       }
     } catch (error) {
@@ -87,8 +87,7 @@ export function AdminNotificationItem({
     try {
       const result = await updateOrderStatusAction(orderId, "CANCELLED");
       if (result.success) {
-        // Mark as read immediately to hide buttons and update UI
-        await markAsReadAction(notification.id);
+         setHasActionTaken(true);
         onActionComplete?.();
       }
     } catch (error) {
