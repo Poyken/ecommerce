@@ -3,6 +3,7 @@ import { productService } from "@/services/product.service";
 import { Brand, Category, Product } from "@/types/models";
 
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Luxe | Premium Furniture Store",
@@ -50,6 +51,12 @@ export default async function Home() {
   }
 
   return (
-    <HomeContent products={products} categories={categories} brands={brands} />
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeContent
+        products={products}
+        categories={categories}
+        brands={brands}
+      />
+    </Suspense>
   );
 }

@@ -38,7 +38,7 @@ import { ResetPasswordDto } from './dto/reset-password.dto';
 const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict' as const,
+  sameSite: 'lax' as const, // Changed from 'strict' - allows cookies on redirects
   path: '/',
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
@@ -69,11 +69,12 @@ export class AuthController {
     const fp = getFingerprint(req);
     const data = await this.authService.register(dto, fp);
 
+    // Set refreshToken in HttpOnly cookie for security
     res.cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { refreshToken, ...response } = data;
-    return { data: response };
+    // CHANGED: Also return refreshToken in body for frontend session management
+    // This is consistent with social login flow
+    return { data };
   }
 
   @Post('login')
@@ -93,11 +94,12 @@ export class AuthController {
     const fp = getFingerprint(req);
     const data = await this.authService.login(dto, fp);
 
+    // Set refreshToken in HttpOnly cookie for security
     res.cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { refreshToken, ...response } = data;
-    return { data: response };
+    // CHANGED: Also return refreshToken in body for frontend session management
+    // This is consistent with register and social login flows
+    return { data };
   }
 
   @Post('logout')

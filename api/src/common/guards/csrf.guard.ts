@@ -30,6 +30,21 @@ import { Request } from 'express';
  */
 @Injectable()
 export class CsrfGuard implements CanActivate {
+  // Whitelist: Routes that don't need CSRF protection
+  private readonly publicRoutes = [
+    '/api/v1/auth/login',
+    '/api/v1/auth/register',
+    '/api/v1/auth/refresh',
+    '/api/v1/auth/forgot-password',
+    '/api/v1/auth/reset-password',
+    '/api/v1/auth/google',
+    '/api/v1/auth/google/callback',
+    '/api/v1/auth/facebook',
+    '/api/v1/auth/facebook/callback',
+    '/api/v1/webhooks', // Payment webhooks
+    '/api/v1/health',
+  ];
+
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest<Request>();
 
@@ -39,10 +54,17 @@ export class CsrfGuard implements CanActivate {
       return true;
     }
 
-    // 2. Chế độ phát triển (Optional: disable nếu cần debug dễ dàng)
+    // 2. Whitelist public routes (login, register, webhooks)
+    const path = request.url || request.path || '';
+    if (this.publicRoutes.some((route) => path.startsWith(route))) {
+      return true;
+    }
+
+    // 3. Chế độ phát triển (Optional: disable nếu cần debug dễ dàng)
+    // UNCOMMENT line below to disable CSRF in development
     // if (process.env.NODE_ENV !== 'production') return true;
 
-    // 3. Trích xuất token từ Header và Cookie
+    // 4. Trích xuất token từ Header và Cookie
     const csrfHeader = request.headers['x-csrf-token'];
     const csrfCookie = request.cookies['csrf-token'];
 
@@ -54,7 +76,7 @@ export class CsrfGuard implements CanActivate {
       throw new ForbiddenException('CSRF Token missing in cookie');
     }
 
-    // 4. So sánh (Double Submit Cookie validation)
+    // 5. So sánh (Double Submit Cookie validation)
     if (csrfHeader !== csrfCookie) {
       throw new ForbiddenException('CSRF Token mismatch');
     }
