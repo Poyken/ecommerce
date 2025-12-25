@@ -22,6 +22,7 @@ import {
   Check,
   Clock,
   Download,
+  Edit,
   Eye,
   Package,
   RefreshCw,
@@ -400,7 +401,7 @@ export function OrdersClient({
                       <span className="font-medium font-mono">
                         #{order.id.slice(0, 8)}
                       </span>
-                      {order.items.length > 0 && (
+                      {order.items && order.items.length > 0 && (
                         <span className="text-xs text-muted-foreground">
                           {order.items.length} items
                         </span>
@@ -410,7 +411,9 @@ export function OrdersClient({
                   <TableCell>
                     <div className="flex flex-col">
                       <span className="text-sm font-medium">
-                        {order.user?.name || t("unknownUser")}
+                        {order.user
+                          ? `${order.user.firstName} ${order.user.lastName}`
+                          : t("unknownUser")}
                       </span>
                       <span className="text-xs text-muted-foreground">
                         {order.user?.email}
@@ -490,7 +493,7 @@ export function OrdersClient({
             }
           />
           <OrderDetailsDialog
-            order={selectedOrder}
+            orderId={selectedOrder.id}
             open={detailsDialogOpen}
             onOpenChange={setDetailsDialogOpen}
           />

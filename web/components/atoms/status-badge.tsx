@@ -32,6 +32,7 @@ interface StatusBadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   status: string; // The raw status string (e.g., "PENDING")
   label?: string; // The localized label to display
   variant?: StatusVariant; // Optional override
+  icon?: React.ReactNode; // Optional icon
   className?: string;
 }
 
@@ -72,7 +73,8 @@ const variantStyles: Record<StatusVariant, string> = {
   error:
     "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20 shadow-sm shadow-rose-500/5",
   info: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20 shadow-sm shadow-blue-500/5",
-  secondary: "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
+  secondary:
+    "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20",
   purple:
     "bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20 shadow-sm shadow-violet-500/5",
 };
@@ -81,6 +83,7 @@ export function StatusBadge({
   status,
   label,
   variant,
+  icon,
   className,
   ...props
 }: StatusBadgeProps) {
@@ -91,12 +94,13 @@ export function StatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
+        "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border",
         variantStyles[resolvedVariant],
         className
       )}
       {...props}
     >
+      {icon && <span className="opacity-80">{icon}</span>}
       {label || status}
     </span>
   );
