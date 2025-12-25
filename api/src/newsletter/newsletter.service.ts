@@ -1,6 +1,8 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import { Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bullmq';
+import { resolveMx } from 'dns/promises';
+import { PrismaService } from '../prisma/prisma.service';
 
 /**
  * =====================================================================
@@ -26,10 +28,51 @@ import { Queue } from 'bullmq';
 export class NewsletterService {
   private readonly logger = new Logger(NewsletterService.name);
 
-  constructor(@InjectQueue('email-queue') private readonly emailQueue: Queue) {}
+  constructor(
+    @InjectQueue('email-queue') private readonly emailQueue: Queue,
+    private readonly prisma: PrismaService,
+  ) {}
 
   async subscribe(email: string) {
-    this.logger.log(`New subscriber: ${email}`);
+    this.logger.log(`New subscriber attempt: ${email}`);
+
+    // Check MX Record
+    try {
+      const domain = email.split('@')[1];
+      if (domain) {
+        const mxRecords = await resolveMx(domain);
+        if (!mxRecords || mxRecords.length === 0) {
+          throw new Error('Invalid domain');
+        }
+      } else {
+        throw new Error('Invalid email format');
+      }
+    } catch {
+      throw new ConflictException(
+        `Email domain '${email.split('@')[1]}' is invalid or unreachable`,
+      );
+    }
+
+    const existing = await this.prisma.newsletterSubscriber.findUnique({
+      where: { email },
+    });
+
+    if (existing) {
+      if (existing.isActive) {
+        throw new ConflictException('Email already subscribed');
+      } else {
+        // Reactivate
+        await this.prisma.newsletterSubscriber.update({
+          where: { id: existing.id },
+          data: { isActive: true },
+        });
+      }
+    } else {
+      // Create new
+      await this.prisma.newsletterSubscriber.create({
+        data: { email },
+      });
+    }
 
     // Extract name from email for personalization
     const name = email.split('@')[0];
@@ -42,5 +85,15 @@ export class NewsletterService {
     });
 
     return { message: 'Subscribed successfully' };
+  }
+
+  async checkSubscriber(email: string) {
+    const subscriber = await this.prisma.newsletterSubscriber.findUnique({
+      where: { email },
+    });
+    return {
+      exists: !!subscriber,
+      isActive: subscriber?.isActive ?? false,
+    };
   }
 }

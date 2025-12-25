@@ -9,6 +9,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { Queue } from 'bullmq';
 import * as crypto from 'crypto';
+import { resolveMx } from 'dns/promises';
 import { EmailService } from '../common/email/email.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RedisService } from '../redis/redis.service';
@@ -42,6 +43,9 @@ export class AuthService {
 
   async register(dto: RegisterDto, fingerprint?: string) {
     const { email, password, firstName, lastName } = dto;
+
+    // 1. Validate real email domain (MX Check)
+    await this.verifyEmailDomain(email);
 
     const existsUser = await this.prisma.user.findUnique({
       where: { email },
@@ -491,6 +495,54 @@ export class AuthService {
     }
 
     return new UserEntity(user as any);
+  }
+
+  async checkEmailExistence(
+    email: string,
+  ): Promise<{ existsInDb: boolean; validDomain: boolean }> {
+    const dbCount = await this.prisma.user.count({ where: { email } });
+
+    let validDomain = false;
+    try {
+      const domain = email.split('@')[1];
+      if (domain) {
+        const mxRecords = await resolveMx(domain);
+        validDomain = mxRecords && mxRecords.length > 0;
+      }
+    } catch (error) {
+      validDomain = false;
+    }
+
+    return {
+      existsInDb: dbCount > 0,
+      validDomain,
+    };
+  }
+
+  /**
+   * Helper to verify if email domain has valid MX records
+   * @throws BadRequestException if domain is invalid
+   */
+  async verifyEmailDomain(email: string) {
+    try {
+      const domain = email.split('@')[1];
+      if (!domain) return false;
+
+      const mxRecords = await resolveMx(domain);
+      if (!mxRecords || mxRecords.length === 0) {
+        throw new BadRequestException(
+          `Email domain '${domain}' does not accept emails (No MX records)`,
+        );
+      }
+      return true;
+    } catch (error) {
+      // network errors or no records
+      if (error instanceof BadRequestException) throw error;
+      // Code ENODATA or ENOTFOUND means no MX
+      throw new BadRequestException(
+        `Invalid email domain: ${email.split('@')[1]}`,
+      );
+    }
   }
 
   async forgotPassword(email: string) {
