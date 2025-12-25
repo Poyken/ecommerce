@@ -79,6 +79,7 @@ export function AddAddressDialog({
           </DialogDescription>
         </DialogHeader>
         <AddAddressForm
+          key={open ? address?.id || "add" : "closed"}
           onOpenChange={onOpenChange}
           onSuccess={onSuccess}
           address={address}

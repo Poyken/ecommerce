@@ -29,6 +29,7 @@
 
 "use server";
 
+import { generateCsrfToken } from "@/lib/csrf";
 import { http } from "@/lib/http";
 import { getPermissionsFromToken } from "@/lib/permission-utils";
 import {
@@ -98,6 +99,8 @@ export async function loginAction(prevState: unknown, formData: FormData) {
 
     // Lưu tokens vào Session (HttpOnly cookies)
     await createSession(accessToken, refreshToken);
+    // Reset CSRF token for New Session
+    await generateCsrfToken();
 
     // Revalidate to ensure all components get the new session state
     revalidatePath("/", "layout");
@@ -182,6 +185,8 @@ export async function registerAction(prevState: unknown, formData: FormData) {
 
     const { accessToken, refreshToken } = response.data;
     await createSession(accessToken, refreshToken);
+    // Reset CSRF token for New Session
+    await generateCsrfToken();
   } catch (error: unknown) {
     return {
       error: (error as Error).message || "Failed to register",

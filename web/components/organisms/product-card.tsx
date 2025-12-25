@@ -23,7 +23,7 @@
 
 import { Button } from "@/components/atoms/button";
 import { MotionButton } from "@/components/atoms/motion-button";
-import { Skeleton } from "@/components/atoms/skeleton";
+import { OptimizedImage } from "@/components/atoms/optimized-image";
 import { CompactRating } from "@/components/molecules/review-preview";
 import { WishlistButton } from "@/components/molecules/wishlist-button";
 import { ProductQuickViewDialog } from "@/components/organisms/product-quick-view-dialog";
@@ -34,10 +34,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Link } from "@/i18n/routing";
 import { cn, formatCurrency } from "@/lib/utils";
 import { ProductOption, Sku } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { Eye } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { memo, useEffect, useState } from "react";
 
 interface ProductCardProps {
@@ -79,9 +78,13 @@ export const ProductCard = memo(function ProductCard({
 }: ProductCardProps) {
   const t = useTranslations("productCard");
   const tToast = useTranslations("common.toast");
-  const [isImageReady, setIsImageReady] = useState(false);
   const { toast } = useToast();
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Use custom hook for cart operations
   const { addToCart, isAdding } = useCart(name);
@@ -91,20 +94,6 @@ export const ProductCard = memo(function ProductCard({
   const defaultSku = skus?.[0];
   const currentStock = useStock(defaultSku?.stock ?? 0, defaultSku?.id);
   const isLowStock = currentStock > 0 && currentStock < 5;
-
-  useEffect(() => {
-    if (imageUrl) {
-      const img = new window.Image();
-      img.src = imageUrl;
-      if (img.complete) {
-        requestAnimationFrame(() => setIsImageReady(true));
-      } else {
-        img.onload = () => setIsImageReady(true);
-      }
-    } else {
-      requestAnimationFrame(() => setIsImageReady(true));
-    }
-  }, [imageUrl]);
 
   const discountPercentage =
     originalPrice && originalPrice > price
@@ -122,27 +111,16 @@ export const ProductCard = memo(function ProductCard({
       )}
     >
       {/* Image Container */}
-      <div className="relative aspect-[4/5] overflow-hidden bg-neutral-50 dark:bg-neutral-900">
+      <div className="relative aspect-4/5 overflow-hidden bg-neutral-50 dark:bg-neutral-900">
         <Link href={`/products/${id}`} className="relative block w-full h-full">
-          <AnimatePresence mode="wait">
-            {!isImageReady && (
-              <motion.div
-                key="skeleton"
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 z-20"
-              >
-                <Skeleton className="w-full h-full rounded-none" />
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <Image
+          <OptimizedImage
             src={imageUrl || "/images/placeholders/product-placeholder.jpg"}
             alt={name}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            containerClassName="w-full h-full"
             className="object-cover transition-transform duration-1000 ease-[0.16,1,0.3,1] group-hover:scale-110"
-            onLoad={() => setIsImageReady(true)}
+            showShimmer={true}
           />
         </Link>
 
@@ -156,7 +134,7 @@ export const ProductCard = memo(function ProductCard({
             isCompact && "top-3 left-3"
           )}
         >
-          {isEnabled("show_new_arrival_badge") && isNew && (
+          {isMounted && isEnabled("show_new_arrival_badge") && isNew && (
             <span className="bg-accent/90 text-accent-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg">
               {t("new")}
             </span>
@@ -200,10 +178,10 @@ export const ProductCard = memo(function ProductCard({
 
         {/* Quick View Action */}
         {!isCompact && (
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-500 z-20 translate-y-4 group-hover:translate-y-0">
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-500 z-20 translate-y-4 group-hover:translate-y-0">
             <MotionButton
               animation="scale"
-              className="pointer-events-auto min-w-[140px] bg-white text-foreground hover:bg-accent hover:text-accent-foreground h-12 rounded-full font-bold text-xs tracking-wider uppercase shadow-2xl border-none hover:shadow-accent/30 hover:shadow-2xl transition-all duration-300 px-6 backdrop-blur-md"
+              className="pointer-events-auto min-w-[140px] bg-white text-foreground hover:bg-accent hover:text-accent-foreground h-12 rounded-full font-bold text-xs tracking-wider uppercase shadow-2xl border-none hover:shadow-accent/30 hover:shadow-2xl transition-[background-color,color,box-shadow,opacity] duration-300 px-6 backdrop-blur-md transform-gpu"
               onClick={(e) => {
                 e.preventDefault();
                 setIsQuickViewOpen(true);
@@ -216,10 +194,10 @@ export const ProductCard = memo(function ProductCard({
         )}
 
         {isCompact && (
-          <div className="absolute inset-x-3 bottom-3 z-20 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+          <div className="absolute inset-x-3 bottom-3 z-20 opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-300 translate-y-2 group-hover:translate-y-0">
             <Button
               size="sm"
-              className="w-full bg-white/95 backdrop-blur-xl text-foreground border-none hover:bg-accent hover:text-accent-foreground rounded-full text-[10px] font-black h-9 shadow-xl hover:shadow-accent/20 transition-all duration-300"
+              className="w-full bg-white/95 backdrop-blur-xl text-foreground border-none hover:bg-accent hover:text-accent-foreground rounded-full text-[10px] font-black h-9 shadow-xl hover:shadow-accent/20 transition-[background-color,color,box-shadow] duration-300 transform-gpu"
               onClick={(e) => {
                 e.preventDefault();
                 setIsQuickViewOpen(true);

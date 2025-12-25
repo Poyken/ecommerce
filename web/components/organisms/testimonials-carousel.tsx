@@ -2,10 +2,10 @@
 
 import { GlassButton } from "@/components/atoms/glass-button";
 import { GlassCard } from "@/components/atoms/glass-card";
+import { AvatarImage } from "@/components/atoms/optimized-image";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { useCallback, useEffect } from "react";
 
 /**
@@ -148,11 +148,10 @@ export function TestimonialsCarousel() {
                 </p>
                 <div className="flex items-center gap-4 pt-4 border-t border-foreground/5">
                   <div className="relative w-12 h-12 rounded-2xl overflow-hidden border border-foreground/10 shadow-sm">
-                    <Image
+                    <AvatarImage
                       src={item.avatar}
                       alt={item.author}
-                      fill
-                      sizes="48px"
+                      size={48}
                       className="object-cover"
                     />
                   </div>

@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearchPostgres"]
 }
 
@@ -11,7 +11,6 @@ datasource db {
 model User {
   id            String           @id @default(uuid())
   email         String           @unique
-
   firstName     String?
   lastName      String?
   password      String?          @db.VarChar(255)
@@ -123,9 +122,8 @@ model Product {
   metaDescription String?
   metaKeywords    String?
   metaTitle       String?
-  maxPrice        Decimal?             @db.Decimal(20, 2)
-  minPrice        Decimal?             @db.Decimal(20, 2)
-  // Cached aggregate fields for performance
+  maxPrice        Decimal?             @db.Decimal(10, 2)
+  minPrice        Decimal?             @db.Decimal(10, 2)
   avgRating       Float?               @default(0)
   reviewCount     Int                  @default(0)
   products        BlogProduct[]
@@ -144,7 +142,6 @@ model Product {
   @@index([brandId])
   @@index([createdAt])
   @@index([deletedAt])
-  // Optimized composite index for filtering
   @@index([categoryId, brandId, minPrice, maxPrice])
 }
 
@@ -174,8 +171,8 @@ model Sku {
   id            String             @id @default(uuid())
   skuCode       String             @unique @db.VarChar(50)
   productId     String
-  price         Decimal?           @db.Decimal(20, 2)
-  salePrice     Decimal?           @db.Decimal(20, 2)
+  price         Decimal?           @db.Decimal(10, 2)
+  salePrice     Decimal?           @db.Decimal(10, 2)
   stock         Int                @default(0)
   imageUrl      String?
   status        String             @default("INACTIVE")
@@ -252,17 +249,17 @@ model Coupon {
   id                String       @id @default(uuid())
   code              String       @unique
   discountType      DiscountType
-  discountValue     Decimal      @db.Decimal(20, 2)
-  minOrderAmount    Decimal?     @db.Decimal(20, 2)
-  maxDiscountAmount Decimal?     @db.Decimal(20, 2)
+  discountValue     Decimal      @db.Decimal(10, 2)
+  minOrderAmount    Decimal?     @db.Decimal(10, 2)
+  maxDiscountAmount Decimal?     @db.Decimal(10, 2)
   startDate         DateTime
   endDate           DateTime
   usageLimit        Int?
   usedCount         Int          @default(0)
   isActive          Boolean      @default(true)
-  description       String?
   createdAt         DateTime     @default(now())
   updatedAt         DateTime     @updatedAt
+  description       String?
   orders            Order[]
 
   @@index([code])
@@ -272,8 +269,8 @@ model Order {
   id              String        @id @default(uuid())
   userId          String
   status          OrderStatus   @default(PENDING)
-  totalAmount     Decimal       @db.Decimal(20, 2)
-  shippingFee     Decimal       @default(0.00) @db.Decimal(20, 2)
+  totalAmount     Decimal       @db.Decimal(10, 2)
+  shippingFee     Decimal       @default(0.00) @db.Decimal(10, 2)
   recipientName   String
   phoneNumber     String
   shippingAddress String
@@ -296,7 +293,7 @@ model OrderItem {
   orderId         String
   skuId           String
   quantity        Int
-  priceAtPurchase Decimal @db.Decimal(20, 2)
+  priceAtPurchase Decimal @db.Decimal(10, 2)
   order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   sku             Sku     @relation(fields: [skuId], references: [id])
 
@@ -305,21 +302,21 @@ model OrderItem {
 }
 
 model Review {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   userId     String
   productId  String
-  rating     Int      @db.SmallInt
+  rating     Int       @db.SmallInt
   content    String?
-  isApproved Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  isApproved Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
   skuId      String?
   images     String[]
   reply      String?
   replyAt    DateTime?
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  sku        Sku?     @relation(fields: [skuId], references: [id])
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku        Sku?      @relation(fields: [skuId], references: [id])
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, productId, skuId])
   @@index([productId, rating])
@@ -454,13 +451,25 @@ model BlogProduct {
   @@index([productId])
 }
 
+model FeatureFlag {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  description String?
+  isEnabled   Boolean  @default(false)
+  rules       Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([key])
+}
+
 enum OrderStatus {
-  RETURNED
   PENDING
   PROCESSING
   SHIPPED
   DELIVERED
   CANCELLED
+  RETURNED
 }
 
 enum PaymentStatus {
@@ -474,16 +483,4 @@ enum PaymentStatus {
 enum DiscountType {
   PERCENTAGE
   FIXED_AMOUNT
-}
-
-model FeatureFlag {
-  id          String   @id @default(uuid())
-  key         String   @unique
-  description String?
-  isEnabled   Boolean  @default(false)
-  rules       Json?    // For advanced targeting: { "userIds": [...], "percentage": 50, "environments": ["production"] }
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@index([key])
 }

@@ -43,6 +43,7 @@ export class CsrfGuard implements CanActivate {
     '/api/v1/auth/facebook/callback',
     '/api/v1/webhooks', // Payment webhooks
     '/api/v1/health',
+    '/api/v1/notifications',
   ];
 
   canActivate(context: ExecutionContext): boolean {

@@ -1,11 +1,11 @@
 "use client";
 
 import { GlassCard } from "@/components/atoms/glass-card";
+import { OptimizedImage } from "@/components/atoms/optimized-image";
 import { BlogWithProducts } from "@/types/models";
 import { motion } from "framer-motion";
 import { ArrowRight, Calendar, Clock, User } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import Link from "next/link";
 
 /**
@@ -58,10 +58,12 @@ export function BlogList({ posts }: BlogListProps) {
           className="group relative aspect-21/9 block rounded-[2.5rem] overflow-hidden border border-foreground/5 shadow-2xl"
         >
           {firstPost.image && (
-            <Image
+            <OptimizedImage
               src={firstPost.image}
               alt={firstPost.title}
               fill
+              showShimmer={true}
+              containerClassName="w-full h-full"
               className="object-cover group-hover:scale-105 transition-transform duration-1000"
               priority
             />
@@ -126,10 +128,12 @@ export function BlogList({ posts }: BlogListProps) {
               >
                 {post.image && (
                   <div className="relative aspect-3/2 overflow-hidden">
-                    <Image
+                    <OptimizedImage
                       src={post.image}
                       alt={post.title}
                       fill
+                      showShimmer={true}
+                      containerClassName="w-full h-full"
                       className="object-cover group-hover:scale-110 transition-transform duration-1000"
                     />
                     <div className="absolute top-5 left-5">

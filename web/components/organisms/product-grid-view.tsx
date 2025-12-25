@@ -2,17 +2,15 @@
 
 import { DataTablePagination } from "@/components/atoms/data-table-pagination";
 import { ProductCard } from "@/components/organisms/product-card";
+import { usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { PaginationMeta } from "@/types/dtos";
 import { Product } from "@/types/models";
 import { AnimatePresence, motion } from "framer-motion";
-import {
-  Grid2x2,
-  Grid3x3,
-  LayoutGrid,
-} from "lucide-react";
+import { Grid2x2, Grid3x3, LayoutGrid } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface ProductGridViewProps {
   products: Product[];
@@ -24,15 +22,37 @@ export function ProductGridView({
   pagination,
 }: ProductGridViewProps) {
   const t = useTranslations("common");
-  // Default to 4 columns on large screens
-  const [columns, setColumns] = useState<3 | 4 | 5 | 6>(4);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Persist columns in URL
+  const columnsParam = searchParams.get("columns");
+  const initialColumns = (Number(columnsParam) || 4) as 3 | 4 | 5;
+  const [columns, setColumnsState] = useState<3 | 4 | 5>(initialColumns);
+
+  // Sync state with URL
+  useEffect(() => {
+    if (columnsParam) {
+      const val = Number(columnsParam);
+      if (val === 3 || val === 4 || val === 5) {
+        setColumnsState(val as 3 | 4 | 5);
+      }
+    }
+  }, [columnsParam]);
+
+  const setColumns = (newCols: 3 | 4 | 5) => {
+    setColumnsState(newCols);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("columns", newCols.toString());
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   // Map column count to grid classes
   const gridClasses = {
     3: "lg:grid-cols-3",
     4: "lg:grid-cols-4",
     5: "lg:grid-cols-5",
-    6: "lg:grid-cols-6",
   };
 
   return (
@@ -80,26 +100,14 @@ export function ProductGridView({
             >
               <Grid2x2 className="w-4 h-4" />
             </button>
-            <button
-              onClick={() => setColumns(6)}
-              className={cn(
-                "p-2 rounded-md transition-all duration-200",
-                columns === 6
-                  ? "bg-background text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-              title="6 Columns"
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
           </div>
         </div>
         <div className="text-sm text-muted-foreground font-medium">
-            {t("shop.showing", {
-                from: (pagination.page - 1) * pagination.limit + 1,
-                to: Math.min(pagination.page * pagination.limit, pagination.total),
-                total: pagination.total
-            })}
+          {t("shop.showing", {
+            from: (pagination.page - 1) * pagination.limit + 1,
+            to: Math.min(pagination.page * pagination.limit, pagination.total),
+            total: pagination.total,
+          })}
         </div>
       </div>
 
@@ -107,9 +115,17 @@ export function ProductGridView({
       <motion.div
         layout
         className={cn(
-          "grid grid-cols-2 gap-4 md:gap-6",
+          "grid grid-cols-2 gap-4 md:gap-6 lg:gap-8",
           gridClasses[columns]
         )}
+        transition={{
+          layout: {
+            type: "spring",
+            stiffness: 250,
+            damping: 30,
+            mass: 1,
+          },
+        }}
       >
         <AnimatePresence mode="popLayout">
           {products.map((product) => {
@@ -126,7 +142,15 @@ export function ProductGridView({
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.2 }}
+                transition={{
+                  opacity: { duration: 0.2 },
+                  layout: {
+                    type: "spring",
+                    stiffness: 250,
+                    damping: 30,
+                    mass: 1,
+                  },
+                }}
                 key={product.id}
               >
                 <ProductCard
@@ -153,11 +177,11 @@ export function ProductGridView({
       {/* Pagination */}
       {pagination && pagination.lastPage > 1 && (
         <div className="mt-12 flex justify-center">
-            <DataTablePagination
-              page={pagination.page}
-              total={pagination.total}
-              limit={pagination.limit}
-            />
+          <DataTablePagination
+            page={pagination.page}
+            total={pagination.total}
+            limit={pagination.limit}
+          />
         </div>
       )}
     </div>

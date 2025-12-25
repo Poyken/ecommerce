@@ -52,7 +52,7 @@ export function HeroSection() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[60vh] bg-accent/10 rounded-full blur-[150px] opacity-60" />
 
         {/* Bottom Gradient */}
-        <div className="absolute bottom-0 inset-x-0 h-[40vh] bg-gradient-to-t from-background via-background/50 to-transparent" />
+        <div className="absolute bottom-0 inset-x-0 h-[40vh] bg-linear-to-t from-background via-background/50 to-transparent" />
 
         {/* Subtle Grid Pattern */}
         <div
@@ -91,7 +91,7 @@ export function HeroSection() {
             <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-normal tracking-[-0.03em] leading-[0.9]">
               <span className="block text-foreground">{t("redefining")}</span>
               <span className="relative inline-block mt-2 w-full">
-                <span className="text-gradient-champagne italic w-full block">
+                <span className="text-gradient-champagne italic w-full block pb-4">
                   {t("luxuryStyle")}
                 </span>
               </span>
@@ -109,7 +109,8 @@ export function HeroSection() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="group h-14 px-10 rounded-full bg-primary text-primary-foreground font-medium text-sm tracking-wider uppercase transition-all duration-500 hover:shadow-2xl hover:shadow-primary/20"
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className="group h-14 px-10 rounded-full bg-primary text-primary-foreground font-medium text-sm tracking-wider uppercase transition-[background-color,box-shadow,opacity] duration-300 hover:shadow-2xl hover:shadow-primary/20 transform-gpu will-change-transform"
               >
                 <span className="flex items-center gap-3">
                   {t("shopCollection")}
@@ -180,7 +181,7 @@ export function HeroSection() {
             />
 
             {/* Subtle Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60" />
+            <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-60" />
 
             {/* Floating Product Card - Glassmorphism */}
             <motion.div
@@ -230,7 +231,7 @@ export function HeroSection() {
         <motion.div
           animate={{ y: [0, 6, 0] }}
           transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="w-px h-8 bg-gradient-to-b from-accent/50 to-transparent"
+          className="w-px h-8 bg-linear-to-b from-accent/50 to-transparent"
         />
       </motion.div>
     </section>

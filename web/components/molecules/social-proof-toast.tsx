@@ -85,9 +85,7 @@ export function SocialProofToast() {
         >
           <div className="relative">
             <Avatar className="h-10 w-10 border-2 border-primary">
-              <AvatarImage
-                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${name}`}
-              />
+              <AvatarImage src={`/images/avatars/${name}.svg`} />
               <AvatarFallback>{name[0]}</AvatarFallback>
             </Avatar>
             <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background animate-pulse"></span>

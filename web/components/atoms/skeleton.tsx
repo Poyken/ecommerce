@@ -27,7 +27,11 @@ function Skeleton({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("rounded-md bg-muted animate-pulse", className)}
+      className={cn(
+        "relative overflow-hidden rounded-md bg-muted/50",
+        "after:absolute after:inset-0 after:-translate-x-full after:animate-shimmer after:bg-linear-to-r after:from-transparent after:via-white/10 after:to-transparent dark:after:via-white/5",
+        className
+      )}
       {...props}
     />
   );

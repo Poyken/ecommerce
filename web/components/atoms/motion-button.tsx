@@ -72,7 +72,7 @@ export const MotionButton = forwardRef<HTMLButtonElement, MotionButtonProps>(
         ref={ref}
         className={cn(
           buttonVariants({ variant, size, className }),
-          "transition-[color,background-color,border-color,text-decoration-color,fill,stroke,opacity,box-shadow,filter,backdrop-filter]"
+          "transform-gpu transition-[background-color,border-color,opacity,box-shadow,filter] will-change-transform duration-300"
         )}
         whileHover={hover}
         whileTap={tap}

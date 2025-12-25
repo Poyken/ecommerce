@@ -21,18 +21,18 @@
 "use client";
 
 import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-    type CarouselApi,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
 } from "@/components/atoms/carousel";
+import { OptimizedImage } from "@/components/atoms/optimized-image";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const ProductImageLightbox = dynamic(
@@ -76,12 +76,23 @@ export function ProductImageGallery({
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
 
-  // Preload initial image
+  // Preload initial image and handle state sync
   useEffect(() => {
-    const img = new window.Image();
-    img.src = images[0];
-    img.onload = () => setIsFirstLoadReady(true);
-  }, [images]);
+    if (images.length > 0) {
+      const img = new window.Image();
+      const firstImage = activeImage || images[0];
+      img.src = firstImage;
+      img.onload = () => setIsFirstLoadReady(true);
+      img.onerror = () => setIsFirstLoadReady(true); // Don't block UI on error
+
+      // Also sync displayImage if it was empty or mismatched
+      if (!displayImage || (displayImage !== firstImage && !isTransitioning)) {
+        setDisplayImage(firstImage);
+      }
+    } else {
+      setIsFirstLoadReady(true);
+    }
+  }, [images, activeImage]);
 
   return (
     <div className="space-y-6 lg:sticky lg:top-24">
@@ -123,7 +134,7 @@ export function ProductImageGallery({
           transition={{ duration: 0.8 }}
           className="absolute inset-0 w-full h-full"
         >
-          <Image
+          <OptimizedImage
             src={displayImage}
             alt={productName}
             fill
@@ -134,13 +145,12 @@ export function ProductImageGallery({
               "z-10"
             )}
             priority
-            unoptimized
           />
         </motion.div>
 
         {/* 2. The Incoming Image (Loading in Background) */}
         {isTransitioning && (
-          <Image
+          <OptimizedImage
             key={targetImage} // Force new instance for reliable Load event
             src={targetImage}
             alt={productName}
@@ -152,7 +162,6 @@ export function ProductImageGallery({
               "opacity-0 z-20" // Hidden until loaded
             )}
             priority
-            unoptimized
             onLoad={() => {
               // Image is ready! Promote it to displayImage.
               setDisplayImage(targetImage);
@@ -192,7 +201,7 @@ export function ProductImageGallery({
                       : "border-white/10 opacity-70 hover:opacity-100 hover:border-primary/50 hover:scale-105"
                   )}
                 >
-                  <Image
+                  <OptimizedImage
                     src={img}
                     alt={`${productName} thumbnail ${i + 1}`}
                     fill

@@ -54,6 +54,7 @@ export const getProfileAction = cache(async () => {
       !message.includes("Internal Server Error")
     ) {
       console.error("[getProfileAction] Failed to fetch profile:", message);
+      console.error("[getProfileAction] Error object:", error);
     }
     return { data: null, error: message };
   }

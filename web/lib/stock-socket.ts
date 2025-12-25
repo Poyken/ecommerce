@@ -13,11 +13,17 @@ class StockSocketClient {
   connect() {
     if (this.socket?.connected) return;
 
-    const serverUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-    // Usually API URL is like http://localhost:8080/api/v1, we need http://localhost:8080
-    const wsUrl = serverUrl.includes("/api")
-      ? serverUrl.split("/api")[0]
-      : serverUrl;
+    const serverUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8088";
+    // Usually API URL is like http://localhost:8088/api/v1, we need http://localhost:8088
+    let wsBaseUrl = serverUrl;
+    if (serverUrl.includes("/api/")) {
+      wsBaseUrl = serverUrl.split("/api/")[0];
+    } else if (serverUrl.includes("/api")) {
+      wsBaseUrl = serverUrl.split("/api")[0];
+    }
+
+    // Convert to ws/wss if it starts with http/https
+    const wsUrl = wsBaseUrl.replace(/^http/, "ws");
 
     this.socket = io(`${wsUrl}/stock`, {
       transports: ["websocket"],

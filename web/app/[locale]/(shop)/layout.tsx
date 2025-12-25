@@ -56,7 +56,7 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
     const cookieStore = await cookies();
     const [profile, cartRes, wishlistItems, notificationsRes, unreadCountRes] =
       await Promise.all([
-        getProfileAction(),
+        getProfileAction().catch(() => ({ data: null, error: null })),
         getCartCountAction().catch(() => ({ count: 0 })),
         getWishlistAction().catch(() => []),
         getNotificationsAction(10).catch(() => ({ data: [] })),

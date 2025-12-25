@@ -87,9 +87,7 @@ export const OrderSummary = memo(function OrderSummary({
                 />
               ) : (
                 <Image
-                  src={`https://picsum.photos/seed/${
-                    item.sku?.product?.id || "fallback"
-                  }/200`}
+                  src="/images/placeholders/product-placeholder.jpg"
                   alt={item.sku?.product?.name || "Product"}
                   fill
                   sizes="80px"

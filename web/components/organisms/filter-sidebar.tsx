@@ -1,8 +1,10 @@
 "use client";
 
 import { GlassButton } from "@/components/atoms/glass-button";
+import { usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { Brand, Category } from "@/types/models";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ChevronUp, Filter, Loader2, Tag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -42,6 +44,8 @@ export const FilterSidebar = memo(function FilterSidebar({
 }: FilterSidebarProps) {
   const t = useTranslations("common");
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [showAllBrands, setShowAllBrands] = useState(false);
 
@@ -55,6 +59,44 @@ export const FilterSidebar = memo(function FilterSidebar({
   const currentCategory = searchParams.get("categoryId");
   const currentBrand = searchParams.get("brandId");
   const hasActiveFilters = currentCategory || currentBrand;
+
+  // Helper to render filter button
+  const renderFilterButton = (
+    id: string | null,
+    name: string,
+    activeId: string | null,
+    type: "categoryId" | "brandId",
+    isBrand = false
+  ) => {
+    const isActive = id === null ? !activeId : activeId === id;
+    const activeClass = isBrand
+      ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-lg shadow-amber-500/5"
+      : "bg-primary/10 text-primary border border-primary/20 shadow-lg shadow-primary/5";
+
+    return (
+      <button
+        key={id || "all"}
+        onClick={() => handleFilter(type, id)}
+        onMouseEnter={() => {
+          if (!isActive && !isPending) {
+            const params = new URLSearchParams(searchParams.toString());
+            if (id === null) params.delete(type);
+            else params.set(type, id);
+            router.prefetch(`${pathname}?${params.toString()}`);
+          }
+        }}
+        disabled={isPending}
+        className={cn(
+          "block w-full text-left text-sm px-4 py-3 rounded-xl transition-all duration-300 font-bold transform-gpu will-change-[transform,background-color]",
+          isActive
+            ? activeClass
+            : "text-muted-foreground/60 hover:text-foreground hover:bg-foreground/2 hover:translate-x-1"
+        )}
+      >
+        {name}
+      </button>
+    );
+  };
 
   return (
     <aside className={cn("space-y-6", className)}>
@@ -80,35 +122,47 @@ export const FilterSidebar = memo(function FilterSidebar({
           {t("categories")}
         </h3>
         <div className="space-y-2">
-          <button
-            onClick={() => handleFilter("categoryId", null)}
-            disabled={isPending}
-            className={cn(
-              "block w-full text-left text-sm px-4 py-3 rounded-xl transition-all duration-300 font-bold",
-              !currentCategory
-                ? "bg-primary/10 text-primary border border-primary/20 shadow-lg shadow-primary/5"
-                : "text-muted-foreground/60 hover:text-foreground hover:bg-foreground/2 hover:translate-x-1"
+          {renderFilterButton(
+            null,
+            t("allCategories"),
+            currentCategory,
+            "categoryId"
+          )}
+
+          {categories
+            .slice(0, 6)
+            .map((cat) =>
+              renderFilterButton(
+                cat.id,
+                cat.name,
+                currentCategory,
+                "categoryId"
+              )
             )}
-          >
-            {t("allCategories")}
-          </button>
-          
-          {(showAllCategories ? categories : categories.slice(0, 6)).map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => handleFilter("categoryId", cat.id)}
-              disabled={isPending}
-              className={cn(
-                "block w-full text-left text-sm px-4 py-3 rounded-xl transition-all duration-300 font-bold",
-                currentCategory === cat.id
-                  ? "bg-primary/10 text-primary border border-primary/20 shadow-lg shadow-primary/5"
-                  : "text-muted-foreground/60 hover:text-foreground hover:bg-foreground/2 hover:translate-x-1"
-              )}
-            >
-              {cat.name}
-            </button>
-          ))}
-          
+
+          <AnimatePresence>
+            {showAllCategories && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden space-y-2"
+              >
+                {categories
+                  .slice(6)
+                  .map((cat) =>
+                    renderFilterButton(
+                      cat.id,
+                      cat.name,
+                      currentCategory,
+                      "categoryId"
+                    )
+                  )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {categories.length > 6 && (
             <button
               onClick={() => setShowAllCategories(!showAllCategories)}
@@ -135,37 +189,52 @@ export const FilterSidebar = memo(function FilterSidebar({
           {t("brands")}
         </h3>
         <div className="space-y-2">
-          <button
-            onClick={() => handleFilter("brandId", null)}
-            disabled={isPending}
-            className={cn(
-              "block w-full text-left text-sm px-4 py-3 rounded-xl transition-all duration-300 font-bold",
-              !currentBrand
-                ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-lg shadow-amber-500/5"
-                : "text-muted-foreground/60 hover:text-foreground hover:bg-foreground/2 hover:translate-x-1"
+          {renderFilterButton(
+            null,
+            t("allBrands"),
+            currentBrand,
+            "brandId",
+            true
+          )}
+
+          {brands
+            .slice(0, 6)
+            .map((brand) =>
+              renderFilterButton(
+                brand.id,
+                brand.name,
+                currentBrand,
+                "brandId",
+                true
+              )
             )}
-          >
-            {t("allBrands")}
-          </button>
-          
-          {(showAllBrands ? brands : brands.slice(0, 6)).map((brand) => (
-            <button
-              key={brand.id}
-              onClick={() => handleFilter("brandId", brand.id)}
-              disabled={isPending}
-              className={cn(
-                "block w-full text-left text-sm px-4 py-3 rounded-xl transition-all duration-300 font-bold",
-                currentBrand === brand.id
-                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-lg shadow-amber-500/5"
-                  : "text-muted-foreground/60 hover:text-foreground hover:bg-foreground/2 hover:translate-x-1"
-              )}
-            >
-              {brand.name}
-            </button>
-          ))}
-          
+
+          <AnimatePresence>
+            {showAllBrands && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="overflow-hidden space-y-2"
+              >
+                {brands
+                  .slice(6)
+                  .map((brand) =>
+                    renderFilterButton(
+                      brand.id,
+                      brand.name,
+                      currentBrand,
+                      "brandId",
+                      true
+                    )
+                  )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {brands.length > 6 && (
-             <button
+            <button
               onClick={() => setShowAllBrands(!showAllBrands)}
               className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 transition-colors px-4 py-1"
             >

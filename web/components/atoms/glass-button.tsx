@@ -71,7 +71,7 @@ const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
         whileTap={tapScale}
         disabled={props.disabled || loading}
         className={cn(
-          "inline-flex items-center justify-center whitespace-nowrap rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:pointer-events-none disabled:opacity-50 border cursor-pointer",
+          "inline-flex items-center justify-center whitespace-nowrap rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:pointer-events-none disabled:opacity-50 border cursor-pointer transform-gpu transition-[background-color,border-color,opacity,box-shadow] will-change-transform",
           variants[variant],
           sizes[size],
           className

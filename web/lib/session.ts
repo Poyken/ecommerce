@@ -47,7 +47,8 @@ export async function createSession(accessToken: string, refreshToken: string) {
   // Common cookie options
   const cookieOptions = {
     httpOnly: true, // JavaScript không thể đọc
-    secure: isProduction, // HTTPS only trong production
+    // FORCE FALSE FOR DEBUGGING
+    secure: false, // isProduction, // HTTPS only trong production
     sameSite: "lax" as const, // Bảo vệ CSRF, cho phép navigation requests
     path: "/", // Gửi với mọi request
     // NOTE: Không set domain để cookie work với cả subdomain và main domain

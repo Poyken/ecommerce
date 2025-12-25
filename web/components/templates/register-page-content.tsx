@@ -13,7 +13,6 @@ import { Link, useRouter } from "@/i18n/routing";
 import { registerSchema } from "@/lib/schemas";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 
@@ -34,6 +33,9 @@ import { useActionState, useEffect, useRef, useState } from "react";
  *
  * 3. UI CONSISTENCY:
  * - Sử dụng chung bộ `GlassCard` và `GlassButton` để đảm bảo tính thẩm mỹ đồng nhất với trang Login.
+ *
+ * 4. SYNC GUEST DATA:
+ * - Sau khi đăng ký thành công, tự động sync Cart và Wishlist từ localStorage lên Server.
  * =====================================================================
  */
 
@@ -176,280 +178,240 @@ export function RegisterPageContent() {
   };
 
   return (
-    <div className="w-full min-h-screen lg:grid lg:grid-cols-2 overflow-hidden bg-background">
-      {/* Left Side - Image */}
-      <div className="hidden lg:flex flex-col justify-center items-center bg-muted relative overflow-hidden h-full">
-        <Image
-          src="/images/auth/auth-bg-original.webp"
-          unoptimized
-          alt="Authentication Background"
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/50" />
-        <div className="relative z-10 text-white p-10 max-w-lg text-center space-y-4">
-          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/70 block">
-            Join Our Community
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={sectionVariants}
+      className="w-full"
+    >
+      <GlassCard
+        className="p-8 border-none shadow-none bg-transparent"
+        variant="default"
+      >
+        <div className="mb-8 text-center space-y-3">
+          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
+            Create Account
           </span>
-          <h2 className="text-5xl font-serif font-normal tracking-tight">
-            {t("heroTitle")}
-          </h2>
-          <p className="text-xl text-white/70 font-light">
-            {t("heroSubtitle")}
-          </p>
+          <h1 className="text-4xl font-serif font-normal tracking-tight text-foreground">
+            {t("title")}
+          </h1>
+          <p className="text-muted-foreground font-light">{t("subtitle")}</p>
         </div>
-      </div>
 
-      {/* Right Side - Form */}
-      <div className="flex items-center justify-center p-8 h-full relative">
-        {/* Background Gradients for Right Side */}
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[200px] pointer-events-none opacity-50" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary/30 rounded-full blur-[150px] pointer-events-none opacity-50" />
-
-        <motion.div
-          initial="hidden"
-          animate="visible"
-          variants={sectionVariants}
-          className="w-full max-w-md relative z-10"
+        <motion.form
+          layout
+          action={handleAction}
+          className="space-y-5"
+          noValidate
         >
-          <GlassCard
-            className="p-8 border-none shadow-none bg-transparent"
-            variant="default"
-          >
-            <div className="mb-8 text-center space-y-3">
-              <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
-                Create Account
-              </span>
-              <h1 className="text-4xl font-serif font-normal tracking-tight text-foreground">
-                {t("title")}
-              </h1>
-              <p className="text-muted-foreground font-light">
-                {t("subtitle")}
-              </p>
-            </div>
-
-            <motion.form
-              layout
-              action={handleAction}
-              className="space-y-5"
-              noValidate
-            >
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="firstName"
-                    className="text-foreground/80 font-bold"
-                  >
-                    {t("firstNameLabel")}
-                  </Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    placeholder={t("firstNamePlaceholder")}
-                    className={`bg-foreground/3 border-foreground/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/50 h-11 rounded-2xl ${
-                      localErrors.firstName ? "border-red-500" : ""
-                    }`}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (localErrors.firstName) {
-                        const result =
-                          registerSchema.shape.firstName.safeParse(value);
-                        if (result.success) {
-                          const newErrors = { ...localErrors };
-                          delete newErrors.firstName;
-                          setLocalErrors(newErrors);
-                        } else {
-                          setLocalErrors({
-                            ...localErrors,
-                            firstName: result.error.flatten().formErrors,
-                          });
-                        }
-                      }
-                    }}
-                  />
-                  <AnimatePresence initial={false}>
-                    {localErrors.firstName && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <p className="text-red-500 text-sm mt-1">
-                          {localErrors.firstName[0]}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="lastName"
-                    className="text-foreground/80 font-bold"
-                  >
-                    {t("lastNameLabel")}
-                  </Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    placeholder={t("lastNamePlaceholder")}
-                    className={`bg-foreground/3 border-foreground/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/50 h-11 rounded-2xl ${
-                      localErrors.lastName ? "border-red-500" : ""
-                    }`}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      if (localErrors.lastName) {
-                        const result =
-                          registerSchema.shape.lastName.safeParse(value);
-                        if (result.success) {
-                          const newErrors = { ...localErrors };
-                          delete newErrors.lastName;
-                          setLocalErrors(newErrors);
-                        } else {
-                          setLocalErrors({
-                            ...localErrors,
-                            lastName: result.error.flatten().formErrors,
-                          });
-                        }
-                      }
-                    }}
-                  />
-                  <AnimatePresence initial={false}>
-                    {localErrors.lastName && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <p className="text-red-500 text-sm mt-1">
-                          {localErrors.lastName[0]}
-                        </p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-foreground/80 font-bold">
-                  {t("emailLabel")}
-                </Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder={t("emailPlaceholder")}
-                  className={`bg-foreground/3 border-foreground/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/50 h-12 rounded-2xl ${
-                    localErrors.email ? "border-red-500" : ""
-                  }`}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (localErrors.email) {
-                      const result =
-                        registerSchema.shape.email.safeParse(value);
-                      if (result.success) {
-                        const newErrors = { ...localErrors };
-                        delete newErrors.email;
-                        setLocalErrors(newErrors);
-                      } else {
-                        setLocalErrors({
-                          ...localErrors,
-                          email: result.error.flatten().formErrors,
-                        });
-                      }
-                    }
-                  }}
-                />
-                <AnimatePresence initial={false}>
-                  {localErrors.email && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <p className="text-red-500 text-sm mt-1">
-                        {localErrors.email[0]}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              <div className="space-y-2">
-                <Label
-                  htmlFor="password"
-                  className="text-foreground/80 font-bold"
-                >
-                  {t("passwordLabel")}
-                </Label>
-                <PasswordInput
-                  id="password"
-                  name="password"
-                  className={`bg-foreground/3 border-foreground/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/50 h-12 rounded-2xl ${
-                    localErrors.password ? "border-red-500" : ""
-                  }`}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (localErrors.password) {
-                      const result =
-                        registerSchema.shape.password.safeParse(value);
-                      if (result.success) {
-                        const newErrors = { ...localErrors };
-                        delete newErrors.password;
-                        setLocalErrors(newErrors);
-                      } else {
-                        setLocalErrors({
-                          ...localErrors,
-                          password: result.error.flatten().formErrors,
-                        });
-                      }
-                    }
-                  }}
-                />
-                <AnimatePresence initial={false}>
-                  {localErrors.password && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <p className="text-red-500 text-sm mt-1">
-                        {localErrors.password[0]}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              <GlassButton
-                type="submit"
-                className="w-full h-12 text-base font-black bg-primary hover:opacity-90 text-primary-foreground shadow-xl shadow-primary/20"
-                loading={isPending}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label
+                htmlFor="firstName"
+                className="text-foreground/80 font-bold"
               >
-                {t("submit")}
-              </GlassButton>
+                {t("firstNameLabel")}
+              </Label>
+              <Input
+                id="firstName"
+                name="firstName"
+                placeholder={t("firstNamePlaceholder")}
+                className={`bg-foreground/3 border-foreground/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/50 h-11 rounded-2xl ${
+                  localErrors.firstName ? "border-red-500" : ""
+                }`}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (localErrors.firstName) {
+                    const result =
+                      registerSchema.shape.firstName.safeParse(value);
+                    if (result.success) {
+                      const newErrors = { ...localErrors };
+                      delete newErrors.firstName;
+                      setLocalErrors(newErrors);
+                    } else {
+                      setLocalErrors({
+                        ...localErrors,
+                        firstName: result.error.flatten().formErrors,
+                      });
+                    }
+                  }
+                }}
+              />
+              <AnimatePresence initial={false}>
+                {localErrors.firstName && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <p className="text-red-500 text-sm mt-1">
+                      {localErrors.firstName[0]}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="lastName"
+                className="text-foreground/80 font-bold"
+              >
+                {t("lastNameLabel")}
+              </Label>
+              <Input
+                id="lastName"
+                name="lastName"
+                placeholder={t("lastNamePlaceholder")}
+                className={`bg-foreground/3 border-foreground/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/50 h-11 rounded-2xl ${
+                  localErrors.lastName ? "border-red-500" : ""
+                }`}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (localErrors.lastName) {
+                    const result =
+                      registerSchema.shape.lastName.safeParse(value);
+                    if (result.success) {
+                      const newErrors = { ...localErrors };
+                      delete newErrors.lastName;
+                      setLocalErrors(newErrors);
+                    } else {
+                      setLocalErrors({
+                        ...localErrors,
+                        lastName: result.error.flatten().formErrors,
+                      });
+                    }
+                  }
+                }}
+              />
+              <AnimatePresence initial={false}>
+                {localErrors.lastName && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="overflow-hidden"
+                  >
+                    <p className="text-red-500 text-sm mt-1">
+                      {localErrors.lastName[0]}
+                    </p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
 
-              <div className="text-center text-sm text-muted-foreground/70 font-medium">
-                {t("hasAccount")}{" "}
-                <Link
-                  href="/login"
-                  className="text-primary hover:text-primary/80 transition-colors font-bold"
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-foreground/80 font-bold">
+              {t("emailLabel")}
+            </Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder={t("emailPlaceholder")}
+              className={`bg-foreground/3 border-foreground/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/50 h-12 rounded-2xl ${
+                localErrors.email ? "border-red-500" : ""
+              }`}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (localErrors.email) {
+                  const result = registerSchema.shape.email.safeParse(value);
+                  if (result.success) {
+                    const newErrors = { ...localErrors };
+                    delete newErrors.email;
+                    setLocalErrors(newErrors);
+                  } else {
+                    setLocalErrors({
+                      ...localErrors,
+                      email: result.error.flatten().formErrors,
+                    });
+                  }
+                }
+              }}
+            />
+            <AnimatePresence initial={false}>
+              {localErrors.email && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
                 >
-                  {t("signIn")}
-                </Link>
-              </div>
-            </motion.form>
-          </GlassCard>
-        </motion.div>
-      </div>
-    </div>
+                  <p className="text-red-500 text-sm mt-1">
+                    {localErrors.email[0]}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-foreground/80 font-bold">
+              {t("passwordLabel")}
+            </Label>
+            <PasswordInput
+              id="password"
+              name="password"
+              className={`bg-foreground/3 border-foreground/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/50 h-12 rounded-2xl ${
+                localErrors.password ? "border-red-500" : ""
+              }`}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (localErrors.password) {
+                  const result = registerSchema.shape.password.safeParse(value);
+                  if (result.success) {
+                    const newErrors = { ...localErrors };
+                    delete newErrors.password;
+                    setLocalErrors(newErrors);
+                  } else {
+                    setLocalErrors({
+                      ...localErrors,
+                      password: result.error.flatten().formErrors,
+                    });
+                  }
+                }
+              }}
+            />
+            <AnimatePresence initial={false}>
+              {localErrors.password && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <p className="text-red-500 text-sm mt-1">
+                    {localErrors.password[0]}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          <GlassButton
+            type="submit"
+            className="w-full h-12 text-base font-black bg-primary hover:opacity-90 text-primary-foreground shadow-xl shadow-primary/20"
+            loading={isPending}
+          >
+            {t("submit")}
+          </GlassButton>
+
+          <div className="text-center text-sm text-muted-foreground/70 font-medium">
+            {t("hasAccount")}{" "}
+            <Link
+              href="/login"
+              className="text-primary hover:text-primary/80 transition-colors font-bold"
+            >
+              {t("signIn")}
+            </Link>
+          </div>
+        </motion.form>
+      </GlassCard>
+    </motion.div>
   );
 }

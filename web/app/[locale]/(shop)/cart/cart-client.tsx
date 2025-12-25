@@ -24,43 +24,43 @@
 "use client";
 
 import {
-    clearCartAction,
-    getGuestCartDetailsAction,
-    removeFromCartAction,
-    updateCartItemAction,
+  clearCartAction,
+  getGuestCartDetailsAction,
+  removeFromCartAction,
+  updateCartItemAction,
 } from "@/actions/cart";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/atoms/alert-dialog";
 import { Checkbox } from "@/components/atoms/checkbox";
 import { GlassButton } from "@/components/atoms/glass-button";
 import { GlassCard } from "@/components/atoms/glass-card";
+import { OptimizedImage } from "@/components/atoms/optimized-image";
 import { Separator } from "@/components/atoms/separator";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "@/i18n/routing";
 import { Cart, CartItem, Sku } from "@/types/models";
 import { motion } from "framer-motion";
 import {
-    Lock,
-    Minus,
-    Plus,
-    RefreshCcw,
-    ShieldCheck,
-    ShoppingBag,
-    Trash2,
-    Truck,
-    X,
+  Lock,
+  Minus,
+  Plus,
+  RefreshCcw,
+  ShieldCheck,
+  ShoppingBag,
+  Trash2,
+  Truck,
+  X,
 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 
 // Extend shared types for stricter UI requirements (we know SKU must exist here)
@@ -582,33 +582,17 @@ export function CartClient({ cart }: CartClientProps) {
                           href={`/products/${item.sku.product.id}`}
                           className="relative w-24 h-32 md:w-32 md:h-40 rounded-xl overflow-hidden bg-muted shrink-0 border border-white/5 block group/img"
                         >
-                          {item.sku.imageUrl ? (
-                            <Image
-                              src={item.sku.imageUrl}
-                              alt={item.sku.product.name}
-                              fill
-                              sizes="(max-width: 768px) 96px, 128px"
-                              className="object-cover transition-transform duration-500 group-hover/img:scale-110"
-                            />
-                          ) : item.sku.product.images?.[0] ? (
-                            <Image
-                              src={item.sku.product.images[0]}
-                              alt={item.sku.product.name}
-                              fill
-                              sizes="(max-width: 768px) 96px, 128px"
-                              className="object-cover transition-transform duration-500 group-hover/img:scale-110"
-                            />
-                          ) : (
-                            <Image
-                              src={`https://picsum.photos/seed/${
-                                item.sku.product.id || "fallback"
-                              }/400/600`}
-                              alt={item.sku.product.name}
-                              fill
-                              sizes="(max-width: 768px) 96px, 128px"
-                              className="object-cover transition-transform duration-500 group-hover/img:scale-110"
-                            />
-                          )}
+                          <OptimizedImage
+                            src={
+                              item.sku.imageUrl ||
+                              item.sku.product.images?.[0] ||
+                              ""
+                            }
+                            alt={item.sku.product.name}
+                            fill
+                            sizes="(max-width: 768px) 96px, 128px"
+                            className="object-cover transition-transform duration-500 group-hover/img:scale-110"
+                          />
                         </Link>
 
                         <div className="flex-1 flex flex-col justify-between py-1">

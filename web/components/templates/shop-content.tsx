@@ -3,18 +3,18 @@
 import { BreadcrumbNav } from "@/components/atoms/breadcrumb-nav";
 import { Button } from "@/components/atoms/button";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/atoms/select";
 import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/atoms/sheet";
 import { Skeleton } from "@/components/atoms/skeleton";
 import { SearchInput } from "@/components/molecules/search-input";
@@ -23,12 +23,20 @@ import { FilterSidebar } from "@/components/organisms/filter-sidebar";
 import { ShopGrid } from "@/components/organisms/shop-grid";
 import { ProductsSkeleton } from "@/components/organisms/skeletons/home-skeleton";
 import { usePathname, useRouter } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
 import { ApiResponse } from "@/types/dtos";
 import { Brand, Category, Product } from "@/types/models";
 import { Filter, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { Suspense, use, useCallback, useTransition } from "react";
+import {
+  Suspense,
+  use,
+  useCallback,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 
 /**
  * =====================================================================
@@ -73,6 +81,28 @@ export function ShopContent({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
+  // Persist columns in URL
+  const columnsParam = searchParams.get("columns");
+  const initialColumns = (Number(columnsParam) || 4) as 3 | 4 | 5;
+  const [columns, setColumnsState] = useState<3 | 4 | 5>(initialColumns);
+
+  // Sync state with URL
+  useEffect(() => {
+    if (columnsParam) {
+      const val = Number(columnsParam);
+      if (val === 3 || val === 4 || val === 5) {
+        setColumnsState(val as 3 | 4 | 5);
+      }
+    }
+  }, [columnsParam]);
+
+  const setColumns = (newCols: 3 | 4 | 5) => {
+    setColumnsState(newCols);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("columns", newCols.toString());
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
   // Unwrap categories and brands for sidebar and active filters
   const categories = use(categoriesPromise);
   const brands = use(brandsPromise);
@@ -102,8 +132,9 @@ export function ShopContent({
       } else {
         params.set(name, value);
       }
+
       // Reset page to 1 on filter/sort change
-      if (name !== "page") {
+      if (name !== "page" && name !== "columns") {
         params.set("page", "1");
       }
       return params.toString();
@@ -278,15 +309,62 @@ export function ShopContent({
             />
 
             {/* Product Grid - 80% width (4/5) */}
-            <div className="lg:col-span-4 space-y-8">
+            <div className="lg:col-span-4 space-y-6">
+              {/* View Options & Stats Row */}
+              <div className="flex flex-col sm:flex-row justify-between items-center bg-background/50 backdrop-blur-sm p-4 rounded-xl border border-border/50 gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground mr-2 hidden sm:inline-block">
+                    View
+                  </span>
+                  <div className="flex bg-muted/50 p-1 rounded-lg">
+                    {[3, 4, 5].map((col) => (
+                      <button
+                        key={col}
+                        onClick={() => setColumns(col as 3 | 4 | 5)}
+                        className={cn(
+                          "p-2 rounded-md transition-all duration-200 hover:bg-background/80 hover:text-foreground hover:shadow-sm",
+                          columns === col
+                            ? "bg-background text-primary shadow-sm ring-1 ring-black/5 dark:ring-white/10"
+                            : "text-muted-foreground"
+                        )}
+                        title={`${col} Columns`}
+                      >
+                        <div className="flex gap-0.5">
+                          {Array.from({ length: Math.min(col, 3) }).map(
+                            (_, i) => (
+                              <div
+                                key={i}
+                                className="w-1 h-3 bg-current rounded-full"
+                              />
+                            )
+                          )}
+                          {col > 3 && (
+                            <div className="w-0.5 h-3 bg-current rounded-full" />
+                          )}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="font-medium order-1 sm:order-2">
+                  <Suspense fallback={<Skeleton className="h-5 w-32" />}>
+                    <ShopStats productsPromise={productsPromise} />
+                  </Suspense>
+                </div>
+              </div>
+
               {isPending ? (
-                <ProductsSkeleton count={12} />
+                <ProductsSkeleton count={12} columns={columns} />
               ) : (
-                <Suspense fallback={<ProductsSkeleton count={12} />}>
+                <Suspense
+                  fallback={<ProductsSkeleton count={12} columns={columns} />}
+                >
                   <ShopGrid
                     productsPromise={productsPromise}
                     suggestedProductsPromise={suggestedProductsPromise}
                     wishlistItems={wishlistItems}
+                    columns={columns}
                   />
                 </Suspense>
               )}

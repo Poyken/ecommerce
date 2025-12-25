@@ -1,9 +1,10 @@
 "use client";
 
+import { usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
@@ -58,6 +59,9 @@ export function SearchInput({
       params.delete("search");
     }
 
+    // Reset page to 1 on search change
+    params.set("page", "1");
+
     startTransition(() => {
       replace(`${pathname}?${params.toString()}` as any, { scroll: false });
     });
@@ -77,7 +81,7 @@ export function SearchInput({
         onChange={onChange}
         placeholder={placeholder || t("searchPlaceholder")}
         className={cn(
-          "w-full h-12 bg-foreground/[0.02] dark:bg-white/[0.02] border border-foreground/5 dark:border-white/5 text-foreground placeholder:text-muted-foreground/40 rounded-2xl px-4 py-2 pl-12 pr-10 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-md hover:border-foreground/10",
+          "w-full h-12 bg-foreground/2 dark:bg-white/2 border border-foreground/5 dark:border-white/5 text-foreground placeholder:text-muted-foreground/40 rounded-2xl px-4 py-2 pl-12 pr-10 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all duration-300 text-sm font-medium shadow-sm hover:shadow-md hover:border-foreground/10",
           className
         )}
       />

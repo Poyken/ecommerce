@@ -107,6 +107,11 @@ export function CartProvider({
 
   // Listen for cart updates
   useEffect(() => {
+    // For guest users, fetch initial count on mount since server-side doesn't have it
+    if (!initialUser) {
+      fetchCount();
+    }
+
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "guest_cart") fetchCount();
     };

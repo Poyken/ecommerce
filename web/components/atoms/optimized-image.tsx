@@ -24,7 +24,7 @@ import { memo, useState } from "react";
  * =====================================================================
  */
 
-interface OptimizedImageProps extends Omit<ImageProps, "onLoad" | "onError"> {
+interface OptimizedImageProps extends ImageProps {
   /** Fallback image URL nếu load thất bại */
   fallbackSrc?: string;
   /** Show shimmer loading effect */
@@ -46,7 +46,7 @@ const aspectRatioClasses = {
 export const OptimizedImage = memo(function OptimizedImage({
   src,
   alt,
-  fallbackSrc = "/placeholder-product.png",
+  fallbackSrc = "/images/placeholders/product-placeholder.jpg",
   showShimmer = true,
   aspectRatio = "auto",
   containerClassName,
@@ -55,13 +55,39 @@ export const OptimizedImage = memo(function OptimizedImage({
 }: OptimizedImageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [fallbackError, setFallbackError] = useState(false);
 
-  const imageSrc = error ? fallbackSrc : src;
+  // If source is empty, treat as error immediately
+  const hasSrc =
+    (src && src !== "" && src !== "null" && src !== "undefined") || false;
+  const finalError = error || !hasSrc;
+
+  // Choose which source to use
+  let imageSrc = finalError ? fallbackSrc : src;
+  if (finalError && fallbackError) {
+    // If BOTH primary and fallback fail, we'll render a placeholder div instead of a broken Image
+    return (
+      <div
+        className={cn(
+          "relative overflow-hidden bg-muted/30 flex items-center justify-center p-4 text-center",
+          aspectRatioClasses[aspectRatio],
+          containerClassName
+        )}
+      >
+        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest opacity-50">
+          {alt || "Image Not Found"}
+        </span>
+      </div>
+    );
+  }
+
+  const { onLoad, onError, ...rest } = props;
 
   return (
     <div
       className={cn(
         "relative overflow-hidden bg-muted/30",
+        props.fill && "w-full h-full",
         aspectRatioClasses[aspectRatio],
         containerClassName
       )}
@@ -75,18 +101,26 @@ export const OptimizedImage = memo(function OptimizedImage({
         src={imageSrc}
         alt={alt}
         className={cn(
-          "transition-all duration-500 ease-out",
+          "transition-all duration-700 ease-in-out",
           isLoading
-            ? "scale-105 blur-sm opacity-0"
+            ? "scale-110 blur-2xl opacity-0"
             : "scale-100 blur-0 opacity-100",
           className
         )}
-        onLoad={() => setIsLoading(false)}
-        onError={() => {
-          setError(true);
+        onLoad={(e) => {
           setIsLoading(false);
+          if (onLoad) onLoad(e);
         }}
-        {...props}
+        onError={(e) => {
+          if (!finalError) {
+            setError(true);
+          } else {
+            setFallbackError(true);
+          }
+          setIsLoading(false);
+          if (onError) onError(e);
+        }}
+        {...rest}
       />
     </div>
   );

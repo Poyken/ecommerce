@@ -34,9 +34,25 @@ export function CategoriesSkeleton() {
   );
 }
 
-export function ProductsSkeleton({ count = 4 }: { count?: number }) {
+export function ProductsSkeleton({
+  count = 4,
+  columns = 4,
+}: {
+  count?: number;
+  columns?: number;
+}) {
+  const gridClasses: Record<number, string> = {
+    3: "lg:grid-cols-3",
+    4: "lg:grid-cols-4",
+    5: "lg:grid-cols-5",
+  };
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <div
+      className={`grid grid-cols-2 gap-4 md:gap-6 lg:gap-8 ${
+        gridClasses[columns] || "lg:grid-cols-4"
+      }`}
+    >
       {[...Array(count)].map((_, i) => (
         <div key={i} className="space-y-4">
           <Skeleton className="aspect-3/4 rounded-xl" />

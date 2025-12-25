@@ -170,7 +170,7 @@ export class ProductsService {
         // 1. Search text (Tên hoặc Mô tả)
         // 1. Search text (Full Text Search)
         search
-          ? ({
+          ? {
               OR: [
                 {
                   name: {
@@ -183,7 +183,7 @@ export class ProductsService {
                   },
                 },
               ],
-            } as any)
+            }
           : {},
         // 1.1 Filter by IDs
         ids

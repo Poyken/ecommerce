@@ -117,19 +117,34 @@ async function bootstrap() {
     origin: (origin, callback) => {
       // Danh sách domain được phép (whitelist)
       const allowedOrigins = [
-        process.env.FRONTEND_URL || 'http://localhost:3000', // Frontend URL
-        'http://localhost:3000', // Explicitly allow localhost:3000
-        'http://localhost:8080', // Cho phép chính server gọi (Swagger UI)
-      ];
+        process.env.FRONTEND_URL,
+        'http://localhost:3000',
+        'http://localhost:8080',
+        'https://web-okfy.onrender.com',
+      ].filter(Boolean); // Lọc bỏ giá trị undefined/null
 
-      // Cho phép request không có origin (VD: Postman, Mobile App)
-      // hoặc nằm trong whitelist
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        logger.warn(`Đã chặn request CORS từ origin: ${origin}`);
-        callback(new Error('Không được phép bởi CORS'));
+      // 1. Cho phép request không có origin (Server-to-Server, Tools like Postman)
+      if (!origin) {
+        return callback(null, true);
       }
+
+      // 2. Check trong whitelist cứng
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // 3. Cho phép dynamic Localhost & Local Network (cho Dev environment)
+      // Giúp developers chạy trên IP mạng LAN (ví dụ view trên điện thoại)
+      if (
+        origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://192.168.')
+      ) {
+        return callback(null, true);
+      }
+
+      // 4. Block
+      logger.warn(`🚫 CORS Blocked Origin: ${origin}`);
+      callback(new Error('Not allowed by CORS'));
     },
     credentials: true, // Cho phép gửi cookies
   });
@@ -187,7 +202,7 @@ async function bootstrap() {
   // ============================================================================
   // 9. START SERVER - Khởi động server
   // ============================================================================
-  const port = process.env.PORT ?? 8080;
+  const port = process.env.PORT ?? 8088;
   await app.listen(port);
 
   logger.log(`🚀 Server is running on: http://localhost:${port}`);
