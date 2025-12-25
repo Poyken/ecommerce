@@ -152,6 +152,17 @@ export function ProductQuickViewDialog({
     }
   };
 
+  // Sync SKU selection when clicking on an image in the gallery
+  const handleImageClick = (imageUrl: string) => {
+    setActiveImage(imageUrl);
+
+    // Find SKU with this image and update selection
+    const targetSku = product?.skus?.find((sku) => sku.imageUrl === imageUrl);
+    if (targetSku) {
+      setCurrentSkuId(targetSku.id);
+    }
+  };
+
   const handleAddToCart = async () => {
     if (!currentSkuId) {
       toast({
@@ -233,7 +244,7 @@ export function ProductQuickViewDialog({
                   images={sortedImages}
                   productName={product.name}
                   activeImage={activeImage}
-                  onImageClick={setActiveImage}
+                  onImageClick={handleImageClick}
                   skus={product.skus || []}
                   options={product.options || []}
                   onLightboxChange={setIsLightboxOpen}

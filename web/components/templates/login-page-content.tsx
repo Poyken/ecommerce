@@ -391,7 +391,11 @@ export function LoginPageContent() {
           <div className="text-center text-sm text-muted-foreground/70 font-medium">
             {t("noAccount")}{" "}
             <Link
-              href="/register"
+              href={
+                callbackUrl && callbackUrl !== "/"
+                  ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                  : "/register"
+              }
               className="text-primary hover:text-primary/80 transition-colors font-bold"
             >
               {t("createAccount")}

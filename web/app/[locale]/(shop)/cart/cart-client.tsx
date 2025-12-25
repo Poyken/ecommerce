@@ -274,9 +274,11 @@ export function CartClient({ cart }: CartClientProps) {
         setGuestItems([]);
         setTotalGuest(0);
         window.dispatchEvent(new Event("guest_cart_updated"));
+        window.dispatchEvent(new Event("cart_clear")); // Immediate badge update
       } else {
         const res = await clearCartAction();
         if (res.success) {
+          window.dispatchEvent(new Event("cart_clear")); // Immediate badge update
           toast({
             variant: "success",
             title: t("cleared"),

@@ -99,7 +99,7 @@ export const OptimizedImage = memo(function OptimizedImage({
 
       <Image
         src={imageSrc}
-        alt={alt}
+        alt={alt || "Image"}
         className={cn(
           "transition-all duration-700 ease-in-out",
           isLoading

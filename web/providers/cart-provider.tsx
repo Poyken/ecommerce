@@ -119,15 +119,18 @@ export function CartProvider({
     // Custom events for cart updates
     const handleGuestUpdate = () => fetchCount();
     const handleCartUpdate = () => fetchCount(); // For logged-in users
+    const handleCartClear = () => setCount(0); // Immediate reset when cart is cleared
 
     window.addEventListener("storage", handleStorageChange);
     window.addEventListener("guest_cart_updated", handleGuestUpdate); // Guest users
     window.addEventListener("cart_updated", handleCartUpdate); // Logged-in users
+    window.addEventListener("cart_clear", handleCartClear); // Clear cart event
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
       window.removeEventListener("guest_cart_updated", handleGuestUpdate);
       window.removeEventListener("cart_updated", handleCartUpdate);
+      window.removeEventListener("cart_clear", handleCartClear);
     };
   }, [initialUser, fetchCount]);
 

@@ -44,8 +44,10 @@ import Loading from "./loading";
 async function DynamicShopContent({ children }: { children: React.ReactNode }) {
   // Fetch user data ONCE for the entire layout
   // We also try to fetch cart and wishlist counts securely on the server to avoid client waterfalls
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+
   let user = null;
-  let token = undefined;
   let initialCartCount = 0;
   let initialWishlistCount = 0;
   let initialNotifications: Notification[] = [];
@@ -53,9 +55,14 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
   let permissions: string[] = [];
 
   try {
-    const cookieStore = await cookies();
-    const [profile, cartRes, wishlistItems, notificationsRes, unreadCountRes] =
-      await Promise.all([
+    if (token) {
+      const [
+        profile,
+        cartRes,
+        wishlistItems,
+        notificationsRes,
+        unreadCountRes,
+      ] = await Promise.all([
         getProfileAction().catch(() => ({ data: null, error: null })),
         getCartCountAction().catch(() => ({ count: 0 })),
         getWishlistAction().catch(() => []),
@@ -63,21 +70,22 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
         getUnreadCountAction().catch(() => ({ count: 0 })),
       ]);
 
-    user = profile.data;
-    token = cookieStore.get("accessToken")?.value;
-    permissions = user ? getPermissionsFromToken(token) : [];
-    initialCartCount =
-      user && cartRes && typeof cartRes.count === "number" ? cartRes.count : 0;
-    initialWishlistCount =
-      user && Array.isArray(wishlistItems) ? wishlistItems.length : 0;
-    initialNotifications = (notificationsRes?.data || []) as Notification[];
-    initialUnreadCount =
-      unreadCountRes && typeof unreadCountRes.count === "number"
-        ? unreadCountRes.count
-        : 0;
+      user = profile.data;
+      permissions = user ? getPermissionsFromToken(token) : [];
+      initialCartCount =
+        user && cartRes && typeof cartRes.count === "number"
+          ? cartRes.count
+          : 0;
+      initialWishlistCount =
+        user && Array.isArray(wishlistItems) ? wishlistItems.length : 0;
+      initialNotifications = (notificationsRes?.data || []) as Notification[];
+      initialUnreadCount =
+        unreadCountRes && typeof unreadCountRes.count === "number"
+          ? unreadCountRes.count
+          : 0;
+    }
   } catch (e) {
-    // If cookies() or fetching fails during prerendering, we just use the default empty values.
-    // This allows the static shell of the layout to be built.
+    // Falls back to defaults
   }
 
   return (

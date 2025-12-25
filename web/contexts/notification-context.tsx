@@ -119,7 +119,9 @@ export function NotificationProvider({
       try {
         // Optimistic update
         setNotifications((prev) =>
-          prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+          Array.isArray(prev)
+            ? prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
+            : []
         );
         setUnreadCount((prev) => Math.max(0, prev - 1));
 
@@ -136,7 +138,9 @@ export function NotificationProvider({
   const markAllAsRead = useCallback(async () => {
     try {
       // Optimistic update
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+      setNotifications((prev) =>
+        Array.isArray(prev) ? prev.map((n) => ({ ...n, isRead: true })) : []
+      );
       setUnreadCount(0);
 
       await markAllAsReadAction();
@@ -180,7 +184,9 @@ export function NotificationProvider({
       );
 
       // Add to the beginning of the list
-      setNotifications((prev) => [notification, ...prev].slice(0, 10));
+      setNotifications((prev) =>
+        [notification, ...(Array.isArray(prev) ? prev : [])].slice(0, 10)
+      );
 
       // Increment unread count if notification is unread
       if (!notification.isRead) {

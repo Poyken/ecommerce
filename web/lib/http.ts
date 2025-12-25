@@ -221,12 +221,21 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     error.status = res.status;
     error.body = errorBody;
 
-    console.error(
-      `[HTTP Error] Status: ${
-        res.status
-      }, URL: ${url.toString()}, Message: ${errorMessage}`
-    );
-    console.error(`[HTTP Error Body]:`, JSON.stringify(errorBody, null, 2));
+    const isUnauthorized = res.status === 401;
+    if (!isUnauthorized || options.skipRedirectOn401) {
+      if (isUnauthorized) {
+        console.warn(
+          `[HTTP 401 Received] Expected for guest, handled by client: ${url.toString()}`
+        );
+      } else {
+        console.error(
+          `[HTTP Error] Status: ${
+            res.status
+          }, URL: ${url.toString()}, Message: ${errorMessage}`
+        );
+        console.error(`[HTTP Error Body]:`, JSON.stringify(errorBody, null, 2));
+      }
+    }
 
     throw error;
   }

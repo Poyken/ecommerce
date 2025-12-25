@@ -121,18 +121,29 @@ function AddAddressForm({
     wardCode: address?.wardCode || (undefined as string | undefined),
   });
 
-  // 1. Fetch Provinces on Mount
+  // 1. Fetch Provinces on Mount (and Districts/Wards if editing)
   useEffect(() => {
     const fetchData = async () => {
       try {
         const list = await getProvinces();
         setProvinces(list);
+
+        // If editing an address, pre-fetch districts and wards
+        if (address?.provinceId) {
+          const districtList = await getDistricts(address.provinceId);
+          setDistricts(districtList);
+
+          if (address?.districtId) {
+            const wardList = await getWards(address.districtId);
+            setWards(wardList);
+          }
+        }
       } catch (err) {
         console.error("Fetch provinces error:", err);
       }
     };
     fetchData();
-  }, []);
+  }, [address?.provinceId, address?.districtId]);
 
   // 2. Fetch Districts when Province Changes
   useEffect(() => {

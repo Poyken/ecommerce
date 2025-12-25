@@ -457,6 +457,30 @@ export class AuthService {
   }
 
   private async grantWelcomeVoucher(userId: string) {
+    // Check if user already has a welcome voucher (to prevent duplicates)
+    // Check via orders relation - if user has used any WELCOME coupon
+    const existingWelcomeCoupon = await this.prisma.coupon.findFirst({
+      where: {
+        code: { startsWith: 'WELCOME-' },
+        orders: {
+          some: { userId },
+        },
+      },
+    });
+
+    // Also check for coupons created with notification to this user
+    const existingNotification = await this.prisma.notification.findFirst({
+      where: {
+        userId,
+        title: { contains: 'Quà tặng chào mừng' },
+      },
+    });
+
+    if (existingWelcomeCoupon || existingNotification) {
+      console.log(`User ${userId} already has a welcome voucher, skipping...`);
+      return null;
+    }
+
     const now = new Date();
     const endDate = new Date();
     endDate.setDate(now.getDate() + 7);

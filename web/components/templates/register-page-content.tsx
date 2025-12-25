@@ -404,7 +404,11 @@ export function RegisterPageContent() {
           <div className="text-center text-sm text-muted-foreground/70 font-medium">
             {t("hasAccount")}{" "}
             <Link
-              href="/login"
+              href={
+                callbackUrl && callbackUrl !== "/"
+                  ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                  : "/login"
+              }
               className="text-primary hover:text-primary/80 transition-colors font-bold"
             >
               {t("signIn")}
