@@ -3,51 +3,63 @@ import { UsersPageClient } from "./users-page-client";
 
 /**
  * =====================================================================
- * ADMIN USERS PAGE - Quản lý người dùng (Server Component)
+ * USERS PAGE (Server Component)
  * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. USER MANAGEMENT:
- * - Trang này hiển thị danh sách toàn bộ người dùng trong hệ thống.
- * - Admin có thể tìm kiếm user theo tên hoặc email.
- *
- * 2. SERVER-SIDE FETCHING:
- * - Sử dụng `getUsersAction` để lấy dữ liệu user kèm thông tin phân trang.
- * - Đảm bảo dữ liệu luôn mới nhất mỗi khi trang được tải lại.
- *
- * 3. SECURITY & PRIVACY:
- * - Chỉ hiển thị các thông tin cần thiết cho việc quản lý.
- * - Các thông tin nhạy cảm (như mật khẩu) tuyệt đối không được trả về từ API này.
- * =====================================================================
+ * Fetch users with server-side filtering (Role) and Counts.
  */
+
+async function getUserCounts() {
+  try {
+    // Fetch counts for common roles
+    const [all, admins, users] = await Promise.all([
+      getUsersAction(1, 1),
+      getUsersAction(1, 1, "", "ADMIN"),
+      getUsersAction(1, 1, "", "USER"),
+    ]);
+
+    return {
+      total: "data" in all ? all.meta?.total || 0 : 0,
+      admin: "data" in admins ? admins.meta?.total || 0 : 0,
+      user: "data" in users ? users.meta?.total || 0 : 0,
+    };
+  } catch (error) {
+    console.error("Error fetching user counts:", error);
+    return { total: 0, admin: 0, user: 0 };
+  }
+}
 
 export default async function UsersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; search?: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const params = await searchParams;
-  const page = parseInt(params.page || "1", 10);
-  const limit = 10;
-  const search = params.search || "";
+  const page = Number(params?.page) || 1;
+  const limit = Number(params?.limit) || 10;
+  const search = (params?.search as string) || "";
+  const role = (params?.role as string) || "all";
 
-  const result = await getUsersAction(page, limit, search);
+  const [response, counts] = await Promise.all([
+    getUsersAction(page, limit, search, role),
+    getUserCounts(),
+  ]);
 
-  if (!("data" in result)) {
+  if ("error" in response) {
     return (
-      <div className="text-red-600">
-        Error loading users: {(result as any).error}
+      <div className="p-8 text-center text-red-500">
+        Error loading users: {response.error}
       </div>
     );
   }
 
   return (
     <UsersPageClient
-      users={result.data || []}
-      total={result.meta?.total || 0}
+      initialUsers={response.data || []}
+      total={response.meta?.total || 0}
       page={page}
       limit={limit}
+      counts={counts}
+      currentRole={role}
     />
   );
 }

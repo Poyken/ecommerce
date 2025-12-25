@@ -33,7 +33,7 @@ export class CreateBlogDto {
   category: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   author: string;
 
   @IsString()

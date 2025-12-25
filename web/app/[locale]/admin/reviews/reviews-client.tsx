@@ -1,12 +1,25 @@
 "use client";
 
+/**
+ * =====================================================================
+ * REVIEWS CLIENT - Quản lý đánh giá sản phẩm (Enhanced)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * - Filter theo status (Server-side via URL)
+ * - Stats fetched from server
+ * - Search theo product hoặc comment
+ * - Quick actions: Reply, Toggle Publish, Delete
+ * =====================================================================
+ */
+
 import {
   deleteReviewAction,
   replyToReviewAction,
-  updateReviewAction,
+  toggleReviewStatusAction,
 } from "@/actions/admin";
 import { Button } from "@/components/atoms/button";
-import { DataTableEmptyRow } from "@/components/atoms/data-table-empty-row";
 import { DataTablePagination } from "@/components/atoms/data-table-pagination";
 import {
   Dialog,
@@ -16,8 +29,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/atoms/dialog";
-import { GlassCard } from "@/components/atoms/glass-card";
-import { StatusBadge } from "@/components/atoms/status-badge";
+import { Input } from "@/components/atoms/input";
 import {
   Table,
   TableBody,
@@ -26,29 +38,42 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/atoms/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
 import { Textarea } from "@/components/atoms/textarea";
-import { AdminSearchInput } from "@/components/organisms/admin/admin-search-input";
+import {
+  AdminActionBadge,
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
+} from "@/components/organisms/admin/admin-page-components";
 import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "@/i18n/routing";
-import { formatDate } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
-import { Eye, EyeOff, MessageSquare, Star, Trash2 } from "lucide-react";
+import { format } from "date-fns";
+import { Eye, EyeOff, MessageSquare, Search, Star, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
+
+type FilterType = "all" | "published" | "hidden";
 
 export function ReviewsClient({
   reviews,
   total,
   page,
   limit,
+  counts,
+  currentStatus = "all",
 }: {
   reviews: any[];
   total: number;
   page: number;
   limit: number;
+  counts?: { total: number; published: number; hidden: number };
+  currentStatus?: string;
 }) {
   const t = useTranslations("admin");
   const { hasPermission } = useAuth();
@@ -73,26 +98,52 @@ export function ReviewsClient({
   );
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
+  // Server Stats
+  const publishedCount = counts?.published || 0;
+  const hiddenCount = counts?.hidden || 0;
+  const totalCount = counts?.total || total;
+
+  // Avg Rating Calculation (Based on current page only, as approximation)
+  const avgRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+        ).toFixed(1)
+      : "N/A";
+
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     const currentSearch = params.get("search") || "";
 
     if (currentSearch !== debouncedSearchTerm) {
-      if (debouncedSearchTerm) {
-        params.set("search", debouncedSearchTerm);
-      } else {
-        params.delete("search");
-      }
-      params.set("page", "1");
-      router.push(`/admin/reviews?${params.toString()}` as any);
+      startTransition(() => {
+        if (debouncedSearchTerm) {
+          params.set("search", debouncedSearchTerm);
+        } else {
+          params.delete("search");
+        }
+        params.set("page", "1");
+        router.push(`/admin/reviews?${params.toString()}` as any);
+      });
     }
   }, [debouncedSearchTerm, router, searchParams]);
 
+  const handleStatusChange = (status: FilterType) => {
+    startTransition(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (status === "all") {
+        params.delete("status");
+      } else {
+        params.set("status", status);
+      }
+      params.set("page", "1");
+      router.push(`/admin/reviews?${params.toString()}` as any);
+    });
+  };
+
   const togglePublish = (reviewId: string, currentStatus: boolean) => {
     startTransition(async () => {
-      const result = await updateReviewAction(reviewId, {
-        isPublished: !currentStatus,
-      });
+      const result = await toggleReviewStatusAction(reviewId, !currentStatus);
       if (result.success) {
         toast({
           title: t("success"),
@@ -153,118 +204,183 @@ export function ReviewsClient({
 
   const renderStars = (rating: number) => {
     return (
-      <div className="flex text-yellow-500">
+      <div className="flex gap-0.5">
         {[1, 2, 3, 4, 5].map((s) => (
           <Star
             key={s}
-            className={`h-4 w-4 ${
-              s <= rating ? "fill-current" : "text-gray-300"
-            }`}
+            className={cn(
+              "h-4 w-4",
+              s <= rating
+                ? "fill-amber-400 text-amber-400"
+                : "text-muted-foreground/30"
+            )}
           />
         ))}
       </div>
     );
   };
 
-  const totalPages = Math.ceil(total / limit);
-
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">{t("reviews.management")}</h1>
-          <p className="text-sm text-gray-400 mt-1">
-            {t("showing", {
-              count: reviews.length,
-              total,
-              item: t("reviews.title").toLowerCase(),
-            })}
-          </p>
+      {/* Page Header */}
+      <AdminPageHeader
+        title={t("reviews.management")}
+        subtitle={t("reviews.showingCount", {
+          count: reviews.length,
+          total: totalCount,
+        })}
+        icon={<Star className="h-5 w-5" />}
+        stats={[
+          { label: "total", value: totalCount, variant: "default" },
+          { label: "published", value: publishedCount, variant: "success" },
+          { label: "hidden", value: hiddenCount, variant: "warning" },
+          ...(avgRating !== "N/A"
+            ? [
+                {
+                  label: "avg rating",
+                  value: `⭐ ${avgRating}`,
+                  variant: "info" as const,
+                },
+              ]
+            : []),
+        ]}
+      />
+
+      {/* Filters & Search */}
+      <div className="flex flex-col md:flex-row md:items-center gap-4">
+        <Tabs
+          value={currentStatus}
+          onValueChange={(v) => handleStatusChange(v as FilterType)}
+        >
+          <TabsList>
+            <TabsTrigger value="all" className="gap-2" disabled={isPending}>
+              All ({totalCount})
+            </TabsTrigger>
+            <TabsTrigger
+              value="published"
+              className="gap-2"
+              disabled={isPending}
+            >
+              <Eye className="h-4 w-4" />
+              Published ({publishedCount})
+            </TabsTrigger>
+            <TabsTrigger value="hidden" className="gap-2" disabled={isPending}>
+              <EyeOff className="h-4 w-4" />
+              Hidden ({hiddenCount})
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t("reviews.searchPlaceholder")}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+          {isPending && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          )}
         </div>
       </div>
 
-      <div className="flex items-center space-x-2">
-        <AdminSearchInput
-          placeholder={t("reviews.searchPlaceholder")}
-          value={searchTerm}
-          onChange={setSearchTerm}
-        />
-      </div>
-
-      <GlassCard className="p-6">
+      {/* Table */}
+      <AdminTableWrapper>
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead className="w-[150px]">{t("name")}</TableHead>
+            <TableRow className="bg-muted/50">
+              <TableHead className="w-[200px]">{t("reviews.rating")}</TableHead>
               <TableHead>{t("product")}</TableHead>
-              <TableHead>{t("reviews.rating")}</TableHead>
-              <TableHead className="max-w-md">{t("reviews.comment")}</TableHead>
+              <TableHead className="max-w-[300px]">
+                {t("reviews.comment")}
+              </TableHead>
               <TableHead>{t("reviews.status")}</TableHead>
               <TableHead>{t("created")}</TableHead>
               {(canUpdate || canDelete) && (
-                <TableHead className="text-right">{t("actions")}</TableHead>
+                <TableHead className="text-right w-[120px]">
+                  {t("actions")}
+                </TableHead>
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
             {reviews.length === 0 ? (
-              <DataTableEmptyRow
-                colSpan={canUpdate || canDelete ? 7 : 6}
-                message={t("reviews.noFound")}
-              />
+              <TableRow>
+                <TableCell colSpan={canUpdate || canDelete ? 6 : 5}>
+                  <AdminEmptyState
+                    icon={Star}
+                    title={t("reviews.noFound")}
+                    description="No reviews found matching your criteria."
+                  />
+                </TableCell>
+              </TableRow>
             ) : (
               reviews.map((review) => (
-                <TableRow key={review.id}>
-                  <TableCell className="font-medium">
-                    {review.user?.firstName} {review.user?.lastName}
+                <TableRow
+                  key={review.id}
+                  className="hover:bg-muted/30 transition-colors"
+                >
+                  <TableCell>
+                    <div className="flex flex-col gap-1">
+                      {renderStars(review.rating)}
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span className="font-medium text-foreground">
+                          {review.user?.firstName} {review.user?.lastName}
+                        </span>
+                      </div>
+                    </div>
                   </TableCell>
                   <TableCell>
-                    <div className="text-sm font-medium">
-                      {review.product?.name}
-                    </div>
-                    <div className="text-xs text-gray-500 font-mono">
-                      {review.sku?.code}
+                    <div>
+                      <p className="text-sm font-medium line-clamp-1">
+                        {review.product?.name}
+                      </p>
+                      <code className="text-xs text-muted-foreground">
+                        {review.sku?.skuCode}
+                      </code>
                     </div>
                   </TableCell>
-                  <TableCell>{renderStars(review.rating)}</TableCell>
-                  <TableCell className="max-w-md">
-                    <div className="truncate" title={review.comment}>
-                      {review.comment}
-                    </div>
+                  <TableCell className="max-w-[300px]">
+                    <p className="text-sm line-clamp-2" title={review.content}>
+                      {review.content}
+                    </p>
                     {review.reply && (
-                      <div className="mt-2 pl-3 border-l-2 border-primary/50 text-sm text-muted-foreground">
-                        <span className="font-bold text-xs uppercase text-primary">
+                      <div className="mt-2 pl-3 border-l-2 border-primary/50">
+                        <span className="text-[10px] font-bold uppercase text-primary">
                           Admin Reply:
-                        </span>{" "}
-                        {review.reply}
+                        </span>
+                        <p className="text-xs text-muted-foreground line-clamp-1">
+                          {review.reply}
+                        </p>
                       </div>
                     )}
                   </TableCell>
                   <TableCell>
-                    <StatusBadge
-                      status={review.isPublished ? "PUBLISHED" : "HIDDEN"}
+                    <AdminActionBadge
                       label={
-                        review.isPublished
+                        review.isApproved
                           ? t("reviews.published")
                           : t("reviews.hidden")
                       }
+                      variant={review.isApproved ? "success" : "warning"}
                     />
                   </TableCell>
-                  <TableCell className="text-sm text-gray-500">
-                    {formatDate(review.createdAt)}
+                  <TableCell className="text-sm text-muted-foreground">
+                    {format(new Date(review.createdAt), "dd MMM yyyy")}
                   </TableCell>
                   {(canUpdate || canDelete) && (
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex justify-end gap-1">
                         {canUpdate && (
                           <>
                             <Button
                               variant="ghost"
                               size="sm"
+                              className="h-8 w-8 p-0 text-blue-500 hover:text-blue-600 hover:bg-blue-50"
                               onClick={() =>
                                 handleReply(review.id, review.reply)
                               }
-                              className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10"
                               title="Reply"
                             >
                               <MessageSquare className="h-4 w-4" />
@@ -272,16 +388,13 @@ export function ReviewsClient({
                             <Button
                               variant="ghost"
                               size="sm"
+                              className="h-8 w-8 p-0"
                               onClick={() =>
-                                togglePublish(review.id, review.isPublished)
+                                togglePublish(review.id, review.isApproved)
                               }
-                              title={
-                                review.isPublished
-                                  ? t("reviews.hidden")
-                                  : t("reviews.published")
-                              }
+                              title={review.isApproved ? "Hide" : "Publish"}
                             >
-                              {review.isPublished ? (
+                              {review.isApproved ? (
                                 <EyeOff className="h-4 w-4" />
                               ) : (
                                 <Eye className="h-4 w-4" />
@@ -293,8 +406,8 @@ export function ReviewsClient({
                           <Button
                             variant="ghost"
                             size="sm"
+                            className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
                             onClick={() => handleDelete(review.id)}
-                            className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -307,55 +420,62 @@ export function ReviewsClient({
             )}
           </TableBody>
         </Table>
+      </AdminTableWrapper>
 
+      {/* Pagination with page numbers - only show when needed */}
+      {reviews.length > 0 && total > limit && (
         <DataTablePagination page={page} total={total} limit={limit} />
+      )}
 
-        {deleteId && (
-          <DeleteConfirmDialog
-            open={deleteDialogOpen}
-            onOpenChange={setDeleteDialogOpen}
-            title={t("reviews.deleteConfirm")}
-            description={t("reviews.deleteConfirmDesc", { id: deleteId })}
-            action={() => deleteReviewAction(deleteId)}
-            successMessage={t("reviews.successDelete")}
-          />
-        )}
+      {/* Delete Dialog */}
+      {deleteId && (
+        <DeleteConfirmDialog
+          open={deleteDialogOpen}
+          onOpenChange={setDeleteDialogOpen}
+          title={t("reviews.deleteConfirm")}
+          description={t("reviews.deleteConfirmDesc", { id: deleteId })}
+          action={() => deleteReviewAction(deleteId)}
+          successMessage={t("reviews.successDelete")}
+        />
+      )}
 
-        {/* Reply Dialog */}
-        <Dialog open={replyDialogOpen} onOpenChange={setReplyDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Reply to Review</DialogTitle>
-              <DialogDescription>
-                Write a response to this customer review. They will be notified.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="py-4">
-              <Textarea
-                value={replyText}
-                onChange={(e) => setReplyText(e.target.value)}
-                placeholder="Type your reply here..."
-                rows={4}
-              />
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => setReplyDialogOpen(false)}
-                disabled={isReplying}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={submitReply}
-                disabled={isReplying || !replyText.trim()}
-              >
-                {isReplying ? "Sending..." : "Send Reply"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </GlassCard>
+      {/* Reply Dialog */}
+      <Dialog open={replyDialogOpen} onOpenChange={setReplyDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageSquare className="h-5 w-5 text-primary" />
+              Reply to Review
+            </DialogTitle>
+            <DialogDescription>
+              Write a response to this customer review. They will be notified.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Textarea
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              placeholder="Type your reply here..."
+              rows={4}
+            />
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setReplyDialogOpen(false)}
+              disabled={isReplying}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={submitReply}
+              disabled={isReplying || !replyText.trim()}
+            >
+              {isReplying ? "Sending..." : "Send Reply"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

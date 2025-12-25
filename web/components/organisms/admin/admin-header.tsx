@@ -16,12 +16,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/atoms/dropdown-menu";
 import { LanguageSwitcher } from "@/components/molecules/language-switcher";
-import { NotificationBell } from "@/components/molecules/notification-bell";
+import { AdminNotificationBell } from "@/components/organisms/admin/admin-notification-bell";
 import { Laptop, LogOut, Moon, Palette, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useState } from "react";
-
 
 interface AdminHeaderProps {
   user: {
@@ -75,7 +74,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
 
         <div className="flex items-center gap-2 md:gap-5">
           <div className="flex items-center gap-2 pr-4 border-r border-foreground/10">
-            <NotificationBell />
+            <AdminNotificationBell />
             <LanguageSwitcher />
           </div>
 
@@ -95,10 +94,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-56"
-            >
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">
@@ -118,29 +114,17 @@ export function AdminHeader({ user }: AdminHeaderProps) {
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
                   <DropdownMenuSubContent>
-                    <DropdownMenuItem
-                      onClick={() => setTheme("light")}
-                    >
+                    <DropdownMenuItem onClick={() => setTheme("light")}>
                       <Sun className="h-4 w-4" />
-                      <span>
-                        {tCommon("light")}
-                      </span>
+                      <span>{tCommon("light")}</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => setTheme("dark")}
-                    >
+                    <DropdownMenuItem onClick={() => setTheme("dark")}>
                       <Moon className="h-4 w-4" />
-                      <span>
-                        {tCommon("dark")}
-                      </span>
+                      <span>{tCommon("dark")}</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => setTheme("system")}
-                    >
+                    <DropdownMenuItem onClick={() => setTheme("system")}>
                       <Laptop className="h-4 w-4" />
-                      <span>
-                        {tCommon("system")}
-                      </span>
+                      <span>{tCommon("system")}</span>
                     </DropdownMenuItem>
                   </DropdownMenuSubContent>
                 </DropdownMenuPortal>
@@ -162,9 +146,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
                 }}
               >
                 <LogOut className="h-4 w-4" />
-                <span>
-                  {tCommon("logout")}
-                </span>
+                <span>{tCommon("logout")}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

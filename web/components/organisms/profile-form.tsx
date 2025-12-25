@@ -21,6 +21,7 @@
 
 import { ProfileAccountTab } from "@/components/organisms/profile/profile-account-tab";
 import { ProfileAddressesTab } from "@/components/organisms/profile/profile-addresses-tab";
+import { ProfileBlogsTab } from "@/components/organisms/profile/profile-blogs-tab";
 import { ProfileDashboardTab } from "@/components/organisms/profile/profile-dashboard-tab";
 import { ProfileOrdersTab } from "@/components/organisms/profile/profile-orders-tab";
 import { ProfilePasswordTab } from "@/components/organisms/profile/profile-password-tab";
@@ -50,6 +51,8 @@ export function ProfileForm({ user }: { user: User }) {
         return <ProfileVouchersTab />;
       case "password":
         return <ProfilePasswordTab />;
+      case "blogs":
+        return <ProfileBlogsTab />;
       default:
         return <ProfileAccountTab user={user} />;
     }

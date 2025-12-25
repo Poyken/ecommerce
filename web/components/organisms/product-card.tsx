@@ -130,12 +130,12 @@ export const ProductCard = memo(function ProductCard({
         {/* Badges - Glassmorphism style */}
         <div
           className={cn(
-            "absolute top-4 left-4 flex flex-col gap-2 z-10",
+            "absolute top-4 left-4 flex flex-col items-start gap-2 z-10",
             isCompact && "top-3 left-3"
           )}
         >
           {isMounted && isEnabled("show_new_arrival_badge") && isNew && (
-            <span className="bg-accent/90 text-accent-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg">
+            <span className="w-fit bg-accent/90 text-accent-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg">
               {t("new")}
             </span>
           )}
@@ -143,18 +143,18 @@ export const ProductCard = memo(function ProductCard({
             <motion.span
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-orange-500/90 text-white text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg animate-pulse"
+              className="w-fit bg-orange-500/90 text-white text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg animate-pulse"
             >
               {t("lowStock") || "Low Stock"}
             </motion.span>
           )}
           {!isNew && isHot && (
-            <span className="bg-primary/90 text-primary-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg">
+            <span className="w-fit bg-primary/90 text-primary-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg">
               {t("hot")}
             </span>
           )}
           {!isNew && !isHot && isSale && discountPercentage > 0 && (
-            <span className="bg-destructive/90 text-destructive-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg">
+            <span className="w-fit bg-destructive/90 text-destructive-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg">
               -{discountPercentage}%
             </span>
           )}

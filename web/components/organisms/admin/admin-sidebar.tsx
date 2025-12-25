@@ -200,7 +200,7 @@ export function AdminSidebar() {
     >
       <div
         className={cn(
-          "p-4 border-b border-border flex items-center",
+          "h-16 px-4 border-b border-border flex items-center",
           isCollapsed ? "justify-center" : "justify-between"
         )}
       >

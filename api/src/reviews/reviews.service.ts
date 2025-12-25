@@ -265,12 +265,33 @@ export class ReviewsService {
     };
   }
 
-  async findAll(page: number, limit: number, rating?: number) {
+  async findAll(
+    page: number,
+    limit: number,
+    rating?: number,
+    status?: string,
+    search?: string,
+  ) {
     const skip = (page - 1) * limit;
     const where: any = {};
 
     if (rating) {
       where.rating = rating;
+    }
+
+    if (status) {
+      if (status === 'published') where.isApproved = true;
+      if (status === 'hidden') where.isApproved = false;
+    }
+
+    if (search) {
+      where.OR = [
+        { content: { contains: search, mode: 'insensitive' } },
+        { user: { email: { contains: search, mode: 'insensitive' } } },
+        { user: { firstName: { contains: search, mode: 'insensitive' } } },
+        { user: { lastName: { contains: search, mode: 'insensitive' } } },
+        { product: { name: { contains: search, mode: 'insensitive' } } },
+      ];
     }
 
     const [reviews, total] = await Promise.all([
@@ -303,6 +324,20 @@ export class ReviewsService {
         lastPage: Math.ceil(total / limit),
       },
     };
+  }
+
+  async updateStatus(id: string, isApproved: boolean) {
+    const review = await this.prisma.review.findUnique({ where: { id } });
+    if (!review) throw new BadRequestException('Review not found');
+
+    return this.prisma.$transaction(async (tx) => {
+      const updated = await tx.review.update({
+        where: { id },
+        data: { isApproved },
+      });
+      await this.updateProductRatingCache(review.productId, tx);
+      return updated;
+    });
   }
 
   async update(userId: string, id: string, dto: UpdateReviewDto) {

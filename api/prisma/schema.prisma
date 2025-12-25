@@ -29,6 +29,7 @@ model User {
   permissions   UserPermission[]
   roles         UserRole[]
   wishlist      Wishlist[]
+  blogs         Blog[]
 
   @@index([email])
 }
@@ -122,8 +123,8 @@ model Product {
   metaDescription String?
   metaKeywords    String?
   metaTitle       String?
-  maxPrice        Decimal?             @db.Decimal(10, 2)
-  minPrice        Decimal?             @db.Decimal(10, 2)
+  maxPrice        Decimal?             @db.Decimal(20, 2)
+  minPrice        Decimal?             @db.Decimal(20, 2)
   avgRating       Float?               @default(0)
   reviewCount     Int                  @default(0)
   products        BlogProduct[]
@@ -171,8 +172,8 @@ model Sku {
   id            String             @id @default(uuid())
   skuCode       String             @unique @db.VarChar(50)
   productId     String
-  price         Decimal?           @db.Decimal(10, 2)
-  salePrice     Decimal?           @db.Decimal(10, 2)
+  price         Decimal?           @db.Decimal(20, 2)
+  salePrice     Decimal?           @db.Decimal(20, 2)
   stock         Int                @default(0)
   imageUrl      String?
   status        String             @default("INACTIVE")
@@ -249,9 +250,9 @@ model Coupon {
   id                String       @id @default(uuid())
   code              String       @unique
   discountType      DiscountType
-  discountValue     Decimal      @db.Decimal(10, 2)
-  minOrderAmount    Decimal?     @db.Decimal(10, 2)
-  maxDiscountAmount Decimal?     @db.Decimal(10, 2)
+  discountValue     Decimal      @db.Decimal(20, 2)
+  minOrderAmount    Decimal?     @db.Decimal(20, 2)
+  maxDiscountAmount Decimal?     @db.Decimal(20, 2)
   startDate         DateTime
   endDate           DateTime
   usageLimit        Int?
@@ -269,8 +270,8 @@ model Order {
   id              String        @id @default(uuid())
   userId          String
   status          OrderStatus   @default(PENDING)
-  totalAmount     Decimal       @db.Decimal(10, 2)
-  shippingFee     Decimal       @default(0.00) @db.Decimal(10, 2)
+  totalAmount     Decimal       @db.Decimal(20, 2)
+  shippingFee     Decimal       @default(0.00) @db.Decimal(20, 2)
   recipientName   String
   phoneNumber     String
   shippingAddress String
@@ -293,7 +294,7 @@ model OrderItem {
   orderId         String
   skuId           String
   quantity        Int
-  priceAtPurchase Decimal @db.Decimal(10, 2)
+  priceAtPurchase Decimal @db.Decimal(20, 2)
   order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   sku             Sku     @relation(fields: [skuId], references: [id])
 
@@ -431,12 +432,16 @@ model Blog {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   deletedAt   DateTime?
+  userId      String?
+  user        User?         @relation(fields: [userId], references: [id])
   products    BlogProduct[]
 
   @@index([slug])
   @@index([category])
   @@index([language])
   @@index([publishedAt])
+  @@index([userId])
+  @@index([deletedAt])
 }
 
 model BlogProduct {

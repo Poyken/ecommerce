@@ -1,6 +1,11 @@
+import {
+  getAnalyticsStatsAction,
+  getReviewsAction,
+  getSalesDataAction,
+  getTopProductsAction,
+} from "@/actions/admin";
 import { getProfileAction } from "@/actions/profile";
 import { Badge } from "@/components/atoms/badge";
-import { Card } from "@/components/atoms/card";
 import {
   Table,
   TableBody,
@@ -11,14 +16,32 @@ import {
 } from "@/components/atoms/table";
 import { AdminAlerts } from "@/components/organisms/admin/admin-alerts";
 import {
+  AdminPageHeader,
+  AdminTableWrapper,
+} from "@/components/organisms/admin/admin-page-components";
+import {
   LazyBestSellersChart as BestSellersChart,
   LazySalesTrendChart as SalesTrendChart,
 } from "@/components/organisms/admin/lazy-admin-charts";
 import { QuickActions } from "@/components/organisms/admin/quick-actions";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";
-import { formatCurrency } from "@/lib/utils";
-import { DollarSign, Package, ShoppingCart, Users } from "lucide-react";
+import { cn, formatCurrency } from "@/lib/utils";
+import { AnalyticsStats } from "@/types/dtos";
+import {
+  AlertCircle,
+  ArrowUpRight,
+  Clock,
+  DollarSign,
+  ExternalLink,
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Star,
+  TrendingUp,
+  Users,
+} from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
 
 interface Order {
@@ -31,53 +54,20 @@ interface Order {
     lastName: string;
     email: string;
   };
-  items?: {
-    quantity: number;
-    sku: {
-      product: {
-        name: string;
-      };
-    };
-  }[];
-}
-
-interface User {
-  id: string;
-}
-
-interface Product {
-  id: string;
 }
 
 /**
  * =====================================================================
- * ADMIN DASHBOARD - Trang tổng quan
+ * ADMIN DASHBOARD (PRO VERSION) 🚀
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * DATA FETCHING STRATEGY:
- * - Dashboard cần rất nhiều dữ liệu (Orders, Users, Products, SKUs).
- * - Sử dụng `Promise.all` để gọi song song 4 API requests.
- * - Giúp giảm đáng kể thời gian load trang so với gọi tuần tự (Sequential).
- *
- * DATA CALCULATION:
- * - Tính toán các chỉ số (Revenue, Total Orders...) trực tiếp từ dữ liệu thô.
- * - `reduce`, `filter`, `map` được sử dụng dày đặc để xử lý mảng.
- * - Ví dụ: Tính doanh thu 7 ngày gần nhất để vẽ biểu đồ.
- *
- * UI COMPONENTS:
- * - Sử dụng `Card` để hiển thị các chỉ số chính (KPIs).
- * - Sử dụng Chart components (`SalesTrendChart`, `BestSellersChart`) để trực quan hóa dữ liệu.
- * - Sử dụng `Table` để liệt kê đơn hàng mới nhất.
+ * Cải tiến cho Chủ Shop:
+ * 1. REAL-TIME PULSE: Hiển thị doanh thu HÔM NAY (Today) ngay cạnh tổng doanh thu.
+ * 2. ACTIONABLE INSIGHTS: Nổi bật số lượng đơn hàng "Chờ xử lý" (Pending) để xử lý ngay.
+ * 3. CUSTOMER VOICE: Hiển thị đánh giá mới nhất để nắm bắt phản hồi khách hàng.
+ * 4. INVENTORY HEALTH: Cảnh báo tồn kho thấp (đã có từ bản trước).
  * =====================================================================
  */
-import {
-  getAnalyticsStatsAction,
-  getSalesDataAction,
-  getTopProductsAction,
-} from "@/actions/admin";
-import { getTranslations } from "next-intl/server";
 
 export default async function AdminDashboardPage() {
   const { data: user } = await getProfileAction();
@@ -85,22 +75,30 @@ export default async function AdminDashboardPage() {
 
   const t = await getTranslations("admin");
 
-  // Parallel data fetching
-  const [statsRes, salesRes, topProductsRes, ordersRes, skusRes] =
+  // Parallel data fetching for maximum performance
+  const [statsRes, salesRes, topProductsRes, ordersRes, skusRes, reviewsRes] =
     await Promise.all([
       getAnalyticsStatsAction(),
       getSalesDataAction(7),
       getTopProductsAction(5),
       http<{ data: Order[] }>("/orders?limit=5&includeItems=true"),
       http<{ data: unknown[] }>("/skus?limit=1000&includeProduct=true"),
+      getReviewsAction(1, 4), // 4 recent reviews
     ]);
 
-  const stats = (statsRes.data as Record<string, number> | undefined) || {
+  const stats = (statsRes.data || {
     totalRevenue: 0,
     totalOrders: 0,
     totalCustomers: 0,
     totalProducts: 0,
-  };
+    growth: 0,
+    pendingOrders: 0,
+    todayRevenue: 0,
+    todayOrders: 0,
+    lifetimeProducts: 0,
+    lifetimeCustomers: 0,
+  }) as AnalyticsStats;
+
   const salesData = (Array.isArray(salesRes.data) ? salesRes.data : []).map(
     (item: unknown) => ({
       name: new Date((item as { date: string }).date).toLocaleDateString(
@@ -110,14 +108,16 @@ export default async function AdminDashboardPage() {
       sales: (item as { amount: number }).amount,
     })
   );
-  // console.log('[Dashboard] Sales Data:', JSON.stringify(salesData, null, 2));
+
   const bestSellersData = (
     Array.isArray(topProductsRes.data) ? topProductsRes.data : []
   ).map((item: unknown) => ({
     name: (item as { productName: string }).productName,
     sales: (item as { quantity: number }).quantity,
   }));
+
   const recentOrders = ordersRes.data || [];
+  const recentReviews = (reviewsRes as any).data || []; // reviewsRes is ActionResult
   const skus = skusRes.data || [];
 
   // Calculate Low Stock SKUs
@@ -125,114 +125,151 @@ export default async function AdminDashboardPage() {
     (sku: unknown) => (sku as { stock: number }).stock < 5
   );
 
-  const totalRevenue = (stats as { totalRevenue: number }).totalRevenue;
-  const totalOrders = (stats as { totalOrders: number }).totalOrders;
-  const totalCustomers = (stats as { totalCustomers: number }).totalCustomers;
-  const totalProducts = (stats as { totalProducts: number }).totalProducts;
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case "COMPLETED":
+      case "DELIVERED":
+        return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
+      case "PENDING":
+        return "bg-amber-500/10 text-amber-600 dark:text-amber-400";
+      case "PROCESSING":
+        return "bg-blue-500/10 text-blue-600 dark:text-blue-400";
+      case "SHIPPED":
+        return "bg-purple-500/10 text-purple-600 dark:text-purple-400";
+      case "CANCELLED":
+        return "bg-red-500/10 text-red-600 dark:text-red-400";
+      default:
+        return "bg-muted text-muted-foreground";
+    }
+  };
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            {t("dashboard")}
-          </h1>
-          <p className="text-muted-foreground mt-1">{t("overview")}</p>
-        </div>
-      </div>
+      {/* Page Header */}
+      <AdminPageHeader
+        title={t("dashboard")}
+        subtitle={`Welcome back, ${user.firstName}! Here's what's happening today.`}
+        icon={<LayoutDashboard className="h-5 w-5" />}
+      />
 
       {/* Quick Actions */}
       <QuickActions />
 
       {/* Key Metric Cards */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <Card className="p-6 shadow-sm border-border bg-card">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-              {t("stats.revenue")}
-            </h3>
-            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-full">
-              <DollarSign className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Revenue Card - Highlight TODAY */}
+        <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-all hover:shadow-lg hover:shadow-emerald-500/5">
+          <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-muted-foreground">
+                {t("stats.revenue")}
+              </span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10">
+                <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <span className="text-3xl font-bold">
+                {formatCurrency(stats.totalRevenue)}
+              </span>
+            </div>
+            <div className="mt-2 flex items-center justify-between">
+              <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                  +{formatCurrency(stats.todayRevenue)} today
+                </span>
+              </div>
             </div>
           </div>
-          <div className="text-2xl font-bold text-foreground mt-2">
-            {formatCurrency(totalRevenue)}
-          </div>
-          <div className="flex items-center mt-1">
-            <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 flex items-center">
-              +20.1% ↑
-            </span>
-            <span className="text-xs text-muted-foreground ml-2">
-              {t("vsLastMonth")}
-            </span>
-          </div>
-        </Card>
+        </div>
 
-        <Card className="p-6 shadow-sm border-border bg-card">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-              {t("stats.orders")}
-            </h3>
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-full">
-              <ShoppingCart className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+        {/* Orders Card - Highlight PENDING */}
+        <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-all hover:shadow-lg hover:shadow-blue-500/5">
+          <div className="absolute inset-0 bg-linear-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-muted-foreground">
+                {t("stats.orders")}
+              </span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/10">
+                <ShoppingCart className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <span className="text-3xl font-bold">{stats.totalOrders}</span>
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              {stats.pendingOrders > 0 ? (
+                <div className="flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-0.5">
+                  <AlertCircle className="h-3 w-3 text-amber-600" />
+                  <span className="text-xs font-bold text-amber-600 dark:text-amber-400">
+                    {stats.pendingOrders} Pending Action
+                  </span>
+                </div>
+              ) : (
+                <span className="text-xs text-muted-foreground">
+                  All caught up!
+                </span>
+              )}
             </div>
           </div>
-          <div className="text-2xl font-bold text-foreground mt-2">
-            +{totalOrders}
-          </div>
-          <div className="flex items-center mt-1">
-            <span className="text-xs font-medium text-blue-600 dark:text-blue-400 flex items-center">
-              +180% ↑
-            </span>
-            <span className="text-xs text-muted-foreground ml-2">
-              {t("vsLastMonth")}
-            </span>
-          </div>
-        </Card>
+        </div>
 
-        <Card className="p-6 shadow-sm border-border bg-card">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-              {t("stats.customers")}
-            </h3>
-            <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-full">
-              <Users className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+        {/* Customers Card */}
+        <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-all hover:shadow-lg hover:shadow-amber-500/5">
+          <div className="absolute inset-0 bg-linear-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-muted-foreground">
+                {t("stats.customers")}
+              </span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/10">
+                <Users className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <span className="text-3xl font-bold">
+                {stats.lifetimeCustomers}
+              </span>
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400">
+                <TrendingUp className="h-3 w-3" />
+                Active
+              </span>
+              <span className="text-xs text-muted-foreground">users</span>
             </div>
           </div>
-          <div className="text-2xl font-bold text-foreground mt-2">
-            +{totalCustomers}
-          </div>
-          <div className="flex items-center mt-1">
-            <span className="text-xs font-medium text-amber-600 dark:text-amber-400 flex items-center">
-              +19% ↑
-            </span>
-            <span className="text-xs text-muted-foreground ml-2">
-              {t("vsLastMonth")}
-            </span>
-          </div>
-        </Card>
+        </div>
 
-        <Card className="p-6 shadow-sm border-border bg-card">
-          <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-              {t("stats.products")}
-            </h3>
-            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-full">
-              <Package className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+        {/* Products Card */}
+        <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-all hover:shadow-lg hover:shadow-purple-500/5">
+          <div className="absolute inset-0 bg-linear-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="relative">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-muted-foreground">
+                {t("stats.products")}
+              </span>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-500/10">
+                <Package className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              </div>
+            </div>
+            <div className="mt-3">
+              <span className="text-3xl font-bold">
+                {stats.lifetimeProducts}
+              </span>
+            </div>
+            <div className="mt-2 flex items-center gap-2">
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-purple-600 dark:text-purple-400">
+                <ArrowUpRight className="h-3 w-3" />
+                Live
+              </span>
+              <span className="text-xs text-muted-foreground">on store</span>
             </div>
           </div>
-          <div className="text-2xl font-bold text-foreground mt-2">
-            +{totalProducts}
-          </div>
-          <div className="flex items-center mt-1">
-            <span className="text-xs font-medium text-purple-600 dark:text-purple-400 flex items-center">
-              +201 ↑
-            </span>
-            <span className="text-xs text-muted-foreground ml-2">
-              {t("sinceLastHour")}
-            </span>
-          </div>
-        </Card>
+        </div>
       </div>
 
       {/* Charts Section */}
@@ -241,98 +278,157 @@ export default async function AdminDashboardPage() {
         <BestSellersChart data={bestSellersData} />
       </div>
 
-      <div className="flex flex-col xl:flex-row gap-8">
-        {/* Recent Orders Table */}
-        <div className="flex-1 min-w-0">
-          <Card className="p-6 shadow-sm border-border bg-card h-full">
-            <div className="mb-6 flex items-center justify-between">
-              <h3 className="text-xl font-bold text-foreground">
-                {t("recentOrders")}
-              </h3>
+      <div className="flex flex-col xl:flex-row gap-6">
+        {/* Main Content Column */}
+        <div className="flex-1 space-y-6 min-w-0">
+          {/* Recent Orders */}
+          <AdminTableWrapper
+            title={t("recentOrders")}
+            headerActions={
               <Link
                 href="/admin/orders"
-                className="text-sm text-primary hover:underline font-medium"
+                className="inline-flex items-center gap-1 text-sm text-primary hover:underline font-medium"
               >
                 {t("viewAll")}
+                <ExternalLink className="h-3 w-3" />
               </Link>
-            </div>
+            }
+          >
             <Table>
               <TableHeader>
-                <TableRow className="border-border hover:bg-muted/50">
-                  <TableHead className="text-muted-foreground font-bold">
-                    {t("orderId")}
-                  </TableHead>
-                  <TableHead className="text-muted-foreground font-bold">
-                    {t("customer")}
-                  </TableHead>
-                  <TableHead className="text-muted-foreground font-bold">
-                    {t("status")}
-                  </TableHead>
-                  <TableHead className="text-right text-muted-foreground font-bold">
-                    {t("amount")}
-                  </TableHead>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="w-[180px]">{t("orderId")}</TableHead>
+                  <TableHead>{t("status")}</TableHead>
+                  <TableHead className="text-right">{t("amount")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {recentOrders.map((order: any) => (
+                {recentOrders.map((order: Order) => (
                   <TableRow
                     key={order.id}
-                    className="border-border hover:bg-muted/50 transition-colors"
+                    className="hover:bg-muted/30 transition-colors"
                   >
-                    <TableCell className="font-medium text-foreground font-mono">
-                      {order.id}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {order.user
-                        ? `${order.user.firstName} ${order.user.lastName}`
-                        : t("guest")}
+                    <TableCell>
+                      <div className="flex flex-col">
+                        <Link
+                          href={`/admin/orders/${order.id}` as any}
+                          className="font-mono text-sm text-primary hover:underline font-bold"
+                        >
+                          #{order.id.slice(0, 8).toUpperCase()}
+                        </Link>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(order.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
                     </TableCell>
                     <TableCell>
                       <Badge
                         variant="secondary"
-                        className={`
-                              ${
-                                order.status === "COMPLETED"
-                                  ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                                  : order.status === "PENDING"
-                                  ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
-                                  : order.status === "CANCELLED"
-                                  ? "bg-red-500/10 text-red-500 border-red-500/20"
-                                  : "bg-muted text-muted-foreground border-border"
-                              }
-                            `}
+                        className={cn(
+                          "font-medium text-[10px] px-1.5 py-0.5",
+                          getStatusStyle(order.status)
+                        )}
                       >
-                        {order.status === "COMPLETED"
-                          ? t("completed")
-                          : order.status === "PENDING"
-                          ? t("pending")
-                          : order.status === "CANCELLED"
-                          ? t("cancelled")
-                          : order.status}
+                        {order.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right text-foreground font-medium">
-                      {formatCurrency(order.totalAmount)}
+                    <TableCell className="text-right">
+                      <span className="font-bold text-sm">
+                        {formatCurrency(order.totalAmount)}
+                      </span>
                     </TableCell>
                   </TableRow>
                 ))}
                 {recentOrders.length === 0 && (
                   <TableRow>
                     <TableCell
-                      colSpan={4}
-                      className="text-center text-muted-foreground py-8"
+                      colSpan={3}
+                      className="text-center py-8 text-muted-foreground"
                     >
-                      {t("noOrders")}
+                      No orders yet.
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
-          </Card>
+          </AdminTableWrapper>
+
+          {/* Recent Reviews (New Section) */}
+          <AdminTableWrapper
+            title={t("reviews.title")}
+            headerActions={
+              <Link
+                href="/admin/reviews"
+                className="inline-flex items-center gap-1 text-sm text-primary hover:underline font-medium"
+              >
+                {t("viewAll")}
+                <ExternalLink className="h-3 w-3" />
+              </Link>
+            }
+          >
+            <div className="divide-y divide-border">
+              {recentReviews.length === 0 ? (
+                <div className="p-6 text-center text-muted-foreground text-sm">
+                  No recent reviews.
+                </div>
+              ) : (
+                recentReviews.map((review: any) => (
+                  <div
+                    key={review.id}
+                    className="p-4 flex gap-4 hover:bg-muted/20 transition-colors"
+                  >
+                    <div className="shrink-0">
+                      {review.user?.avatarUrl ? (
+                        <img
+                          src={review.user.avatarUrl}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
+                          {review.user?.firstName?.[0]}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-bold truncate">
+                          {review.user?.firstName} {review.user?.lastName}
+                        </span>
+                        <div className="flex text-amber-400">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={cn(
+                                "w-3 h-3",
+                                i < review.rating
+                                  ? "fill-current"
+                                  : "text-muted-foreground/20"
+                              )}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+                        "{review.content}"
+                      </p>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Clock className="w-3 h-3" />
+                        {new Date(review.createdAt).toLocaleDateString()}
+                        <span className="text-border">|</span>
+                        <span className="truncate max-w-[150px]">
+                          {review.product?.name}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </AdminTableWrapper>
         </div>
 
-        {/* Smart Alerts */}
-        <div className="w-full xl:w-[380px] shrink-0">
+        {/* Sidebar Column: Alerts + Trending */}
+        <div className="w-full xl:w-[380px] shrink-0 space-y-6">
           <AdminAlerts
             lowStockSkus={lowStockSkus}
             trendingProducts={bestSellersData}

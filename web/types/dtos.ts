@@ -276,10 +276,16 @@ export interface UpdateCouponDto {
 // ==================== ANALYTICS DTOs ====================
 
 export interface AnalyticsStats {
-  revenue: number;
-  orders: number;
-  customers: number;
-  products: number;
+  totalRevenue: number;
+  totalOrders: number;
+  totalCustomers: number;
+  totalProducts: number;
+  growth: number;
+  pendingOrders: number;
+  todayRevenue: number;
+  todayOrders: number;
+  lifetimeProducts: number;
+  lifetimeCustomers: number;
 }
 
 export interface SalesDataPoint {

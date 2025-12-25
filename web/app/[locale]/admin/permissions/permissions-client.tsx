@@ -1,39 +1,73 @@
 "use client";
 
+/**
+ * =====================================================================
+ * ADMIN PERMISSIONS CLIENT - Quản lý quyền hạn (Enhanced)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * IMPROVED UI:
+ * - Collapsible accordion-style groups
+ * - Grid layout for better visibility
+ * - Color-coded action badges
+ * - Search with instant filter
+ * - Stats in header
+ * =====================================================================
+ */
+
 import { deletePermissionAction } from "@/actions/admin";
+import { Badge } from "@/components/atoms/badge";
+import { Button } from "@/components/atoms/button";
+import { Input } from "@/components/atoms/input";
+import {
+  AdminEmptyState,
+  AdminPageHeader,
+} from "@/components/organisms/admin/admin-page-components";
 import { CreatePermissionDialog } from "@/components/organisms/admin/create-permission-dialog";
 import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
 import { EditPermissionDialog } from "@/components/organisms/admin/edit-permission-dialog";
-import { Badge } from "@/components/atoms/badge";
-import { Button } from "@/components/atoms/button";
-import { GlassCard } from "@/components/atoms/glass-card";
-import { Input } from "@/components/atoms/input";
+import { cn } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
-import { Edit2, Plus, Search, Trash2 } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronRight,
+  Edit2,
+  Eye,
+  FileEdit,
+  Key,
+  Lock,
+  Plus,
+  Search,
+  Settings,
+  Shield,
+  Trash2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
+// Action icons mapping
+const actionIcons: Record<string, React.ReactNode> = {
+  create: <Plus className="h-3 w-3" />,
+  read: <Eye className="h-3 w-3" />,
+  update: <FileEdit className="h-3 w-3" />,
+  delete: <Trash2 className="h-3 w-3" />,
+  manage: <Settings className="h-3 w-3" />,
+};
+
+// Action colors
+const actionColors: Record<string, string> = {
+  create:
+    "bg-emerald-500/10 text-emerald-600 border-emerald-500/20 hover:bg-emerald-500/20",
+  read: "bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500/20",
+  update:
+    "bg-amber-500/10 text-amber-600 border-amber-500/20 hover:bg-amber-500/20",
+  delete: "bg-red-500/10 text-red-600 border-red-500/20 hover:bg-red-500/20",
+  manage:
+    "bg-purple-500/10 text-purple-600 border-purple-500/20 hover:bg-purple-500/20",
+};
+
 export function PermissionsPageClient({ permissions }: { permissions: any[] }) {
-  /**
-   * =====================================================================
-   * ADMIN PERMISSIONS CLIENT - Quản lý quyền hạn
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. GROUPING LOGIC (`useMemo`):
-   * - Permissions thường có dạng `resource:action` (vd: `user:create`, `product:delete`).
-   * - Logic này tự động gom nhóm các quyền theo `resource` (User, Product...).
-   * - Dùng `useMemo` để chỉ tính toán lại khi danh sách `permissions` thay đổi -> Tối ưu hiệu năng.
-   *
-   * 2. CLIENT-SIDE SEARCH:
-   * - Search hoạt động trên cả tên Resource (nhóm) và tên Permission (chi tiết).
-   * - Filter trực tiếp trên object `groupedPermissions` đã được tính toán trước đó.
-   *
-   * 3. UI CARD LAYOUT:
-   * - Hiển thị dạng Grid Card thay vì Table để dễ nhìn hơn với cấu trúc phân nhóm.
-   * =====================================================================
-   */
   const t = useTranslations("admin");
   const { hasPermission } = useAuth();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -41,6 +75,7 @@ export function PermissionsPageClient({ permissions }: { permissions: any[] }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedPermission, setSelectedPermission] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
   const canCreate = hasPermission("permission:create");
   const canUpdate = hasPermission("permission:update");
@@ -56,22 +91,38 @@ export function PermissionsPageClient({ permissions }: { permissions: any[] }) {
     setDeleteDialogOpen(true);
   };
 
-  // Nhóm quyền theo tài nguyên (ví dụ: "user:read" -> tài nguyên "user")
+  const toggleGroup = (resource: string) => {
+    const newExpanded = new Set(expandedGroups);
+    if (newExpanded.has(resource)) {
+      newExpanded.delete(resource);
+    } else {
+      newExpanded.add(resource);
+    }
+    setExpandedGroups(newExpanded);
+  };
+
+  const expandAll = () => {
+    setExpandedGroups(new Set(Object.keys(groupedPermissions)));
+  };
+
+  const collapseAll = () => {
+    setExpandedGroups(new Set());
+  };
+
+  // Group permissions by resource
   const groupedPermissions = useMemo(() => {
     const groups: Record<string, any[]> = {};
 
     permissions.forEach((perm) => {
-      // Thử tách bằng dấu hai chấm hoặc gạch dưới, mặc định là "Other"
       let resource = "Other";
       if (perm.name.includes(":")) {
         resource = perm.name.split(":")[0];
       } else if (perm.name.includes("_")) {
         resource = perm.name.split("_")[0];
       } else {
-        resource = perm.name; // Dự phòng nếu không có dấu phân cách
+        resource = perm.name;
       }
 
-      // Viết hoa chữ cái đầu
       resource = resource.charAt(0).toUpperCase() + resource.slice(1);
 
       if (!groups[resource]) {
@@ -80,10 +131,13 @@ export function PermissionsPageClient({ permissions }: { permissions: any[] }) {
       groups[resource].push(perm);
     });
 
-    return groups;
+    // Sort groups by name
+    return Object.fromEntries(
+      Object.entries(groups).sort(([a], [b]) => a.localeCompare(b))
+    );
   }, [permissions]);
 
-  // Lọc nhóm dựa trên tìm kiếm
+  // Filter groups based on search
   const filteredGroups = useMemo(() => {
     if (!searchTerm) return groupedPermissions;
 
@@ -91,11 +145,9 @@ export function PermissionsPageClient({ permissions }: { permissions: any[] }) {
     const filtered: Record<string, any[]> = {};
 
     Object.entries(groupedPermissions).forEach(([resource, perms]) => {
-      // Kiểm tra xem tên tài nguyên có khớp không
       if (resource.toLowerCase().includes(lowerSearch)) {
         filtered[resource] = perms;
       } else {
-        // Kiểm tra xem bất kỳ quyền nào trong nhóm có khớp không
         const matchingPerms = perms.filter((p) =>
           p.name.toLowerCase().includes(lowerSearch)
         );
@@ -108,105 +160,204 @@ export function PermissionsPageClient({ permissions }: { permissions: any[] }) {
     return filtered;
   }, [groupedPermissions, searchTerm]);
 
+  // Extract action from permission name
+  const getAction = (permName: string) => {
+    const parts = permName.split(":").pop()?.split("_").pop() || "";
+    return parts.toLowerCase();
+  };
+
+  // Stats
+  const totalGroups = Object.keys(groupedPermissions).length;
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">{t("permissions.management")}</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {t("permissions.description")}
-          </p>
+      {/* Page Header */}
+      <AdminPageHeader
+        title={t("permissions.management")}
+        subtitle={t("permissions.description")}
+        icon={<Shield className="h-5 w-5" />}
+        stats={[
+          { label: "total", value: permissions.length, variant: "default" },
+          { label: "resources", value: totalGroups, variant: "info" },
+        ]}
+        actions={
+          canCreate ? (
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t("permissions.createNew")}
+            </Button>
+          ) : undefined
+        }
+      />
+
+      {/* Search & Controls */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t("permissions.searchPlaceholder")}
+            className="pl-10"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
-        {canCreate && (
-          <Button onClick={() => setCreateDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" /> {t("permissions.createNew")}
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={expandAll}>
+            Expand All
           </Button>
-        )}
+          <Button variant="outline" size="sm" onClick={collapseAll}>
+            Collapse All
+          </Button>
+        </div>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-        <Input
-          placeholder={t("permissions.searchPlaceholder")}
-          className="pl-10 max-w-md"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {Object.entries(filteredGroups).length > 0 ? (
-          Object.entries(filteredGroups).map(([resource, perms]) => (
-            <GlassCard
-              key={resource}
-              className="flex flex-col h-full hover:bg-white/5 transition-colors duration-200"
-            >
-              <div className="p-6 pb-3 flex flex-row items-center justify-between space-y-0">
-                <h3 className="text-lg font-bold text-foreground">
-                  {resource}
-                </h3>
-                <Badge
-                  variant="secondary"
-                  className="rounded-full px-2.5 py-0.5 bg-primary/10 text-primary border-primary/20 font-medium"
+      {/* Permission Groups */}
+      {Object.entries(filteredGroups).length > 0 ? (
+        <div className="grid gap-4">
+          {Object.entries(filteredGroups).map(([resource, perms]) => {
+            const isExpanded = expandedGroups.has(resource);
+            return (
+              <div
+                key={resource}
+                className="rounded-xl border border-border bg-card overflow-hidden"
+              >
+                {/* Group Header */}
+                <button
+                  onClick={() => toggleGroup(resource)}
+                  className={cn(
+                    "w-full flex items-center justify-between p-4 transition-colors",
+                    "hover:bg-muted/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  )}
                 >
-                  {perms.length}
-                </Badge>
-              </div>
-              <div className="p-6 pt-0 flex-grow">
-                <div className="flex flex-wrap gap-2.5">
-                  {perms.map((perm) => (
-                    <div
-                      key={perm.id}
-                      className="group relative inline-flex items-center"
-                    >
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-sm text-muted-foreground hover:text-foreground hover:bg-white/10 hover:border-white/20 transition-colors">
-                        <span className="font-medium">{perm.name}</span>
-                        {(canUpdate || canDelete) && (
-                          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 -mr-1">
-                            {canUpdate && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openEdit(perm);
-                                }}
-                                className="p-1 text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 rounded-full transition-colors"
-                                title={t("edit")}
-                              >
-                                <Edit2 className="h-3 w-3" />
-                              </button>
-                            )}
-                            {canDelete && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  openDelete(perm);
-                                }}
-                                className="p-1 text-red-400 hover:text-red-300 hover:bg-red-400/10 rounded-full transition-colors"
-                                title={t("delete")}
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </button>
-                            )}
-                          </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                      <Key className="h-5 w-5" />
+                    </div>
+                    <div className="text-left">
+                      <h3 className="font-semibold text-foreground">
+                        {resource}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {perms.length} permission{perms.length > 1 ? "s" : ""}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    {/* Quick badges preview when collapsed */}
+                    {!isExpanded && (
+                      <div className="hidden sm:flex gap-1">
+                        {perms.slice(0, 4).map((perm) => {
+                          const action = getAction(perm.name);
+                          return (
+                            <Badge
+                              key={perm.id}
+                              variant="outline"
+                              className={cn(
+                                "text-xs px-2",
+                                actionColors[action] || "bg-muted"
+                              )}
+                            >
+                              {action}
+                            </Badge>
+                          );
+                        })}
+                        {perms.length > 4 && (
+                          <Badge variant="secondary" className="text-xs">
+                            +{perms.length - 4}
+                          </Badge>
                         )}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </GlassCard>
-          ))
-        ) : (
-          <div className="col-span-full flex flex-col items-center justify-center py-16 text-muted-foreground bg-white/5 rounded-lg border border-dashed border-white/10">
-            <Search className="h-10 w-10 text-muted-foreground/50 mb-3" />
-            <p className="text-lg font-medium">{t("permissions.noFound")}</p>
-            <p className="text-sm text-muted-foreground/70">
-              {t("permissions.adjustSearch")}
-            </p>
-          </div>
-        )}
-      </div>
+                    )}
+                    {isExpanded ? (
+                      <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                    ) : (
+                      <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    )}
+                  </div>
+                </button>
 
+                {/* Group Content - Permissions */}
+                {isExpanded && (
+                  <div className="border-t border-border bg-muted/20 p-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                      {perms.map((perm) => {
+                        const action = getAction(perm.name);
+                        const icon = actionIcons[action] || (
+                          <Lock className="h-3 w-3" />
+                        );
+                        const colorClass =
+                          actionColors[action] ||
+                          "bg-muted text-muted-foreground";
+
+                        return (
+                          <div
+                            key={perm.id}
+                            className={cn(
+                              "group flex items-center justify-between gap-2 px-4 py-3 rounded-lg border transition-all",
+                              colorClass
+                            )}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              {icon}
+                              <span className="font-medium text-sm truncate">
+                                {perm.name}
+                              </span>
+                            </div>
+                            {(canUpdate || canDelete) && (
+                              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {canUpdate && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openEdit(perm);
+                                    }}
+                                    className="p-1.5 rounded-full hover:bg-white/50 dark:hover:bg-black/20 transition-colors"
+                                    title={t("edit")}
+                                  >
+                                    <Edit2 className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                                {canDelete && (
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      openDelete(perm);
+                                    }}
+                                    className="p-1.5 rounded-full hover:bg-white/50 dark:hover:bg-black/20 transition-colors"
+                                    title={t("delete")}
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <AdminEmptyState
+          icon={Shield}
+          title={t("permissions.noFound")}
+          description={t("permissions.adjustSearch")}
+          action={
+            canCreate ? (
+              <Button onClick={() => setCreateDialogOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Create Permission
+              </Button>
+            ) : undefined
+          }
+        />
+      )}
+
+      {/* Dialogs */}
       <CreatePermissionDialog
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
@@ -224,7 +375,9 @@ export function PermissionsPageClient({ permissions }: { permissions: any[] }) {
             open={deleteDialogOpen}
             onOpenChange={setDeleteDialogOpen}
             title={t("confirmTitle")}
-            description={t("confirmDeleteDesc", { item: selectedPermission.name })}
+            description={t("confirmDeleteDesc", {
+              item: selectedPermission.name,
+            })}
             action={() => deletePermissionAction(selectedPermission.id)}
             successMessage={t("permissions.successDelete")}
           />

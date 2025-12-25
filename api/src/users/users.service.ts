@@ -73,10 +73,25 @@ export class UsersService {
    * Lấy danh sách User (Phân trang).
    * - Trả về dữ liệu đã được serialize qua UserEntity (ẩn password, flatten roles).
    */
-  async findAll(page: number = 1, limit: number = 10, search?: string) {
+  async findAll(
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    role?: string,
+  ) {
     const skip = (page - 1) * limit;
-
     const where: any = {};
+
+    if (role && role !== 'all') {
+      where.roles = {
+        some: {
+          role: {
+            name: role,
+          },
+        },
+      };
+    }
+
     if (search) {
       where.OR = [
         { email: { contains: search, mode: 'insensitive' } },

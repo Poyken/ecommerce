@@ -1,11 +1,38 @@
 "use client";
+
+/**
+ * =====================================================================
+ * ORDERS CLIENT - Quản lý đơn hàng (Enhanced)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * - Filter theo status (Server-side via URL)
+ * - Bulk actions: Export CSV, Delete
+ * - Quick status update
+ * - Show status counts from server props
+ * =====================================================================
+ */
+
 import { Checkbox } from "@/components/atoms/checkbox";
+import { DataTablePagination } from "@/components/atoms/data-table-pagination";
 import { OrderDetailsDialog } from "@/components/organisms/admin/order-details-dialog";
 import { UpdateOrderStatusDialog } from "@/components/organisms/admin/update-order-status-dialog";
-import { Download, Trash2 } from "lucide-react";
+import {
+  Check,
+  Clock,
+  Download,
+  Eye,
+  Package,
+  RefreshCw,
+  Search,
+  ShoppingBag,
+  Trash2,
+  Truck,
+  X,
+} from "lucide-react";
 
 import { Button } from "@/components/atoms/button";
-import { GlassCard } from "@/components/atoms/glass-card";
 import { Input } from "@/components/atoms/input";
 import { StatusBadge } from "@/components/atoms/status-badge";
 import {
@@ -16,50 +43,49 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/atoms/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
+import {
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
+} from "@/components/organisms/admin/admin-page-components";
 import { useDebounce } from "@/hooks/use-debounce";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
-import { Order } from "@/types/models";
+import { Order, OrderStatus } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+
+type FilterType =
+  | "all"
+  | "PENDING"
+  | "PROCESSING"
+  | "SHIPPED"
+  | "DELIVERED"
+  | "CANCELLED";
 
 export function OrdersClient({
   orders,
   total,
   page,
   limit,
+  counts,
+  currentStatus = "all",
 }: {
   orders: Order[];
   total: number;
   page: number;
   limit: number;
+  counts?: Record<string, number>;
+  currentStatus?: string;
 }) {
-  /**
-   * =====================================================================
-   * ADMIN ORDERS CLIENT - Quản lý đơn hàng
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. BULK ACTIONS (Thao tác hàng loạt):
-   * - Sử dụng `Set` để lưu danh sách ID các dòng được chọn (hiệu năng O(1)).
-   * - Toolbar chỉ hiện khi có ít nhất 1 dòng được chọn (`selectedRows.size > 0`).
-   *
-   * 2. CLIENT-SIDE EXPORT (CSV):
-   * - Tạo file CSV trực tiếp từ dữ liệu JSON trên trình duyệt.
-   * - Dùng `Blob` và `URL.createObjectURL` để tạo link download ảo.
-   * - Không cần gọi API backend để export (tiết kiệm tài nguyên server).
-   *
-   * 3. STATUS COLORING:
-   * - Logic render màu Badge dựa trên trạng thái đơn hàng (Completed=Green, Pending=Yellow...).
-   * =====================================================================
-   */
   const t = useTranslations("admin");
   const { hasPermission } = useAuth();
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const canRead = hasPermission("order:read");
   const canUpdate = hasPermission("order:update");
@@ -74,33 +100,44 @@ export function OrdersClient({
     searchParams.get("search") || ""
   );
 
-  // Debounced search term
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  // Update URL when debounced search term changes
+  // Stats from server
+  const pendingCount = counts?.PENDING || 0;
+  const processingCount = counts?.PROCESSING || 0;
+  const shippedCount = counts?.SHIPPED || 0;
+  const deliveredCount = counts?.DELIVERED || 0;
+  const cancelledCount = counts?.CANCELLED || 0;
+  const totalCount = counts?.total || total;
+
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     const currentSearch = params.get("search") || "";
 
     if (currentSearch !== debouncedSearchTerm) {
-      if (debouncedSearchTerm) {
-        params.set("search", debouncedSearchTerm);
-      } else {
-        params.delete("search");
-      }
-      params.set("page", "1");
-      router.push(`/admin/orders?${params.toString()}`);
+      startTransition(() => {
+        if (debouncedSearchTerm) {
+          params.set("search", debouncedSearchTerm);
+        } else {
+          params.delete("search");
+        }
+        params.set("page", "1");
+        router.push(`/admin/orders?${params.toString()}`);
+      });
     }
   }, [debouncedSearchTerm, router, searchParams]);
 
-  const totalPages = Math.ceil(total / limit);
-  const hasNextPage = page < totalPages;
-  const hasPrevPage = page > 1;
-
-  const goToPage = (newPage: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", newPage.toString());
-    router.push(`/admin/orders?${params.toString()}`);
+  const handleStatusChange = (status: FilterType) => {
+    startTransition(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (status === "all") {
+        params.delete("status");
+      } else {
+        params.set("status", status);
+      }
+      params.set("page", "1");
+      router.push(`/admin/orders?${params.toString()}`);
+    });
   };
 
   const openStatusUpdate = (order: Order) => {
@@ -133,7 +170,6 @@ export function OrdersClient({
 
   const handleBulkDelete = () => {
     if (confirm(t("confirmTitle"))) {
-      // Implement bulk delete action here
       console.log("Deleting:", Array.from(selectedRows));
       setSelectedRows(new Set());
     }
@@ -143,7 +179,6 @@ export function OrdersClient({
     const ordersToExport = orders.filter((o) => selectedRows.has(o.id));
     if (ordersToExport.length === 0) return;
 
-    // Define headers
     const headers = [
       t("orders.idLabel"),
       t("orders.emailLabel"),
@@ -152,7 +187,6 @@ export function OrdersClient({
       t("created"),
     ];
 
-    // Map data
     const rows = ordersToExport.map((order) => [
       order.id,
       order.user?.email || t("unknownUser"),
@@ -161,13 +195,11 @@ export function OrdersClient({
       new Date(order.createdAt).toISOString(),
     ]);
 
-    // Create CSV content
     const csvContent = [
       headers.join(","),
       ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
     ].join("\n");
 
-    // Create blob and download
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     if (link.download !== undefined) {
@@ -184,65 +216,137 @@ export function OrdersClient({
     }
   };
 
+  const getStatusIcon = (status: OrderStatus) => {
+    switch (status) {
+      case "PENDING":
+        return <Clock className="h-4 w-4" />;
+      case "PROCESSING":
+        return <RefreshCw className="h-4 w-4" />;
+      case "SHIPPED":
+        return <Truck className="h-4 w-4" />;
+      case "DELIVERED":
+        return <Check className="h-4 w-4" />;
+      case "CANCELLED":
+        return <X className="h-4 w-4" />;
+      default:
+        return <Package className="h-4 w-4" />;
+    }
+  };
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6 h-14">
-        <div>
-          <h1 className="text-3xl font-bold">{t("orders.management")}</h1>
-        </div>
-        {/* Bulk Actions Toolbar - Always rendered to prevent layout shift */}
-        <div
-          className={`flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg transition-all duration-200 ${
-            selectedRows.size > 0
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-2 pointer-events-none"
-          }`}
+    <div className="space-y-6">
+      {/* Page Header */}
+      <AdminPageHeader
+        title={t("orders.management")}
+        subtitle={t("orders.showingCount", {
+          count: orders.length,
+          total: totalCount,
+        })}
+        icon={<ShoppingBag className="h-5 w-5" />}
+        stats={[
+          { label: "total", value: totalCount, variant: "default" },
+          { label: "pending", value: pendingCount, variant: "warning" },
+          { label: "processing", value: processingCount, variant: "info" },
+          { label: "delivered", value: deliveredCount, variant: "success" },
+        ]}
+        actions={
+          selectedRows.size > 0 ? (
+            <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg">
+              <span className="text-sm font-medium text-primary">
+                {t("orders.selectedCount", { count: selectedRows.size })}
+              </span>
+              <div className="h-4 w-px bg-primary/20 mx-2" />
+              {canDelete && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={handleBulkDelete}
+                >
+                  <Trash2 size={16} className="mr-2" />
+                  {t("delete")}
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-8 hover:bg-primary/10"
+                onClick={handleExport}
+              >
+                <Download size={16} className="mr-2" />
+                {t("orders.exportLabel")}
+              </Button>
+            </div>
+          ) : undefined
+        }
+      />
+
+      {/* Filters & Search */}
+      <div className="flex flex-col md:flex-row md:items-center gap-4">
+        <Tabs
+          value={currentStatus}
+          onValueChange={(v) => handleStatusChange(v as FilterType)}
         >
-          <span className="text-sm font-medium text-primary">
-            {t("orders.selectedCount", { count: selectedRows.size })}
-          </span>
-          <div className="h-4 w-px bg-primary/20 mx-2" />
-          {canDelete && (
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-              onClick={handleBulkDelete}
+          <TabsList className="flex-wrap h-auto gap-1 p-1">
+            <TabsTrigger value="all" className="gap-2" disabled={isPending}>
+              All ({totalCount})
+            </TabsTrigger>
+            <TabsTrigger value="PENDING" className="gap-2" disabled={isPending}>
+              <Clock className="h-3 w-3" />
+              Pending ({pendingCount})
+            </TabsTrigger>
+            <TabsTrigger
+              value="PROCESSING"
+              className="gap-2"
+              disabled={isPending}
             >
-              <Trash2 size={16} className="mr-2" />
-              {t("delete")}
-            </Button>
+              <RefreshCw className="h-3 w-3" />
+              Processing ({processingCount})
+            </TabsTrigger>
+            <TabsTrigger value="SHIPPED" className="gap-2" disabled={isPending}>
+              <Truck className="h-3 w-3" />
+              Shipped ({shippedCount})
+            </TabsTrigger>
+            <TabsTrigger
+              value="DELIVERED"
+              className="gap-2"
+              disabled={isPending}
+            >
+              <Check className="h-3 w-3" />
+              Delivered ({deliveredCount})
+            </TabsTrigger>
+            {cancelledCount > 0 && (
+              <TabsTrigger
+                value="CANCELLED"
+                className="gap-2"
+                disabled={isPending}
+              >
+                <X className="h-3 w-3" />
+                Cancelled ({cancelledCount})
+              </TabsTrigger>
+            )}
+          </TabsList>
+        </Tabs>
+
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t("orders.searchPlaceholder")}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+          {isPending && (
+            <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
           )}
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-8 hover:bg-primary/10"
-            onClick={handleExport}
-          >
-            <Download size={16} className="mr-2" />
-            {t("orders.exportLabel")}
-          </Button>
         </div>
       </div>
 
-      <div className="flex items-center space-x-2 mb-6">
-        <Input
-          placeholder={t("orders.searchPlaceholder")}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
-      </div>
-
-      <GlassCard className="p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-foreground">
-            {t("orders.title")}
-          </h2>
-        </div>
+      {/* Table */}
+      <AdminTableWrapper>
         <Table>
           <TableHeader>
-            <TableRow className="border-white/10 hover:bg-white/5">
+            <TableRow className="bg-muted/50">
               <TableHead className="w-[50px]">
                 <Checkbox
                   checked={
@@ -252,23 +356,13 @@ export function OrdersClient({
                   aria-label={t("selectAll")}
                 />
               </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("orders.idLabel")}
-              </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("sidebar.users")}
-              </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("orders.totalLabel")}
-              </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("orders.statusLabel")}
-              </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("created")}
-              </TableHead>
+              <TableHead className="w-[200px]">{t("orders.idLabel")}</TableHead>
+              <TableHead>{t("sidebar.users")}</TableHead>
+              <TableHead>{t("orders.totalLabel")}</TableHead>
+              <TableHead>{t("orders.statusLabel")}</TableHead>
+              <TableHead>{t("created")}</TableHead>
               {(canRead || canUpdate) && (
-                <TableHead className="text-right text-muted-foreground uppercase tracking-wider text-xs font-bold">
+                <TableHead className="text-right w-[120px]">
                   {t("actions")}
                 </TableHead>
               )}
@@ -277,66 +371,92 @@ export function OrdersClient({
           <TableBody>
             {orders.length === 0 ? (
               <TableRow>
-                <TableCell
-                  colSpan={canRead || canUpdate ? 7 : 6}
-                  className="text-center py-8 text-muted-foreground"
-                >
-                  {t("orders.noFound")}
+                <TableCell colSpan={canRead || canUpdate ? 7 : 6}>
+                  <AdminEmptyState
+                    icon={ShoppingBag}
+                    title={t("orders.noFound")}
+                    description="No orders found matching your criteria."
+                  />
                 </TableCell>
               </TableRow>
             ) : (
               orders.map((order) => (
                 <TableRow
                   key={order.id}
-                  className="border-white/10 hover:bg-white/5 transition-colors"
+                  className={cn(
+                    "hover:bg-muted/30 transition-colors",
+                    selectedRows.has(order.id) && "bg-muted/20"
+                  )}
                 >
                   <TableCell>
                     <Checkbox
                       checked={selectedRows.has(order.id)}
                       onCheckedChange={() => toggleRow(order.id)}
-                      aria-label={t("selectItem", { item: order.id })}
+                      aria-label={`Select order ${order.id}`}
                     />
                   </TableCell>
-                  <TableCell className="font-medium text-foreground">
-                    {order.id}
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="font-medium font-mono">
+                        #{order.id.slice(0, 8)}
+                      </span>
+                      {order.items.length > 0 && (
+                        <span className="text-xs text-muted-foreground">
+                          {order.items.length} items
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {order.user?.email || t("unknownUser")}
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">
+                        {order.user?.name || t("unknownUser")}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {order.user?.email}
+                      </span>
+                    </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="font-medium">
                     {formatCurrency(Number(order.totalAmount))}
                   </TableCell>
                   <TableCell>
-                    <StatusBadge status={order.status} />
+                    <StatusBadge
+                      status={order.status}
+                      icon={getStatusIcon(order.status)}
+                    />
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatDate(order.createdAt)}
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="text-sm">
+                        {formatDate(order.createdAt)}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(order.createdAt).toLocaleTimeString()}
+                      </span>
+                    </div>
                   </TableCell>
                   {(canRead || canUpdate) && (
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex items-center justify-end gap-1">
                         {canRead && (
                           <Button
                             variant="ghost"
                             size="sm"
+                            className="h-8 w-8 p-0 text-blue-500 hover:text-blue-600 hover:bg-blue-50"
                             onClick={() => openDetails(order)}
-                            className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10"
                           >
-                            {t("orders.details")}
+                            <Eye className="h-4 w-4" />
                           </Button>
                         )}
                         {canUpdate && (
                           <Button
                             variant="ghost"
                             size="sm"
+                            className="h-8 w-8 p-0 text-amber-500 hover:text-amber-600 hover:bg-amber-50"
                             onClick={() => openStatusUpdate(order)}
-                            disabled={
-                              order.status === "DELIVERED" ||
-                              order.status === "CANCELLED"
-                            }
-                            className="text-purple-400 hover:text-purple-300 hover:bg-purple-400/10 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
-                            {t("update")}
+                            <Edit className="h-4 w-4" />
                           </Button>
                         )}
                       </div>
@@ -347,42 +467,14 @@ export function OrdersClient({
             )}
           </TableBody>
         </Table>
+      </AdminTableWrapper>
 
-        {/* Pagination */}
-        <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-          <div className="text-sm text-muted-foreground">
-            {t("showing", {
-              count: `${total === 0 ? 0 : (page - 1) * limit + 1} - ${Math.min(
-                page * limit,
-                total
-              )}`,
-              total: total,
-              item: t("orders.title").toLowerCase(),
-            })}
-          </div>
-          <div className="flex space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => goToPage(page - 1)}
-              disabled={!hasPrevPage}
-              className="border-white/10 hover:bg-white/5"
-            >
-              {t("pagination.previous")}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => goToPage(page + 1)}
-              disabled={!hasNextPage}
-              className="border-white/10 hover:bg-white/5"
-            >
-              {t("pagination.next")}
-            </Button>
-          </div>
-        </div>
-      </GlassCard>
+      {/* Pagination with page numbers - only show when needed */}
+      {orders.length > 0 && total > limit && (
+        <DataTablePagination page={page} total={total} limit={limit} />
+      )}
 
+      {/* Dialogs */}
       {selectedOrder && (
         <>
           <UpdateOrderStatusDialog
@@ -391,14 +483,16 @@ export function OrdersClient({
             onOpenChange={setStatusDialogOpen}
             orderId={selectedOrder.id}
             currentStatus={
-              orders.find((o) => o.id === selectedOrder.id)?.status ||
-              selectedOrder.status
+              selectedOrder.status === "CANCELLED" ||
+              selectedOrder.status === "DELIVERED"
+                ? "PENDING"
+                : selectedOrder.status
             }
           />
           <OrderDetailsDialog
+            order={selectedOrder}
             open={detailsDialogOpen}
             onOpenChange={setDetailsDialogOpen}
-            orderId={selectedOrder.id}
           />
         </>
       )}

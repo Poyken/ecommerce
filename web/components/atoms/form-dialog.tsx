@@ -1,6 +1,6 @@
 /**
  * =====================================================================
- * FORM DIALOG - Hộp thoại chứa Form
+ * FORM DIALOG - Hộp thoại chứa Form (Enhanced)
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
@@ -12,6 +12,11 @@
  * 2. PENDING STATE:
  * - Hỗ trợ prop `isPending` để vô hiệu hóa các nút bấm khi đang gửi dữ liệu (Submitting),
  *   ngăn chặn việc user nhấn gửi nhiều lần gây trùng lặp dữ liệu.
+ *
+ * 3. ENHANCED UI:
+ * - Icon support in header
+ * - Better styling for form sections
+ * - Improved footer with consistent button styling
  * =====================================================================
  */
 
@@ -26,6 +31,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/atoms/dialog";
+import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 
@@ -41,6 +47,8 @@ interface FormDialogProps {
   cancelLabel?: string;
   maxWidth?: string; // e.g. "sm:max-w-md" or "sm:max-w-2xl"
   disabled?: boolean;
+  icon?: ReactNode;
+  variant?: "default" | "create" | "edit";
 }
 
 export function FormDialog({
@@ -55,28 +63,60 @@ export function FormDialog({
   cancelLabel,
   maxWidth = "sm:max-w-md",
   disabled = false,
+  icon,
+  variant = "default",
 }: FormDialogProps) {
   const t = useTranslations("admin");
+
+  const submitButtonClass = cn(
+    variant === "create" && "bg-emerald-600 hover:bg-emerald-700 text-white",
+    variant === "edit" && "bg-blue-600 hover:bg-blue-700 text-white"
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={`${maxWidth} max-h-[90vh] overflow-y-auto`}>
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          {description && <DialogDescription>{description}</DialogDescription>}
+        <DialogHeader className="space-y-3">
+          <div className="flex items-center gap-3">
+            {icon && (
+              <div
+                className={cn(
+                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+                  variant === "create" &&
+                    "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400",
+                  variant === "edit" &&
+                    "bg-blue-100 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400",
+                  variant === "default" && "bg-primary/10 text-primary"
+                )}
+              >
+                {icon}
+              </div>
+            )}
+            <div className="space-y-1">
+              <DialogTitle className="text-lg font-semibold">
+                {title}
+              </DialogTitle>
+              {description && (
+                <DialogDescription className="text-sm text-muted-foreground">
+                  {description}
+                </DialogDescription>
+              )}
+            </div>
+          </div>
         </DialogHeader>
 
         <form onSubmit={onSubmit} noValidate className="space-y-6">
           {/* Form Content */}
-          <div className="py-2">{children}</div>
+          <div className="py-2 space-y-4">{children}</div>
 
           {/* Footer */}
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-2 pt-4 border-t">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isPending}
+              className="w-full sm:w-auto"
             >
               {cancelLabel || t("cancel")}
             </Button>
@@ -84,6 +124,7 @@ export function FormDialog({
               type="submit"
               loading={isPending}
               disabled={disabled || isPending}
+              className={cn("w-full sm:w-auto", submitButtonClass)}
             >
               {submitLabel || t("create")}
             </Button>

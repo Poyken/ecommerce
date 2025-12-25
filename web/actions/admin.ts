@@ -105,12 +105,21 @@ async function handleAdminAction<T>(
  * @param page - Trang hiện tại
  * @param limit - Số lượng user mỗi trang
  * @param search - Từ khóa tìm kiếm (email hoặc tên)
+ * @param role - Lọc theo vai trò (ADMIN/USER)
  */
-export async function getUsersAction(page = 1, limit = 10, search?: string) {
+export async function getUsersAction(
+  page = 1,
+  limit = 10,
+  search?: string,
+  role?: string
+) {
   try {
     let url = `/users?page=${page}&limit=${limit}`;
     if (search) {
       url += `&search=${encodeURIComponent(search)}`;
+    }
+    if (role && role !== "all") {
+      url += `&role=${role}`;
     }
     const response = await http<ApiResponse<User[]>>(url);
     return response;
@@ -551,11 +560,19 @@ export async function deleteSkuAction(skuId: string): Promise<ActionResult> {
 /**
  * Lấy danh sách đơn hàng cho admin.
  */
-export async function getOrdersAction(page = 1, limit = 10, search?: string) {
+export async function getOrdersAction(
+  page = 1,
+  limit = 10,
+  search?: string,
+  status?: string
+) {
   try {
     let url = `/orders?page=${page}&limit=${limit}`;
     if (search) {
       url += `&search=${encodeURIComponent(search)}`;
+    }
+    if (status && status !== "all") {
+      url += `&status=${status}`;
     }
     const res = await http<ApiResponse<Order[]>>(url);
     return res;
@@ -689,11 +706,19 @@ export async function getTopProductsAction(limit = 5) {
 /**
  * Lấy danh sách đánh giá có phân trang và lọc theo rating.
  */
-export async function getReviewsAction(page = 1, limit = 10, search?: string) {
+export async function getReviewsAction(
+  page = 1,
+  limit = 10,
+  search?: string,
+  status?: string
+) {
   try {
     let url = `/reviews?page=${page}&limit=${limit}`;
     if (search) {
       url += `&search=${encodeURIComponent(search)}`;
+    }
+    if (status && status !== "all") {
+      url += `&status=${status}`;
     }
     const response = await http<ApiResponse<Review[]>>(url);
     return response;
@@ -713,7 +738,24 @@ export async function updateReviewAction(
         method: "PATCH",
         body: JSON.stringify(data),
       }),
-    ["/admin/reviews"]
+    ["/admin/reviews"],
+    ["reviews"]
+  );
+}
+
+export async function toggleReviewStatusAction(
+  id: string,
+  isApproved: boolean
+) {
+  return handleAdminAction(
+    async () => {
+      return http(`/reviews/${id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ isApproved }),
+      });
+    },
+    ["/admin/reviews"],
+    ["reviews"]
   );
 }
 
@@ -757,12 +799,16 @@ export async function replyToReviewAction(
 export async function getAuditLogsAction(
   page = 1,
   limit = 20,
-  search?: string
+  search?: string,
+  action?: string
 ) {
   try {
     let url = `/audit?page=${page}&limit=${limit}`;
     if (search) {
       url += `&search=${encodeURIComponent(search)}`;
+    }
+    if (action && action !== "all") {
+      url += `&action=${action}`;
     }
     const response = await http<ApiResponse<unknown[]>>(url);
     return response;

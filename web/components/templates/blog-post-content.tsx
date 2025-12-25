@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 
 import { Skeleton } from "@/components/atoms/skeleton";
+import { useToast } from "@/hooks/use-toast";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -47,7 +48,31 @@ interface BlogPostContentProps {
 export function BlogPostContent({ post }: BlogPostContentProps) {
   const t = useTranslations("blog");
   const tCommon = useTranslations("common");
+  const { toast } = useToast();
   const [isImageReady, setIsImageReady] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+
+  const handleSubscribe = () => {
+    if (!email) {
+      setEmailError(tCommon("emailRequired"));
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setEmailError(tCommon("emailInvalid"));
+      return;
+    }
+
+    // Success scenario
+    setEmailError("");
+    toast({
+      title: tCommon("subscribedTitle"),
+      description: tCommon("subscribedDesc"),
+      variant: "success",
+    });
+    setEmail("");
+  };
 
   useEffect(() => {
     if (post.image) {
@@ -66,7 +91,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-accent/30 pt-28 pb-24 relative overflow-hidden">
       {/* Ambient Background - Quiet Luxury */}
-      <div className="fixed inset-0 bg-gradient-to-br from-accent/3 via-secondary/5 to-accent/3 -z-20" />
+      <div className="fixed inset-0 bg-linear-to-br from-accent/3 via-secondary/5 to-accent/3 -z-20" />
       <BackgroundBlob
         variant="primary"
         position="top-left"
@@ -278,16 +303,31 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                   {t("newsletterDesc")}
                 </p>
                 <div className="space-y-2">
-                  <input
-                    type="email"
-                    placeholder="Enter your email"
-                    className="w-full bg-black/5 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-                  />
+                  <div className="space-y-1">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (emailError) setEmailError("");
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSubscribe();
+                      }}
+                      placeholder="Enter your email"
+                      className={`w-full bg-black/5 dark:bg-black/20 border border-black/10 dark:border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary ${
+                        emailError ? "border-destructive ring-destructive" : ""
+                      }`}
+                    />
+                    {emailError && (
+                      <p className="text-xs text-destructive px-1">
+                        {emailError}
+                      </p>
+                    )}
+                  </div>
                   <GlassButton
                     className="w-full bg-primary text-primary-foreground"
-                    onClick={() => {
-                      alert("Subscribed! (Demo functionality)");
-                    }}
+                    onClick={handleSubscribe}
                   >
                     {tCommon("subscribe")}
                   </GlassButton>

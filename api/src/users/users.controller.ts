@@ -74,11 +74,13 @@ export class UsersController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('search') search?: string,
+    @Query('role') role?: string,
   ) {
     const result = await this.usersService.findAll(
       Number(page),
       Number(limit),
       search,
+      role,
     );
     return result;
   }

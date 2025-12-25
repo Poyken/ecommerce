@@ -22,6 +22,7 @@
 
 import { http } from "@/lib/http";
 import { ActionResult } from "@/types/dtos";
+import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 
 /**
@@ -120,5 +121,44 @@ export async function deleteBlogAction(id: string): Promise<ActionResult> {
   } catch (error: unknown) {
     console.error("Error deleting blog:", error);
     return { error: (error as Error).message || "Failed to delete blog post" };
+  }
+}
+
+/**
+ * Toggle trạng thái Publish của bài viết.
+ *
+ * @param id - ID bài viết
+ */
+export async function toggleBlogPublishAction(
+  id: string
+): Promise<ActionResult> {
+  try {
+    await http(`/blogs/${id}/toggle-publish`, { method: "PATCH" });
+
+    revalidatePath("/admin/blogs");
+    revalidatePath("/blog");
+
+    return { success: true };
+  } catch (error: unknown) {
+    console.error("Error toggling blog publish:", error);
+    return {
+      error: (error as Error).message || "Failed to update blog status",
+    };
+  }
+}
+
+export async function getMyBlogsAction() {
+  const t = await getTranslations("admin.blogs");
+  try {
+    const res = await http<any>(`/blogs/my-blogs`, {
+      method: "GET",
+      next: { tags: ["my-blogs"] },
+    });
+    return res;
+  } catch (error) {
+    console.error("Failed to fetch my blogs:", error);
+    return {
+      error: t("error"),
+    };
   }
 }

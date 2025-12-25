@@ -65,7 +65,7 @@ export function SearchInput({
     startTransition(() => {
       replace(`${pathname}?${params.toString()}` as any, { scroll: false });
     });
-  }, 300);
+  }, 200);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;

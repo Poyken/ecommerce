@@ -23,6 +23,7 @@ import { logoutAction } from "@/actions/auth";
 import { GlassCard } from "@/components/atoms/glass-card";
 import { cn } from "@/lib/utils";
 import {
+  FileText,
   Heart,
   KeyRound,
   LayoutDashboard,
@@ -69,6 +70,11 @@ export function ProfileSidebar({
       id: "orders",
       label: t("orders"),
       icon: ShoppingBag,
+    },
+    {
+      id: "blogs",
+      label: t("blogs"),
+      icon: FileText,
     },
     {
       id: "wishlist",

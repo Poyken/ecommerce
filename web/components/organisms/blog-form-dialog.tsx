@@ -1,6 +1,6 @@
 "use client";
 
-import { getProductsAction } from "@/actions/admin";
+import { getCategoriesAction, getProductsAction } from "@/actions/admin";
 import { createBlogAction, updateBlogAction } from "@/actions/blog";
 import { Checkbox } from "@/components/atoms/checkbox";
 import { FormDialog } from "@/components/atoms/form-dialog";
@@ -27,19 +27,32 @@ interface BlogFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   blog?: BlogWithProducts | null;
-  categories: Category[];
+  categories: Category[]; // Passed from parent or fetched? Admin passes it. User might need fetch.
+  // Actually, to make it shared self-contained, fetching inside is better if we want to avoid prop drilling,
+  // but AdminPage fetches categories server-side/client-side efficiently.
+  // Let's keep categories prop for flexibility, or make it optional and fetch if missing.
+  // Admin passes it. Profile will pass it (fetched inside ProfileTab).
+  onSuccess?: () => void;
+  isUserMode?: boolean;
+  defaultAuthor?: string;
 }
 
 export function BlogFormDialog({
   open,
   onOpenChange,
   blog,
-  categories,
+  categories: initialCategories = [],
+  onSuccess,
+  isUserMode = false,
+  defaultAuthor = "",
 }: BlogFormDialogProps) {
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
   const t = useTranslations("admin.blogs");
   const isEditing = !!blog;
+
+  // Local categories state if we need to fetch them
+  const [categories, setCategories] = useState<Category[]>(initialCategories);
 
   const [formData, setFormData] = useState({
     title: blog?.title || "",
@@ -47,7 +60,7 @@ export function BlogFormDialog({
     excerpt: blog?.excerpt || "",
     content: blog?.content || "",
     category: blog?.category || "",
-    author: blog?.author || "",
+    author: blog?.author || defaultAuthor,
     language: blog?.language || "en",
     readTime: blog?.readTime ? blog.readTime.replace(/[^0-9]/g, "") : "",
     image: blog?.image || "",
@@ -59,19 +72,35 @@ export function BlogFormDialog({
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      const response = await getProductsAction(1, 100);
-      if ("data" in response) {
-        setProducts(response.data || []);
-      }
-    };
     if (open) {
+      // Fetch products for tagging
+      const fetchProducts = async () => {
+        const response = await getProductsAction(1, 100);
+        if ("data" in response) {
+          setProducts(response.data || []);
+        }
+      };
       fetchProducts();
-    }
-  }, [open]);
 
-  useEffect(() => {
-    if (open) {
+      // If categories invalid/empty and we are in UserMode (where parent might not have passed them yet or we want to fetch),
+      // fetch categories.
+      // Admin usually passes them. ProfileTab logic currently fetches them?
+      // Let's support fetching if empty.
+      if (categories.length === 0) {
+        const fetchCats = async () => {
+          const res = await getCategoriesAction(1, 100);
+          if (res && "data" in res && res.data) {
+            setCategories(res.data);
+            // Set default category if creating
+            if (!blog && !formData.category && res.data.length > 0) {
+              setFormData((prev) => ({ ...prev, category: res.data[0].name }));
+            }
+          }
+        };
+        fetchCats();
+      }
+
+      // Reset/Init Form
       if (blog) {
         setFormData({
           title: blog.title,
@@ -92,7 +121,7 @@ export function BlogFormDialog({
           excerpt: "",
           content: "",
           category: categories[0]?.name || "",
-          author: "",
+          author: isUserMode ? defaultAuthor : "",
           language: "en",
           readTime: "",
           image: "",
@@ -102,22 +131,39 @@ export function BlogFormDialog({
       setImageFile(null);
       setErrors({});
     }
-  }, [blog, open, categories]);
+  }, [open, blog]); // removed categories dependency to avoid loop if we setCategories inside
+
+  // Update categories if prop changes
+  useEffect(() => {
+    if (initialCategories.length > 0) {
+      setCategories(initialCategories);
+    }
+  }, [initialCategories]);
+
+  // Update default author if changed
+  useEffect(() => {
+    if (!isEditing && isUserMode && defaultAuthor) {
+      setFormData((prev) => ({ ...prev, author: defaultAuthor }));
+    }
+  }, [defaultAuthor, isUserMode, isEditing]);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
     if (!formData.title)
-      newErrors.title = t("titleRequired") || "Title is required";
+      newErrors.title = t("validation.titleRequired") || "Title is required";
     if (!formData.slug)
-      newErrors.slug = t("slugRequired") || "Slug is required";
+      newErrors.slug = t("validation.slugRequired") || "Slug is required";
     if (!formData.excerpt)
-      newErrors.excerpt = t("excerptRequired") || "Excerpt is required";
+      newErrors.excerpt =
+        t("validation.excerptRequired") || "Excerpt is required";
     if (!formData.content || formData.content === "<p></p>")
-      newErrors.content = t("contentRequired") || "Content is required";
+      newErrors.content =
+        t("validation.contentRequired") || "Content is required";
     if (!formData.category)
-      newErrors.category = t("categoryRequired") || "Category is required";
-    if (!formData.author)
-      newErrors.author = t("authorRequired") || "Author is required";
+      newErrors.category =
+        t("validation.categoryRequired") || "Category is required";
+    if (!formData.author && !isUserMode)
+      newErrors.author = t("validation.authorRequired") || "Author is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -167,6 +213,7 @@ export function BlogFormDialog({
           description: t(isEditing ? "updateSuccess" : "createSuccess"),
         });
         onOpenChange(false);
+        if (onSuccess) onSuccess();
       } else {
         toast({
           title: t("error"),
@@ -207,7 +254,7 @@ export function BlogFormDialog({
       <div className="space-y-6 pt-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="title">{t("title")} *</Label>
+            <Label htmlFor="title">{t("fields.title")} *</Label>
             <Input
               id="title"
               value={formData.title}
@@ -238,7 +285,7 @@ export function BlogFormDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="slug">{t("slug")} *</Label>
+            <Label htmlFor="slug">{t("fields.slug")} *</Label>
             <Input
               id="slug"
               value={formData.slug}
@@ -246,7 +293,7 @@ export function BlogFormDialog({
                 setFormData((prev) => ({ ...prev, slug: e.target.value }));
                 if (errors.slug) setErrors((prev) => ({ ...prev, slug: "" }));
               }}
-              disabled={isPending}
+              disabled={isPending} // Allowed to edit slug? Yes, same as Admin.
               placeholder="auto-generated-from-title"
               className={errors.slug ? "border-destructive" : ""}
             />
@@ -266,7 +313,7 @@ export function BlogFormDialog({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="excerpt">{t("excerpt")} *</Label>
+          <Label htmlFor="excerpt">{t("fields.excerpt")} *</Label>
           <Textarea
             id="excerpt"
             value={formData.excerpt}
@@ -277,7 +324,7 @@ export function BlogFormDialog({
             }}
             disabled={isPending}
             rows={2}
-            placeholder={t("excerptPlaceholder")}
+            placeholder={t("placeholders.excerpt")}
             className={errors.excerpt ? "border-destructive" : ""}
           />
           <AnimatePresence>
@@ -295,7 +342,7 @@ export function BlogFormDialog({
         </div>
 
         <div className="space-y-2">
-          <Label>{t("content")} *</Label>
+          <Label>{t("fields.content")} *</Label>
           <RichTextEditor
             content={formData.content}
             onChange={(content) => {
@@ -303,7 +350,7 @@ export function BlogFormDialog({
               if (errors.content)
                 setErrors((prev) => ({ ...prev, content: "" }));
             }}
-            placeholder={t("contentPlaceholder")}
+            placeholder={t("placeholders.content")}
           />
           <AnimatePresence>
             {errors.content && (
@@ -321,7 +368,7 @@ export function BlogFormDialog({
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="category">{t("category")} *</Label>
+            <Label htmlFor="category">{t("fields.category")} *</Label>
             <Select
               value={formData.category}
               onValueChange={(value) => {
@@ -359,7 +406,7 @@ export function BlogFormDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="language">{t("language")} *</Label>
+            <Label htmlFor="language">{t("fields.language")} *</Label>
             <Select
               value={formData.language}
               onValueChange={(value) =>
@@ -380,7 +427,7 @@ export function BlogFormDialog({
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="author">{t("author")} *</Label>
+            <Label htmlFor="author">{t("fields.author")} *</Label>
             <Input
               id="author"
               value={formData.author}
@@ -389,7 +436,8 @@ export function BlogFormDialog({
                 if (errors.author)
                   setErrors((prev) => ({ ...prev, author: "" }));
               }}
-              disabled={isPending}
+              disabled={isPending || isUserMode} // Disabled in User Mode
+              autoComplete="off"
               placeholder="John Doe"
               className={errors.author ? "border-destructive" : ""}
             />
@@ -404,11 +452,16 @@ export function BlogFormDialog({
                   {errors.author}
                 </motion.p>
               )}
+              {isUserMode && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Author name will be automatically set to your name.
+                </p>
+              )}
             </AnimatePresence>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="readTime">{t("readTime")}</Label>
+            <Label htmlFor="readTime">{t("fields.readTime")}</Label>
             <div className="flex gap-2 items-center">
               <Input
                 id="readTime"
@@ -433,7 +486,7 @@ export function BlogFormDialog({
         </div>
 
         <div className="space-y-2">
-          <Label>{t("relatedProducts")}</Label>
+          <Label>{t("fields.relatedProducts")}</Label>
           <ScrollArea className="h-48 border rounded-md p-4 bg-white/5">
             <div className="grid grid-cols-2 gap-4">
               {products.map((product) => (
@@ -457,7 +510,7 @@ export function BlogFormDialog({
         </div>
 
         <div className="space-y-2">
-          <Label>{t("featuredImage")}</Label>
+          <Label>{t("fields.featuredImage")}</Label>
           <ImageUpload
             value={imageFile ? undefined : formData.image}
             onChange={(file) => setImageFile(file)}

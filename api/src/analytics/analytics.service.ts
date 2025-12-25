@@ -40,45 +40,69 @@ export class AnalyticsService {
 
   async getStats(startDate?: string, endDate?: string) {
     const { start, end } = this.getDateRange(startDate, endDate);
-    // console.log(
-    //   `[Analytics] Range: ${start.toISOString()} - ${end.toISOString()}`,
-    // );
 
-    const [revenueResult, totalOrders, totalCustomers, totalProducts] =
-      await Promise.all([
-        this.prisma.order.aggregate({
-          _sum: { totalAmount: true },
-          where: {
-            status: 'DELIVERED',
-            createdAt: { gte: start, lte: end },
-          },
-        }),
-        this.prisma.order.count({
-          where: {
-            status: 'DELIVERED',
-            createdAt: { gte: start, lte: end },
-          },
-        }),
-        this.prisma.user.count({
-          where: {
-            roles: {
-              some: {
-                role: {
-                  name: { in: ['CUSTOMER', 'USER'] },
-                },
-              },
-            },
-            createdAt: { gte: start, lte: end }, // Customers joined in period
-          },
-        }),
-        this.prisma.product.count({
-          where: { createdAt: { gte: start, lte: end } }, // New products
-        }),
-      ]);
+    // Today's Date Range (UTC)
+    const todayStart = new Date();
+    todayStart.setUTCHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setUTCHours(23, 59, 59, 999);
 
-    // console.log(
-    //   `[Analytics] Stats: Orders=${totalOrders}, Revenue=${revenueResult._sum.totalAmount}`,
-    // );
+    const [
+      revenueResult,
+      totalOrders,
+      totalCustomers,
+      totalProducts,
+      pendingOrders,
+      todayRevenueResult,
+      todayOrders,
+      lifetimeProducts,
+      lifetimeCustomers,
+    ] = await Promise.all([
+      this.prisma.order.aggregate({
+        _sum: { totalAmount: true },
+        where: {
+          status: 'DELIVERED',
+          createdAt: { gte: start, lte: end },
+        },
+      }),
+      this.prisma.order.count({
+        where: {
+          status: 'DELIVERED',
+          createdAt: { gte: start, lte: end },
+        },
+      }),
+      this.prisma.user.count({
+        where: {
+          roles: { some: { role: { name: { in: ['CUSTOMER', 'USER'] } } } },
+          createdAt: { gte: start, lte: end },
+        },
+      }),
+      this.prisma.product.count({
+        where: { createdAt: { gte: start, lte: end } },
+      }),
+      this.prisma.order.count({
+        where: { status: 'PENDING' },
+      }),
+      this.prisma.order.aggregate({
+        _sum: { totalAmount: true },
+        where: {
+          status: 'DELIVERED',
+          createdAt: { gte: todayStart, lte: todayEnd },
+        },
+      }),
+      this.prisma.order.count({
+        where: {
+          status: 'DELIVERED',
+          createdAt: { gte: todayStart, lte: todayEnd },
+        },
+      }),
+      this.prisma.product.count(), // Lifetime products
+      this.prisma.user.count({
+        where: {
+          roles: { some: { role: { name: { in: ['CUSTOMER', 'USER'] } } } },
+        },
+      }), // Lifetime customers
+    ]);
 
     // Get comparison data (previous period)
     const duration = end.getTime() - start.getTime();
@@ -107,9 +131,14 @@ export class AnalyticsService {
     return {
       totalRevenue: currentRevenue,
       totalOrders,
-      totalCustomers, // New customers in period
-      totalProducts, // New products in period
+      totalCustomers,
+      totalProducts,
       growth: Math.round(growth * 10) / 10,
+      pendingOrders,
+      todayRevenue: Number(todayRevenueResult._sum.totalAmount || 0),
+      todayOrders,
+      lifetimeProducts,
+      lifetimeCustomers,
     };
   }
 

@@ -1,27 +1,57 @@
 "use client";
 
+/**
+ * =====================================================================
+ * PRODUCTS CLIENT - Quản lý sản phẩm (Enhanced)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * - Removed virtual scrolling for simpler pagination
+ * - Using DataTablePagination with page numbers
+ * - Filter tabs
+ * - Stats header
+ * =====================================================================
+ */
+
 import { deleteProductAction } from "@/actions/admin";
+import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
-import { GlassCard } from "@/components/atoms/glass-card";
+import { DataTablePagination } from "@/components/atoms/data-table-pagination";
 import { Input } from "@/components/atoms/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/atoms/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
+import {
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
+} from "@/components/organisms/admin/admin-page-components";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/providers/auth-provider";
 import { Product } from "@/types/models";
-import { useVirtualizer } from "@tanstack/react-virtual";
-import { Languages } from "lucide-react";
+import { format } from "date-fns";
+import {
+  Box,
+  Edit,
+  Languages,
+  Package,
+  Plus,
+  Search,
+  Tag,
+  Trash2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 const CreateProductDialog = dynamic(
   () =>
@@ -52,6 +82,8 @@ const ProductTranslationDialog = dynamic(
   { ssr: false }
 );
 
+type FilterType = "all" | "recent" | "no-category";
+
 export function ProductsClient({
   products,
   total,
@@ -70,6 +102,7 @@ export function ProductsClient({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [translateDialogOpen, setTranslateDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [filter, setFilter] = useState<FilterType>("all");
 
   const canCreate = hasPermission("product:create");
   const canUpdate = hasPermission("product:update");
@@ -82,10 +115,8 @@ export function ProductsClient({
     searchParams.get("search") || ""
   );
 
-  // Debounced search term
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  // Update URL when debounced search term changes
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     const currentSearch = params.get("search") || "";
@@ -101,7 +132,6 @@ export function ProductsClient({
     }
   }, [debouncedSearchTerm, router, searchParams]);
 
-  // Redirect to previous page if current page is empty and not the first page
   useEffect(() => {
     if (products.length === 0 && page > 1) {
       const params = new URLSearchParams(searchParams.toString());
@@ -110,15 +140,28 @@ export function ProductsClient({
     }
   }, [products.length, page, router, searchParams]);
 
-  const totalPages = Math.ceil(total / limit);
-  const hasNextPage = page < totalPages;
-  const hasPrevPage = page > 1;
+  // Filter products (client-side for current page only)
+  const filteredProducts = products.filter((product) => {
+    if (filter === "all") return true;
+    if (filter === "recent") {
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 7);
+      return new Date(product.createdAt) > weekAgo;
+    }
+    if (filter === "no-category") return !product.category;
+    return true;
+  });
 
-  const goToPage = (newPage: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", newPage.toString());
-    router.push(`/admin/products?${params.toString()}`);
-  };
+  // Stats (based on current page)
+  const recentCount = products.filter((p) => {
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return new Date(p.createdAt) > weekAgo;
+  }).length;
+  const noCategoryCount = products.filter((p) => !p.category).length;
+  const categoriesSet = new Set(
+    products.map((p) => p.category?.id).filter(Boolean)
+  );
 
   const openEdit = (product: Product) => {
     setSelectedProduct(product);
@@ -135,213 +178,212 @@ export function ProductsClient({
     setTranslateDialogOpen(true);
   };
 
-
-  // Virtualization
-  const parentRef = useRef<HTMLDivElement>(null);
-  const rowVirtualizer = useVirtualizer({
-    count: products.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 73,
-    overscan: 5,
-  });
-
-  const virtualItems = rowVirtualizer.getVirtualItems();
-  const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
-  const paddingBottom =
-    virtualItems.length > 0
-      ? rowVirtualizer.getTotalSize() -
-        virtualItems[virtualItems.length - 1].end
-      : 0;
-
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">{t("products.title")}</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {t("showing", {
-              count: products.length,
-              total: total,
+      {/* Page Header */}
+      <AdminPageHeader
+        title={t("products.title")}
+        subtitle={t("showing", {
+          count: products.length,
+          total: total,
+          item: t("products.title").toLowerCase(),
+        })}
+        icon={<Package className="h-5 w-5" />}
+        stats={[
+          { label: "total", value: total, variant: "default" },
+          { label: "recent", value: recentCount, variant: "success" },
+          { label: "categories", value: categoriesSet.size, variant: "info" },
+        ]}
+        actions={
+          canCreate ? (
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t("products.createNew")}
+            </Button>
+          ) : undefined
+        }
+      />
+
+      {/* Filters & Search */}
+      <div className="flex flex-col md:flex-row md:items-center gap-4">
+        <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterType)}>
+          <TabsList>
+            <TabsTrigger value="all" className="gap-2">
+              <Box className="h-4 w-4" />
+              All ({products.length})
+            </TabsTrigger>
+            <TabsTrigger value="recent" className="gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              Recent ({recentCount})
+            </TabsTrigger>
+            {noCategoryCount > 0 && (
+              <TabsTrigger value="no-category" className="gap-2">
+                <span className="h-2 w-2 rounded-full bg-amber-500" />
+                No Category ({noCategoryCount})
+              </TabsTrigger>
+            )}
+          </TabsList>
+        </Tabs>
+
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t("search", {
               item: t("products.title").toLowerCase(),
             })}
-          </p>
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
         </div>
-        {canCreate && (
-          <Button onClick={() => setCreateDialogOpen(true)}>
-            {t("products.createNew")}
-          </Button>
-        )}
       </div>
 
-      <div className="flex items-center space-x-2">
-        <Input
-          placeholder={t("search", { item: t("products.title").toLowerCase() })}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
-      </div>
-
-      <GlassCard className="p-0 overflow-hidden">
-        <div className="p-6 pb-0 mb-4">
-          <h2 className="text-xl font-bold text-foreground">
-            {t("all", { item: t("products.title") })}
-          </h2>
-        </div>
-        
-        <div 
-          ref={parentRef} 
-          className="h-[600px] overflow-auto relative"
-        >
-          <Table>
-            <TableHeader className="sticky top-0 bg-background/95 backdrop-blur-sm z-10 shadow-sm">
-              <TableRow className="border-white/10 hover:bg-transparent">
-                <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
+      {/* Table without virtual scrolling */}
+      <AdminTableWrapper>
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/50 hover:bg-muted/50">
+              <TableHead className="w-[35%]">
+                <div className="flex items-center gap-2">
+                  <Package className="h-4 w-4" />
                   {t("name")}
-                </TableHead>
-                <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <Tag className="h-4 w-4" />
                   {t("category")}
+                </div>
+              </TableHead>
+              <TableHead>{t("brand")}</TableHead>
+              <TableHead>{t("created")}</TableHead>
+              {(canTranslate || canUpdate || canDelete) && (
+                <TableHead className="text-right w-[150px]">
+                  {t("actions")}
                 </TableHead>
-                <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                  {t("brand")}
-                </TableHead>
-                <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                  {t("created")}
-                </TableHead>
-                {(canTranslate || canUpdate || canDelete) && (
-                  <TableHead className="text-right text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                    {t("actions")}
-                  </TableHead>
-                )}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={canTranslate || canUpdate || canDelete ? 5 : 4}
-                    className="text-center py-8 text-muted-foreground"
-                  >
-                    {t("noFound", { item: t("products.title").toLowerCase() })}
-                  </TableCell>
-                </TableRow>
-              ) : (
-                <>
-                  {paddingTop > 0 && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={canTranslate || canUpdate || canDelete ? 5 : 4}
-                        style={{ height: `${paddingTop}px`, padding: 0 }}
-                        className="border-0 p-0"
-                      />
-                    </TableRow>
-                  )}
-                  {virtualItems.map((virtualRow) => {
-                    const product = products[virtualRow.index];
-                    return (
-                      <TableRow
-                        key={product.id}
-                        className="border-white/10 hover:bg-white/5 transition-colors"
-                        ref={rowVirtualizer.measureElement}
-                        data-index={virtualRow.index}
-                      >
-                        <TableCell className="font-medium text-foreground">
-                          {product.name}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {product.category?.name || "N/A"}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {product.brand?.name || "N/A"}
-                        </TableCell>
-                        <TableCell className="text-muted-foreground">
-                          {new Date(product.createdAt).toLocaleDateString()}
-                        </TableCell>
-                        {(canTranslate || canUpdate || canDelete) && (
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              {canTranslate && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => openTranslate(product)}
-                                  className="text-amber-400 hover:text-amber-300 hover:bg-amber-400/10"
-                                  title={t("products.translate")}
-                                >
-                                  <Languages className="h-4 w-4" />
-                                </Button>
-                              )}
-                              {canUpdate && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => openEdit(product)}
-                                  className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10"
-                                >
-                                  {t("edit")}
-                                </Button>
-                              )}
-                              {canDelete && (
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => openDelete(product)}
-                                  className="text-red-400 hover:text-red-300 hover:bg-red-400/10"
-                                >
-                                  {t("delete")}
-                                </Button>
-                              )}
-                            </div>
-                          </TableCell>
-                        )}
-                      </TableRow>
-                    );
-                  })}
-                  {paddingBottom > 0 && (
-                    <TableRow>
-                      <TableCell
-                        colSpan={canTranslate || canUpdate || canDelete ? 5 : 4}
-                        style={{ height: `${paddingBottom}px`, padding: 0 }}
-                        className="border-0 p-0"
-                      />
-                    </TableRow>
-                  )}
-                </>
               )}
-            </TableBody>
-          </Table>
-        </div>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredProducts.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={canTranslate || canUpdate || canDelete ? 5 : 4}
+                >
+                  <AdminEmptyState
+                    icon={Package}
+                    title={t("noFound", {
+                      item: t("products.title").toLowerCase(),
+                    })}
+                    description="No products found matching your criteria."
+                    action={
+                      canCreate ? (
+                        <Button onClick={() => setCreateDialogOpen(true)}>
+                          <Plus className="mr-2 h-4 w-4" />
+                          Create Product
+                        </Button>
+                      ) : undefined
+                    }
+                  />
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredProducts.map((product) => (
+                <TableRow
+                  key={product.id}
+                  className="hover:bg-muted/30 transition-colors"
+                >
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <Package className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <p className="font-medium">{product.name}</p>
+                        <code className="text-xs text-muted-foreground">
+                          ID: {product.id.slice(0, 8)}...
+                        </code>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {product.category ? (
+                      <Badge
+                        variant="secondary"
+                        className="bg-primary/10 text-primary"
+                      >
+                        {product.category.name}
+                      </Badge>
+                    ) : (
+                      <span className="text-muted-foreground/50 text-sm">
+                        N/A
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {product.brand ? (
+                      <span className="font-medium text-sm">
+                        {product.brand.name}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground/50 text-sm">
+                        N/A
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {format(new Date(product.createdAt), "dd MMM yyyy")}
+                  </TableCell>
+                  {(canTranslate || canUpdate || canDelete) && (
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        {canTranslate && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 text-amber-500 hover:text-amber-600 hover:bg-amber-50"
+                            onClick={() => openTranslate(product)}
+                            title={t("products.translate")}
+                          >
+                            <Languages className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {canUpdate && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 text-blue-500 hover:text-blue-600 hover:bg-blue-50"
+                            onClick={() => openEdit(product)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        )}
+                        {canDelete && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8 w-8 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+                            onClick={() => openDelete(product)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    </TableCell>
+                  )}
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </AdminTableWrapper>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-            <div className="text-sm text-muted-foreground">
-              {t("pagination.page", { current: page, total: totalPages })}
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(page - 1)}
-                disabled={!hasPrevPage}
-                className="border-white/10 hover:bg-white/5"
-              >
-                {t("pagination.previous")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(page + 1)}
-                disabled={!hasNextPage}
-                className="border-white/10 hover:bg-white/5"
-              >
-                {t("pagination.next")}
-              </Button>
-            </div>
-          </div>
-        )}
-      </GlassCard>
+      {/* Pagination with page numbers - only show when needed */}
+      {filteredProducts.length > 0 && total > limit && (
+        <DataTablePagination page={page} total={total} limit={limit} />
+      )}
 
+      {/* Dialogs */}
       <CreateProductDialog
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}

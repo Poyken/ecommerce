@@ -8,18 +8,32 @@ import { SkusClient } from "./skus-client";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. SKU (Stock Keeping Unit):
- * - Đây là đơn vị quản lý tồn kho chi tiết nhất. Một sản phẩm có thể có nhiều SKU (VD: iPhone 15 Pro - Màu Xanh - 256GB).
- * - Trang này giúp admin theo dõi chính xác số lượng tồn kho của từng biến thể.
- *
- * 2. ADVANCED FILTERING:
- * - Hỗ trợ lọc theo `status` (ACTIVE/INACTIVE), `search` (mã SKU) và `stockLimit` (cảnh báo hàng sắp hết).
- * - Toàn bộ trạng thái lọc được lưu trên URL để dễ dàng quản lý.
- *
- * 3. SERVER-SIDE DATA FETCHING:
- * - Sử dụng `getSkusAction` để lấy dữ liệu từ server, đảm bảo hiệu năng tốt nhất cho bảng dữ liệu lớn.
+ * 1. SERVER-SIDE FILTERING & COUNTS:
+ * - Fetch counts từ server để đảm bảo tabs/stats hiển thị đúng số lượng toàn cục.
+ * - getSkusAction hỗ trợ params status và stockLimit.
  * =====================================================================
  */
+
+async function getSkuCounts() {
+  try {
+    const [all, active, inactive, lowStock] = await Promise.all([
+      getSkusAction(1, 1),
+      getSkusAction(1, 1, "ACTIVE"),
+      getSkusAction(1, 1, "INACTIVE"),
+      getSkusAction(1, 1, undefined, undefined, 10),
+    ]);
+
+    return {
+      total: "data" in all ? all.meta?.total || 0 : 0,
+      active: "data" in active ? active.meta?.total || 0 : 0,
+      inactive: "data" in inactive ? inactive.meta?.total || 0 : 0,
+      lowStock: "data" in lowStock ? lowStock.meta?.total || 0 : 0,
+    };
+  } catch (error) {
+    console.error("Error fetching SKU counts:", error);
+    return { total: 0, active: 0, inactive: 0, lowStock: 0 };
+  }
+}
 
 export default async function SKUsPage({
   searchParams,
@@ -40,7 +54,10 @@ export default async function SKUsPage({
     ? parseInt(params.stockLimit)
     : undefined;
 
-  const result = await getSkusAction(page, limit, status, search, stockLimit);
+  const [result, counts] = await Promise.all([
+    getSkusAction(page, limit, status, search, stockLimit),
+    getSkuCounts(),
+  ]);
 
   if (!("data" in result)) {
     return (
@@ -59,6 +76,7 @@ export default async function SKUsPage({
       total={result.meta?.total || 0}
       page={page}
       limit={limit}
+      counts={counts}
     />
   );
 }

@@ -15,6 +15,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { Category } from "@/types/models";
 import { AnimatePresence, motion } from "framer-motion";
+import { FolderTree } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
@@ -110,6 +111,8 @@ export function CreateCategoryDialog({
       isPending={isPending}
       submitLabel={t("create")}
       disabled={!name.trim() || !slug.trim()}
+      icon={<FolderTree className="h-5 w-5" />}
+      variant="create"
     >
       <div className="space-y-4">
         <div className="space-y-2">

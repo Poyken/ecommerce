@@ -1,63 +1,135 @@
 "use client";
 
+/**
+ * =====================================================================
+ * SKUS CLIENT - Quản lý biến thể sản phẩm (Enhanced)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * - Server-side counts for accurate stats
+ * - Filter tabs (Active/Inactive), Low Stock filter checkbox
+ * - DataTablePagination with page numbers
+ * =====================================================================
+ */
+
 import { Button } from "@/components/atoms/button";
 import { Checkbox } from "@/components/atoms/checkbox";
-import { GlassCard } from "@/components/atoms/glass-card";
+import { DataTablePagination } from "@/components/atoms/data-table-pagination";
+import { Input } from "@/components/atoms/input";
 import { Label } from "@/components/atoms/label";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/atoms/select";
 import { StatusBadge } from "@/components/atoms/status-badge";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/atoms/table";
-import { SearchInput } from "@/components/molecules/search-input";
+import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
+import {
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
+} from "@/components/organisms/admin/admin-page-components";
 import { EditSkuDialog } from "@/components/organisms/admin/edit-sku-dialog";
+import { useDebounce } from "@/hooks/use-debounce";
 import { formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/providers/auth-provider";
 import { Sku } from "@/types/models";
+import { AlertTriangle, Barcode, Edit, Package, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
+
+type StatusFilterType = "ALL" | "ACTIVE" | "INACTIVE";
 
 export function SkusClient({
   skus,
   total,
   page,
   limit,
+  counts,
 }: {
   skus: Sku[];
   total: number;
   page: number;
   limit: number;
+  counts?: {
+    total: number;
+    active: number;
+    inactive: number;
+    lowStock: number;
+  };
 }) {
   const t = useTranslations("admin");
   const { hasPermission } = useAuth();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedSku, setSelectedSku] = useState<Sku | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const canUpdate = hasPermission("sku:update");
 
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const totalPages = Math.ceil(total / limit);
-  const hasNextPage = page < totalPages;
-  const hasPrevPage = page > 1;
+  const currentStatus = (searchParams.get("status") ||
+    "ALL") as StatusFilterType;
+  const hasLowStockFilter = !!searchParams.get("stockLimit");
+  const [searchTerm, setSearchTerm] = useState(
+    searchParams.get("search") || ""
+  );
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  const goToPage = (newPage: number) => {
+  // Stats from server props
+  const totalCount = counts?.total || total;
+  const activeCount = counts?.active || 0;
+  const inactiveCount = counts?.inactive || 0;
+  const lowStockCount = counts?.lowStock || 0;
+
+  // Update URL when search term changes
+  useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("page", newPage.toString());
-    router.push(`/admin/skus?${params.toString()}`);
+    const currentSearch = params.get("search") || "";
+
+    if (currentSearch !== debouncedSearchTerm) {
+      startTransition(() => {
+        if (debouncedSearchTerm) {
+          params.set("search", debouncedSearchTerm);
+        } else {
+          params.delete("search");
+        }
+        params.set("page", "1");
+        router.push(`/admin/skus?${params.toString()}`);
+      });
+    }
+  }, [debouncedSearchTerm, router, searchParams]);
+
+  const handleStatusChange = (status: StatusFilterType) => {
+    startTransition(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (status === "ALL") {
+        params.delete("status");
+      } else {
+        params.set("status", status);
+      }
+      params.set("page", "1");
+      router.push(`/admin/skus?${params.toString()}`);
+    });
+  };
+
+  const handleLowStockChange = (checked: boolean) => {
+    startTransition(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (checked) {
+        params.set("stockLimit", "10");
+      } else {
+        params.delete("stockLimit");
+      }
+      params.set("page", "1");
+      router.push(`/admin/skus?${params.toString()}`);
+    });
   };
 
   const openEdit = (sku: Sku) => {
@@ -67,187 +139,199 @@ export function SkusClient({
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">{t("skus.management")}</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            {t("skus.showingCount", { count: skus.length, total: total })}
-          </p>
-        </div>
-        <div className="flex gap-2">
+      {/* Page Header */}
+      <AdminPageHeader
+        title={t("skus.management")}
+        subtitle={t("skus.showingCount", {
+          count: skus.length,
+          total: totalCount,
+        })}
+        icon={<Barcode className="h-5 w-5" />}
+        stats={[
+          { label: "total", value: totalCount, variant: "default" },
+          { label: "active", value: activeCount, variant: "success" },
+          { label: "inactive", value: inactiveCount, variant: "warning" },
+          { label: "lowStock", value: lowStockCount, variant: "danger" },
+        ]}
+      />
 
-          <SearchInput
-            placeholder={t("skus.searchPlaceholder")}
-            className="w-[300px] bg-white border-input text-foreground placeholder:text-muted-foreground focus:bg-white transition-colors"
-          />
-          <div className="flex items-center space-x-2 bg-white px-3 border rounded-md h-10 border-input">
+      {/* Filters & Search */}
+      <div className="flex flex-col md:flex-row md:items-center gap-4">
+        <Tabs
+          value={currentStatus}
+          onValueChange={(v) => handleStatusChange(v as StatusFilterType)}
+        >
+          <TabsList>
+            <TabsTrigger value="ALL" className="gap-2" disabled={isPending}>
+              <Package className="h-4 w-4" />
+              All ({totalCount})
+            </TabsTrigger>
+            <TabsTrigger value="ACTIVE" className="gap-2" disabled={isPending}>
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              Active ({activeCount})
+            </TabsTrigger>
+            <TabsTrigger
+              value="INACTIVE"
+              className="gap-2"
+              disabled={isPending}
+            >
+              <span className="h-2 w-2 rounded-full bg-gray-400" />
+              Inactive ({inactiveCount})
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        <div className="flex items-center gap-4">
+          {/* Low Stock Filter */}
+          <div className="flex items-center space-x-2 bg-background px-3 py-2 border rounded-lg">
             <Checkbox
               id="low-stock"
-              checked={!!searchParams.get("stockLimit")}
-              onCheckedChange={(checked) => {
-                const params = new URLSearchParams(searchParams.toString());
-                if (checked) {
-                  params.set("stockLimit", "10");
-                } else {
-                  params.delete("stockLimit");
-                }
-                params.set("page", "1");
-                router.push(`/admin/skus?${params.toString()}` as any);
-              }}
+              checked={hasLowStockFilter}
+              onCheckedChange={(checked) =>
+                handleLowStockChange(checked as boolean)
+              }
+              disabled={isPending}
             />
-            <Label htmlFor="low-stock" className="cursor-pointer whitespace-nowrap">
-              Low Stock
+            <Label
+              htmlFor="low-stock"
+              className="cursor-pointer whitespace-nowrap text-sm flex items-center gap-2"
+            >
+              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              Low Stock ({lowStockCount})
             </Label>
           </div>
-          <Select
-            defaultValue={(searchParams.get("status") || "ALL").toUpperCase()}
-            onValueChange={(value) => {
-              const params = new URLSearchParams(searchParams.toString());
-              if (value === "ALL") {
-                params.delete("status");
-              } else {
-                params.set("status", value);
-              }
-              params.set("page", "1");
-              router.push(`/admin/skus?${params.toString()}` as any);
-            }}
-          >
-            <SelectTrigger className="w-[180px] h-10 bg-white border-input">
-              <SelectValue placeholder={t("skus.filterStatus")} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">{t("skus.allStatus")}</SelectItem>
-              <SelectItem value="ACTIVE">{t("skus.activeOnly")}</SelectItem>
-              <SelectItem value="INACTIVE">{t("skus.inactiveOnly")}</SelectItem>
-            </SelectContent>
-          </Select>
+
+          {/* Search */}
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder={t("skus.searchPlaceholder")}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+            {isPending && (
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            )}
+          </div>
         </div>
       </div>
 
-      <GlassCard className="p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-foreground">
-            {t("skus.allSkus")}
-          </h2>
-        </div>
+      {/* Table */}
+      <AdminTableWrapper>
         <Table>
           <TableHeader>
-            <TableRow className="border-white/10 hover:bg-white/5">
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("skus.skuCodeLabel")}
+            <TableRow className="bg-muted/50">
+              <TableHead className="w-[200px]">
+                <div className="flex items-center gap-2">
+                  <Barcode className="h-4 w-4" />
+                  {t("skus.skuCodeLabel")}
+                </div>
               </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("product")}
+              <TableHead>{t("product")}</TableHead>
+              <TableHead>{t("skus.priceLabel")}</TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <Package className="h-4 w-4" />
+                  {t("skus.stockLabel")}
+                </div>
               </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("skus.priceLabel")}
-              </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("skus.stockLabel")}
-              </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("status")}
-              </TableHead>
+              <TableHead>{t("status")}</TableHead>
               {canUpdate && (
-                <TableHead className="text-right text-muted-foreground uppercase tracking-wider text-xs font-bold">
+                <TableHead className="text-right w-[100px]">
                   {t("actions")}
                 </TableHead>
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {skus && skus.length > 0 ? (
-              skus.map((sku: any) => (
+            {skus.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={canUpdate ? 6 : 5}>
+                  <AdminEmptyState
+                    icon={Barcode}
+                    title={t("skus.noFound")}
+                    description="No SKUs found matching your criteria."
+                  />
+                </TableCell>
+              </TableRow>
+            ) : (
+              skus.map((sku: Sku) => (
                 <TableRow
                   key={sku.id}
-                  className={`border-white/10 hover:bg-white/5 transition-colors ${
+                  className={`hover:bg-muted/30 transition-colors ${
                     sku.status === "INACTIVE" ? "opacity-60" : ""
                   }`}
                 >
-                  <TableCell className="font-medium font-mono text-foreground">
-                    {sku.skuCode}
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <Barcode className="h-5 w-5" />
+                      </div>
+                      <code className="font-mono text-sm font-medium">
+                        {sku.skuCode}
+                      </code>
+                    </div>
                   </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {sku.product?.name || "N/A"}
+                    {(sku as any).product?.name || "N/A"}
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {formatCurrency(sku.price)}
-                  </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {sku.stock}
+                  <TableCell className="font-medium">
+                    {formatCurrency(Number(sku.price) || 0)}
                   </TableCell>
                   <TableCell>
-<StatusBadge 
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={
+                          sku.stock < 10 ? "text-amber-600 font-medium" : ""
+                        }
+                      >
+                        {sku.stock}
+                      </span>
+                      {sku.stock < 10 && (
+                        <AlertTriangle className="h-4 w-4 text-amber-500" />
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <StatusBadge
                       status={sku.status}
-                      label={sku.status === "ACTIVE" ? t("active") : t("inactive")}
+                      label={
+                        sku.status === "ACTIVE" ? t("active") : t("inactive")
+                      }
                     />
                   </TableCell>
                   {canUpdate && (
-                    <TableCell className="text-right space-x-2">
+                    <TableCell className="text-right">
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
+                        className="h-8 w-8 p-0 text-blue-500 hover:text-blue-600 hover:bg-blue-50"
                         onClick={() => openEdit(sku)}
                         disabled={sku.status === "INACTIVE"}
-                        className="border-white/10 hover:bg-white/5"
                       >
-                        {t("edit")}
+                        <Edit className="h-4 w-4" />
                       </Button>
                     </TableCell>
                   )}
                 </TableRow>
               ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={canUpdate ? 6 : 5}
-                  className="text-center py-8 text-muted-foreground"
-                >
-                  {t("skus.noFound")}
-                </TableCell>
-              </TableRow>
             )}
           </TableBody>
         </Table>
+      </AdminTableWrapper>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/10">
-            <div className="text-sm text-muted-foreground">
-              {t("pagination.page", { current: page, total: totalPages })}
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(page - 1)}
-                disabled={!hasPrevPage}
-                className="border-white/10 hover:bg-white/5"
-              >
-                {t("pagination.previous")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(page + 1)}
-                disabled={!hasNextPage}
-                className="border-white/10 hover:bg-white/5"
-              >
-                {t("pagination.next")}
-              </Button>
-            </div>
-          </div>
-        )}
-      </GlassCard>
+      {/* Pagination with page numbers - only show when needed */}
+      {skus.length > 0 && total > limit && (
+        <DataTablePagination page={page} total={total} limit={limit} />
+      )}
 
       {selectedSku && (
-        <>
-          <EditSkuDialog
-            sku={selectedSku}
-            open={editDialogOpen}
-            onOpenChange={setEditDialogOpen}
-          />
-        </>
+        <EditSkuDialog
+          sku={selectedSku}
+          open={editDialogOpen}
+          onOpenChange={setEditDialogOpen}
+        />
       )}
     </div>
   );

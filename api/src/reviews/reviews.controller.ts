@@ -61,11 +61,15 @@ export class ReviewsController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('rating') rating?: number,
+    @Query('status') status?: string,
+    @Query('search') search?: string,
   ) {
     return this.reviewsService.findAll(
       Number(page),
       Number(limit),
       rating ? Number(rating) : undefined,
+      status,
+      search,
     );
   }
 
@@ -131,6 +135,19 @@ export class ReviewsController {
   @ApiOperation({ summary: 'Xóa đánh giá của tôi' })
   async removeOwn(@GetUser('id') userId: string, @Param('id') id: string) {
     const data = await this.reviewsService.removeOwn(userId, id);
+    return { data };
+  }
+
+  @Patch(':id/status')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions('review:update')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update review status (Admin)' })
+  async updateStatus(
+    @Param('id') id: string,
+    @Body('isApproved') isApproved: boolean,
+  ) {
+    const data = await this.reviewsService.updateStatus(id, isApproved);
     return { data };
   }
 

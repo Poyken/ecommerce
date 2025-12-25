@@ -1,14 +1,27 @@
 "use client";
 
-import { Badge } from "@/components/atoms/badge";
+/**
+ * =====================================================================
+ * AUDIT LOGS CLIENT - Nhật ký hoạt động hệ thống (Enhanced)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Trang này hiển thị tất cả các hoạt động của admin trong hệ thống.
+ * - Filter theo action type (CREATE, UPDATE, DELETE)
+ * - Search theo resource hoặc user
+ * - View detail với JSON payload
+ * =====================================================================
+ */
+
 import { Button } from "@/components/atoms/button";
+import { DataTablePagination } from "@/components/atoms/data-table-pagination";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/atoms/dialog";
-import { GlassCard } from "@/components/atoms/glass-card";
 import { Input } from "@/components/atoms/input";
 import {
   Table,
@@ -18,13 +31,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/atoms/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
+import {
+  AdminActionBadge,
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
+} from "@/components/organisms/admin/admin-page-components";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/providers/auth-provider";
-import { Info, Search } from "lucide-react";
+import { format } from "date-fns";
+import {
+  Activity,
+  Clock,
+  Eye,
+  FileText,
+  Filter,
+  Globe,
+  Info,
+  Search,
+  User,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+
+type FilterType = "all" | "create" | "update" | "delete";
 
 export function AuditLogsClient({
   logs,
@@ -47,6 +80,7 @@ export function AuditLogsClient({
   const [searchTerm, setSearchTerm] = useState(
     searchParams.get("search") || ""
   );
+  const [filter, setFilter] = useState<FilterType>("all");
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   const [selectedLog, setSelectedLog] = useState<Record<string, any> | null>(
@@ -55,46 +89,143 @@ export function AuditLogsClient({
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    if (debouncedSearchTerm) {
-      params.set("search", debouncedSearchTerm);
-    } else {
-      params.delete("search");
+    const currentSearch = params.get("search") || "";
+
+    if (currentSearch !== debouncedSearchTerm) {
+      if (debouncedSearchTerm) {
+        params.set("search", debouncedSearchTerm);
+      } else {
+        params.delete("search");
+      }
+      params.set("page", "1");
+      router.push(`/admin/audit-logs?${params.toString()}`);
     }
-    params.set("page", "1");
-    router.push(`/admin/audit-logs?${params.toString()}`);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearchTerm]); // Only trigger on search term change
+  }, [debouncedSearchTerm, router, searchParams]);
 
   const totalPages = Math.ceil(total / limit);
 
-  const getActionColor = (action: string) => {
-    if (action.includes("create"))
-      return "bg-green-100 text-green-700 border-green-200";
-    if (action.includes("update") || action.includes("patch"))
-      return "bg-blue-100 text-blue-700 border-blue-200";
-    if (action.includes("delete"))
-      return "bg-red-100 text-red-700 border-red-200";
-    return "bg-gray-100 text-gray-700 border-gray-200";
+  const getActionVariant = (
+    action: string
+  ): "success" | "info" | "danger" | "default" => {
+    const actionLower = action.toLowerCase();
+    if (actionLower.includes("create")) return "success";
+    if (actionLower.includes("update") || actionLower.includes("patch"))
+      return "info";
+    if (actionLower.includes("delete")) return "danger";
+    return "default";
+  };
+
+  // Generate human-readable description from log data
+  const getLogDescription = (log: Record<string, any>): string => {
+    const action = log.action?.toLowerCase() || "";
+    const resource = log.resource || "item";
+    const payload = log.payload || {};
+
+    // Try to extract meaningful info from payload
+    const name =
+      payload.name || payload.title || payload.code || payload.email || "";
+    const id = payload.id ? `(ID: ${String(payload.id).slice(0, 8)}...)` : "";
+
+    if (action.includes("create")) {
+      return name
+        ? `Created ${resource}: "${name}" ${id}`
+        : `Created new ${resource} ${id}`;
+    }
+    if (action.includes("update") || action.includes("patch")) {
+      const changes = payload.changes || payload.data || {};
+      const changedFields = Object.keys(changes).slice(0, 3).join(", ");
+      if (changedFields) {
+        return `Updated ${resource}: ${changedFields} ${id}`;
+      }
+      return name
+        ? `Updated ${resource}: "${name}" ${id}`
+        : `Updated ${resource} ${id}`;
+    }
+    if (action.includes("delete")) {
+      return name
+        ? `Deleted ${resource}: "${name}" ${id}`
+        : `Deleted ${resource} ${id}`;
+    }
+    if (action.includes("login")) {
+      return `User logged in`;
+    }
+    if (action.includes("logout")) {
+      return `User logged out`;
+    }
+
+    return `${action} on ${resource}`;
+  };
+
+  // Filter logs by action type
+  const filteredLogs = logs.filter((log) => {
+    if (filter === "all") return true;
+    const actionLower = log.action.toLowerCase();
+    return actionLower.includes(filter);
+  });
+
+  // Stats
+  const createCount = logs.filter((l) =>
+    l.action.toLowerCase().includes("create")
+  ).length;
+  const updateCount = logs.filter(
+    (l) =>
+      l.action.toLowerCase().includes("update") ||
+      l.action.toLowerCase().includes("patch")
+  ).length;
+  const deleteCount = logs.filter((l) =>
+    l.action.toLowerCase().includes("delete")
+  ).length;
+
+  const goToPage = (newPage: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", newPage.toString());
+    router.push(`/admin/audit-logs?${params.toString()}`);
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">{t("audit.management")}</h1>
-          <p className="text-sm text-gray-400 mt-1">
-            {t("showing", {
-              count: logs.length,
-              total,
-              item: t("audit.title").toLowerCase(),
-            })}
-          </p>
-        </div>
-      </div>
+      {/* Page Header */}
+      <AdminPageHeader
+        title={t("audit.management")}
+        subtitle={t("showing", {
+          count: filteredLogs.length,
+          total: filter === "all" ? total : filteredLogs.length,
+          item: t("audit.title").toLowerCase(),
+        })}
+        icon={<Activity className="h-5 w-5" />}
+        stats={[
+          { label: "total", value: total, variant: "default" },
+          { label: "creates", value: createCount, variant: "success" },
+          { label: "updates", value: updateCount, variant: "info" },
+          { label: "deletes", value: deleteCount, variant: "danger" },
+        ]}
+      />
 
-      <div className="flex items-center space-x-2">
-        <div className="relative max-w-sm w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+      {/* Filters & Search */}
+      <div className="flex flex-col md:flex-row md:items-center gap-4">
+        <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterType)}>
+          <TabsList>
+            <TabsTrigger value="all" className="gap-2">
+              <Filter className="h-4 w-4" />
+              All
+            </TabsTrigger>
+            <TabsTrigger value="create" className="gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              Create
+            </TabsTrigger>
+            <TabsTrigger value="update" className="gap-2">
+              <span className="h-2 w-2 rounded-full bg-blue-500" />
+              Update
+            </TabsTrigger>
+            <TabsTrigger value="delete" className="gap-2">
+              <span className="h-2 w-2 rounded-full bg-red-500" />
+              Delete
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t("audit.searchPlaceholder")}
             value={searchTerm}
@@ -104,72 +235,131 @@ export function AuditLogsClient({
         </div>
       </div>
 
-      <GlassCard className="p-6">
+      {/* Table */}
+      <AdminTableWrapper>
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>{t("audit.date")}</TableHead>
-              <TableHead>{t("audit.user")}</TableHead>
+            <TableRow className="bg-muted/50">
+              <TableHead className="w-[180px]">
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  {t("audit.date")}
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  {t("audit.user")}
+                </div>
+              </TableHead>
               <TableHead>{t("audit.action")}</TableHead>
               <TableHead>{t("audit.resource")}</TableHead>
-              <TableHead>{t("audit.ipAddress")}</TableHead>
+              <TableHead className="w-[250px]">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  Description
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <Globe className="h-4 w-4" />
+                  {t("audit.ipAddress")}
+                </div>
+              </TableHead>
               {canRead && (
-                <TableHead className="text-right">{t("actions")}</TableHead>
+                <TableHead className="text-right w-[100px]">
+                  {t("actions")}
+                </TableHead>
               )}
             </TableRow>
           </TableHeader>
           <TableBody>
-            {logs.length === 0 ? (
+            {filteredLogs.length === 0 ? (
               <TableRow>
-                <TableCell
-                  colSpan={canRead ? 6 : 5}
-                  className="text-center py-8 text-muted-foreground"
-                >
-                  {t("audit.noFound")}
+                <TableCell colSpan={canRead ? 7 : 6}>
+                  <AdminEmptyState
+                    icon={Activity}
+                    title={t("audit.noFound")}
+                    description="No activity logs found matching your criteria."
+                  />
                 </TableCell>
               </TableRow>
             ) : (
-              logs.map((log) => (
-                <TableRow key={log.id}>
-                  <TableCell className="text-sm font-mono whitespace-nowrap">
-                    {new Date(log.createdAt).toLocaleString()}
+              filteredLogs.map((log) => (
+                <TableRow
+                  key={log.id}
+                  className="hover:bg-muted/30 transition-colors"
+                >
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium">
+                          {format(new Date(log.createdAt), "dd MMM yyyy")}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          {format(new Date(log.createdAt), "HH:mm:ss")}
+                        </p>
+                      </div>
+                    </div>
                   </TableCell>
                   <TableCell>
                     {log.user ? (
-                      <div className="flex flex-col">
-                        <span className="font-medium">
-                          {log.user.firstName} {log.user.lastName}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          {log.user.email}
-                        </span>
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">
+                          {log.user.firstName?.[0]}
+                          {log.user.lastName?.[0]}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">
+                            {log.user.firstName} {log.user.lastName}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {log.user.email}
+                          </p>
+                        </div>
                       </div>
                     ) : (
-                      <span className="text-gray-400 italic">
-                        System / Anon
+                      <span className="text-muted-foreground italic text-sm">
+                        System
                       </span>
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge
-                      variant="outline"
-                      className={getActionColor(log.action.toLowerCase())}
-                    >
-                      {log.action}
-                    </Badge>
+                    <AdminActionBadge
+                      label={log.action}
+                      variant={getActionVariant(log.action)}
+                    />
                   </TableCell>
-                  <TableCell className="capitalize">{log.resource}</TableCell>
-                  <TableCell className="text-xs text-gray-500 font-mono">
-                    {log.ipAddress || "N/A"}
+                  <TableCell>
+                    <span className="capitalize text-sm font-medium">
+                      {log.resource}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <p
+                      className="text-sm text-muted-foreground max-w-[250px] truncate"
+                      title={getLogDescription(log)}
+                    >
+                      {getLogDescription(log)}
+                    </p>
+                  </TableCell>
+                  <TableCell>
+                    <code className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
+                      {log.ipAddress || "N/A"}
+                    </code>
                   </TableCell>
                   {canRead && (
                     <TableCell className="text-right">
                       <Button
                         variant="ghost"
                         size="sm"
+                        className="h-8 w-8 p-0"
                         onClick={() => setSelectedLog(log)}
                       >
-                        <Info className="h-4 w-4" />
+                        <Eye className="h-4 w-4" />
                       </Button>
                     </TableCell>
                   )}
@@ -178,93 +368,97 @@ export function AuditLogsClient({
             )}
           </TableBody>
         </Table>
+      </AdminTableWrapper>
 
-        {totalPages > 1 && (
-          <div className="mt-4 flex justify-between items-center">
-            <p className="text-sm text-gray-400">
-              {t("pagination.page", { current: page, total: totalPages })}
-            </p>
-            <div className="flex space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page <= 1}
-                onClick={() => {
-                  const params = new URLSearchParams(searchParams.toString());
-                  params.set("page", (page - 1).toString());
-                  router.push(`/admin/audit-logs?${params.toString()}`);
-                }}
-              >
-                {t("pagination.previous")}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                disabled={page >= totalPages}
-                onClick={() => {
-                  const params = new URLSearchParams(searchParams.toString());
-                  params.set("page", (page + 1).toString());
-                  router.push(`/admin/audit-logs?${params.toString()}`);
-                }}
-              >
-                {t("pagination.next")}
-              </Button>
-            </div>
-          </div>
-        )}
-      </GlassCard>
+      {/* Pagination with page numbers - only show when needed */}
+      {filteredLogs.length > 0 && total > limit && (
+        <DataTablePagination page={page} total={total} limit={limit} />
+      )}
 
+      {/* Detail Dialog */}
       <Dialog open={!!selectedLog} onOpenChange={() => setSelectedLog(null)}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>{t("audit.details")}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Info className="h-5 w-5 text-primary" />
+              {t("audit.details")}
+            </DialogTitle>
           </DialogHeader>
           {selectedLog && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-gray-400">{t("audit.date")}</p>
+            <div className="space-y-6">
+              {/* Summary Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-lg bg-muted/50 border">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    {t("audit.date")}
+                  </p>
                   <p className="font-medium">
-                    {new Date(selectedLog.createdAt).toLocaleString()}
+                    {format(
+                      new Date(selectedLog.createdAt),
+                      "dd MMM yyyy HH:mm:ss"
+                    )}
                   </p>
                 </div>
-                <div>
-                  <p className="text-gray-400">{t("audit.user")}</p>
+                <div className="p-4 rounded-lg bg-muted/50 border">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    {t("audit.user")}
+                  </p>
                   <p className="font-medium">
                     {selectedLog.user
                       ? `${selectedLog.user.firstName} ${selectedLog.user.lastName}`
                       : "System"}
                   </p>
                 </div>
-                <div>
-                  <p className="text-gray-400">{t("audit.action")}</p>
-                  <p className="font-medium">{selectedLog.action}</p>
+                <div className="p-4 rounded-lg bg-muted/50 border">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    {t("audit.action")}
+                  </p>
+                  <AdminActionBadge
+                    label={selectedLog.action}
+                    variant={getActionVariant(selectedLog.action)}
+                  />
                 </div>
-                <div>
-                  <p className="text-gray-400">{t("audit.resource")}</p>
+                <div className="p-4 rounded-lg bg-muted/50 border">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    {t("audit.resource")}
+                  </p>
                   <p className="font-medium capitalize">
                     {selectedLog.resource}
                   </p>
                 </div>
               </div>
 
+              {/* Payload */}
               <div>
-                <p className="text-gray-400 text-sm mb-2">Payload / Changes</p>
-                <div className="bg-slate-950 p-4 rounded-lg overflow-x-auto">
-                  <pre className="text-xs text-green-400">
+                <p className="text-sm font-medium mb-2">Payload / Changes</p>
+                <div className="bg-slate-950 p-4 rounded-lg overflow-x-auto border border-slate-800">
+                  <pre className="text-xs text-emerald-400">
                     {JSON.stringify(selectedLog.payload, null, 2)}
                   </pre>
                 </div>
               </div>
 
-              {selectedLog.userAgent && (
-                <div>
-                  <p className="text-gray-400 text-sm mb-1">User Agent</p>
-                  <p className="text-xs font-mono text-gray-500 break-all">
-                    {selectedLog.userAgent}
+              {/* IP & User Agent */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-lg bg-muted/50 border">
+                  <p className="text-xs text-muted-foreground mb-1">
+                    IP Address
                   </p>
+                  <code className="text-sm">
+                    {selectedLog.ipAddress || "N/A"}
+                  </code>
                 </div>
-              )}
+                {selectedLog.userAgent && (
+                  <div className="p-4 rounded-lg bg-muted/50 border">
+                    <p className="text-xs text-muted-foreground mb-1">
+                      User Agent
+                    </p>
+                    <p className="text-xs break-all text-muted-foreground">
+                      {selectedLog.userAgent}
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </DialogContent>

@@ -92,12 +92,14 @@ export class OrdersController {
   @ApiQuery({ name: 'limit', required: false, type: Number })
   findAll(
     @Query('search') search?: string,
+    @Query('status') status?: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
     @Query('includeItems') includeItems?: string,
   ) {
     return this.ordersService.findAll(
       search,
+      status, // Pass status to service
       Number(page),
       Number(limit),
       includeItems === 'true',

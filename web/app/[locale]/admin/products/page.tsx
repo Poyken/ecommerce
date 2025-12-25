@@ -16,7 +16,7 @@ export default async function ProductsPage({
   const t = await getTranslations("admin.products");
   const params = await searchParams;
   const page = parseInt(params.page || "1", 10);
-  const limit = 12;
+  const limit = 10;
   const search = params.search || "";
 
   // Fetch products only - Brands and Categories are handled by AdminMetadataProvider in Layout

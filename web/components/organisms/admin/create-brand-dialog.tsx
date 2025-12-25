@@ -7,6 +7,7 @@ import { Input } from "@/components/atoms/input";
 import { Label } from "@/components/atoms/label";
 import { useToast } from "@/hooks/use-toast";
 import { AnimatePresence, motion } from "framer-motion";
+import { Award } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
@@ -116,6 +117,8 @@ export function CreateBrandDialog({
       isPending={isPending}
       submitLabel={t("create")}
       disabled={!name.trim()}
+      icon={<Award className="h-5 w-5" />}
+      variant="create"
     >
       <div className="space-y-4">
         <div className="space-y-2">

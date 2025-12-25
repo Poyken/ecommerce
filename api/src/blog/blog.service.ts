@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { Blog } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -8,39 +8,60 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
 export class BlogService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createBlogDto: CreateBlogDto): Promise<Blog> {
+  async create(createBlogDto: CreateBlogDto, userId?: string): Promise<Blog> {
     const { productIds, ...blogData } = createBlogDto;
 
-    return this.prisma.blog.create({
-      data: {
-        ...blogData,
-        publishedAt: new Date(),
-        // Connect products if provided
-        ...(productIds && productIds.length > 0
-          ? {
-              products: {
-                create: productIds.map((productId) => ({
-                  product: { connect: { id: productId } },
-                })),
-              },
-            }
-          : {}),
-      },
-      include: {
-        products: {
-          include: {
-            product: {
-              include: {
-                category: true,
-                brand: true,
-                skus: true,
-                images: true,
+    const data: any = { ...blogData };
+
+    if (userId) {
+      data.userId = userId; // Ensure userId is set in the data object
+      if (!data.author) {
+        const user = await this.prisma.user.findUnique({
+          where: { id: userId },
+        });
+        if (user) {
+          data.author = `${user.firstName} ${user.lastName}`;
+        }
+      }
+    }
+
+    try {
+      return await this.prisma.blog.create({
+        data: {
+          ...data,
+          publishedAt: null, // Default to Draft. Admin must publish.
+          // Connect products if provided
+          ...(productIds && productIds.length > 0
+            ? {
+                products: {
+                  create: productIds.map((productId) => ({
+                    product: { connect: { id: productId } },
+                  })),
+                },
+              }
+            : {}),
+        },
+        include: {
+          products: {
+            include: {
+              product: {
+                include: {
+                  category: true,
+                  brand: true,
+                  skus: true,
+                  images: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Slug already exists');
+      }
+      throw error;
+    }
   }
 
   async findAll(params?: {
@@ -48,15 +69,30 @@ export class BlogService {
     limit?: number;
     category?: string;
     language?: string;
+    status?: string;
+    search?: string;
+    userId?: string;
   }): Promise<{ data: any[]; meta: any }> {
     const page = params?.page || 1;
     const limit = params?.limit || 10;
     const skip = (page - 1) * limit;
 
     const where: any = {
-      publishedAt: { not: null },
       deletedAt: null,
     };
+
+    if (params?.userId) {
+      where.userId = params.userId;
+    }
+
+    // Status filter
+    const status = params?.status || 'published';
+    if (status === 'published') {
+      where.publishedAt = { not: null };
+    } else if (status === 'draft') {
+      where.publishedAt = null;
+    }
+    // if 'all', we don't filter by publishedAt
 
     if (params?.category) {
       where.category = params.category;
@@ -64,6 +100,21 @@ export class BlogService {
 
     if (params?.language) {
       where.language = params.language;
+    }
+
+    if (params?.search) {
+      where.OR = [
+        { title: { contains: params.search, mode: 'insensitive' } },
+        { content: { contains: params.search, mode: 'insensitive' } },
+        { author: { contains: params.search, mode: 'insensitive' } },
+        { user: { email: { contains: params.search, mode: 'insensitive' } } },
+        {
+          user: { firstName: { contains: params.search, mode: 'insensitive' } },
+        },
+        {
+          user: { lastName: { contains: params.search, mode: 'insensitive' } },
+        },
+      ];
     }
 
     const [blogs, total] = await Promise.all([
@@ -94,6 +145,7 @@ export class BlogService {
     const data = blogs.map((blog) => ({
       ...blog,
       products: blog.products.map((bp) => bp.product),
+      status: blog.publishedAt ? 'published' : 'draft',
     }));
 
     return {
@@ -105,6 +157,19 @@ export class BlogService {
         limit,
       },
     };
+  }
+
+  async togglePublish(id: string) {
+    const blog = await this.prisma.blog.findUnique({ where: { id } });
+    if (!blog) throw new Error('Blog not found');
+
+    const isPublished = !!blog.publishedAt;
+    return this.prisma.blog.update({
+      where: { id },
+      data: {
+        publishedAt: isPublished ? null : new Date(),
+      },
+    });
   }
 
   async findOne(idOrSlug: string): Promise<any> {
@@ -170,8 +235,45 @@ export class BlogService {
     };
   }
 
-  async update(id: string, updateBlogDto: UpdateBlogDto): Promise<Blog> {
+  async update(
+    id: string,
+    updateBlogDto: UpdateBlogDto,
+
+    user?: any,
+  ): Promise<Blog> {
     const { productIds, ...blogData } = updateBlogDto;
+
+    const existingBlog = await this.prisma.blog.findUnique({ where: { id } });
+    if (!existingBlog) throw new Error('Blog not found');
+
+    if (user) {
+      const hasAdminPermission = user.permissions?.includes('blog:update');
+      const isOwner = existingBlog.userId === user.id;
+
+      console.log(
+        '[BlogUpdate] User:',
+        user.id,
+        'Permissions:',
+        user.permissions,
+      );
+      console.log(
+        '[BlogUpdate] IsOwner:',
+        isOwner,
+        'HasAdminPermission:',
+        hasAdminPermission,
+      );
+
+      if (!hasAdminPermission && !isOwner) {
+        throw new Error('Forbidden resource');
+      }
+
+      // If user is updating their own post and is NOT an admin, reset status to Draft
+      if (!hasAdminPermission) {
+        console.log('[BlogUpdate] Resetting blog status to Draft');
+
+        (blogData as any).publishedAt = null;
+      }
+    }
 
     // If productIds provided, update the relations
     if (productIds !== undefined) {
@@ -191,16 +293,38 @@ export class BlogService {
       }
     }
 
-    return this.prisma.blog.update({
-      where: { id },
-      data: blogData,
-    });
+    try {
+      return await this.prisma.blog.update({
+        where: { id },
+        data: blogData,
+      });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Slug already exists');
+      }
+      throw error;
+    }
   }
 
-  async remove(id: string): Promise<Blog> {
+  async remove(id: string, user?: any): Promise<Blog> {
+    const existingBlog = await this.prisma.blog.findUnique({ where: { id } });
+    if (!existingBlog) throw new Error('Blog not found');
+
+    if (user) {
+      const hasAdminPermission = user.permissions?.includes('blog:delete');
+      const isOwner = existingBlog.userId === user.id;
+
+      if (!hasAdminPermission && !isOwner) {
+        throw new Error('Forbidden resource');
+      }
+    }
+
     return this.prisma.blog.update({
       where: { id },
-      data: { deletedAt: new Date() },
+      data: {
+        deletedAt: new Date(),
+        slug: `${existingBlog.slug}-deleted-${Date.now()}`,
+      },
     });
   }
 }

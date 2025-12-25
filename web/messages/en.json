@@ -40,6 +40,10 @@
       "en": "English",
       "vi": "Tiếng Việt"
     },
+    "subscribedTitle": "Subscribed!",
+    "subscribedDesc": "Thank you! You have successfully subscribed to our newsletter.",
+    "emailRequired": "Email is required.",
+    "emailInvalid": "Please enter a valid email address.",
     "sr": {
       "close": "Close",
       "previous": "Previous slide",
@@ -582,7 +586,8 @@
       "wishlist": "Wishlist",
       "addresses": "Addresses",
       "password": "Password",
-      "vouchers": "Vouchers"
+      "vouchers": "Vouchers",
+      "blogs": "My Blogs"
     },
     "dashboard": {
       "welcome": "Welcome back, {name}!",
@@ -754,7 +759,8 @@
       "refresh": "Refresh",
       "noHistory": "No notification history found",
       "createdAt": "Sent At",
-      "send": "Send Notification"
+      "send": "Send Notification",
+      "status": "Status"
     },
     "languages": {
       "en": "English",
@@ -815,6 +821,11 @@
     "cancel": "Cancel",
     "success": "Success",
     "error": "Error",
+    "successDelete": "Deleted successfully",
+    "successCreate": "Created successfully",
+    "successUpdate": "Updated successfully",
+    "errorOccurred": "An error occurred",
+    "processing": "Processing...",
     "close": "Close",
     "loading": "Loading...",
     "optional": "Optional",
@@ -903,57 +914,70 @@
     },
     "blogs": {
       "title": "Blogs",
-      "management": "Blog Posts Management",
-      "allPosts": "All Posts",
-      "totalPosts": "{count} posts total",
+      "totalPosts": "Total Posts: {count}",
+      "management": "Blogs Management",
+      "create": "Create Post",
       "createButton": "Create Post",
-      "createPost": "Create Post",
-      "createBlog": "Create Blog Post",
-      "createDescription": "Create a new blog post to engage your audience.",
-      "description": "Create a new blog post",
-      "noPosts": "No blog posts found.",
-      "noFound": "No posts found",
+      "editPost": "Edit Post",
+      "createPost": "Create New Post",
+      "updateBlog": "Update Blog",
+      "createBlog": "Create Blog",
+      "updated": "Blog Updated",
+      "created": "Blog Created",
+      "updateSuccess": "Blog updated successfully",
+      "createSuccess": "Blog created successfully",
+      "editDescription": "Edit the details of your blog post.",
+      "createDescription": "Add a new blog post to your store.",
       "deleteTitle": "Delete Post",
-      "deleteConfirm": "Are you sure you want to delete this post? This action cannot be undone.",
-      "delete": "Delete Post",
+      "deleteConfirm": "Are you sure you want to delete '{title}'?",
       "deleteSuccess": "Post deleted successfully",
-      "successDelete": "Post deleted successfully",
-      "successCreate": "Post created successfully",
-      "successUpdate": "Post updated successfully",
-      "draft": "Draft",
+      "delete": "Delete",
+      
       "published": "Published",
+      "draft": "Draft",
+      "searchPlaceholder": "Search posts...",
+      "noFound": "No posts found",
+      "noPosts": "No posts found",
+      "error": "Error",
+      "errorMessage": "An error occurred",
+      
+      "fields": {
+        "title": "Title",
+        "slug": "Slug",
+        "excerpt": "Excerpt",
+        "content": "Content",
+        "category": "Category",
+        "author": "Author",
+        "language": "Language",
+        "readTime": "Read Time",
+        "relatedProducts": "Related Products",
+        "featuredImage": "Featured Image"
+      },
+      "placeholders": {
+          "excerpt": "Brief summary...",
+          "content": "Write content..."
+      },
+      "validation": {
+          "titleRequired": "Title is required",
+          "slugRequired": "Slug is required",
+          "excerptRequired": "Excerpt is required",
+          "contentRequired": "Content is required",
+          "categoryRequired": "Category is required",
+          "authorRequired": "Author is required"
+      },
       "table": {
         "title": "Title",
         "category": "Category",
         "language": "Language",
         "author": "Author",
-        "published": "Published",
+        "published": "Status",
         "actions": "Actions"
       },
-      "edit": "Edit Post",
-      "editDescription": "Update blog post details",
-      "titleRequired": "Title is required",
-      "slug": "Slug",
-      "slugRequired": "Slug is required",
-      "excerpt": "Excerpt",
-      "excerptPlaceholder": "Brief summary of the post...",
-      "content": "Content",
-      "contentPlaceholder": "Write your post content here...",
-      "contentRequired": "Content is required",
-      "category": "Category",
-      "categoryRequired": "Category is required",
-      "language": "Language",
       "languages": {
         "en": "English",
         "vi": "Vietnamese"
       },
-      "author": "Author",
-      "authorRequired": "Author is required",
-      "readTime": "Read Time",
-      "minutes": "mins",
-      "relatedProducts": "Related Products",
-      "featuredImage": "Featured Image",
-      "searchPlaceholder": "Search posts..."
+      "minutes": "min"
     },
     "processing": "Processing...",
     "products": {
@@ -1111,6 +1135,7 @@
     "orders": {
       "title": "Orders",
       "management": "Orders Management",
+      "showingCount": "Showing {count} of {total} orders",
       "selectedCount": "{count} selected",
       "exportLabel": "Export",
       "searchPlaceholder": "Search by order ID or email...",
@@ -1169,6 +1194,7 @@
     "reviews": {
       "title": "Reviews",
       "management": "Reviews Management",
+      "showingCount": "Showing {count} of {total} reviews",
       "rating": "Rating",
       "comment": "Comment",
       "status": "Status",
@@ -1183,6 +1209,7 @@
     "audit": {
       "title": "Audit Logs",
       "management": "System Audit Logs",
+      "showingCount": "Showing {count} of {total} logs",
       "action": "Action",
       "resource": "Resource",
       "user": "User",
@@ -1192,6 +1219,7 @@
       "details": "Payload Details",
       "searchPlaceholder": "Search actions or resources..."
     },
+
 
     "sidebar": {
       "overview": "OVERVIEW",

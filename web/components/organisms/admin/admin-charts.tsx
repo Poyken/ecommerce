@@ -137,9 +137,9 @@ export function BestSellersChart({ data }: { data: any[] }) {
             />
             <Bar
               dataKey="sales"
-              fill="hsl(var(--accent))"
+              fill="hsl(var(--primary))"
               radius={[8, 8, 0, 0]}
-              activeBar={false}
+              activeBar={{ fill: "hsl(var(--primary) / 0.8)" }}
             />
           </BarChart>
         </ResponsiveContainer>

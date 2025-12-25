@@ -320,9 +320,19 @@ export class OrdersService {
     return order;
   }
 
-  async findAll(search?: string, page = 1, limit = 10, includeItems = false) {
+  async findAll(
+    search?: string,
+    status?: string,
+    page = 1,
+    limit = 10,
+    includeItems = false,
+  ) {
     const skip = (page - 1) * limit;
     const where: any = {};
+
+    if (status && status !== 'all') {
+      where.status = status as OrderStatus;
+    }
     if (search) {
       where.OR = [
         { id: { contains: search, mode: 'insensitive' } },
