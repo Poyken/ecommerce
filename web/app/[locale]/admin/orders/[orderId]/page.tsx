@@ -108,14 +108,14 @@ export default async function OrderDetailsPage({
             </span>
             <span>{order.shippingAddress || "N/A"}</span>
             
-            {(order.details as any)?.note && (
+            {/* {(order.details as any)?.note && (
                 <>
                    <span className="font-medium text-gray-500">
                     Note:
                    </span>
                    <span>{(order.details as any).note}</span>
                 </>
-            )}
+            )} */}
           </div>
         </div>
       </div>
@@ -146,7 +146,9 @@ export default async function OrderDetailsPage({
                   <TableCell className="font-medium">
                     <Link
                       href={
-                        `/products/${item.sku?.product?.id}?skuId=${item.sku?.id}` as any
+                        item.sku?.product?.id 
+                          ? `/products/${item.sku.product.id}?skuId=${item.sku.id}`
+                          : "#"
                       }
                       target="_blank"
                       className="hover:underline text-primary"

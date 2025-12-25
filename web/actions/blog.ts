@@ -150,7 +150,7 @@ export async function toggleBlogPublishAction(
 export async function getMyBlogsAction() {
   const t = await getTranslations("admin.blogs");
   try {
-    const res = await http<any>(`/blogs/my-blogs`, {
+    const res = await http<unknown>(`/blogs/my-blogs`, {
       method: "GET",
       next: { tags: ["my-blogs"] },
     });
