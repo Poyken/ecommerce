@@ -26,15 +26,13 @@ import { Product } from "@/types/models";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { use } from "react";
 
 interface NewArrivalsProps {
-  productsPromise: Promise<Product[]>;
+  products: Product[];
 }
 
-export function NewArrivals({ productsPromise }: NewArrivalsProps) {
+export function NewArrivals({ products }: NewArrivalsProps) {
   const t = useTranslations("home");
-  const products = use(productsPromise);
   const inStockProducts = products.filter((product) =>
     product.skus?.some((sku) => sku.stock > 0)
   );

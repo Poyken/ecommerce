@@ -27,17 +27,13 @@ import { Category } from "@/types/models";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { use } from "react";
 
 interface FeaturedCategoriesProps {
-  categoriesPromise: Promise<Category[]>;
+  categories: Category[];
 }
 
-export function FeaturedCategories({
-  categoriesPromise,
-}: FeaturedCategoriesProps) {
+export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
   const t = useTranslations("home");
-  const categories = use(categoriesPromise);
 
   return (
     <section className="container mx-auto px-4 mt-8">

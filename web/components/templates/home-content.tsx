@@ -9,18 +9,18 @@ import { HeroSection } from "@/components/organisms/hero-section";
 import { NewArrivals } from "@/components/organisms/new-arrivals";
 import { NewsletterForm } from "@/components/organisms/newsletter-form";
 import {
-    CategoriesSkeleton,
-    ProductsSkeleton,
+  CategoriesSkeleton,
+  ProductsSkeleton,
 } from "@/components/organisms/skeletons/home-skeleton";
 import { TestimonialsCarousel } from "@/components/organisms/testimonials-carousel";
 import { TrendingProducts } from "@/components/organisms/trending-products";
 import { Link } from "@/i18n/routing";
 import {
-    fadeInLeft,
-    fadeInRight,
-    fadeInUp,
-    scaleUp,
-    zoomIn,
+  fadeInLeft,
+  fadeInRight,
+  fadeInUp,
+  scaleUp,
+  zoomIn,
 } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { Brand, Category, Product } from "@/types/models";
@@ -46,23 +46,22 @@ import { Suspense } from "react";
  * - `fallback`: Hiển thị Skeleton (khung xương loading) trong khi chờ data.
  * - Giúp trang hiển thị ngay lập tức (Instant Loading), các phần nặng sẽ hiện dần sau.
  *
- * 3. PROMISE PROPS:
- * - Thay vì await data ở Page rồi mới truyền xuống, ta truyền `Promise` xuống.
- * - Component con sẽ `use(promise)` để unwrap data.
- * - Đây là pattern mới trong React Server Components để tối ưu hiệu suất.
+ * 3. DATA PROPS:
+ * - Nhận resolved data (không phải Promise) từ server component parent.
+ * - Điều này tránh blocking waterfalls khi nhiều component con gọi use() trên cùng một promise.
  * =====================================================================
  */
 
 interface HomeContentProps {
-  productsPromise: Promise<Product[]>;
-  categoriesPromise: Promise<Category[]>;
-  brandsPromise: Promise<Brand[]>;
+  products: Product[];
+  categories: Category[];
+  brands: Brand[];
 }
 
 export function HomeContent({
-  productsPromise,
-  categoriesPromise,
-  brandsPromise,
+  products,
+  categories,
+  brands,
 }: HomeContentProps) {
   const t = useTranslations("home");
 
@@ -88,12 +87,12 @@ export function HomeContent({
             </div>
           }
         >
-          <FeaturedCategories categoriesPromise={categoriesPromise} />
+          <FeaturedCategories categories={categories} />
         </Suspense>
 
         {/* 1.5 Featured Brands */}
         <Suspense fallback={null}>
-          <FeaturedBrands brandsPromise={brandsPromise} />
+          <FeaturedBrands brands={brands} />
         </Suspense>
 
         {/* 2. Trending Now */}
@@ -104,7 +103,7 @@ export function HomeContent({
             </div>
           }
         >
-          <TrendingProducts productsPromise={productsPromise} />
+          <TrendingProducts products={products} />
         </Suspense>
 
         {/* 3. Deal of the Month */}
@@ -125,7 +124,7 @@ export function HomeContent({
             </div>
           }
         >
-          <NewArrivals productsPromise={productsPromise} />
+          <NewArrivals products={products} />
         </Suspense>
 
         {/* 5. Promotional Banners - Luxe Style */}

@@ -1,5 +1,6 @@
 import { HomeContent } from "@/components/templates/home-content";
 import { productService } from "@/services/product.service";
+import { Brand, Category, Product } from "@/types/models";
 
 import { Metadata } from "next";
 
@@ -32,30 +33,23 @@ export const metadata: Metadata = {
  * =====================================================================
  */
 export default async function Home() {
-  // Use standard ISR or static rendering
-  // Note: For now, we rely on the revalidate constant if specified,
-  // or just default dynamic behavior.
-
-  let productsPromise;
-  let categoriesPromise;
-  let brandsPromise;
+  // Await all data in parallel at the server component level
+  // This prevents blocking waterfalls when client components use the use() hook
+  let products: Product[] = [];
+  let categories: Category[] = [];
+  let brands: Brand[] = [];
 
   try {
-    productsPromise = productService.getFeaturedProducts(20);
-    categoriesPromise = productService.getCategories();
-    brandsPromise = productService.getBrands();
+    [products, categories, brands] = await Promise.all([
+      productService.getFeaturedProducts(20),
+      productService.getCategories(),
+      productService.getBrands(),
+    ]);
   } catch (e) {
     console.error("Failed to fetch data", e);
-    productsPromise = Promise.resolve([]);
-    categoriesPromise = Promise.resolve([]);
-    brandsPromise = Promise.resolve([]);
   }
 
   return (
-    <HomeContent
-      productsPromise={productsPromise}
-      categoriesPromise={categoriesPromise}
-      brandsPromise={brandsPromise}
-    />
+    <HomeContent products={products} categories={categories} brands={brands} />
   );
 }

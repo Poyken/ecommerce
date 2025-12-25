@@ -26,15 +26,13 @@ import { fadeInUp, itemVariant, staggerContainer } from "@/lib/animations";
 import { Product } from "@/types/models";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { use } from "react";
 
 interface TrendingProductsProps {
-  productsPromise: Promise<Product[]>;
+  products: Product[];
 }
 
-export function TrendingProducts({ productsPromise }: TrendingProductsProps) {
+export function TrendingProducts({ products }: TrendingProductsProps) {
   const t = useTranslations("home");
-  const products = use(productsPromise);
   const inStockProducts = products.filter((product) =>
     product.skus?.some((sku) => sku.stock > 0)
   );
