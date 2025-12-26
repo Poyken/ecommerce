@@ -270,8 +270,6 @@
       "RETURNED": "Returned",
       "PAID": "Paid",
       "UNPAID": "Unpaid"
-      "PAID": "Paid",
-      "UNPAID": "Unpaid"
     },
     "orderDetail": "Order Detail",
     "orderNotFound": "Order not found",

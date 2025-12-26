@@ -132,7 +132,7 @@ export default async function ShopPage({
         wishlistItems = items;
       }
     } catch (error) {
-      console.error("Failed to fetch wishlist", error);
+      // console.error("Failed to fetch wishlist", error);
     }
 
     return (
@@ -145,7 +145,7 @@ export default async function ShopPage({
       />
     );
   } catch (e) {
-    console.error("Failed to fetch data", e);
+    // console.error("Failed to fetch data", e);
     const t = await getTranslations("shop");
     return <div>{t("errorLoading")}</div>;
   }

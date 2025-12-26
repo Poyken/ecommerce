@@ -29,28 +29,28 @@
 
 "use client";
 
+import { GlassButton } from "@/components/shared/glass-button";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
 import { validateCouponAction } from "@/features/coupons/coupon-actions";
 import { placeOrderAction } from "@/features/orders/actions";
 import { calculateShippingFeeAction } from "@/features/shipping/actions";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { GlassButton } from "@/components/shared/glass-button";
 // import { AddAddressDialog } from "@/features/admin/components/add-address-dialog"; // Replaced with dynamic import
-import { getGuestCartDetailsAction } from "@/features/cart/actions";
+import { useToast } from "@/components/shared/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getGuestCartDetailsAction } from "@/features/cart/actions";
 import { AddressSelector } from "@/features/checkout/components/address-selector";
 import { CouponInput } from "@/features/checkout/components/coupon-input";
 import { OrderSummary } from "@/features/checkout/components/order-summary";
 import {
-  PaymentMethodSelector,
-  PaymentMethodType,
+    PaymentMethodSelector,
+    PaymentMethodType,
 } from "@/features/checkout/components/payment-method-selector";
-import { useToast } from "@/components/shared/use-toast";
 import { Link, useRouter } from "@/i18n/routing";
 import { formatCurrency } from "@/lib/utils";
 import { Address, Cart, CartItem, Coupon, Sku } from "@/types/models";
@@ -170,7 +170,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
               }
             }
           } catch (e) {
-            console.error("Error loading guest cart", e);
+            // console.error("Error loading guest cart", e);
           } finally {
             setIsInitializing(false);
           }
@@ -239,7 +239,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
           : [];
         setAvailableCoupons(list);
       } catch {
-        console.error("Failed to fetch coupons");
+        // console.error("Failed to fetch coupons");
       }
     };
     fetchCoupons();

@@ -38,7 +38,7 @@ export default async function BlogPage() {
     posts = postsResult.data;
     stats = statsResult;
   } catch (error) {
-    console.error("Failed to fetch blogs:", error);
+    // console.error("Failed to fetch blogs:", error);
   }
 
   return <BlogPageClient posts={posts} initialStats={stats} />;

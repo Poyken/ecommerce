@@ -23,43 +23,43 @@
 
 "use client";
 
-import {
-  clearCartAction,
-  getGuestCartDetailsAction,
-  removeFromCartAction,
-  updateCartItemAction,
-} from "@/features/cart/actions";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Checkbox } from "@/components/ui/checkbox";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { OptimizedImage } from "@/components/shared/optimized-image";
+import { useToast } from "@/components/shared/use-toast";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/components/shared/use-toast";
+import {
+    clearCartAction,
+    getGuestCartDetailsAction,
+    removeFromCartAction,
+    updateCartItemAction,
+} from "@/features/cart/actions";
 import { Link } from "@/i18n/routing";
 import { Cart, CartItem, Sku } from "@/types/models";
 import { motion } from "framer-motion";
 import {
-  Lock,
-  Minus,
-  Plus,
-  RefreshCcw,
-  ShieldCheck,
-  ShoppingBag,
-  Trash2,
-  Truck,
-  X,
+    Lock,
+    Minus,
+    Plus,
+    RefreshCcw,
+    ShieldCheck,
+    ShoppingBag,
+    Trash2,
+    Truck,
+    X,
 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
@@ -215,7 +215,7 @@ export function CartClient({ cart }: CartClientProps) {
               setTotalGuest(0);
             }
           } catch (e) {
-            console.error("Error loading guest cart", e);
+            // console.error("Error loading guest cart", e);
             setGuestItems([]);
           } finally {
             setIsInitializing(false);
@@ -404,7 +404,7 @@ export function CartClient({ cart }: CartClientProps) {
             }
           }
         } catch (error) {
-          console.error("Failed to update cart item", error);
+          // console.error("Failed to update cart item", error);
           setLocalItems((prev) => {
             const serverItem = items.find((i) => i.id === id);
             return prev.map((item) =>

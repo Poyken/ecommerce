@@ -19,36 +19,36 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { OrderDetailsDialog } from "@/features/admin/components/order-details-dialog";
 import { UpdateOrderStatusDialog } from "@/features/admin/components/update-order-status-dialog";
 import {
-  Check,
-  Clock,
-  Download,
-  Edit,
-  Eye,
-  Package,
-  RefreshCw,
-  Search,
-  ShoppingBag,
-  Trash2,
-  Truck,
-  X,
+    Check,
+    Clock,
+    Download,
+    Edit,
+    Eye,
+    Package,
+    RefreshCw,
+    Search,
+    ShoppingBag,
+    Trash2,
+    Truck,
+    X,
 } from "lucide-react";
 
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  AdminEmptyState,
-  AdminPageHeader,
-  AdminTableWrapper,
+    AdminEmptyState,
+    AdminPageHeader,
+    AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
@@ -138,7 +138,7 @@ export function OrdersClient({
 
   const handleBulkDelete = () => {
     if (confirm(t("confirmTitle"))) {
-      console.log("Deleting:", Array.from(selectedRows));
+      // console.log("Deleting:", Array.from(selectedRows));
       setSelectedRows(new Set());
     }
   };

@@ -1,9 +1,9 @@
-import { Toaster } from "@/components/ui/toaster";
 import { SmoothScroll } from "@/components/shared/smooth-scroll";
-import { FeatureFlagProvider } from "@/features/admin/hooks/use-feature-flags";
-import { routing } from "@/i18n/routing";
-import { AuthProvider } from "@/features/auth/providers/auth-provider";
 import { ThemeProvider } from "@/components/shared/theme-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { FeatureFlagProvider } from "@/features/admin/hooks/use-feature-flags";
+import { AuthProvider } from "@/features/auth/providers/auth-provider";
+import { routing } from "@/i18n/routing";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -71,9 +71,9 @@ async function RootProviders({
 }) {
   const messages = await getMessages({ locale });
   const accessToken = await getSession();
-  console.log(
+  /* console.log(
     `[RootLayout] accessToken present: ${!!accessToken}, locale: ${locale}`
-  );
+  ); */
   const initialPermissions = getPermissionsFromToken(accessToken);
 
   return (

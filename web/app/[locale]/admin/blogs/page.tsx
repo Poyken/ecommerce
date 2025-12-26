@@ -35,7 +35,7 @@ async function getBlogs(
       meta: data.meta || { page, limit, total: data.data?.length || 0 },
     };
   } catch (error) {
-    console.error("Error fetching blogs:", error);
+    // console.error("Error fetching blogs:", error);
     return { data: [], meta: { page: 1, limit: 10, total: 0 } };
   }
 }
@@ -78,7 +78,7 @@ async function getCategories() {
     const data = await res.json();
     return data.data || [];
   } catch (error) {
-    console.error("Error fetching categories:", error);
+    // console.error("Error fetching categories:", error);
     return [];
   }
 }

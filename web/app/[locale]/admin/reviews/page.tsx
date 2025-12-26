@@ -15,7 +15,7 @@ async function getReviewCounts() {
       hidden: "data" in hidden ? hidden.meta?.total || 0 : 0,
     };
   } catch (error) {
-    console.error("Error fetching review counts:", error);
+    // console.error("Error fetching review counts:", error);
     return {
       total: 0,
       published: 0,

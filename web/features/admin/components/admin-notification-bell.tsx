@@ -17,23 +17,23 @@
  * =====================================================================
  */
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/atoms/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/atoms/popover";
-import { ScrollArea } from "@/components/atoms/scroll-area";
 import { Button } from "@/components/ui/button";
 import {
-  Notification,
-  useNotifications,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+    Notification,
+    useNotifications,
 } from "@/contexts/notification-context";
 import { Link, useRouter } from "@/i18n/routing";
 import { formatDistanceToNow } from "date-fns";

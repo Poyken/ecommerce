@@ -51,7 +51,7 @@ async function getOrderCounts() {
 
     return counts;
   } catch (error) {
-    console.error("Error fetching order counts:", error);
+    // console.error("Error fetching order counts:", error);
     return { total: 0 };
   }
 }

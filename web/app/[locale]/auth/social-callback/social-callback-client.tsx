@@ -1,9 +1,9 @@
 "use client";
 
+import { useToast } from "@/components/shared/use-toast";
 import { socialLoginAction } from "@/features/auth/actions";
 import { mergeGuestCartAction } from "@/features/cart/actions";
 import { mergeGuestWishlistAction } from "@/features/wishlist/actions";
-import { useToast } from "@/components/shared/use-toast";
 import { Loader2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -36,7 +36,7 @@ export function SocialCallbackClient() {
               window.dispatchEvent(new Event("wishlist_updated"));
             }
           } catch (e) {
-            console.error("Failed to sync wishlist", e);
+            // console.error("Failed to sync wishlist", e);
           }
 
           // Guest Cart Merge Logic
@@ -80,7 +80,7 @@ export function SocialCallbackClient() {
             // Dispatch event to update UI
             window.dispatchEvent(new Event("cart_updated"));
           } catch (e) {
-            console.error("Failed to sync guest cart", e);
+            // console.error("Failed to sync guest cart", e);
           }
 
           // Redirect to home

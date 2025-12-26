@@ -73,7 +73,7 @@ export function AdminNotificationItem({
         onActionComplete?.();
       }
     } catch (error) {
-      console.error("Failed to accept order:", error);
+      // console.error("Failed to accept order:", error);
     } finally {
       setIsLoading(null);
     }
@@ -91,7 +91,7 @@ export function AdminNotificationItem({
         onActionComplete?.();
       }
     } catch (error) {
-      console.error("Failed to reject order:", error);
+      // console.error("Failed to reject order:", error);
     } finally {
       setIsLoading(null);
     }

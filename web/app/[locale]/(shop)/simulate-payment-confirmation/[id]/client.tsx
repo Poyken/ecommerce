@@ -1,9 +1,9 @@
 "use client";
 
-import { simulatePaymentSuccessAction } from "@/features/orders/actions";
-import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { useToast } from "@/components/shared/use-toast";
+import { Button } from "@/components/ui/button";
+import { simulatePaymentSuccessAction } from "@/features/orders/actions";
 import { Check, CreditCard, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -38,7 +38,7 @@ export function SimulatePaymentClient({ orderId }: { orderId: string }) {
         });
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       toast({
         title: t("errorTitle"),
         description: "An unexpected error occurred.",

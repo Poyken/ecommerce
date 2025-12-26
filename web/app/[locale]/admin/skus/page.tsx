@@ -30,7 +30,7 @@ async function getSkuCounts() {
       lowStock: "data" in lowStock ? lowStock.meta?.total || 0 : 0,
     };
   } catch (error) {
-    console.error("Error fetching SKU counts:", error);
+    // this.logger.error("Error fetching SKU counts:", error);
     return { total: 0, active: 0, inactive: 0, lowStock: 0 };
   }
 }

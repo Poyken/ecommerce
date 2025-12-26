@@ -57,7 +57,7 @@ async function DynamicOrders({
       error = res.error;
     }
   } catch (e: unknown) {
-    console.error("Lấy danh sách đơn hàng thất bại", e);
+    // console.error("Lấy danh sách đơn hàng thất bại", e);
     error = e;
   }
 
@@ -92,8 +92,8 @@ async function DynamicOrders({
   return <OrdersClient orders={orders} meta={meta ?? null} />;
 }
 
-import { getMyOrdersAction } from "@/features/orders/actions"; // Import action
 import { LoadingScreen } from "@/components/shared/loading-screen";
+import { getMyOrdersAction } from "@/features/orders/actions"; // Import action
 
 export default async function OrdersPage({
   searchParams,

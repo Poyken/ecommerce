@@ -1,16 +1,16 @@
+import { LoadingScreen } from "@/components/shared/loading-screen";
+import { NotificationProvider } from "@/contexts/notification-context";
 import { getBrandsAction, getCategoriesAction } from "@/features/admin/actions";
+import { AdminHeader } from "@/features/admin/components/admin-header";
+import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
+import { AdminMetadataProvider } from "@/features/admin/providers/admin-metadata-provider";
+import { AuthProvider } from "@/features/auth/providers/auth-provider";
 import {
     getNotificationsAction,
     getUnreadCountAction,
 } from "@/features/notifications/actions";
 import { getProfileAction } from "@/features/profile/actions";
-import { LoadingScreen } from "@/components/shared/loading-screen";
-import { AdminHeader } from "@/features/admin/components/admin-header";
-import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
-import { NotificationProvider } from "@/contexts/notification-context";
 import { getPermissionsFromToken } from "@/lib/permission-utils";
-import { AdminMetadataProvider } from "@/features/admin/providers/admin-metadata-provider";
-import { AuthProvider } from "@/features/auth/providers/auth-provider";
 import { getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -56,13 +56,13 @@ async function DynamicAdminContent({
   const token = cookieStore.get("accessToken")?.value;
   const permissions = getPermissionsFromToken(token);
 
-  console.log("[AdminLayout] Data check:", {
+  /* console.log("[AdminLayout] Data check:", {
     hasUser: !!user,
     hasToken: !!token,
     roles: user?.roles?.map((r: any) => r.role?.name),
     permissionsCount: permissions.length,
     profileError: (profile as any).error,
-  });
+  }); */
 
   if (!user) {
     console.warn("[AdminLayout] No user found, redirecting to /login");
