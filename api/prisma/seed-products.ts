@@ -785,10 +785,7 @@ async function main() {
         for (const colorVal of colorValuesObj) {
           for (const sizeVal of sizeValuesObj) {
             for (const matVal of materialValuesObj) {
-              const price = getRandomPrice(
-                template.basePrice * 1000 * 1000,
-                0.1,
-              );
+              const price = getRandomPrice(template.basePrice * 1000 * 10, 0.1);
               const salePrice =
                 Math.random() > 0.8 ? Math.round(price * 0.9) : null;
               const stock = Math.floor(Math.random() * 50) + 1;

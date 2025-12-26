@@ -31,8 +31,14 @@ export function ProfileBlogsTab() {
     try {
       setIsLoading(true);
       const res = await getMyBlogsAction();
-      if (res && res.data) {
+      if (res.success && res.data) {
         setBlogs(res.data);
+      } else if (res.error) {
+        toast({
+          variant: "destructive",
+          title: t("error"),
+          description: res.error,
+        });
       }
     } catch (error) {
       console.error("Failed to fetch my blogs", error);

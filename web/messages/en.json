@@ -1160,6 +1160,8 @@
       "skuLabel": "SKU",
       "priceLabel": "Price",
       "qtyLabel": "Qty",
+      "paymentStatusLabel": "Payment Status",
+      "paymentMethodLabel": "Payment Method",
       "selectStatus": "Select status",
       "successUpdateStatus": "Order status updated successfully",
       "statusMapping": {
@@ -1168,6 +1170,13 @@
         "SHIPPED": "Shipped",
         "DELIVERED": "Delivered",
         "CANCELLED": "Cancelled"
+      },
+      "paymentStatusMapping": {
+        "UNPAID": "Unpaid",
+        "PENDING": "Pending",
+        "PAID": "Paid",
+        "FAILED": "Failed",
+        "REFUNDED": "Refunded"
       }
     },
     "skus": {

@@ -21,7 +21,8 @@
 "use server";
 
 import { http } from "@/lib/http";
-import { ActionResult } from "@/types/dtos";
+import { ActionResult, ApiResponse } from "@/types/dtos";
+import { BlogWithProducts } from "@/types/models";
 import { getTranslations } from "next-intl/server";
 import { revalidatePath } from "next/cache";
 
@@ -147,18 +148,24 @@ export async function toggleBlogPublishAction(
   }
 }
 
-export async function getMyBlogsAction() {
+export async function getMyBlogsAction(): Promise<
+  ActionResult<BlogWithProducts[]>
+> {
   const t = await getTranslations("admin.blogs");
   try {
-    const res = await http<unknown>(`/blogs/my-blogs`, {
+    const res = await http<ApiResponse<BlogWithProducts[]>>(`/blogs/my-blogs`, {
       method: "GET",
       next: { tags: ["my-blogs"] },
     });
-    return res;
+    return {
+      success: true,
+      data: res.data,
+    };
   } catch (error) {
     console.error("Failed to fetch my blogs:", error);
     return {
-      error: t("error"),
+      success: false,
+      error: (error as Error).message || t("error"),
     };
   }
 }

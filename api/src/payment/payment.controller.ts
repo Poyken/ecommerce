@@ -25,7 +25,7 @@ export class PaymentController {
 
   @Get('vnpay_return')
   @ApiOperation({ summary: 'Handle VNPay Return URL' })
-  vnpayReturn(@Query() query: any, @Res() res) {
+  async vnpayReturn(@Query() query: any, @Res() res) {
     const vnp_Params = { ...query };
     const secureHash = vnp_Params['vnp_SecureHash'];
 
@@ -40,16 +40,32 @@ export class PaymentController {
     const isValid = VNPayUtils.verifySignature(secureHash, secretKey, signData);
 
     if (isValid) {
-      // Check transaction status
-      if (vnp_Params['vnp_ResponseCode'] === '00') {
-        // Success
-        // Redirect to frontend success page
-        const orderId = vnp_Params['vnp_TxnRef'];
+      const orderId = vnp_Params['vnp_TxnRef'];
+      const responseCode = vnp_Params['vnp_ResponseCode'];
+
+      if (responseCode === '00') {
+        // Success -> Update Order Status immediately (good for local dev)
+        await this.prisma.order.update({
+          where: { id: orderId },
+          data: {
+            status: 'PROCESSING',
+            paymentStatus: 'PAID',
+          },
+        });
+
         return res.redirect(
           `${process.env.FRONTEND_URL || 'http://localhost:3000'}/order-success/${orderId}`,
         );
       } else {
         // Failed
+        await this.prisma.order.update({
+          where: { id: orderId },
+          data: {
+            status: 'CANCELLED',
+            paymentStatus: 'FAILED',
+          },
+        });
+
         return res.redirect(
           `${process.env.FRONTEND_URL || 'http://localhost:3000'}/order-failed`,
         );

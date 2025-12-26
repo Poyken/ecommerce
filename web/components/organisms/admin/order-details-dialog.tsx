@@ -4,18 +4,18 @@ import { getOrderDetailsAction } from "@/actions/admin";
 import { Badge } from "@/components/atoms/badge";
 import { Button } from "@/components/atoms/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/atoms/dialog";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/atoms/table";
 import { formatCurrency } from "@/lib/utils";
 import { Order, OrderItem } from "@/types/models";
@@ -57,7 +57,7 @@ export function OrderDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="!max-w-5xl max-h-[85vh] flex flex-col p-0 gap-0">
+      <DialogContent className="max-w-5xl! max-h-[85vh] flex flex-col p-0 gap-0">
         <DialogHeader className="p-6 pb-4 border-b">
           <DialogTitle>{t("orders.details")}</DialogTitle>
         </DialogHeader>
@@ -98,14 +98,17 @@ function OrderDetailsContent({
             }
           }
         } catch (err: unknown) {
-          if (isMounted) setError(err instanceof Error ? err.message : t("error"));
+          if (isMounted)
+            setError(err instanceof Error ? err.message : t("error"));
         } finally {
           if (isMounted) setLoading(false);
         }
       };
       fetchOrder();
     }
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, [orderId, t]);
 
   return (
@@ -137,14 +140,42 @@ function OrderDetailsContent({
                     {t("orders.statusLabel")}:
                   </span>
                   <span>
-                    <Badge>{t(`orders.statusMapping.${order.status}` as any)}</Badge>
+                    <Badge>
+                      {t(`orders.statusMapping.${order.status}` as any)}
+                    </Badge>
                   </span>
 
                   <span className="font-medium text-gray-500">
                     {t("orders.totalLabel")}:
                   </span>
-                  <span className="font-semibold text-lg">
+                  <span className="font-semibold text-lg text-primary">
                     {formatCurrency(Number(order.totalAmount))}
+                  </span>
+
+                  <span className="font-medium text-gray-500">
+                    {t("orders.paymentStatusLabel")}:
+                  </span>
+                  <span>
+                    <Badge
+                      variant={
+                        order.paymentStatus === "PAID"
+                          ? "success"
+                          : order.paymentStatus === "FAILED"
+                          ? "destructive"
+                          : "secondary"
+                      }
+                    >
+                      {t(
+                        `orders.paymentStatusMapping.${order.paymentStatus}` as any
+                      )}
+                    </Badge>
+                  </span>
+
+                  <span className="font-medium text-gray-500">
+                    {t("orders.paymentMethodLabel")}:
+                  </span>
+                  <span className="font-medium">
+                    {order.paymentMethod || "N/A"}
                   </span>
                 </div>
               </div>
@@ -178,7 +209,9 @@ function OrderDetailsContent({
             </div>
 
             <div>
-              <h3 className="font-semibold text-lg mb-4">{t("orders.items")}</h3>
+              <h3 className="font-semibold text-lg mb-4">
+                {t("orders.items")}
+              </h3>
               <div className="border rounded-lg overflow-hidden">
                 <Table>
                   <TableHeader className="bg-gray-50">
@@ -221,7 +254,9 @@ function OrderDetailsContent({
                           {item.quantity}
                         </TableCell>
                         <TableCell className="text-right font-medium">
-                          {formatCurrency(Number(item.priceAtPurchase) * item.quantity)}
+                          {formatCurrency(
+                            Number(item.priceAtPurchase) * item.quantity
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}

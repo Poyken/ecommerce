@@ -1085,6 +1085,8 @@
       "skuLabel": "SKU",
       "priceLabel": "Giá",
       "qtyLabel": "SL",
+      "paymentStatusLabel": "Trạng thái thanh toán",
+      "paymentMethodLabel": "Phương thức thanh toán",
       "selectStatus": "Chọn trạng thái",
       "successUpdateStatus": "Cập nhật trạng thái đơn hàng thành công",
       "statusMapping": {
@@ -1093,6 +1095,13 @@
         "SHIPPED": "Đã giao đơn vị vận chuyển",
         "DELIVERED": "Đã giao hàng",
         "CANCELLED": "Đã hủy"
+      },
+      "paymentStatusMapping": {
+        "UNPAID": "Chưa thanh toán",
+        "PENDING": "Đang chờ",
+        "PAID": "Đã thanh toán",
+        "FAILED": "Thất bại",
+        "REFUNDED": "Đã hoàn tiền"
       }
     },
     "skus": {
