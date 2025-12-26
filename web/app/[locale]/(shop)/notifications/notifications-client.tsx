@@ -21,7 +21,7 @@
 
 "use client";
 
-import { Button } from "@/components/atoms/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -29,8 +29,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/atoms/dialog";
-import { GlassCard } from "@/components/atoms/glass-card";
+} from "@/components/ui/dialog";
+import { GlassCard } from "@/components/shared/glass-card";
 import {
   Notification,
   useNotifications,

@@ -23,9 +23,9 @@
 
 export const revalidate = 3600; // Cache 1 hour
 
-import { getProfileAction } from "@/actions/profile";
-import { BreadcrumbNav } from "@/components/atoms/breadcrumb-nav";
-import { ProductDetailSkeleton } from "@/components/organisms/skeletons/product-detail-skeleton";
+import { getProfileAction } from "@/features/profile/actions";
+import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav";
+import { ProductDetailSkeleton } from "@/components/shared/skeletons/product-detail-skeleton";
 import { productService } from "@/services/product.service";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -80,7 +80,7 @@ export async function generateMetadata({
 async function ProductDetailStreamer({ id }: { id: string }) {
   // Dynamic import actions để tránh bundle code server vào client bundle (nếu có leak)
   const { checkReviewEligibilityAction, getReviewsAction } = await import(
-    "@/actions/review"
+    "@/features/reviews/actions"
   );
 
   // Kỹ thuật Parallel Fetching quan trọng

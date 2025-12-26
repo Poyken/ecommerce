@@ -1,4 +1,4 @@
-import { getPermissionsAction } from "@/actions/admin";
+import { getPermissionsAction } from "@/features/admin/actions";
 import { getTranslations } from "next-intl/server";
 import { PermissionsPageClient } from "./permissions-client";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { deleteBlogAction } from "@/actions/blog";
+import { deleteBlogAction } from "@/features/blog/actions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,8 +10,8 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/atoms/alert-dialog";
-import { useToast } from "@/hooks/use-toast";
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/components/shared/use-toast";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 

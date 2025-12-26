@@ -12,10 +12,10 @@
  * =====================================================================
  */
 
-import { deleteBrandAction, getBrandsAction } from "@/actions/admin";
-import { Button } from "@/components/atoms/button";
-import { DataTablePagination } from "@/components/atoms/data-table-pagination";
-import { Input } from "@/components/atoms/input";
+import { deleteBrandAction, getBrandsAction } from "@/features/admin/actions";
+import { Button } from "@/components/ui/button";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -23,18 +23,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
+} from "@/components/ui/table";
 import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/components/organisms/admin/admin-page-components";
-import { CreateBrandDialog } from "@/components/organisms/admin/create-brand-dialog";
-import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
-import { EditBrandDialog } from "@/components/organisms/admin/edit-brand-dialog";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useAdminBrands } from "@/providers/admin-metadata-provider";
-import { useAuth } from "@/providers/auth-provider";
+} from "@/features/admin/components/admin-page-components";
+import { CreateBrandDialog } from "@/features/admin/components/create-brand-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+import { EditBrandDialog } from "@/features/admin/components/edit-brand-dialog";
+import { useDebounce } from "@/lib/hooks/use-debounce";
+import { useAdminBrands } from "@/features/admin/providers/admin-metadata-provider";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { PaginationMeta } from "@/types/dtos";
 import { Brand } from "@/types/models";
 import { format } from "date-fns";

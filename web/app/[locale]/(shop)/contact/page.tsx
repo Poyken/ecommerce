@@ -1,4 +1,4 @@
-import { ContactPageContent } from "@/components/templates/contact-page-content";
+import { ContactPageContent } from "@/features/contact/components/contact-page-content";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 

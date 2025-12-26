@@ -1,6 +1,6 @@
 "use client";
-import { Badge } from "@/components/atoms/badge";
-import { GlassButton } from "@/components/atoms/glass-button";
+import { Badge } from "@/components/ui/badge";
+import { GlassButton } from "@/components/shared/glass-button";
 import { cn, formatCurrency } from "@/lib/utils";
 import { ProductOption, Sku } from "@/types/models";
 import { useRouter, useSearchParams } from "next/navigation";

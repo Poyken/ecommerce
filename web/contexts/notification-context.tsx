@@ -3,7 +3,7 @@
 import {
   markAllAsReadAction,
   markAsReadAction as markAsReadServerAction,
-} from "@/actions/notifications";
+} from "@/features/notifications/actions";
 import { notificationSocket } from "@/lib/socket";
 import {
   createContext,

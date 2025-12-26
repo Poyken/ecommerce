@@ -1,6 +1,6 @@
-import { getProfileAction } from "@/actions/profile";
-import { GlassCard } from "@/components/atoms/glass-card";
-import { ProfilePageContent } from "@/components/templates/profile-page-content";
+import { getProfileAction } from "@/features/profile/actions";
+import { GlassCard } from "@/components/shared/glass-card";
+import { ProfilePageContent } from "@/features/profile/components/profile-page-content";
 import { Link } from "@/i18n/routing";
 
 import { Metadata } from "next";
@@ -85,7 +85,7 @@ async function DynamicProfile() {
   return <ProfilePageContent user={user} />;
 }
 
-import { LoadingScreen } from "@/components/atoms/loading-screen";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 
 export default async function ProfilePage() {
   const t = await getTranslations("loading");

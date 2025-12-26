@@ -1,5 +1,5 @@
-import { getOrderDetailsAction } from "@/actions/order";
-import { Button } from "@/components/atoms/button";
+import { Button } from "@/components/ui/button";
+import { getOrderDetailsAction } from "@/features/orders/actions";
 import { formatCurrency } from "@/lib/utils";
 import { ArrowRight, CheckCircle, Package, ShoppingBag } from "lucide-react";
 import Link from "next/link";
@@ -24,7 +24,7 @@ export default async function OrderSuccessPage({
   const illustration = "/order-success-illustration.png";
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 mt-12">
       <div className="max-w-3xl w-full space-y-8 bg-white dark:bg-zinc-950 p-8 sm:p-12 rounded-3xl shadow-2xl border border-zinc-100 dark:border-zinc-800 text-center animate-in fade-in slide-in-from-bottom-8 duration-700">
         {/* Celebration Illustration */}
         <div className="relative w-48 h-48 mx-auto mb-8">

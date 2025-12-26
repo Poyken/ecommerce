@@ -1,4 +1,4 @@
-import { getRolesAction } from "@/actions/admin";
+import { getRolesAction } from "@/features/admin/actions";
 import { RolesPageClient } from "./roles-client";
 
 /**

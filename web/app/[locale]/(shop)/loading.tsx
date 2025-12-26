@@ -1,4 +1,4 @@
-import { HomeSkeleton } from "@/components/organisms/skeletons/home-skeleton";
+import { HomeSkeleton } from "@/components/shared/skeletons/home-skeleton";
 
 /**
  * =====================================================================

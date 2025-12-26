@@ -22,8 +22,8 @@
 
 "use client";
 
-import { Avatar, AvatarFallback } from "@/components/atoms/avatar";
-import { Skeleton } from "@/components/atoms/skeleton";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";

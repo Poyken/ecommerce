@@ -1,4 +1,4 @@
-import { getCategoriesAction } from "@/actions/admin";
+import { getCategoriesAction } from "@/features/admin/actions";
 import { CategoriesPageClient } from "./categories-client";
 
 /**

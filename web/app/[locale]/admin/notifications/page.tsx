@@ -1,4 +1,4 @@
-import { getUsersAction } from "@/actions/admin";
+import { getUsersAction } from "@/features/admin/actions";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { NotificationsAdminClient } from "./notifications-admin-client";

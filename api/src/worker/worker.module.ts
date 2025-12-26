@@ -1,7 +1,7 @@
 import { BullModule, InjectQueue } from '@nestjs/bullmq';
 import { Logger, Module, OnApplicationBootstrap } from '@nestjs/common';
 import { Queue } from 'bullmq';
-import { ProductsModule } from '../products/products/products.module';
+import { ProductsModule } from '@/products/products.module';
 import { CacheWarmingProcessor } from './processors/cache-warming.processor';
 
 @Module({

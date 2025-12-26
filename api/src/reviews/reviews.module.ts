@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'src/prisma/prisma.module';
+import { PrismaModule } from '@core/prisma/prisma.module';
 
 /**
  * =====================================================================
@@ -17,11 +17,11 @@ import { PrismaModule } from 'src/prisma/prisma.module';
  * - Tách biệt rõ ràng giữa logic cho khách hàng (viết review) và Admin (quản lý/xóa review).
  * =====================================================================
  */
-import { CloudinaryModule } from 'src/common/cloudinary/cloudinary.module';
+import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
 import { ReviewsController } from './reviews.controller';
 import { ReviewsService } from './reviews.service';
 
-import { NotificationsModule } from '../notifications/notifications.module';
+import { NotificationsModule } from '@/notifications/notifications.module';
 
 @Module({
   imports: [PrismaModule, CloudinaryModule, NotificationsModule],

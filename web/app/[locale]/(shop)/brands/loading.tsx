@@ -1,4 +1,4 @@
-import { BrandsSkeleton } from "@/components/organisms/skeletons/brands-skeleton";
+import { BrandsSkeleton } from "@/components/shared/skeletons/brands-skeleton";
 
 /**
  * =====================================================================

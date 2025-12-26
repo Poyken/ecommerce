@@ -1,9 +1,9 @@
 "use client";
 
-import { simulatePaymentSuccessAction } from "@/actions/order";
-import { Button } from "@/components/atoms/button";
-import { GlassCard } from "@/components/atoms/glass-card";
-import { useToast } from "@/hooks/use-toast";
+import { simulatePaymentSuccessAction } from "@/features/orders/actions";
+import { Button } from "@/components/ui/button";
+import { GlassCard } from "@/components/shared/glass-card";
+import { useToast } from "@/components/shared/use-toast";
 import { Check, CreditCard, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";

@@ -16,19 +16,19 @@
  * =====================================================================
  */
 
-import { deletePermissionAction } from "@/actions/admin";
-import { Badge } from "@/components/atoms/badge";
-import { Button } from "@/components/atoms/button";
-import { Input } from "@/components/atoms/input";
+import { deletePermissionAction } from "@/features/admin/actions";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   AdminEmptyState,
   AdminPageHeader,
-} from "@/components/organisms/admin/admin-page-components";
-import { CreatePermissionDialog } from "@/components/organisms/admin/create-permission-dialog";
-import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
-import { EditPermissionDialog } from "@/components/organisms/admin/edit-permission-dialog";
+} from "@/features/admin/components/admin-page-components";
+import { CreatePermissionDialog } from "@/features/admin/components/create-permission-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+import { EditPermissionDialog } from "@/features/admin/components/edit-permission-dialog";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import {
   ChevronDown,
   ChevronRight,

@@ -22,11 +22,11 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import type { User } from '@prisma/client';
-import { GetUser } from '../auth/decorators/get-user.decorator';
-import { Permissions } from '../auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { PermissionsGuard } from '../auth/permissions.guard';
-import { CloudinaryService } from '../common/cloudinary/cloudinary.service';
+import { GetUser } from '@/auth/decorators/get-user.decorator';
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
+import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';

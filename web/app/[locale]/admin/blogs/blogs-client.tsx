@@ -13,12 +13,12 @@
  * =====================================================================
  */
 
-import { deleteBlogAction, toggleBlogPublishAction } from "@/actions/blog";
-import { Badge } from "@/components/atoms/badge";
-import { Button } from "@/components/atoms/button";
-import { DataTablePagination } from "@/components/atoms/data-table-pagination";
-import { Input } from "@/components/atoms/input";
-import { StatusBadge } from "@/components/atoms/status-badge";
+import { deleteBlogAction, toggleBlogPublishAction } from "@/features/blog/actions";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { Input } from "@/components/ui/input";
+import { StatusBadge } from "@/components/shared/status-badge";
 import {
   Table,
   TableBody,
@@ -26,19 +26,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
+} from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/components/organisms/admin/admin-page-components";
-import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
-import { BlogFormDialog } from "@/components/organisms/blog-form-dialog";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useToast } from "@/hooks/use-toast";
+} from "@/features/admin/components/admin-page-components";
+import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+import { BlogFormDialog } from "@/features/blog/components/blog-form-dialog";
+import { useDebounce } from "@/lib/hooks/use-debounce";
+import { useToast } from "@/components/shared/use-toast";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { PaginationMeta } from "@/types/dtos";
 import { BlogWithProducts, Category } from "@/types/models";
 import { format } from "date-fns";

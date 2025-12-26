@@ -1,4 +1,4 @@
-import { getOrdersAction } from "@/actions/admin";
+import { getOrdersAction } from "@/features/admin/actions";
 import { OrdersClient } from "./orders-client";
 
 /**

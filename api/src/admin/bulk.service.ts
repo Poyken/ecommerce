@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '@core/prisma/prisma.service';
 
 /**
  * =====================================================================

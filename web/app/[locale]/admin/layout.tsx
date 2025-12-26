@@ -1,16 +1,16 @@
-import { getBrandsAction, getCategoriesAction } from "@/actions/admin";
+import { getBrandsAction, getCategoriesAction } from "@/features/admin/actions";
 import {
     getNotificationsAction,
     getUnreadCountAction,
-} from "@/actions/notifications";
-import { getProfileAction } from "@/actions/profile";
-import { LoadingScreen } from "@/components/atoms/loading-screen";
-import { AdminHeader } from "@/components/organisms/admin/admin-header";
-import { AdminSidebar } from "@/components/organisms/admin/admin-sidebar";
+} from "@/features/notifications/actions";
+import { getProfileAction } from "@/features/profile/actions";
+import { LoadingScreen } from "@/components/shared/loading-screen";
+import { AdminHeader } from "@/features/admin/components/admin-header";
+import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
 import { NotificationProvider } from "@/contexts/notification-context";
 import { getPermissionsFromToken } from "@/lib/permission-utils";
-import { AdminMetadataProvider } from "@/providers/admin-metadata-provider";
-import { AuthProvider } from "@/providers/auth-provider";
+import { AdminMetadataProvider } from "@/features/admin/providers/admin-metadata-provider";
+import { AuthProvider } from "@/features/auth/providers/auth-provider";
 import { getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";

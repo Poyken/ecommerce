@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { CloudinaryModule } from '../common/cloudinary/cloudinary.module';
-import { PrismaModule } from '../prisma/prisma.module';
+import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
+import { PrismaModule } from '@core/prisma/prisma.module';
 import { BlogController } from './blog.controller';
 import { BlogService } from './blog.service';
 

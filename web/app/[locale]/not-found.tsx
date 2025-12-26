@@ -1,7 +1,7 @@
 "use client";
 
-import { GlassButton } from "@/components/atoms/glass-button";
-import { GlassCard } from "@/components/atoms/glass-card";
+import { GlassButton } from "@/components/shared/glass-button";
+import { GlassCard } from "@/components/shared/glass-card";
 import { Link } from "@/i18n/routing";
 import { motion } from "framer-motion";
 import { ArrowLeft, Search } from "lucide-react";

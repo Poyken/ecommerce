@@ -1,4 +1,4 @@
-import { getSkusAction } from "@/actions/admin";
+import { getSkusAction } from "@/features/admin/actions";
 import { SkusClient } from "./skus-client";
 
 /**

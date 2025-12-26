@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import * as crypto from 'crypto';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { RedisService } from '../redis/redis.service';
+import { RedisService } from '@core/redis/redis.service';
 
 /**
  * =====================================================================

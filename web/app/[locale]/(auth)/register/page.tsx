@@ -1,4 +1,4 @@
-import { RegisterPageContent } from "@/components/templates/register-page-content";
+import { RegisterPageContent } from "@/features/auth/components/register-page-content";
 import { Metadata } from "next";
 
 /**

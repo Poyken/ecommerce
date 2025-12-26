@@ -1,5 +1,5 @@
-import { getOrderDetailsAction } from "@/actions/admin";
-import { Badge } from "@/components/atoms/badge";
+import { getOrderDetailsAction } from "@/features/admin/actions";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -7,7 +7,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
+} from "@/components/ui/table";
 import { formatCurrency } from "@/lib/utils";
 import { OrderItem } from "@/types/models";
 import { getTranslations } from "next-intl/server";

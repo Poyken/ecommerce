@@ -21,13 +21,13 @@
 
 "use client";
 
-import { getGuestWishlistDetailsAction } from "@/actions/wishlist";
-import { GlassButton } from "@/components/atoms/glass-button";
-import { Skeleton } from "@/components/atoms/skeleton";
-import { ProductCard } from "@/components/organisms/product-card";
-import { useGuestWishlist } from "@/hooks/use-guest-wishlist";
+import { getGuestWishlistDetailsAction } from "@/features/wishlist/actions";
+import { GlassButton } from "@/components/shared/glass-button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { ProductCard } from "@/features/products/components/product-card";
+import { useGuestWishlist } from "@/features/wishlist/hooks/use-guest-wishlist";
 import { Link } from "@/i18n/routing";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { motion } from "framer-motion";
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";

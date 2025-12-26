@@ -18,9 +18,9 @@ import {
   deleteReviewAction,
   replyToReviewAction,
   toggleReviewStatusAction,
-} from "@/actions/admin";
-import { Button } from "@/components/atoms/button";
-import { DataTablePagination } from "@/components/atoms/data-table-pagination";
+} from "@/features/admin/actions";
+import { Button } from "@/components/ui/button";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import {
   Dialog,
   DialogContent,
@@ -28,8 +28,8 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/atoms/dialog";
-import { Input } from "@/components/atoms/input";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -37,21 +37,21 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
-import { Textarea } from "@/components/atoms/textarea";
+} from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import {
   AdminActionBadge,
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/components/organisms/admin/admin-page-components";
-import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useToast } from "@/hooks/use-toast";
+} from "@/features/admin/components/admin-page-components";
+import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+import { useDebounce } from "@/lib/hooks/use-debounce";
+import { useToast } from "@/components/shared/use-toast";
 import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { format } from "date-fns";
 import { Eye, EyeOff, MessageSquare, Search, Star, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";

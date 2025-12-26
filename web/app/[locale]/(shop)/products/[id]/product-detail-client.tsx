@@ -1,13 +1,13 @@
 "use client";
 
-import { GlassCard } from "@/components/atoms/glass-card";
-import { ProductVariantSelector } from "@/components/molecules/product-variant-selector";
-import { WishlistButton } from "@/components/molecules/wishlist-button";
-import { MobileStickyCart } from "@/components/organisms/mobile-sticky-cart";
-import { ProductImageGallery } from "@/components/organisms/product-image-gallery";
-import { ProductReviews } from "@/components/organisms/product-reviews";
-import { useCart } from "@/hooks/use-cart";
-import { useToast } from "@/hooks/use-toast";
+import { GlassCard } from "@/components/shared/glass-card";
+import { ProductVariantSelector } from "@/features/products/components/product-variant-selector";
+import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
+import { MobileStickyCart } from "@/features/cart/components/mobile-sticky-cart";
+import { ProductImageGallery } from "@/features/products/components/product-image-gallery";
+import { ProductReviews } from "@/features/reviews/components/product-reviews";
+import { useCart } from "@/features/cart/hooks/use-cart";
+import { useToast } from "@/components/shared/use-toast";
 import { cn } from "@/lib/utils";
 import { Product, Sku } from "@/types/models";
 import { motion } from "framer-motion";

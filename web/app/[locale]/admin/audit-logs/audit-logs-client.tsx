@@ -14,15 +14,15 @@
  * =====================================================================
  */
 
-import { Button } from "@/components/atoms/button";
-import { DataTablePagination } from "@/components/atoms/data-table-pagination";
+import { Button } from "@/components/ui/button";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/atoms/dialog";
-import { Input } from "@/components/atoms/input";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -30,17 +30,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
+} from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AdminActionBadge,
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/components/organisms/admin/admin-page-components";
-import { useDebounce } from "@/hooks/use-debounce";
+} from "@/features/admin/components/admin-page-components";
+import { useDebounce } from "@/lib/hooks/use-debounce";
 import { useRouter } from "@/i18n/routing";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { format } from "date-fns";
 import {
   Activity,

@@ -1,5 +1,5 @@
-import { GlassCard } from "@/components/atoms/glass-card";
-import { Skeleton } from "@/components/atoms/skeleton";
+import { GlassCard } from "@/components/shared/glass-card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /**
  * =====================================================================

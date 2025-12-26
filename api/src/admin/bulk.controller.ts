@@ -16,9 +16,9 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Permissions } from '../auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { PermissionsGuard } from '../auth/permissions.guard';
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
 import { BulkService } from './bulk.service';
 import { BulkUpdateDto, ImportSkusDto } from './dto/bulk.dto';
 

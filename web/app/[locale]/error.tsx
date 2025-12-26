@@ -1,7 +1,7 @@
 "use client";
 
-import { GlassButton } from "@/components/atoms/glass-button";
-import { GlassCard } from "@/components/atoms/glass-card";
+import { GlassButton } from "@/components/shared/glass-button";
+import { GlassCard } from "@/components/shared/glass-card";
 import { AlertTriangle, RefreshCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";

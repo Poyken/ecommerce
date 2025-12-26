@@ -1,4 +1,4 @@
-import { getUsersAction } from "@/actions/admin";
+import { getUsersAction } from "@/features/admin/actions";
 import { UsersPageClient } from "./users-page-client";
 
 /**

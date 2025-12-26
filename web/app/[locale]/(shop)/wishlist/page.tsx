@@ -10,8 +10,8 @@
  * =====================================================================
  */
 
-import { getWishlistAction } from "@/actions/wishlist";
-import { LoadingScreen } from "@/components/atoms/loading-screen";
+import { getWishlistAction } from "@/features/wishlist/actions";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { WishlistClient } from "./wishlist-client";

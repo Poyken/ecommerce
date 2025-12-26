@@ -4,28 +4,28 @@ import {
   getCouponsAction,
   getOrdersAction,
   getProductsAction,
-} from "@/actions/admin";
+} from "@/features/admin/actions";
 import {
   broadcastNotificationAction,
   sendNotificationToUserAction,
-} from "@/actions/notifications";
-import { Button } from "@/components/atoms/button";
-import { Checkbox } from "@/components/atoms/checkbox";
-import { Combobox, ComboboxOption } from "@/components/atoms/combobox";
-import { GlassCard } from "@/components/atoms/glass-card";
-import { Input } from "@/components/atoms/input";
-import { Label } from "@/components/atoms/label";
+} from "@/features/notifications/actions";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Combobox, ComboboxOption } from "@/components/ui/combobox";
+import { GlassCard } from "@/components/shared/glass-card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/atoms/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/atoms/tabs";
-import { Textarea } from "@/components/atoms/textarea";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useToast } from "@/hooks/use-toast";
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+import { useDebounce } from "@/lib/hooks/use-debounce";
+import { useToast } from "@/components/shared/use-toast";
 import { Coupon, Order, Product } from "@/types/models";
 import { Bell, Mail, Send, Users } from "lucide-react";
 import { useTranslations } from "next-intl";

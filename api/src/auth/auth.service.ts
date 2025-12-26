@@ -10,9 +10,9 @@ import * as bcrypt from 'bcrypt';
 import { Queue } from 'bullmq';
 import * as crypto from 'crypto';
 import { resolveMx } from 'dns/promises';
-import { EmailService } from '../common/email/email.service';
-import { PrismaService } from '../prisma/prisma.service';
-import { RedisService } from '../redis/redis.service';
+import { EmailService } from '@integrations/email/email.service';
+import { PrismaService } from '@core/prisma/prisma.service';
+import { RedisService } from '@core/redis/redis.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UserEntity } from './entities/user.entity';
@@ -45,8 +45,8 @@ import { TwoFactorService } from './two-factor.service';
  * =====================================================================
  */
 
-import { NotificationsGateway } from '../notifications/notifications.gateway';
-import { NotificationsService } from '../notifications/notifications.service';
+import { NotificationsGateway } from '@/notifications/notifications.gateway';
+import { NotificationsService } from '@/notifications/notifications.service';
 
 @Injectable()
 export class AuthService {

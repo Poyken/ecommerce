@@ -1,4 +1,4 @@
-import { getProductsAction } from "@/actions/admin";
+import { getProductsAction } from "@/features/admin/actions";
 import { getTranslations } from "next-intl/server";
 import { ProductsClient } from "./products-client";
 

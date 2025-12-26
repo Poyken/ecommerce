@@ -19,15 +19,15 @@
  * =====================================================================
  */
 
-import { updateOrderStatusAction } from "@/actions/admin";
+import { updateOrderStatusAction } from "@/features/admin/actions";
 import {
   getAdminNotificationsAction,
   markAllAsReadAction,
   Notification,
-} from "@/actions/notifications";
-import { Button } from "@/components/atoms/button";
-import { GlassCard } from "@/components/atoms/glass-card";
-import { Input } from "@/components/atoms/input";
+} from "@/features/notifications/actions";
+import { Button } from "@/components/ui/button";
+import { GlassCard } from "@/components/shared/glass-card";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -35,9 +35,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
-import { useToast } from "@/hooks/use-toast";
+} from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useToast } from "@/components/shared/use-toast";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";

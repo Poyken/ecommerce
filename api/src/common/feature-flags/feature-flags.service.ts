@@ -1,7 +1,7 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { Cache } from 'cache-manager';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '@core/prisma/prisma.service';
 import {
   CreateFeatureFlagDto,
   UpdateFeatureFlagDto,

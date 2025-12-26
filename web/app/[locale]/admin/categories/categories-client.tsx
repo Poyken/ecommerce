@@ -13,11 +13,11 @@
  * =====================================================================
  */
 
-import { deleteCategoryAction, getCategoriesAction } from "@/actions/admin";
-import { Badge } from "@/components/atoms/badge";
-import { Button } from "@/components/atoms/button";
-import { DataTablePagination } from "@/components/atoms/data-table-pagination";
-import { Input } from "@/components/atoms/input";
+import { deleteCategoryAction, getCategoriesAction } from "@/features/admin/actions";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -25,18 +25,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
+} from "@/components/ui/table";
 import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/components/organisms/admin/admin-page-components";
-import { CreateCategoryDialog } from "@/components/organisms/admin/create-category-dialog";
-import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
-import { EditCategoryDialog } from "@/components/organisms/admin/edit-category-dialog";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useAdminCategories } from "@/providers/admin-metadata-provider";
-import { useAuth } from "@/providers/auth-provider";
+} from "@/features/admin/components/admin-page-components";
+import { CreateCategoryDialog } from "@/features/admin/components/create-category-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+import { EditCategoryDialog } from "@/features/admin/components/edit-category-dialog";
+import { useDebounce } from "@/lib/hooks/use-debounce";
+import { useAdminCategories } from "@/features/admin/providers/admin-metadata-provider";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { PaginationMeta } from "@/types/dtos";
 import { Category } from "@/types/models";
 import { format } from "date-fns";

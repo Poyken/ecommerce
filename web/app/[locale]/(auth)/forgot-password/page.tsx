@@ -1,4 +1,4 @@
-import { ForgotPasswordPageContent } from "@/components/templates/forgot-password-page-content";
+import { ForgotPasswordPageContent } from "@/features/auth/components/forgot-password-page-content";
 import { Metadata } from "next";
 
 /**

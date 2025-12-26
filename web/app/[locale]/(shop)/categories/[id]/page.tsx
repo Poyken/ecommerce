@@ -1,4 +1,4 @@
-import { ProductCard } from "@/components/organisms/product-card";
+import { ProductCard } from "@/features/products/components/product-card";
 import { Link } from "@/i18n/routing";
 import { productService } from "@/services/product.service";
 import { getTranslations } from "next-intl/server";

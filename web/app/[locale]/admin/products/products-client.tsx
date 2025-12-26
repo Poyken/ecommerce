@@ -14,11 +14,11 @@
  * =====================================================================
  */
 
-import { deleteProductAction } from "@/actions/admin";
-import { Badge } from "@/components/atoms/badge";
-import { Button } from "@/components/atoms/button";
-import { DataTablePagination } from "@/components/atoms/data-table-pagination";
-import { Input } from "@/components/atoms/input";
+import { deleteProductAction } from "@/features/admin/actions";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -26,16 +26,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
+} from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/components/organisms/admin/admin-page-components";
-import { useDebounce } from "@/hooks/use-debounce";
+} from "@/features/admin/components/admin-page-components";
+import { useDebounce } from "@/lib/hooks/use-debounce";
 import { useRouter } from "@/i18n/routing";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { Product } from "@/types/models";
 import { format } from "date-fns";
 import {
@@ -57,28 +57,28 @@ import { useEffect, useState } from "react";
 
 const CreateProductDialog = dynamic(
   () =>
-    import("@/components/organisms/admin/create-product-dialog").then(
+    import("@/features/admin/components/create-product-dialog").then(
       (mod) => mod.CreateProductDialog
     ),
   { ssr: false }
 );
 const DeleteConfirmDialog = dynamic(
   () =>
-    import("@/components/organisms/admin/delete-confirm-dialog").then(
+    import("@/features/admin/components/delete-confirm-dialog").then(
       (mod) => mod.DeleteConfirmDialog
     ),
   { ssr: false }
 );
 const EditProductDialog = dynamic(
   () =>
-    import("@/components/organisms/admin/edit-product-dialog").then(
+    import("@/features/admin/components/edit-product-dialog").then(
       (mod) => mod.EditProductDialog
     ),
   { ssr: false }
 );
 const ProductTranslationDialog = dynamic(
   () =>
-    import("@/components/organisms/admin/product-translation-dialog").then(
+    import("@/features/admin/components/product-translation-dialog").then(
       (mod) => mod.ProductTranslationDialog
     ),
   { ssr: false }

@@ -1,4 +1,4 @@
-import { AboutPageContent } from "@/components/templates/about-page-content";
+import { AboutPageContent } from "@/features/marketing/components/about-page-content";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 

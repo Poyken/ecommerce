@@ -1,4 +1,4 @@
-import { getReviewsAction } from "@/actions/admin";
+import { getReviewsAction } from "@/features/admin/actions";
 import { ReviewsClient } from "./reviews-client";
 
 async function getReviewCounts() {

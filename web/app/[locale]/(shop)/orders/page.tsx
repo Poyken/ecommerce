@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "View your order history and track shipments.",
 };
 
-import { GlassCard } from "@/components/atoms/glass-card";
+import { GlassCard } from "@/components/shared/glass-card";
 
 /**
  * =====================================================================
@@ -92,8 +92,8 @@ async function DynamicOrders({
   return <OrdersClient orders={orders} meta={meta ?? null} />;
 }
 
-import { getMyOrdersAction } from "@/actions/order"; // Import action
-import { LoadingScreen } from "@/components/atoms/loading-screen";
+import { getMyOrdersAction } from "@/features/orders/actions"; // Import action
+import { LoadingScreen } from "@/components/shared/loading-screen";
 
 export default async function OrdersPage({
   searchParams,

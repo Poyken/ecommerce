@@ -13,10 +13,10 @@
  * =====================================================================
  */
 
-import { Badge } from "@/components/atoms/badge";
-import { Button } from "@/components/atoms/button";
-import { DataTablePagination } from "@/components/atoms/data-table-pagination";
-import { Input } from "@/components/atoms/input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -24,18 +24,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
+} from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/components/organisms/admin/admin-page-components";
-import { CreateUserDialog } from "@/components/organisms/admin/create-user-dialog";
-import { UserActions } from "@/components/organisms/user-actions";
-import { useDebounce } from "@/hooks/use-debounce";
+} from "@/features/admin/components/admin-page-components";
+import { CreateUserDialog } from "@/features/admin/components/create-user-dialog";
+import { UserActions } from "@/features/layout/components/user-actions";
+import { useDebounce } from "@/lib/hooks/use-debounce";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { User } from "@/types/models";
 import { format } from "date-fns";
 import {

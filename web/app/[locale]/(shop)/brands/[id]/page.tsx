@@ -1,4 +1,4 @@
-import { ProductGridView } from "@/components/organisms/product-grid-view";
+import { ProductGridView } from "@/features/products/components/product-grid-view";
 import { Link } from "@/i18n/routing";
 import { productService } from "@/services/product.service";
 import { getTranslations } from "next-intl/server";

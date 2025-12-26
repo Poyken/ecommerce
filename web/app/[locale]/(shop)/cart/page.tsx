@@ -54,7 +54,7 @@ async function DynamicCart() {
   return <CartClient cart={cart} />;
 }
 
-import { LoadingScreen } from "@/components/atoms/loading-screen";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 
 export default async function CartPage() {
   const t = await getTranslations("loading");

@@ -31,9 +31,9 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
-import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
-import { TransformInterceptor } from './common/interceptors/transform.interceptor';
-import { LoggerService } from './common/logger.service';
+import { AllExceptionsFilter } from '@core/filters/all-exceptions.filter';
+import { TransformInterceptor } from '@core/interceptors/transform.interceptor';
+import { LoggerService } from '@core/logger/logger.service';
 
 /**
  * Hàm Bootstrap - Khởi tạo và cấu hình ứng dụng

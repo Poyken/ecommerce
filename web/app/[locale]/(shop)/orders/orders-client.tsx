@@ -31,11 +31,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/atoms/alert-dialog";
-import { Button } from "@/components/atoms/button";
-import { GlassButton } from "@/components/atoms/glass-button";
-import { GlassCard } from "@/components/atoms/glass-card";
-import { StatusBadge } from "@/components/atoms/status-badge";
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { GlassButton } from "@/components/shared/glass-button";
+import { GlassCard } from "@/components/shared/glass-card";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Link } from "@/i18n/routing";
 import { fadeInUp, itemVariant, staggerContainer } from "@/lib/animations";
 import { formatCurrency } from "@/lib/utils";
@@ -177,7 +177,7 @@ export function OrdersClient({ orders, meta }: OrdersClientProps) {
                                 </AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={async () => {
-                                    await import("@/actions/order").then(
+                                    await import("@/features/orders/actions").then(
                                       (mod) => mod.cancelOrderAction(order.id)
                                     );
                                   }}

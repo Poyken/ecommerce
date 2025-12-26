@@ -1,8 +1,8 @@
 "use client";
 
-import { addToCartAction } from "@/actions/cart";
-import { Button } from "@/components/atoms/button";
-import { useToast } from "@/hooks/use-toast";
+import { addToCartAction } from "@/features/cart/actions";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/shared/use-toast";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 

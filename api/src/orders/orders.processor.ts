@@ -2,11 +2,11 @@ import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 import { Job } from 'bullmq';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { InventoryService } from 'src/products/skus/inventory.service';
-import { EmailService } from '../common/email/email.service';
-import { NotificationsGateway } from '../notifications/notifications.gateway';
-import { NotificationsService } from '../notifications/notifications.service';
+import { PrismaService } from '@core/prisma/prisma.service';
+import { InventoryService } from '@/skus/inventory.service';
+import { EmailService } from '@integrations/email/email.service';
+import { NotificationsGateway } from '@/notifications/notifications.gateway';
+import { NotificationsService } from '@/notifications/notifications.service';
 
 /**
  * =====================================================================

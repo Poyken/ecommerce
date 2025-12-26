@@ -1,9 +1,9 @@
-import { Toaster } from "@/components/atoms/toaster";
-import { SmoothScroll } from "@/components/molecules/smooth-scroll";
-import { FeatureFlagProvider } from "@/hooks/use-feature-flags";
+import { Toaster } from "@/components/ui/toaster";
+import { SmoothScroll } from "@/components/shared/smooth-scroll";
+import { FeatureFlagProvider } from "@/features/admin/hooks/use-feature-flags";
 import { routing } from "@/i18n/routing";
-import { AuthProvider } from "@/providers/auth-provider";
-import { ThemeProvider } from "@/providers/theme-provider";
+import { AuthProvider } from "@/features/auth/providers/auth-provider";
+import { ThemeProvider } from "@/components/shared/theme-provider";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";

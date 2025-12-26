@@ -1,7 +1,7 @@
 "use client";
 
-import { updateCartItemAction } from "@/actions/cart";
-import { Button } from "@/components/atoms/button";
+import { updateCartItemAction } from "@/features/cart/actions";
+import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
 import { useState, useTransition } from "react";
 
@@ -25,7 +25,7 @@ import { useState, useTransition } from "react";
  * =====================================================================
  */
 
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/shared/use-toast";
 import { CartItem } from "@/types/models";
 
 export function CartItemControl({

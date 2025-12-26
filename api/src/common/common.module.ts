@@ -1,8 +1,8 @@
 import { Global, Module } from '@nestjs/common';
-import { RedisModule } from '../redis/redis.module';
-import { CacheService } from './cache.service';
-import { EmailService } from './email/email.service';
-import { LoggerService } from './logger.service';
+import { RedisModule } from '@core/redis/redis.module';
+import { CacheService } from '@core/cache/cache.service';
+import { EmailService } from '@integrations/email/email.service';
+import { LoggerService } from '@core/logger/logger.service';
 
 /**
  * =====================================================================

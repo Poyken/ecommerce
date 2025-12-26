@@ -1,4 +1,4 @@
-import { HomeContent } from "@/components/templates/home-content";
+import { HomeContent } from "@/features/products/components/home-content";
 import { productService } from "@/services/product.service";
 import { Brand, Category, Product } from "@/types/models";
 

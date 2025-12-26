@@ -1,4 +1,4 @@
-import { ResetPasswordPageContent } from "@/components/templates/reset-password-page-content";
+import { ResetPasswordPageContent } from "@/features/auth/components/reset-password-page-content";
 import { Metadata } from "next";
 import { Suspense } from "react";
 

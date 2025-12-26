@@ -12,7 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as crypto from 'crypto';
 import * as querystring from 'qs';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '@core/prisma/prisma.service';
 import { VNPayUtils } from './vnpay.utils';
 
 @ApiTags('Payment')

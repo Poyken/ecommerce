@@ -28,7 +28,7 @@ import {
   getGuestCartDetailsAction,
   removeFromCartAction,
   updateCartItemAction,
-} from "@/actions/cart";
+} from "@/features/cart/actions";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,14 +39,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/atoms/alert-dialog";
-import { Checkbox } from "@/components/atoms/checkbox";
-import { GlassButton } from "@/components/atoms/glass-button";
-import { GlassCard } from "@/components/atoms/glass-card";
-import { OptimizedImage } from "@/components/atoms/optimized-image";
-import { Separator } from "@/components/atoms/separator";
-import { Skeleton } from "@/components/atoms/skeleton";
-import { useToast } from "@/hooks/use-toast";
+} from "@/components/ui/alert-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { GlassButton } from "@/components/shared/glass-button";
+import { GlassCard } from "@/components/shared/glass-card";
+import { OptimizedImage } from "@/components/shared/optimized-image";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/shared/use-toast";
 import { Link } from "@/i18n/routing";
 import { Cart, CartItem, Sku } from "@/types/models";
 import { motion } from "framer-motion";

@@ -11,10 +11,10 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { Permissions } from '../auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { PermissionsGuard } from '../auth/permissions.guard';
-import { EmailService } from '../common/email/email.service';
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
+import { EmailService } from '@integrations/email/email.service';
 import { BroadcastNotificationDto } from './dto/broadcast-notification.dto';
 import { SendToUserDto } from './dto/send-to-user.dto';
 import { NotificationsService } from './notifications.service';

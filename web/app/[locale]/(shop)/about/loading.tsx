@@ -1,4 +1,4 @@
-import { AboutSkeleton } from "@/components/organisms/skeletons/about-skeleton";
+import { AboutSkeleton } from "@/components/shared/skeletons/about-skeleton";
 
 /**
  * =====================================================================

@@ -1,8 +1,8 @@
 "use client";
 
-import { BackgroundBlob } from "@/components/atoms/background-blob";
-import { GlassButton } from "@/components/atoms/glass-button";
-import { OptimizedImage } from "@/components/atoms/optimized-image";
+import { BackgroundBlob } from "@/components/shared/background-blob";
+import { GlassButton } from "@/components/shared/glass-button";
+import { OptimizedImage } from "@/components/shared/optimized-image";
 import { useRouter } from "@/i18n/routing";
 import { ChevronLeft } from "lucide-react";
 import { useTranslations } from "next-intl";

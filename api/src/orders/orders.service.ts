@@ -7,18 +7,18 @@ import {
 } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 import { Queue } from 'bullmq';
-import { PaymentService } from 'src/payment/payment.service';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PaymentService } from '@/payment/payment.service';
+import { PrismaService } from '@core/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
 import { Logger } from '@nestjs/common';
-import { EmailService } from '../common/email/email.service';
-import { CouponsService } from '../coupons/coupons.service';
-import { NotificationsGateway } from '../notifications/notifications.gateway';
-import { NotificationsService } from '../notifications/notifications.service';
-import { InventoryService } from '../products/skus/inventory.service';
-import { ShippingService } from '../shipping/shipping.service';
+import { EmailService } from '@integrations/email/email.service';
+import { CouponsService } from '@/coupons/coupons.service';
+import { NotificationsGateway } from '@/notifications/notifications.gateway';
+import { NotificationsService } from '@/notifications/notifications.service';
+import { InventoryService } from '@/skus/inventory.service';
+import { ShippingService } from '@/shipping/shipping.service';
 
 /**
  * =====================================================================

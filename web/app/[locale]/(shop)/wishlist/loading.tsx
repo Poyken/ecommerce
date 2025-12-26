@@ -1,4 +1,4 @@
-import { WishlistSkeleton } from "@/components/organisms/skeletons/wishlist-skeleton";
+import { WishlistSkeleton } from "@/components/shared/skeletons/wishlist-skeleton";
 
 /**
  * =====================================================================

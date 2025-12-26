@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/atoms/button";
+import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
 import { useTransition } from "react";
 

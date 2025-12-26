@@ -13,12 +13,12 @@
  * =====================================================================
  */
 
-import { Button } from "@/components/atoms/button";
-import { Checkbox } from "@/components/atoms/checkbox";
-import { DataTablePagination } from "@/components/atoms/data-table-pagination";
-import { Input } from "@/components/atoms/input";
-import { Label } from "@/components/atoms/label";
-import { StatusBadge } from "@/components/atoms/status-badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { StatusBadge } from "@/components/shared/status-badge";
 import {
   Table,
   TableBody,
@@ -26,17 +26,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
+} from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/components/organisms/admin/admin-page-components";
-import { EditSkuDialog } from "@/components/organisms/admin/edit-sku-dialog";
-import { useDebounce } from "@/hooks/use-debounce";
+} from "@/features/admin/components/admin-page-components";
+import { EditSkuDialog } from "@/features/admin/components/edit-sku-dialog";
+import { useDebounce } from "@/lib/hooks/use-debounce";
 import { formatCurrency } from "@/lib/utils";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { Sku } from "@/types/models";
 import { AlertTriangle, Barcode, Edit, Package, Search } from "lucide-react";
 import { useTranslations } from "next-intl";

@@ -1,4 +1,4 @@
-import { ShopContent } from "@/components/templates/shop-content";
+import { ShopContent } from "@/features/products/components/shop-content";
 import { http } from "@/lib/http";
 import { productService } from "@/services/product.service";
 import { getTranslations } from "next-intl/server";
@@ -124,7 +124,7 @@ export default async function ShopPage({
     const suggestedProductsPromise = productService.getFeaturedProducts(4);
 
     // Fetch wishlist items (server-side) to ensure correct initial state
-    const { getWishlistAction } = await import("@/actions/wishlist");
+    const { getWishlistAction } = await import("@/features/wishlist/actions");
     let wishlistItems: Product[] = [];
     try {
       const items = await getWishlistAction();

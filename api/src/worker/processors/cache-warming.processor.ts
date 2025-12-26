@@ -1,8 +1,8 @@
+import { SortOption } from '@/products/dto/filter-product.dto';
+import { ProductsService } from '@/products/products.service';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { SortOption } from '../../products/products/dto/filter-product.dto';
-import { ProductsService } from '../../products/products/products.service';
 
 @Processor('cache-warming')
 export class CacheWarmingProcessor extends WorkerHost {

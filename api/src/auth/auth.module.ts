@@ -22,14 +22,14 @@ import { JwtModule } from '@nestjs/jwt';
  * - `TokenService` được tách riêng để quản lý logic phức tạp về Access/Refresh Token, giúp `AuthService` tập trung vào logic nghiệp vụ chính.
  * =====================================================================
  */
-import { NotificationsModule } from '../notifications/notifications.module';
+import { NotificationsModule } from '@/notifications/notifications.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './jwt.strategy';
 import { TokenService } from './token.service';
 import { TwoFactorService } from './two-factor.service';
 
-import { EmailModule } from '../common/email/email.module';
+import { EmailModule } from '@integrations/email/email.module';
 import { FacebookStrategy } from './strategies/facebook.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 

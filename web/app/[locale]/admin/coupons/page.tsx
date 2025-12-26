@@ -1,4 +1,4 @@
-import { getCouponsAction } from "@/actions/admin";
+import { getCouponsAction } from "@/features/admin/actions";
 import { getTranslations } from "next-intl/server";
 import { CouponsClient } from "./coupons-client";
 

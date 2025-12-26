@@ -3,9 +3,9 @@ import {
   getReviewsAction,
   getSalesDataAction,
   getTopProductsAction,
-} from "@/actions/admin";
-import { getProfileAction } from "@/actions/profile";
-import { Badge } from "@/components/atoms/badge";
+} from "@/features/admin/actions";
+import { getProfileAction } from "@/features/profile/actions";
+import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -13,17 +13,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
-import { AdminAlerts } from "@/components/organisms/admin/admin-alerts";
+} from "@/components/ui/table";
+import { AdminAlerts } from "@/features/admin/components/admin-alerts";
 import {
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/components/organisms/admin/admin-page-components";
+} from "@/features/admin/components/admin-page-components";
 import {
   LazyBestSellersChart as BestSellersChart,
   LazySalesTrendChart as SalesTrendChart,
-} from "@/components/organisms/admin/lazy-admin-charts";
-import { QuickActions } from "@/components/organisms/admin/quick-actions";
+} from "@/features/admin/components/lazy-admin-charts";
+import { QuickActions } from "@/features/admin/components/quick-actions";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";
 import { cn, formatCurrency } from "@/lib/utils";

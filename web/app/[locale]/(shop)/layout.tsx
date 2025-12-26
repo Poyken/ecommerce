@@ -1,21 +1,21 @@
-import { getCartCountAction } from "@/actions/cart";
+import { getCartCountAction } from "@/features/cart/actions";
 import {
   getNotificationsAction,
   getUnreadCountAction,
-} from "@/actions/notifications";
-import { getProfileAction } from "@/actions/profile";
-import { getWishlistAction } from "@/actions/wishlist";
-import { SocialProofToast } from "@/components/molecules/purchase-toast";
-import { ConditionalFooter } from "@/components/organisms/conditional-footer";
-import { Footer } from "@/components/organisms/footer";
-import { Header, HeaderFallback } from "@/components/organisms/header";
-import { MobileBottomNav } from "@/components/organisms/mobile-nav";
+} from "@/features/notifications/actions";
+import { getProfileAction } from "@/features/profile/actions";
+import { getWishlistAction } from "@/features/wishlist/actions";
+import { SocialProofToast } from "@/components/shared/purchase-toast";
+import { ConditionalFooter } from "@/features/layout/components/conditional-footer";
+import { Footer } from "@/features/layout/components/footer";
+import { Header, HeaderFallback } from "@/features/layout/components/header";
+import { MobileBottomNav } from "@/features/layout/components/mobile-nav";
 import {
   NotificationProvider,
   type Notification,
 } from "@/contexts/notification-context";
 import { getPermissionsFromToken } from "@/lib/permission-utils";
-import { CartProvider } from "@/providers/cart-provider";
+import { CartProvider } from "@/features/cart/providers/cart-provider";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 

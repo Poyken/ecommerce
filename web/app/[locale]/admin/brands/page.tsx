@@ -1,4 +1,4 @@
-import { getBrandsAction } from "@/actions/admin";
+import { getBrandsAction } from "@/features/admin/actions";
 import { BrandsPageClient } from "./brands-client";
 
 /**

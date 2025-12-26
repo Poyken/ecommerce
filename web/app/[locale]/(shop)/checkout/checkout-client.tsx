@@ -29,28 +29,28 @@
 
 "use client";
 
-import { validateCouponAction } from "@/actions/coupon";
-import { placeOrderAction } from "@/actions/order";
-import { calculateShippingFeeAction } from "@/actions/shipping";
+import { validateCouponAction } from "@/features/coupons/coupon-actions";
+import { placeOrderAction } from "@/features/orders/actions";
+import { calculateShippingFeeAction } from "@/features/shipping/actions";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/atoms/dialog";
-import { GlassButton } from "@/components/atoms/glass-button";
-// import { AddAddressDialog } from "@/components/organisms/admin/add-address-dialog"; // Replaced with dynamic import
-import { getGuestCartDetailsAction } from "@/actions/cart";
-import { Skeleton } from "@/components/atoms/skeleton";
-import { AddressSelector } from "@/components/organisms/checkout/address-selector";
-import { CouponInput } from "@/components/organisms/checkout/coupon-input";
-import { OrderSummary } from "@/components/organisms/checkout/order-summary";
+} from "@/components/ui/dialog";
+import { GlassButton } from "@/components/shared/glass-button";
+// import { AddAddressDialog } from "@/features/admin/components/add-address-dialog"; // Replaced with dynamic import
+import { getGuestCartDetailsAction } from "@/features/cart/actions";
+import { Skeleton } from "@/components/ui/skeleton";
+import { AddressSelector } from "@/features/checkout/components/address-selector";
+import { CouponInput } from "@/features/checkout/components/coupon-input";
+import { OrderSummary } from "@/features/checkout/components/order-summary";
 import {
   PaymentMethodSelector,
   PaymentMethodType,
-} from "@/components/organisms/checkout/payment-method-selector";
-import { useToast } from "@/hooks/use-toast";
+} from "@/features/checkout/components/payment-method-selector";
+import { useToast } from "@/components/shared/use-toast";
 import { Link, useRouter } from "@/i18n/routing";
 import { formatCurrency } from "@/lib/utils";
 import { Address, Cart, CartItem, Coupon, Sku } from "@/types/models";
@@ -63,7 +63,7 @@ import { useEffect, useMemo, useState, useTransition } from "react";
 
 const AddAddressDialog = dynamic(
   () =>
-    import("@/components/organisms/admin/add-address-dialog").then(
+    import("@/features/admin/components/add-address-dialog").then(
       (m) => m.AddAddressDialog
     ),
   { ssr: false }
@@ -71,7 +71,7 @@ const AddAddressDialog = dynamic(
 
 const BankTransferQR = dynamic(
   () =>
-    import("@/components/organisms/orders/bank-transfer-qr").then(
+    import("@/features/orders/components/bank-transfer-qr").then(
       (m) => m.BankTransferQR
     ),
   { ssr: false }

@@ -1,9 +1,9 @@
 "use client";
 
-import { socialLoginAction } from "@/actions/auth";
-import { mergeGuestCartAction } from "@/actions/cart";
-import { mergeGuestWishlistAction } from "@/actions/wishlist";
-import { useToast } from "@/hooks/use-toast";
+import { socialLoginAction } from "@/features/auth/actions";
+import { mergeGuestCartAction } from "@/features/cart/actions";
+import { mergeGuestWishlistAction } from "@/features/wishlist/actions";
+import { useToast } from "@/components/shared/use-toast";
 import { Loader2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";

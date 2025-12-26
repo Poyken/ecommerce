@@ -1,8 +1,8 @@
 "use client";
-import { deleteRoleAction } from "@/actions/admin";
-import { Badge } from "@/components/atoms/badge";
-import { Button } from "@/components/atoms/button";
-import { DataTablePagination } from "@/components/atoms/data-table-pagination";
+import { deleteRoleAction } from "@/features/admin/actions";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,8 +10,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/atoms/dropdown-menu";
-import { Input } from "@/components/atoms/input";
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -19,18 +19,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
+} from "@/components/ui/table";
 import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/components/organisms/admin/admin-page-components";
-import { AssignPermissionsDialog } from "@/components/organisms/admin/assign-permissions-dialog";
-import { CreateRoleDialog } from "@/components/organisms/admin/create-role-dialog";
-import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
-import { EditRoleDialog } from "@/components/organisms/admin/edit-role-dialog";
-import { useDebounce } from "@/hooks/use-debounce";
-import { useAuth } from "@/providers/auth-provider";
+} from "@/features/admin/components/admin-page-components";
+import { AssignPermissionsDialog } from "@/features/admin/components/assign-permissions-dialog";
+import { CreateRoleDialog } from "@/features/admin/components/create-role-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+import { EditRoleDialog } from "@/features/admin/components/edit-role-dialog";
+import { useDebounce } from "@/lib/hooks/use-debounce";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { PaginationMeta } from "@/types/dtos";
 import {
   Edit2,

@@ -18,7 +18,7 @@
  * =====================================================================
  */
 
-import { LoadingScreen } from "@/components/atoms/loading-screen";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 
 export default function Loading() {
   return <LoadingScreen />;

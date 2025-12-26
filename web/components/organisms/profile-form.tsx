@@ -19,15 +19,15 @@
 
 "use client";
 
-import { ProfileAccountTab } from "@/components/organisms/profile/profile-account-tab";
-import { ProfileAddressesTab } from "@/components/organisms/profile/profile-addresses-tab";
-import { ProfileBlogsTab } from "@/components/organisms/profile/profile-blogs-tab";
-import { ProfileDashboardTab } from "@/components/organisms/profile/profile-dashboard-tab";
-import { ProfileOrdersTab } from "@/components/organisms/profile/profile-orders-tab";
-import { ProfilePasswordTab } from "@/components/organisms/profile/profile-password-tab";
-import { ProfileSidebar } from "@/components/organisms/profile/profile-sidebar";
-import { ProfileVouchersTab } from "@/components/organisms/profile/profile-vouchers-tab";
-import { ProfileWishlistTab } from "@/components/organisms/profile/profile-wishlist-tab";
+import { ProfileAccountTab } from "@/features/profile/components/profile-account-tab";
+import { ProfileAddressesTab } from "@/features/profile/components/profile-addresses-tab";
+import { ProfileBlogsTab } from "@/features/profile/components/profile-blogs-tab";
+import { ProfileDashboardTab } from "@/features/profile/components/profile-dashboard-tab";
+import { ProfileOrdersTab } from "@/features/profile/components/profile-orders-tab";
+import { ProfilePasswordTab } from "@/features/profile/components/profile-password-tab";
+import { ProfileSidebar } from "@/features/profile/components/profile-sidebar";
+import { ProfileVouchersTab } from "@/features/profile/components/profile-vouchers-tab";
+import { ProfileWishlistTab } from "@/features/profile/components/profile-wishlist-tab";
 import { User } from "@/types/models";
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";

@@ -1,4 +1,4 @@
-import { getAuditLogsAction } from "@/actions/admin";
+import { getAuditLogsAction } from "@/features/admin/actions";
 import { AuditLogsClient } from "./audit-logs-client";
 
 export default async function AuditLogsPage({

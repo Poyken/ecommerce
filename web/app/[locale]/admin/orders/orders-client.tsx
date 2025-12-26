@@ -14,10 +14,10 @@
  * =====================================================================
  */
 
-import { Checkbox } from "@/components/atoms/checkbox";
-import { DataTablePagination } from "@/components/atoms/data-table-pagination";
-import { OrderDetailsDialog } from "@/components/organisms/admin/order-details-dialog";
-import { UpdateOrderStatusDialog } from "@/components/organisms/admin/update-order-status-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { OrderDetailsDialog } from "@/features/admin/components/order-details-dialog";
+import { UpdateOrderStatusDialog } from "@/features/admin/components/update-order-status-dialog";
 import {
   Check,
   Clock,
@@ -33,9 +33,9 @@ import {
   X,
 } from "lucide-react";
 
-import { Button } from "@/components/atoms/button";
-import { Input } from "@/components/atoms/input";
-import { StatusBadge } from "@/components/atoms/status-badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { StatusBadge } from "@/components/shared/status-badge";
 import {
   Table,
   TableBody,
@@ -43,16 +43,16 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
+} from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/components/organisms/admin/admin-page-components";
-import { useDebounce } from "@/hooks/use-debounce";
+} from "@/features/admin/components/admin-page-components";
+import { useDebounce } from "@/lib/hooks/use-debounce";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { Order, OrderStatus } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";

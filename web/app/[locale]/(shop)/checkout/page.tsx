@@ -1,4 +1,4 @@
-import { getProfileAction } from "@/actions/profile";
+import { getProfileAction } from "@/features/profile/actions";
 import { http } from "@/lib/http";
 import { ApiResponse } from "@/types/dtos";
 import { Cart } from "@/types/models";
@@ -43,7 +43,7 @@ async function DynamicCheckout() {
   return <CheckoutClient cart={cart} addresses={addresses} />;
 }
 
-import { LoadingScreen } from "@/components/atoms/loading-screen";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 
 export default async function CheckoutPage() {
   const t = await getTranslations("loading");

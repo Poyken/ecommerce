@@ -13,10 +13,10 @@
  * =====================================================================
  */
 
-import { deleteCouponAction } from "@/actions/admin";
-import { Button } from "@/components/atoms/button";
-import { DataTablePagination } from "@/components/atoms/data-table-pagination";
-import { Input } from "@/components/atoms/input";
+import { deleteCouponAction } from "@/features/admin/actions";
+import { Button } from "@/components/ui/button";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -24,20 +24,20 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/atoms/table";
-import { Tabs, TabsList, TabsTrigger } from "@/components/atoms/tabs";
+} from "@/components/ui/table";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   AdminActionBadge,
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/components/organisms/admin/admin-page-components";
-import { CreateCouponDialog } from "@/components/organisms/admin/create-coupon-dialog";
-import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
-import { EditCouponDialog } from "@/components/organisms/admin/edit-coupon-dialog";
-import { useToast } from "@/hooks/use-toast";
+} from "@/features/admin/components/admin-page-components";
+import { CreateCouponDialog } from "@/features/admin/components/create-coupon-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+import { EditCouponDialog } from "@/features/admin/components/edit-coupon-dialog";
+import { useToast } from "@/components/shared/use-toast";
 import { cn, formatCurrency } from "@/lib/utils";
-import { useAuth } from "@/providers/auth-provider";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { PaginationMeta } from "@/types/dtos";
 import { Coupon } from "@/types/models";
 import { format } from "date-fns";

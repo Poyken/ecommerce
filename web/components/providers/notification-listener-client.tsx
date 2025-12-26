@@ -1,6 +1,6 @@
 "use client";
 
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/shared/use-toast";
 import { notificationSocket } from "@/lib/socket";
 import { useEffect, useState } from "react";
 

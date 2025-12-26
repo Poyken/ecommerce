@@ -1,8 +1,8 @@
 "use client";
 
-import { getBlogsAction } from "@/actions/blog-public";
-import { LoadingScreen } from "@/components/atoms/loading-screen";
-import { BlogList } from "@/components/organisms/blog-list";
+import { getBlogsAction } from "@/features/blog/public-actions";
+import { LoadingScreen } from "@/components/shared/loading-screen";
+import { BlogList } from "@/features/blog/components/blog-list";
 import { tapScale } from "@/lib/animations";
 import { BlogWithProducts } from "@/types/models";
 import { motion } from "framer-motion";

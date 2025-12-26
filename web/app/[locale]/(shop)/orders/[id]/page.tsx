@@ -3,11 +3,11 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/atoms/card";
-import { Separator } from "@/components/atoms/separator";
-import { StatusBadge } from "@/components/atoms/status-badge";
-import { BankTransferQR } from "@/components/organisms/orders/bank-transfer-qr";
-import { BuyAgainButton } from "@/components/organisms/orders/buy-again-button";
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { StatusBadge } from "@/components/shared/status-badge";
+import { BankTransferQR } from "@/features/orders/components/bank-transfer-qr";
+import { BuyAgainButton } from "@/features/orders/components/buy-again-button";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";
 import { formatCurrency } from "@/lib/utils";
@@ -319,7 +319,7 @@ async function DynamicOrderDetail({ id }: { id: string }) {
   );
 }
 
-import { LoadingScreen } from "@/components/atoms/loading-screen";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 
 export default async function OrderDetailPage({
   params,
