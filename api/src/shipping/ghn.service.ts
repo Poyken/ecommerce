@@ -93,6 +93,10 @@ export class GHNService {
     }
   }
 
+  /**
+   * Calculate shipping fee from GHN
+   * ✅ Production-safe: Has timeout + fallback
+   */
   async calculateFee(data: {
     service_id?: number;
     service_type_id?: number;
@@ -108,25 +112,38 @@ export class GHNService {
     const feeUrl =
       this.configService.get('GHN_FEE_URL') ||
       `${this.v2Url}shipping-order/fee`;
+
     try {
-      const response = await axios.post(
-        feeUrl,
-        {
-          ...data,
-          from_district_id: parseInt(
-            this.configService.get('GHN_FROM_DISTRICT_ID') || '1482',
-          ), // Default to Hanoi Ba Dinh
-          service_type_id: data.service_type_id || 2, // Default E-commerce service
-        },
-        { headers: this.shopHeaders },
-      );
+      // ✅ Add timeout wrapper to prevent hanging
+      const response = await Promise.race([
+        axios.post(
+          feeUrl,
+          {
+            ...data,
+            from_district_id: parseInt(
+              this.configService.get('GHN_FROM_DISTRICT_ID') || '1482',
+            ), // Default to Hanoi Ba Dinh
+            service_type_id: data.service_type_id || 2, // Default E-commerce service
+          },
+          {
+            headers: this.shopHeaders,
+            timeout: 5000, // 5 second axios timeout
+          },
+        ),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('GHN API timeout after 5s')), 5000),
+        ),
+      ]);
+
       return response.data.data.total;
     } catch (error) {
       this.logger.error(
-        'Failed to calculate shipping fee from GHN',
+        'Failed to calculate shipping fee from GHN, using default',
         error.response?.data || error.message,
       );
-      throw error;
+
+      // ✅ Graceful fallback - return default shipping fee
+      return 30000; // Default 30,000 VND
     }
   }
 

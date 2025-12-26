@@ -66,139 +66,243 @@ export class OrdersService {
     private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
+  /**
+   * Create a new order from cart items
+   *
+   * ✅ PRODUCTION-SAFE: ALL validation happens INSIDE transaction
+   * ✅ No TOCTOU bugs (stock validated atomically)
+   * ✅ No overselling possible
+   * ✅ Atomic coupon usage increment
+   */
   async create(userId: string, createOrderDto: CreateOrderDto) {
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
-    if (!user) throw new BadRequestException('User không tồn tại');
-
-    const cart = await this.prisma.cart.findUnique({
-      where: { userId },
-      include: {
-        items: {
-          include: { sku: true },
-        },
-      },
-    });
-
-    if (!cart || cart.items.length === 0) {
-      throw new BadRequestException('Giỏ hàng trống');
-    }
-
-    let totalAmount = 0;
-    const orderItemsData: {
-      skuId: string;
-      quantity: number;
-      priceAtPurchase: number;
-    }[] = [];
-
-    const itemsToProcess =
-      createOrderDto.itemIds && createOrderDto.itemIds.length > 0
-        ? cart.items.filter((item) => createOrderDto.itemIds!.includes(item.id))
-        : cart.items;
-
-    if (itemsToProcess.length === 0) {
-      throw new BadRequestException('No items selected for checkout');
-    }
-
-    for (const item of itemsToProcess) {
-      if (item.sku.stock < item.quantity) {
-        throw new BadRequestException(
-          `Sản phẩm ${item.sku.skuCode} không đủ số lượng (Yêu cầu: ${item.quantity}, Còn: ${item.sku.stock}).`,
-        );
-      }
-
-      const price = Number(item.sku.price);
-      totalAmount += price * item.quantity;
-
-      orderItemsData.push({
-        skuId: item.skuId,
-        quantity: item.quantity,
-        priceAtPurchase: price,
-      });
-    }
-
-    let couponId: string | null = null;
-    let discountAmount = 0;
-    if (createOrderDto.couponCode) {
-      const { coupon, discountAmount: valDiscount } =
-        await this.couponsService.validateCoupon(
-          createOrderDto.couponCode,
-          totalAmount,
-        );
-      couponId = coupon.id;
-      discountAmount = valDiscount;
-
-      totalAmount = Math.max(0, totalAmount - discountAmount);
-    }
-
-    let shippingFee = 0;
-    if (createOrderDto.addressId) {
-      const address = await this.prisma.address.findUnique({
-        where: { id: createOrderDto.addressId },
-      });
-      if (address && address.districtId && address.wardCode) {
-        shippingFee = await this.shippingService.calculateFee(
-          address.districtId,
-          address.wardCode,
-        );
-      }
-    }
-    totalAmount += shippingFee;
-
-    const order = await this.prisma.$transaction(async (tx) => {
-      const newOrder = await tx.order.create({
-        data: {
-          userId,
-          totalAmount: totalAmount,
-          recipientName: createOrderDto.recipientName,
-          phoneNumber: createOrderDto.phoneNumber,
-          shippingAddress: createOrderDto.shippingAddress,
-          shippingFee: shippingFee,
-          paymentMethod: createOrderDto.paymentMethod || 'COD',
-          status: OrderStatus.PENDING,
-          couponId: couponId,
-          addressId: createOrderDto.addressId,
-          items: {
-            create: orderItemsData,
-          },
-        } as any,
-        include: { items: true },
-      });
-
-      for (const item of itemsToProcess) {
-        await this.inventoryService.reserveStock(item.skuId, item.quantity, tx);
-      }
-
-      const itemIdsToDelete = itemsToProcess.map((i) => i.id);
-      await tx.cartItem.deleteMany({
-        where: {
-          cartId: cart.id,
-          id: { in: itemIdsToDelete },
-        },
-      });
-
-      if (couponId) {
-        // [P0] Atomic re-verify usageLimit inside transaction to prevent race conditions
-        const coupon = await tx.coupon.findUnique({
-          where: { id: couponId },
-          select: { id: true, usageLimit: true, usedCount: true },
-        });
-
-        if (
-          coupon &&
-          coupon.usageLimit !== null &&
-          coupon.usedCount >= coupon.usageLimit
-        ) {
-          throw new BadRequestException('Mã giảm giá vừa hết lượt sử dụng');
+    // Return entire order creation in one big transaction
+    const order = await this.prisma.$transaction(
+      async (tx) => {
+        // 1. Validate user exists
+        const user = await tx.user.findUnique({ where: { id: userId } });
+        if (!user) {
+          throw new BadRequestException('User không tồn tại');
         }
 
-        await tx.coupon.update({
-          where: { id: couponId },
-          data: { usedCount: { increment: 1 } },
+        // 2. Get cart with items (inside transaction)
+        const cart = await tx.cart.findUnique({
+          where: { userId },
+          include: {
+            items: {
+              include: { sku: true },
+            },
+          },
         });
-      }
 
-      return newOrder;
-    });
+        if (!cart || cart.items.length === 0) {
+          throw new BadRequestException('Giỏ hàng trống');
+        }
+
+        // 3. Filter items to process
+        const itemsToProcess =
+          createOrderDto.itemIds && createOrderDto.itemIds.length > 0
+            ? cart.items.filter((item) =>
+                createOrderDto.itemIds!.includes(item.id),
+              )
+            : cart.items;
+
+        if (itemsToProcess.length === 0) {
+          throw new BadRequestException('No items selected for checkout');
+        }
+
+        // 4. Validate stock and calculate price INSIDE transaction
+        let totalAmount = 0;
+        const orderItemsData: {
+          skuId: string;
+          quantity: number;
+          priceAtPurchase: number;
+        }[] = [];
+
+        for (const item of itemsToProcess) {
+          // ✅ Re-fetch SKU with latest stock (atomic read)
+          const sku = await tx.sku.findUnique({
+            where: { id: item.skuId },
+            select: {
+              id: true,
+              skuCode: true,
+              stock: true,
+              status: true,
+              price: true,
+            },
+          });
+
+          if (!sku) {
+            throw new BadRequestException(
+              `Sản phẩm ${item.sku.skuCode} không tồn tại`,
+            );
+          }
+
+          if (sku.status !== 'ACTIVE') {
+            throw new BadRequestException(
+              `Sản phẩm ${sku.skuCode} không còn được bán`,
+            );
+          }
+
+          // ✅ Stock validation INSIDE transaction (prevents TOCTOU)
+          if (sku.stock < item.quantity) {
+            throw new BadRequestException(
+              `Sản phẩm ${sku.skuCode} không đủ số lượng (Yêu cầu: ${item.quantity}, Còn: ${sku.stock})`,
+            );
+          }
+
+          const price = Number(sku.price);
+          totalAmount += price * item.quantity;
+
+          orderItemsData.push({
+            skuId: item.skuId,
+            quantity: item.quantity,
+            priceAtPurchase: price,
+          });
+        }
+
+        // 5. Validate and apply coupon (inside transaction)
+        let couponId: string | null = null;
+        let discountAmount = 0;
+
+        if (createOrderDto.couponCode) {
+          // Validate coupon INSIDE transaction
+          const coupon = await tx.coupon.findUnique({
+            where: { code: createOrderDto.couponCode },
+            select: {
+              id: true,
+              code: true,
+              discountType: true,
+              discountValue: true,
+              minOrderAmount: true,
+              maxDiscountAmount: true,
+              usageLimit: true,
+              usedCount: true,
+              startDate: true,
+              endDate: true,
+            },
+          });
+
+          if (!coupon) {
+            throw new BadRequestException('Mã giảm giá không tồn tại');
+          }
+
+          const now = new Date();
+          if (coupon.startDate && now < new Date(coupon.startDate)) {
+            throw new BadRequestException('Mã giảm giá chưa có hiệu lực');
+          }
+
+          if (coupon.endDate && now > new Date(coupon.endDate)) {
+            throw new BadRequestException('Mã giảm giá đã hết hạn');
+          }
+
+          // ✅ Atomic usage limit check
+          if (
+            coupon.usageLimit !== null &&
+            coupon.usedCount >= coupon.usageLimit
+          ) {
+            throw new BadRequestException('Mã giảm giá đã hết lượt sử dụng');
+          }
+
+          if (
+            coupon.minOrderAmount &&
+            totalAmount < Number(coupon.minOrderAmount)
+          ) {
+            throw new BadRequestException(
+              `Đơn hàng tối thiểu ${coupon.minOrderAmount} để sử dụng mã này`,
+            );
+          }
+
+          // Calculate discount
+          if (coupon.discountType === 'PERCENTAGE') {
+            discountAmount = (totalAmount * Number(coupon.discountValue)) / 100;
+            if (coupon.maxDiscountAmount) {
+              discountAmount = Math.min(
+                discountAmount,
+                Number(coupon.maxDiscountAmount),
+              );
+            }
+          } else {
+            discountAmount = Number(coupon.discountValue);
+          }
+
+          couponId = coupon.id;
+          totalAmount = Math.max(0, totalAmount - discountAmount);
+
+          // ✅ Increment usage count atomically
+          await tx.coupon.update({
+            where: { id: couponId },
+            data: { usedCount: { increment: 1 } },
+          });
+        }
+
+        // 6. Calculate shipping fee
+        // Note: External API call - consider moving to async job if too slow
+        let shippingFee = 0;
+        if (createOrderDto.addressId) {
+          const address = await tx.address.findUnique({
+            where: { id: createOrderDto.addressId },
+          });
+          if (address && address.districtId && address.wardCode) {
+            try {
+              shippingFee = await this.shippingService.calculateFee(
+                address.districtId,
+                address.wardCode,
+              );
+            } catch (error) {
+              this.logger.warn(
+                'Shipping fee calculation failed, using default',
+              );
+              shippingFee = 30000; // ✅ Fallback fee
+            }
+          }
+        }
+        totalAmount += shippingFee;
+
+        // 7. Create order (inside existing transaction)
+        const order = await tx.order.create({
+          data: {
+            userId,
+            totalAmount,
+            recipientName: createOrderDto.recipientName,
+            phoneNumber: createOrderDto.phoneNumber,
+            shippingAddress: createOrderDto.shippingAddress,
+            shippingFee,
+            paymentMethod: createOrderDto.paymentMethod || 'COD',
+            status: OrderStatus.PENDING,
+            couponId,
+            addressId: createOrderDto.addressId,
+            items: {
+              create: orderItemsData,
+            },
+          } as any,
+          include: { items: true },
+        });
+
+        // 8. Reserve stock for all items
+        for (const item of itemsToProcess) {
+          await this.inventoryService.reserveStock(
+            item.skuId,
+            item.quantity,
+            tx,
+          );
+        }
+
+        // 9. Clear processed items from cart
+        const itemIdsToDelete = itemsToProcess.map((i) => i.id);
+        await tx.cartItem.deleteMany({
+          where: {
+            cartId: cart.id,
+            id: { in: itemIdsToDelete },
+          },
+        });
+
+        return order;
+      },
+      {
+        isolationLevel: 'Serializable',
+        timeout: 10000, // 10 second timeout
+      },
+    );
 
     // --- SCHEDULE STOCK RELEASE JOB (15 Minutes) ---
     try {

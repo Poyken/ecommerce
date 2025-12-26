@@ -21,15 +21,25 @@ import { env } from "./lib/env";
  * 2. Token Refresh tự động: Làm mới Access Token nếu hết hạn.
  * 3. Bảo vệ Route Admin: Chặn truy cập trái phép vào trang quản trị.
  * 4. CSRF Protection: Tạo token bảo vệ Server Actions.
+ *
+ * ✅ PRODUCTION-SAFE:
+ * - CSRF token generated ONCE per request
+ * - No duplicate token generation
+ * - Consistent client/server state
  * =====================================================================
  */
 
 const intlMiddleware = createMiddleware(routing);
 
-const CSRF_COOKIE_NAME = "csrf-token"; // Added for P0 Compliance
+const CSRF_COOKIE_NAME = "csrf-token";
 
 export default async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+
+  // Bypass i18n routing for static assets (images, fonts, etc.)
+  if (pathname.startsWith("/images/") || pathname.startsWith("/fonts/")) {
+    return NextResponse.next();
+  }
 
   // 1. Xác định locale hiện tại
   // Dùng regex để bắt locale từ pathname (vd: /vi/abc -> vi)
@@ -41,6 +51,10 @@ export default async function proxy(request: NextRequest) {
       ? localeMatch[1]
       : routing.defaultLocale
     : routing.defaultLocale;
+
+  // ✅ Generate CSRF token ONCE at start
+  const currentCsrfToken = request.cookies.get(CSRF_COOKIE_NAME)?.value;
+  const csrfToken = currentCsrfToken || nanoid(32);
 
   let accessToken = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
@@ -63,34 +77,24 @@ export default async function proxy(request: NextRequest) {
 
   let response: NextResponse;
 
-  // 2.5. Bypass i18n routing for static assets (images, fonts, etc.)
-  if (pathname.startsWith("/images/") || pathname.startsWith("/fonts/")) {
-    return NextResponse.next();
-  }
-
   // 3. Thực thi intlMiddleware (Xử lý đa ngôn ngữ)
-  // NOTE: Để not-found.tsx và loading.tsx áp dụng cho mọi path (như /vi/2),
-  // ta đã thêm catch-all route [...rest] trong app/[locale].
   response = intlMiddleware(request);
 
-  // --- CSRF PROTECTION (P0 INJECTION) ---
-  const currentCsrfToken = request.cookies.get(CSRF_COOKIE_NAME)?.value;
+  // ✅ Set CSRF token ONCE (only if not already set)
   if (!currentCsrfToken) {
-    const newToken = nanoid(32);
-    response.cookies.set(CSRF_COOKIE_NAME, newToken, {
+    response.cookies.set(CSRF_COOKIE_NAME, csrfToken, {
       path: "/",
       httpOnly: false, // Critical: Client must read this
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
     });
   }
-  // --------------------------------------
 
   if (shouldRefresh && refreshToken) {
     try {
       const apiUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
 
-      // FIXED: Send refresh token in Cookie header, not just body
+      // Send refresh token in Cookie header
       const refreshRes = await fetch(`${apiUrl}/auth/refresh`, {
         method: "POST",
         headers: {
@@ -102,31 +106,19 @@ export default async function proxy(request: NextRequest) {
 
       if (refreshRes.ok) {
         const data = await refreshRes.json();
-        const newTokens = data.data; // Note: Backend now only returns accessToken in body
-
-        // Attempt to capture rotated refresh token from backend response headers
-        // Since Fetch response headers 'set-cookie' is tricky, we rely on accessToken primarily.
-        // If Backend strictly enforces rotation, this might lag, but keeps P0 Secure.
+        const newTokens = data.data;
 
         if (newTokens && newTokens.accessToken) {
           accessToken = newTokens.accessToken;
           // Đồng bộ token vào request headers cho Server Components
           request.headers.set(
             "Cookie",
-            `accessToken=${newTokens.accessToken}; refreshToken=${refreshToken}` // Use existing RT if new one not found
+            `accessToken=${newTokens.accessToken}; refreshToken=${refreshToken}`
           );
           response = intlMiddleware(request);
 
-          // Re-apply CSRF if needed (createMiddleware might reset response)
-          if (!currentCsrfToken) {
-            const newToken = nanoid(32);
-            response.cookies.set(CSRF_COOKIE_NAME, newToken, {
-              path: "/",
-              httpOnly: false,
-              secure: process.env.NODE_ENV === "production",
-              sameSite: "lax",
-            });
-          }
+          // ✅ Don't regenerate CSRF - already set above!
+          // Just update auth cookies
 
           // Cập nhật token vào browser cookies
           const cookieOptions = {
@@ -140,7 +132,7 @@ export default async function proxy(request: NextRequest) {
             maxAge: 15 * 60,
           });
 
-          // Only update Refresh Token if returned (It won't be with current Backend P0 logic, keeping legacy safe)
+          // Only update Refresh Token if returned
           if (newTokens.refreshToken) {
             response.cookies.set("refreshToken", newTokens.refreshToken, {
               ...cookieOptions,

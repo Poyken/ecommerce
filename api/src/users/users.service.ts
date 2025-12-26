@@ -1,3 +1,6 @@
+import { UserEntity } from '@/auth/entities/user.entity';
+import { AUTH_CONFIG } from '@core/config/constants';
+import { PrismaService } from '@core/prisma/prisma.service';
 import {
   BadRequestException,
   ConflictException,
@@ -5,8 +8,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { UserEntity } from '@/auth/entities/user.entity';
-import { PrismaService } from '@core/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -55,7 +56,10 @@ export class UsersService {
       throw new ConflictException('Email này đã được sử dụng');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(
+      password,
+      AUTH_CONFIG.BCRYPT_ROUNDS,
+    );
 
     const user = await this.prisma.user.create({
       data: {
@@ -156,7 +160,10 @@ export class UsersService {
     }
 
     if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);
+      updateUserDto.password = await bcrypt.hash(
+        updateUserDto.password,
+        AUTH_CONFIG.BCRYPT_ROUNDS,
+      );
     }
 
     const updatedUser = await this.prisma.user.update({

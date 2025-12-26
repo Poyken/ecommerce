@@ -1,9 +1,14 @@
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import type { Cache } from 'cache-manager';
-import { PrismaService } from '@core/prisma/prisma.service';
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
+import { PrismaService } from '@core/prisma/prisma.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
+import type { Cache } from 'cache-manager';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 
@@ -15,6 +20,8 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 
 @Injectable()
 export class ReviewsService {
+  private readonly logger = new Logger(ReviewsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
@@ -50,7 +57,7 @@ export class ReviewsService {
         }
       }
     } catch (error) {
-      console.error('Cache invalidation failed', error);
+      this.logger.error('Cache invalidation failed', error);
     }
   }
 
@@ -438,7 +445,7 @@ export class ReviewsService {
         notification,
       );
     } catch (error) {
-      console.error('Failed to send notification for review reply', error);
+      this.logger.error('Failed to send notification for review reply', error);
     }
 
     return updatedReview;

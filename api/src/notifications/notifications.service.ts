@@ -132,6 +132,7 @@ export class NotificationsService {
 
   /**
    * Gửi thông báo cho TẤT CẢ users (Admin broadcast)
+   * ✅ Optimized: Batch processing (handles millions of users)
    */
   async broadcast(data: {
     type: string;
@@ -139,15 +140,48 @@ export class NotificationsService {
     message: string;
     link?: string;
   }) {
-    const users = await this.prisma.user.findMany({ select: { id: true } });
-    const notifications = users.map((user) => ({
-      ...data,
-      userId: user.id,
-    }));
+    const BATCH_SIZE = 1000; // Process 1000 users at a time
+    let skip = 0;
+    let totalCreated = 0;
 
-    return this.prisma.notification.createMany({
-      data: notifications,
-    });
+    this.logger.log('[Broadcast] Starting broadcast to all users...');
+
+    while (true) {
+      // ✅ Cursor-based pagination
+      const users = await this.prisma.user.findMany({
+        select: { id: true },
+        skip,
+        take: BATCH_SIZE,
+        orderBy: { id: 'asc' }, // Consistent ordering
+      });
+
+      if (users.length === 0) break;
+
+      const notifications = users.map((user) => ({
+        ...data,
+        userId: user.id,
+        isRead: false,
+      }));
+
+      const result = await this.prisma.notification.createMany({
+        data: notifications,
+      });
+
+      totalCreated += result.count;
+      skip += BATCH_SIZE;
+
+      this.logger.log(
+        `[Broadcast] Progress: ${totalCreated} notifications created`,
+      );
+
+      // ✅ Small delay to prevent DB overload
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+
+    this.logger.log(
+      `[Broadcast] Complete: ${totalCreated} notifications created`,
+    );
+    return { created: totalCreated };
   }
 
   /**

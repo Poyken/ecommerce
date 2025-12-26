@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class WishlistService {
+  private readonly logger = new Logger(WishlistService.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   async toggle(userId: string, productId: string) {
@@ -30,7 +32,7 @@ export class WishlistService {
         });
         return { isWishlisted: true };
       } catch (err) {
-        console.error('[WishlistService] create error details:', {
+        this.logger.error('[WishlistService] create error details:', {
           userId,
           productId,
           error: err,

@@ -1,32 +1,17 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsUUID, Min } from 'class-validator';
+import { IsNumber, IsUUID, Max, Min } from 'class-validator';
 
 /**
- * =====================================================================
- * ADD TO CART DTO - Đối tượng truyền dữ liệu thêm vào giỏ hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DATA VALIDATION:
- * - Sử dụng `class-validator` để kiểm tra dữ liệu đầu vào ngay tại tầng DTO.
- * - `@IsUUID()`: Đảm bảo `skuId` phải là định dạng UUID hợp lệ.
- * - `@Min(1)`: Ngăn chặn việc thêm số lượng bằng 0 hoặc số âm vào giỏ hàng.
- *
- * 2. SWAGGER DOCUMENTATION:
- * - `@ApiProperty()`: Dùng để mô tả trường dữ liệu cho tài liệu API tự động (Swagger).
- * - Giúp các bạn làm Frontend biết được cấu trúc dữ liệu cần gửi lên mà không cần đọc code logic.
- * =====================================================================
+ * DTO for adding items to cart
+ * ✅ Business rules applied:
+ * - Min: 1 (at least one item)
+ * - Max: 999 (prevent abuse/UI issues)
  */
-
 export class AddToCartDto {
-  @ApiProperty({ example: 'uuid-sku-id' })
-  @IsUUID()
-  @IsNotEmpty()
+  @IsUUID('4', { message: 'SKU ID không hợp lệ' })
   skuId: string;
 
-  @ApiProperty({ example: 1 })
-  @IsInt()
-  @Min(1)
+  @IsNumber({}, { message: 'Số lượng phải là số' })
+  @Min(1, { message: 'Số lượng tối thiểu là 1' })
+  @Max(999, { message: 'Số lượng tối đa là 999 sản phẩm' })
   quantity: number;
 }
