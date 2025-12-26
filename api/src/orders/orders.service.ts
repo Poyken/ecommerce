@@ -1,4 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
+import { PaymentService } from '@/payment/payment.service';
+import { PrismaService } from '@core/prisma/prisma.service';
 import { InjectQueue } from '@nestjs/bullmq';
 import {
   BadRequestException,
@@ -7,18 +9,16 @@ import {
 } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 import { Queue } from 'bullmq';
-import { PaymentService } from '@/payment/payment.service';
-import { PrismaService } from '@core/prisma/prisma.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
-import { Logger } from '@nestjs/common';
-import { EmailService } from '@integrations/email/email.service';
 import { CouponsService } from '@/coupons/coupons.service';
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { InventoryService } from '@/skus/inventory.service';
 import { ShippingService } from '@/shipping/shipping.service';
+import { InventoryService } from '@/skus/inventory.service';
+import { EmailService } from '@integrations/email/email.service';
+import { Logger } from '@nestjs/common';
 
 /**
  * =====================================================================
@@ -210,7 +210,7 @@ export class OrdersService {
         },
       );
     } catch (e) {
-      console.error(
+      this.logger.error(
         `Failed to schedule stock release check for order ${order.id}`,
         e,
       );
@@ -565,7 +565,10 @@ export class OrdersService {
             notification,
           );
         } catch (error) {
-          console.error('Failed to create status update notification', error);
+          this.logger.error(
+            'Failed to create status update notification',
+            error,
+          );
         }
       }
 

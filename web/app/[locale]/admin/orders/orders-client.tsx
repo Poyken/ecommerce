@@ -14,8 +14,8 @@
  * =====================================================================
  */
 
-import { Checkbox } from "@/components/ui/checkbox";
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { Checkbox } from "@/components/ui/checkbox";
 import { OrderDetailsDialog } from "@/features/admin/components/order-details-dialog";
 import { UpdateOrderStatusDialog } from "@/features/admin/components/update-order-status-dialog";
 import {
@@ -33,9 +33,9 @@ import {
   X,
 } from "lucide-react";
 
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { StatusBadge } from "@/components/shared/status-badge";
 import {
   Table,
   TableBody,
@@ -50,13 +50,12 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
-import { useDebounce } from "@/lib/hooks/use-debounce";
-import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import { useAuth } from "@/features/auth/providers/auth-provider";
+import { useAdminTable } from "@/lib/hooks/use-admin-table";
+import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import { Order, OrderStatus } from "@/types/models";
 import { useTranslations } from "next-intl";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState } from "react";
 
 type FilterType =
   | "all"
@@ -86,22 +85,6 @@ export function OrdersClient({
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [isPending, startTransition] = useTransition();
-
-  const canRead = hasPermission("order:read");
-  const canUpdate = hasPermission("order:update");
-  const canDelete = hasPermission("order:delete");
-
-  // Bulk Selection State
-  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
-
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState(
-    searchParams.get("search") || ""
-  );
-
-  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   // Stats from server
   const pendingCount = counts?.PENDING || 0;
@@ -111,34 +94,18 @@ export function OrdersClient({
   const cancelledCount = counts?.CANCELLED || 0;
   const totalCount = counts?.total || total;
 
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    const currentSearch = params.get("search") || "";
+  const canRead = hasPermission("order:read");
+  const canUpdate = hasPermission("order:update");
+  const canDelete = hasPermission("order:delete");
 
-    if (currentSearch !== debouncedSearchTerm) {
-      startTransition(() => {
-        if (debouncedSearchTerm) {
-          params.set("search", debouncedSearchTerm);
-        } else {
-          params.delete("search");
-        }
-        params.set("page", "1");
-        router.push(`/admin/orders?${params.toString()}`);
-      });
-    }
-  }, [debouncedSearchTerm, router, searchParams]);
+  // Bulk Selection State
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+
+  const { searchTerm, setSearchTerm, isPending, handleFilterChange } =
+    useAdminTable("/admin/orders");
 
   const handleStatusChange = (status: FilterType) => {
-    startTransition(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (status === "all") {
-        params.delete("status");
-      } else {
-        params.set("status", status);
-      }
-      params.set("page", "1");
-      router.push(`/admin/orders?${params.toString()}`);
-    });
+    handleFilterChange("status", status);
   };
 
   const openStatusUpdate = (order: Order) => {

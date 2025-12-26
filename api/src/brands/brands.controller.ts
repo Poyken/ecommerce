@@ -35,6 +35,10 @@ import {
  * - GET /brands được cache 5 phút để giảm tải database.
  * =====================================================================
  */
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
+import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
@@ -43,10 +47,6 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
-import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
 import { BrandsService } from './brands.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
@@ -90,7 +90,12 @@ export class BrandsController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
   ) {
-    return this.brandsService.findAll(search, Number(page), Number(limit));
+    const data = await this.brandsService.findAll(
+      search,
+      Number(page),
+      Number(limit),
+    );
+    return { data };
   }
 
   @Get(':id')

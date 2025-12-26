@@ -1,3 +1,4 @@
+import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import {
   OnGatewayConnection,
@@ -48,6 +49,8 @@ import { NotificationsService } from './notifications.service';
 export class NotificationsGateway
   implements OnGatewayConnection, OnGatewayDisconnect
 {
+  private readonly logger = new Logger(NotificationsGateway.name);
+
   @WebSocketServer()
   server: Server;
 
@@ -67,7 +70,7 @@ export class NotificationsGateway
       const token = client.handshake.auth.token || client.handshake.query.token;
 
       if (!token) {
-        console.log('[WS] No token provided, disconnecting...');
+        this.logger.debug('[WS] No token provided, disconnecting...');
         client.disconnect();
         return;
       }
@@ -77,7 +80,7 @@ export class NotificationsGateway
       const userId = payload.userId;
 
       if (!userId) {
-        console.log('[WS] Invalid token, disconnecting...');
+        this.logger.debug('[WS] Invalid token, disconnecting...');
         client.disconnect();
         return;
       }
@@ -101,7 +104,7 @@ export class NotificationsGateway
 
       // console.log(`[WS] User ${userId} connected (socket: ${client.id})`);
     } catch (error) {
-      console.error('[WS] Connection error:', error.message);
+      this.logger.error('[WS] Connection error:', error.message);
       client.disconnect();
     }
   }
@@ -178,7 +181,7 @@ export class NotificationsGateway
       this.server.to(`user:${userId}`).emit('unread_count', { count });
     });
 
-    console.log(`[WS] Sent notification to user ${userId}`);
+    this.logger.debug(`[WS] Sent notification to user ${userId}`);
   }
 
   /**
@@ -186,7 +189,7 @@ export class NotificationsGateway
    */
   broadcastNotification(notification: any) {
     this.server.emit('new_notification', notification);
-    console.log('[WS] Broadcasted notification to all users');
+    this.logger.debug('[WS] Broadcasted notification to all users');
   }
 
   /**

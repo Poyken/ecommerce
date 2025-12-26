@@ -1,3 +1,4 @@
+import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import {
   Body,
@@ -14,7 +15,6 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes } from '@nestjs/swagger';
-import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewsService } from './reviews.service';
@@ -37,11 +37,11 @@ import { ReviewsService } from './reviews.service';
  * - `findAllByProduct`: Là route công khai (Public), không cần Guard, giúp khách vãng lai cũng có thể đọc được các đánh giá sản phẩm.
  * =====================================================================
  */
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetUser } from '@/auth/decorators/get-user.decorator';
 import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Reviews')
 @Controller('reviews')
@@ -56,21 +56,21 @@ export class ReviewsController {
   @Permissions('review:read')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Lấy tất cả đánh giá (Admin)' })
-  @ApiOperation({ summary: 'Lấy tất cả đánh giá (Admin)' })
-  findAll(
+  async findAll(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
     @Query('rating') rating?: number,
     @Query('status') status?: string,
     @Query('search') search?: string,
   ) {
-    return this.reviewsService.findAll(
+    const data = await this.reviewsService.findAll(
       Number(page),
       Number(limit),
       rating ? Number(rating) : undefined,
       status,
       search,
     );
+    return data; // Service returns { data, meta }
   }
 
   @Post()
@@ -103,20 +103,17 @@ export class ReviewsController {
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(60000) // 1 minute
   @ApiOperation({ summary: 'Lấy đánh giá theo sản phẩm' })
-  @Get('product/:productId')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(60000) // 1 minute
-  @ApiOperation({ summary: 'Lấy đánh giá theo sản phẩm' })
-  findAllByProduct(
+  async findAllByProduct(
     @Param('productId') productId: string,
     @Query('cursor') cursor?: string,
     @Query('limit') limit = 10,
   ) {
-    return this.reviewsService.findAllByProduct(
+    const data = await this.reviewsService.findAllByProduct(
       productId,
       cursor,
       Number(limit),
     );
+    return { data };
   }
 
   @Delete(':id')

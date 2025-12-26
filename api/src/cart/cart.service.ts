@@ -1,9 +1,10 @@
+import { PrismaService } from '@core/prisma/prisma.service';
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '@core/prisma/prisma.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 
@@ -33,6 +34,8 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 
 @Injectable()
 export class CartService {
+  private readonly logger = new Logger(CartService.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   /**
@@ -137,7 +140,7 @@ export class CartService {
       });
       if (!sku) throw new NotFoundException('Sản phẩm (SKU) không tồn tại');
 
-      console.log(
+      this.logger.debug(
         `[AddToCart] Checking SKU ${sku.skuCode}: stock=${sku.stock}, reqQty=${dto.quantity}`,
       );
 
@@ -202,7 +205,7 @@ export class CartService {
         return { ...created, capped };
       }
     } catch (error: any) {
-      // Logger.error('Lỗi addToCart Service:', error);
+      this.logger.error(`Error in addToCart for user ${userId}:`, error.stack);
       throw new BadRequestException(error.message || 'Error processing cart');
     }
   }
@@ -222,7 +225,7 @@ export class CartService {
     }
 
     // Check tồn kho cho số lượng MỚI
-    console.log(
+    this.logger.debug(
       `[UpdateItem] Checking SKU ${item.sku.skuCode}: stock=${item.sku.stock}, newQty=${dto.quantity}`,
     );
     if (item.sku.stock < dto.quantity) {

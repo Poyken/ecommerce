@@ -22,12 +22,6 @@
  * =====================================================================
  */
 
-import { BullModule } from '@nestjs/bullmq';
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { ThrottlerModule } from '@nestjs/throttler';
-import * as Joi from 'joi';
 import { AddressesModule } from '@/addresses/addresses.module';
 import { AdminModule } from '@/admin/admin.module';
 import { AnalyticsModule } from '@/analytics/analytics.module';
@@ -35,35 +29,42 @@ import { AuditInterceptor } from '@/audit/audit.interceptor';
 import { AuditModule } from '@/audit/audit.module';
 import { AuthModule } from '@/auth/auth.module';
 import { BlogModule } from '@/blog/blog.module';
+import { BrandsModule } from '@/brands/brands.module';
 import { CartModule } from '@/cart/cart.module';
-import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
+import { CategoriesModule } from '@/categories/categories.module';
 import { CommonModule } from '@/common/common.module';
 import { FeatureFlagsModule } from '@/common/feature-flags/feature-flags.module';
-import { AppThrottlerGuard } from '@core/guards/app.throttler.guard';
-import { CsrfGuard } from '@core/guards/csrf.guard';
-import { SitemapModule } from '@integrations/sitemap/sitemap.module';
 import { CouponsModule } from '@/coupons/coupons.module';
-import { HealthController } from './health.controller';
-import { NewsletterModule } from '@integrations/newsletter/newsletter.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { OrdersModule } from '@/orders/orders.module';
 import { PaymentModule } from '@/payment/payment.module';
-import { PrismaModule } from '@core/prisma/prisma.module';
-import { BrandsModule } from '@/brands/brands.module';
-import { CategoriesModule } from '@/categories/categories.module';
 import { ProductsModule } from '@/products/products.module';
-import { SkusModule } from '@/skus/skus.module';
-import { RedisModule } from '@core/redis/redis.module';
 import { ReviewsModule } from '@/reviews/reviews.module';
 import { RolesModule } from '@/roles/roles.module';
 import { ShippingModule } from '@/shipping/shipping.module';
+import { SkusModule } from '@/skus/skus.module';
 import { UsersModule } from '@/users/users.module';
 import { WishlistModule } from '@/wishlist/wishlist.module';
+import { AppThrottlerGuard } from '@core/guards/app.throttler.guard';
+import { CsrfGuard } from '@core/guards/csrf.guard';
+import { PrismaModule } from '@core/prisma/prisma.module';
+import { RedisModule } from '@core/redis/redis.module';
+import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
+import { NewsletterModule } from '@integrations/newsletter/newsletter.module';
+import { SitemapModule } from '@integrations/sitemap/sitemap.module';
+import { BullModule } from '@nestjs/bullmq';
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ThrottlerModule } from '@nestjs/throttler';
+import * as Joi from 'joi';
+import { HealthController } from './health.controller';
 
-import { CacheModule } from '@nestjs/cache-manager';
-import { RedisThrottlerStorageService } from '@core/config/throttler/redis-throttler.storage';
-import { RedisService } from '@core/redis/redis.service';
 import { WorkerModule } from '@/worker/worker.module';
+import { RedisThrottlerStorageService } from '@core/config/throttler/redis-throttler.storage';
+import { LoggingInterceptor } from '@core/interceptors/logging.interceptor';
+import { RedisService } from '@core/redis/redis.service';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -208,6 +209,10 @@ import { WorkerModule } from '@/worker/worker.module';
     {
       provide: APP_GUARD,
       useClass: CsrfGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
     },
     {
       provide: APP_INTERCEPTOR,

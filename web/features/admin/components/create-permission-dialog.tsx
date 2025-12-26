@@ -1,10 +1,10 @@
 "use client";
 
-import { createPermissionAction } from "@/features/admin/actions";
 import { FormDialog } from "@/components/shared/form-dialog";
+import { useToast } from "@/components/shared/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/shared/use-toast";
+import { createPermissionAction } from "@/features/admin/actions";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";

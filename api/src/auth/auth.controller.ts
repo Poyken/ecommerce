@@ -1,3 +1,4 @@
+import { getFingerprint } from '@/common/utils/fingerprint';
 import {
   Body,
   Controller,
@@ -13,7 +14,6 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { Throttle } from '@nestjs/throttler';
-import * as crypto from 'crypto';
 import type { Response } from 'express';
 
 /**
@@ -44,14 +44,7 @@ const COOKIE_OPTIONS = {
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };
 
-function getFingerprint(req: any) {
-  const ua = req.headers['user-agent'] || '';
-  const ip = req.ip || (req.connection && req.connection.remoteAddress) || '';
-  return crypto
-    .createHash('sha256')
-    .update(ip + ua)
-    .digest('hex');
-}
+// Redundant local getFingerprint removed, using shared utility from @/common/utils/fingerprint
 
 @ApiTags('Auth')
 @Controller('auth')

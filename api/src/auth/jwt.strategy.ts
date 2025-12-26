@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { getFingerprint } from '@/common/utils/fingerprint';
+import { RedisService } from '@core/redis/redis.service';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import * as crypto from 'crypto';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { RedisService } from '@core/redis/redis.service';
 
 /**
  * =====================================================================
@@ -30,6 +30,8 @@ import { RedisService } from '@core/redis/redis.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
+  private readonly logger = new Logger(JwtStrategy.name);
+
   constructor(
     configService: ConfigService,
     private readonly redisService: RedisService,
@@ -80,7 +82,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     // 1. Check for Revoked Token (Blacklist) via JTI
     const isRevoked = await this.redisService.get(`jwt:revoked:${jti}`);
-    console.log(
+    this.logger.debug(
       `[JwtStrategy] Validating JTI: ${jti}, Revoked status: ${isRevoked}`,
     );
     // if (isRevoked) {
@@ -89,30 +91,24 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     // 2. Validate Device Fingerprint (Binding)
     if (fp) {
-      const userAgent = req.headers['user-agent'] || '';
-      const forwardedFor = req.headers['x-forwarded-for'];
-      const reqIp =
-        req.ip || (req.connection && req.connection.remoteAddress) || '';
-
-      // Use SAME hash logic as AuthController
-      const currentFp = crypto
-        .createHash('sha256')
-        .update(reqIp + userAgent)
-        .digest('hex');
+      // Use SAME hash logic as AuthController via shared utility
+      const currentFp = getFingerprint(req);
 
       if (fp !== currentFp) {
         // [DEV MODE] Fingerprint mismatch is common in dev (e.g. localhost vs IP).
         // Log warning instead of revoking token.
-        console.warn(`[JWT] Fingerprint mismatch detected!`);
-        console.warn(`[JWT] Token FP: ${fp.substring(0, 10)}...`);
-        console.warn(`[JWT] Current FP: ${currentFp.substring(0, 10)}...`);
-        console.warn(`[JWT] UA: ${userAgent}`);
-        console.warn(`[JWT] IP: ${reqIp} (X-Forwarded-For: ${forwardedFor})`);
+        this.logger.warn(`[JWT] Fingerprint mismatch detected!`);
+        this.logger.debug(`[JWT] Token FP: ${fp.substring(0, 10)}...`);
+        this.logger.debug(`[JWT] Current FP: ${currentFp.substring(0, 10)}...`);
+        this.logger.debug(`[JWT] UA: ${req.headers['user-agent']}`);
+        this.logger.debug(
+          `[JWT] IP: ${req.ip} (X-Forwarded-For: ${req.headers['x-forwarded-for']})`,
+        );
 
         // In production, we might want to be stricter, but for now we just log
         // throw new UnauthorizedException('Device fingerprint mismatch');
       } else {
-        console.log(`[JWT] Fingerprint verified for user ${userId}`);
+        this.logger.debug(`[JWT] Fingerprint verified for user ${userId}`);
       }
     }
 

@@ -35,6 +35,10 @@ import {
  * - GET /categories được cache 5 phút để giảm tải database cho dữ liệu ít thay đổi.
  * =====================================================================
  */
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
+import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
@@ -43,10 +47,6 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
-import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -90,7 +90,12 @@ export class CategoriesController {
     @Query('page') page = 1,
     @Query('limit') limit = 100,
   ) {
-    return this.categoriesService.findAll(search, Number(page), Number(limit));
+    const data = await this.categoriesService.findAll(
+      search,
+      Number(page),
+      Number(limit),
+    );
+    return { data };
   }
 
   @Get(':id')

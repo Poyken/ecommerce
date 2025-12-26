@@ -28,8 +28,8 @@ import {
  * - Sử dụng đầy đủ các phương thức: `POST` (Tạo), `GET` (Lấy), `PATCH` (Cập nhật), `DELETE` (Xóa).
  * =====================================================================
  */
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AddressesService } from './addresses.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
@@ -43,29 +43,40 @@ export class AddressesController {
 
   @Post()
   @ApiOperation({ summary: 'Tạo địa chỉ mới' })
-  create(@Request() req, @Body() createAddressDto: CreateAddressDto) {
-    return this.addressesService.create(req.user.id, createAddressDto);
+  async create(@Request() req, @Body() createAddressDto: CreateAddressDto) {
+    const data = await this.addressesService.create(
+      req.user.id,
+      createAddressDto,
+    );
+    return { data };
   }
 
   @Get()
   @ApiOperation({ summary: 'Lấy danh sách địa chỉ của user' })
-  findAll(@Request() req) {
-    return this.addressesService.findAll(req.user.id);
+  async findAll(@Request() req) {
+    const data = await this.addressesService.findAll(req.user.id);
+    return { data };
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Cập nhật địa chỉ' })
-  update(
+  async update(
     @Request() req,
     @Param('id') id: string,
     @Body() updateAddressDto: UpdateAddressDto,
   ) {
-    return this.addressesService.update(req.user.id, id, updateAddressDto);
+    const data = await this.addressesService.update(
+      req.user.id,
+      id,
+      updateAddressDto,
+    );
+    return { data };
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Xóa địa chỉ' })
-  remove(@Request() req, @Param('id') id: string) {
-    return this.addressesService.remove(req.user.id, id);
+  async remove(@Request() req, @Param('id') id: string) {
+    const data = await this.addressesService.remove(req.user.id, id);
+    return { data };
   }
 }

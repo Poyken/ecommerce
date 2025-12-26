@@ -19,14 +19,9 @@
  * =====================================================================
  */
 
-import { updateOrderStatusAction } from "@/features/admin/actions";
-import {
-  getAdminNotificationsAction,
-  markAllAsReadAction,
-  Notification,
-} from "@/features/notifications/actions";
-import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/shared/glass-card";
+import { useToast } from "@/components/shared/use-toast";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -37,9 +32,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useToast } from "@/components/shared/use-toast";
+import { updateOrderStatusAction } from "@/features/admin/actions";
+import {
+  getAdminNotificationsAction,
+  markAllAsReadAction,
+} from "@/features/notifications/actions";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
+import { Notification } from "@/types/models";
 import { format } from "date-fns";
 import {
   Bell,

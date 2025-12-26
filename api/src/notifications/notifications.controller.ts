@@ -1,8 +1,13 @@
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
+import { EmailService } from '@integrations/email/email.service';
 import {
   Body,
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Patch,
   Post,
@@ -11,10 +16,7 @@ import {
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
-import { EmailService } from '@integrations/email/email.service';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BroadcastNotificationDto } from './dto/broadcast-notification.dto';
 import { SendToUserDto } from './dto/send-to-user.dto';
 import { NotificationsService } from './notifications.service';
@@ -42,9 +44,13 @@ import { NotificationsService } from './notifications.service';
  * =====================================================================
  */
 
+@ApiTags('Notifications')
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class NotificationsController {
+  private readonly logger = new Logger(NotificationsController.name);
+
   constructor(
     private readonly notificationsService: NotificationsService,
     private readonly emailService: EmailService,
@@ -56,6 +62,7 @@ export class NotificationsController {
    * Lấy danh sách thông báo của user hiện tại
    */
   @Get()
+  @ApiOperation({ summary: 'Lấy danh sách thông báo của user hiện tại' })
   async findAll(
     @Request() req,
     @Query('limit') limit?: string,
@@ -64,9 +71,12 @@ export class NotificationsController {
     try {
       const userId = req.user.userId || req.user.id;
       if (!userId) {
-        console.warn('[NotificationsController] No userId found in request', {
-          user: req.user,
-        });
+        this.logger.warn(
+          '[NotificationsController] No userId found in request',
+          {
+            user: req.user,
+          },
+        );
       }
       const data = await this.notificationsService.findAll(
         userId,
@@ -75,7 +85,7 @@ export class NotificationsController {
       );
       return { data };
     } catch (err) {
-      console.error('[NotificationsController] findAll error:', err);
+      this.logger.error('[NotificationsController] findAll error:', err);
       throw err;
     }
   }
@@ -84,9 +94,10 @@ export class NotificationsController {
    * Đếm số thông báo chưa đọc
    */
   @Get('unread-count')
+  @ApiOperation({ summary: 'Đếm số thông báo chưa đọc' })
   async getUnreadCount(@Request() req) {
     const data = await this.notificationsService.getUnreadCount(
-      req.user.userId,
+      req.user.userId || req.user.id,
     );
     return { data };
   }
@@ -95,8 +106,11 @@ export class NotificationsController {
    * Đánh dấu tất cả thông báo đã đọc
    */
   @Patch('read-all')
+  @ApiOperation({ summary: 'Đánh dấu tất cả thông báo đã đọc' })
   async markAllAsRead(@Request() req) {
-    const data = await this.notificationsService.markAllAsRead(req.user.userId);
+    const data = await this.notificationsService.markAllAsRead(
+      req.user.userId || req.user.id,
+    );
     return { data };
   }
 
@@ -104,10 +118,11 @@ export class NotificationsController {
    * Đánh dấu một thông báo đã đọc
    */
   @Patch(':id/read')
+  @ApiOperation({ summary: 'Đánh dấu một thông báo đã đọc' })
   async markAsRead(@Request() req, @Param('id') id: string) {
     const data = await this.notificationsService.markAsRead(
       id,
-      req.user.userId,
+      req.user.userId || req.user.id,
     );
     return { data };
   }
@@ -116,8 +131,12 @@ export class NotificationsController {
    * Xóa một thông báo
    */
   @Delete(':id')
+  @ApiOperation({ summary: 'Xóa một thông báo' })
   async delete(@Request() req, @Param('id') id: string) {
-    const data = await this.notificationsService.delete(id, req.user.userId);
+    const data = await this.notificationsService.delete(
+      id,
+      req.user.userId || req.user.id,
+    );
     return { data };
   }
 
@@ -125,8 +144,11 @@ export class NotificationsController {
    * Xóa tất cả thông báo đã đọc
    */
   @Delete('read-all')
+  @ApiOperation({ summary: 'Xóa tất cả thông báo đã đọc' })
   async deleteAllRead(@Request() req) {
-    const data = await this.notificationsService.deleteAllRead(req.user.userId);
+    const data = await this.notificationsService.deleteAllRead(
+      req.user.userId || req.user.id,
+    );
     return { data };
   }
 
@@ -138,6 +160,7 @@ export class NotificationsController {
   @Post('admin/broadcast')
   @UseGuards(PermissionsGuard)
   @Permissions('notification:create')
+  @ApiOperation({ summary: 'Gửi thông báo cho TẤT CẢ users (Broadcast)' })
   async broadcast(@Body(ValidationPipe) data: BroadcastNotificationDto) {
     const result = await this.notificationsService.broadcast({
       type: data.type,
@@ -147,8 +170,7 @@ export class NotificationsController {
     });
 
     if (data.sendEmail) {
-      // In a real app, this would be a background job
-      console.log('Broadcasting email to all users...');
+      this.logger.log('Broadcasting email to all users...');
       // TODO: Implement email broadcasting via queue
     }
 
@@ -161,6 +183,7 @@ export class NotificationsController {
   @Post('admin/send')
   @UseGuards(PermissionsGuard)
   @Permissions('notification:create')
+  @ApiOperation({ summary: 'Gửi thông báo cho user cụ thể' })
   async sendToUser(@Body(ValidationPipe) data: SendToUserDto) {
     try {
       const result = await this.notificationsService.create({
@@ -181,7 +204,7 @@ export class NotificationsController {
 
       return { data: result };
     } catch (err) {
-      console.error('[NotificationsController] sendToUser error:', err);
+      this.logger.error('[NotificationsController] sendToUser error:', err);
       throw err;
     }
   }
@@ -192,6 +215,7 @@ export class NotificationsController {
   @Get('admin/all')
   @UseGuards(PermissionsGuard)
   @Permissions('notification:read')
+  @ApiOperation({ summary: 'Lấy tất cả thông báo (Admin view với filters)' })
   async findAllAdmin(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -218,6 +242,7 @@ export class NotificationsController {
   @Get('admin/:id')
   @UseGuards(PermissionsGuard)
   @Permissions('notification:read')
+  @ApiOperation({ summary: 'Lấy chi tiết một thông báo (Admin)' })
   async findOne(@Param('id') id: string) {
     const data = await this.notificationsService.findOne(id);
     return { data };
@@ -229,6 +254,7 @@ export class NotificationsController {
   @Delete('admin/cleanup')
   @UseGuards(PermissionsGuard)
   @Permissions('notification:delete')
+  @ApiOperation({ summary: 'Cleanup: Xóa thông báo đã đọc cũ (Admin)' })
   async cleanupOldNotifications(@Query('daysOld') daysOld?: string) {
     const data = await this.notificationsService.deleteOldReadNotifications(
       daysOld ? parseInt(daysOld) : 30,

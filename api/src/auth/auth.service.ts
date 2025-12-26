@@ -1,8 +1,12 @@
+import { PrismaService } from '@core/prisma/prisma.service';
+import { RedisService } from '@core/redis/redis.service';
+import { EmailService } from '@integrations/email/email.service';
 import { InjectQueue } from '@nestjs/bullmq';
 import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -10,9 +14,6 @@ import * as bcrypt from 'bcrypt';
 import { Queue } from 'bullmq';
 import * as crypto from 'crypto';
 import { resolveMx } from 'dns/promises';
-import { EmailService } from '@integrations/email/email.service';
-import { PrismaService } from '@core/prisma/prisma.service';
-import { RedisService } from '@core/redis/redis.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UserEntity } from './entities/user.entity';
@@ -50,6 +51,8 @@ import { NotificationsService } from '@/notifications/notifications.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly tokenService: TokenService,
@@ -114,7 +117,7 @@ export class AuthService {
     try {
       await this.grantWelcomeVoucher(user.id);
     } catch (error) {
-      console.error('Failed to process post-registration tasks', error);
+      this.logger.error('Failed to process post-registration tasks', error);
     }
 
     return { accessToken, refreshToken };
@@ -210,7 +213,7 @@ export class AuthService {
 
       if (user) {
         await this.grantWelcomeVoucher(user.id).catch((err) =>
-          console.error('Failed to grant social welcome voucher', err),
+          this.logger.error('Failed to grant social welcome voucher', err),
         );
       }
     }
@@ -395,7 +398,7 @@ export class AuthService {
       // Potential Token Theft!
       // We should invalidate all tokens for this user ideally.
       // For now, just reject.
-      console.warn(
+      this.logger.warn(
         `Suspicious refresh attempt defined for user ${decoded.userId}`,
       );
       throw new UnauthorizedException('Invalid refresh token (FP)');
@@ -625,7 +628,9 @@ export class AuthService {
     });
 
     if (existingWelcomeCoupon || existingNotification) {
-      console.log(`User ${userId} already has a welcome voucher, skipping...`);
+      this.logger.log(
+        `User ${userId} already has a welcome voucher, skipping...`,
+      );
       return null;
     }
 

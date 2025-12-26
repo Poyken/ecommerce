@@ -1,10 +1,11 @@
+import { CacheService } from '@core/cache/cache.service';
+import { PrismaService } from '@core/prisma/prisma.service';
+import { RedisService } from '@core/redis/redis.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import type { Cache } from 'cache-manager';
 import slugify from 'slugify';
-import { PrismaService } from '@core/prisma/prisma.service';
-import { RedisService } from '@core/redis/redis.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto, SortOption } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -54,6 +55,7 @@ export class ProductsService {
     private readonly prisma: PrismaService,
     private readonly skuManager: SkuManagerService,
     private readonly redisService: RedisService,
+    private readonly cacheService: CacheService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
@@ -122,13 +124,7 @@ export class ProductsService {
     await this.skuManager.generateSkusForNewProduct(product);
 
     // Invalidate product list cache
-    const store = (this.cacheManager as any).store;
-    if (store.keys) {
-      const keys = await store.keys('products_filter_*');
-      if (Array.isArray(keys)) {
-        await Promise.all(keys.map((k) => this.cacheManager.del(k)));
-      }
-    }
+    await this.cacheService.invalidatePattern('products:filter:*');
     // Also reset if unclear to be safe, or just trust the keys?
     // User asked for specific invalidation. The above is specific.
 
@@ -143,12 +139,19 @@ export class ProductsService {
    * Lấy danh sách sản phẩm với bộ lọc nâng cao (Search, Filter, Sort, Pagination).
    */
   async findAll(query: FilterProductDto) {
-    // const cacheKey = `products_filter_${JSON.stringify(query)}`;
-    // const cachedResult = await this.cacheManager.get(cacheKey);
-    // if (cachedResult) {
-    //   return cachedResult;
-    // }
+    const cacheKey = `products:filter:${JSON.stringify(query)}`;
 
+    return this.cacheService.getOrSet(
+      cacheKey,
+      () => this.findAllFromDb(query),
+      CACHE_TTL.PRODUCT_LIST,
+    );
+  }
+
+  /**
+   * Internal method used by findAll for cache-aside
+   */
+  private async findAllFromDb(query: FilterProductDto) {
     const {
       page = 1,
       limit = 10,

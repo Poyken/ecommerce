@@ -1,5 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { Injectable, Logger } from '@nestjs/common';
 
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
@@ -140,7 +140,7 @@ export class InventoryService {
             notification,
           );
         } catch (error) {
-          console.error(
+          this.logger.error(
             `Failed to send low stock notification to user ${cart.userId}`,
             error,
           );

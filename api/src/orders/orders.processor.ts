@@ -1,12 +1,12 @@
+import { NotificationsGateway } from '@/notifications/notifications.gateway';
+import { NotificationsService } from '@/notifications/notifications.service';
+import { InventoryService } from '@/skus/inventory.service';
+import { PrismaService } from '@core/prisma/prisma.service';
+import { EmailService } from '@integrations/email/email.service';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 import { Job } from 'bullmq';
-import { PrismaService } from '@core/prisma/prisma.service';
-import { InventoryService } from '@/skus/inventory.service';
-import { EmailService } from '@integrations/email/email.service';
-import { NotificationsGateway } from '@/notifications/notifications.gateway';
-import { NotificationsService } from '@/notifications/notifications.service';
 
 /**
  * =====================================================================
@@ -120,7 +120,7 @@ export class OrdersProcessor extends WorkerHost {
 
     const order = await this.prisma.order.findUnique({
       where: { id: data.orderId },
-      include: { items: true },
+      include: { items: true, user: true },
     });
 
     if (!order) return;

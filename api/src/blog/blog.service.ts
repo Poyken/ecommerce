@@ -1,11 +1,13 @@
-import { ConflictException, Injectable } from '@nestjs/common';
-import { Blog } from '@prisma/client';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
+import { Blog } from '@prisma/client';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 
 @Injectable()
 export class BlogService {
+  private readonly logger = new Logger(BlogService.name);
+
   constructor(private prisma: PrismaService) {}
 
   async create(createBlogDto: CreateBlogDto, userId?: string): Promise<Blog> {
@@ -250,17 +252,11 @@ export class BlogService {
       const hasAdminPermission = user.permissions?.includes('blog:update');
       const isOwner = existingBlog.userId === user.id;
 
-      console.log(
-        '[BlogUpdate] User:',
-        user.id,
-        'Permissions:',
-        user.permissions,
+      this.logger.debug(
+        `[BlogUpdate] User: ${user.id} Permissions: ${JSON.stringify(user.permissions)}`,
       );
-      console.log(
-        '[BlogUpdate] IsOwner:',
-        isOwner,
-        'HasAdminPermission:',
-        hasAdminPermission,
+      this.logger.debug(
+        `[BlogUpdate] IsOwner: ${isOwner} HasAdminPermission: ${hasAdminPermission}`,
       );
 
       if (!hasAdminPermission && !isOwner) {
@@ -269,7 +265,7 @@ export class BlogService {
 
       // If user is updating their own post and is NOT an admin, reset status to Draft
       if (!hasAdminPermission) {
-        console.log('[BlogUpdate] Resetting blog status to Draft');
+        this.logger.log('[BlogUpdate] Resetting blog status to Draft');
 
         (blogData as any).publishedAt = null;
       }

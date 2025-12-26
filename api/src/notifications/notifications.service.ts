@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 /**
  * =====================================================================
@@ -25,6 +25,8 @@ import { PrismaService } from '@core/prisma/prisma.service';
 
 @Injectable()
 export class NotificationsService {
+  private readonly logger = new Logger(NotificationsService.name);
+
   constructor(private prisma: PrismaService) {}
 
   /**
@@ -186,7 +188,7 @@ export class NotificationsService {
       },
     });
 
-    console.log(
+    this.logger.log(
       `[NotificationCleanup] Deleted ${result.count} old read notifications`,
     );
 

@@ -17,9 +17,10 @@
  * =====================================================================
  */
 
-import { updateOrderStatusAction } from "@/features/admin/actions";
 import { Button } from "@/components/ui/button";
 import { Notification } from "@/contexts/notification-context";
+import { updateOrderStatusAction } from "@/features/admin/actions";
+import { markAsReadAction } from "@/features/notifications/actions";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
@@ -67,6 +68,8 @@ export function AdminNotificationItem({
     try {
       const result = await updateOrderStatusAction(orderId, "PROCESSING");
       if (result.success) {
+        // Mark as read immediately to hide buttons and update UI
+        await markAsReadAction(notification.id);
         onActionComplete?.();
       }
     } catch (error) {
@@ -84,6 +87,8 @@ export function AdminNotificationItem({
     try {
       const result = await updateOrderStatusAction(orderId, "CANCELLED");
       if (result.success) {
+        // Mark as read immediately to hide buttons and update UI
+        await markAsReadAction(notification.id);
         onActionComplete?.();
       }
     } catch (error) {

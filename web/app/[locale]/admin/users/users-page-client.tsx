@@ -13,9 +13,9 @@
  * =====================================================================
  */
 
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -32,10 +32,10 @@ import {
   AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { CreateUserDialog } from "@/features/admin/components/create-user-dialog";
-import { UserActions } from "@/features/layout/components/user-actions";
-import { useDebounce } from "@/lib/hooks/use-debounce";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/features/auth/providers/auth-provider";
+import { UserActions } from "@/features/layout/components/user-actions";
+import { useAdminTable } from "@/lib/hooks/use-admin-table";
+import { cn } from "@/lib/utils";
 import { User } from "@/types/models";
 import { format } from "date-fns";
 import {
@@ -48,8 +48,7 @@ import {
   Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState } from "react";
 
 type FilterType = "all" | "ADMIN" | "USER";
 
@@ -70,55 +69,22 @@ export function UsersPageClient({
 }) {
   const t = useTranslations("admin");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
-  const [searchTerm, setSearchTerm] = useState(
-    searchParams.get("search") || ""
-  );
+  const { searchTerm, setSearchTerm, isPending, handleFilterChange } =
+    useAdminTable("/admin/users");
 
   const { hasPermission } = useAuth();
-
   const canUpdate = hasPermission("user:update");
   const canDelete = hasPermission("user:delete");
   const canCreate = hasPermission("user:create");
   const canAssignRoles = hasPermission("user:update");
-
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
   // Server Stats
   const adminCount = counts?.admin || 0;
   const userCount = counts?.user || 0;
   const totalCount = counts?.total || total;
 
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    const currentSearch = params.get("search") || "";
-
-    if (currentSearch !== debouncedSearchTerm) {
-      startTransition(() => {
-        if (debouncedSearchTerm) {
-          params.set("search", debouncedSearchTerm);
-        } else {
-          params.delete("search");
-        }
-        params.set("page", "1");
-        router.push(`/admin/users?${params.toString()}`);
-      });
-    }
-  }, [debouncedSearchTerm, router, searchParams]);
-
   const handleRoleChange = (role: string) => {
-    startTransition(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      if (role === "all") {
-        params.delete("role");
-      } else {
-        params.set("role", role);
-      }
-      params.set("page", "1");
-      router.push(`/admin/users?${params.toString()}`);
-    });
+    handleFilterChange("role", role);
   };
 
   // Helper to check admin role for UI display

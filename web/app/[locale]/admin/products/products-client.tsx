@@ -14,10 +14,9 @@
  * =====================================================================
  */
 
-import { deleteProductAction } from "@/features/admin/actions";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -28,14 +27,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { deleteProductAction } from "@/features/admin/actions";
 import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
-import { useDebounce } from "@/lib/hooks/use-debounce";
-import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/features/auth/providers/auth-provider";
+import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { Product } from "@/types/models";
 import { format } from "date-fns";
 import {
@@ -52,8 +51,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const CreateProductDialog = dynamic(
   () =>
@@ -104,43 +102,23 @@ export function ProductsClient({
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [translateDialogOpen, setTranslateDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [filter, setFilter] = useState<FilterType>("all");
 
   const canCreate = hasPermission("product:create");
   const canUpdate = hasPermission("product:update");
   const canDelete = hasPermission("product:delete");
   const canTranslate = hasPermission("product:update");
 
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState(
-    searchParams.get("search") || ""
-  );
+  const { searchTerm, setSearchTerm, isPending, handleFilterChange } =
+    useAdminTable("/admin/products");
 
-  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const [filter, setFilter] = useState<FilterType>("all");
 
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    const currentSearch = params.get("search") || "";
-
-    if (currentSearch !== debouncedSearchTerm) {
-      if (debouncedSearchTerm) {
-        params.set("search", debouncedSearchTerm);
-      } else {
-        params.delete("search");
-      }
-      params.set("page", "1");
-      router.push(`/admin/products?${params.toString()}`);
-    }
-  }, [debouncedSearchTerm, router, searchParams]);
-
-  useEffect(() => {
-    if (products.length === 0 && page > 1) {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", (page - 1).toString());
-      router.push(`/admin/products?${params.toString()}`);
-    }
-  }, [products.length, page, router, searchParams]);
+  const handleStatusChange = (status: FilterType) => {
+    setFilter(status);
+    // Note: This filter is currently client-side only based on current page data.
+    // If you want server-side filtering, you should pass it to useAdminTable.
+    // But since the original code was client-side, I'll keep it for now.
+  };
 
   // Filter products (client-side for current page only)
   const filteredProducts = products.filter((product) => {

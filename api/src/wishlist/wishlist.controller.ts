@@ -1,3 +1,4 @@
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import {
   Body,
   Controller,
@@ -14,7 +15,6 @@ import {
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { WishlistService } from './wishlist.service';
 
 @ApiTags('Wishlist')
@@ -26,14 +26,16 @@ export class WishlistController {
 
   @Post('toggle')
   @ApiOperation({ summary: 'Toggle wishlist (Add/Remove)' })
-  toggle(@Req() req, @Body('productId') productId: string) {
-    return this.wishlistService.toggle(req.user.id, productId);
+  async toggle(@Req() req, @Body('productId') productId: string) {
+    const data = await this.wishlistService.toggle(req.user.id, productId);
+    return { data };
   }
 
   @Get('count')
   @ApiOperation({ summary: 'Get wishlist items count' })
-  count(@Req() req) {
-    return this.wishlistService.count(req.user.id);
+  async count(@Req() req) {
+    const data = await this.wishlistService.count(req.user.id);
+    return { data };
   }
 
   @Get()
@@ -45,22 +47,28 @@ export class WishlistController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
   ) {
-    return this.wishlistService.findAll(
+    const data = await this.wishlistService.findAll(
       req.user.id,
       Number(page),
       Number(limit),
     );
+    return data; // Service returns { data, meta }
   }
 
   @Get('check')
   @ApiOperation({ summary: 'Check if product is wishlisted' })
-  checkStatus(@Req() req, @Query('productId') productId: string) {
-    return this.wishlistService.checkStatus(req.user.id, productId);
+  async checkStatus(@Req() req, @Query('productId') productId: string) {
+    const data = await this.wishlistService.checkStatus(req.user.id, productId);
+    return { data };
   }
 
   @Post('merge')
   @ApiOperation({ summary: 'Merge guest wishlist into user account' })
-  mergeWishlist(@Req() req, @Body('productIds') productIds: string[]) {
-    return this.wishlistService.mergeWishlist(req.user.id, productIds);
+  async mergeWishlist(@Req() req, @Body('productIds') productIds: string[]) {
+    const data = await this.wishlistService.mergeWishlist(
+      req.user.id,
+      productIds,
+    );
+    return { data };
   }
 }
