@@ -61,6 +61,7 @@ import * as Joi from 'joi';
 import { HealthController } from './health.controller';
 
 import { WorkerModule } from '@/worker/worker.module';
+import { CACHE_CONFIG } from '@core/config/constants';
 import { RedisThrottlerStorageService } from '@core/config/throttler/redis-throttler.storage';
 import { LoggingInterceptor } from '@core/interceptors/logging.interceptor';
 import { RedisService } from '@core/redis/redis.service';
@@ -70,8 +71,8 @@ import { CacheModule } from '@nestjs/cache-manager';
   imports: [
     CacheModule.register({
       isGlobal: true,
-      ttl: 30000, // 30 seconds
-      max: 100, // maximum number of items in cache
+      ttl: CACHE_CONFIG.DEFAULT_TTL * 1000, // Convert seconds to milliseconds
+      max: CACHE_CONFIG.MAX_ITEMS,
     }),
     // 1. ConfigModule - Quản lý biến môi trường (.env)
     // isGlobal: true => Có thể inject ConfigService ở bất kỳ module nào

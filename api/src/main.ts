@@ -20,6 +20,10 @@
  * =====================================================================
  */
 
+import { SECURITY_HEADERS } from '@core/config/constants';
+import { AllExceptionsFilter } from '@core/filters/all-exceptions.filter';
+import { TransformInterceptor } from '@core/interceptors/transform.interceptor';
+import { LoggerService } from '@core/logger/logger.service';
 import {
   ClassSerializerInterceptor,
   ValidationPipe,
@@ -31,16 +35,11 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 import { AppModule } from './app.module';
-import { AllExceptionsFilter } from '@core/filters/all-exceptions.filter';
-import { TransformInterceptor } from '@core/interceptors/transform.interceptor';
-import { LoggerService } from '@core/logger/logger.service';
 
 /**
  * Hàm Bootstrap - Khởi tạo và cấu hình ứng dụng
  */
 import { NestExpressApplication } from '@nestjs/platform-express';
-
-// ...
 
 async function bootstrap() {
   // Tạo instance ứng dụng NestJS
@@ -67,28 +66,16 @@ async function bootstrap() {
   // - XSS (Cross-Site Scripting)
   // - Clickjacking
   // - MIME type sniffing
-  // Helmet thiết lập các HTTP headers bảo mật
+  // Using centralized security configuration from constants
   app.use(
     helmet({
       contentSecurityPolicy: {
-        directives: {
-          defaultSrc: ["'self'"],
-          scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"], // Needed for Swagger/Next.js inline scripts
-          styleSrc: [
-            "'self'",
-            "'unsafe-inline'",
-            'https://fonts.googleapis.com',
-          ],
-          fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-          imgSrc: ["'self'", 'data:', 'https:', 'https://res.cloudinary.com'], // Trusted Cloudinary
-          connectSrc: ["'self'", 'https://api.vnpay.vn'], // Trusted VNPay
-          frameAncestors: ["'self'"], // Prevent Clickjacking
-        },
+        directives: SECURITY_HEADERS.CSP_DIRECTIVES,
       },
       crossOriginEmbedderPolicy: false,
       crossOriginResourcePolicy: { policy: 'cross-origin' },
       hsts: {
-        maxAge: 31536000,
+        maxAge: SECURITY_HEADERS.HSTS_MAX_AGE,
         includeSubDomains: true,
         preload: true,
       },

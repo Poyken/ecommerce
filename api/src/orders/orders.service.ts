@@ -501,13 +501,13 @@ export class OrdersService {
         data: {
           status: dto.status as OrderStatus,
           cancellationReason: dto.cancellationReason,
-          ...(dto.paymentStatus && { paymentStatus: dto.paymentStatus as any }),
-        },
+          ...(dto.paymentStatus && { paymentStatus: dto.paymentStatus }),
+        } as any,
         include: {
           user: true,
           items: { include: { sku: { include: { product: true } } } },
           address: true,
-        } as any,
+        },
       });
 
       if (newStatus === OrderStatus.PROCESSING) {

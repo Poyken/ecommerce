@@ -48,6 +48,8 @@ import { TwoFactorService } from './two-factor.service';
 
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
+import { AUTH_CONFIG } from '@core/config/constants';
+import { PermissionService } from './permission.service';
 
 @Injectable()
 export class AuthService {
@@ -58,6 +60,7 @@ export class AuthService {
     private readonly tokenService: TokenService,
     private readonly redisService: RedisService,
     private readonly twoFactorService: TwoFactorService,
+    private readonly permissionService: PermissionService,
     @InjectQueue('email-queue') private readonly emailQueue: Queue,
     private readonly emailService: EmailService,
     private readonly notificationsService: NotificationsService,
@@ -77,7 +80,10 @@ export class AuthService {
       throw new ConflictException('User already exists');
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(
+      password,
+      AUTH_CONFIG.BCRYPT_ROUNDS,
+    );
 
     const user = await this.prisma.user.create({
       data: {
@@ -222,11 +228,10 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const directPerms = user.permissions.map((up) => up.permission.name);
-    const rolePerms = user.roles.flatMap((ur) =>
-      ur.role.permissions.map((rp) => rp.permission.name),
+    // Use PermissionService for consistent permission aggregation
+    const allPermissions = this.permissionService.aggregatePermissions(
+      user as any,
     );
-    const allPermissions = [...new Set([...directPerms, ...rolePerms])];
 
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
@@ -294,11 +299,10 @@ export class AuthService {
       };
     }
 
-    const directPerms = user.permissions.map((up) => up.permission.name);
-    const rolePerms = user.roles.flatMap((ur) =>
-      ur.role.permissions.map((rp) => rp.permission.name),
+    // Use PermissionService for consistent permission aggregation
+    const allPermissions = this.permissionService.aggregatePermissions(
+      user as any,
     );
-    const allPermissions = [...new Set([...directPerms, ...rolePerms])];
 
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
@@ -352,11 +356,10 @@ export class AuthService {
       throw new UnauthorizedException('Mã xác thực không hợp lệ');
     }
 
-    const directPerms = user.permissions.map((up) => up.permission.name);
-    const rolePerms = user.roles.flatMap((ur) =>
-      ur.role.permissions.map((rp) => rp.permission.name),
+    // Use PermissionService for consistent permission aggregation
+    const allPermissions = this.permissionService.aggregatePermissions(
+      user as any,
     );
-    const allPermissions = [...new Set([...directPerms, ...rolePerms])];
 
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
@@ -432,11 +435,10 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const directPerms = user.permissions.map((up) => up.permission.name);
-    const rolePerms = user.roles.flatMap((ur) =>
-      ur.role.permissions.map((rp) => rp.permission.name),
+    // Use PermissionService for consistent permission aggregation
+    const allPermissions = this.permissionService.aggregatePermissions(
+      user as any,
     );
-    const allPermissions = [...new Set([...directPerms, ...rolePerms])];
 
     const tokens = this.tokenService.generateTokens(
       userId,
@@ -474,7 +476,10 @@ export class AuthService {
         throw new UnauthorizedException('Mật khẩu hiện tại không đúng');
       }
 
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      const hashedPassword = await bcrypt.hash(
+        newPassword,
+        AUTH_CONFIG.BCRYPT_ROUNDS,
+      );
 
       await this.prisma.user.update({
         where: { id: userId },
@@ -593,7 +598,10 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    const hashedPassword = await bcrypt.hash(
+      newPassword,
+      AUTH_CONFIG.BCRYPT_ROUNDS,
+    );
     await this.prisma.user.update({
       where: { id: userId },
       data: { password: hashedPassword },

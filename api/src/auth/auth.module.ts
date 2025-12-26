@@ -30,6 +30,7 @@ import { TokenService } from './token.service';
 import { TwoFactorService } from './two-factor.service';
 
 import { EmailModule } from '@integrations/email/email.module';
+import { PermissionService } from './permission.service';
 import { FacebookStrategy } from './strategies/facebook.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
 
@@ -43,7 +44,8 @@ import { GoogleStrategy } from './strategies/google.strategy';
     GoogleStrategy,
     FacebookStrategy,
     TwoFactorService, // Added TwoFactorService
+    PermissionService, // Added PermissionService for centralized permission management
   ],
-  exports: [AuthService, TokenService, TwoFactorService], // Added exports array
+  exports: [AuthService, TokenService, TwoFactorService, PermissionService], // Export PermissionService
 })
 export class AuthModule {}
