@@ -32,10 +32,16 @@ export class GHNService {
     this.shopId = this.configService.get('GHN_SHOP_ID') || '';
   }
 
-  private get headers() {
+  private get baseHeaders() {
     return {
       'Content-Type': 'application/json',
       Token: this.token,
+    };
+  }
+
+  private get shopHeaders() {
+    return {
+      ...this.baseHeaders,
       ShopId: this.shopId,
     };
   }
@@ -43,7 +49,7 @@ export class GHNService {
   async getProvinces() {
     try {
       const response = await axios.get(`${this.masterDataUrl}province`, {
-        headers: this.headers,
+        headers: this.baseHeaders,
       });
       return response.data.data;
     } catch (error) {
@@ -59,7 +65,7 @@ export class GHNService {
     try {
       const response = await axios.get(`${this.masterDataUrl}district`, {
         params: { province_id: provinceId },
-        headers: this.headers,
+        headers: this.baseHeaders,
       });
       return response.data.data;
     } catch (error) {
@@ -75,7 +81,7 @@ export class GHNService {
     try {
       const response = await axios.get(`${this.masterDataUrl}ward`, {
         params: { district_id: districtId },
-        headers: this.headers,
+        headers: this.baseHeaders,
       });
       return response.data.data;
     } catch (error) {
@@ -112,7 +118,7 @@ export class GHNService {
           ), // Default to Hanoi Ba Dinh
           service_type_id: data.service_type_id || 2, // Default E-commerce service
         },
-        { headers: this.headers },
+        { headers: this.shopHeaders },
       );
       return response.data.data.total;
     } catch (error) {
@@ -130,7 +136,7 @@ export class GHNService {
       `${this.v2Url}shipping-order/create`;
     try {
       const response = await axios.post(createUrl, orderData, {
-        headers: this.headers,
+        headers: this.shopHeaders,
       });
       return response.data.data;
     } catch (error) {

@@ -44,13 +44,14 @@ export function UpdateOrderStatusDialog({
 }) {
   const t = useTranslations("admin");
   const [status, setStatus] = useState<OrderStatus>(currentStatus);
+  const [notify, setNotify] = useState(true);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const result = await updateOrderStatusAction(orderId, status);
+    const result = await updateOrderStatusAction(orderId, status, notify);
     setLoading(false);
 
     if (result.success) {
@@ -92,41 +93,68 @@ export function UpdateOrderStatusDialog({
       isPending={loading}
       submitLabel={t("orders.updateStatus")}
     >
-      <div className="py-4">
-        <Select
-          value={status}
-          onValueChange={(val) => setStatus(val as OrderStatus)}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={t("orders.selectStatus")} />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="PENDING" disabled={isOptionDisabled("PENDING")}>
-              {t("orders.statusMapping.PENDING")}
-            </SelectItem>
-            <SelectItem
-              value="PROCESSING"
-              disabled={isOptionDisabled("PROCESSING")}
-            >
-              {t("orders.statusMapping.PROCESSING")}
-            </SelectItem>
-            <SelectItem value="SHIPPED" disabled={isOptionDisabled("SHIPPED")}>
-              {t("orders.statusMapping.SHIPPED")}
-            </SelectItem>
-            <SelectItem
-              value="DELIVERED"
-              disabled={isOptionDisabled("DELIVERED")}
-            >
-              {t("orders.statusMapping.DELIVERED")}
-            </SelectItem>
-            <SelectItem
-              value="CANCELLED"
-              disabled={isOptionDisabled("CANCELLED")}
-            >
-              {t("orders.statusMapping.CANCELLED")}
-            </SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="space-y-4 py-4">
+        <div className="space-y-2">
+          <label className="text-sm font-medium">
+            {t("orders.statusLabel")}
+          </label>
+          <Select
+            value={status}
+            onValueChange={(val) => setStatus(val as OrderStatus)}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder={t("orders.selectStatus")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                value="PENDING"
+                disabled={isOptionDisabled("PENDING")}
+              >
+                {t("orders.statusMapping.PENDING")}
+              </SelectItem>
+              <SelectItem
+                value="PROCESSING"
+                disabled={isOptionDisabled("PROCESSING")}
+              >
+                {t("orders.statusMapping.PROCESSING")}
+              </SelectItem>
+              <SelectItem
+                value="SHIPPED"
+                disabled={isOptionDisabled("SHIPPED")}
+              >
+                {t("orders.statusMapping.SHIPPED")}
+              </SelectItem>
+              <SelectItem
+                value="DELIVERED"
+                disabled={isOptionDisabled("DELIVERED")}
+              >
+                {t("orders.statusMapping.DELIVERED")}
+              </SelectItem>
+              <SelectItem
+                value="CANCELLED"
+                disabled={isOptionDisabled("CANCELLED")}
+              >
+                {t("orders.statusMapping.CANCELLED")}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center space-x-2 pt-2">
+          <input
+            type="checkbox"
+            id="notify"
+            checked={notify}
+            onChange={(e) => setNotify(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+          />
+          <label
+            htmlFor="notify"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {t("notifications.sendToUser")}
+          </label>
+        </div>
       </div>
     </FormDialog>
   );

@@ -583,13 +583,14 @@ export async function getOrdersAction(
 
 export async function updateOrderStatusAction(
   orderId: string,
-  status: string
+  status: string,
+  notify = true
 ): Promise<ActionResult> {
   return handleAdminAction(
     () =>
       http(`/orders/${orderId}/status`, {
         method: "PATCH",
-        body: JSON.stringify({ status }),
+        body: JSON.stringify({ status, notify }),
       }),
     ["/admin/orders"]
   );

@@ -479,65 +479,67 @@ export class OrdersService {
         }
       }
 
-      // Send email notification for status changes
-      const emailStatuses = [
-        OrderStatus.PROCESSING,
-        OrderStatus.SHIPPED,
-        OrderStatus.DELIVERED,
-        OrderStatus.CANCELLED,
-      ];
+      if (dto.notify !== false) {
+        // Send email notification for status changes
+        const emailStatuses = [
+          OrderStatus.PROCESSING,
+          OrderStatus.SHIPPED,
+          OrderStatus.DELIVERED,
+          OrderStatus.CANCELLED,
+        ];
 
-      if ((emailStatuses as any[]).includes(newStatus)) {
-        await this.emailService.sendOrderStatusUpdate(updatedOrder);
-      }
-
-      try {
-        let title = 'Cập nhật đơn hàng';
-        let message = `Đơn hàng #${id.slice(-8)} đã chuyển sang trạng thái ${newStatus}`;
-
-        let notiType = 'ORDER';
-        switch (newStatus) {
-          case OrderStatus.PROCESSING:
-            title = 'Đơn hàng đang xử lý';
-            message = `Đơn hàng #${id.slice(-8)} của bạn đang được chuẩn bị.`;
-            notiType = 'ORDER_PROCESSING';
-            break;
-          case OrderStatus.SHIPPED:
-            title = 'Đơn hàng đang giao';
-            message = `Đơn hàng #${id.slice(-8)} đã được bàn giao cho đơn vị vận chuyển.`;
-            notiType = 'ORDER_SHIPPED';
-            break;
-          case OrderStatus.DELIVERED:
-            title = 'Giao hàng thành công';
-            message = `Đơn hàng #${id.slice(-8)} đã được giao thành công. Cảm ơn bạn đã mua sắm!`;
-            notiType = 'ORDER_DELIVERED';
-            break;
-          case OrderStatus.CANCELLED:
-            title = 'Đơn hàng đã hủy';
-            message = `Đơn hàng #${id.slice(-8)} của bạn đã bị hủy.`;
-            notiType = 'ORDER_CANCELLED';
-            break;
-          case 'RETURNED' as any:
-            title = 'Đơn hàng đã hoàn';
-            message = `Đơn hàng #${id.slice(-8)} của bạn đã được hoàn trả.`;
-            notiType = 'ORDER_RETURNED';
-            break;
+        if ((emailStatuses as any[]).includes(newStatus)) {
+          await this.emailService.sendOrderStatusUpdate(updatedOrder);
         }
 
-        const notification = await this.notificationsService.create({
-          userId: updatedOrder.userId,
-          type: notiType,
-          title,
-          message,
-          link: `/orders/${id}`,
-        });
+        try {
+          let title = 'Cập nhật đơn hàng';
+          let message = `Đơn hàng #${id.slice(-8)} đã chuyển sang trạng thái ${newStatus}`;
 
-        this.notificationsGateway.sendNotificationToUser(
-          updatedOrder.userId,
-          notification,
-        );
-      } catch (error) {
-        console.error('Failed to create status update notification', error);
+          let notiType = 'ORDER';
+          switch (newStatus) {
+            case OrderStatus.PROCESSING:
+              title = 'Đơn hàng đang xử lý';
+              message = `Đơn hàng #${id.slice(-8)} của bạn đang được chuẩn bị.`;
+              notiType = 'ORDER_PROCESSING';
+              break;
+            case OrderStatus.SHIPPED:
+              title = 'Đơn hàng đang giao';
+              message = `Đơn hàng #${id.slice(-8)} đã được bàn giao cho đơn vị vận chuyển.`;
+              notiType = 'ORDER_SHIPPED';
+              break;
+            case OrderStatus.DELIVERED:
+              title = 'Giao hàng thành công';
+              message = `Đơn hàng #${id.slice(-8)} đã được giao thành công. Cảm ơn bạn đã mua sắm!`;
+              notiType = 'ORDER_DELIVERED';
+              break;
+            case OrderStatus.CANCELLED:
+              title = 'Đơn hàng đã hủy';
+              message = `Đơn hàng #${id.slice(-8)} của bạn đã bị hủy.`;
+              notiType = 'ORDER_CANCELLED';
+              break;
+            case 'RETURNED' as any:
+              title = 'Đơn hàng đã hoàn';
+              message = `Đơn hàng #${id.slice(-8)} của bạn đã được hoàn trả.`;
+              notiType = 'ORDER_RETURNED';
+              break;
+          }
+
+          const notification = await this.notificationsService.create({
+            userId: updatedOrder.userId,
+            type: notiType,
+            title,
+            message,
+            link: `/orders/${id}`,
+          });
+
+          this.notificationsGateway.sendNotificationToUser(
+            updatedOrder.userId,
+            notification,
+          );
+        } catch (error) {
+          console.error('Failed to create status update notification', error);
+        }
       }
 
       return updatedOrder;

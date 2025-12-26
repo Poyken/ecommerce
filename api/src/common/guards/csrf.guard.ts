@@ -41,7 +41,9 @@ export class CsrfGuard implements CanActivate {
     '/api/v1/auth/google/callback',
     '/api/v1/auth/facebook',
     '/api/v1/auth/facebook/callback',
-    '/api/v1/webhooks', // Payment webhooks
+    '/api/v1/webhooks', // General webhooks
+    '/api/v1/payment/momo_ipn', // MoMo IPN
+    '/api/v1/shipping/webhook', // GHN Webhook
     '/api/v1/health',
     '/api/v1/notifications',
   ];

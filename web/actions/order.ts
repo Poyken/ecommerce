@@ -115,3 +115,15 @@ export async function cancelOrderAction(orderId: string) {
 
   return { success: true };
 }
+
+/**
+ * Lấy chi tiết một đơn hàng của người dùng hiện tại.
+ */
+export async function getOrderDetailsAction(orderId: string) {
+  try {
+    const res = await http<ApiResponse<Order>>(`/orders/${orderId}`);
+    return { data: res.data };
+  } catch (error: unknown) {
+    return { error: (error as Error).message };
+  }
+}

@@ -357,10 +357,11 @@ export function OrdersClient({
                   aria-label={t("selectAll")}
                 />
               </TableHead>
-              <TableHead className="w-[200px]">{t("orders.idLabel")}</TableHead>
+              <TableHead className="w-[150px]">{t("orders.idLabel")}</TableHead>
               <TableHead>{t("sidebar.users")}</TableHead>
               <TableHead>{t("orders.totalLabel")}</TableHead>
               <TableHead>{t("orders.statusLabel")}</TableHead>
+              <TableHead>{t("orders.paymentStatusLabel")}</TableHead>
               <TableHead>{t("created")}</TableHead>
               {(canRead || canUpdate) && (
                 <TableHead className="text-right w-[120px]">
@@ -430,6 +431,20 @@ export function OrdersClient({
                     />
                   </TableCell>
                   <TableCell>
+                    <StatusBadge
+                      status={
+                        order.paymentStatus === "PAID"
+                          ? "DELIVERED"
+                          : order.paymentStatus === "FAILED"
+                          ? "CANCELLED"
+                          : "PENDING"
+                      }
+                      label={t(
+                        `orders.paymentStatusMapping.${order.paymentStatus}` as any
+                      )}
+                    />
+                  </TableCell>
+                  <TableCell>
                     <div className="flex flex-col">
                       <span className="text-sm">
                         {formatDate(order.createdAt)}
@@ -485,12 +500,7 @@ export function OrdersClient({
             open={statusDialogOpen}
             onOpenChange={setStatusDialogOpen}
             orderId={selectedOrder.id}
-            currentStatus={
-              selectedOrder.status === "CANCELLED" ||
-              selectedOrder.status === "DELIVERED"
-                ? "PENDING"
-                : selectedOrder.status
-            }
+            currentStatus={selectedOrder.status}
           />
           <OrderDetailsDialog
             orderId={selectedOrder.id}

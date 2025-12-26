@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsBoolean, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 
 /**
  * =====================================================================
@@ -33,4 +33,9 @@ export class UpdateOrderStatusDto {
   @IsNotEmpty()
   @IsEnum(OrderStatus)
   status: OrderStatus;
+
+  @ApiProperty({ example: true, required: false })
+  @IsOptional()
+  @IsBoolean()
+  notify?: boolean;
 }

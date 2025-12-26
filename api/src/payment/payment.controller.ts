@@ -54,7 +54,7 @@ export class PaymentController {
         });
 
         return res.redirect(
-          `${process.env.FRONTEND_URL || 'http://localhost:3000'}/order-success/${orderId}`,
+          `${process.env.FRONTEND_URL || 'http://localhost:3000'}/en/order-success/${orderId}`,
         );
       } else {
         // Failed
@@ -67,12 +67,12 @@ export class PaymentController {
         });
 
         return res.redirect(
-          `${process.env.FRONTEND_URL || 'http://localhost:3000'}/order-failed`,
+          `${process.env.FRONTEND_URL || 'http://localhost:3000'}/en/order-failed`,
         );
       }
     } else {
       return res.redirect(
-        `${process.env.FRONTEND_URL || 'http://localhost:3000'}/order-failed?reason=checksum_failed`,
+        `${process.env.FRONTEND_URL || 'http://localhost:3000'}/en/order-failed?reason=checksum_failed`,
       );
     }
   }
