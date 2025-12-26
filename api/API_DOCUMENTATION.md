@@ -20,8 +20,10 @@
   - [4.15. 🏠 Addresses Module](#415-addresses-module-srcaddresses)
   - [4.16. 🎫 Coupons Module](#416-coupons-module-srccoupons)
   - [4.17. 🏥 Health Module](#417-health-module-srchealthcontrollerts)
+  - [4.18. ❤️ Wishlist Module](#418-wishlist-module-srcwishlist)
+  - [4.19. 📝 Blog Module](#419-blog-module-srcblog)
+  - [4.20. 🚚 Shipping Module](#420-shipping-module-srcshipping)
 - [V. LƯỢC ĐỒ CƠ SỞ DỮ LIỆU](#v-database-schema)
-
 - [VI. XÁC THỰC VÀ PHÂN QUYỀN](#vi-authentication--authorization)
 - [VII. DANH SÁCH API ENDPOINTS](#vii-api-endpoints)
 - [VIII. KIỂM THỬ VÀ TRIỂN KHAI](#viii-testing--deployment)
@@ -988,6 +990,8 @@ await redis.set(cacheKey, JSON.stringify(products), 'EX', 300);
 GET    /analytics/stats       # Thống kê tổng quan (Dashboard)
 GET    /analytics/sales       # Dữ liệu doanh thu biểu đồ (?days=30)
 GET    /analytics/top-products # Top sản phẩm bán chạy (?limit=5)
+GET    /analytics/inventory   # Phân tích tồn kho (Inventory Health)
+GET    /analytics/categories  # Doanh thu theo danh mục
 ```
 
 ### Business Logic
@@ -995,6 +999,8 @@ GET    /analytics/top-products # Top sản phẩm bán chạy (?limit=5)
 - **Stats**: Sử dụng `Prisma aggregate` và `count` để lấy số liệu tổng quát.
 - **Sales Data**: Truy vấn đơn hàng trong X ngày qua, nhóm theo ngày và tính tổng doanh thu.
 - **Top Products**: Sử dụng `groupBy` trên `OrderItem` theo `skuId`, sau đó join với bảng `Sku` và `Product` để lấy thông tin chi tiết.
+- **Inventory**: Phân tích các sản phẩm sắp hết hàng (low stock) hoặc hết hàng (out of stock).
+- **Categories**: Tính tổng doanh thu theo từng danh mục sản phẩm.
 
 ---
 
@@ -1068,6 +1074,90 @@ GET    /health/info      # Thông tin hệ thống (RAM, uptime, version)
 
 - **Kubernetes/Docker**: Sử dụng `/health` cho liveness probe và `/health/ready` cho readiness probe.
 - **Monitoring**: Sử dụng `/health/info` để theo dõi mức sử dụng RAM và uptime.
+
+---
+
+## 4.18. ❤️ Wishlist Module (`src/wishlist/`)
+
+### Chức năng
+
+- Quản lý danh sách sản phẩm yêu thích (Wishlist).
+- Tích hợp Guest Wishlist (merge khi đăng nhập).
+
+### Endpoints
+
+```
+GET    /wishlist              # Lấy danh sách yêu thích
+GET    /wishlist/count        # Đếm số lượng item
+GET    /wishlist/check        # Kiểm tra sản phẩm có trong wishlist không (?productId=...)
+POST   /wishlist/toggle       # Thêm/Xóa sản phẩm khỏi wishlist
+POST   /wishlist/merge        # Gộp wishlist từ LocalStorage khi login
+```
+
+### Business Logic
+
+- **Toggle**: Endpoint duy nhất để thêm hoặc xóa. Nếu đã có -> xóa, nếu chưa có -> thêm.
+- **Merge**: Khi user đăng nhập, client gửi danh sách productId từ localStorage lên để gộp vào database.
+
+---
+
+## 4.19. 📝 Blog Module (`src/blog/`)
+
+### Chức năng
+
+- Hệ thống bài viết tin tức, blog.
+- Hỗ trợ upload ảnh, categories, tags.
+- Admin quản lý (duyệt, ẩn/hiện, xóa).
+
+### Endpoints (Public)
+
+```
+GET    /blogs                 # Danh sách bài viết (Pagination, Filter, Search)
+GET    /blogs/:id             # Chi tiết bài viết (theo ID hoặc Slug)
+GET    /blogs/categories      # Thống kê danh mục blog
+```
+
+### Endpoints (User/Admin)
+
+```
+GET    /blogs/my-blogs        # Bài viết của tôi
+POST   /blogs                 # Tạo bài viết mới (Multipart/form-data)
+PATCH  /blogs/:id             # Cập nhật bài viết
+DELETE /blogs/:id             # Xóa bài viết (Soft delete)
+PATCH  /blogs/:id/toggle-publish # Duyệt/Ẩn bài viết (Admin)
+```
+
+### Business Logic
+
+- **Upload Image**: Tích hợp Cloudinary để upload ảnh cover cho bài viết.
+- **Status**: Bài viết có thể ở trạng thái `DRAFT` (Nháp) hoặc `PUBLISHED` (Đã xuất bản).
+- **Security**: User chỉ được sửa/xóa bài của chính mình. Admin có quyền quản lý tất cả.
+
+---
+
+## 4.20. 🚚 Shipping Module (`src/shipping/`)
+
+### Chức năng
+
+- Tích hợp API Giao Hàng Nhanh (GHN).
+- Lấy dữ liệu hành chính (Tỉnh/Thành, Quận/Huyện, Phường/Xã).
+- Tính phí vận chuyển tự động.
+- Webhook cập nhật trạng thái đơn hàng.
+
+### Endpoints
+
+```
+GET    /shipping/provinces            # Danh sách Tỉnh/Thành
+GET    /shipping/districts/:provinceId  # Danh sách Quận/Huyện
+GET    /shipping/wards/:districtId      # Danh sách Phường/Xã
+POST   /shipping/fee                  # Tính phí vận chuyển
+POST   /shipping/webhook              # GHN Webhook Callback
+```
+
+### Business Logic
+
+- **Calculate Fee**: Dựa trên `districtId` (Quận/Huyện nhận), `wardCode` (Phường/Xã nhận) và thông tin gói hàng (cân nặng, kích thước mặc định).
+- **Webhook**: Nhận dữ liệu từ GHN khi trạng thái đơn hàng thay đổi (VD: Đang giao -> Đã giao) và cập nhật vào Database.
 
 ---
 
@@ -1519,6 +1609,29 @@ GET    /api/v1/roles              # List roles
 POST   /api/v1/roles              # Create role
 POST   /api/v1/roles/:id/permissions  # Assign permissions
 DELETE /api/v1/roles/:id/permissions/:permId  # Remove permission
+```
+
+## 7.10. Wishlist
+
+```
+GET    /api/v1/wishlist           # List items
+POST   /api/v1/wishlist/toggle    # Toggle item
+GET    /api/v1/wishlist/check     # Check status
+```
+
+## 7.11. Blog
+
+```
+GET    /api/v1/blogs              # List blogs
+GET    /api/v1/blogs/:id          # Detail
+POST   /api/v1/blogs              # Create
+```
+
+## 7.12. Shipping
+
+```
+GET    /api/v1/shipping/provinces # Get provinces
+POST   /api/v1/shipping/fee       # Calculate fee
 ```
 
 ---

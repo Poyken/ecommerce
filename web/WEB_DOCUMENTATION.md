@@ -15,14 +15,15 @@
 - [III. CẤU TRÚC THƯ MỤC CHI TIẾT](#iii-cấu-trúc-thư-mục-chi-tiết)
 - [IV. KIẾN TRÚC ỨNG DỤNG](#iv-kiến-trúc-ứng-dụng)
 - [V. LUỒNG DỮ LIỆU (DATA FLOW)](#v-luồng-dữ-liệu-data-flow)
-- [VI. CÁC THÀNH PHẦN CỐT LÕI](#vi-các-thành-phần-cốt-lõi)
-- [VII. SERVER ACTIONS CHI TIẾT](#vii-server-actions-chi-tiết)
-- [VIII. HOOKS & PROVIDERS](#viii-hooks--providers)
-- [IX. THỰC HÀNH: TRACE CODE THEO LUỒNG](#ix-thực-hành-trace-code-theo-luồng)
-- [X. CÁC TRANG QUAN TRỌNG](#x-các-trang-quan-trọng)
-- [XI. HƯỚNG DẪN ONBOARDING CHO THỰC TẬP SINH](#xi-hướng-dẫn-onboarding-cho-thực-tập-sinh)
-- [XII. QUY TẮC TỐT NHẤT VÀ QUY ƯỚC](#xii-best-practices--quy-ước)
-- [XIII. XỬ LÝ SỰ CỐ](#xiii-troubleshooting)
+- [VI. TÍNH NĂNG CHI TIẾT (DETAILED FEATURES)](#vi-tính-năng-chi-tiết-detailed-features)
+- [VII. CÁC THÀNH PHẦN CỐT LÕI](#vii-các-thành-phần-cốt-lõi)
+- [VIII. SERVER ACTIONS CHI TIẾT](#viii-server-actions-chi-tiết)
+- [IX. HOOKS & PROVIDERS](#ix-hooks--providers)
+- [X. THỰC HÀNH: TRACE CODE THEO LUỒNG](#x-thực-hành-trace-code-theo-luồng)
+- [XI. CÁC TRANG QUAN TRỌNG](#xi-các-trang-quan-trọng)
+- [XII. HƯỚNG DẪN ONBOARDING CHO THỰC TẬP SINH](#xii-hướng-dẫn-onboarding-cho-thực-tập-sinh)
+- [XIII. QUY TẮC TỐT NHẤT VÀ QUY ƯỚC](#xiii-best-practices--quy-ước)
+- [XIV. XỬ LÝ SỰ CỐ](#xiv-troubleshooting)
 
 ---
 
@@ -251,47 +252,104 @@ web/
 
 ---
 
-# V. LUỒNG DỮ LIỆU (DATA FLOW)
+# VI. TÍNH NĂNG CHI TIẾT (DETAILED FEATURES)
 
-## 5.1. Server Actions Flow
+Hệ thống cung cấp một bộ tính năng toàn diện cho cả Khách hàng (Storefront) và Quản trị viên (Admin Panel).
 
-```
-┌────────────────┐     ┌─────────────────┐     ┌──────────────┐
-│ User clicks    │────▶│ Server Action   │────▶│ Backend API  │
-│ "Add to Cart"  │     │ addToCartAction │     │ POST /cart   │
-└────────────────┘     └────────┬────────┘     └──────┬───────┘
-                                │                     │
-                                │ revalidatePath      │ Response
-                                ▼                     ▼
-                       ┌─────────────────┐     ┌──────────────┐
-                       │ Cache invalidate│◀────│ { success }  │
-                       │ /cart page      │     └──────────────┘
-                       └─────────────────┘
-```
+## 6.1. Xác thực & Bảo mật (Authentication & Security)
 
-## 5.2. HTTP Client Flow
+Hệ thống sử dụng cơ chế bảo mật đa lớp để bảo vệ tài khoản người dùng và dữ liệu.
 
-### Server-side (`lib/http.ts`)
+- **JWT (JSON Web Tokens)**: Sử dụng Access Token (ngắn hạn) và Refresh Token (dài hạn) để quản lý phiên đăng nhập.
+- **Security Fingerprinting**:
+  - Mỗi token được gắn với một "Dấu vân tay" (Fingerprint) bao gồm thông tin thiết bị (User-Agent) và IP.
+  - Hệ thống tự động phát hiện và chặn các request nếu Fingerprint thay đổi bất thường (chống trộm token).
+- **RBAC (Role-Based Access Control)**:
+  - Hệ thống phân quyền dựa trên Vai trò (Role) và Quyền hạn (Permission).
+  - Ví dụ: Nhân viên kho chỉ có quyền xem đơn hàng, không được sửa sản phẩm.
+- **CSRF Protection**: Bảo vệ chống lại các cuộc tấn công Cross-Site Request Forgery.
 
-```typescript
-// Chỉ dùng trong Server Components/Actions
-// Tự động đọc accessToken từ cookies
-const data = await http<ApiResponse<Product[]>>("/products");
-```
+## 6.2. Trải nghiệm Mua sắm (Shopping Experience)
 
-### Client-side (`lib/http-client.ts`)
+### 🛍️ Khám phá sản phẩm
 
-```typescript
-// Dùng trong Client Components (có "use client")
-// Browser tự gửi cookies với credentials: "include"
-const data = await httpClient<Product[]>("/products");
-```
+- **Tìm kiếm thông minh**: Tìm kiếm sản phẩm theo tên, mô tả.
+- **Bộ lọc nâng cao**: Lọc theo Danh mục, Thương hiệu, Khoảng giá, và các thuộc tính khác.
+- **Biến thể sản phẩm (SKUs)**: Hỗ trợ sản phẩm có nhiều biến thể (Màu sắc, Kích thước, Vật liệu) với giá và tồn kho riêng biệt.
+
+### 🛒 Giỏ hàng (Cart)
+
+- **Giỏ hàng khách (Guest Cart)**: Cho phép khách vãng lai thêm hàng vào giỏ mà không cần đăng nhập (lưu trữ local).
+- **Đồng bộ giỏ hàng**: Khi khách đăng nhập, giỏ hàng khách sẽ tự động được gộp vào giỏ hàng chính của tài khoản.
+- **Cập nhật thời gian thực**: Tính toán lại tổng tiền ngay lập tức khi thay đổi số lượng.
+
+### 💳 Thanh toán (Checkout)
+
+- **Tính phí vận chuyển tự động (GHN Integration)**:
+  - Tích hợp trực tiếp với API Giao Hàng Nhanh (GHN).
+  - Tự động tính phí ship dựa trên Địa chỉ nhận hàng và Kích thước/Khối lượng sản phẩm.
+- **Phương thức thanh toán đa dạng**:
+  - **COD**: Thanh toán khi nhận hàng.
+  - **Chuyển khoản ngân hàng (Banking)**: Hiển thị mã QR để khách chuyển khoản.
+  - **Ví điện tử**: MoMo, VNPay (đang phát triển).
+- **Mã giảm giá (Coupons)**: Áp dụng mã giảm giá theo % hoặc số tiền cố định.
+
+## 6.3. Tài khoản Người dùng (User Profile)
+
+- **Dashboard cá nhân**: Xem tổng quan hoạt động, đơn hàng gần đây.
+- **Quản lý đơn hàng**:
+  - Theo dõi trạng thái đơn hàng (Chờ xử lý, Đang giao, Đã giao, v.v.).
+  - Xem chi tiết từng sản phẩm trong đơn.
+  - Hủy đơn hàng (nếu chưa được xử lý).
+  - Đặt lại đơn hàng cũ (Re-order).
+- **Sổ địa chỉ (Address Book)**:
+  - Quản lý nhiều địa chỉ giao hàng.
+  - Tích hợp dữ liệu hành chính Việt Nam (Tỉnh/Thành, Quận/Huyện, Phường/Xã) từ GHN.
+- **Blog cá nhân**: Người dùng có thể viết bài chia sẻ, review sản phẩm (User Generated Content).
+
+## 6.4. Hệ thống Blog & Content
+
+- **Quản lý bài viết**: Soạn thảo bài viết với Rich Text Editor.
+- **Đa ngôn ngữ**: Hỗ trợ viết bài bằng nhiều ngôn ngữ (Tiếng Việt, Tiếng Anh).
+- **Gắn sản phẩm**: Cho phép gắn các sản phẩm liên quan vào bài viết để thúc đẩy bán hàng (Upsell).
+
+## 6.5. Quản trị hệ thống (Admin Dashboard)
+
+Dành cho Quản trị viên và Nhân viên vận hành.
+
+### 📊 Tổng quan (Analytics)
+
+- Biểu đồ doanh thu theo thời gian thực.
+- Top sản phẩm bán chạy.
+- Thống kê đơn hàng mới, khách hàng mới.
+
+### 📦 Quản lý Sản phẩm & Kho hàng
+
+- **Product Management**: Tạo/Sửa/Xóa sản phẩm, quản lý hình ảnh, SEO metadata.
+- **SKU Management**: Quản lý chi tiết từng biến thể, cập nhật giá và tồn kho nhanh chóng.
+- **Brand & Category**: Quản lý thương hiệu và danh mục sản phẩm phân cấp.
+
+### 🧾 Quản lý Đơn hàng (Order Fulfillment)
+
+- Xem danh sách đơn hàng với bộ lọc trạng thái.
+- Cập nhật quy trình xử lý đơn hàng (Duyệt đơn -> Đóng gói -> Giao vận chuyển).
+- In phiếu giao hàng (tính năng dự kiến).
+
+### 👥 Quản lý Người dùng & Phân quyền
+
+- Quản lý danh sách người dùng.
+- Tạo và cấp phát Vai trò (Roles) và Quyền hạn (Permissions) chi tiết.
+
+### ⚙️ Tính năng hệ thống (System Features)
+
+- **Feature Flags**: Bật/Tắt tính năng nóng mà không cần deploy lại code (VD: Tắt tính năng thanh toán online khi bảo trì).
+- **Audit Logs**: Ghi lại nhật ký hoạt động của hệ thống để tra soát.
 
 ---
 
-# VI. CÁC THÀNH PHẦN CỐT LÕI
+# VIII. CÁC THÀNH PHẦN CỐT LÕI
 
-## 6.1. Types & Models (`types/models.ts`)
+## 7.1. Types & Models (`types/models.ts`)
 
 Định nghĩa TypeScript interfaces cho tất cả entities:
 
@@ -373,9 +431,9 @@ export async function refreshSession();
 
 ---
 
-# VII. SERVER ACTIONS CHI TIẾT
+# VIII. SERVER ACTIONS CHI TIẾT
 
-## 7.1. Auth Actions (`actions/auth.ts`)
+## 8.1. Auth Actions (`actions/auth.ts`)
 
 | Action                 | Mô tả              | Input                                           | Output                         |
 | ---------------------- | ------------------ | ----------------------------------------------- | ------------------------------ |
@@ -408,7 +466,7 @@ export function LoginForm() {
 }
 ```
 
-## 7.2. Cart Actions (`actions/cart.ts`)
+## 8.2. Cart Actions (`actions/cart.ts`)
 
 | Action                 | Mô tả             | Input            | Output                         |
 | ---------------------- | ----------------- | ---------------- | ------------------------------ |
@@ -420,7 +478,7 @@ export function LoginForm() {
 | `reorderAction`        | Đặt lại đơn cũ    | orderId          | `{ success }`                  |
 | `getCartCountAction`   | Đếm số item       | -                | `{ count }`                    |
 
-## 7.3. Guest Cart Actions (`actions/guest-cart.ts`)
+## 8.3. Guest Cart Actions (`actions/guest-cart.ts`)
 
 | Action                      | Mô tả                                                |
 | --------------------------- | ---------------------------------------------------- |
@@ -436,7 +494,7 @@ export function LoginForm() {
 4. Xóa localStorage guest_cart
 ```
 
-## 7.4. Admin Actions (`actions/admin.ts`)
+## 8.4. Admin Actions (`actions/admin.ts`)
 
 **USERS:**
 
@@ -464,9 +522,9 @@ export function LoginForm() {
 
 ---
 
-# VIII. HOOKS & PROVIDERS
+# IX. HOOKS & PROVIDERS
 
-## 8.1. AuthProvider (`providers/auth-provider.tsx`)
+## 9.1. AuthProvider (`providers/auth-provider.tsx`)
 
 Cung cấp context cho việc kiểm tra quyền truy cập:
 
@@ -481,7 +539,7 @@ if (hasPermission("admin:users")) {
 }
 ```
 
-## 8.2. useUserProfile Hook
+## 9.2. useUserProfile Hook
 
 ```tsx
 // Lấy thông tin user với optimistic UI
@@ -489,7 +547,7 @@ const { user } = useUserProfile(initialUser);
 // initialUser từ Server Component để tránh loading flash
 ```
 
-## 8.3. useDebounce Hook
+## 9.3. useDebounce Hook
 
 ```tsx
 // Debounce search input
@@ -501,7 +559,7 @@ useEffect(() => {
 }, [debouncedSearch]);
 ```
 
-## 8.4. useToast Hook (`components/ui/use-toast.ts`)
+## 9.4. useToast Hook (`components/ui/use-toast.ts`)
 
 Dùng để hiển thị thông báo (Notification) ở góc màn hình. Đã được style lại theo **Luxe UI**:
 
@@ -516,7 +574,7 @@ toast({
 // Các variants: default, destructive (Rose), success (Emerald), warning (Amber), info (Blue)
 ```
 
-## 8.5. Virtualization (`useVirtualizer`)
+## 9.5. Virtualization (`useVirtualizer`)
 
 Sử dụng trong các bảng dữ liệu lớn (VD: Admin Products) để chỉ render những item đang hiển thị trên màn hình -> **Performance tối ưu**.
 
@@ -524,9 +582,9 @@ Sử dụng trong các bảng dữ liệu lớn (VD: Admin Products) để chỉ
 
 ---
 
-# IX. THỰC HÀNH: TRACE CODE THEO LUỒNG
+# X. THỰC HÀNH: TRACE CODE THEO LUỒNG
 
-## 9.1. Luồng "Thêm vào giỏ hàng"
+## 10.1. Luồng "Thêm vào giỏ hàng"
 
 **Mục tiêu:** Hiểu cách data flow từ UI đến Database
 
@@ -595,7 +653,7 @@ POST http://localhost:8080/api/v1/cart
 
 ---
 
-## 9.2. Luồng "Đăng nhập"
+## 10.2. Luồng "Đăng nhập"
 
 ```
 1. User nhập email/password
@@ -620,9 +678,9 @@ POST http://localhost:8080/api/v1/cart
 
 ---
 
-# X. CÁC TRANG QUAN TRỌNG
+# XI. CÁC TRANG QUAN TRỌNG
 
-## 10.1. Storefront Pages
+## 11.1. Storefront Pages
 
 | Trang              | Path               | File                                           |
 | ------------------ | ------------------ | ---------------------------------------------- |
@@ -635,7 +693,7 @@ POST http://localhost:8080/api/v1/cart
 | Chi tiết đơn hàng  | `/orders/[id]`     | `app/[locale]/(shop)/orders/[id]/page.tsx`     |
 | Hồ sơ              | `/profile`         | `app/[locale]/(shop)/profile/page.tsx`         |
 
-## 10.2. Admin Pages
+## 11.2. Admin Pages
 
 | Trang      | Path                | Chức năng                   |
 | ---------- | ------------------- | --------------------------- |
@@ -651,9 +709,9 @@ POST http://localhost:8080/api/v1/cart
 
 ---
 
-# XI. HƯỚNG DẪN ONBOARDING CHO THỰC TẬP SINH
+# XII. HƯỚNG DẪN ONBOARDING CHO THỰC TẬP SINH
 
-## 11.1. Ngày 1: Setup & Khám phá
+## 12.1. Ngày 1: Setup & Khám phá
 
 ### Buổi sáng: Setup môi trường
 
@@ -677,7 +735,7 @@ npm run dev
 3. Thử thêm sản phẩm vào giỏ hàng
 4. Mở **React DevTools** để xem component tree
 
-## 11.2. Ngày 2: Hiểu cấu trúc
+## 12.2. Ngày 2: Hiểu cấu trúc
 
 ### Đọc và ghi chú:
 
@@ -686,24 +744,24 @@ npm run dev
 3. Đọc file `types/dtos.ts` - hiểu API wrappers
 4. Mở một trang đơn giản (VD: `/about`) và trace từ đầu đến cuối
 
-## 11.3. Ngày 3: Trace một luồng hoàn chỉnh
+## 12.3. Ngày 3: Trace một luồng hoàn chỉnh
 
 ### Bài tập: Trace luồng "Thêm vào giỏ hàng"
 
-Sử dụng hướng dẫn ở Section IX, tự trace và ghi chú lại:
+Sử dụng hướng dẫn ở Section X, tự trace và ghi chú lại:
 
 - Component nào render nút "Thêm vào giỏ"?
 - Server Action nào được gọi?
 - API endpoint nào được gọi?
 - Data flow như thế nào?
 
-## 11.4. Ngày 4: Làm quen với Admin
+## 12.4. Ngày 4: Làm quen với Admin
 
 1. Đăng nhập với tài khoản Admin (`admin@example.com` / `Admin@123`)
 2. Duyệt qua các trang Admin
 3. Trace luồng "Cập nhật SKU" từ UI đến Database
 
-## 11.5. Ngày 5: Thực hành nhỏ
+## 12.5. Ngày 5: Thực hành nhỏ
 
 ### Bài tập đề xuất:
 
@@ -713,9 +771,9 @@ Sử dụng hướng dẫn ở Section IX, tự trace và ghi chú lại:
 
 ---
 
-# XII. QUY TẮC TỐT NHẤT VÀ QUY ƯỚC
+# XIII. QUY TẮC TỐT NHẤT VÀ QUY ƯỚC
 
-## 12.1. Quy ước đặt tên (Naming Conventions)
+## 13.1. Quy ước đặt tên (Naming Conventions)
 
 | Loại             | Convention               | Ví dụ                                    |
 | ---------------- | ------------------------ | ---------------------------------------- |
@@ -725,7 +783,7 @@ Sử dụng hướng dẫn ở Section IX, tự trace và ghi chú lại:
 | Files            | kebab-case               | `product-card.tsx`, `use-debounce.ts`    |
 | Types/Interfaces | PascalCase               | `Product`, `OrderStatus`, `ApiResponse`  |
 
-## 12.2. Cấu trúc Component
+## 13.2. Cấu trúc Component
 
 ```tsx
 // 1. Imports
@@ -749,7 +807,7 @@ export function ProductCard({ product }: Props) {
 }
 ```
 
-## 12.3. Cấu trúc Server Action
+## 13.3. Cấu trúc Server Action
 
 ```typescript
 export async function someAction(input: InputType): Promise<ActionResult> {
@@ -773,7 +831,7 @@ export async function someAction(input: InputType): Promise<ActionResult> {
 }
 ```
 
-## 12.4. Đa ngôn ngữ (Internationalization / i18n)
+## 13.4. Đa ngôn ngữ (Internationalization / i18n)
 
 ```tsx
 // Sử dụng translations
@@ -797,7 +855,7 @@ export function ProductCard() {
 
 ---
 
-# XIII. XỬ LÝ SỰ CỐ
+# XIV. XỬ LÝ SỰ CỐ
 
 ## 13.1. Lỗi thường gặp
 
