@@ -345,6 +345,7 @@ export interface Order {
   user?: User;
   couponId?: string | null;
   coupon?: Coupon | null;
+  cancellationReason?: string | null;
 }
 
 // =============================================================================

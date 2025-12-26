@@ -23,6 +23,7 @@
 
 import { getGuestWishlistDetailsAction } from "@/actions/wishlist";
 import { GlassButton } from "@/components/atoms/glass-button";
+import { Skeleton } from "@/components/atoms/skeleton";
 import { ProductCard } from "@/components/organisms/product-card";
 import { useGuestWishlist } from "@/hooks/use-guest-wishlist";
 import { Link } from "@/i18n/routing";
@@ -51,6 +52,7 @@ export function WishlistClient({
   const { isAuthenticated } = useAuth();
   const guestWishlist = useGuestWishlist();
   const [items, setItems] = useState<WishlistItem[]>(initialItems || []);
+  const [isInitializing, setIsInitializing] = useState(!isAuthenticated);
 
   const router = useRouter();
 
@@ -69,13 +71,18 @@ export function WishlistClient({
     // If authenticated, we trust server items (initialItems)
     if (isAuthenticated) {
       setItems(initialItems || []);
+      setIsInitializing(false);
       return;
     }
 
     // If guest, we fetch from localStorage IDs
     const fetchGuestProducts = async () => {
+      // Small delay to ensure localStorage hook is sync
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       if (guestWishlist.wishlistIds.length === 0) {
         setItems([]);
+        setIsInitializing(false);
         return;
       }
 
@@ -93,6 +100,8 @@ export function WishlistClient({
         }
       } catch (e) {
         console.error("Failed to fetch guest wishlist", e);
+      } finally {
+        setIsInitializing(false);
       }
     };
 
@@ -126,7 +135,19 @@ export function WishlistClient({
         </motion.div>
 
         <div>
-          {items.length > 0 ? (
+          {isInitializing ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="space-y-4">
+                  <Skeleton className="aspect-3/4 w-full rounded-2xl" />
+                  <div className="space-y-2">
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : items.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {items
                 .filter((item) => item.product)

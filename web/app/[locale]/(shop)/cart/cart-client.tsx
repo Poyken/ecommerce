@@ -45,6 +45,7 @@ import { GlassButton } from "@/components/atoms/glass-button";
 import { GlassCard } from "@/components/atoms/glass-card";
 import { OptimizedImage } from "@/components/atoms/optimized-image";
 import { Separator } from "@/components/atoms/separator";
+import { Skeleton } from "@/components/atoms/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { Link } from "@/i18n/routing";
 import { Cart, CartItem, Sku } from "@/types/models";
@@ -100,6 +101,7 @@ export function CartClient({ cart }: CartClientProps) {
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
   const debouncedUpdateRef = useRef<{ [key: string]: NodeJS.Timeout }>({});
+  const [isInitializing, setIsInitializing] = useState(!cart);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -127,6 +129,9 @@ export function CartClient({ cart }: CartClientProps) {
   useEffect(() => {
     if (isGuest) {
       const fetchGuestCart = async () => {
+        // Delay to ensure hydration
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
         const guestCartStr = localStorage.getItem("guest_cart");
         if (guestCartStr) {
           try {
@@ -211,10 +216,14 @@ export function CartClient({ cart }: CartClientProps) {
             }
           } catch (e) {
             console.error("Error loading guest cart", e);
+            setGuestItems([]);
+          } finally {
+            setIsInitializing(false);
           }
         } else {
           setGuestItems([]);
           setTotalGuest(0);
+          setIsInitializing(false);
         }
       };
 
@@ -223,6 +232,8 @@ export function CartClient({ cart }: CartClientProps) {
       return () => {
         window.removeEventListener("guest_cart_updated", fetchGuestCart);
       };
+    } else {
+      setIsInitializing(false);
     }
   }, [isGuest]);
 
@@ -475,7 +486,31 @@ export function CartClient({ cart }: CartClientProps) {
           )}
         </motion.div>
 
-        {localItems.length === 0 ? (
+        {isInitializing ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="lg:col-span-8 space-y-4">
+              {[1, 2].map((i) => (
+                <div key={i} className="p-4 border rounded-xl flex gap-4">
+                  <Skeleton className="w-24 h-32 rounded-lg" />
+                  <div className="flex-1 space-y-3">
+                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-4 w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="lg:col-span-4">
+              <div className="p-6 border rounded-xl space-y-4">
+                <Skeleton className="h-8 w-1/2 mb-4" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-full" />
+                <div className="pt-4 border-t">
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : localItems.length === 0 ? (
           <motion.div
             className="flex flex-col items-center justify-center py-24 px-4 text-center space-y-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm"
             initial={{ opacity: 0, scale: 0.95 }}

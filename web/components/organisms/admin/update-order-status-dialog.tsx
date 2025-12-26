@@ -46,12 +46,28 @@ export function UpdateOrderStatusDialog({
   const [status, setStatus] = useState<OrderStatus>(currentStatus);
   const [notify, setNotify] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [cancellationReason, setCancellationReason] = useState("");
   const { toast } = useToast();
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (status === "CANCELLED" && !cancellationReason.trim()) {
+      toast({
+        title: "Reason Required",
+        description: "Please provide a reason for cancellation.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
-    const result = await updateOrderStatusAction(orderId, status, notify);
+    const result = await updateOrderStatusAction(
+      orderId,
+      status,
+      notify,
+      cancellationReason
+    );
     setLoading(false);
 
     if (result.success) {
@@ -139,6 +155,21 @@ export function UpdateOrderStatusDialog({
             </SelectContent>
           </Select>
         </div>
+
+        {status === "CANCELLED" && (
+          <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
+            <label className="text-sm font-medium text-red-500">
+              Cancellation Reason (Required)
+            </label>
+            <textarea
+              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="Why is this order being cancelled?"
+              value={cancellationReason}
+              onChange={(e) => setCancellationReason(e.target.value)}
+              required
+            />
+          </div>
+        )}
 
         <div className="flex items-center space-x-2 pt-2">
           <input

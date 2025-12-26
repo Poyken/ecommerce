@@ -26,6 +26,7 @@ import { usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { ApiResponse } from "@/types/dtos";
 import { Brand, Category, Product } from "@/types/models";
+import { AnimatePresence, motion } from "framer-motion";
 import { Filter, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -262,38 +263,46 @@ export function ShopContent({
                 <ShopStats productsPromise={productsPromise} />
               </Suspense>
 
-              {hasActiveFilters && (
-                <div className="flex flex-wrap gap-3">
-                  {activeCategoryName && (
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-wider border border-primary/30 shadow-sm shadow-primary/5">
-                      {activeCategoryName}
-                      <button
-                        onClick={() => handleRemoveFilter("categoryId")}
-                        className="hover:text-foreground transition-colors"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  )}
-                  {activeBrandName && (
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-xs font-black uppercase tracking-wider border border-accent/30 shadow-sm shadow-accent/5">
-                      {activeBrandName}
-                      <button
-                        onClick={() => handleRemoveFilter("brandId")}
-                        className="hover:text-foreground transition-colors"
-                      >
-                        <X size={14} />
-                      </button>
-                    </div>
-                  )}
-                  <button
-                    onClick={handleClearAllFilters}
-                    className="text-xs font-bold text-muted-foreground hover:text-primary underline underline-offset-4 uppercase tracking-wider transition-colors cursor-pointer"
+              <AnimatePresence mode="popLayout">
+                {hasActiveFilters && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex flex-wrap gap-3"
                   >
-                    {t("clearAll")}
-                  </button>
-                </div>
-              )}
+                    {activeCategoryName && (
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-wider border border-primary/30 shadow-sm shadow-primary/5">
+                        {activeCategoryName}
+                        <button
+                          onClick={() => handleRemoveFilter("categoryId")}
+                          className="hover:text-foreground transition-colors"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    )}
+                    {activeBrandName && (
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-xs font-black uppercase tracking-wider border border-accent/30 shadow-sm shadow-accent/5">
+                        {activeBrandName}
+                        <button
+                          onClick={() => handleRemoveFilter("brandId")}
+                          className="hover:text-foreground transition-colors"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    )}
+                    <button
+                      onClick={handleClearAllFilters}
+                      className="text-xs font-bold text-muted-foreground hover:text-primary underline underline-offset-4 uppercase tracking-wider transition-colors cursor-pointer"
+                    >
+                      {t("clearAll")}
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </div>
 

@@ -39,6 +39,7 @@ import { useAuth } from "@/providers/auth-provider";
 import { User } from "@/types/models";
 import { format } from "date-fns";
 import {
+  Download,
   Mail,
   Plus,
   Search,
@@ -145,12 +146,22 @@ export function UsersPageClient({
           { label: "users", value: userCount, variant: "success" },
         ]}
         actions={
-          canCreate ? (
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              {t("users.createNew")}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => alert("Export features coming soon")}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Export CSV
             </Button>
-          ) : undefined
+            {canCreate && (
+              <Button onClick={() => setCreateDialogOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                {t("users.createNew")}
+              </Button>
+            )}
+          </div>
         }
       />
 

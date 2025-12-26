@@ -40,6 +40,7 @@ import { Product } from "@/types/models";
 import { format } from "date-fns";
 import {
   Box,
+  Download,
   Edit,
   Languages,
   Package,
@@ -47,6 +48,7 @@ import {
   Search,
   Tag,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
@@ -195,12 +197,32 @@ export function ProductsClient({
           { label: "categories", value: categoriesSet.size, variant: "info" },
         ]}
         actions={
-          canCreate ? (
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              {t("products.createNew")}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => alert("Export feature coming soon")}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Export
             </Button>
-          ) : undefined
+            {canCreate && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => alert("Import feature coming soon")}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Import
+                </Button>
+                <Button onClick={() => setCreateDialogOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("products.createNew")}
+                </Button>
+              </>
+            )}
+          </div>
         }
       />
 

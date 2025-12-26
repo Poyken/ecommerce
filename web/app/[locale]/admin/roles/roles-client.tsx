@@ -11,7 +11,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/atoms/dropdown-menu";
-import { GlassCard } from "@/components/atoms/glass-card";
 import { Input } from "@/components/atoms/input";
 import {
   Table,
@@ -21,6 +20,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/atoms/table";
+import {
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
+} from "@/components/organisms/admin/admin-page-components";
 import { AssignPermissionsDialog } from "@/components/organisms/admin/assign-permissions-dialog";
 import { CreateRoleDialog } from "@/components/organisms/admin/create-role-dialog";
 import { DeleteConfirmDialog } from "@/components/organisms/admin/delete-confirm-dialog";
@@ -28,7 +32,15 @@ import { EditRoleDialog } from "@/components/organisms/admin/edit-role-dialog";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useAuth } from "@/providers/auth-provider";
 import { PaginationMeta } from "@/types/dtos";
-import { MoreHorizontal } from "lucide-react";
+import {
+  Edit2,
+  Key,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Shield,
+  Trash2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -40,27 +52,6 @@ export function RolesPageClient({
   roles: any[];
   meta?: PaginationMeta;
 }) {
-  /**
-   * =====================================================================
-   * ADMIN ROLES CLIENT - Quản lý chuẩn bị
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. PERMISSIONS DISPLAY:
-   * - Một Role có nhiều Permissions.
-   * - UI chỉ hiển thị tối đa 3 permissions đầu tiên để tránh vỡ layout bảng.
-   * - Số còn lại được gom vào badge "+X more".
-   *
-   * 2. DROPDOWN MENU ACTIONS:
-   * - Sử dụng `DropdownMenu` của Radix UI (qua shadcn/ui) để gom nhóm các hành động.
-   * - Giúp giao diện gọn gàng hơn so với việc để nhiều nút bấm rời rạc.
-   *
-   * 3. DIALOGS:
-   * - Tách biệt logic Create, Edit, Delete, Assign Permissions ra các component Dialog riêng.
-   * - Giúp file này không bị quá dài và dễ bảo trì.
-   * =====================================================================
-   */
   const t = useTranslations("admin");
   const { hasPermission } = useAuth();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -72,7 +63,7 @@ export function RolesPageClient({
   const canCreate = hasPermission("role:create");
   const canUpdate = hasPermission("role:update");
   const canDelete = hasPermission("role:delete");
-  const canAssignPermissions = hasPermission("role:update"); // Assuming update permission is needed for assigning permissions
+  const canAssignPermissions = hasPermission("role:update");
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -80,10 +71,8 @@ export function RolesPageClient({
     searchParams.get("search") || ""
   );
 
-  // Debounced search term
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
 
-  // Update URL when debounced search term changes
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     const currentSearch = params.get("search") || "";
@@ -91,6 +80,7 @@ export function RolesPageClient({
     if (currentSearch !== debouncedSearchTerm) {
       if (debouncedSearchTerm) {
         params.set("search", debouncedSearchTerm);
+        params.set("page", "1"); // Reset to page 1 on search
       } else {
         params.delete("search");
       }
@@ -115,44 +105,54 @@ export function RolesPageClient({
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">{t("roles.management")}</h1>
-        {canCreate && (
-          <Button onClick={() => setCreateDialogOpen(true)}>
-            {t("roles.createNew")}
-          </Button>
-        )}
-      </div>
+      {/* 1. Standard Admin Header */}
+      <AdminPageHeader
+        title={t("roles.management")}
+        subtitle={`${meta?.total || 0} roles defined in system`}
+        icon={<Shield className="h-5 w-5" />}
+        stats={[
+          { label: "total", value: meta?.total || 0, variant: "default" },
+        ]}
+        actions={
+          canCreate ? (
+            <Button onClick={() => setCreateDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              {t("roles.createNew")}
+            </Button>
+          ) : undefined
+        }
+      />
 
-      <div className="flex items-center space-x-2">
-        <Input
-          placeholder={t("roles.searchPlaceholder")}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
-      </div>
-
-      <GlassCard className="p-6">
-        <div className="mb-6">
-          <h2 className="text-xl font-bold text-foreground">
-            {t("roles.allLabel")}
-          </h2>
+      {/* 2. Search Bar */}
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1 max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder={t("roles.searchPlaceholder")}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
         </div>
+      </div>
+
+      {/* 3. Table Wrapper */}
+      <AdminTableWrapper>
         <Table>
           <TableHeader>
-            <TableRow className="border-white/10 hover:bg-white/5">
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("roles.roleNameLabel")}
+            <TableRow className="bg-muted/50">
+              <TableHead className="w-[20%]">
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4" />
+                  {t("roles.roleNameLabel")}
+                </div>
               </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
+              <TableHead className="w-[50%]">
                 {t("permissions.title")}
               </TableHead>
-              <TableHead className="text-muted-foreground uppercase tracking-wider text-xs font-bold">
-                {t("roles.createdLabel")}
-              </TableHead>
+              <TableHead>{t("roles.createdLabel")}</TableHead>
               {(canAssignPermissions || canUpdate || canDelete) && (
-                <TableHead className="text-right text-muted-foreground uppercase tracking-wider text-xs font-bold">
+                <TableHead className="text-right w-[100px]">
                   {t("actions")}
                 </TableHead>
               )}
@@ -163,40 +163,45 @@ export function RolesPageClient({
               roles.map((role: any) => (
                 <TableRow
                   key={role.id}
-                  className="border-white/10 hover:bg-white/5 transition-colors"
+                  className="hover:bg-muted/30 transition-colors"
                 >
-                  <TableCell className="font-medium text-foreground">
-                    {role.name}
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                        <Key className="h-5 w-5" />
+                      </div>
+                      <div className="font-medium text-foreground">
+                        {role.name}
+                      </div>
+                    </div>
                   </TableCell>
-                  <TableCell className="max-w-md">
-                    <div className="flex flex-wrap gap-1">
-                      {role.permissions?.slice(0, 3).map((rp: any) => (
+                  <TableCell>
+                    <div className="flex flex-wrap gap-1.5">
+                      {role.permissions?.slice(0, 4).map((rp: any) => (
                         <Badge
                           key={rp.permission?.id}
                           variant="secondary"
-                          className="text-xs bg-primary/10 text-primary border-primary/20"
+                          className="text-xs bg-muted/50 hover:bg-muted border-border font-normal"
                         >
                           {rp.permission?.name}
                         </Badge>
                       ))}
-                      {role.permissions?.length > 3 && (
+                      {role.permissions?.length > 4 && (
                         <Badge
                           variant="outline"
-                          className="text-xs border-white/10 text-muted-foreground"
+                          className="text-xs border-dashed text-muted-foreground"
                         >
-                          {t("roles.moreCount", {
-                            count: role.permissions.length - 3,
-                          })}
+                          +{role.permissions.length - 4}
                         </Badge>
                       )}
                       {(!role.permissions || role.permissions.length === 0) && (
-                        <span className="text-muted-foreground/50 text-sm">
+                        <span className="text-muted-foreground/50 text-sm italic">
                           {t("none")}
                         </span>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
+                  <TableCell className="text-sm text-muted-foreground">
                     {new Date(role.createdAt).toLocaleDateString()}
                   </TableCell>
                   {(canAssignPermissions || canUpdate || canDelete) && (
@@ -205,23 +210,20 @@ export function RolesPageClient({
                         <DropdownMenuTrigger asChild>
                           <Button
                             variant="ghost"
-                            className="h-8 w-8 p-0 hover:bg-white/10 text-muted-foreground hover:text-foreground"
+                            className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground"
                           >
-                            <span>
-                              <span className="sr-only">{t("openMenu")}</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </span>
+                            <span className="sr-only">{t("openMenu")}</span>
+                            <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel className="text-muted-foreground">
-                            {t("actions")}
-                          </DropdownMenuLabel>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuLabel>{t("actions")}</DropdownMenuLabel>
                           {canAssignPermissions && (
                             <DropdownMenuItem
                               onClick={() => openPermissions(role)}
                               className="cursor-pointer"
                             >
+                              <Key className="mr-2 h-4 w-4 text-blue-500" />
                               {t("roles.assignPermissions")}
                             </DropdownMenuItem>
                           )}
@@ -230,16 +232,18 @@ export function RolesPageClient({
                               onClick={() => openEdit(role)}
                               className="cursor-pointer"
                             >
+                              <Edit2 className="mr-2 h-4 w-4 text-amber-500" />
                               {t("roles.edit")}
                             </DropdownMenuItem>
                           )}
                           {canDelete && (
                             <>
-                              <DropdownMenuSeparator className="bg-white/10" />
+                              <DropdownMenuSeparator />
                               <DropdownMenuItem
-                                className="text-red-500 focus:text-red-400 focus:bg-red-500/10 cursor-pointer"
+                                className="text-red-600 focus:text-red-600 cursor-pointer"
                                 onClick={() => openDelete(role)}
                               >
+                                <Trash2 className="mr-2 h-4 w-4" />
                                 {t("roles.delete")}
                               </DropdownMenuItem>
                             </>
@@ -256,15 +260,27 @@ export function RolesPageClient({
                   colSpan={
                     canAssignPermissions || canUpdate || canDelete ? 4 : 3
                   }
-                  className="text-center py-8 text-muted-foreground"
+                  className="h-24 text-center"
                 >
-                  {t("noFound", { item: t("roles.title") })}
+                  <AdminEmptyState
+                    icon={Shield}
+                    title={t("noFound", { item: t("roles.title") })}
+                    description={t("roles.searchPlaceholder")}
+                    action={
+                      canCreate ? (
+                        <Button onClick={() => setCreateDialogOpen(true)}>
+                          <Plus className="mr-2 h-4 w-4" />
+                          {t("roles.createNew")}
+                        </Button>
+                      ) : undefined
+                    }
+                  />
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
-      </GlassCard>
+      </AdminTableWrapper>
 
       {meta && (
         <DataTablePagination
@@ -274,6 +290,7 @@ export function RolesPageClient({
         />
       )}
 
+      {/* Dialogs */}
       <CreateRoleDialog
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}

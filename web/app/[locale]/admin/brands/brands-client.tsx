@@ -38,7 +38,15 @@ import { useAuth } from "@/providers/auth-provider";
 import { PaginationMeta } from "@/types/dtos";
 import { Brand } from "@/types/models";
 import { format } from "date-fns";
-import { Award, Edit, Plus, Search, Trash2 } from "lucide-react";
+import {
+  Award,
+  Download,
+  Edit,
+  Plus,
+  Search,
+  Trash2,
+  Upload,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -141,12 +149,32 @@ export function BrandsPageClient({
         icon={<Award className="h-5 w-5" />}
         stats={[{ label: "total", value: total, variant: "default" }]}
         actions={
-          canCreate ? (
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              {t("brands.createNew")}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => alert("Export features coming soon")}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              Export
             </Button>
-          ) : undefined
+            {canCreate && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => alert("Import features coming soon")}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Import
+                </Button>
+                <Button onClick={() => setCreateDialogOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("brands.createNew")}
+                </Button>
+              </>
+            )}
+          </div>
         }
       />
 
@@ -197,7 +225,7 @@ export function BrandsPageClient({
                       <div>
                         <p className="font-medium">{brand.name}</p>
                         <code className="text-xs text-muted-foreground">
-                          ID: {brand.id.slice(0, 8)}...
+                          ID: {brand.id}
                         </code>
                       </div>
                     </div>

@@ -268,7 +268,8 @@
       "CANCELLED": "Cancelled",
       "COMPLETED": "Completed",
       "RETURNED": "Returned",
-      "PAID": "Paid"
+      "PAID": "Paid",
+      "UNPAID": "Unpaid"
     },
     "orderDetail": "Order Detail",
     "orderNotFound": "Order not found",
@@ -291,7 +292,10 @@
       "COD": "Cash on Delivery",
       "BANKING": "Bank Transfer",
       "CARD": "Credit Card"
-    }
+    },
+    "scanToPay": "Scan to Pay",
+    "transferInfo": "Transfer Information",
+    "copied": "Copied"
   },
   "home": {
     "heroTitle": "Premium Furniture Store",
@@ -578,7 +582,20 @@
     "subtotal": "Subtotal",
     "shipping": "Shipping",
     "total": "Total",
-    "edit": "Edit"
+    "edit": "Edit",
+    "completePayment": "Complete Payment",
+    "scanQrDesc": "Scan QR code with Banking App",
+    "finishAndViewOrder": "Finish & View Order"
+  },
+  "simulatePayment": {
+    "title": "Confirm Payment",
+    "description": "Simulate a successful bank transfer for Order",
+    "devTool": "⚠️ This is a development tool to simulate a webhook callback.",
+    "confirmButton": "Confirm Payment Now",
+    "processing": "Processing...",
+    "successTitle": "Payment Confirmed",
+    "successDesc": "Order status updated to PROCESSING.",
+    "errorTitle": "Error"
   },
   "profile": {
     "tabs": {

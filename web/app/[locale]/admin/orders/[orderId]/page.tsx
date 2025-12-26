@@ -1,12 +1,12 @@
 import { getOrderDetailsAction } from "@/actions/admin";
 import { Badge } from "@/components/atoms/badge";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/atoms/table";
 import { formatCurrency } from "@/lib/utils";
 import { OrderItem } from "@/types/models";
@@ -39,8 +39,8 @@ export default async function OrderDetailsPage({
     <div className="flex-1 overflow-y-auto p-6 space-y-8">
       <div className="flex justify-between items-center border-b pb-4">
         <h1 className="text-2xl font-bold">{t("orders.details")}</h1>
-        <Link 
-          href="/admin/orders" 
+        <Link
+          href="/admin/orders"
           className="text-sm text-gray-500 hover:underline"
         >
           ← {t("back")}
@@ -68,7 +68,9 @@ export default async function OrderDetailsPage({
               {t("orders.statusLabel")}:
             </span>
             <span>
-              <Badge variant={order.status === "PENDING" ? "warning" : "default"}>
+              <Badge
+                variant={order.status === "PENDING" ? "warning" : "default"}
+              >
                 {t(`orders.statusMapping.${order.status}` as any)}
               </Badge>
             </span>
@@ -79,6 +81,36 @@ export default async function OrderDetailsPage({
             <span className="font-semibold text-lg text-primary">
               {formatCurrency(Number(order.totalAmount))}
             </span>
+
+            <span className="font-medium text-gray-500">Payment Method:</span>
+            <span>{order.paymentMethod || "N/A"}</span>
+
+            <span className="font-medium text-gray-500">Payment Status:</span>
+            <span>
+              <Badge
+                variant={
+                  order.paymentStatus === "PAID"
+                    ? "success"
+                    : order.paymentStatus === "PENDING"
+                    ? "warning"
+                    : "default"
+                }
+              >
+                {order.paymentStatus}
+              </Badge>
+            </span>
+
+            {order.status === "CANCELLED" &&
+              (order as any).cancellationReason && (
+                <>
+                  <span className="font-medium text-red-500">
+                    Cancellation Reason:
+                  </span>
+                  <span className="text-red-500 font-medium">
+                    {(order as any).cancellationReason}
+                  </span>
+                </>
+              )}
           </div>
         </div>
 
@@ -107,7 +139,7 @@ export default async function OrderDetailsPage({
               {t("orders.addressLabel")}:
             </span>
             <span>{order.shippingAddress || "N/A"}</span>
-            
+
             {/* {(order.details as any)?.note && (
                 <>
                    <span className="font-medium text-gray-500">
@@ -146,7 +178,7 @@ export default async function OrderDetailsPage({
                   <TableCell className="font-medium">
                     <Link
                       href={
-                        item.sku?.product?.id 
+                        item.sku?.product?.id
                           ? `/products/${item.sku.product.id}?skuId=${item.sku.id}`
                           : "#"
                       }

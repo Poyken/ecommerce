@@ -143,11 +143,11 @@ export class ProductsService {
    * Lấy danh sách sản phẩm với bộ lọc nâng cao (Search, Filter, Sort, Pagination).
    */
   async findAll(query: FilterProductDto) {
-    const cacheKey = `products_filter_${JSON.stringify(query)}`;
-    const cachedResult = await this.cacheManager.get(cacheKey);
-    if (cachedResult) {
-      return cachedResult;
-    }
+    // const cacheKey = `products_filter_${JSON.stringify(query)}`;
+    // const cachedResult = await this.cacheManager.get(cacheKey);
+    // if (cachedResult) {
+    //   return cachedResult;
+    // }
 
     const {
       page = 1,
@@ -333,11 +333,11 @@ export class ProductsService {
       },
     };
 
-    await this.cacheManager.set(
-      cacheKey,
-      result,
-      CACHE_TTL.PRODUCT_LIST * 1000,
-    );
+    // await this.cacheManager.set(
+    //   cacheKey,
+    //   result,
+    //   CACHE_TTL.PRODUCT_LIST * 1000,
+    // );
     return result;
   }
 

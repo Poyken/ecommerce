@@ -92,10 +92,16 @@ export function ProfileWishlistTab() {
         <AnimatePresence>
           {products.map((product, index) => {
             const defaultSku = product.skus?.[0];
-            const price = defaultSku?.price ? Number(defaultSku.price) : 0;
+            const regularPrice = defaultSku?.price
+              ? Number(defaultSku.price)
+              : 0;
             const salePrice = defaultSku?.salePrice
               ? Number(defaultSku.salePrice)
               : undefined;
+
+            const displayPrice = salePrice ?? regularPrice;
+            const originalPrice = salePrice ? regularPrice : undefined;
+
             const reviewCount =
               product._count?.reviews || product.reviews?.length || 0;
             const averageRating = product.reviews?.length
@@ -113,8 +119,8 @@ export function ProfileWishlistTab() {
                 <ProductCard
                   id={product.id}
                   name={product.name}
-                  price={price}
-                  originalPrice={salePrice}
+                  price={displayPrice}
+                  originalPrice={originalPrice}
                   imageUrl={
                     (typeof product.images?.[0] === "string"
                       ? product.images?.[0]

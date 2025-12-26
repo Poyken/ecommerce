@@ -2,16 +2,17 @@ import { Skeleton } from "@/components/atoms/skeleton";
 
 /**
  * =====================================================================
- * BRANDS SKELETON - Skeleton cho trang Brands
+ * CATEGORIES SKELETON - Skeleton cho trang Categories
  * =====================================================================
  *
- * Layout khớp với BrandsPage:
- * - Header: Tiêu đề
- * - Brands Grid: 4 cột
+ * Layout khớp với CategoriesPage:
+ * - Header center
+ * - Grid 5 cột (responsive)
+ * - Card tỷ lệ 4/3
  * =====================================================================
  */
 
-export function BrandsSkeleton() {
+export function CategoriesSkeleton() {
   return (
     <div className="min-h-screen bg-background pt-24 pb-16">
       <div className="container mx-auto px-4">
@@ -20,12 +21,12 @@ export function BrandsSkeleton() {
 
         {/* Header */}
         <div className="flex flex-col items-center mb-12 space-y-4">
-          <Skeleton className="h-4 w-32" /> {/* Luxury Partners */}
-          <Skeleton className="h-12 w-64 md:w-96" /> {/* Browse Brands Title */}
+          <Skeleton className="h-4 w-24" /> {/* Tagline */}
+          <Skeleton className="h-12 w-64 md:w-96" /> {/* Title */}
           <Skeleton className="h-1 w-24 rounded-full" /> {/* Divider */}
         </div>
 
-        {/* Brands Grid */}
+        {/* Categories Grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {[...Array(10)].map((_, i) => (
             <div

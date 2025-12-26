@@ -73,7 +73,7 @@ export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
         whileInView="visible"
         viewport={{ once: true, margin: "-50px" }}
       >
-        {categories.slice(0, 4).map((category) => (
+        {categories.slice(0, 8).map((category) => (
           <motion.div key={category.id} variants={itemScaleVariant}>
             <CategoryCard
               id={category.id}

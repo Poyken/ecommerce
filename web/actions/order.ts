@@ -127,3 +127,22 @@ export async function getOrderDetailsAction(orderId: string) {
     return { error: (error as Error).message };
   }
 }
+/**
+ * SIMULATION ONLY: Mark order as Paid (Processing) to simulate webhook.
+ */
+export async function simulatePaymentSuccessAction(orderId: string) {
+  try {
+    const res = await http(`/orders/${orderId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        status: "PROCESSING",
+        paymentStatus: "PAID",
+        notify: true,
+      }),
+    });
+    revalidatePath(`/orders/${orderId}`);
+    return { success: true };
+  } catch (error: unknown) {
+    return { error: (error as Error).message };
+  }
+}

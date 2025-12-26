@@ -116,6 +116,7 @@ export default async function ShopPage({
       page: params.page ? Number(params.page) : 1,
       limit: 12,
       sort: typeof params.sort === "string" ? params.sort : undefined,
+      includeSkus: "true",
     });
 
     const categoriesPromise = getCachedCategories();

@@ -27,7 +27,7 @@
     "seed:feature-flags": "ts-node prisma/seed-feature-flags.ts"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "npm run seed:all"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",

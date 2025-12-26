@@ -288,6 +288,7 @@ model Order {
   couponId        String?
   addressId       String?
   shippingCode    String?
+  cancellationReason String?
   coupon          Coupon?       @relation(fields: [couponId], references: [id])
   address         Address?      @relation(fields: [addressId], references: [id])
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)

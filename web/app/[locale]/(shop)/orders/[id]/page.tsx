@@ -6,6 +6,7 @@ import {
 } from "@/components/atoms/card";
 import { Separator } from "@/components/atoms/separator";
 import { StatusBadge } from "@/components/atoms/status-badge";
+import { BankTransferQR } from "@/components/organisms/orders/bank-transfer-qr";
 import { BuyAgainButton } from "@/components/organisms/orders/buy-again-button";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";
@@ -223,6 +224,21 @@ async function DynamicOrderDetail({ id }: { id: string }) {
               </div>
             </CardContent>
           </Card>
+
+          {/* Bank Transfer QR Code - Only for PENDING Bank Transfer */}
+          {order.status === "PENDING" &&
+            order.paymentMethod === "BANKING" &&
+            (order.paymentStatus === "UNPAID" ||
+              order.paymentStatus === "PENDING") && (
+              <div className="mt-6">
+                <BankTransferQR
+                  amount={order.totalAmount}
+                  orderCode={order.id.slice(0, 8).toUpperCase()}
+                  orderId={order.id}
+                  createdAt={order.orderDate}
+                />
+              </div>
+            )}
         </div>
 
         <div className="space-y-6 sticky top-24 h-fit">

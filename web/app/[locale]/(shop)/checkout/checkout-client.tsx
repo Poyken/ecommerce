@@ -28,19 +28,28 @@
 import { validateCouponAction } from "@/actions/coupon";
 import { placeOrderAction } from "@/actions/order";
 import { calculateShippingFeeAction } from "@/actions/shipping";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/atoms/dialog";
 import { GlassButton } from "@/components/atoms/glass-button";
 // import { AddAddressDialog } from "@/components/organisms/admin/add-address-dialog"; // Replaced with dynamic import
+import { getGuestCartDetailsAction } from "@/actions/cart";
+import { Skeleton } from "@/components/atoms/skeleton";
 import { AddressSelector } from "@/components/organisms/checkout/address-selector";
 import { CouponInput } from "@/components/organisms/checkout/coupon-input";
 import { OrderSummary } from "@/components/organisms/checkout/order-summary";
 import {
-    PaymentMethodSelector,
-    PaymentMethodType,
+  PaymentMethodSelector,
+  PaymentMethodType,
 } from "@/components/organisms/checkout/payment-method-selector";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useRouter } from "@/i18n/routing";
 import { formatCurrency } from "@/lib/utils";
-import { Address, Cart, CartItem, Coupon } from "@/types/models";
+import { Address, Cart, CartItem, Coupon, Sku } from "@/types/models";
 import { motion } from "framer-motion";
 import { ArrowLeft, Lock, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -52,6 +61,14 @@ const AddAddressDialog = dynamic(
   () =>
     import("@/components/organisms/admin/add-address-dialog").then(
       (m) => m.AddAddressDialog
+    ),
+  { ssr: false }
+);
+
+const BankTransferQR = dynamic(
+  () =>
+    import("@/components/organisms/orders/bank-transfer-qr").then(
+      (m) => m.BankTransferQR
     ),
   { ssr: false }
 );
@@ -87,6 +104,14 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
   const [isCalculatingFee, setIsCalculatingFee] = useState(false);
   const [isAddAddressOpen, setIsAddAddressOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
+  const [guestItems, setGuestItems] = useState<CartItem[]>([]);
+  const [isInitializing, setIsInitializing] = useState(!cart);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [tempOrderData, setTempOrderData] = useState<{
+    id: string;
+    totalAmount: number;
+    createdAt: string;
+  } | null>(null);
 
   // Derived State
   const itemIdsParam = searchParams.get("items");
@@ -100,9 +125,65 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
     [addresses, selectedAddressId]
   );
 
+  useEffect(() => {
+    if (!cart) {
+      const fetchGuestCart = async () => {
+        // Delay to ensure hydration
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        const guestCartStr = localStorage.getItem("guest_cart");
+        if (guestCartStr) {
+          try {
+            const parsed = JSON.parse(guestCartStr);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              const skuIds = parsed
+                .map((p) => p.skuId)
+                .filter((id): id is string => !!id);
+              const res = await getGuestCartDetailsAction(skuIds);
+
+              if (res.success && res.data) {
+                // Map API response to CartItem structure
+                const mappedItems: CartItem[] = res.data.map((sku: Sku) => {
+                  const q =
+                    parsed.find((p: any) => p.skuId === sku.id)?.quantity || 1;
+                  return {
+                    id: `guest-${sku.id}`,
+                    cartId: "guest",
+                    skuId: sku.id,
+                    quantity: q,
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString(),
+                    sku: {
+                      ...sku,
+                      price: Number(sku.price),
+                      salePrice: sku.salePrice ? Number(sku.salePrice) : null,
+                      stock: sku.stock,
+                      product: sku.product,
+                    },
+                  } as unknown as CartItem;
+                });
+                setGuestItems(mappedItems);
+              }
+            }
+          } catch (e) {
+            console.error("Error loading guest cart", e);
+          } finally {
+            setIsInitializing(false);
+          }
+        } else {
+          setIsInitializing(false);
+        }
+      };
+
+      fetchGuestCart();
+    } else {
+      setIsInitializing(false);
+    }
+  }, [cart]);
+
   const allItems = useMemo(
-    () => (cart?.items || []) as unknown as CartItem[],
-    [cart]
+    () => (cart?.items || guestItems) as unknown as CartItem[],
+    [cart, guestItems]
   );
 
   const items = useMemo(
@@ -255,12 +336,22 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
         // Dispatch event to refresh cart count immediately
         window.dispatchEvent(new Event("cart_updated"));
 
+        if (paymentMethod === "BANKING") {
+          setTempOrderData({
+            id: res.orderId,
+            totalAmount: total,
+            createdAt: new Date().toISOString(),
+          });
+          setIsPaymentModalOpen(true);
+          return;
+        }
+
         toast({
           title: t("success"),
           description: t("successDesc"),
           variant: "success",
         });
-        router.push("/orders");
+        router.push(`/orders/${res.orderId}`);
       } else {
         toast({
           title: t("failed"),
@@ -315,75 +406,100 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
           </h1>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Main Form */}
-          <div className="lg:col-span-8 space-y-6">
-            <AddressSelector
-              addresses={addresses}
-              selectedAddressId={selectedAddressId}
-              onSelect={setSelectedAddressId}
-              onAddNew={() => {
-                setEditingAddress(null);
-                setIsAddAddressOpen(true);
-              }}
-              onEdit={handleEditAddress}
-            />
-
-            <PaymentMethodSelector
-              method={paymentMethod}
-              onChange={setPaymentMethod}
-            />
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-4 space-y-6">
-            <OrderSummary
-              items={items}
-              subtotal={subtotal}
-              shippingFee={shippingFee}
-              discount={discount}
-              total={total}
-              isLoadingFee={isCalculatingFee}
-              couponSlot={
-                <CouponInput
-                  couponCode={couponCode}
-                  onCodeChange={setCouponCode}
-                  availableCoupons={availableCoupons}
-                  appliedCoupon={appliedCoupon}
-                  isValidating={isValidatingCoupon}
-                  onApply={handleApplyCoupon}
-                  onRemove={() => {
-                    setAppliedCoupon(null);
-                    setCouponCode("");
-                    setCouponError("");
-                  }}
-                  error={couponError}
-                  formatMoney={formatCurrency}
-                />
-              }
-              actionSlot={
-                <GlassButton
-                  className="w-full bg-linear-to-r from-success to-success/80 font-bold text-white shadow-lg shadow-success/20"
-                  size="lg"
-                  onClick={handlePlaceOrder}
-                  disabled={isPending || !cart || items.length === 0}
-                >
-                  {isPending
-                    ? t("processing")
-                    : t("completeOrderWithTotal", {
-                        total: formatCurrency(total),
-                      })}
-                </GlassButton>
-              }
-              footerSlot={
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                  <span>{t("secureTransaction")}</span>
+        {isInitializing ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-8 space-y-6">
+              <div className="space-y-4">
+                <Skeleton className="h-10 w-full" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <Skeleton className="h-24 w-full rounded-xl" />
+                  <Skeleton className="h-24 w-full rounded-xl" />
                 </div>
-              }
-            />
+              </div>
+              <div className="space-y-4">
+                <Skeleton className="h-10 w-full" />
+                <div className="grid grid-cols-3 gap-4">
+                  <Skeleton className="h-20 w-full rounded-xl" />
+                  <Skeleton className="h-20 w-full rounded-xl" />
+                  <Skeleton className="h-20 w-full rounded-xl" />
+                </div>
+              </div>
+            </div>
+            <div className="lg:col-span-4">
+              <Skeleton className="h-[400px] w-full rounded-xl" />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Main Form */}
+            <div className="lg:col-span-8 space-y-6">
+              <AddressSelector
+                addresses={addresses}
+                selectedAddressId={selectedAddressId}
+                onSelect={setSelectedAddressId}
+                onAddNew={() => {
+                  setEditingAddress(null);
+                  setIsAddAddressOpen(true);
+                }}
+                onEdit={handleEditAddress}
+              />
+
+              <PaymentMethodSelector
+                method={paymentMethod}
+                onChange={setPaymentMethod}
+              />
+            </div>
+
+            {/* Sidebar */}
+            <div className="lg:col-span-4 space-y-6">
+              <OrderSummary
+                items={items}
+                subtotal={subtotal}
+                shippingFee={shippingFee}
+                discount={discount}
+                total={total}
+                isLoadingFee={isCalculatingFee}
+                couponSlot={
+                  <CouponInput
+                    couponCode={couponCode}
+                    onCodeChange={setCouponCode}
+                    availableCoupons={availableCoupons}
+                    appliedCoupon={appliedCoupon}
+                    isValidating={isValidatingCoupon}
+                    onApply={handleApplyCoupon}
+                    onRemove={() => {
+                      setAppliedCoupon(null);
+                      setCouponCode("");
+                      setCouponError("");
+                    }}
+                    error={couponError}
+                    formatMoney={formatCurrency}
+                  />
+                }
+                actionSlot={
+                  <GlassButton
+                    className="w-full bg-linear-to-r from-success to-success/80 font-bold text-white shadow-lg shadow-success/20"
+                    size="lg"
+                    onClick={handlePlaceOrder}
+                    disabled={isPending || !cart || items.length === 0}
+                  >
+                    {isPending
+                      ? t("processing")
+                      : t("completeOrderWithTotal", {
+                          total: formatCurrency(total),
+                        })}
+                  </GlassButton>
+                }
+                footerSlot={
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <span>{t("secureTransaction")}</span>
+                  </div>
+                }
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <AddAddressDialog
@@ -397,6 +513,45 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
         }}
         address={editingAddress}
       />
+
+      <Dialog
+        open={isPaymentModalOpen}
+        onOpenChange={(open) => {
+          if (!open && tempOrderData) {
+            router.push(`/orders/${tempOrderData.id}`);
+          }
+          setIsPaymentModalOpen(open);
+        }}
+      >
+        <DialogContent className="max-w-7xl!">
+          <DialogHeader>
+            <DialogTitle>{t("completePayment")}</DialogTitle>
+            <DialogDescription>{t("scanQrDesc")}</DialogDescription>
+          </DialogHeader>
+
+          {tempOrderData && (
+            <div className="flex flex-col items-center w-full">
+              <div className="w-full">
+                <BankTransferQR
+                  amount={tempOrderData.totalAmount}
+                  orderCode={tempOrderData.id.slice(0, 8).toUpperCase()}
+                  orderId={tempOrderData.id}
+                  createdAt={tempOrderData.createdAt}
+                />
+              </div>
+
+              <div className="flex gap-4 mt-6 w-full justify-center">
+                <GlassButton
+                  onClick={() => router.push(`/orders/${tempOrderData.id}`)}
+                  className="w-full max-w-sm"
+                >
+                  {t("finishAndViewOrder")}
+                </GlassButton>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

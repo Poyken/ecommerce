@@ -464,7 +464,11 @@ export class OrdersService {
       }
       const updatedOrder = await tx.order.update({
         where: { id },
-        data: { status: dto.status as OrderStatus },
+        data: {
+          status: dto.status as OrderStatus,
+          cancellationReason: dto.cancellationReason,
+          ...(dto.paymentStatus && { paymentStatus: dto.paymentStatus as any }),
+        },
         include: {
           user: true,
           items: { include: { sku: { include: { product: true } } } },

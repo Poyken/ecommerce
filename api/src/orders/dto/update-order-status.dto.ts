@@ -28,6 +28,14 @@ export enum OrderStatus {
   CANCELLED = 'CANCELLED',
 }
 
+export enum PaymentStatus {
+  UNPAID = 'UNPAID',
+  PENDING = 'PENDING',
+  PAID = 'PAID',
+  REFUNDED = 'REFUNDED',
+  FAILED = 'FAILED',
+}
+
 export class UpdateOrderStatusDto {
   @ApiProperty({ enum: OrderStatus, example: OrderStatus.PROCESSING })
   @IsNotEmpty()
@@ -38,4 +46,17 @@ export class UpdateOrderStatusDto {
   @IsOptional()
   @IsBoolean()
   notify?: boolean;
+
+  @ApiProperty({ example: 'Customer changed mind', required: false })
+  @IsOptional()
+  cancellationReason?: string;
+
+  @ApiProperty({
+    enum: PaymentStatus,
+    required: false,
+    example: PaymentStatus.PAID,
+  })
+  @IsOptional()
+  @IsEnum(PaymentStatus)
+  paymentStatus?: PaymentStatus;
 }

@@ -263,7 +263,8 @@
       "CANCELLED": "Đã hủy",
       "COMPLETED": "Hoàn thành",
       "RETURNED": "Đã hoàn trả",
-      "PAID": "Đã thanh toán"
+      "PAID": "Đã thanh toán",
+      "UNPAID": "Chưa thanh toán"
     },
     "orderDetail": "Chi tiết đơn hàng",
     "orderNotFound": "Không tìm thấy đơn hàng",
@@ -288,7 +289,10 @@
       "CARD": "Thẻ tín dụng",
       "MOMO": "Ví MoMo",
       "VNPAY": "VNPay"
-    }
+    },
+    "scanToPay": "Quét mã để thanh toán",
+    "transferInfo": "Thông tin chuyển khoản",
+    "copied": "Đã sao chép"
   },
   "home": {
     "heroTitle": "Cửa hàng nội thất cao cấp",
@@ -571,7 +575,20 @@
     "momoDesc": "Thanh toán qua ứng dụng MoMo",
     "freeShipping": "Miễn phí (Chọn địa chỉ)",
     "completeOrderWithTotal": "Hoàn tất đơn hàng • {total}",
-    "edit": "Chỉnh sửa"
+    "edit": "Chỉnh sửa",
+    "completePayment": "Thanh toán",
+    "scanQrDesc": "Quét mã QR bằng ứng dụng ngân hàng",
+    "finishAndViewOrder": "Hoàn tất và xem đơn hàng"
+  },
+  "simulatePayment": {
+    "title": "Xác nhận thanh toán",
+    "description": "Mô phỏng chuyển khoản ngân hàng thành công cho Đơn hàng",
+    "devTool": "⚠️ Đây là công cụ phát triển để mô phỏng webhook.",
+    "confirmButton": "Xác nhận thanh toán ngay",
+    "processing": "Đang xử lý...",
+    "successTitle": "Thanh toán đã xác nhận",
+    "successDesc": "Trạng thái đơn hàng đã cập nhật thành ĐANG XỬ LÝ.",
+    "errorTitle": "Lỗi"
   },
   "profile": {
     "tabs": {
