@@ -11,16 +11,17 @@ import { useEffect, useState } from "react";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. SOCIAL PROOF (Bằng chứng xã hội):
- * - Kỹ thuật marketing hiển thị các thông báo "giả lập" hoặc thật về hoạt động của người dùng khác.
- * - Mục đích: Tạo cảm giác sản phẩm đang "hot", kích thích tâm lý mua hàng (FOMO).
+ * 1. SOCIAL PROOF & FOMO:
+ * - Kỹ thuật marketing: Hiển thị "người khác đang mua" để tạo hiệu ứng đám đông (Social Proof) và sợ bỏ lỡ (FOMO).
+ * - Tăng tỷ lệ chuyển đổi (Conversion Rate) đáng kể trên các trang E-commerce.
  *
- * 2. RANDOMIZATION LOGIC:
- * - Sử dụng `setTimeout` lồng nhau để hiển thị thông báo sau các khoảng thời gian ngẫu nhiên (10-20 giây).
- * - `MESSAGES` và `NAMES` được chọn ngẫu nhiên để tạo cảm giác tự nhiên.
+ * 2. RECURSIVE TIMEOUTS (Timer đệ quy):
+ * - Thay vì `setInterval` cố định 10s -> Ta dùng `setTimeout` lồng nhau.
+ * - Lợi ích: Có thể random thời gian chờ (Lúc thì 10s, lúc thì 20s) -> Tạo cảm giác tự nhiên hơn ("Randomness").
  *
- * 3. CLEANUP:
- * - Rất quan trọng: Phải `clearTimeout` tất cả các timer khi component unmount để tránh lỗi logic hoặc memory leak.
+ * 3. CLEANUP IS CRITICAL:
+ * - Phải lưu lại tất cả `timeoutId` để `clearTimeout` khi component unmount.
+ * - Nếu không, khi user chuyển trang, toast vẫn hiện lên -> Gây khó chịu và lỗi memory leak.
  * =====================================================================
  */
 

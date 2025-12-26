@@ -5,13 +5,18 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. SEARCHABLE SELECT:
- * - Thay vì dùng thẻ `<select>` truyền thống, Combobox cho phép người dùng gõ để tìm kiếm lựa chọn.
- * - Rất hữu ích khi danh sách lựa chọn quá dài (VD: Danh sách tỉnh thành, danh sách khách hàng).
+ * 1. SEARCHABLE SELECT (Select + Search):
+ * - Kết hợp `Button` (trigger) và `Input` (search) trong một `Popover`.
+ * - Giải quyết vấn đề của thẻ `<select>` mặc định: Không thể tìm kiếm khi danh sách quá dài (UI/UX kém).
  *
- * 2. POPOVER & SCROLL AREA:
- * - Sử dụng `Popover` để hiển thị danh sách nổi lên trên các thành phần khác.
- * - `ScrollArea` đảm bảo danh sách không chiếm quá nhiều diện tích màn hình.
+ * 2. POPOVER PATTERN:
+ * - Dùng `Popover` thay vì render list ngay bên dưới để tránh bị `overflow: hidden` của các container cha cắt mất nội dung.
+ * - Danh sách nổi lên lớp trên cùng (Z-index layer).
+ *
+ * 3. CONTROLLED VS UNCONTROLLED SEARCH:
+ * - Hỗ trợ cả 2 chế độ:
+ *   + Uncontrolled (`internalSearch`): component tự quản lý state tìm kiếm.
+ *   + Controlled (`searchValue` prop): cha quản lý state (thường dùng khi search gọi API server-side).
  * =====================================================================
  */
 

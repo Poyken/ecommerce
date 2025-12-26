@@ -5,6 +5,28 @@ import { NotificationsGateway } from 'src/notifications/notifications.gateway';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { StockGateway } from './stock.gateway';
 
+/**
+ * =====================================================================
+ * INVENTORY SERVICE - Quản lý tồn kho
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CONCURRENCY CONTROL (Kiểm soát đồng thời):
+ * - Vấn đề kinh điển: 2 user A và B cùng mua sản phẩm cuối cùng CÙNG LÚC.
+ * - Giải pháp: Dùng "Atomic Update" với điều kiện `where: { stock: { gte: quantity } }`.
+ * - Database sẽ khóa dòng dữ liệu (Row Lock) và chỉ cho phép update nếu điều kiện thỏa mãn.
+ * - User chậm hơn 1ms sẽ bị fail do `count === 0` (hàng đã bị người trước mua mất).
+ *
+ * 2. REAL-TIME UPDATES:
+ * - Khi stock thay đổi, ta dùng WebSocket (`StockGateway`) để bắn tin cho tất cả client đang xem sản phẩm đó.
+ * - Giúp UI user tự động cập nhật "Còn 5 sản phẩm" -> "Còn 4 sản phẩm" ngay lập tức.
+ *
+ * 3. FOMO EFFECT (Low Stock Alert):
+ * - Khi hàng sắp hết (< 5), hệ thống tự động tìm những ai đang để hàng trong giỏ (Pending Cart) và gửi thông báo thúc giục mua hàng.
+ * =====================================================================
+ */
+
 @Injectable()
 export class InventoryService {
   private readonly logger = new Logger(InventoryService.name);

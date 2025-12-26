@@ -15,9 +15,21 @@ import { memo, useCallback, useState } from "react";
  * FILTER SIDEBAR - Thanh lọc sản phẩm (Category, Brand)
  * =====================================================================
  *
- * PERFORMANCE:
- * - React.memo để prevent re-render khi props không thay đổi
- * - useCallback cho handleFilter
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. URL-BASED STATE (Trạng thái dựa trên URL):
+ * - Thay vì dùng `useState` để lưu filter đang chọn -> Ta lưu lên URL (`?categoryId=...`).
+ * - Lợi ích: User f5 không mất filter, có thể share link cho người khác đúng filter đó.
+ *
+ * 2. ROUTER PREFETCHING (Kỹ thuật tăng tốc):
+ * - Logic `onMouseEnter`: Khi user chỉ mới VỪA RÊ CHUỘT vào nút lọc -> Ta đã gọi `router.prefetch()`.
+ * - Next.js sẽ tải ngầm trang kết quả ở background.
+ * - Khi user thực sự Click -> Trang mới hiện ra TỨC THÌ (Instant Navigation).
+ *
+ * 3. PERFORMANCE (`React.memo`):
+ * - Sidebar này nhận list category/brand ít thay đổi.
+ * - Dùng `memo` để nó không bị render lại vô nghĩa khi Parent Component (ProductList) re-render do data thay đổi.
+ * =====================================================================
  */
 
 interface FilterSidebarProps {
@@ -46,9 +58,12 @@ export const FilterSidebar = memo(function FilterSidebar({
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+
+  // State quản lý việc đóng mở danh sách dài ("Show More")
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [showAllBrands, setShowAllBrands] = useState(false);
 
+  // useCallback để function reference không đổi qua các lần render -> Props cho Child không đổi -> memo hoạt động hiệu quả
   const handleFilter = useCallback(
     (type: "categoryId" | "brandId", value: string | null) => {
       onFilterChange(type, value);
@@ -56,11 +71,15 @@ export const FilterSidebar = memo(function FilterSidebar({
     [onFilterChange]
   );
 
+  // Lấy state hiện tại từ URL
   const currentCategory = searchParams.get("categoryId");
   const currentBrand = searchParams.get("brandId");
   const hasActiveFilters = currentCategory || currentBrand;
 
-  // Helper to render filter button
+  /**
+   * Helper function render từng nút lọc
+   * Giúp code DRY (Don't Repeat Yourself)
+   */
   const renderFilterButton = (
     id: string | null,
     name: string,
@@ -68,7 +87,12 @@ export const FilterSidebar = memo(function FilterSidebar({
     type: "categoryId" | "brandId",
     isBrand = false
   ) => {
+    // Logic xác định nút này có đang active không
+    // Nếu id=null (nút "Tất cả") -> Active khi activeId cũng null
+    // Nếu id != null -> Active khi activeId match id
     const isActive = id === null ? !activeId : activeId === id;
+
+    // Style riêng cho Brand (Màu Amber) và Category (Màu Primary)
     const activeClass = isBrand
       ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-lg shadow-amber-500/5"
       : "bg-primary/10 text-primary border border-primary/20 shadow-lg shadow-primary/5";
@@ -77,11 +101,15 @@ export const FilterSidebar = memo(function FilterSidebar({
       <button
         key={id || "all"}
         onClick={() => handleFilter(type, id)}
+        // PREFETCHING STRATEGY:
         onMouseEnter={() => {
           if (!isActive && !isPending) {
+            // Giả lập URL mới
             const params = new URLSearchParams(searchParams.toString());
             if (id === null) params.delete(type);
             else params.set(type, id);
+
+            // Tải trước dữ liệu
             router.prefetch(`${pathname}?${params.toString()}`);
           }
         }}
@@ -100,7 +128,7 @@ export const FilterSidebar = memo(function FilterSidebar({
 
   return (
     <aside className={cn("space-y-6", className)}>
-      {/* Filter Header */}
+      {/* 1. Header Sidebar */}
       {!hideTitle && (
         <div className="flex items-center justify-between pb-6 border-b border-foreground/5">
           <div className="flex items-center gap-3">
@@ -115,13 +143,14 @@ export const FilterSidebar = memo(function FilterSidebar({
         </div>
       )}
 
-      {/* Categories Section */}
+      {/* 2. Categories Section */}
       <div className="space-y-4">
         <h3 className="font-black text-[11px] tracking-[0.2em] text-primary uppercase flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-primary" />
           {t("categories")}
         </h3>
         <div className="space-y-2">
+          {/* Nút "Tất cả" */}
           {renderFilterButton(
             null,
             t("allCategories"),
@@ -129,6 +158,7 @@ export const FilterSidebar = memo(function FilterSidebar({
             "categoryId"
           )}
 
+          {/* Top 6 categories */}
           {categories
             .slice(0, 6)
             .map((cat) =>
@@ -140,6 +170,7 @@ export const FilterSidebar = memo(function FilterSidebar({
               )
             )}
 
+          {/* Phần mở rộng có animation */}
           <AnimatePresence>
             {showAllCategories && (
               <motion.div
@@ -163,6 +194,7 @@ export const FilterSidebar = memo(function FilterSidebar({
             )}
           </AnimatePresence>
 
+          {/* Nút Show More/Less chỉ hiện khi có > 6 categories */}
           {categories.length > 6 && (
             <button
               onClick={() => setShowAllCategories(!showAllCategories)}
@@ -182,7 +214,7 @@ export const FilterSidebar = memo(function FilterSidebar({
         </div>
       </div>
 
-      {/* Brands Section */}
+      {/* 3. Brands Section (Tương tự Categories) */}
       <div className="space-y-4">
         <h3 className="font-black text-[11px] tracking-[0.2em] text-amber-600 dark:text-amber-400 uppercase flex items-center gap-2">
           <Tag className="w-3.5 h-3.5" />
@@ -252,7 +284,7 @@ export const FilterSidebar = memo(function FilterSidebar({
         </div>
       </div>
 
-      {/* Reset All */}
+      {/* 4. Reset All Button */}
       {hasActiveFilters && (
         <GlassButton
           variant="ghost"

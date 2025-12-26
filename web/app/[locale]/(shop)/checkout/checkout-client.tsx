@@ -5,21 +5,25 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. COMPONENT DECOMPOSITION:
- * - Form thanh toán rất phức tạp nên được chia nhỏ thành các component:
- *   - `AddressSelector`: Chọn/Thêm địa chỉ giao hàng.
- *   - `PaymentMethodSelector`: Chọn phương thức thanh toán (COD, VNPAY...).
- *   - `CouponInput`: Nhập và kiểm tra mã giảm giá.
- *   - `OrderSummary`: Hiển thị tổng tiền và nút đặt hàng.
+ * 1. COMPONENT DECOMPOSITION (Chia nhỏ Component):
+ * - Form thanh toán rất phức tạp nên được chia nhỏ thành các component chức năng:
+ *   - `AddressSelector`: Logic chọn/Thêm địa chỉ giao hàng.
+ *   - `PaymentMethodSelector`: Logic chọn phương thức thanh toán.
+ *   - `CouponInput`: Logic nhập và validate mã giảm giá.
+ *   - `OrderSummary`: Logic hiển thị tổng tiền cuối cùng.
  *
- * 2. DYNAMIC CALCULATIONS:
- * - `shippingFee`: Tự động tính toán lại khi user thay đổi địa chỉ (gọi `calculateShippingFeeAction`).
- * - `discount`: Cập nhật khi áp dụng mã giảm giá thành công.
- * - `subtotal`: Tổng tiền hàng (có thể chỉ tính cho các món được chọn từ giỏ hàng).
+ * 2. REACT TRANSITION (`useTransition`):
+ * - Khi user nhấn "Đặt hàng", ta bọc hành động này trong `startTransition`.
+ * - Lợi ích: Nếu action chạy lâu, UI vẫn phản hồi (không bị đơ), và React có thể hiển thị trạng thái `isPending`.
  *
- * 3. ORDER FLOW:
- * - Khi nhấn đặt hàng, `placeOrderAction` được gọi.
- * - Nếu là VNPAY, sẽ redirect user sang trang thanh toán của ngân hàng.
+ * 3. HYBRID CART (Giỏ hàng lai):
+ * - `cart`: Giỏ hàng của user đã login (lấy từ DB).
+ * - `guestItems`: Giỏ hàng của khách (lấy từ LocalStorage -> convert thành objects).
+ * - Component này phải xử lý cả 2 trường hợp một cách trong suốt (Transparent).
+ *
+ * 4. DYNAMIC FEE CALCULATION:
+ * - Khi `selectedAddress` thay đổi -> Trigger `useEffect` gọi shipping API.
+ * - Cập nhật phí ship realtime dựa trên Quận/Huyện.
  * =====================================================================
  */
 

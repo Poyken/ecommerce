@@ -9,15 +9,16 @@ import { io, Socket } from "socket.io-client";
  *
  * 1. SINGLETON PATTERN:
  * - Chỉ tạo 1 WebSocket connection duy nhất cho toàn app
- * - Tránh tạo nhiều connections không cần thiết
+ * - Tránh tạo nhiều connections không cần thiết gây quá tải Server.
  *
- * 2. AUTO-RECONNECT:
- * - Socket.io tự động reconnect khi mất kết nối
- * - Retry logic được xử lý tự động
+ * 2. AUTO-RECONNECT (Tự động kết nối lại):
+ * - Socket.io có cơ chế tự động reconnect cực mạnh khi mất mạng.
+ * - Options: `reconnection: true`, `reconnectionAttempts: 5` (Thử lại 5 lần).
  *
- * 3. AUTHENTICATION:
- * - Gửi JWT token khi connect
- * - Server sẽ verify token và join user vào room riêng
+ * 3. AUTHENTICATION (Xác thực):
+ * - SocketIO cũng cần bảo mật như API.
+ * - Ta gửi JWT token qua `auth: { token }` khi connect.
+ * - Server sẽ verify token này trong Middleware "Handshake".
  * =====================================================================
  */
 

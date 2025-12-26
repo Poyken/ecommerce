@@ -11,26 +11,24 @@ import { useEffect, useState } from "react";
 
 /**
  * =====================================================================
- * HERO SECTION - Quiet Luxury Edition
+ * HERO SECTION - Quiet Luxury Edition (Màn hình chính)
  * =====================================================================
  *
- * 📚 DESIGN CONCEPT:
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. QUIET LUXURY AESTHETIC:
- * - Immersive full-viewport design with cinematic lighting
- * - Bone white, champagne, and deep charcoal palette
- * - Editorial serif typography for headings
- * - Ultra-minimal, airy layout with premium whitespace
+ * 1. QUIET LUXURY DESIGN (Sang trọng thầm lặng):
+ * - Không dùng màu quá gắt. Chủ đạo là "Bone White", "Charcoal", "Champagne".
+ * - Typography (Font chữ): Dùng Serif (có chân) cho tiêu đề để tạo cảm giác tạp chí thời trang cao cấp (Editorial).
+ * - Nhiều khoảng trắng (Whitespace) để tạo cảm giác "thở" và premium.
  *
- * 2. VISUAL HIERARCHY:
- * - Large serif headline with champagne text gradient
- * - Subtle floating elements with glassmorphism
- * - Cinematic radial gradient overlay for depth
+ * 2. VISUAL HIERARCHY (Phân cấp thị giác):
+ * - Tiêu đề to nhất -> Gradient champagne -> Nút bấm -> Ảnh.
+ * - Dùng ánh sáng (Lighting) làm nền để hướng mắt người dùng vào trung tâm.
  *
- * 3. MICRO-INTERACTIONS:
- * - Smooth parallax scrolling effects
- * - Gentle hover states with champagne glow
- * - Refined scroll indicator at bottom
+ * 3. MICRO-INTERACTIONS (Tương tác nhỏ):
+ * - Nút bấm hơi phồng lên (`scale: 1.02`) khi hover.
+ * - Ảnh chính zoom nhẹ (`scale-105`) khi di chuột.
+ * - Những chi tiết nhỏ này làm website "sống động" hơn mà không cần animation quá lố.
  * =====================================================================
  */
 

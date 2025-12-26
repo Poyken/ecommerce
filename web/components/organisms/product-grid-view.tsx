@@ -12,6 +12,25 @@ import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+/**
+ * =====================================================================
+ * PRODUCT GRID VIEW - Lưới sản phẩm (Grid View)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. LAYOUT ANIMATIONS (Framer Motion):
+ * - Sử dụng `layout` prop của framer-motion để tự động tạo animation khi layout thay đổi.
+ * - Khi user đổi số cột (3 -> 4 -> 5), các items sẽ bay về vị trí mới mượt mà thay vì nhảy cục súc.
+ *
+ * 2. URL-DRIVEN STATE:
+ * - Số lượng cột (`columns`) được lưu trên URL (`?columns=3`).
+ * - Giúp giữ nguyên trạng thái hiển thị khi user reload trnag hoặc chia sẻ link.
+ *
+ * 3. ANNOUNCE CHANGES (A11y):
+ * - Cần chú ý về Accessibility khi thay đổi layout động, tuy nhiên ở mức độ cơ bản này ta tập trung vào Visual UX.
+ * =====================================================================
+ */
 interface ProductGridViewProps {
   products: Product[];
   pagination: PaginationMeta;

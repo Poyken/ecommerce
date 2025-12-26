@@ -3,9 +3,26 @@ import { ThrottlerGuard, ThrottlerRequest } from '@nestjs/throttler';
 
 @Injectable()
 export class AppThrottlerGuard extends ThrottlerGuard {
-  // Override to dynamically determine limit based on user authentication
-  // Note: This specific override signature depends on @nestjs/throttler version.
-  // Assuming v5/v6 compatibility.
+  /**
+   * =====================================================================
+   * APP THROTTLER GUARD - Bảo vệ tài nguyên (Rate Limiting)
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. RATE LIMITING LOGIC:
+   * - Guard này kế thừa từ `ThrottlerGuard` chuẩn của NestJS.
+   * - Nhiệm vụ: Chặn các request quá nhanh từ cùng 1 IP (DDoS protection).
+   *
+   * 2. CUSTOM LOGIC:
+   * - Guest (Chưa đăng nhập): Giới hạn 1000 requests/phút.
+   * - User (Đã đăng nhập): Giới hạn 2000 requests/phút (Cao hơn vì tin tưởng hơn).
+   *
+   * 3. WHY HIGH LIMIT?
+   * - Next.js khi build (SSG - Static Site Generation) sẽ bắn hàng nghìn request cùng lúc để lấy dữ liệu build trang.
+   * - Nếu để limit thấp (vd: 20 req/phút), quá trình build sẽ bị lỗi 429 Too Many Requests.
+   * =====================================================================
+   */
 
   protected async handleRequest(
     requestProps: ThrottlerRequest,

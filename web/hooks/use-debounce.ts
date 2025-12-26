@@ -7,17 +7,17 @@ import { useEffect, useState } from "react";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. DEBOUNCE LOGIC:
- * - Kỹ thuật giới hạn số lần gọi hàm trong một khoảng thời gian.
- * - Chỉ update giá trị `debouncedValue` sau khi user "ngừng" thay đổi `value` trong `delay` ms.
+ * 1. DEBOUNCE LOGIC (Kỹ thuật "chống rung"):
+ * - Giới hạn số lần thực thi của một hàm khi sự kiện xảy ra liên tục (như gõ phím).
+ * - Ví dụ: User gõ "Samsung", thay vì gọi API cho 7 chữ cái (S, Sa, Sam...), ta đợi user NGỪNG GÕ 500ms mới gọi.
  *
- * 2. MEMORY LEAK PREVENTION:
- * - `useEffect` trả về một cleanup function (`clearTimeout`).
- * - Nếu `value` thay đổi trước khi hết thời gian `delay`, timeout cũ sẽ bị hủy.
- * - Đảm bảo không có update state nào chạy sau khi component đã unmount hoặc value đã đổi.
+ * 2. MEMORY LEAK PREVENTION (Chống rò rỉ bộ nhớ):
+ * - `useEffect` luôn trả về cleanup function `clearTimeout`.
+ * - Nếu component unmount HOẶC user gõ phím tiếp (value đổi), timer cũ bị hủy ngay lập tức.
+ * - Đảm bảo state `debouncedValue` không bao giờ được set trên một component đã hủy.
  *
  * 3. CLOSURE:
- * - `setTimeout` tạo ra một closure lưu giữ giá trị `value` tại thời điểm nó được gọi.
+ * - `setTimeout` tạo ra một closure "chụp ảnh" giá trị `value` tại thời điểm đó.
  * =====================================================================
  */
 export function useDebounce<T>(value: T, delay: number = 500): T {

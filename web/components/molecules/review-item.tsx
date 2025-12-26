@@ -5,16 +5,18 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. REACT.MEMO OPTIMIZATION:
- * - Wrap component với `memo()` để prevent unnecessary re-renders.
- * - ReviewItem chỉ re-render khi props thực sự thay đổi.
+ * 1. REACT.MEMO OPTIMIZATION (Tối ưu hiệu năng):
+ * - Danh sách review có thể rất dài (hàng trăm items).
+ * - Nếu cha re-render (VD: do filter thay đổi), ta không muốn hàng trăm con re-render theo.
+ * - `memo()` giúp chặn việc re-render thừa nếu props `review` không đổi.
  *
- * 2. SKELETON COMPONENT:
- * - Mô phỏng layout chính xác của ReviewItem thật.
- * - Giảm Cumulative Layout Shift (CLS) khi loading.
+ * 2. SKELETON LOADING (Hiệu ứng khung xương):
+ * - Thay vì hiện "Loading..." nhàm chán, ta vẽ ra các khối xám (`Skeleton`) có hình dạng giống hệt nội dung thật.
+ * - Giúp giảm CLS (Cumulative Layout Shift) - hiện tượng giao diện bị giật cục khi ảnh/text load xong.
  *
- * 3. SEPARATION OF CONCERNS:
- * - Tách ReviewItem thành module riêng để dễ maintain và test.
+ * 3. COMPONENT CO-LOCATION:
+ * - Ta đặt cả `ReviewItem` và `ReviewItemSkeleton` trong cùng 1 file.
+ * - Vì chúng có cấu trúc HTML tương tự nhau, khi sửa layout item thật, ta dễ nhớ sửa luôn skeleton.
  * =====================================================================
  */
 

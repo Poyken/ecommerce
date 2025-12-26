@@ -1,17 +1,19 @@
 /**
  * =====================================================================
- * UTILITY FUNCTIONS - Hàm tiện ích
+ * UTILITY FUNCTIONS - Hàm tiện ích dùng chung
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. `cn` (Class Name) UTILITY:
- * - Đây là hàm quan trọng nhất khi làm việc với Tailwind CSS trong React.
- * - Kết hợp sức mạnh của `clsx` (xử lý logic điều kiện) và `tailwind-merge` (xử lý xung đột class).
+ * 1. `cn` (Class Name Utility):
+ * - Đây là hàm quan trọng nhất khi làm việc với Tailwind trong React.
+ * - Nó kết hợp `clsx` (để xử lý điều kiện: `isTrue && "class"`)
+ *   và `tailwind-merge` (để xử lý conflict: `cn("p-4", "p-2")` -> `p-2`).
+ * - Không có nó, việc override style từ props sẽ rất lỗi.
  *
- * 2. VẤN ĐỀ GIẢI QUYẾT:
- * - Nếu chỉ dùng string template: `className="p-4 ${className}"` -> Có thể sinh ra `p-4 p-2` (CSS nào thắng tùy thuộc thứ tự define, rất khó debug).
- * - Dùng `cn`: `cn("p-4", "p-2")` -> `p-2` (Class sau ghi đè class trước một cách logic).
+ * 2. HELPERS KHÁC:
+ * - `toSlug`: Biến tên sản phẩm "Áo Thun Đẹp" thành URL "ao-thun-dep" (Chuẩn SEO).
+ * - `formatCurrency`: Format tiền tệ chuyên nghiệp (100.000 ₫) dùng Intl API của trình duyệt.
  * =====================================================================
  */
 

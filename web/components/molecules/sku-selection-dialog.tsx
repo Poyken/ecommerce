@@ -1,16 +1,22 @@
 /**
  * =====================================================================
- * SKU SELECTION DIALOG - Hộp thoại chọn biến thể nhanh
+ * SKU SELECTION DIALOG - Hộp thoại chọn biến thể nhanh (Quick View)
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. QUICK VIEW / QUICK ADD:
- * - Cho phép người dùng chọn Size/Color ngay từ trang danh sách sản phẩm mà không cần vào trang chi tiết.
- * - Tăng tỷ lệ chuyển đổi bằng cách giảm bớt các bước trung gian.
+ * 1. QUICK VIEW / QUICK ADD PATTERN:
+ * - Mục tiêu: Giảm thiểu "Friction" (lực cản) trong hành trình mua hàng.
+ * - Thay vì bắt user vào trang chi tiết -> chờ load -> chọn size -> add cart,
+ *   ta cho phép họ làm tất cả ngay tại trang danh sách.
  *
- * 2. COMPONENT COMPOSITION:
- * - Tái sử dụng logic hiển thị ảnh, giá và các nút bấm từ các component nhỏ hơn.
+ * 2. LOGIC REPLICATION (Tái sử dụng Logic):
+ * - Component này chứa logic chọn biến thể GẦN GIỐNG với `ProductVariantSelector`.
+ * - Tại sao không reuse 100%? -> Vì UI/UX ở trong Dialog khác hẳn (Layout 2 cột, ảnh to bên trái).
+ * - Đôi khi việc Duplicate code (nhẹ) tốt hơn là cố gắng Abstract quá mức (Over-engineering).
+ *
+ * 3. SMART MATCHING (Giản lược):
+ * - Vẫn dùng thuật toán tìm SKU phù hợp nhất (`bestSku`), nhưng đơn giản hóa hơn một chút so với trang chi tiết.
  * =====================================================================
  */
 

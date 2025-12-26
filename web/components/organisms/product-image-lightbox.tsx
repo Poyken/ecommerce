@@ -45,15 +45,21 @@ export function ProductImageLightbox({
    * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
    *
    * 1. REACT PORTAL (`createPortal`):
-   * - Lightbox cần hiển thị đè lên TOÀN BỘ trang web (z-index cao nhất).
-   * - `createPortal` đưa component này ra khỏi DOM tree hiện tại và gắn trực tiếp vào `body`.
-   * - Tránh bị ảnh hưởng bởi `overflow: hidden` hoặc `z-index` của component cha.
+   * - Lightbox cần hiển thị đè lên TOÀN BỘ trang web (như một Modal toàn màn hình).
+   * - Nếu chỉ render bình thường, nó sẽ bị giới hạn bởi `z-index` hoặc `overflow` của component cha.
+   * - `createPortal(..., document.body)` giúp "dịch chuyển" component này ra ngoài, gắn thẳng vào thẻ body.
    *
-   * 2. ZOOM & PAN INTERACTION:
-   * - Sử dụng `react-zoom-pan-pinch` để xử lý thao tác zoom mượt mà trên cả Desktop và Mobile.
+   * 2. ZOOM & PAN (Phóng to & Di chuyển):
+   * - Sử dụng thư viện `react-zoom-pan-pinch`.
    * - Logic `watchDrag: !isZoomed`:
-   *   - Khi chưa zoom: Cho phép vuốt sang trái/phải để đổi ảnh (Carousel).
-   *   - Khi đang zoom: Tắt vuốt đổi ảnh để user có thể di chuyển (pan) vùng ảnh đang zoom.
+   *   + Khi đang zoom (scale > 1): Tắt tính năng vuốt đổi ảnh (Carousel Swipe) để nhường quyền điều khiển cho việc di chuyển ảnh (Panning).
+   *   + Khi không zoom: Bật lại Swipe để user lướt xem ảnh khác.
+   *
+   * 3. DOUBLE CLICK ZOOM:
+   * - Tự implement logic double click:
+   *   + Click lần 1: Zoom 2x.
+   *   + Click lần 2: Zoom 4x.
+   *   + Click lần 3: Reset về 1x.
    * =====================================================================
    */
   const t = useTranslations("product");
@@ -150,7 +156,7 @@ export function ProductImageLightbox({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm pointer-events-auto"
+          className="fixed inset-0 z-9999 flex items-center justify-center bg-black/80 backdrop-blur-sm pointer-events-auto"
           onClick={(e) => {
             // Only close if clicking directly on the overlay (not on content)
             if (e.target === e.currentTarget) {
@@ -163,7 +169,7 @@ export function ProductImageLightbox({
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-4 right-4 z-[10000] text-white/70 hover:text-white hover:bg-white/10 rounded-full h-12 w-12 pointer-events-auto"
+            className="absolute top-4 right-4 z-10000 text-white/70 hover:text-white hover:bg-white/10 rounded-full h-12 w-12 pointer-events-auto"
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -174,13 +180,13 @@ export function ProductImageLightbox({
           </Button>
 
           {/* Carousel */}
-          <div 
+          <div
             className="w-full h-full flex items-center justify-center p-4 md:p-10"
             onClick={(e) => e.stopPropagation()}
           >
             <Carousel
               setApi={setApi}
-              className="w-full h-full max-w-7xl mx-auto [&_[data-slot=carousel-content]]:h-full"
+              className="w-full h-full max-w-7xl mx-auto **:data-[slot=carousel-content]:h-full"
               opts={{
                 loop: true,
                 align: "center",
@@ -193,79 +199,85 @@ export function ProductImageLightbox({
                     key={index}
                     className="relative w-full h-full flex items-center justify-center"
                   >
-                    <div 
+                    <div
                       className="w-full h-full flex items-center justify-center"
                       onClick={(e) => e.stopPropagation()}
                     >
-                        <TransformWrapper
-                          ref={(ref) => {
-                            if (index === images.indexOf(activeImage)) {
-                              zoomRef.current = ref;
-                            }
-                          }}
-                          initialScale={1}
-                          minScale={1}
-                          maxScale={8}
-                          wheel={{ step: 0.2 }}
-                          doubleClick={{ disabled: true }}
-                          onTransformed={onTransformed}
-                        >
-                          {({ zoomIn, zoomOut, resetTransform, ...rest }) => {
-                            const handleClick = (e: React.MouseEvent) => {
-                              e.stopPropagation();
-                              
-                              const now = Date.now();
-                              const DOUBLE_CLICK_TIME = 350;
-                              
-                              if (now - lastClickTime.current < DOUBLE_CLICK_TIME) {
-                                // Double click detected
-                                const scale = rest.instance.transformState.scale;
-                                if (scale >= 3.9) {
-                                  // If at 4x or higher, reset to 1x
-                                  resetTransform(300);
-                                } else if (scale >= 1.9) {
-                                  // If at 2x, zoom to 4x
-                                  zoomIn(2, 300);
-                                } else {
-                                  // If at 1x, zoom to 2x
-                                  zoomIn(2, 300);
-                                }
+                      <TransformWrapper
+                        ref={(ref) => {
+                          if (index === images.indexOf(activeImage)) {
+                            zoomRef.current = ref;
+                          }
+                        }}
+                        initialScale={1}
+                        minScale={1}
+                        maxScale={8}
+                        wheel={{ step: 0.2 }}
+                        doubleClick={{ disabled: true }}
+                        onTransformed={onTransformed}
+                      >
+                        {({ zoomIn, zoomOut, resetTransform, ...rest }) => {
+                          const handleClick = (e: React.MouseEvent) => {
+                            e.stopPropagation();
+
+                            const now = Date.now();
+                            const DOUBLE_CLICK_TIME = 350;
+
+                            if (
+                              now - lastClickTime.current <
+                              DOUBLE_CLICK_TIME
+                            ) {
+                              // Double click detected
+                              const scale = rest.instance.transformState.scale;
+                              if (scale >= 3.9) {
+                                // If at 4x or higher, reset to 1x
+                                resetTransform(300);
+                              } else if (scale >= 1.9) {
+                                // If at 2x, zoom to 4x
+                                zoomIn(2, 300);
+                              } else {
+                                // If at 1x, zoom to 2x
+                                zoomIn(2, 300);
                               }
-                              lastClickTime.current = now;
-                            };
+                            }
+                            lastClickTime.current = now;
+                          };
 
-                            const currentScale = rest.instance.transformState.scale;
+                          const currentScale =
+                            rest.instance.transformState.scale;
 
-                            return (
-                              <TransformComponent
-                                wrapperStyle={{ width: "100%", height: "100%" }}
-                                contentStyle={{
-                                  width: "100%",
-                                  height: "100%",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                }}
+                          return (
+                            <TransformComponent
+                              wrapperStyle={{ width: "100%", height: "100%" }}
+                              contentStyle={{
+                                width: "100%",
+                                height: "100%",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <div
+                                className={cn(
+                                  "relative w-full h-full flex items-center justify-center",
+                                  currentScale > 1
+                                    ? "cursor-grab active:cursor-grabbing"
+                                    : "cursor-zoom-in"
+                                )}
+                                onClick={handleClick}
                               >
-                                <div
-                                  className={cn(
-                                    "relative w-full h-full flex items-center justify-center",
-                                    currentScale > 1 ? "cursor-grab active:cursor-grabbing" : "cursor-zoom-in"
-                                  )}
-                                  onClick={handleClick}
-                                >
-                                  <Image
-                                    src={img}
-                                    alt={`Product image ${index + 1}`}
-                                    fill
-                                    className="object-contain"
-                                    priority={
-                                      index === images.indexOf(activeImage)
-                                    }
-                                    unoptimized
-                                    sizes="100vw"
-                                  />
-                                </div>
+                                <Image
+                                  src={img}
+                                  alt={`Product image ${index + 1}`}
+                                  fill
+                                  className="object-contain"
+                                  priority={
+                                    index === images.indexOf(activeImage)
+                                  }
+                                  unoptimized
+                                  sizes="100vw"
+                                />
+                              </div>
                             </TransformComponent>
                           );
                         }}
@@ -304,7 +316,7 @@ export function ProductImageLightbox({
                 key={idx}
                 onClick={() => api?.scrollTo(idx)}
                 className={cn(
-                  "relative w-12 h-12 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0",
+                  "relative w-12 h-12 rounded-lg overflow-hidden border-2 transition-all shrink-0",
                   idx === current - 1
                     ? "border-primary opacity-100 scale-110"
                     : "border-transparent opacity-50 hover:opacity-100 hover:scale-105"

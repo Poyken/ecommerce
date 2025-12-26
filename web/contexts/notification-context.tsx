@@ -30,11 +30,11 @@ import {
  *
  * 3. HYBRID SYNC (WebSocket + Polling):
  * - WebSocket: Nhận thông báo real-time ngay khi có sự kiện từ server.
- * - Polling (30s): Cơ chế dự phòng nếu kết nối WebSocket bị gián đoạn.
+ * - Polling (60s): Cơ chế dự phòng nếu kết nối WebSocket bị gián đoạn hoặc không ổn định.
  *
  * 4. NEXT.JS REWRITES:
- * - Fetch trực tiếp tới `/api/v1/notifications` thay vì full URL.
- * - Browser sẽ tự động đính kèm HttpOnly Cookies, giúp xác thực an toàn mà không cần code thêm.
+ * - Fetch trực tiếp tới `/api/v1/notifications` thay vì full URL backend.
+ * - Next.js Proxy sẽ tự động chuyển tiếp request kèm HttpOnly Cookies -> Bảo mật hơn.
  * =====================================================================
  */
 

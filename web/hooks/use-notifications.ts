@@ -12,15 +12,17 @@ import { useCallback, useEffect, useState } from "react";
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. CLIENT-SIDE SOCKET INIT:
- * - Hook này chịu trách nhiệm khởi tạo kết nối WebSocket trực tiếp từ phía Client.
- * - Lấy `accessToken` từ cookie để xác thực với Socket server.
+ * - Hook này chạy ở phía Client (`use client`), chịu trách nhiệm "kích hoạt" kết nối Socket.
+ * - Nó lấy Token từ Cookie (do HttpOnly cookie không đọc được trực tiếp bằng JS thường,
+ *   nhưng ở đây code đang dùng `document.cookie` parse thủ công - lưu ý về bảo mật nếu token không phải HttpOnly).
  *
- * 2. EVENT HANDLING:
- * - `notification`: Nhận thông báo mới và lưu vào `latestNotification`.
- * - `unreadCount`: Cập nhật số lượng thông báo chưa đọc.
+ * 2. EVENT LISTENING (Lắng nghe sự kiện):
+ * - `notification`: Nhận object thông báo mới -> Update state để hiện popup/badge.
+ * - `unreadCount`: Đồng bộ số lượng chưa đọc realtime.
  *
- * 3. CLEANUP:
- * - Tự động gỡ bỏ các listener (`off`) khi component unmount để tránh rò rỉ bộ nhớ và duplicate thông báo.
+ * 3. CLEANUP (Dọn dẹp):
+ * - QUAN TRỌNG: Phải gọi `off()` trong return của `useEffect`.
+ * - Nếu không, mỗi lần component re-render sẽ tạo thêm 1 listener mới -> Duplicate notification (1 thông báo hiện 10 lần).
  * =====================================================================
  */
 export function useNotifications() {

@@ -6,24 +6,24 @@ import { useCallback, useEffect, useState } from "react";
 
 /**
  * =====================================================================
- * SOCIAL PROOF TOAST - Thông báo mua hàng thời gian thực
+ * PURCHASE TOAST - Thông báo mua hàng thời gian thực
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. FOMO (Fear Of Missing Out):
- * - Hiển thị các thông báo mua hàng giả lập (hoặc thật qua WebSocket) để tạo cảm giác cửa hàng đang rất nhộn nhịp.
- * - Giúp khách hàng mới cảm thấy yên tâm hơn khi thấy nhiều người khác cũng đang mua sắm.
+ * 1. MARKETING PSYCHOLOGY - FOMO:
+ * - Hiển thị "Ai đó vừa mua..." để tạo hiệu ứng đám đông (Social Proof).
+ * - Làm cho website trông có vẻ "đắt hàng" -> Kích thích user chốt đơn nhanh hơn.
  *
- * 2. ANIMATE PRESENCE:
- * - Sử dụng `AnimatePresence` từ Framer Motion để xử lý animation khi component bị gỡ bỏ khỏi DOM (`exit` animation).
- * - `initial`: Trạng thái bắt đầu (trượt từ trái sang).
- * - `animate`: Trạng thái hiển thị.
- * - `exit`: Trạng thái khi biến mất.
+ * 2. ANIMATE PRESENCE (Framer Motion):
+ * - React thuần không hỗ trợ animation khi unmount (gỡ bỏ) component.
+ * - `AnimatePresence` giúp component "sống sót" thêm vài ms để chạy nốt animation `exit` rồi mới biến mất hẳn.
  *
- * 3. NOTIFICATION CYCLE:
- * - Sử dụng `setTimeout` lồng nhau để tạo chu kỳ: Hiện 5s -> Nghỉ 15-25s -> Hiện cái tiếp theo.
- * - Khoảng nghỉ ngẫu nhiên (`Math.random()`) giúp thông báo trông "thật" hơn, không bị máy móc.
+ * 3. NOTIFICATION LOOP LOGIC:
+ * - Dùng cặp `setTimeout` lồng nhau:
+ *   + Timer 1: Show toast -> Chờ 5s -> Hide toast.
+ *   + Timer 2: Sau khi hide -> Chờ random 15-25s -> Gọi lại hàm showNext.
+ * - Tạo ra một vòng lặp vô tận nhưng có khoảng nghỉ ngẫu nhiên để trông tự nhiên.
  * =====================================================================
  */
 interface PurchaseNotification {

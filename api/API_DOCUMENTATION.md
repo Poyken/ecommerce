@@ -14,6 +14,17 @@
 - [II. KIẾN TRÚC HỆ THỐNG](#ii-kiến-trúc-hệ-thống)
 - [III. CẤU TRÚC DỰ ÁN](#iii-cấu-trúc-dự-án)
 - [IV. MODULES VÀ CHỨC NĂNG](#iv-modules-và-chức-năng)
+  - [4.1. 🔐 Auth Module](#41-auth-module-srcauth)
+  - [4.2. 👤 Users Module](#42-users-module-srcusers)
+  - [4.3. 🎭 Roles Module](#43-roles-module-srcroles)
+  - [4.4. 📦 Products Module](#44-products-module-srcproducts)
+  - [4.5. 🛒 Cart Module](#45-cart-module-srccart)
+  - [4.6. 📋 Orders Module](#46-orders-module-srcorders)
+  - [4.7. 💳 Payment Module](#47-payment-module-srcpayment)
+  - [4.8. ⭐ Reviews Module](#48-reviews-module-srcreviews)
+  - [4.9. 📧 Notifications Module](#49-notifications-module-srcnotifications)
+  - [4.10. 🗄️ Prisma Module](#410-prisma-module-srcprisma)
+  - [4.11. 🔴 Redis Module](#411-redis-module-srcredis)
   - [4.12. 📰 Newsletter Module](#412-newsletter-module-srcnewsletter)
   - [4.13. ☁️ Cloudinary Module](#413-cloudinary-module-srccommoncloudinary)
   - [4.14. 📊 Analytics Module](#414-analytics-module-srcanalytics)
@@ -23,6 +34,8 @@
   - [4.18. ❤️ Wishlist Module](#418-wishlist-module-srcwishlist)
   - [4.19. 📝 Blog Module](#419-blog-module-srcblog)
   - [4.20. 🚚 Shipping Module](#420-shipping-module-srcshipping)
+  - [4.21. 🛡️ Audit Module](#421-audit-module-srcaudit)
+  - [4.22. 👷 Worker Module](#422-worker-module-srcworker)
 - [V. LƯỢC ĐỒ CƠ SỞ DỮ LIỆU](#v-database-schema)
 - [VI. XÁC THỰC VÀ PHÂN QUYỀN](#vi-authentication--authorization)
 - [VII. DANH SÁCH API ENDPOINTS](#vii-api-endpoints)
@@ -1161,7 +1174,103 @@ POST   /shipping/webhook              # GHN Webhook Callback
 
 ---
 
+## 4.21. 🛡️ Audit Module (`src/audit/`)
+
+### Chức năng
+
+- **System Logging**: Ghi lại toàn bộ hoạt động quan trọng của hệ thống.
+- **Action Tracking**: Theo dõi ai (User), làm gì (Action), trên đối tượng nào (Resource), vào lúc nào (Timestamp).
+- **Change Tracking**: Lưu giữ giá trị cũ và giá trị mới để đối chiếu (Audit Trail).
+
+### Components
+
+- `AuditInterceptor`: Tự động chặn và ghi log cho các request ghi đổi dữ liệu (POST, PATCH, DELETE).
+- `AuditService`: Service xử lý lưu log vào database bất đồng bộ.
+- `AuditController`: API cho phép Admin xem và tìm kiếm logs.
+
+### Database Schema (AuditLog)
+
+Bảng ghi nhận log hệ thống:
+
+```prisma
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String   // Method: POST, PATCH, DELETE
+  resource  String   // URL Path hoặc Resource Name
+  userId    String?  // ID người thực hiện (nếu có)
+  ip        String?  // IP Address
+  userAgent String?  // Browser/Device info
+  details   Json?    // Metadata bổ sung
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+}
+```
+
+### Endpoints (Admin Only)
+
+```
+GET    /audit                 # Xem nhật ký hệ thống (Pagination, Filter)
+```
+
+---
+
+## 4.22. 👷 Worker Module (`src/worker/`)
+
+### Chức năng
+
+- **Background Processing**: Xử lý các tác vụ nặng dưới nền để không chặn request chính.
+- **Cache Warming**: Tự động làm nóng cache định kỳ để đảm bảo API luôn phản hồi nhanh (dưới 50ms).
+- **Scheduled Tasks**: Chạy các cron jobs.
+
+### Cache Warming Job
+
+- **Queue Name**: `cache-warming`
+- **Processor**: `CacheWarmingProcessor`
+- **Schedule**: Chạy mỗi 10 phút.
+- **Nội dung**:
+  1. Fetch danh sách sản phẩm trang chủ từ Database.
+  2. Fetch danh sách Categories, Brands.
+  3. Pre-calculate các dữ liệu thống kê.
+  4. Lưu tất cả vào Redis Cache với TTL dài.
+
+### Example Code (Processor)
+
+```typescript
+@Processor('cache-warming')
+export class CacheWarmingProcessor extends WorkerHost {
+  async process(job: Job) {
+    // 1. Warm Home Products
+    const products = await this.prisma.product.findMany({ ... });
+    await this.redis.set('home:products', JSON.stringify(products));
+    
+    return { warmed: true, count: products.length };
+  }
+}
+```
+
+---
+
 # V. DATABASE SCHEMA
+
+## 5.0. Audit Log Tables
+
+### AuditLog
+
+```prisma
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  resource  String
+  userId    String?
+  ip        String?
+  userAgent String?
+  details   Json?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id])
+}
+```
 
 
 ## 5.1. Core Tables

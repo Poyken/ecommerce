@@ -6,23 +6,21 @@
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * SERVICE LAYER LÀ GÌ?
- * - Tầng trung gian giữa UI components và API
- * - Đóng gói logic gọi API vào các method có ý nghĩa
- * - Giúp code DRY (Don't Repeat Yourself) - không lặp lại
+ * - Là tầng trung gian giữa Component (UI) và API (Backend).
+ * - Thay vì gọi `fetch` trực tiếp trong component (rất lộn xộn và khó test), ta gói logic vào đây.
  *
  * TẠI SAO CẦN SERVICE LAYER?
- * 1. Tái sử dụng: Nhiều component có thể dùng cùng service
- * 2. Dễ test: Mock service thay vì mock HTTP requests
- * 3. Dễ maintain: Thay đổi API chỉ cần sửa 1 chỗ
- * 4. Clean code: Component chỉ cần gọi service, không cần biết về API
+ * 1. TÁI SỬ DỤNG (Reusability): Một API `getProduct` có thể được gọi từ HomePage, ProductPage, CartPage...
+ * 2. DỄ BẢO TRÌ (Maintainability): Nếu Backend đổi đường dẫn API từ `/api/v1/product` sang `/api/v2/items`, ta chỉ cần sửa trong file này, không cần tìm sửa hàng chục component.
+ * 3. CACHING CONTROL: Centralized logic để điều khiển việc cache của Next.js (revalidate, tags).
  *
  * SO SÁNH VỚI SERVER ACTIONS:
  * ┌──────────────────┬─────────────────────┬────────────────────────┐
  * │                  │ Service             │ Server Action           │
  * ├──────────────────┼─────────────────────┼────────────────────────┤
- * │ Dùng cho         │ Lấy dữ liệu (GET)   │ Thay đổi data (POST...)│
- * │ Caching          │ Next.js cache       │ revalidatePath          │
- * │ Gọi từ           │ Server Components   │ Forms, Client Components│
+ * │ Mục đích         │ Lấy dữ liệu (GET)   │ Gửi dữ liệu (POST/PUT)  │
+ * │ Chạy ở           │ Server & Client     │ Chỉ chạy trên Server    │
+ * │ Caching          │ Next.js fetch cache │ revalidatePath/revalidateTag|
  * └──────────────────┴─────────────────────┴────────────────────────┘
  * =====================================================================
  */

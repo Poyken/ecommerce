@@ -12,6 +12,24 @@ import { z } from "zod";
  * =====================================================================
  * ORDER SERVER ACTIONS - Quản lý đơn hàng
  * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SAFE ACTION CLIENT (`protectedActionClient`):
+ * - Thay vì dùng `export async function...` trần trụi, ta bọc logic trong `safe-action`.
+ * - Lợi ích:
+ *   + Tự động validate input với Zod schema (`.schema(...)`).
+ *   + Tự động handle try-catch lỗi hệ thống.
+ *   + Type-safety cho input và output trả về client.
+ *   + Middleware authentication đã được tích hợp sẵn (check login).
+ *
+ * 2. REVALIDATION:
+ * - Sau khi tạo đơn hoặc hủy đơn, ta gọi `revalidatePath`.
+ * - Mục đích: Xóa cache cũ của Next.js để UI cập nhật ngay lập tức (vd: giỏ hàng về 0, danh sách đơn hàng có thêm đơn mới).
+ *
+ * 3. SIMULATION ACTION:
+ * - `simulatePaymentSuccessAction`: Chỉ dùng cho môi trường Dev/Test để giả lập việc thanh toán thành công mà không cần qua cổng thanh toán thật.
+ * =====================================================================
  */
 
 const CancelOrderSchema = z.object({
@@ -34,6 +52,7 @@ interface PlaceOrderData {
 
 // --- SAFE ACTIONS ---
 
+// Action đặt hàng - Được bảo vệ bằng Authentication và Zod Validation
 const safePlaceOrder = protectedActionClient
   .schema(CheckoutSchema)
   .action(async ({ parsedInput }) => {
@@ -51,6 +70,7 @@ const safePlaceOrder = protectedActionClient
       const paymentUrl = res.data?.paymentUrl;
       const orderId = res.data?.id;
 
+      // Xóa cache các trang liên quan để hiển thị dữ liệu mới nhất
       revalidatePath("/cart");
       revalidatePath("/orders");
 
@@ -60,6 +80,7 @@ const safePlaceOrder = protectedActionClient
     }
   });
 
+// Action hủy đơn hàng
 const safeCancelOrder = protectedActionClient
   .schema(CancelOrderSchema)
   .action(async ({ parsedInput }) => {
@@ -76,7 +97,7 @@ const safeCancelOrder = protectedActionClient
     }
   });
 
-// --- EXPORTS ---
+// --- EXPORTS (Wrapper Functions) ---
 
 export async function getMyOrdersAction(page = 1, limit = 10) {
   try {
@@ -127,6 +148,7 @@ export async function getOrderDetailsAction(orderId: string) {
     return { error: (error as Error).message };
   }
 }
+
 /**
  * SIMULATION ONLY: Mark order as Paid (Processing) to simulate webhook.
  */

@@ -8,20 +8,22 @@ import Image from "next/image";
 
 /**
  * =====================================================================
- * BENTO GRID - Trending Asymmetric Layout for Product Discovery
+ * BENTO GRID - Layout bất đối xứng hiện đại (Grid View)
  * =====================================================================
  *
- * 📚 DESIGN CONCEPT:
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. BENTO GRID LAYOUT:
- * - Inspired by Japanese Bento box design - asymmetric, balanced, visually striking
- * - Featured cell spans 2 rows for hero product placement
- * - Other cells provide secondary product highlights
+ * 1. BENTO UI TREND:
+ * - Lấy cảm hứng từ hộp cơm Bento Nhật Bản. Chia content thành các ô vuông/chữ nhật kích thước khác nhau.
+ * - `lg:row-span-2`: Ô nổi bật (Featured) chiếm 2 hàng dọc -> Tạo điểm nhấn thị giác mạnh.
  *
- * 2. QUIET LUXURY AESTHETIC:
- * - Subtle borders with champagne glow on hover
- * - Editorial typography with serif headings
- * - Minimal text overlay for clean, airy feel
+ * 2. QUIET LUXURY AESTHETIC (Thẩm mỹ sang trọng thầm lặng):
+ * - Font chữ Serif (`font-serif`) cho tiêu đề -> Cổ điển, thanh lịch.
+ * - Hiệu ứng `champagne glow` (viền sáng màu rượu sâm panh) khi hover -> Tinh tế, không lòe loẹt.
+ *
+ * 3. STAGGERED ANIMATION:
+ * - `delay: 0.1 * (index + 1)`: Các ô không hiện ra cùng lúc mà lần lượt nối đuôi nhau.
+ * - Tạo cảm giác mượt mà và dẫn dắt mắt người xem.
  * =====================================================================
  */
 
@@ -43,7 +45,9 @@ export function BentoGrid({ items, className }: BentoGridProps) {
   if (items.length === 0) return null;
 
   const featuredItem = items.find((item) => item.featured) || items[0];
-  const regularItems = items.filter((item) => item.id !== featuredItem.id).slice(0, 3);
+  const regularItems = items
+    .filter((item) => item.id !== featuredItem.id)
+    .slice(0, 3);
 
   return (
     <div
@@ -70,7 +74,11 @@ export function BentoGrid({ items, className }: BentoGridProps) {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.1 * (index + 1), ease: [0.16, 1, 0.3, 1] }}
+          transition={{
+            duration: 0.6,
+            delay: 0.1 * (index + 1),
+            ease: [0.16, 1, 0.3, 1],
+          }}
         >
           <BentoCell item={item} />
         </motion.div>
@@ -79,7 +87,13 @@ export function BentoGrid({ items, className }: BentoGridProps) {
   );
 }
 
-function BentoCell({ item, featured = false }: { item: BentoItem; featured?: boolean }) {
+function BentoCell({
+  item,
+  featured = false,
+}: {
+  item: BentoItem;
+  featured?: boolean;
+}) {
   return (
     <Link
       href={item.href}
@@ -88,7 +102,9 @@ function BentoCell({ item, featured = false }: { item: BentoItem; featured?: boo
         "bg-card border border-border",
         "transition-all duration-700 ease-[0.16,1,0.3,1]",
         "hover:border-accent/40 hover:shadow-2xl hover:shadow-accent/10",
-        featured ? "h-[400px] md:h-[500px] lg:h-full min-h-[500px]" : "h-[240px] md:h-[280px]"
+        featured
+          ? "h-[400px] md:h-[500px] lg:h-full min-h-[500px]"
+          : "h-[240px] md:h-[280px]"
       )}
     >
       {/* Image */}
@@ -97,7 +113,11 @@ function BentoCell({ item, featured = false }: { item: BentoItem; featured?: boo
           src={item.image}
           alt={item.title}
           fill
-          sizes={featured ? "(max-width: 768px) 100vw, 50vw" : "(max-width: 768px) 100vw, 33vw"}
+          sizes={
+            featured
+              ? "(max-width: 768px) 100vw, 50vw"
+              : "(max-width: 768px) 100vw, 33vw"
+          }
           className="object-cover transition-transform duration-1000 ease-[0.16,1,0.3,1] group-hover:scale-105"
         />
       </div>
@@ -105,7 +125,7 @@ function BentoCell({ item, featured = false }: { item: BentoItem; featured?: boo
       {/* Gradient Overlay */}
       <div
         className={cn(
-          "absolute inset-0 bg-gradient-to-t transition-opacity duration-500",
+          "absolute inset-0 bg-linear-to-t transition-opacity duration-500",
           featured
             ? "from-black/70 via-black/20 to-transparent"
             : "from-black/60 via-transparent to-transparent"

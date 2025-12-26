@@ -5,13 +5,17 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. REAL-TIME UPDATES:
- * - Kết nối với `NotificationContext` để lấy danh sách thông báo mới nhất.
- * - Hiển thị số lượng thông báo chưa đọc (`unreadCount`) trên biểu tượng chuông.
+ * 1. CONTEXT INTEGRATION:
+ * - Component này không tự quản lý Socket. Nó chỉ "tiêu thụ" (consume) dữ liệu từ `NotificationContext`.
+ * - Tách biệt UI (Bell) và Logic (Socket/State) giúp code sạch và dễ bảo trì.
  *
- * 2. POPOVER UI:
- * - Khi click vào chuông, một danh sách rút gọn các thông báo gần đây sẽ hiện ra.
- * - Hỗ trợ "Đánh dấu tất cả là đã đọc" (`markAllAsRead`).
+ * 2. POPOVER INTERACTION (Hành vi Dropdown):
+ * - Khi mở (`onOpenChange`), ta gọi `refetch()` để đảm bảo user thấy danh sách mới nhất (đôi khi Socket có thể miss nếu mạng lag).
+ * - `markAsRead` được gọi khi user click vào 1 thông báo cụ thể -> UX: Giảm notification badge ngay lập tức.
+ *
+ * 3. BADGE LOGIC:
+ * - Chỉ hiện badge đỏ nếu `unreadCount > 0`.
+ * - Nếu > 99 thì hiện "99+" để tránh vỡ layout nếu user có quá nhiều thông báo.
  * =====================================================================
  */
 

@@ -5,25 +5,17 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * SERVER ACTIONS LÀ GÌ?
- * - Là các hàm async chạy trên server, nhưng có thể gọi trực tiếp từ client.
- * - Thay thế cho việc phải tạo API Route thủ công (như Pages Router).
- * - Được đánh dấu bằng directive `"use server"` ở đầu file hoặc đầu hàm.
+ * 1. SERVER ACTIONS LÀ GÌ?
+ * - Là các hàm async chạy hoàn toàn trên server, nhưng được gọi từ Client Component như hàm bình thường.
+ * - Directive `"use server"` bảo Next.js tạo API endpoint ngầm cho file/hàm này.
  *
- * CÁCH HOẠT ĐỘNG:
- * 1. Client gọi Action (như gọi hàm bình thường).
- * 2. Next.js tự động gửi POST request đến server.
- * 3. Server thực thi hàm, có thể truy cập Database, Cookies, Headers...
- * 4. Trả về kết quả cho Client.
+ * 2. COOKIE-BASED SESSION:
+ * - Sau khi login API trả về token, ta phải lưu vào HttpOnly Cookie ngay trên server bằng `cookies().set(...)`.
+ * - Tại sao HttpOnly? -> Để JavaScript phía client không đọc được -> Chống XSS (Cross-Site Scripting).
  *
- * FORM HANDLING VỚI `useActionState`:
- * - Action thường nhận vào `prevState` và `formData`.
- * - `prevState`: Trạng thái cũ của form (để hiển thị lỗi validation).
- * - `formData`: Dữ liệu từ form HTML.
- *
- * SECURITY:
- * - Server Actions luôn phải validate dữ liệu đầu vào (dùng Zod).
- * - Không bao giờ tin tưởng dữ liệu từ Client.
+ * 3. VALIDATION (Zod):
+ * - Dữ liệu từ Form (Client) không bao giờ được tin tưởng.
+ * - Luôn dùng Zod validate email/password trước khi gửi sang Backend API để tiết kiệm request lỗi.
  * =====================================================================
  */
 

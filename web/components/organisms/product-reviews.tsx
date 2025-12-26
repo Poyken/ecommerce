@@ -22,20 +22,20 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. ELIGIBILITY CHECK (`checkReviewEligibilityAction`):
- * - Không phải ai cũng được đánh giá. Chỉ những user đã mua sản phẩm (đã thanh toán) mới có quyền đánh giá.
- * - Hệ thống check dựa trên `productId` và trả về danh sách các SKU mà user đã mua.
+ * 1. CHECK ELIGIBILITY (Kiểm tra quyền đánh giá):
+ * - Không phải user nào cũng được viết review. Chỉ những người ĐÃ MUA sản phẩm (`checkReviewEligibilityAction`) mới được phép.
+ * - Đây là tiêu chuẩn "Verified Purchase" của các sàn TMĐT lớn để chống spam/fake review.
  *
- * 2. REVIEW SUMMARY:
- * - Hiển thị điểm trung bình (`averageRating`) và tổng số đánh giá.
- * - Sử dụng `Math.round` để hiển thị số sao tương ứng.
+ * 2. CLIENT-SIDE DATA FETCHING:
+ * - Review list không cần thiết phải SEO quá mạnh (Google chỉ cần AggregateRating JSON-LD).
+ * - Fetch ở Client (`useEffect`) giúp TTime To First Byte (TTFB) của trang sản phẩm nhanh hơn vì server không phải chờ query review.
  *
- * 3. DYNAMIC FETCHING:
- * - Dữ liệu được fetch ở Client (`useEffect`) để đảm bảo tính realtime và không làm chậm quá trình render trang sản phẩm chính.
+ * 3. PAGINATION STRATEGY:
+ * - Sử dụng Cursor-based pagination (`meta.nextCursor`) thay vì Page number.
+ * - Hiệu quả hơn với các bảng dữ liệu lớn (Big Data) vì database không phải scan/offset lại từ đầu.
  *
- * 4. PERFORMANCE OPTIMIZATIONS:
- * - useRef để prevent duplicate fetches in StrictMode
- * - useCallback để stabilize fetchData reference
+ * 4. STRICT MODE HANDLING:
+ * - `useRef(hasFetched)`: Ngăn chặn việc React 18 Strict Mode gọi API 2 lần khi dev, tiết kiệm tài nguyên.
  * =====================================================================
  */
 

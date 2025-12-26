@@ -18,12 +18,13 @@ import { useDropzone } from "react-dropzone";
  * - `getRootProps` & `getInputProps`: Các props cần thiết để biến một vùng div thành vùng nhận file.
  *
  * 2. OBJECT URL PREVIEW:
- * - `URL.createObjectURL(file)`: Tạo một đường dẫn tạm thời để hiển thị ảnh ngay lập tức sau khi chọn, giúp user xem trước (Preview) mà không cần chờ upload lên server.
- * - Cần lưu ý dọn dẹp (revoke) URL này nếu dùng trong ứng dụng lớn để tránh rò rỉ bộ nhớ.
+ * - `URL.createObjectURL(file)`: Tạo một đường dẫn tạm thời (blob:http://...) để hiển thị ảnh ngay lập tức.
+ * - Giúp user xem trước (Preview) ảnh vừa chọn mà không cần chờ upload lên server.
+ * - Quan trọng: Phải revoke URL khi component unmount để tránh memory leak (dù browser hiện đại có thể làm tự động).
  *
  * 3. UI FEEDBACK:
- * - `isDragActive`: Thay đổi màu nền và viền khi user đang kéo file đè lên vùng upload.
- * - Hỗ trợ nút xóa (`handleRemove`) để user dễ dàng thay đổi lựa chọn.
+ * - `isDragActive`: Style thay đổi (sáng lên) khi user đang kéo file lơ lửng bên trên.
+ * - Hỗ trợ nút xóa (`X`) để user đổi ý dễ dàng.
  * =====================================================================
  */
 

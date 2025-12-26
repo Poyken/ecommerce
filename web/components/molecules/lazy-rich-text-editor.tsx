@@ -5,16 +5,18 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. CODE SPLITTING:
- * - TipTap là một thư viện nặng (~150KB gzipped).
- * - Sử dụng `next/dynamic` để lazy load, giảm bundle size ban đầu.
+ * 1. CODE SPLITTING (Phân tách mã nguồn):
+ * - TipTap là một thư viện khá nặng (~150KB gzipped). Nếu import trực tiếp, nó sẽ làm chậm tốc độ load trang ban đầu (Initial Load).
+ * - Sử dụng `next/dynamic` (bản chất là React.lazy + Suspense) để tách editor ra thành một file JS riêng (chunk).
+ * - File này chỉ được tải xuống khi browser thực sự cần render Editor.
  *
- * 2. LOADING STATE:
- * - Hiển thị skeleton trong khi component đang load.
- * - Tránh layout shift khi component xuất hiện.
+ * 2. SSR DISABLED (Tắt Server-Side Rendering):
+ * - Hầu hết các thư viện Editor (như TipTap, Quill, Draft.js) đều cần truy cập `window` hoặc `document` ngay khi khởi tạo.
+ * - Trên Server (Node.js) không có `window` -> Gây lỗi. -> Bắt buộc dùng `{ ssr: false }`.
  *
- * 3. SSR DISABLED:
- * - Editor cần DOM nên phải tắt SSR.
+ * 3. LOADING SKELETON:
+ * - Trong lúc chờ tải file JS của Editor, ta hiển thị một `Skeleton` để giữ chỗ (Placeholder).
+ * - Giúp tránh hiện tượng layout bị giật (Cumulative Layout Shift - CLS).
  * =====================================================================
  */
 

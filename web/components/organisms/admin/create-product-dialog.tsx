@@ -30,15 +30,18 @@ import { useState, useTransition } from "react";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. DYNAMIC OPTIONS:
- * - Cho phép Admin thêm không giới hạn các tùy chọn sản phẩm (VD: Màu sắc, Kích thước).
- * - Mỗi tùy chọn có thể có nhiều giá trị (VD: Đỏ, Xanh, Lớn, Nhỏ).
+ * 1. DYNAMIC FORM (Form động):
+ * - Sản phẩm có thể có N tùy chọn (Màu, Size, Chất liệu...).
+ * - Ta không thể hard-code số lượng input. Phải dùng State mảng (`options`) để render vòng lặp.
+ * - Cho phép user Add/Remove tùy ý -> Đây là kỹ thuật "Dynamic Field Array".
  *
- * 2. METADATA PROVIDERS:
- * - Sử dụng `useAdminBrands` và `useAdminCategories` để lấy danh sách thương hiệu/danh mục mà không cần fetch lại nhiều lần.
+ * 2. METADATA OPTIMIZATION:
+ * - Thay vì mỗi lần mở Dialog lại gọi API lấy danh sách Brand/Category -> Ta dùng Context (`useAdminBrands`, `useAdminCategories`).
+ * - Dữ liệu này được fetch 1 lần ở cấp cha (`AdminMetadataProvider`) và truyền xuống -> Tiết kiệm request, App nhanh hơn.
  *
- * 3. SLUG PREVIEW:
- * - Hiển thị gợi ý slug dựa trên tên sản phẩm đang nhập để Admin dễ hình dung URL.
+ * 3. UX PATTERNS:
+ * - `Slug Preview`: Tự động tạo slug khi gõ tên sản phẩm (UX tốt).
+ * - `Prevent Close`: Không cho đóng dialog khi đang submit (`isLoading`).
  * =====================================================================
  */
 

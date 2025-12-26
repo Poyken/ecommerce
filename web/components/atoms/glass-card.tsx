@@ -10,17 +10,18 @@ import { motion, type HTMLMotionProps } from "framer-motion";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. BACKDROP BLUR:
- * - Đây là linh hồn của Glassmorphism. Nó làm mờ phần nền PHÍA SAU card.
- * - `backdrop-blur-md` (Medium) hoặc `backdrop-blur-xl` (Extra Large) tùy vào biến thể.
+ * 1. GLASSMORPHISM CORE:
+ * - Phong cách thiết kế mô phỏng tấm kính mờ đặt trên nền.
+ * - `backdrop-blur-xl`: Mấu chốt!. Làm mờ những gì NẰM SAU nó (background cha).
+ * - `bg-white/60`: Nền phải bán trong suốt (alpha < 1) thì mới thấy hiệu ứng blur.
  *
- * 2. LAYERED BACKGROUND:
- * - Kết hợp `bg-white/60` (Light mode) và `bg-white/5` (Dark mode) để đảm bảo nội dung luôn dễ đọc trên mọi loại nền.
+ * 2. BORDER SUBTLETY (Viền tinh tế):
+ * - Để tạo cảm giác "tấm kính dày", ta thêm viền rất mờ (`border-white/10`).
+ * - Viền này mô phỏng cạnh kính bắt sáng.
  *
- * 3. ADAPTIVE VARIANTS:
- * - `default`: Dùng cho các card thông thường.
- * - `hover`: Có thêm hiệu ứng đổi màu nền và đổ bóng khi di chuột.
- * - `heavy`: Độ mờ cao hơn, dùng cho các modal hoặc popup quan trọng.
+ * 3. VARIANT SYSTEM:
+ * - `hover`: Khi di chuột vào, tăng shadow và độ sáng -> Tạo cảm giác thẻ "nổi lên".
+ * - `heavy`: Dùng cho Modal/Popup cần che nền mạnh hơn để user tập trung nội dung.
  * =====================================================================
  */
 
@@ -46,11 +47,7 @@ export function GlassCard({
 
   return (
     <motion.div
-      className={cn(
-        "rounded-2xl border",
-        variants[variant],
-        className
-      )}
+      className={cn("rounded-2xl border", variants[variant], className)}
       {...props}
     >
       {children}

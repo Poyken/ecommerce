@@ -1,6 +1,22 @@
 /**
  * =====================================================================
- * MAIN BOOTSTRAP
+ * MAIN BOOTSTRAP - ĐIỂM KHỞI CHẠY ỨNG DỤNG
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Đây là file quan trọng nhất (Entry Point) của ứng dụng NestJS.
+ * Nó chịu trách nhiệm:
+ * 1. Khởi tạo instance ứng dụng (`NestFactory.create`).
+ * 2. Cấu hình Middleware toàn cục (Global Middleware):
+ *    - Security (Helmet, CORS): Bảo mật HTTP headers và chặn request trái phép.
+ *    - Performance (Compression): Nén Gzip response.
+ *    - Logging: Ghi log chuẩn format.
+ * 3. Cấu hình Pipes & Interceptors toàn cục:
+ *    - ValidationPipe: Tự động kiểm tra và convert dữ liệu đầu vào (DTO).
+ *    - TransformInterceptor: Chuẩn hóa format trả về { data, message, statusCode }.
+ *    - AllExceptionsFilter: Bắt lỗi tập trung và trả về lỗi đẹp.
+ * 4. Tạo tài liệu API (Swagger) tự động tại `/docs`.
  * =====================================================================
  */
 

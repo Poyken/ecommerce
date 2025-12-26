@@ -1,3 +1,25 @@
+/**
+ * =====================================================================
+ * PROFILE SERVER ACTIONS - Quản lý hồ sơ người dùng
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * File này chứa các Server Actions liên quan đến thông tin cá nhân của User:
+ * - Lấy thông tin profile (`getProfileAction`)
+ * - Cập nhật thông tin (Tên, Ảnh đại diện, Mật khẩu) (`updateProfileAction`)
+ *
+ * LƯU Ý KỸ THUẬT QUAN TRỌNG:
+ * 1. CACHE DEDUPLICATION:
+ *    - `getProfileAction` được bọc bởi `cache()` của React.
+ *    - Giúp tránh việc gọi API `/auth/me` nhiều lần nếu component cha và con cùng cần profile trong 1 lần render.
+ *
+ * 2. SESSION VALIDATION:
+ *    - Luôn kiểm tra `accessToken` từ Cookie.
+ *    - Xử lý các case 401 (Unauthorized) để tự động force logout nếu phiên làm việc hết hạn.
+ * =====================================================================
+ */
+
 "use server";
 
 import { http } from "@/lib/http";

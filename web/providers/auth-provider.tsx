@@ -5,18 +5,18 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. ROLE-BASED ACCESS CONTROL (RBAC):
- * - Hệ thống sử dụng Permissions thay vì chỉ dùng Role (vd: "admin:read" thay vì "ADMIN").
- * - Giúp phân quyền linh hoạt hơn (Granular permissions).
+ * 1. RBAC (Role-Based Access Control):
+ * - Thay vì chỉ check Role (Admin/User), ta check PERMISSION (Quyền).
+ * - VD: `hasPermission("product:create")`.
+ * - Linh hoạt hơn: Một Role có thể có nhiều Permission. Admin có thể tạo user, nhưng Manager thì không.
  *
- * 2. CLIENT-SIDE PERMISSION CHECK:
- * - `AuthProvider` lưu danh sách permissions vào React Context.
- * - `useAuth()` hook cho phép bất kỳ component nào cũng có thể check quyền (`hasPermission`).
- * - Lưu ý: Đây chỉ là UI Guard. Backend vẫn phải check lại permission cho mỗi API request.
+ * 2. HYDRATION (Bơm dữ liệu):
+ * - `initialPermissions` được lấy từ Server (trong Layout) truyền xuống.
+ * - Giúp UI hiển thị đúng quyền ngay lập tức mà không cần chờ loading spinner (Client-side fetching).
  *
- * 3. HYDRATION STRATEGY:
- * - `initialPermissions` được truyền từ Server Component (Layout) để tránh nháy giao diện.
- * - Nếu thiếu, `useEffect` sẽ fetch lại từ Server Action.
+ * 3. SECURITY NOTE:
+ * - Việc check permission ở Client (`hasPermission`) chỉ là để ẩn hiện UI (UX).
+ * - BẮT BUỘC phải check lại ở Backend/API để đảm bảo an toàn thực sự.
  * =====================================================================
  */
 

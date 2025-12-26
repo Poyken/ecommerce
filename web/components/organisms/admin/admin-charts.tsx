@@ -30,18 +30,17 @@ import {
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. RECHARTS LIBRARY:
- * - Sử dụng thư viện Recharts để vẽ biểu đồ dạng Declarative (khai báo).
- * - `ResponsiveContainer`: Đảm bảo biểu đồ tự động co giãn theo kích thước của thẻ cha.
+ * 1. RECHARTS LIB (Thư viện biểu đồ):
+ * - Đây là thư viện vẽ chart phổ biến nhất cho React.
+ * - Nó dùng cơ chế "Declarative" (Khai báo): Ta xếp các component `<BarChart>`, `<XAxis>`, `<Tooltip>` lồng nhau thay vì vẽ canvas thủ công.
  *
- * 2. DATA FORMATTING:
- * - Sử dụng `Intl.NumberFormat` để định dạng tiền tệ (VND) trực tiếp trên trục Y và Tooltip.
- * - `notation: "compact"` giúp rút gọn các con số lớn (VD: 1.000.000 -> 1Tr) để biểu đồ trông gọn gàng hơn.
+ * 2. RESPONSIVE DESIGN:
+ * - Luôn bọc Chart trong `<ResponsiveContainer>`.
+ * - Nó giúp chart tự động co giãn (`width="100%"`) theo kích thước màn hình cha -> Quan trọng cho Dashboard Dashboard responsive.
  *
- * 3. CHART TYPES:
- * - `LineChart`: Phù hợp để theo dõi xu hướng (Sales Trends) theo thời gian.
- * - `BarChart`: Phù hợp để so sánh các hạng mục (Best Sellers).
- * - `PieChart`: Phù hợp để hiển thị tỷ lệ phần trăm (Order Status).
+ * 3. DATA FORMATTING (Định dạng số liệu):
+ * - Trục Y và Tooltip dùng `Intl.NumberFormat` để format tiền tệ (VND).
+ * - `notation: "compact"`: Biến số 1.500.000 thành "1.5Tr" -> Giúp biểu đồ thoáng và dễ đọc hơn.
  * =====================================================================
  */
 

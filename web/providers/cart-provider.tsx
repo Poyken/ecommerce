@@ -19,22 +19,23 @@ import {
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. GLOBAL CART COUNT:
- * - Lưu trữ số lượng sản phẩm trong giỏ hàng để hiển thị trên Badge của Header.
- * - Giúp người dùng biết được trạng thái giỏ hàng ở bất kỳ trang nào.
+ * 1. GLOBAL STATE MANAGER:
+ * - Thay vì mỗi trang tự gọi API lấy số lượng giỏ hàng, ta quản lý tập trung ở đây.
+ * - Bất kỳ component nào (Header, ProductPage) cũng có thể lấy data qua `useCartContext()`.
  *
- * 2. AUTH-AWARE FETCHING:
- * - Nếu user đã login: Fetch số lượng từ API Backend thông qua Server Action.
- * - Nếu là khách (Guest): Tính toán số lượng từ `localStorage` (`guest_cart`).
+ * 2. HYBRID STRATEGY (Guest vs User):
+ * - User đã login: Gọi Server Action `getCartCountAction` (Database).
+ * - User chưa login (Guest): Lấy từ `localStorage` (Trình duyệt).
+ * -> Đảm bảo trải nghiệm liền mạch kể cả khi chưa đăng nhập.
  *
- * 3. EVENT-DRIVEN UPDATES:
- * - Lắng nghe các event `storage`, `guest_cart_updated`, và `cart_updated`.
- * - Khi giỏ hàng thay đổi ở một nơi (vd: trang chi tiết sản phẩm), Provider sẽ tự động cập nhật lại số lượng.
+ * 3. EVENT-DRIVEN UPDATES (Cập nhật theo sự kiện):
+ * - Làm sao để Header biết khi ProductPage thêm hàng vào giỏ?
+ * - Ta dùng `window.dispatchEvent(new Event('cart_updated'))`.
+ * - Provider lắng nghe sự kiện này và tự động fetch lại data mới nhất.
  *
- * 4. PERFORMANCE OPTIMIZATIONS:
- * - useMemo cho context value để tránh re-render children khi reference thay đổi
- * - useCallback cho tất cả functions để stabilize references
- * - useRef để prevent concurrent fetches
+ * 4. PERFORMANCE (Hiệu năng):
+ * - `useMemo` cho contextValue: Giúp tránh render lại các component con không cần thiết.
+ * - `useRef` cho `isFetching`: Ngăn chặn việc gọi API 2 lần liên tiếp (Race condition).
  * =====================================================================
  */
 

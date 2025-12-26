@@ -64,6 +64,11 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   // ========================================
   // 3. CẤU HÌNH HEADERS & CSRF & AUTH
   // ========================================
+  // 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+  // - Ở đây ta xử lý "Interceptor" cho request.
+  // - Nếu chạy trên Server, ta tự động lấy accessToken từ Cookie để gắn vào Header.
+  // - Đây là lý do tại sao Fetch Wrapper này mạnh hơn `fetch` thường.
+
   let csrfToken: string | undefined;
   let accessToken: string | undefined;
   let forwardedUserAgent: string | undefined;
@@ -73,12 +78,23 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     rest.method?.toUpperCase() || "GET"
   );
 
-  // Only access cookies on server-side when necessary
+  // Chỉ truy cập cookies trên Server (Server Component / Action)
+  // Client Component sẽ tự động gửi cookie theo cơ chế của trình duyệt (credentials: include)
   if (typeof window === "undefined") {
-    // P0 Optimization: Only call cookies() if we actually need accessToken or csrfToken
-    // This prevents breaking "use cache" for public GET requests.
+    /**
+     * 📚 GIẢI THÍCH CHO THỰC TẬP SINH: TỐI ƯU STATIC CACHE
+     *
+     * 1. NGUYÊN LÝ NEXT.JS:
+     * - Nếu trong Server Component có gọi các hàm "Dynamic APIs" như `cookies()`, `headers()`,
+     *   Next.js sẽ TỰ ĐỘNG chuyển page đó sang chế độ "Dynamic Rendering" (SSR - Server Side Rendering).
+     * - Khi đó, `export const revalidate = 3600` sẽ bị VÔ HIỆU HÓA. Request nào cũng phải chờ server xử lý.
+     *
+     * 2. GIẢI PHÁP (`skipAuth`):
+     * - Với các API public (lấy sản phẩm, danh mục...), ta không cần Token.
+     * - Ta truyền `skipAuth: true` để KHÔNG gọi hàm `cookies()`.
+     * -> Kết quả: Page Home/Product vẫn được coi là Static và được Cache trên CDN. Tải cực nhanh!
+     */
     if (!skipAuth || isStateChanging) {
-      // Always try to get headers for fingerprinting
       try {
         const { cookies, headers } = await import("next/headers");
         const cookieStore = await cookies();
@@ -91,11 +107,11 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
           csrfToken = cookieStore.get("csrf-token")?.value;
         }
 
-        // Get headers for fingerprinting
+        // Fingerprinting headers (User-Agent, IP) để bảo mật
         forwardedUserAgent = headersList.get("user-agent") || undefined;
         forwardedIp = headersList.get("x-forwarded-for") || undefined;
       } catch {
-        // If we are inside "use cache", cookies() throws. We just proceed without tokens.
+        // "use cache" context hoặc static generation thì không có cookies
       }
     }
   }
@@ -205,10 +221,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
       // Keep default message if JSON parsing fails
     }
 
-    const isUserNotFound =
-      res.status === 404 &&
-      (errorMessage.toLowerCase().includes("user") ||
-        errorMessage.toLowerCase().includes("người dùng"));
+    const isUserNotFound = res.status === 404;
 
     // 401 Unauthorized OR 404 User Not Found → Chuyển về trang login
     if ((res.status === 401 || isUserNotFound) && !options.skipRedirectOn401) {

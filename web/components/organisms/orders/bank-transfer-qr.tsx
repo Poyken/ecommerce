@@ -10,6 +10,29 @@ import { Copy, CreditCard, ExternalLink, Loader2, QrCode } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+/**
+ * =====================================================================
+ * BANK TRANSFER QR - Mã QR thanh toán chuyển khoản
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. VIETQR STANDARD:
+ * - Mã QR được generate theo chuẩn VietQR (được hỗ trợ bởi hầu hết app ngân hàng VN).
+ * - Sử dụng API của `vietqr.io` để render ảnh QR động dựa trên số tiền và nội dung.
+ * - Cấu trúc: `https://img.vietqr.io/image/<BANK_ID>-<ACC_NO>-<TEMPLATE>.png?amount=...&addInfo=...`
+ *
+ * 2. POLLING MECHANISM (`useEffect` + `setInterval`):
+ * - Đếm ngược thời gian hết hạn (15 phút).
+ * - Trong thực tế, component này có thể poll API trạng thái đơn hàng (`setInterval`)
+ *   để tự động redirect khi backend nhận được tiền (webhook từ ngân hàng).
+ *
+ * 3. DEV SIMULATION MODE:
+ * - Vì môi trường dev không thể kết nối ngân hàng thật, ta có nút "Simulation".
+ * - Gọi Server Action `simulatePaymentSuccessAction` để giả lập sự kiện Webhook thành công.
+ * =====================================================================
+ */
+
 interface BankTransferQRProps {
   amount: number;
   orderCode: string;
@@ -38,34 +61,33 @@ export function BankTransferQR({
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
 
+  // Hydration fix: Chỉ render client-side logic khi mount xong
   useEffect(() => {
     setMounted(true);
     setOrigin(window.location.origin);
   }, []);
 
+  // Countdown Timer Logic
   useEffect(() => {
     if (!createdAt) return;
 
-    // 15 minutes in ms
+    // 15 minutes expire time
     const EXPIRE_TIME = 15 * 60 * 1000;
     const createdTime = new Date(createdAt).getTime();
 
-    // Initial check
-    const now = Date.now();
-    const elapsed = now - createdTime;
-    const remaining = Math.max(0, EXPIRE_TIME - elapsed);
-    setTimeLeft(remaining);
-
-    if (remaining <= 0) return;
-
-    const timer = setInterval(() => {
+    const updateTimer = () => {
       const now = Date.now();
       const elapsed = now - createdTime;
       const remaining = Math.max(0, EXPIRE_TIME - elapsed);
-
       setTimeLeft(remaining);
+      return remaining;
+    };
 
-      if (remaining <= 0) {
+    // Initial check
+    if (updateTimer() <= 0) return;
+
+    const timer = setInterval(() => {
+      if (updateTimer() <= 0) {
         clearInterval(timer);
       }
     }, 1000);
@@ -81,15 +103,11 @@ export function BankTransferQR({
 
   if (!mounted) return null;
 
-  // Real VietQR for Banking Apps
-  // Format: https://img.vietqr.io/image/<BANK_ID>-<ACCOUNT_NO>-<TEMPLATE>.png?amount=<AMOUNT>&addInfo=<CONTENT>&accountName=<NAME>
+  // Real VietQR URL Construction
+  // AddInfo và AccountName phải được URL Encode để tránh lỗi ký tự đặc biệt
   const info = encodeURIComponent(orderCode);
   const name = encodeURIComponent(accountName);
   const qrSrc = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${amount}&addInfo=${info}&accountName=${name}`;
-
-  // Simulation Link (Dev/Testing)
-  const targetId = orderId || orderCode;
-  const simulationLink = `${origin}/${locale}/simulate-payment-confirmation/${targetId}`;
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);
@@ -101,7 +119,10 @@ export function BankTransferQR({
 
   return (
     <div className="grid md:grid-cols-2 gap-8 items-start animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* QR Code Column */}
+      {/* 
+        COLUMN 1: QR CODE DISPLAY 
+        Hiển thị ảnh QR và đồng hồ đếm ngược
+      */}
       <GlassCard className="p-6 flex flex-col items-center justify-center text-center space-y-4 bg-white/50 dark:bg-black/20 backdrop-blur-md border-primary/10">
         <h3 className="font-bold text-lg flex items-center gap-2 text-foreground">
           <QrCode className="text-primary w-5 h-5" />
@@ -117,6 +138,7 @@ export function BankTransferQR({
           />
         </div>
 
+        {/* Countdown Badge */}
         {timeLeft !== null && timeLeft > 0 && (
           <div className="flex items-center gap-2 text-amber-600 bg-amber-50 px-3 py-1 rounded-full text-sm font-medium mt-2 animate-pulse">
             <span>Expires in: {formatTime(timeLeft)}</span>
@@ -133,7 +155,10 @@ export function BankTransferQR({
           Open your <strong>Banking App</strong> and scan this QR code.
         </p>
 
-        {/* Dev Tool: Simulation Link */}
+        {/* 
+           DEV TOOL: SIMULATION BUTTON 
+           Chỉ nên hiển thị trong môi trường Dev hoặc Test 
+        */}
         <div className="pt-4 mt-2 border-t border-dashed border-border/50 w-full flex flex-col items-center gap-2">
           <span className="text-[10px] uppercase font-bold text-amber-500">
             Dev Simulation
@@ -146,6 +171,7 @@ export function BankTransferQR({
 
               setIsSimulating(true);
               try {
+                // Gọi Server Action để giả lập webhook thành công
                 const res = await simulatePaymentSuccessAction(id);
                 if (res.success) {
                   toast({
@@ -185,7 +211,10 @@ export function BankTransferQR({
         </div>
       </GlassCard>
 
-      {/* Manual Transfer Info */}
+      {/* 
+        COLUMN 2: MANUAL TRANSFER INFO 
+        Thông tin số tài khoản cho người dùng không scan được QR
+      */}
       <div className="space-y-6">
         <div>
           <h3 className="font-bold text-xl mb-4 flex items-center gap-2 tracking-tight">

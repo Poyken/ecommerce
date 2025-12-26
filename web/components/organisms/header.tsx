@@ -17,32 +17,41 @@ import { useTranslations } from "next-intl";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. PROPS-BASED RENDERING:
- * - Header nhận user và permissions từ Layout (đã fetch sẵn).
- * - Tránh duplicate API calls bằng cách không fetch dữ liệu trong component này.
- * - Layout fetch MỘT LẦN và pass xuống tất cả components con.
+ * 1. CHIẾN LƯỢC FETCH DATA (Data Fetching Strategy):
+ * - Vấn đề: Header cần thông tin User, Cart, Wishlist.
+ * - Sai lầm thường gặp: Fetch API trực tiếp trong Header -> Gây ra "Waterfall" (Layout fetch xong mới render Header -> Header mới fetch).
+ * - Giải pháp: Fetch dữ liệu ở tầng cao nhất (`layout.tsx`) và truyền xuống qua Props.
+ *   -> Header trở thành "Dumb Component" (chỉ nhận và hiển thị), giúp render cực nhanh.
  *
- * 2. STATIC SHELL:
- * - Logo luôn render static.
- * - Nav, Cart, Actions render dựa trên props.
+ * 2. COMPOSITION PATTERN:
+ * - Header không tự làm mọi thứ. Nó ghép nối các components nhỏ hơn:
+ *   + `HeaderNav`: Menu điều hướng.
+ *   + `HeaderActions`: Login/Logout/Profile menu.
+ *   + `CartBadge`, `WishlistBadge`: Icon kèm số lượng.
+ * - Giúp code gọn gàng, dễ bảo trì.
+ *
+ * 3. FALLBACK & SKELETON:
+ * - `HeaderFallback`: Hiển thị khung xương khi component động đang load.
+ * - Ngăn chặn Layout Shift (CLS) - hiện tượng giao diện bị giật cục khi load.
  * =====================================================================
  */
 
 interface HeaderProps {
-  initialUser?: any;
-  permissions?: string[];
+  initialUser?: any; // Thông tin user (được truyền từ server component cha)
+  permissions?: string[]; // Quyền hạn (RBAC)
   initialCartCount?: number;
   initialWishlistCount?: number;
 }
 
 /**
- * Skeleton placeholder for dynamic header content.
- * Must match the exact structure of Header content to prevent layout shift.
+ * Skeleton Placeholder
+ * - Mô phỏng chính xác cấu trúc của Header thật.
+ * - Giữ chỗ để layout không bị nhảy khi hydration xảy ra.
  */
 function HeaderContentSkeleton() {
   return (
     <>
-      {/* Nav skeleton - matches HeaderNav structure */}
+      {/* Nav skeleton - Phải khớp với HeaderNav */}
       <nav className="hidden md:flex items-center gap-6">
         <Skeleton className="w-16 h-5 rounded" />
         <Skeleton className="w-12 h-5 rounded" />
@@ -50,7 +59,7 @@ function HeaderContentSkeleton() {
         <Skeleton className="w-16 h-5 rounded" />
         <Skeleton className="w-14 h-5 rounded" />
       </nav>
-      {/* Actions skeleton - matches cart + actions structure */}
+      {/* Actions skeleton - Phải khớp với cụm bên phải */}
       <div className="flex items-center gap-4">
         <Skeleton className="w-9 h-9 rounded-full" />
         <Skeleton className="w-9 h-9 rounded-full" />
@@ -60,9 +69,13 @@ function HeaderContentSkeleton() {
   );
 }
 
+/**
+ * Header Fallback Component
+ * - Được sử dụng trong `loading.tsx` hoặc `Suspense` boundary.
+ */
 export function HeaderFallback() {
   return (
-    <header 
+    <header
       data-fixed-element
       className="border-b bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60 w-full z-50 sticky top-0 transition-[background-color,border-color,transform,box-shadow,backdrop-filter] duration-300"
     >
@@ -74,6 +87,9 @@ export function HeaderFallback() {
   );
 }
 
+/**
+ * Main Header Component
+ */
 export function Header({
   initialUser,
   permissions,
@@ -83,13 +99,18 @@ export function Header({
   const t = useTranslations("common");
 
   return (
+    // StickyHeader: Wrapper xử lý sự kiện cuộn trang (ẩn hiện header)
     <StickyHeader className="border-b bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60 z-50 transition-all duration-500">
       <div className="container flex h-20 items-center justify-between max-w-7xl mx-auto px-4 md:px-8">
+        {/* 1. Logo Brand */}
         <Logo />
 
+        {/* 2. Main Navigation (Truyền props User xuống để quyết định hiện menu Admin hay không) */}
         <HeaderNav initialUser={initialUser} permissions={permissions} />
 
+        {/* 3. Right Actions (Wishlist, Cart, Profile) */}
         <div className="flex items-center gap-2 md:gap-4">
+          {/* Wishlist Button */}
           <Link
             href="/wishlist"
             className="transition-all hover:text-primary text-foreground/70 relative w-10 h-10 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-white/5 rounded-full group"
@@ -106,9 +127,11 @@ export function Header({
               />
             </span>
           </Link>
+
+          {/* Cart Button with Prefetching */}
           <Link
             href="/cart"
-            prefetch={true}
+            prefetch={true} // Tải trước trang Cart ngay khi hover -> Tăng tốc độ chuyển trang
             className="transition-all hover:text-primary text-foreground/70 relative w-10 h-10 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-white/5 rounded-full group"
           >
             <span className="relative inline-flex">
@@ -122,7 +145,10 @@ export function Header({
               />
             </span>
           </Link>
+
           <div className="hidden sm:block h-6 w-px bg-foreground/10 mx-1" />
+
+          {/* Notification & User Actions */}
           <NotificationBell />
           <HeaderActions initialUser={initialUser} />
         </div>

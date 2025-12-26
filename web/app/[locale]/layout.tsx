@@ -24,17 +24,18 @@ export function generateStaticParams() {
  *
  * 1. FONTS OPTIMIZATION (`next/font`):
  * - Sử dụng `Outfit` và `Inter` từ Google Fonts.
- * - Next.js tự động download và host font local -> Tránh lỗi CLS (Cumulative Layout Shift).
+ * - Next.js tự động download và host font local -> Tránh lỗi CLS (Cumulative Layout Shift) và tracking từ bên thứ 3.
  * - `variable`: Định nghĩa CSS Variable để dùng trong Tailwind (vd: `font-sans`).
  *
- * 2. GLOBAL PROVIDERS:
- * - `AuthProvider`: Quản lý phân quyền (Permissions).
- * - `ThemeProvider`: Quản lý Dark Mode/Light Mode.
- * - `SmoothScroll`: Hiệu ứng cuộn mượt mà (Lenis).
- * - `Toaster`: Container hiển thị các thông báo Toast.
+ * 2. GLOBAL PROVIDERS PATTERN:
+ * - Layout này bọc TOÀN BỘ ứng dụng.
+ * - Ta đặt các Provider (Theme, Auth, Toast) ở đây để chúng "sống" xuyên suốt app.
+ * - Lưu ý: `NextIntlClientProvider` giúp i18n hoạt động ở Client Component.
  *
- * 3. METADATA API:
- * - Định nghĩa SEO (Title, Description) cho toàn bộ trang web.
+ * 3. SERVER-SIDE PRE-FETCHING:
+ * - `RootProviders` là một Server Component (async).
+ * - Nó lấy trước `accessToken` và `permissions` từ server -> Truyền xuống Client Provider.
+ * - Kỹ thuật này giúp tránh hiện tượng "FOUC" (Flash of Unauthenticated Content).
  * =====================================================================
  */
 
@@ -70,7 +71,9 @@ async function RootProviders({
 }) {
   const messages = await getMessages({ locale });
   const accessToken = await getSession();
-  console.log(`[RootLayout] accessToken present: ${!!accessToken}, locale: ${locale}`);
+  console.log(
+    `[RootLayout] accessToken present: ${!!accessToken}, locale: ${locale}`
+  );
   const initialPermissions = getPermissionsFromToken(accessToken);
 
   return (

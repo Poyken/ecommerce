@@ -20,6 +20,29 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { InventoryService } from '../products/skus/inventory.service';
 import { ShippingService } from '../shipping/shipping.service';
 
+/**
+ * =====================================================================
+ * ORDERS SERVICE - LOGIC XỬ LÝ ĐƠN HÀNG
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. DATABASE TRANSACTION ($transaction):
+ * - Đây là kỹ thuật QUAN TRỌNG NHẤT khi xử lý đơn hàng.
+ * - Mọi thao tác: Tạo Order, Trừ tồn kho (Stock), Xóa giỏ hàng -> Phải nằm trong 1 transaction.
+ * - Nếu 1 bước lỗi -> Mọi thứ rollback về ban đầu. KHÔNG BAO GIỜ có chuyện tạo đơn xong mà kho không trừ, hoặc kho trừ mà đơn không tạo.
+ *
+ * 2. BACKGROUND JOBS (BullMQ):
+ * - Sau khi tạo đơn, các tác vụ phụ như: Gửi Email xác nhận, Auto-cancel nếu không thanh toán...
+ *   được đẩy vào hàng đợi (`ordersQueue`) để xử lý bất đồng bộ (Async).
+ * - Giúp API phản hồi nhanh (Low Latency) cho user, không bắt user chờ email gửi xong mới báo thành công.
+ *
+ * 3. 3RD PARTY INTEGRATION:
+ * - Service này tích hợp chặt chẽ với Payment (VNPAY/MoMo) và Shipping (GHN).
+ * - Logic đồng bộ trạng thái đơn hàng (Sync GHN) được tự động kích hoạt khi đơn chuyển sang 'PROCESSING'.
+ * =====================================================================
+ */
+
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);

@@ -33,6 +33,26 @@ interface ProductQuickViewDialogProps {
   };
 }
 
+/**
+ * =====================================================================
+ * PRODUCT QUICK VIEW DIALOG - Xem nhanh sản phẩm
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. DYNAMIC DATA FETCHING:
+ * - Dialog nhận `productId` và tự gọi API `getProduct` khi mở ra.
+ * - Tại sao không truyền full object từ ngoài vào? -> Để đảm bảo dữ liệu luôn mới nhất (tồn kho, giá) mà không cần reload trang cha.
+ *
+ * 2. SKELETON LOADING (UI Loading):
+ * - Trong khi chờ API, hiển thị khung xương (`Skeleton`) thay vì để trắng trơn.
+ * - Logic `if (loading && !product)`: Chỉ hiện Skeleton nếu chưa có data cũ.
+ *
+ * 3. SMART IMAGE SORTING (`useMemo`):
+ * - Logic phức tạp để sắp xếp ảnh: Ảnh của tùy chọn chính (VD: Màu sắc) lên đầu, tiếp theo là các ảnh chung.
+ * - Giúp user thấy đúng ảnh màu áo mình đang chọn ngay lập tức.
+ * =====================================================================
+ */
 export function ProductQuickViewDialog({
   isOpen,
   onOpenChange,

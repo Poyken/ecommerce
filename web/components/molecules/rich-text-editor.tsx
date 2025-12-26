@@ -7,10 +7,14 @@
  *
  * 1. TIPTAP EDITOR:
  * - Sử dụng thư viện Tiptap (dựa trên ProseMirror) để tạo trình soạn thảo WYSIWYG.
- * - Hỗ trợ các định dạng cơ bản: Bold, Italic, Heading, Bullet List.
+ * - Headless: Tiptap không có giao diện mặc định, ta phải tự build UI (nút Bold, Italic...) -> Linh hoạt tối đa.
  *
- * 2. PROSE STYLING:
- * - Sử dụng plugin `@tailwindcss/typography` (class `prose`) để hiển thị nội dung HTML một cách đẹp mắt và chuẩn xác.
+ * 2. PROSE STYLING (@tailwindcss/typography):
+ * - Class `prose`: Một bộ style mặc định cực đẹp của Tailwind cho nội dung văn bản.
+ * - Giúp các thẻ `h1, h2, p, ul` bên trong editor có style chuẩn typography mà không cần viết CSS thủ công.
+ *
+ * 3. CONTROL BAR:
+ * - Các nút điều khiển (`editor.chain().focus().toggleBold().run()`) thực hiện lệnh format một cách programmatic.
  * =====================================================================
  */
 

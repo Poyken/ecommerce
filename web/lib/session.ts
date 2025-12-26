@@ -6,17 +6,17 @@
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. HTTP-ONLY COOKIES:
- * - Đây là phương pháp lưu trữ token an toàn nhất cho Web App.
- * - `httpOnly: true`: JavaScript (client-side) KHÔNG THỂ đọc được cookie này -> Chống XSS (Cross-Site Scripting).
- * - `secure: true`: Chỉ gửi qua HTTPS -> Chống nghe lén.
+ * - Chúng ta lưu Token ở Cookie thay vì LocalStorage để bảo mật.
+ * - `httpOnly: true`: Ngăn JavaScript phía Client đọc được Cookie -> Chặn đứng tấn công XSS.
+ * - `secure: true`: Bắt buộc chỉ gửi qua HTTPS (trừ localhost).
  *
  * 2. SESSION LIFECYCLE:
- * - Login -> Tạo Access Token (ngắn hạn) & Refresh Token (dài hạn).
- * - Request -> Browser tự động gửi Cookie.
- * - Logout -> Xóa Cookie.
+ * - Khi Login -> Tạo 2 Cookies: `accessToken` (ngắn hạn) và `refreshToken` (dài hạn).
+ * - Khi gọi API -> Trình duyệt tự động đính kèm Cookie vào request.
+ * - Khi Logout -> Xóa Cookies.
  *
  * 3. SERVER-ONLY:
- * - File này chỉ chạy trên Server (Node.js environment) để thao tác với headers/cookies.
+ * - File này được đánh dấu `"server-only"` để đảm bảo không bao giờ bị bundle nhầm xuống Client (gây lộ logic bảo mật).
  * =====================================================================
  */
 

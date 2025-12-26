@@ -8,6 +8,30 @@ import { EmailService } from '../common/email/email.service';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
 import { NotificationsService } from '../notifications/notifications.service';
 
+/**
+ * =====================================================================
+ * ORDERS PROCESSOR - Xử lý tác vụ nền cho đơn hàng
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. WORKER/PROCESSOR (BullMQ):
+ * - Đây là một "công nhân" chạy ngầm (Background Worker), độc lập với luồng request chính của user.
+ * - Nhiệm vụ: Lắng nghe hàng đợi `orders-queue` và xử lý các Jobs được đẩy vào.
+ *
+ * 2. CÁC LOẠI JOB:
+ * - `check-stock-release`:
+ *     + Job này được lên lịch (Scheduled) chạy sau 15 phút kể từ khi tạo đơn.
+ *     + Logic: Nếu sau 15p mà đơn vẫn `PENDING` (chưa thanh toán) -> Hủy đơn và hoàn lại tồn kho (Release Stock).
+ *     + Mục đích: Tránh việc user "giữ chỗ" sản phẩm mà không mua ("Inventory Hoarding").
+ *
+ * - `order-created-post-process`:
+ *     + Chạy ngay sau khi đơn tạo thành công.
+ *     + Gửi email xác nhận cho khách.
+ *     + Bắn thông báo (Notification) cho khách và Admin.
+ * =====================================================================
+ */
+
 @Processor('orders-queue')
 export class OrdersProcessor extends WorkerHost {
   private readonly logger = new Logger(OrdersProcessor.name);

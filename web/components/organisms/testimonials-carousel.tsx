@@ -15,17 +15,17 @@ import { useCallback, useEffect } from "react";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. EMBLA CAROUSEL:
- * - Thư viện carousel nhẹ, không phụ thuộc vào framework, hiệu năng cao.
- * - `loop: true`: Cho phép xoay vòng vô tận.
- * - `align: "start"`: Căn lề slide bắt đầu từ bên trái.
+ * 1. HEADLESS CAROUSEL (Embla):
+ * - Khác với Slick hay Swiper có sẵn UI, Embla chỉ cung cấp Logic (API).
+ * - Ưu điểm: Siêu nhẹ, mượt (dùng native scroll), và ta có thể tùy biến UI 100% theo ý thích.
  *
- * 2. CUSTOM NAVIGATION:
- * - Sử dụng `emblaApi.scrollPrev()` và `scrollNext()` để điều khiển slider bằng nút bấm riêng.
- * - Nút bấm được ẩn trên mobile và chỉ hiện trên desktop (`hidden md:block`).
+ * 2. MOUSE WHEEL CONTROL:
+ * - Một tính năng UX cao cấp: Cho phép user cuộn chuột (Mouse Wheel) hoặc vuốt touchpad để lướt slider ngang.
+ * - Logic `wheelListener`: Chuyển đổi sự kiện cuộn dọc (`deltaY`) thành lệnh cuộn ngang (`scrollNext/Prev`).
  *
- * 3. GRADIENT MASKS:
- * - Sử dụng 2 lớp gradient ở 2 bên để tạo hiệu ứng slider "biến mất" dần vào nền, trông cao cấp hơn.
+ * 3. VISUAL POLISH (Gradient Masks):
+ * - Hai lớp overlay mờ dần ở 2 cạnh trái phải (`bg-linear-to-r`).
+ * - Tạo cảm giác "Vô tận" (Infinity), che đi điểm cắt đột ngột của các card ở mép màn hình.
  * =====================================================================
  */
 

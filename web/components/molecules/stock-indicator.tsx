@@ -18,10 +18,6 @@ import { useEffect, useState } from "react";
  * 2. REAL-TIME SIMULATION (Giả lập thời gian thực):
  * - `viewerCount`: Giả lập số người đang xem sản phẩm. Trong thực tế, con số này có thể lấy từ Socket.io hoặc Analytics API.
  * - Hiệu ứng `animate-ping` (dấu chấm xanh nhấp nháy) tạo cảm giác hệ thống đang hoạt động "live".
- *
- * 3. DYNAMIC MESSAGING:
- * - Thay đổi icon và màu sắc linh hoạt dựa trên số lượng `stock`.
- * - Cung cấp thông tin hữu ích (Còn hàng/Hết hàng) kèm theo cảm xúc (Chỉ còn X sản phẩm!).
  * =====================================================================
  */
 interface StockIndicatorProps {
@@ -96,9 +92,7 @@ export function StockIndicator({
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center gap-2 px-3 py-2 bg-primary/10 border border-primary/20 rounded-lg">
         <Clock className="w-4 h-4 text-primary" />
-        <span className="text-sm font-bold text-primary">
-          Còn hàng
-        </span>
+        <span className="text-sm font-bold text-primary">Còn hàng</span>
       </div>
 
       {/* Viewer Count */}

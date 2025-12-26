@@ -16,17 +16,17 @@ import { useState } from "react";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. MOBILE-FIRST UX:
- * - Trên điện thoại, ngón cái dễ chạm vào cạnh dưới hơn cạnh trên.
- * - Bottom Nav giúp trải nghiệm chuyển trang giống như một ứng dụng Native App.
+ * 1. MOBILE-FIRST UX (Trải nghiệm ưu tiên di động):
+ * - Trên điện thoại, ngón cái dễ chạm vào cạnh dưới ("Thumb Zone") hơn cạnh trên.
+ * - Bottom Nav giúp trải nghiệm chuyển trang tiện lợi như Native App.
  *
- * 2. SHARED LAYOUT ANIMATION (`layoutId`):
- * - `layoutId="activeTab"`: Khi chuyển tab, chấm tròn nhỏ ở dưới icon sẽ trượt mượt mà từ tab cũ sang tab mới.
- * - Đây là một tính năng cực mạnh của Framer Motion để tạo hiệu ứng "Shared Element".
+ * 2. FRAMER MOTION "SHARED LAYOUT":
+ * - `layoutId="activeTab"`: Magic của Framer Motion.
+ * - Khi `isActive` chuyển từ tab này sang tab khác, dấu chấm tròn (indicator) sẽ "bay" sang vị trí mới thay vì ẩn/hiện thô thiển.
  *
- * 3. OVERLAY MENU:
- * - Nút "More" mở ra một `AnimatePresence` overlay chứa các link phụ.
- * - `safe-area-pb`: Đảm bảo không bị che bởi thanh điều hướng của hệ điều hành (iOS/Android).
+ * 3. PORTAL & OVERLAY:
+ * - Menu mở rộng ("More") sử dụng `AnimatePresence` để animate lúc mount/unmount.
+ * - `safe-area-pb`: Class utility (custom) để tránh bị che bởi thanh Home Indicator của iPhone X+.
  * =====================================================================
  */
 
@@ -45,7 +45,10 @@ interface MobileBottomNavProps {
   initialCartCount?: number;
 }
 
-export function MobileBottomNav({ initialUser, initialCartCount }: MobileBottomNavProps) {
+export function MobileBottomNav({
+  initialUser,
+  initialCartCount,
+}: MobileBottomNavProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -60,7 +63,10 @@ export function MobileBottomNav({ initialUser, initialCartCount }: MobileBottomN
   return (
     <>
       {/* Bottom Navigation Bar */}
-      <nav data-fixed-element className="fixed bottom-0 left-0 right-0 z-[102] md:hidden bg-background/98 backdrop-blur-2xl border-t border-foreground/5 safe-area-pb shadow-2xl">
+      <nav
+        data-fixed-element
+        className="fixed bottom-0 left-0 right-0 z-102 md:hidden bg-background/98 backdrop-blur-2xl border-t border-foreground/5 safe-area-pb shadow-2xl"
+      >
         <div className="flex items-center justify-around h-16 px-2">
           {navItems.map((item) => {
             const isActive =
@@ -83,7 +89,10 @@ export function MobileBottomNav({ initialUser, initialCartCount }: MobileBottomN
                   {item.label === t("cart") ? (
                     <>
                       <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-                      <CartBadge initialUser={initialUser} initialCount={initialCartCount} />
+                      <CartBadge
+                        initialUser={initialUser}
+                        initialCount={initialCartCount}
+                      />
                     </>
                   ) : (
                     <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
@@ -100,10 +109,14 @@ export function MobileBottomNav({ initialUser, initialCartCount }: MobileBottomN
                     />
                   )}
                 </div>
-                <span className={cn(
-                  "text-[10px] font-bold uppercase tracking-wider",
-                  isActive && "text-primary"
-                )}>{item.label}</span>
+                <span
+                  className={cn(
+                    "text-[10px] font-bold uppercase tracking-wider",
+                    isActive && "text-primary"
+                  )}
+                >
+                  {item.label}
+                </span>
               </Link>
             );
           })}
@@ -113,7 +126,11 @@ export function MobileBottomNav({ initialUser, initialCartCount }: MobileBottomN
             onClick={() => setIsSearchOpen(!isSearchOpen)}
             className="flex flex-col items-center justify-center gap-1.5 px-3 py-2 rounded-2xl text-muted-foreground/60 hover:text-foreground transition-all duration-300 active:scale-95"
           >
-            {isSearchOpen ? <X size={24} strokeWidth={2} /> : <Menu size={24} strokeWidth={2} />}
+            {isSearchOpen ? (
+              <X size={24} strokeWidth={2} />
+            ) : (
+              <Menu size={24} strokeWidth={2} />
+            )}
             <span className="text-[10px] font-bold uppercase tracking-wider">
               {t("more") || "More"}
             </span>
@@ -131,7 +148,7 @@ export function MobileBottomNav({ initialUser, initialCartCount }: MobileBottomN
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-100 bg-black/60 backdrop-blur-sm md:hidden"
               onClick={() => setIsSearchOpen(false)}
             />
 
@@ -142,7 +159,7 @@ export function MobileBottomNav({ initialUser, initialCartCount }: MobileBottomN
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="fixed bottom-16 left-0 right-0 z-[101] bg-background/98 backdrop-blur-2xl rounded-t-[2rem] border-t border-foreground/5 p-8 space-y-6 md:hidden safe-area-pb shadow-2xl"
+              className="fixed bottom-16 left-0 right-0 z-101 bg-background/98 backdrop-blur-2xl rounded-t-4xl border-t border-foreground/5 p-8 space-y-6 md:hidden safe-area-pb shadow-2xl"
             >
               <div className="w-16 h-1.5 bg-foreground/10 rounded-full mx-auto mb-6" />
 
@@ -161,7 +178,7 @@ export function MobileBottomNav({ initialUser, initialCartCount }: MobileBottomN
                     key={link.href}
                     href={link.href as any}
                     onClick={() => setIsSearchOpen(false)}
-                    className="flex items-center justify-center p-5 rounded-2xl bg-foreground/[0.02] border border-foreground/5 text-sm font-bold uppercase tracking-wide hover:bg-foreground/[0.05] hover:border-primary/20 transition-all duration-300 active:scale-95"
+                    className="flex items-center justify-center p-5 rounded-2xl bg-foreground/2 border border-foreground/5 text-sm font-bold uppercase tracking-wide hover:bg-foreground/5 hover:border-primary/20 transition-all duration-300 active:scale-95"
                   >
                     {link.label}
                   </Link>

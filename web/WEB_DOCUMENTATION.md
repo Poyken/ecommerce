@@ -2,8 +2,8 @@
 
 ## Dành cho Thực tập sinh và Lập trình viên mới
 
-**Phiên bản:** 2.0  
-**Cập nhật lần cuối:** 25/12/2025  
+**Phiên bản:** 2.1  
+**Cập nhật lần cuối:** 26/12/2025  
 **Trạng thái:** ✅ SẴN SÀNG TRIỂN KHAI
 
 ---
@@ -12,7 +12,7 @@
 
 - [I. TỔNG QUAN DỰ ÁN](#i-tổng-quan-dự-án)
 - [II. CÔNG NGHỆ SỬ DỤNG (TECH STACK)](#ii-công-nghệ-sử-dụng-tech-stack)
-- [III. CẤU TRÚC THƯ MỤC CHI TIẾT](#iii-cấu-trúc-thư-mục-chi-tiết)
+- [III. CẤU TRÚC THƯ MỤC CHI TIẾT (ATOMIC DESIGN)](#iii-cấu-trúc-thư-mục-chi-tiết)
 - [IV. KIẾN TRÚC ỨNG DỤNG](#iv-kiến-trúc-ứng-dụng)
 - [V. LUỒNG DỮ LIỆU (DATA FLOW)](#v-luồng-dữ-liệu-data-flow)
 - [VI. TÍNH NĂNG CHI TIẾT (DETAILED FEATURES)](#vi-tính-năng-chi-tiết-detailed-features)
@@ -117,6 +117,8 @@ Hệ thống thiết kế tập trung vào sự tối giản, sang trọng và k
 
 # III. CẤU TRÚC THƯ MỤC CHI TIẾT
 
+Dự án sử dụng mô hình **Atomic Design** để tổ chức components, giúp tăng khả năng tái sử dụng và dễ bảo trì.
+
 ```
 web/
 ├── actions/                   # 🔥 SERVER ACTIONS
@@ -137,65 +139,51 @@ web/
 │   │   │   ├── products/     # /products/[slug]
 │   │   │   ├── cart/         # /cart
 │   │   │   ├── checkout/     # /checkout
-│   │   │   ├── orders/       # /orders, /orders/[id]
+│   │   │   ├── orders/       # /orders
 │   │   │   ├── profile/      # /profile
-│   │   │   ├── login/        # /login
-│   │   │   ├── register/     # /register
-│   │   │   └── layout.tsx    # Layout cho storefront
+│   │   │   └── layout.tsx    # Layout
 │   │   │
 │   │   └── admin/            # Route Group: Admin Panel
-│   │       ├── page.tsx      # Dashboard
+│   │       ├── dashboard/    # Dashboard
 │   │       ├── products/     # Quản lý sản phẩm
-│   │       ├── skus/         # Quản lý biến thể
-│   │       ├── orders/       # Quản lý đơn hàng
-│   │       ├── users/        # Quản lý người dùng
-│   │       └── ...           # Các trang admin khác
+│   │       └── ...
 │   │
 │   ├── globals.css           # Global styles
 │   └── robots.ts, sitemap.ts # SEO
 │
-├── components/                # 🧩 UI COMPONENTS
-│   ├── ui/                   # Shadcn/UI components (Button, Input, Dialog...)
-│   ├── layout/               # Header, Footer, Sidebar
-│   ├── features/             # Feature-specific components
-│   │   ├── cart/
-│   │   ├── product/
-│   │   └── checkout/
-│   ├── admin/                # Admin panel components
-│   └── auth/                 # Login, Register forms
+├── components/                # 🧩 ATOMIC UI COMPONENTS
+│   ├── atoms/                # 🧱 Nguyên tử: Thành phần nhỏ nhất (Button, Input, Badge)
+│   ├── molecules/            # 🧬 Phân tử: Kết hợp atoms (SearchBox, ProductCard, UserNav)
+│   ├── organisms/            # 🐙 Sinh vật: Khối UI phức tạp (Header, Footer, HeroSection)
+│   ├── templates/            # 📄 Templates: Cấu trúc trang logic (HomeContent, ProductDetailContent)
+│   ├── providers/            # 🛡️ Providers: Context Wrappers (AuthProvider, ThemeProvider)
+│   └── ui/                   # 🎨 Shadcn Base: Các component cơ bản từ thư viện
 │
 ├── lib/                       # 🔧 UTILITIES
-│   ├── http.ts               # HTTP client cho Server Components
-│   ├── http-client.ts        # HTTP client cho Client Components
-│   ├── session.ts            # Quản lý cookies (accessToken, refreshToken)
-│   ├── permission-utils.ts   # Decode JWT, lấy permissions
-│   ├── env.ts                # Environment variables wrapper
-│   ├── utils.ts              # Helper functions (cn, formatPrice...)
-│   └── animations.ts         # Framer Motion presets
+│   ├── http.ts               # HTTP client
+│   ├── session.ts            # Session management
+│   ├── utils.ts              # Helper functions
+│   └── ...
 │
 ├── hooks/                     # ⚓ CUSTOM HOOKS
-│   ├── use-debounce.ts       # Debounce input
-│   ├── use-toast.ts          # Toast notifications
-│   └── use-user-profile.ts   # Client-side user fetching
-│
-├── providers/                 # 🏢 REACT CONTEXT PROVIDERS
-│   └── auth-provider.tsx     # AuthContext (permissions, hasPermission)
-│
-├── types/                     # 🏷️ TYPESCRIPT DEFINITIONS
-│   ├── models.ts             # Entity interfaces (User, Product, Order...)
-│   └── dtos.ts               # DTOs, API wrappers (ApiResponse, ActionResult)
-│
-├── services/                  # 🌐 CLIENT-SIDE SERVICES
-│   └── product.service.ts    # Ví dụ: fetch products từ client
+│   ├── use-debounce.ts
+│   ├── use-toast.ts
+│   └── ...
 │
 ├── messages/                  # 🌍 I18N TRANSLATIONS
-│   ├── vi.json
-│   └── en.json
-│
 └── public/                    # 🖼️ STATIC ASSETS
-    ├── images/
-    └── icons/
 ```
+
+## 3.1. Phân tích Atomic Design
+
+- **Atoms**: Các thành phần nguyên tử, không thể chia nhỏ hơn. Chỉ chứa style và logic hiển thị cơ bản. KHÔNG call API.
+  - _Ví dụ_: `Button`, `Input`, `Avatar`, `Badge`.
+- **Molecules**: Nhóm các atoms lại để thực hiện một chức năng đơn giản. Có thể có state nội tại.
+  - _Ví dụ_: `SearchInput` (Input + Icon + Button), `ProductVariantSelector` (RadioGroups + Label).
+- **Organisms**: Các section lớn của trang, kết hợp nhiều molecules và atoms. Thường chứa business logic cụ thể hoặc call API.
+  - _Ví dụ_: `Header` (Logo + Nav + Search + Cart + User), `ProductGrid`, `OrderSummary`.
+- **Templates**: (Thường nằm trong `components/templates/`) Định nghĩa khung xương của một trang. Đây là nơi tập trung logic chính của trang (Client Component) để tách biệt khỏi Next.js Page (Server Component).
+  - _Ví dụ_: `HomeContent`, `ShopContent`, `LoginPageContent`.
 
 ---
 
@@ -230,6 +218,13 @@ web/
 │  │  - Handle cookies (session)                          │   │
 │  │  - revalidatePath for cache                          │   │
 │  └─────────────────────────┬───────────────────────────┘   │
+│                            ▼                                │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  TEMPLATES (components/templates/...)                │   │
+│  │  (Client Components)                                 │   │
+│  │  - Handle Interactivity (Clicks, State)              │   │
+│  │  - Optimistic UI Updates                             │   │
+│  └─────────────────────────┬───────────────────────────┘   │
 └─────────────────────────────┼───────────────────────────────┘
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
@@ -249,6 +244,38 @@ web/
 
 - Mặc định dùng **Server Component** để tối ưu performance
 - Chỉ dùng **Client Component** khi cần: event handlers, hooks, browser APIs
+
+## 4.3. Templates & Layouts Pattern
+
+Trong dự án này, chúng ta sử dụng pattern **Page -> Template**:
+
+1. **Page (`page.tsx`)**:
+
+   - Là Server Component.
+   - Nhiệm vụ: Fetch dữ liệu ban đầu (Initial Data Fetching), đọc SearchParams, Check Permissions.
+   - Truyền dữ liệu xuống Template.
+
+2. **Template (`components/templates/xyz-content.tsx`)**:
+   - Là Client Component (`"use client"`).
+   - Nhiệm vụ: Render UI, xử lý State, User Interaction.
+
+_Ví dụ:_
+
+```tsx
+// app/shop/page.tsx (Server)
+export default async function ShopPage() {
+  const products = await getProductsAction();
+  return <ShopContent initialProducts={products} />;
+}
+
+// components/templates/shop-content.tsx (Client)
+("use client");
+export function ShopContent({ initialProducts }) {
+  const [products, setProducts] = useState(initialProducts);
+  // ... filtering logic
+  return <div>...</div>;
+}
+```
 
 ---
 
@@ -347,7 +374,7 @@ Dành cho Quản trị viên và Nhân viên vận hành.
 
 ---
 
-# VIII. CÁC THÀNH PHẦN CỐT LÕI
+# VII. CÁC THÀNH PHẦN CỐT LÕI
 
 ## 7.1. Types & Models (`types/models.ts`)
 
@@ -377,7 +404,7 @@ export type OrderStatus =
   | "CANCELLED"; // Đã hủy
 ```
 
-## 6.2. DTOs (`types/dtos.ts`)
+## 7.2. DTOs (`types/dtos.ts`)
 
 Định nghĩa cấu trúc data transfer:
 
@@ -398,7 +425,7 @@ export interface ActionResult<T = void> {
 }
 ```
 
-## 6.3. HTTP Utilities (`lib/http.ts`)
+## 7.3. HTTP Utilities (`lib/http.ts`)
 
 ```typescript
 /**
@@ -416,7 +443,7 @@ const user = await http<ApiResponse<User>>("/auth/me", {
 });
 ```
 
-## 6.4. Session Management (`lib/session.ts`)
+## 7.4. Session Management (`lib/session.ts`)
 
 ```typescript
 // Tạo session (lưu tokens vào httpOnly cookies)
@@ -857,7 +884,7 @@ export function ProductCard() {
 
 # XIV. XỬ LÝ SỰ CỐ
 
-## 13.1. Lỗi thường gặp
+## 14.1. Lỗi thường gặp
 
 ### "Module not found" khi import
 
@@ -880,47 +907,11 @@ export function ProductCard() {
 - Token hết hạn và refresh thất bại
 - Xóa cookies trong browser và đăng nhập lại
 
-## 13.2. Mẹo gỡ lỗi (Debug Tips)
+## 14.2. Mẹo gỡ lỗi (Debug Tips)
 
 ```bash
 # Xem network requests
 Mở DevTools → Network tab → Lọc "Fetch/XHR"
-
-### "Invalid order data" hoặc "Numeric Field Overflow"
-
-- **Nguyên nhân**: Giá trị tiền tệ quá lớn (VD: 1 tỷ VND) vượt quá giới hạn `Decimal(10,2)` của Database.
-- **Khắc phục**:
-  - Database schema đã được update lên `Decimal(20, 2)` (Ngày 25/12).
-  - Kiểm tra `schema.prisma`.
-  - Nếu vẫn bị, kiểm tra validation Zod (`min`, `max`) có quá chặt không.
-
-### "Hydration Error" trong Admin Table (Virtualization)
-
-- **Triệu chứng**: Console báo lỗi `Text content does not match server-rendered HTML` hoặc `<div> cannot appear as a child of <tbody>`.
-- **Nguyên nhân**: Thư viện virtualization thường dùng `div` để bọc content, nhưng `table` > `tbody` chỉ chấp nhận `tr`.
-- **Khắc phục**:
-  - KHÔNG render `div` trực tiếp trong `tbody`.
-  - Sử dụng 2 dòng `tr` đệm (padding rows) ở đầu và cuối list để giả lập chiều cao scroll.
-  - Xem file `admin/products/products-client.tsx` làm mẫu.
-
-### "Async method has no 'await'" (Lint Error)
-
-- **Nguyên nhân**: Quên `await` khi gọi hàm async, đặc biệt là trong vòng lặp hoặc subscribe callback.
-- **Hậu quả**: Code chạy sai thứ tự, biến chưa có giá trị đã bị sử dụng.
-- **Khắc phục**: Thêm `await` hoặc `void` nếu thực sự muốn chạy background (fire-and-forget).
-
-### "Invalid order data" hoặc "Numeric Field Overflow"
-
-- **Nguyên nhân**: Giá trị tiền tệ quá lớn (VD: VND) vượt quá giới hạn Decimal(10,2) mặc định hoặc validation quá chặt (số điện thoại, địa chỉ).
-- **Khắc phục**:
-  - Database schema đã được update lên `Decimal(20, 2)`.
-  - Validation rules đã được nới lỏng (Phone min 3, Address min 5).
-  - Kiểm tra lại data input từ form.
-
-### "Hydration Error" trong Admin Table
-
-- **Nguyên nhân**: Cấu trúc HTML không hợp lệ (VD: `div` nằm trong `tbody` khi dùng virtualization).
-- **Khắc phục**: Chuyển sang dùng `padding-row` với thẻ `tr` và `td` chuẩn thay vì div wrapper.
 
 # Xem component tree
 Cài đặt React DevTools extension
@@ -949,5 +940,5 @@ Bạn đã có trong tay bộ tài liệu toàn diện về Frontend của dự 
 
 **Chúc bạn có kỳ thực tập thành công! 🚀**
 
-**Last Updated:** 18/12/2025  
-**Version:** 2.0
+**Last Updated:** 26/12/2025  
+**Version:** 2.1

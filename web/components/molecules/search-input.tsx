@@ -6,6 +6,7 @@ import { Search, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
+// Thư viện giúp xử lý debounce (trì hoãn thực thi) dễ dàng
 import { useDebouncedCallback } from "use-debounce";
 
 /**
@@ -15,16 +16,19 @@ import { useDebouncedCallback } from "use-debounce";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. DEBOUNCED SEARCH:
- * - Sử dụng `useDebouncedCallback` để trì hoãn việc cập nhật URL khi người dùng đang gõ.
- * - Giúp giảm số lượng request gửi lên server và tránh làm lag giao diện.
+ * 1. DEBOUNCED SEARCH (Tìm kiếm "từ tốn"):
+ * - Vấn đề: Nếu user gõ nhanh "iphone 15" -> 9 ký tự -> 9 lần gọi API search -> Server quá tải.
+ * - Giải pháp: Dùng `useDebouncedCallback`. Chỉ kích hoạt hàm tìm kiếm khi user DỪNG gõ khoảng 200ms.
  *
- * 2. SEARCH-AS-YOU-TYPE (URL State):
- * - Mỗi khi người dùng gõ, tham số `?search=...` trên URL sẽ được cập nhật.
- * - Next.js sẽ tự động re-fetch dữ liệu dựa trên URL mới này.
+ * 2. URL AS STATE (URL là nguồn chân lý):
+ * - Thay vì lưu kết quả tìm kiếm vào State React (`const [results, setResults]`), ta đẩy từ khóa lên URL (`?search=ABC`).
+ * - Lợi ích:
+ *   + User F5 lại trang -> Vẫn còn tìm kiếm.
+ *   + User copy link gửi bạn bè -> Bạn bè thấy đúng trang user đang xem.
  *
- * 3. SYNC LOCAL STATE:
- * - `useEffect` đảm bảo rằng nếu người dùng nhấn Back/Forward trên trình duyệt, giá trị trong ô input vẫn khớp với URL.
+ * 3. UX OPTIMIZATION (`useTransition`):
+ * - Khi đổi URL, Next.js sẽ fetch lại dữ liệu mới. Quá trình này có thể mất 1-2s.
+ * - `startTransition` đánh dấu process này là "việc phụ". UI ô input vẫn gõ mượt mà, không bị khựng lại (blocking).
  * =====================================================================
  */
 
@@ -36,46 +40,72 @@ export function SearchInput({
   className?: string;
 }) {
   const t = useTranslations("common");
+
+  // Hooks để thao tác với URL
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   const pathname = usePathname();
+
+  // Hook quản lý trạng thái loading ngầm của React
   const [isPending, startTransition] = useTransition();
+
+  // Local state để hiển thị những gì user đang gõ (Real-time)
   const [term, setTerm] = useState(
     searchParams.get("search")?.toString() || ""
   );
 
-  // Sync local state with URL params (e.g. on back/forward navigation)
+  /**
+   * Đồng bộ ngược từ URL về Input
+   * Case: User bấm nút Back/Forward trên trình duyệt
+   * -> URL thay đổi -> Input phải cập nhật theo để khớp.
+   */
   useEffect(() => {
     setTerm(searchParams.get("search")?.toString() || "");
   }, [searchParams]);
 
+  /**
+   * Hàm xử lý tìm kiếm (Đã được Debounce)
+   * Chỉ chạy sau khi user ngừng gõ 200ms
+   */
   const handleSearch = useDebouncedCallback((value: string) => {
+    // Tạo bản sao của params hiện tại để chỉnh sửa
     const params = new URLSearchParams(searchParams);
     const trimmedTerm = value.trim();
 
     if (trimmedTerm) {
       params.set("search", trimmedTerm);
     } else {
+      // Nếu xóa hết text -> Xóa tham số search khỏi URL
       params.delete("search");
     }
 
-    // Reset page to 1 on search change
+    // Quan trọng: Khi tìm kiếm mới, phải reset về trang 1
+    // Nếu không user có thể đang ở trang 10 và tìm ra 2 kết quả -> Lỗi UI
     params.set("page", "1");
 
+    // startTransition: Đánh dấu việc đổi URL là "low priority"
+    // Giúp UI (input) vẫn mượt, không bị khựng lại chờ server render
     startTransition(() => {
       replace(`${pathname}?${params.toString()}` as any, { scroll: false });
     });
-  }, 200);
+  }, 200); // Delay 200ms
 
+  // Event handler cho input
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+
+    // 1. Cập nhật state nội bộ ngay lập tức (để user thấy mình đang gõ)
     setTerm(value);
+
+    // 2. Gọi hàm debounce để xử lý logic tìm kiếm (chậm lại một chút)
     handleSearch(value);
   };
 
   return (
     <div className="relative flex-1 md:w-80">
+      {/* Icon Search cố định bên trái */}
       <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground/40 w-5 h-5 z-10 pointer-events-none" />
+
       <input
         value={term}
         onChange={onChange}
@@ -85,15 +115,24 @@ export function SearchInput({
           className
         )}
       />
+
+      {/* 
+        LOGIC HIỂN THỊ ICON BÊN PHẢI:
+        1. Nếu đang loading (isPending) -> Hiện vòng quay (Spinner).
+        2. Nếu có text (term) -> Hiện nút X để xóa.
+      */}
       {isPending ? (
         <div className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
       ) : (
         term && (
           <button
             onClick={() => {
+              // Reset toàn bộ
               setTerm("");
               handleSearch("");
-              // Focus back to input
+
+              // Hack: Focus lại vào ô input sau khi click nút X
+              // Tìm input bằng placeholder để sure đúng element
               const input = document.querySelector(
                 'input[placeholder="' +
                   (placeholder || t("searchPlaceholder")) +

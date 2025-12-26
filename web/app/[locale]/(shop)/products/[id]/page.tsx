@@ -3,11 +3,25 @@
  * PRODUCT DETAIL PAGE - Trang chi tiết sản phẩm (Server Component)
  * =====================================================================
  *
- * [REFACTOR P1]: Implement True Streaming
- * - Metadata and initial layout are rendered immediately.
- * - Product details and Reviews are streamed in via Suspense.
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SUSPENSE STREAMING (Kỹ thuật Streaming):
+ * - Trang chi tiết rất nặng (Product info, Review, Related items...).
+ * - Nếu chờ load xong tất cả mới hiện -> User phải đợi lâu màn hình trắng.
+ * - Giải pháp: Bọc phần nặng (`ProductDetailStreamer`) vào `<Suspense>`.
+ * -> Next.js trả về khung trang (Shell) ngay lập tức, rồi "stream" nội dung nặng về sau.
+ *
+ * 2. PARALLEL FETCHING (Waterfall vs Parallel):
+ * - SAI: `await getProduct(); await getReviews();` (Mất A + B giây).
+ * - ĐÚNG: `Promise.all([getProduct(), getReviews()])` (Chỉ mất max(A, B) giây).
+ * -> Tối ưu thời gian phản hồi máy chủ (TTFB).
+ *
+ * 3. SEO METADATA (`generateMetadata`):
+ * - Vì là Server Component, ta có thể fetch data sản phẩm để điền Title, Description, OpenGraph Image chuẩn SEO dynamic.
+ * =====================================================================
  */
-export const revalidate = 3600; // 1 hour ISR
+
+export const revalidate = 3600; // Cache 1 hour
 
 import { getProfileAction } from "@/actions/profile";
 import { BreadcrumbNav } from "@/components/atoms/breadcrumb-nav";
@@ -17,6 +31,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ProductDetailClient } from "./product-detail-client";
 
+// Generate các URL static tại thời điểm build (để SEO tốt hơn)
 export async function generateStaticParams() {
   try {
     const ids = await productService.getProductIds();
@@ -27,6 +42,7 @@ export async function generateStaticParams() {
   }
 }
 
+// Generate Metadata động cho SEO (Title, Description, OpenGraph Image)
 export async function generateMetadata({
   params,
 }: {
@@ -57,27 +73,30 @@ export async function generateMetadata({
 }
 
 /**
- * [RSC] ProductLoader fetches the heavy product data.
- * This can be awaited inside Suspense to enable streaming.
+ * [RSC] Streamer Component
+ * Component này chịu trách nhiệm fetch dữ liệu nặng và render phần client.
+ * Được bọc trong Suspense để không block UI chính.
  */
 async function ProductDetailStreamer({ id }: { id: string }) {
+  // Dynamic import actions để tránh bundle code server vào client bundle (nếu có leak)
   const { checkReviewEligibilityAction, getReviewsAction } = await import(
     "@/actions/review"
   );
 
+  // Kỹ thuật Parallel Fetching quan trọng
   const [product, { data: user }, reviewsData, eligibilityData] =
     await Promise.all([
-      productService.getProduct(id),
-      getProfileAction(),
-      getReviewsAction(id),
-      checkReviewEligibilityAction(id),
+      productService.getProduct(id), // Lấy thông tin sản phẩm
+      getProfileAction(), // Lấy user hiện tại (để check login)
+      getReviewsAction(id), // Lấy reviews
+      checkReviewEligibilityAction(id), // Check xem user đã mua hàng chưa (để cho review)
     ]);
 
   if (!product) notFound();
 
   const isLoggedIn = !!user;
 
-  // Collect all images from product and SKUs
+  // Tổng hợp ảnh từ Product và Variant SKUs
   const productImages = (product.images || []).map((img) =>
     typeof img === "string" ? img : img.url
   );
@@ -91,6 +110,7 @@ async function ProductDetailStreamer({ id }: { id: string }) {
     images.push(`https://picsum.photos/seed/${product.id}/600/800`);
   }
 
+  // Truyền data đã fetch xuống Client Component để render tương tác
   return (
     <ProductDetailClient
       product={product}
@@ -105,36 +125,7 @@ async function ProductDetailStreamer({ id }: { id: string }) {
   );
 }
 
-export default async function ProductDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-
-  return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30">
-      <div className="container mx-auto px-4 md:px-8 py-8 lg:py-12">
-        {/* Breadcrumb renders immediately */}
-        <div className="mb-6 lg:mb-8">
-          <Suspense
-            fallback={
-              <div className="h-5 w-32 bg-muted animate-pulse rounded" />
-            }
-          >
-            <BreadcrumbStreamer id={id} />
-          </Suspense>
-        </div>
-
-        {/* Heavy content streams in */}
-        <Suspense fallback={<ProductDetailSkeleton />}>
-          <ProductDetailStreamer id={id} />
-        </Suspense>
-      </div>
-    </div>
-  );
-}
-
+// Breadcrumb cũng cần fetch data, tách riêng để Suspense cục bộ
 async function BreadcrumbStreamer({ id }: { id: string }) {
   const product = await productService.getProduct(id);
   if (!product) return null;
@@ -155,5 +146,39 @@ async function BreadcrumbStreamer({ id }: { id: string }) {
       ]}
       className="text-sm"
     />
+  );
+}
+
+/**
+ * MAIN PAGE COMPONENT
+ * Cấu trúc trang sử dụng Streaming SSR.
+ */
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  return (
+    <div className="min-h-screen bg-background font-sans selection:bg-primary/30">
+      <div className="container mx-auto px-4 md:px-8 py-8 lg:py-12">
+        {/* Breadcrumb: Load độc lập */}
+        <div className="mb-6 lg:mb-8">
+          <Suspense
+            fallback={
+              <div className="h-5 w-32 bg-muted animate-pulse rounded" />
+            }
+          >
+            <BreadcrumbStreamer id={id} />
+          </Suspense>
+        </div>
+
+        {/* Main Content: Load độc lập với Skeleton riêng */}
+        <Suspense fallback={<ProductDetailSkeleton />}>
+          <ProductDetailStreamer id={id} />
+        </Suspense>
+      </div>
+    </div>
   );
 }

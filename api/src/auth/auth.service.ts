@@ -21,7 +21,27 @@ import { TwoFactorService } from './two-factor.service';
 
 /**
  * =====================================================================
- * AUTH SERVICE
+ * AUTH SERVICE - LOGIC XÁC THỰC
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. PERMISSION SYSTEM (Hệ thống phân quyền - RBAC):
+ * - Hệ thống này sử dụng cơ chế quyền kết hợp (Hybrid Permissions):
+ *   + Quyền trực tiếp (Direct Permissions): Gán thẳng vào User.
+ *   + Quyền qua vai trò (Role-based Permissions): User -> Roles -> Permissions.
+ * - Logic "Permission Flattening":
+ *   Khi user đăng nhập, ta sẽ gộp tất cả quyền từ Role và quyền trực tiếp thành một mảng duy nhất -> Lưu vào Redis/Token để check nhanh sau này.
+ *
+ * 2. AUTHENTICATION FLOW:
+ * - Bước 1: Validate email/password (Bcrypt compare).
+ * - Bước 2: Kiểm tra 2FA (nếu user bật).
+ * - Bước 3: Generate Tokens (Access + Refresh).
+ * - Bước 4: Lưu Refresh Token vào Redis (để có thể thu hồi/revoke khi user logout).
+ *
+ * 3. SECURITY:
+ * - Mật khẩu LUÔN được hash bằng `bcrypt` trước khi lưu DB.
+ * - Refresh Token cũng được quản lý chặt chẽ kèm Fingerprint thiết bị.
  * =====================================================================
  */
 

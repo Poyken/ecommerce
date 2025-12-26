@@ -11,38 +11,46 @@ import { memo, useState } from "react";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. BLUR PLACEHOLDER:
- * - Hiển thị một version mờ của ảnh trong khi ảnh thật đang load.
- * - Tạo cảm giác load nhanh hơn (perceived performance).
+ * 1. LAYOUT SHIFT (CLS Prevention):
+ * - Vấn đề: Ảnh khi chưa load có độ cao = 0, load xong nhảy xuống -> Bố cục bị giật (CLS).
+ * - Giải pháp: Dùng `aspect-ratio` (container bao ngoài) để "chiếm chỗ" trước tương ứng với tỉ lệ ảnh.
  *
- * 2. LOADING STATE:
- * - Track khi ảnh đã load xong để remove blur effect.
- * - Fade transition smooth từ blur -> clear.
+ * 2. FALLBACK CHAIN (Chuỗi dự phòng):
+ * - Level 1: Load ảnh gốc (`src`).
+ * - Level 2: Nếu lỗi -> Load ảnh thay thế (`fallbackSrc`).
+ * - Level 3: Nếu vẫn lỗi -> Render hộp màu xám (`<div />`).
+ * -> Không bao giờ hiển thị icon "Image Broken" xấu xí.
  *
- * 3. ERROR HANDLING:
- * - Fallback image nếu load thất bại.
+ * 3. SHIMMER EFFECT (Hiệu ứng lấp lánh):
+ * - Trong khi chờ (`isLoading`), hiển thị vệt sáng chạy ngang (`animate-shimmer`).
+ * - Tạo cảm giác "đang tải" (Perceived Performance) tốt hơn là xoay vòng tròn.
  * =====================================================================
  */
 
 interface OptimizedImageProps extends ImageProps {
-  /** Fallback image URL nếu load thất bại */
+  /** Ảnh thay thế nếu ảnh chính load lỗi (Mặc định: placeholder hệ thống) */
   fallbackSrc?: string;
-  /** Show shimmer loading effect */
+  /** Hiệu ứng shimmer (lấp lánh) khi đang load */
   showShimmer?: boolean;
-  /** Aspect ratio cho container */
+  /** Tỉ lệ khung hình (Video: 16/9, Product: 4/5) */
   aspectRatio?: "square" | "video" | "4/5" | "3/4" | "auto";
-  /** Container className */
+  /** ClassName cho thẻ div bao ngoài */
   containerClassName?: string;
 }
 
+// Map các tỉ lệ aspect ratio sang class của Tailwind
 const aspectRatioClasses = {
-  square: "aspect-square",
-  video: "aspect-video",
-  "4/5": "aspect-4/5",
-  "3/4": "aspect-3/4",
-  auto: "",
+  square: "aspect-square", // 1:1
+  video: "aspect-video", // 16:9
+  "4/5": "aspect-4/5", // Chuẩn ảnh sản phẩm thời trang
+  "3/4": "aspect-3/4", // Chuẩn ảnh chân dung
+  auto: "", // Tự do
 };
 
+/**
+ * Component hiển thị ảnh tối ưu.
+ * Sử dụng `memo` để tránh render lại không cần thiết khi parent re-render.
+ */
 export const OptimizedImage = memo(function OptimizedImage({
   src,
   alt,
@@ -53,19 +61,30 @@ export const OptimizedImage = memo(function OptimizedImage({
   className,
   ...props
 }: OptimizedImageProps) {
+  // State 1: Đang tải hay xong?
   const [isLoading, setIsLoading] = useState(true);
+
+  // State 2: Có lỗi load ảnh chính không?
   const [error, setError] = useState(false);
+
+  // State 3: Có lỗi load ảnh fallback không?
   const [fallbackError, setFallbackError] = useState(false);
 
-  // If source is empty, treat as error immediately
+  // Kiểm tra dữ liệu src đầu vào có hợp lệ không
+  // Đôi khi backend trả về chuỗi "null" hoặc "undefined" thay vì null thật
   const hasSrc =
     (src && src !== "" && src !== "null" && src !== "undefined") || false;
+
+  // Xác định lỗi cuối cùng: Hoặc do onError kích hoạt, hoặc do src rỗng ngay từ đầu
   const finalError = error || !hasSrc;
 
-  // Choose which source to use
+  // QUYẾT ĐỊNH ẢNH NÀO SẼ ĐƯỢC RENDER:
+  // Nếu ảnh chính lỗi -> Dùng fallback. Ngược lại dùng ảnh chính.
   let imageSrc = finalError ? fallbackSrc : src;
+
+  // TRƯỜNG HỢP XẤU NHẤT: Cả ảnh chính và ảnh fallback đều lỗi
   if (finalError && fallbackError) {
-    // If BOTH primary and fallback fail, we'll render a placeholder div instead of a broken Image
+    // Render một thẻ div màu xám thay thế
     return (
       <div
         className={cn(
@@ -81,42 +100,59 @@ export const OptimizedImage = memo(function OptimizedImage({
     );
   }
 
+  // Tách các event handlers ra để wrap lại bên dưới
   const { onLoad, onError, ...rest } = props;
 
   return (
     <div
       className={cn(
-        "relative overflow-hidden bg-muted/30",
-        props.fill && "w-full h-full",
+        "relative overflow-hidden bg-muted/30", // Nền xám nhẹ trong khi chờ
+        props.fill && "w-full h-full", // Nếu fill=true thì div cha cũng phải full
         aspectRatioClasses[aspectRatio],
         containerClassName
       )}
     >
-      {/* Shimmer loading effect */}
+      {/* 
+        HIỆU ỨNG SHIMMER (Skeleton loading):
+        Một vệt sáng chạy qua chạy lại để báo hiệu đang tải
+      */}
       {showShimmer && isLoading && (
         <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
       )}
 
+      {/* 
+        COMPONENT NEXT/IMAGE:
+        Tự động optimize size, format (webp/avif) và lazy load
+      */}
       <Image
         src={imageSrc}
         alt={alt || "Image"}
         className={cn(
-          "transition-all duration-700 ease-in-out",
+          "transition-all duration-700 ease-in-out", // Animation mượt mà
           isLoading
-            ? "scale-110 blur-2xl opacity-0"
-            : "scale-100 blur-0 opacity-100",
+            ? "scale-110 blur-2xl opacity-0" // Khi đang load: Phóng to nhẹ, mờ, ẩn
+            : "scale-100 blur-0 opacity-100", // Load xong: Rõ nét, hiện ra
           className
         )}
+        // Sự kiện: Khi load xong -> Tắt trạng thái loading
         onLoad={(e) => {
           setIsLoading(false);
           if (onLoad) onLoad(e);
         }}
+        // Sự kiện: Khi load lỗi
         onError={(e) => {
           if (!finalError) {
+            // Lần 1: Lỗi ảnh chính -> Thử fallback
+            console.warn(
+              `Failed to load image: ${src}, switching to fallback.`
+            );
             setError(true);
           } else {
+            // Lần 2: Lỗi cả fallback -> Chấp nhận số phận
+            console.error(`Failed to load fallback image: ${fallbackSrc}`);
             setFallbackError(true);
           }
+          // Dù lỗi cũng coi như là "load xong" quy trình để tắt shimmer
           setIsLoading(false);
           if (onError) onError(e);
         }}
@@ -127,7 +163,8 @@ export const OptimizedImage = memo(function OptimizedImage({
 });
 
 /**
- * ProductImage - Specialized version cho product images
+ * ProductImage - Phiên bản chuyên dụng cho ảnh sản phẩm
+ * Luôn force tỉ lệ 4:5 để grid sản phẩm đều đẹp.
  */
 export const ProductImage = memo(function ProductImage({
   src,
@@ -139,7 +176,7 @@ export const ProductImage = memo(function ProductImage({
     <OptimizedImage
       src={src}
       alt={alt}
-      aspectRatio="4/5"
+      aspectRatio="4/5" // Cố định tỉ lệ chuẩn thời trang
       showShimmer={true}
       className={cn("object-cover", className)}
       {...props}
@@ -148,7 +185,8 @@ export const ProductImage = memo(function ProductImage({
 });
 
 /**
- * AvatarImage - Specialized version cho user avatars
+ * AvatarImage - Phiên bản chuyên dụng cho Avatar user
+ * Fallback sang DiceBear API để tạo avatar dựa trên tên user.
  */
 export const AvatarImage = memo(function AvatarImage({
   src,
@@ -163,7 +201,8 @@ export const AvatarImage = memo(function AvatarImage({
 }) {
   const [error, setError] = useState(false);
 
-  // Generate dicebear avatar as fallback
+  // Tạo URL avatar ngẫu nhiên dựa trên tên (Seed) nếu không có ảnh
+  // API: DiceBear (Free service)
   const fallbackSrc = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
     alt
   )}`;

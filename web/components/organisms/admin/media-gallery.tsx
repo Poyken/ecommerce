@@ -30,16 +30,18 @@ interface MediaGalleryProps {
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. DRAG & DROP REORDER:
- * - Người dùng có thể kéo thả để sắp xếp thứ tự hiển thị ảnh.
- * - Ảnh đầu tiên thường là ảnh đại diện (thumbnail).
+ * 1. NATIVE DRAG & DROP:
+ * - Thay vì dùng thư viện nặng như `dnd-kit`, ta dùng API kéo thả có sẵn của trình duyệt.
+ * - Sự kiện: `onDragStart` (bắt đầu kéo), `onDragOver` (kéo qua phần tử khác), `onDragEnd` (thả tay).
+ * - Logic `handleDragOver`: Hoán đổi vị trí trong mảng `images` ngay lập tức để tạo hiệu ứng mượt mà.
  *
- * 2. MULTI-IMAGE UPLOAD:
- * - Cho phép chọn nhiều file ảnh cùng lúc.
- * - Tự động tạo preview bằng URL.createObjectURL.
+ * 2. OBJECT URL PREVIEW:
+ * - Khi user chọn file từ máy: `URL.createObjectURL(file)`.
+ * - Tạo ra một URL giả (blob:http://...) để hiển thị ảnh ngay lập tức mà chưa cần upload lên server.
+ * - UX tốt: User thấy ngay ảnh mình vừa chọn.
  *
- * 3. ALT TEXT:
- * - Mỗi ảnh có thể có mô tả thay thế (alt) cho SEO và khả năng tiếp cận.
+ * 3. ACCESSIBILITY (ALT TEXT):
+ * - Rất quan trọng cho SEO. Cho phép Admin nhập mô tả ảnh ngay lúc upload.
  * =====================================================================
  */
 
@@ -205,7 +207,7 @@ export function MediaGallery({
                 key={image.id || image.url}
                 className="flex items-center gap-2"
               >
-                <div className="w-10 h-10 relative rounded overflow-hidden flex-shrink-0">
+                <div className="w-10 h-10 relative rounded overflow-hidden shrink-0">
                   <Image src={image.url} alt="" fill className="object-cover" />
                 </div>
                 <Input

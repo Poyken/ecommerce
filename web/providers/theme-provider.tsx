@@ -10,14 +10,17 @@ import * as React from "react";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. NEXT-THEMES:
- * - Thư viện giúp quản lý theme (light/dark/system) trong Next.js.
- * - Tự động lưu preference vào `localStorage`.
- * - Tránh hiện tượng "flash" (trang trắng hiện lên trước khi đổi sang dark mode).
+ * 1. NEXT-THEMES LIBRARY:
+ * - Thay vì tự viết logic đọc/ghi LocalStorage và toggle class `dark`, ta dùng thư viện này.
+ * - Lợi ích lớn nhất: Ngăn chặn "FOUC/Flash" (Trang web nháy sáng 1 tíc tắc rồi mới chuyển tối).
+ * - Nó tự động inject script nhỏ vào thẻ `<head>` để set class ngay khi HTML parse, trước cả khi React hydrate.
  *
- * 2. CLASS STRATEGY:
- * - `attribute="class"`: Thêm class `.dark` vào thẻ `<html>` khi ở chế độ tối.
- * - Tailwind sẽ dựa vào class này để áp dụng các style `dark:...`.
+ * 2. CONFIGURATION:
+ * - `attribute="class"`: Chế độ này thêm class `.dark` vào thẻ `<html>` thay vì dùng dataset `data-theme`.
+ * - Tương thích tốt nhất với Tailwind CSS (`darkMode: "class"`).
+ *
+ * 3. COMPOSITION (Component Wrapping):
+ * - Đây là một Wrapper Component, nó bao bọc toàn bộ App để cung cấp Context Theme xuống dưới.
  * =====================================================================
  */
 
