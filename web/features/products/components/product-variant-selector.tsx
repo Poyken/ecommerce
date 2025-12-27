@@ -26,8 +26,8 @@
  */
 
 "use client";
-import { Badge } from "@/components/ui/badge";
 import { GlassButton } from "@/components/shared/glass-button";
+import { Badge } from "@/components/ui/badge";
 import { cn, formatCurrency } from "@/lib/utils";
 import { ProductOption, Sku } from "@/types/models";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -41,8 +41,11 @@ interface ProductVariantSelectorProps {
   onSkuChange?: (sku: Sku | null) => void;
   onImageChange?: (imageUrl: string) => void;
   onAddToCart?: () => void;
+  onConfirm?: () => void; // Generic alternative to onAddToCart
+  
   isAdding?: boolean;
   showBuyNow?: boolean;
+  confirmLabel?: string; // e.g., "Add to Cart", "Update Cart"
 }
 
 export function ProductVariantSelector({
@@ -53,8 +56,10 @@ export function ProductVariantSelector({
   onSkuChange,
   onImageChange,
   onAddToCart,
+  onConfirm,
   isAdding = false,
   showBuyNow = true,
+  confirmLabel,
 }: ProductVariantSelectorProps) {
   // State lưu trữ các lựa chọn của user.
   // Format: { [OptionID]: ValueID }
@@ -105,6 +110,19 @@ export function ProductVariantSelector({
 
     if (Object.keys(newSelectedOptions).length > 0) {
       setSelectedOptions(newSelectedOptions);
+      // Notify initial selection
+      if (options.length > 0) {
+         const initialSku = skus.find((sku) => {
+            if (!sku.optionValues) return false;
+            return sku.optionValues.every((ov) => {
+              return newSelectedOptions[ov.optionValue.optionId] === ov.optionValue.id;
+            });
+         });
+         if (initialSku && initialSku.id !== lastNotifiedSkuId.current) {
+            lastNotifiedSkuId.current = initialSku.id;
+            onSkuChange?.(initialSku);
+         }
+      }
       return;
     }
 
@@ -117,9 +135,15 @@ export function ProductVariantSelector({
             newSelectedOptions[ov.optionValue.optionId] = ov.optionValue.id;
         });
         setSelectedOptions(newSelectedOptions);
+        
+        // Notify auto-selection
+        if (availableSku.id !== lastNotifiedSkuId.current) {
+            lastNotifiedSkuId.current = availableSku.id;
+            onSkuChange?.(availableSku);
+        }
       }
     }
-  }, [searchParams, skus, options]);
+  }, [searchParams, skus, options]); // eslint-disable-next-line react-hooks/exhaustive-deps
 
   // 3. CORE LOGIC: XỬ LÝ KHI USER CLICK CHỌN OPTION
   const handleSelect = (optionId: string, valueId: string) => {
@@ -194,6 +218,12 @@ export function ProductVariantSelector({
       if (bestSku.imageUrl && onImageChange) {
         onImageChange(bestSku.imageUrl);
       }
+      
+      // Notify parent immediately (No extra render cycle)
+      if (bestSku.id !== lastNotifiedSkuId.current) {
+          lastNotifiedSkuId.current = bestSku.id;
+          onSkuChange?.(bestSku);
+      }
     }
   };
 
@@ -210,16 +240,7 @@ export function ProductVariantSelector({
     });
   }, [selectedOptions, skus, options]);
 
-  // 5. NOTIFY PARENT: Báo cho component cha biết SKU đã thay đổi
-  useEffect(() => {
-    const currentId = selectedSku?.id;
-    if (currentId !== lastNotifiedSkuId.current) {
-      lastNotifiedSkuId.current = currentId;
-      if (onSkuChange) {
-        onSkuChange(selectedSku || null);
-      }
-    }
-  }, [selectedSku, onSkuChange]);
+
 
   // Helper: Kiểm tra trạng thái của một option value (Có hàng/Hết hàng/Không khả dụng)
   const getOptionValueStatus = (optionId: string, valueId: string) => {
@@ -316,15 +337,15 @@ export function ProductVariantSelector({
           variant="primary"
           size="lg"
           disabled={!selectedSku || isOutOfStock || isAdding}
-          onClick={onAddToCart}
+          onClick={onConfirm || onAddToCart}
         >
           {isAdding
-            ? "Adding..."
+            ? "Processing..."
             : isOutOfStock
             ? "Out of Stock"
-            : "Add to Cart"}
+            : confirmLabel || "Add to Cart"}
         </GlassButton>
-        {showBuyNow && (
+        {showBuyNow && onAddToCart && (
           <GlassButton
             className="flex-1 w-full border-primary text-primary hover:bg-primary/5"
             variant="outline"

@@ -1,10 +1,11 @@
+import { PrismaService } from '@core/prisma/prisma.service';
 import {
   BadRequestException,
   ConflictException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '@core/prisma/prisma.service';
+import { Brand } from '@prisma/client';
+import { BaseCrudService } from '../common/base-crud.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 
@@ -13,25 +14,25 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
  * BRANDS SERVICE - Dịch vụ quản lý thương hiệu
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DATA INTEGRITY (Tính toàn vẹn dữ liệu):
- * - Trước khi tạo hoặc cập nhật, ta luôn kiểm tra xem tên thương hiệu đã tồn tại chưa (`ConflictException`).
- * - Điều này ngăn chặn việc dữ liệu bị trùng lặp, gây bối rối cho người dùng.
- *
- * 2. DELETE CONSTRAINTS (Ràng buộc khi xóa):
- * - Hàm `remove` kiểm tra xem thương hiệu có đang chứa sản phẩm nào không.
- * - Nếu có, ta không cho phép xóa (`BadRequestException`) để tránh lỗi "mồ côi" dữ liệu (Sản phẩm không có thương hiệu).
- *
- * 3. SEARCH & SORT:
- * - `findAll` hỗ trợ tìm kiếm theo tên (không phân biệt hoa thường) và luôn trả về danh sách được sắp xếp A-Z.
- * - Giúp trải nghiệm người dùng Admin mượt mà hơn khi danh sách thương hiệu trở nên dài.
+ * 📚 UPDATED:
+ * - Refactored to use `BaseCrudService` for standardization.
+ * - Custom logic (conflict checks, constraints) remains here.
  * =====================================================================
  */
 
 @Injectable()
-export class BrandsService {
-  constructor(private readonly prisma: PrismaService) {}
+export class BrandsService extends BaseCrudService<
+  Brand,
+  CreateBrandDto,
+  UpdateBrandDto
+> {
+  constructor(private readonly prisma: PrismaService) {
+    super(BrandsService.name);
+  }
+
+  protected get model() {
+    return this.prisma.brand;
+  }
 
   /**
    * Tạo thương hiệu mới (Brand).
@@ -39,7 +40,7 @@ export class BrandsService {
    */
   async create(createBrandDto: CreateBrandDto) {
     // Kiểm tra trùng tên thương hiệu
-    const existing = await this.prisma.brand.findUnique({
+    const existing = await this.model.findUnique({
       where: { name: createBrandDto.name },
     });
 
@@ -47,7 +48,7 @@ export class BrandsService {
       throw new ConflictException('Thương hiệu này đã tồn tại');
     }
 
-    return this.prisma.brand.create({
+    return this.model.create({
       data: createBrandDto,
     });
   }
@@ -60,47 +61,33 @@ export class BrandsService {
     const where = search
       ? { name: { contains: search, mode: 'insensitive' as const } }
       : {};
-    const skip = (page - 1) * limit;
 
-    const [data, total] = await Promise.all([
-      this.prisma.brand.findMany({
-        where,
-        orderBy: { name: 'asc' },
-        skip,
-        take: limit,
-        include: {
-          _count: {
-            select: { products: true },
-          },
+    // Use usage of Base Service helper
+    return this.findAllBase(
+      page,
+      limit,
+      where,
+      {
+        _count: {
+          select: { products: true },
         },
-      }),
-      this.prisma.brand.count({ where }),
-    ]);
-
-    return {
-      data,
-      meta: {
-        total,
-        page,
-        limit,
-        lastPage: Math.ceil(total / limit),
       },
-    };
+      { name: 'asc' }, // Order by Name A-Z
+    );
   }
 
   async findOne(id: string) {
-    const brand = await this.prisma.brand.findUnique({ where: { id } });
-    if (!brand) throw new NotFoundException('Không tìm thấy thương hiệu');
-    return brand;
+    return this.findOneBase(id);
   }
 
   async update(id: string, updateBrandDto: UpdateBrandDto) {
-    const brand = await this.prisma.brand.findUnique({ where: { id } });
-    if (!brand) throw new NotFoundException('Không tìm thấy thương hiệu');
+    // Ensure exists using base helper or manual check
+    // We need logic to check conflict name, so manual check is good.
+    const brand = await this.findOneBase(id); // Will throw NotFound if missing
 
     // Nếu đổi tên, phải check trùng
     if (updateBrandDto.name) {
-      const existingName = await this.prisma.brand.findUnique({
+      const existingName = await this.model.findUnique({
         where: { name: updateBrandDto.name },
       });
       if (existingName && existingName.id !== id) {
@@ -108,7 +95,7 @@ export class BrandsService {
       }
     }
 
-    return this.prisma.brand.update({
+    return this.model.update({
       where: { id },
       data: updateBrandDto,
     });
@@ -128,6 +115,6 @@ export class BrandsService {
       );
     }
 
-    return this.prisma.brand.delete({ where: { id } });
+    return this.model.delete({ where: { id } });
   }
 }

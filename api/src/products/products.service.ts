@@ -354,90 +354,103 @@ export class ProductsService {
    * - Query time nhanh hơn 20-30%
    */
   async findOne(id: string) {
-    const product = await this.prisma.product.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        metadata: true,
-        categoryId: true,
-        brandId: true,
-        createdAt: true,
-        updatedAt: true,
-        deletedAt: true,
-        // Cached price & rating columns
-        minPrice: true,
-        maxPrice: true,
-        avgRating: true,
-        reviewCount: true,
+    const cacheKey = `product:${id}`;
 
-        category: {
-          select: { id: true, name: true, slug: true },
-        },
-        brand: {
-          select: { id: true, name: true, imageUrl: true },
-        },
-        images: {
-          select: { id: true, url: true, alt: true, displayOrder: true },
-          orderBy: { displayOrder: 'asc' },
-        },
-        // Load options to display filters (color, size)
-        options: {
+    return this.cacheService.getOrSet(
+      cacheKey,
+      async () => {
+        const product = await this.prisma.product.findUnique({
+          where: { id },
           select: {
             id: true,
             name: true,
-            displayOrder: true,
-            values: {
-              select: { id: true, value: true, imageUrl: true },
+            slug: true,
+            description: true,
+            metadata: true,
+            categoryId: true,
+            brandId: true,
+            createdAt: true,
+            updatedAt: true,
+            deletedAt: true,
+            // Cached price & rating columns
+            minPrice: true,
+            maxPrice: true,
+            avgRating: true,
+            reviewCount: true,
+
+            category: {
+              select: { id: true, name: true, slug: true },
             },
-          },
-          orderBy: { displayOrder: 'asc' },
-        },
-        // Load SKUs with variants - Optimized with explicit selects
-        skus: {
-          where: { status: 'ACTIVE' },
-          select: {
-            id: true,
-            skuCode: true,
-            price: true,
-            salePrice: true,
-            stock: true,
-            imageUrl: true,
-            status: true,
-            optionValues: {
-              select: {
-                optionValue: {
-                  select: {
-                    id: true,
-                    value: true,
-                    imageUrl: true,
-                    optionId: true,
-                    option: {
-                      select: { id: true, name: true },
-                    },
-                  },
-                },
-              },
+            brand: {
+              select: { id: true, name: true, imageUrl: true },
             },
             images: {
               select: { id: true, url: true, alt: true, displayOrder: true },
               orderBy: { displayOrder: 'asc' },
             },
+            // Load options to display filters (color, size)
+            options: {
+              select: {
+                id: true,
+                name: true,
+                displayOrder: true,
+                values: {
+                  select: { id: true, value: true, imageUrl: true },
+                },
+              },
+              orderBy: { displayOrder: 'asc' },
+            },
+            // Load SKUs with variants - Optimized with explicit selects
+            skus: {
+              where: { status: 'ACTIVE' },
+              select: {
+                id: true,
+                skuCode: true,
+                price: true,
+                salePrice: true,
+                stock: true,
+                imageUrl: true,
+                status: true,
+                optionValues: {
+                  select: {
+                    optionValue: {
+                      select: {
+                        id: true,
+                        value: true,
+                        imageUrl: true,
+                        optionId: true,
+                        option: {
+                          select: { id: true, name: true },
+                        },
+                      },
+                    },
+                  },
+                },
+                images: {
+                  select: {
+                    id: true,
+                    url: true,
+                    alt: true,
+                    displayOrder: true,
+                  },
+                  orderBy: { displayOrder: 'asc' },
+                },
+              },
+            },
+            // Use _count for approved reviews count
+            _count: {
+              select: { reviews: { where: { isApproved: true } } },
+            },
           },
-        },
-        // Use _count for approved reviews count
-        _count: {
-          select: { reviews: { where: { isApproved: true } } },
-        },
+        });
+
+        if (!product || product.deletedAt)
+          throw new NotFoundException('Không tìm thấy sản phẩm');
+
+        return product;
       },
-    });
-
-    if (!product || product.deletedAt)
-      throw new NotFoundException('Không tìm thấy sản phẩm');
-
-    return product;
+      CACHE_TTL.PRODUCT_DETAIL,
+    );
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {

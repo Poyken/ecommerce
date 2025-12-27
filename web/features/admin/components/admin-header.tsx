@@ -1,7 +1,7 @@
 "use client";
 
-import { logoutAction } from "@/features/auth/actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/molecules/user-avatar";
+import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,8 +15,8 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { AdminNotificationBell } from "@/features/admin/components/admin-notification-bell";
+import { logoutAction } from "@/features/auth/actions";
 import { Laptop, LogOut, Moon, Palette, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -80,18 +80,12 @@ export function AdminHeader({ user }: AdminHeaderProps) {
 
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative h-10 w-10 rounded-full p-0 overflow-hidden"
-              >
-                <Avatar className="h-10 w-10">
-                  <AvatarImage src={user.avatar} alt={user.firstName} />
-                  <AvatarFallback className="text-sm">
-                    {user.firstName[0]}
-                    {user.lastName[0]}
-                  </AvatarFallback>
-                </Avatar>
+              <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+                  <UserAvatar 
+                    src={user?.avatar} 
+                    alt={user?.firstName} 
+                    className="h-9 w-9"
+                  />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">

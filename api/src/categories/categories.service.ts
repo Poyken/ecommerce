@@ -1,11 +1,13 @@
+import { CacheService } from '@core/cache/cache.service';
+import { PrismaService } from '@core/prisma/prisma.service';
 import {
   BadRequestException,
   ConflictException,
   Injectable,
-  NotFoundException,
 } from '@nestjs/common';
+import { Category } from '@prisma/client';
 import slugify from 'slugify';
-import { PrismaService } from '@core/prisma/prisma.service';
+import { BaseCrudService } from '../common/base-crud.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
@@ -34,8 +36,21 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
  */
 
 @Injectable()
-export class CategoriesService {
-  constructor(private readonly prisma: PrismaService) {}
+export class CategoriesService extends BaseCrudService<
+  Category,
+  CreateCategoryDto,
+  UpdateCategoryDto
+> {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly cacheService: CacheService,
+  ) {
+    super(CategoriesService.name);
+  }
+
+  protected get model() {
+    return this.prisma.category;
+  }
 
   /**
    * Tạo danh mục mới.
@@ -51,7 +66,7 @@ export class CategoriesService {
       slugify(createCategoryDto.name, { lower: true, strict: true });
 
     // 2. Kiểm tra xem danh mục đã tồn tại chưa (check cả tên và slug)
-    const existing = await this.prisma.category.findFirst({
+    const existing = await this.model.findFirst({
       where: { OR: [{ name: createCategoryDto.name }, { slug }] },
     });
 
@@ -61,7 +76,7 @@ export class CategoriesService {
 
     // 3. Validate danh mục cha (nếu người dùng truyền lên)
     if (createCategoryDto.parentId) {
-      const parent = await this.prisma.category.findUnique({
+      const parent = await this.model.findUnique({
         where: { id: createCategoryDto.parentId },
       });
       if (!parent) {
@@ -70,12 +85,17 @@ export class CategoriesService {
     }
 
     // 4. Lưu vào database
-    return this.prisma.category.create({
+    const newCategory = await this.model.create({
       data: {
         ...createCategoryDto,
         slug,
       },
     });
+
+    // Invalidate cache
+    await this.cacheService.invalidatePattern('categories:all:*');
+
+    return newCategory;
   }
 
   /**
@@ -83,54 +103,54 @@ export class CategoriesService {
    * Hiện tại đang lấy flat list (danh sách phẳng), sắp xếp mới nhất lên đầu.
    */
   async findAll(search?: string, page = 1, limit = 100) {
-    const where = search
-      ? {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' as const } },
-            { slug: { contains: search, mode: 'insensitive' as const } },
-          ],
-        }
-      : {};
-    const skip = (page - 1) * limit;
+    const cacheKey = `categories:all:${search || 'none'}:${page}:${limit}`;
 
-    const [categories, total] = await Promise.all([
-      this.prisma.category.findMany({
-        where,
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
-        include: {
-          _count: {
-            select: { products: true },
+    // TTL: 1 hour (Categories change rarely)
+    return this.cacheService.getOrSet(
+      cacheKey,
+      async () => {
+        const where = search
+          ? {
+              OR: [
+                { name: { contains: search, mode: 'insensitive' as const } },
+                { slug: { contains: search, mode: 'insensitive' as const } },
+              ],
+            }
+          : {};
+
+        // Use BaseCrudService helper
+        const result = await this.findAllBase(
+          page,
+          limit,
+          where,
+          {
+            _count: {
+              select: { products: true },
+            },
           },
-        },
-      }),
-      this.prisma.category.count({ where }),
-    ]);
+          { createdAt: 'desc' },
+        );
 
-    const data = categories.map((c) => ({
-      ...c,
-      productCount: c._count.products,
-    }));
+        // Map count to productCount
+        const data = result.data.map((c) => ({
+          ...c,
+          productCount: (c as any)._count?.products || 0,
+        }));
 
-    return {
-      data,
-      meta: {
-        total,
-        page,
-        limit,
-        lastPage: Math.ceil(total / limit),
+        return {
+          ...result,
+          data,
+        };
       },
-    };
+      3600,
+    );
   }
 
   /**
    * Lấy chi tiết một danh mục theo ID.
    */
   async findOne(id: string) {
-    const category = await this.prisma.category.findUnique({ where: { id } });
-    if (!category) throw new NotFoundException('Không tìm thấy danh mục');
-    return category;
+    return this.findOneBase(id);
   }
 
   /**
@@ -139,12 +159,11 @@ export class CategoriesService {
    * - Nếu cập nhật slug, phải kiểm tra trùng lặp.
    */
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
-    const category = await this.prisma.category.findUnique({ where: { id } });
-    if (!category) throw new NotFoundException('Không tìm thấy danh mục');
+    const category = await this.findOneBase(id);
 
     // Nếu có đổi slug, kiểm tra xem slug mới có bị trùng với danh mục KHÁC không
     if (updateCategoryDto.slug) {
-      const existingSlug = await this.prisma.category.findUnique({
+      const existingSlug = await this.model.findUnique({
         where: { slug: updateCategoryDto.slug },
       });
       if (existingSlug && existingSlug.id !== id) {
@@ -162,10 +181,14 @@ export class CategoriesService {
         updateCategoryDto.parentId === '' ? null : updateCategoryDto.parentId,
     };
 
-    return this.prisma.category.update({
+    const updated = await this.model.update({
       where: { id },
       data: dataToUpdate,
     });
+
+    await this.cacheService.invalidatePattern('categories:all:*');
+
+    return updated;
   }
 
   /**
@@ -186,7 +209,7 @@ export class CategoriesService {
     }
 
     // 2. Check danh mục con
-    const hasChildren = await this.prisma.category.findFirst({
+    const hasChildren = await this.model.findFirst({
       where: { parentId: id },
     });
     if (hasChildren) {
@@ -195,6 +218,8 @@ export class CategoriesService {
       );
     }
 
-    return this.prisma.category.delete({ where: { id } });
+    const deleted = await this.model.delete({ where: { id } });
+    await this.cacheService.invalidatePattern('categories:all:*');
+    return deleted;
   }
 }

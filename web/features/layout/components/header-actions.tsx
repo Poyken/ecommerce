@@ -1,30 +1,30 @@
 "use client";
 
-import { logoutAction } from "@/features/auth/actions";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/molecules/user-avatar";
+import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ThemeToggle } from "@/components/shared/theme-toggle";
+import { logoutAction } from "@/features/auth/actions";
 import { Link } from "@/i18n/routing";
 import {
-    Laptop,
-    Loader2,
-    LogOut,
-    Moon,
-    Palette,
-    Sun,
-    User,
+  Laptop,
+  Loader2,
+  LogOut,
+  Moon,
+  Palette,
+  Sun,
+  User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -94,15 +94,13 @@ export function HeaderActions({ initialUser }: HeaderActionsProps) {
       <LanguageSwitcher />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="relative h-10 w-10 rounded-full p-0 overflow-hidden">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={user?.avatar} alt={user?.firstName || "User"} />
-              <AvatarFallback className="text-sm">
-                {user?.firstName?.[0] || ""}
-                {user?.lastName?.[0] || "U"}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
+            <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+              <UserAvatar 
+                src={user?.avatar} 
+                alt={user?.firstName || "User"} 
+                className="h-9 w-9"
+              />
+            </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>

@@ -20,20 +20,20 @@
 
 "use client";
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi,
-} from "@/components/ui/carousel";
 import { OptimizedImage } from "@/components/shared/optimized-image";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    CarouselNext,
+    CarouselPrevious,
+    type CarouselApi,
+} from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
 const ProductImageLightbox = dynamic(
   () =>
@@ -55,7 +55,7 @@ interface ProductImageGalleryProps {
 
 // ... (imports)
 
-export function ProductImageGallery({
+export const ProductImageGallery = memo(function ProductImageGallery({
   images,
   productName,
   activeImage,
@@ -231,4 +231,4 @@ export function ProductImageGallery({
       />
     </div>
   );
-}
+});

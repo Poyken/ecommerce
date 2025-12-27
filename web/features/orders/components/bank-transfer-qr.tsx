@@ -1,13 +1,14 @@
 "use client";
 
-import { simulatePaymentSuccessAction } from "@/features/orders/actions";
-import { Button } from "@/components/ui/button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { useToast } from "@/components/shared/use-toast";
+import { Button } from "@/components/ui/button";
+import { simulatePaymentSuccessAction } from "@/features/orders/actions";
 import { useRouter } from "@/i18n/routing";
 import { formatCurrency } from "@/lib/utils";
 import { Copy, CreditCard, ExternalLink, Loader2, QrCode } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 /**
@@ -130,11 +131,13 @@ export function BankTransferQR({
         </h3>
 
         <div className="relative group p-2 bg-white rounded-xl shadow-lg transition-transform duration-300 hover:scale-105">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+          <Image
             src={qrSrc}
             alt="VietQR for Banking App"
+            width={320}
+            height={320}
             className="w-64 h-64 sm:w-80 sm:h-80 object-contain"
+            unoptimized
           />
         </div>
 

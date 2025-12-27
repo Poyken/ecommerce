@@ -7,7 +7,9 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { BaseCrudService } from '../common/base-crud.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -37,8 +39,18 @@ import { UpdateUserDto } from './dto/update-user.dto';
  */
 
 @Injectable()
-export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+export class UsersService extends BaseCrudService<
+  User,
+  CreateUserDto,
+  UpdateUserDto
+> {
+  constructor(private readonly prisma: PrismaService) {
+    super(UsersService.name);
+  }
+
+  protected get model() {
+    return this.prisma.user;
+  }
 
   /**
    * Tạo User mới (Admin tạo).
@@ -48,7 +60,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     const { email, password, firstName, lastName } = createUserDto;
 
-    const existingUser = await this.prisma.user.findUnique({
+    const existingUser = await this.model.findUnique({
       where: { email },
     });
 
@@ -61,7 +73,7 @@ export class UsersService {
       AUTH_CONFIG.BCRYPT_ROUNDS,
     );
 
-    const user = await this.prisma.user.create({
+    const user = await this.model.create({
       data: {
         email,
         password: hashedPassword,
@@ -83,7 +95,6 @@ export class UsersService {
     search?: string,
     role?: string,
   ) {
-    const skip = (page - 1) * limit;
     const where: any = {};
 
     if (role && role !== 'all') {
@@ -104,60 +115,47 @@ export class UsersService {
       ];
     }
 
-    const [users, total] = await Promise.all([
-      this.prisma.user.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          roles: { include: { role: true } },
-        },
-      }),
-      this.prisma.user.count({ where }),
-    ]);
+    // Use BaseCrudService helper
+    const result = await this.findAllBase(
+      page,
+      limit,
+      where,
+      {
+        roles: { include: { role: true } },
+      },
+      { createdAt: 'desc' },
+    );
+
+    // Map to UserEntity
+    const data = result.data.map((user) => new UserEntity(user));
 
     return {
-      data: users.map((user) => new UserEntity(user)),
-      meta: {
-        total,
-        page,
-        limit,
-        lastPage: Math.ceil(total / limit),
-      },
+      ...result,
+      data,
     };
   }
 
   async findOne(id: string) {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-      include: {
-        // Load full permission rights (Direct + Role-based)
-        permissions: { include: { permission: true } },
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: { include: { permission: true } },
-              },
+    const user = await this.findOneBase(id, {
+      // Load full permission rights (Direct + Role-based)
+      permissions: { include: { permission: true } },
+      roles: {
+        include: {
+          role: {
+            include: {
+              permissions: { include: { permission: true } },
             },
           },
         },
       },
     });
 
-    if (!user) {
-      throw new NotFoundException(`Không tìm thấy User ID ${id}`);
-    }
-
     return new UserEntity(user);
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
-    if (!user) {
-      throw new NotFoundException(`Không tìm thấy User ID ${id}`);
-    }
+    // Check existence
+    await this.findOneBase(id);
 
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(
@@ -166,7 +164,7 @@ export class UsersService {
       );
     }
 
-    const updatedUser = await this.prisma.user.update({
+    const updatedUser = await this.model.update({
       where: { id },
       data: updateUserDto,
     });
@@ -175,12 +173,10 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    const user = await this.prisma.user.findUnique({ where: { id } });
-    if (!user) {
-      throw new NotFoundException(`Không tìm thấy User ID ${id}`);
-    }
+    // Check existence
+    await this.findOneBase(id);
 
-    await this.prisma.user.delete({
+    await this.model.delete({
       where: { id },
     });
 
@@ -194,7 +190,7 @@ export class UsersService {
    */
   async assignRoles(userId: string, roleNames: string[]) {
     // 1. Validate User
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const user = await this.model.findUnique({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('User không tồn tại');
     }

@@ -1,7 +1,7 @@
+import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { OptionValue, Product, ProductOption } from '@prisma/client';
 import slugify from 'slugify';
-import { PrismaService } from '@core/prisma/prisma.service';
 
 /**
  * =====================================================================
@@ -158,23 +158,25 @@ export class SkuManagerService {
       const optionValues = product.options.map((opt) => opt.values);
       const combinations = this.cartesian(optionValues);
 
-      for (const combo of combinations) {
-        const skuCode = this.generateSkuCode(product.slug, combo);
-        await this.prisma.sku.create({
-          data: {
-            skuCode,
-            productId: product.id,
-            price: 0,
-            stock: 0,
-            status: 'ACTIVE',
-            optionValues: {
-              create: combo.map((val: OptionValue) => ({
-                optionValueId: val.id,
-              })),
+      await Promise.all(
+        combinations.map((combo) => {
+          const skuCode = this.generateSkuCode(product.slug, combo);
+          return this.prisma.sku.create({
+            data: {
+              skuCode,
+              productId: product.id,
+              price: 0,
+              stock: 0,
+              status: 'ACTIVE',
+              optionValues: {
+                create: combo.map((val: OptionValue) => ({
+                  optionValueId: val.id,
+                })),
+              },
             },
-          },
-        });
-      }
+          });
+        }),
+      );
     } else {
       await this.prisma.sku.create({
         data: {

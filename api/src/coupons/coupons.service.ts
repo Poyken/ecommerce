@@ -1,19 +1,31 @@
+import { PrismaService } from '@core/prisma/prisma.service';
 import {
   BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from '@core/prisma/prisma.service';
+import { Coupon } from '@prisma/client';
+import { BaseCrudService } from '../common/base-crud.service';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
 
 @Injectable()
-export class CouponsService {
-  constructor(private readonly prisma: PrismaService) {}
+export class CouponsService extends BaseCrudService<
+  Coupon,
+  CreateCouponDto,
+  UpdateCouponDto
+> {
+  constructor(private readonly prisma: PrismaService) {
+    super(CouponsService.name);
+  }
+
+  protected get model() {
+    return this.prisma.coupon;
+  }
 
   async create(createCouponDto: CreateCouponDto) {
-    const existing = await this.prisma.coupon.findUnique({
+    const existing = await this.model.findUnique({
       where: { code: createCouponDto.code },
     });
 
@@ -21,37 +33,19 @@ export class CouponsService {
       throw new ConflictException('Mã giảm giá đã tồn tại');
     }
 
-    return this.prisma.coupon.create({
+    return this.model.create({
       data: createCouponDto,
     });
   }
 
   async findAll(page = 1, limit = 10) {
-    const skip = (page - 1) * limit;
-    const [coupons, total] = await Promise.all([
-      this.prisma.coupon.findMany({
-        orderBy: { createdAt: 'desc' },
-        skip,
-        take: limit,
-      }),
-      this.prisma.coupon.count(),
-    ]);
-
-    return {
-      data: coupons,
-      meta: {
-        total,
-        page,
-        limit,
-        lastPage: Math.ceil(total / limit),
-      },
-    };
+    return this.findAllBase(page, limit, {}, {}, { createdAt: 'desc' });
   }
 
   async findAvailable() {
     const now = new Date();
     // Debugging Timezone: Fetch all active coupons and filter in memory
-    const candidates = await this.prisma.coupon.findMany({
+    const candidates = await this.model.findMany({
       where: {
         isActive: true,
       },
@@ -94,23 +88,21 @@ export class CouponsService {
   }
 
   async findOne(id: string) {
-    const coupon = await this.prisma.coupon.findUnique({ where: { id } });
-    if (!coupon) throw new NotFoundException('Không tìm thấy mã giảm giá');
-    return coupon;
+    return this.findOneBase(id);
   }
 
   async findByCode(code: string) {
-    const coupon = await this.prisma.coupon.findUnique({ where: { code } });
+    const coupon = await this.model.findUnique({ where: { code } });
     if (!coupon) throw new NotFoundException('Mã giảm giá không hợp lệ');
     return coupon;
   }
 
   async update(id: string, updateCouponDto: UpdateCouponDto) {
-    const coupon = await this.prisma.coupon.findUnique({ where: { id } });
-    if (!coupon) throw new NotFoundException('Không tìm thấy mã giảm giá');
+    // Check existence
+    await this.findOneBase(id);
 
     if (updateCouponDto.code) {
-      const existing = await this.prisma.coupon.findUnique({
+      const existing = await this.model.findUnique({
         where: { code: updateCouponDto.code },
       });
       if (existing && existing.id !== id) {
@@ -118,15 +110,14 @@ export class CouponsService {
       }
     }
 
-    return this.prisma.coupon.update({
+    return this.model.update({
       where: { id },
       data: updateCouponDto,
     });
   }
 
   async remove(id: string) {
-    const coupon = await this.prisma.coupon.findUnique({ where: { id } });
-    if (!coupon) throw new NotFoundException('Không tìm thấy mã giảm giá');
+    await this.findOneBase(id);
 
     // Check if coupon has been used in orders
     const usedInOrders = await this.prisma.order.findFirst({
@@ -139,11 +130,11 @@ export class CouponsService {
       );
     }
 
-    return this.prisma.coupon.delete({ where: { id } });
+    return this.model.delete({ where: { id } });
   }
 
   async validateCoupon(code: string, orderAmount: number) {
-    const coupon = await this.prisma.coupon.findUnique({ where: { code } });
+    const coupon = await this.model.findUnique({ where: { code } });
 
     if (!coupon || !coupon.isActive) {
       throw new BadRequestException(

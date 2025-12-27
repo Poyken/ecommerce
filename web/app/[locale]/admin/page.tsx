@@ -1,10 +1,4 @@
-import {
-  getAnalyticsStatsAction,
-  getReviewsAction,
-  getSalesDataAction,
-  getTopProductsAction,
-} from "@/features/admin/actions";
-import { getProfileAction } from "@/features/profile/actions";
+import { UserAvatar } from "@/components/molecules/user-avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -14,6 +8,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  getAnalyticsStatsAction,
+  getReviewsAction,
+  getSalesDataAction,
+  getTopProductsAction,
+} from "@/features/admin/actions";
 import { AdminAlerts } from "@/features/admin/components/admin-alerts";
 import {
   AdminPageHeader,
@@ -24,6 +24,7 @@ import {
   LazySalesTrendChart as SalesTrendChart,
 } from "@/features/admin/components/lazy-admin-charts";
 import { QuickActions } from "@/features/admin/components/quick-actions";
+import { getProfileAction } from "@/features/profile/actions";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -378,16 +379,10 @@ export default async function AdminDashboardPage() {
                     className="p-4 flex gap-4 hover:bg-muted/20 transition-colors"
                   >
                     <div className="shrink-0">
-                      {review.user?.avatarUrl ? (
-                        <img
-                          src={review.user.avatarUrl}
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold">
-                          {review.user?.firstName?.[0]}
-                        </div>
-                      )}
+                      <UserAvatar
+                        src={review.user?.avatarUrl}
+                        alt={`${review.user?.firstName} ${review.user?.lastName}`}
+                      />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">

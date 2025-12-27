@@ -1,8 +1,8 @@
 "use client";
 
+import { UserAvatar } from "@/components/molecules/user-avatar";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
-import { AvatarImage } from "@/components/shared/optimized-image";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -148,11 +148,10 @@ export function TestimonialsCarousel() {
                 </p>
                 <div className="flex items-center gap-4 pt-4 border-t border-foreground/5">
                   <div className="relative w-12 h-12 rounded-2xl overflow-hidden border border-foreground/10 shadow-sm">
-                    <AvatarImage
+                    <UserAvatar
                       src={item.avatar}
                       alt={item.author}
-                      size={48}
-                      className="object-cover"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                   <div>

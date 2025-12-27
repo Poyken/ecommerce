@@ -2,13 +2,10 @@ import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import {
-  BadRequestException,
-  Inject,
-  Injectable,
-  Logger,
-} from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Review } from '@prisma/client';
 import type { Cache } from 'cache-manager';
+import { BaseCrudService } from '../common/base-crud.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 
@@ -19,16 +16,25 @@ import { UpdateReviewDto } from './dto/update-review.dto';
  */
 
 @Injectable()
-export class ReviewsService {
-  private readonly logger = new Logger(ReviewsService.name);
-
+export class ReviewsService extends BaseCrudService<
+  Review,
+  CreateReviewDto,
+  UpdateReviewDto
+> {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
     private readonly notificationsGateway: NotificationsGateway,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-  ) {}
+  ) {
+    super(ReviewsService.name);
+  }
 
+  protected get model() {
+    return this.prisma.review;
+  }
+
+  /* ... Custom logic for invalidating cache ... */
   private async updateProductRatingCache(
     productId: string,
     tx: any = this.prisma,
@@ -62,7 +68,7 @@ export class ReviewsService {
   }
 
   async create(userId: string, dto: CreateReviewDto) {
-    const existing = await this.prisma.review.findFirst({
+    const existing = await this.model.findFirst({
       where: {
         userId,
         productId: dto.productId,
@@ -102,6 +108,7 @@ export class ReviewsService {
       );
     }
 
+    /* Use Transaction for creation and cache update */
     const review = await this.prisma.$transaction(async (tx) => {
       const newReview = await tx.review.create({
         data: {
@@ -123,11 +130,7 @@ export class ReviewsService {
     return review;
   }
 
-  /**
-   * 🚀 OPTIMIZED: Check if user can review product
-   * - Replaced deep includes với explicit selects
-   * - Giảm unnecessary data loading
-   */
+  /* ... checkEligibility Logic (Complex, Keep as is) ... */
   async checkEligibility(userId: string, productId: string) {
     const orderItems = await this.prisma.orderItem.findMany({
       where: {
@@ -163,7 +166,7 @@ export class ReviewsService {
       },
     });
 
-    const reviews = await this.prisma.review.findMany({
+    const reviews = await this.model.findMany({
       where: {
         userId,
         productId,
@@ -197,13 +200,9 @@ export class ReviewsService {
     };
   }
 
-  /**
-   * 🚀 OPTIMIZED: Fetch reviews for product with cursor pagination
-   * - Replaced deep includes với explicit selects
-   * - Giảm 40-50% data transfer per request
-   */
+  /* ... Custom findAllByProduct (Cursor pagination, specific to reviews) ... */
   async findAllByProduct(productId: string, cursor?: string, limit = 10) {
-    const reviews = await this.prisma.review.findMany({
+    const reviews = await this.model.findMany({
       where: { productId, isApproved: true },
       take: limit + 1,
       skip: cursor ? 1 : 0,
@@ -218,7 +217,6 @@ export class ReviewsService {
         createdAt: true,
         reply: true,
         replyAt: true,
-
         user: {
           select: {
             id: true,
@@ -256,7 +254,6 @@ export class ReviewsService {
       nextCursor = nextItem!.id;
     }
 
-    // Fetch stats from cached Product columns
     const productStats = await this.prisma.product.findUnique({
       where: { id: productId },
       select: { avgRating: true, reviewCount: true },
@@ -272,6 +269,7 @@ export class ReviewsService {
     };
   }
 
+  /* ... Generic findAll for Admin ... */
   async findAll(
     page: number,
     limit: number,
@@ -279,18 +277,13 @@ export class ReviewsService {
     status?: string,
     search?: string,
   ) {
-    const skip = (page - 1) * limit;
+    // Custom filter building
     const where: any = {};
-
-    if (rating) {
-      where.rating = rating;
-    }
-
+    if (rating) where.rating = rating;
     if (status) {
       if (status === 'published') where.isApproved = true;
       if (status === 'hidden') where.isApproved = false;
     }
-
     if (search) {
       where.OR = [
         { content: { contains: search, mode: 'insensitive' } },
@@ -301,41 +294,21 @@ export class ReviewsService {
       ];
     }
 
-    const [reviews, total] = await Promise.all([
-      this.prisma.review.findMany({
-        where,
-        skip,
-        take: limit,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          user: {
-            select: { firstName: true, lastName: true, email: true },
-          },
-          product: {
-            select: { id: true, name: true },
-          },
-          sku: {
-            select: { id: true, skuCode: true },
-          },
-        },
-      }),
-      this.prisma.review.count({ where }),
-    ]);
-
-    return {
-      data: reviews,
-      meta: {
-        total,
-        page,
-        limit,
-        lastPage: Math.ceil(total / limit),
+    return this.findAllBase(
+      page,
+      limit,
+      where,
+      {
+        user: { select: { firstName: true, lastName: true, email: true } },
+        product: { select: { id: true, name: true } },
+        sku: { select: { id: true, skuCode: true } },
       },
-    };
+      { createdAt: 'desc' },
+    );
   }
 
   async updateStatus(id: string, isApproved: boolean) {
-    const review = await this.prisma.review.findUnique({ where: { id } });
-    if (!review) throw new BadRequestException('Review not found');
+    const review = await this.findOneBase(id);
 
     return this.prisma.$transaction(async (tx) => {
       const updated = await tx.review.update({
@@ -348,13 +321,7 @@ export class ReviewsService {
   }
 
   async update(userId: string, id: string, dto: UpdateReviewDto) {
-    const review = await this.prisma.review.findUnique({
-      where: { id },
-    });
-
-    if (!review) {
-      throw new BadRequestException('Đánh giá không tồn tại');
-    }
+    const review = await this.findOneBase(id);
 
     if (review.userId !== userId) {
       throw new BadRequestException(
@@ -379,10 +346,7 @@ export class ReviewsService {
   }
 
   async remove(id: string) {
-    const review = await this.prisma.review.findUnique({ where: { id } });
-    if (!review) {
-      throw new BadRequestException('Đánh giá không tồn tại');
-    }
+    const review = await this.findOneBase(id);
 
     await this.prisma.$transaction(async (tx) => {
       await tx.review.delete({ where: { id } });
@@ -393,13 +357,7 @@ export class ReviewsService {
   }
 
   async removeOwn(userId: string, id: string) {
-    const review = await this.prisma.review.findUnique({
-      where: { id },
-    });
-
-    if (!review) {
-      throw new BadRequestException('Đánh giá không tồn tại');
-    }
+    const review = await this.findOneBase(id);
 
     if (review.userId !== userId) {
       throw new BadRequestException('Bạn không có quyền xóa đánh giá này');
@@ -414,16 +372,16 @@ export class ReviewsService {
   }
 
   async replyToReview(id: string, reply: string) {
-    const review = await this.prisma.review.findUnique({
+    const review = await this.model.findUnique({
       where: { id },
       include: { product: true },
-    });
+    }); // Need product info, using wrapper
 
     if (!review) {
       throw new BadRequestException('Đánh giá không tồn tại');
     }
 
-    const updatedReview = await this.prisma.review.update({
+    const updatedReview = await this.model.update({
       where: { id },
       data: {
         reply,

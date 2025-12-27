@@ -184,45 +184,4 @@ export const ProductImage = memo(function ProductImage({
   );
 });
 
-/**
- * AvatarImage - Phiên bản chuyên dụng cho Avatar user
- * Fallback sang DiceBear API để tạo avatar dựa trên tên user.
- */
-export const AvatarImage = memo(function AvatarImage({
-  src,
-  alt,
-  size = 40,
-  className,
-}: {
-  src: string;
-  alt: string;
-  size?: number;
-  className?: string;
-}) {
-  const [error, setError] = useState(false);
 
-  // Tạo URL avatar ngẫu nhiên dựa trên tên (Seed) nếu không có ảnh
-  // API: DiceBear (Free service)
-  const fallbackSrc = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(
-    alt
-  )}`;
-
-  return (
-    <div
-      className={cn(
-        "relative rounded-full overflow-hidden bg-muted",
-        className
-      )}
-      style={{ width: size, height: size }}
-    >
-      <Image
-        src={error ? fallbackSrc : src}
-        alt={alt}
-        fill
-        sizes={`${size}px`}
-        className="object-cover"
-        onError={() => setError(true)}
-      />
-    </div>
-  );
-});

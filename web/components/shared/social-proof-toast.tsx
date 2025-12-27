@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserAvatar } from "@/components/molecules/user-avatar";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -85,10 +85,12 @@ export function SocialProofToast() {
           className="fixed bottom-6 left-6 z-50 flex items-center gap-4 p-4 pr-6 bg-background/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl max-w-sm"
         >
           <div className="relative">
-            <Avatar className="h-10 w-10 border-2 border-primary">
-              <AvatarImage src={`/images/avatars/${name}.svg`} />
-              <AvatarFallback>{name[0]}</AvatarFallback>
-            </Avatar>
+             <UserAvatar 
+                  src={`/images/avatars/${name}.svg`} 
+                  alt={name}
+                  fallback={name.charAt(0)}
+                  className="w-12 h-12 border-2 border-white dark:border-white/10 shadow-md"
+                />
             <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-background animate-pulse"></span>
           </div>
           <div>

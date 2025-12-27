@@ -590,7 +590,7 @@ export class OrdersService {
       );
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const transactionResult = await this.prisma.$transaction(async (tx) => {
       if (newStatus === OrderStatus.CANCELLED) {
         for (const item of order.items) {
           await this.inventoryService.releaseStock(
@@ -613,13 +613,6 @@ export class OrdersService {
           address: true,
         },
       });
-
-      if (newStatus === OrderStatus.PROCESSING) {
-        // Automatically sync with GHN if addressId exists
-        if (updatedOrder.addressId) {
-          await this.syncWithGHN(updatedOrder);
-        }
-      }
 
       if (dto.notify !== false) {
         // Send email notification for status changes
@@ -689,6 +682,25 @@ export class OrdersService {
 
       return updatedOrder;
     });
+
+    // 🚀 OPTIMIZATION: Move External API Call (GHN) OUT of Transaction
+    // This prevents DB locks if GHN service is slow
+    if (newStatus === OrderStatus.PROCESSING) {
+      // Automatically sync with GHN if addressId exists
+      if (transactionResult.addressId) {
+        try {
+          await this.syncWithGHN(transactionResult);
+        } catch (e) {
+          this.logger.error(
+            `Post-transaction GHN sync failed for order ${id}`,
+            e,
+          );
+          // Non-blocking: Order status is already updated, just log errors
+        }
+      }
+    }
+
+    return transactionResult;
   }
 
   /**

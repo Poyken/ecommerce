@@ -277,6 +277,7 @@ model CartItem {
   sku       Sku      @relation(fields: [skuId], references: [id], onDelete: Cascade)
 
   @@unique([cartId, skuId])
+  @@index([skuId])
 }
 
 model Coupon {
@@ -322,6 +323,8 @@ model Order {
   address         Address?      @relation(fields: [addressId], references: [id])
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   items           OrderItem[]
+
+  @@index([couponId])
 
   // ============================================================
   // PERFORMANCE INDEXES (Production-ready)
@@ -379,6 +382,7 @@ model Review {
 
   @@unique([userId, productId, skuId])
   @@index([productId, rating])
+  @@index([skuId])
 }
 
 model AuditLog {
