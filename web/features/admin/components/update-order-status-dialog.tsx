@@ -1,16 +1,18 @@
 "use client";
 
-import { updateOrderStatusAction } from "@/features/admin/actions";
 import { FormDialog } from "@/components/shared/form-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/components/shared/use-toast";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { updateOrderStatusAction } from "@/features/admin/actions";
+import { cn } from "@/lib/utils";
 import { OrderStatus } from "@/types/models";
+import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -99,6 +101,8 @@ export function UpdateOrderStatusDialog({
     return !allowed.includes(optionValue);
   };
 
+  const isUnchanged = status === currentStatus;
+
   return (
     <FormDialog
       open={open}
@@ -107,6 +111,7 @@ export function UpdateOrderStatusDialog({
       description={t("orders.changeStatusOf", { id: orderId.slice(0, 8) })}
       onSubmit={handleUpdate}
       isPending={loading}
+      disabled={loading || isUnchanged}
       submitLabel={t("orders.updateStatus")}
     >
       <div className="space-y-4 py-4">
@@ -171,20 +176,34 @@ export function UpdateOrderStatusDialog({
           </div>
         )}
 
-        <div className="flex items-center space-x-2 pt-2">
-          <input
-            type="checkbox"
-            id="notify"
-            checked={notify}
-            onChange={(e) => setNotify(e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-          />
-          <label
-            htmlFor="notify"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+        {/* Custom Styled Checkbox "Send to user" */}
+        <div
+          onClick={() => setNotify(!notify)}
+          className={cn(
+            "flex items-center justify-between p-4 rounded-xl border-2 transition-all cursor-pointer group select-none",
+            notify
+              ? "border-primary/30 bg-primary/5"
+              : "border-muted hover:border-muted-foreground/30 bg-muted/20"
+          )}
+        >
+          <div className="space-y-1">
+            <label className="text-sm font-bold text-foreground cursor-pointer block">
+              {t("notifications.sendToUser")}
+            </label>
+            <p className="text-xs text-muted-foreground pr-4 font-medium leading-relaxed">
+              Notify customer about this status change via email/notification.
+            </p>
+          </div>
+          <div
+            className={cn(
+              "w-6 h-6 rounded-md border-2 flex items-center justify-center transition-colors shrink-0",
+              notify
+                ? "bg-primary border-primary text-primary-foreground shadow-sm scale-110"
+                : "border-muted-foreground/30 group-hover:border-primary/50"
+            )}
           >
-            {t("notifications.sendToUser")}
-          </label>
+            {notify && <Check size={14} strokeWidth={3} />}
+          </div>
         </div>
       </div>
     </FormDialog>

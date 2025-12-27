@@ -19,21 +19,21 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-    Notification,
-    useNotifications,
+  Notification,
+  useNotifications,
 } from "@/contexts/notification-context";
 import { Link, useRouter } from "@/i18n/routing";
 import { formatDistanceToNow } from "date-fns";
@@ -55,6 +55,16 @@ export function AdminNotificationBell() {
     useState<Notification | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
+  // Filter notifications relevant to Admin
+  // Only show notifications related to admin workflow: Orders, Stock, Reviews
+  const safeNotifications = Array.isArray(notifications) ? notifications : [];
+  const adminNotifications = safeNotifications.filter((n) => {
+    const type = n.type?.toUpperCase() || "";
+    return ["ORDER_PLACED", "ORDER_CANCELLED", "LOW_STOCK", "REVIEW"].some(
+      (t) => type.includes(t)
+    );
+  });
+
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     if (newOpen) {
@@ -64,25 +74,23 @@ export function AdminNotificationBell() {
 
   const handleNotificationClick = (notification: Notification) => {
     markAsRead(notification.id);
-    // If it's an order notification, go to admin order detail
-    if (notification.type?.includes("ORDER") && notification.link) {
-        const orderId = notification.link.match(/\/orders\/([a-zA-Z0-9-]+)/)?.[1];
-        if (orderId) {
-             router.push(`/admin/orders/${orderId}`);
-        } else {
-             router.push(notification.link);
-        }
+    // If it's an order notification, go to admin orders page with orderId to open dialog
+    if (
+      (notification.type?.includes("ORDER") ||
+        notification.link?.includes("/orders/")) &&
+      notification.link
+    ) {
+      const orderId = notification.link.match(/\/orders\/([a-zA-Z0-9-]+)/)?.[1];
+      if (orderId) {
+        // Redirect to admin orders page with orderId query param to auto-open dialog
+        router.push(`/admin/orders?orderId=${orderId}`);
+      } else {
+        router.push(notification.link);
+      }
     } else if (notification.link) {
       router.push(notification.link);
     }
-    
-    // Don't show dialog if we navigated? 
-    // Actually user might want to see details.
-    // But user asked "action của order phải dẫn đến /admin/orders chứ".
-    // So navigation is priority.
-    
-    // setSelectedNotification(notification);
-    // setDialogOpen(true);
+
     setOpen(false);
   };
 
@@ -90,16 +98,12 @@ export function AdminNotificationBell() {
     refetch();
   };
 
-  // Parse order info from notification
+  // Parse order info from notification for Dialog details (fallback)
   const getOrderInfo = (notification: Notification | null) => {
     if (!notification) return null;
 
     const orderId = notification.link?.match(/\/orders\/([a-zA-Z0-9-]+)/)?.[1];
-    // Try to extract amount from message (e.g., "2.500.000đ" or "$2,500")
-    const amountMatch = notification.message?.match(
-      /(\d{1,3}(?:[.,]\d{3})*(?:[.,]\d{2})?)\s*đ?/
-    );
-
+    
     return {
       orderId: orderId || "N/A",
       shortId: orderId ? `#${orderId.slice(0, 8).toUpperCase()}` : "N/A",
@@ -108,18 +112,19 @@ export function AdminNotificationBell() {
 
   const orderInfo = getOrderInfo(selectedNotification);
 
+  // Calculate admin-specific unread count based on loaded notifications
+  // This ensures the badge matches the visual list, resolving "User vs Admin notification" confusion
+  const adminUnreadCount = adminNotifications.filter((n) => !n.isRead).length;
+
   return (
     <>
       <Popover open={open} onOpenChange={handleOpenChange} modal={false}>
         <PopoverTrigger asChild>
-          <button className="transition-all hover:text-primary text-foreground/70 relative w-10 h-10 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-white/5 rounded-full group">
-            <Bell
-              size={22}
-              className="group-hover:scale-110 transition-transform"
-            />
-            {unreadCount > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground ring-2 ring-background">
-                {unreadCount > 99 ? "99+" : unreadCount}
+          <button className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors">
+            <Bell size={20} className="text-muted-foreground" />
+            {adminUnreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground flex items-center justify-center ring-2 ring-background z-50 shadow-sm">
+                {adminUnreadCount > 99 ? "99+" : adminUnreadCount}
               </span>
             )}
             <span className="sr-only">Notifications</span>
@@ -129,15 +134,14 @@ export function AdminNotificationBell() {
           {/* Header */}
           <div className="flex items-center justify-between border-b px-4 py-3 bg-muted/30">
             <div className="flex items-center gap-2">
-              <Bell className="h-4 w-4 text-primary" />
-              <h4 className="font-semibold">{t("title")}</h4>
-              {unreadCount > 0 && (
-                <span className="px-2 py-0.5 text-xs font-bold bg-primary text-primary-foreground rounded-full">
-                  {unreadCount}
+              <h4 className="font-semibold text-sm">{t("title")}</h4>
+              {adminUnreadCount > 0 && (
+                <span className="px-1.5 py-0.5 text-[10px] font-bold bg-primary/10 text-primary rounded-full">
+                  {adminUnreadCount} new
                 </span>
               )}
             </div>
-            {unreadCount > 0 && (
+            {adminUnreadCount > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -151,9 +155,9 @@ export function AdminNotificationBell() {
 
           {/* Notification List */}
           <ScrollArea className="h-[360px]">
-            {notifications.length > 0 ? (
+            {adminNotifications.length > 0 ? (
               <div className="flex flex-col">
-                {notifications.slice(0, 8).map((notification) => (
+                {adminNotifications.slice(0, 10).map((notification) => (
                   <AdminNotificationItem
                     key={notification.id}
                     notification={notification}
@@ -173,7 +177,7 @@ export function AdminNotificationBell() {
           </ScrollArea>
 
           {/* Footer - View All */}
-          {notifications.length > 0 && (
+          {safeNotifications.length > 0 && (
             <div className="border-t p-2 bg-muted/20">
               <Link href="/admin/notifications" onClick={() => setOpen(false)}>
                 <Button
@@ -190,7 +194,8 @@ export function AdminNotificationBell() {
         </PopoverContent>
       </Popover>
 
-      {/* Order Detail Dialog */}
+      {/* Order Detail Dialog - Fallback used by AdminNotificationItem actions if needed, 
+          but primarily we redirect to admin/orders page */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

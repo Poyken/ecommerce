@@ -40,7 +40,7 @@ export function ProductGridView({
   products,
   pagination,
 }: ProductGridViewProps) {
-  const t = useTranslations("common");
+  const t = useTranslations("shop");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

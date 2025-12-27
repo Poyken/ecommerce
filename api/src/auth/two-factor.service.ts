@@ -1,7 +1,7 @@
+import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
-import { PrismaService } from '@core/prisma/prisma.service';
 
 @Injectable()
 export class TwoFactorService {
@@ -14,7 +14,7 @@ export class TwoFactorService {
     const secret = authenticator.generateSecret();
     const otpauthUrl = authenticator.keyuri(
       userEmail,
-      'Poyken Ecommerce',
+      'Luxe Ecommerce',
       secret,
     );
 

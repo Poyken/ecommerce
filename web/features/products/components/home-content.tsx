@@ -1,18 +1,19 @@
 "use client";
 
-import { FloatingCart } from "@/features/cart/components/floating-cart";
-import { DealSection } from "@/features/marketing/components/deal-section";
-import { FAQAccordion } from "@/features/marketing/components/faq-accordion";
-import { FeaturedBrands } from "@/features/brands/components/featured-brands";
-import { FeaturedCategories } from "@/features/categories/components/featured-categories";
-import { HeroSection } from "@/features/products/components/hero-section";
-import { NewArrivals } from "@/features/products/components/new-arrivals";
-import { NewsletterForm } from "@/features/marketing/components/newsletter-form";
+import { ChatWidget } from "@/features/chat/components/chat-widget";
+
 import {
   CategoriesSkeleton,
   ProductsSkeleton,
 } from "@/components/shared/skeletons/home-skeleton";
+import { FeaturedBrands } from "@/features/brands/components/featured-brands";
+import { FeaturedCategories } from "@/features/categories/components/featured-categories";
+import { DealSection } from "@/features/marketing/components/deal-section";
+import { FAQAccordion } from "@/features/marketing/components/faq-accordion";
+import { NewsletterForm } from "@/features/marketing/components/newsletter-form";
 import { TestimonialsCarousel } from "@/features/marketing/components/testimonials-carousel";
+import { HeroSection } from "@/features/products/components/hero-section";
+import { NewArrivals } from "@/features/products/components/new-arrivals";
 import { TrendingProducts } from "@/features/products/components/trending-products";
 import { Link } from "@/i18n/routing";
 import {
@@ -75,8 +76,8 @@ export function HomeContent({
 
       <HeroSection />
 
-      {/* Floating Cart */}
-      <FloatingCart />
+      {/* Floating Chat Widget */}
+      <ChatWidget />
 
       <main className="space-y-16 pb-16">
         {/* 1. Featured Categories */}

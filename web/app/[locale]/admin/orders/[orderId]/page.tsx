@@ -122,13 +122,13 @@ export default async function OrderDetailsPage({
             </span>
 
             {order.status === "CANCELLED" &&
-              (order as any).cancellationReason && (
+              order.cancellationReason && (
                 <>
                   <span className="font-medium text-red-500">
                     Cancellation Reason:
                   </span>
                   <span className="text-red-500 font-medium">
-                    {(order as any).cancellationReason}
+                    {order.cancellationReason}
                   </span>
                 </>
               )}

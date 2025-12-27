@@ -1,3 +1,4 @@
+import { StatusBadge } from "@/components/shared/status-badge";
 import {
   Card,
   CardContent,
@@ -5,9 +6,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { StatusBadge } from "@/components/shared/status-badge";
 import { BankTransferQR } from "@/features/orders/components/bank-transfer-qr";
 import { BuyAgainButton } from "@/features/orders/components/buy-again-button";
+import { CancelOrderButton } from "@/features/orders/components/cancel-order-button";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";
 import { formatCurrency } from "@/lib/utils";
@@ -76,6 +77,8 @@ interface Order {
   items: OrderItem[];
   paymentMethod?: string;
   paymentStatus?: string;
+  cancellationReason?: string;
+  shippingCode?: string;
 }
 
 import { Metadata } from "next";
@@ -96,36 +99,45 @@ export async function generateMetadata({
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 
+import { EmptyState } from "@/components/shared/empty-state";
+import { AlertCircle, PackageSearch } from "lucide-react";
+import { redirect } from "next/navigation";
+
 async function DynamicOrderDetail({ id }: { id: string }) {
   let order: Order | null = null;
   let error = null;
 
   // Trigger dynamic access before try/catch to allow PPR to work correctly.
-  // In Next.js 16, cookies() throws a special error during static prerender.
   await cookies();
 
   const t = await getTranslations("orders");
 
   try {
-    const res = await http<{ data: Order }>(`/orders/my-orders/${id}`);
+    const res = await http<{ data: Order }>(`/orders/my-orders/${id}`, {
+      skipRedirectOn401: true, // Handle explicitly to avoid NEXT_REDIRECT in catch block
+    });
     order = res.data;
-  } catch (e: unknown) {
+  } catch (e: any) {
+    if (e?.status === 401) {
+      redirect("/login");
+    }
     error = e instanceof Error ? e.message : t("orderNotFound");
   }
 
   if (error || !order) {
     return (
-      <div className="container mx-auto px-4 pt-24 pb-8">
-        <h1 className="text-2xl font-bold mb-4">{t("orderDetail")}</h1>
-        <div className="bg-red-50 text-red-600 p-4 rounded-md">
-          {error || t("orderNotFound")}
-        </div>
-        <Link
-          href="/orders"
-          className="text-primary hover:underline mt-4 inline-block"
-        >
-          &larr; {t("backToOrders")}
-        </Link>
+      <div className="container mx-auto px-4 pt-24 pb-8 max-w-4xl">
+        <EmptyState
+          icon={error ? AlertCircle : PackageSearch}
+          title={error ? t("orderNotFound") : t("loadingDetails")}
+          description={
+            error
+              ? t("checkOrderId") || "Please check the order ID and try again."
+              : "Retrieving your order information..."
+          }
+          actionHref="/orders"
+          actionLabel={t("backToOrders")}
+        />
       </div>
     );
   }
@@ -137,9 +149,14 @@ async function DynamicOrderDetail({ id }: { id: string }) {
           {t("orderNumber")}
           {order.id.slice(0, 8)}...
         </h1>
-        <Link href="/orders" className="text-primary hover:underline">
-          &larr; {t("backToOrders")}
-        </Link>
+        <div className="flex items-center gap-4">
+          {order.status === "PENDING" && (
+            <CancelOrderButton orderId={order.id} />
+          )}
+          <Link href="/orders" className="text-primary hover:underline">
+            &larr; {t("backToOrders")}
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -153,6 +170,17 @@ async function DynamicOrderDetail({ id }: { id: string }) {
                   label={t(`status.${order.status}`)}
                 />
               </div>
+              {/* Show cancellation reason if order is cancelled */}
+              {order.status === "CANCELLED" && order.cancellationReason && (
+                <div className="mt-4 p-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 rounded-lg">
+                  <p className="text-sm font-medium text-red-600 dark:text-red-400">
+                    {t("cancellationReason") || "Cancellation Reason"}:
+                  </p>
+                  <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                    {order.cancellationReason}
+                  </p>
+                </div>
+              )}
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
@@ -281,6 +309,25 @@ async function DynamicOrderDetail({ id }: { id: string }) {
                   {order.shippingAddress}
                 </p>
               </div>
+
+              {order.shippingCode && (
+                <div className="mt-3 p-3 bg-primary/5 rounded-lg border border-primary/10">
+                  <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-1">
+                    {t("shippingCode") || "Mã vận đơn (GHN)"}
+                  </p>
+                  <p className="font-mono text-primary font-bold">
+                    {order.shippingCode}
+                  </p>
+                  <a
+                    href={`https://tracking.ghn.dev/?order_code=${order.shippingCode}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline mt-1 inline-block"
+                  >
+                    {t("trackOrder") || "Theo dõi hành trình"} &rarr;
+                  </a>
+                </div>
+              )}
 
               <Separator />
 

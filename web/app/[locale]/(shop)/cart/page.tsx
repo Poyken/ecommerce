@@ -44,11 +44,16 @@ async function DynamicCart() {
     const accessToken = cookieStore.get("accessToken");
 
     if (accessToken) {
-      const [cartRes] = await Promise.all([http<ApiResponse<Cart>>("/cart")]);
+      const [cartRes] = await Promise.all([
+        http<ApiResponse<Cart>>("/cart", { skipRedirectOn401: true }),
+      ]);
       cart = cartRes.data;
     }
-  } catch {
-    // Handle error
+  } catch (e: any) {
+    // If token is invalid (401), allow CartClient to handle guest cart or redirect
+    if (e?.status === 401) {
+       // Optional: Could redirect, or just let it render empty cart
+    }
   }
 
   return <CartClient cart={cart} />;

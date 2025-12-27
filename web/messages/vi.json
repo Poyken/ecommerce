@@ -254,6 +254,7 @@
     "viewDetails": "Xem chi tiết",
     "cancelOrder": "Hủy đơn hàng",
     "confirmCancel": "Bạn có chắc chắn muốn hủy đơn hàng này không?",
+    "cancellationReason": "Lý do hủy đơn",
     "reorder": "Mua lại",
     "status": {
       "PENDING": "Chờ xử lý",
@@ -264,7 +265,8 @@
       "COMPLETED": "Hoàn thành",
       "RETURNED": "Đã hoàn trả",
       "PAID": "Đã thanh toán",
-      "UNPAID": "Chưa thanh toán"
+      "UNPAID": "Chưa thanh toán",
+      "FAILED": "Thất bại"
     },
     "orderDetail": "Chi tiết đơn hàng",
     "orderNotFound": "Không tìm thấy đơn hàng",

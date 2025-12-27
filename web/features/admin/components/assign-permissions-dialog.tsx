@@ -1,11 +1,11 @@
 "use client";
 
-import { assignPermissionsAction, getPermissionsAction } from "@/features/admin/actions";
+import { FormDialog } from "@/components/shared/form-dialog";
+import { useToast } from "@/components/shared/use-toast";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FormDialog } from "@/components/shared/form-dialog";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/shared/use-toast";
+import { assignPermissionsAction, getPermissionsAction } from "@/features/admin/actions";
 import { Permission } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
@@ -57,15 +57,15 @@ export function AssignPermissionsDialog({
   useEffect(() => {
     if (open) {
       startTransition(async () => {
-        const { data } = await getPermissionsAction();
-        if (data) {
-          setPermissions(data);
-          // Đặt các quyền hiện được gán
-          const current = data
-            .filter((p: Permission) => currentPermissions.includes(p.name))
-            .map((p: Permission) => p.id);
-          setSelectedPermissionIds(current);
-        }
+        const result = await getPermissionsAction();
+        if ('error' in result || !result.data) return;
+        const data = result.data;
+        setPermissions(data);
+        // Đặt các quyền hiện được gán
+        const current = data
+          .filter((p: Permission) => currentPermissions.includes(p.name))
+          .map((p: Permission) => p.id);
+        setSelectedPermissionIds(current);
       });
     }
   }, [open, currentPermissions]);

@@ -31,11 +31,11 @@
 
 import { GlassButton } from "@/components/shared/glass-button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { validateCouponAction } from "@/features/coupons/coupon-actions";
 import { placeOrderAction } from "@/features/orders/actions";
@@ -48,8 +48,8 @@ import { AddressSelector } from "@/features/checkout/components/address-selector
 import { CouponInput } from "@/features/checkout/components/coupon-input";
 import { OrderSummary } from "@/features/checkout/components/order-summary";
 import {
-    PaymentMethodSelector,
-    PaymentMethodType,
+  PaymentMethodSelector,
+  PaymentMethodType,
 } from "@/features/checkout/components/payment-method-selector";
 import { Link, useRouter } from "@/i18n/routing";
 import { formatCurrency } from "@/lib/utils";
@@ -528,7 +528,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
           setIsPaymentModalOpen(open);
         }}
       >
-        <DialogContent className="max-w-7xl!">
+        <DialogContent className="max-w-7xl! max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{t("completePayment")}</DialogTitle>
             <DialogDescription>{t("scanQrDesc")}</DialogDescription>

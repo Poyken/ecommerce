@@ -25,6 +25,7 @@ interface LogoProps {
   variant?: "light" | "dark" | "default";
   size?: "sm" | "md" | "lg";
   collapsed?: boolean;
+  href?: any;
 }
 
 export function Logo({
@@ -32,6 +33,7 @@ export function Logo({
   variant = "default",
   size = "md",
   collapsed = false,
+  href = "/",
 }: LogoProps) {
   const sizes = {
     sm: { box: "w-8 h-8", text: "text-lg", char: "text-base" },
@@ -46,7 +48,7 @@ export function Logo({
   };
 
   return (
-    <Link href="/" className={cn("flex items-center gap-2.5 group", className)}>
+    <Link href={href} className={cn("flex items-center gap-2.5 group", className)}>
       <motion.div
         whileHover={{ scale: 1.1, rotate: 5 }}
         whileTap={{ scale: 0.95 }}

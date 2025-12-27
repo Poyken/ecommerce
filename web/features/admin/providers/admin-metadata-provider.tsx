@@ -77,16 +77,21 @@ export function AdminMetadataProvider({
     revalidateOnFocus: false,
   });
 
-  const brands = brandsRes?.data ? (
-    Array.isArray(brandsRes.data) 
-      ? brandsRes.data 
-      : (brandsRes.data as any).data || []
-  ) : [];
-  const categories = categoriesRes?.data ? (
-    Array.isArray(categoriesRes.data) 
-      ? categoriesRes.data 
-      : (categoriesRes.data as any).data || []
-  ) : [];
+  // Extract brands with proper type guard
+  const brands = (() => {
+    if (!brandsRes || 'error' in brandsRes) return [];
+    if (Array.isArray(brandsRes.data)) return brandsRes.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (brandsRes.data as any)?.data || [];
+  })();
+  
+  // Extract categories with proper type guard
+  const categories = (() => {
+    if (!categoriesRes || 'error' in categoriesRes) return [];
+    if (Array.isArray(categoriesRes.data)) return categoriesRes.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return (categoriesRes.data as any)?.data || [];
+  })();
 
   return (
     <AdminMetadataContext.Provider

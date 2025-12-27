@@ -318,6 +318,8 @@ model Order {
   couponId        String?
   addressId       String?
   shippingCode    String?
+  ghnStatus       String?
+  expectedDeliveryTime DateTime?
   cancellationReason String?
   coupon          Coupon?       @relation(fields: [couponId], references: [id])
   address         Address?      @relation(fields: [addressId], references: [id])

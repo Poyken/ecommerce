@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { Logo } from "@/features/layout/components/logo";
 import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/features/auth/providers/auth-provider";
 import {
   ArrowLeft,
   ArrowRight,
@@ -205,6 +205,7 @@ export function AdminSidebar() {
         )}
       >
         <Logo
+          href="/admin"
           collapsed={isCollapsed}
           className={cn(
             "transition-all duration-300",

@@ -1,3 +1,4 @@
+import { PrismaService } from '@core/prisma/prisma.service';
 import {
   Body,
   Controller,
@@ -12,7 +13,6 @@ import { ConfigService } from '@nestjs/config';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import * as crypto from 'crypto';
 import * as querystring from 'qs';
-import { PrismaService } from '@core/prisma/prisma.service';
 import { VNPayUtils } from './vnpay.utils';
 
 @ApiTags('Payment')
@@ -67,7 +67,7 @@ export class PaymentController {
         });
 
         return res.redirect(
-          `${process.env.FRONTEND_URL || 'http://localhost:3000'}/en/order-failed`,
+          `${process.env.FRONTEND_URL || 'http://localhost:3000'}/en/order-failed/${orderId}`,
         );
       }
     } else {

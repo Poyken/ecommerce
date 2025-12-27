@@ -82,7 +82,7 @@ export function NotificationHistoryTab() {
       undefined,
       typeFilter
     );
-    if (res.data) {
+    if (res && 'data' in res && res.data) {
       setNotifications(res.data);
       if (res.meta) {
         setTotalPages(res.meta.lastPage);
@@ -106,7 +106,7 @@ export function NotificationHistoryTab() {
   });
 
   // Get order ID from notification link
-  const getOrderId = (link?: string): string | null => {
+  const getOrderId = (link?: string | null): string | null => {
     if (!link) return null;
     const match = link.match(/\/orders\/([a-zA-Z0-9-]+)/);
     return match ? match[1] : null;
@@ -170,11 +170,23 @@ export function NotificationHistoryTab() {
     }
   };
 
-  const isOrderNotification = (notif: Notification) => {
-    return (
-      notif.type?.toUpperCase() === "ORDER" ||
-      notif.type?.toUpperCase() === "ORDER_PLACED"
-    );
+  // Check if this is a NEW order notification that can be acted upon
+  const isNewOrderNotification = (notif: Notification) => {
+    const type = notif.type?.toUpperCase() || "";
+    // Only ORDER or ORDER_PLACED = new order needing action
+    // Exclude status updates like ORDER_PROCESSING, ORDER_CANCELLED, etc.
+    return type === "ORDER" || type === "ORDER_PLACED";
+  };
+
+  // Check if notification is about an already processed order
+  const isAlreadyProcessedType = (notif: Notification) => {
+    return [
+      "ORDER_PROCESSING",
+      "ORDER_SHIPPED",
+      "ORDER_DELIVERED",
+      "ORDER_CANCELLED",
+      "ORDER_RETURNED",
+    ].includes(notif.type?.toUpperCase() || "");
   };
 
   const getTypeStyle = (type: string) => {
@@ -195,7 +207,7 @@ export function NotificationHistoryTab() {
   };
 
   // Stats
-  const orderCount = notifications.filter(isOrderNotification).length;
+  const orderCount = notifications.filter(isNewOrderNotification).length;
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
@@ -291,8 +303,9 @@ export function NotificationHistoryTab() {
             ) : (
               filteredNotifications.map((notif) => {
                 const orderId = getOrderId(notif.link);
+                // Only show actions for NEW orders, not status updates
                 const canTakeAction =
-                  isOrderNotification(notif) && orderId && !notif.isRead;
+                  isNewOrderNotification(notif) && orderId && !notif.isRead && !isAlreadyProcessedType(notif);
 
                 return (
                   <TableRow

@@ -94,8 +94,7 @@ import { CacheModule } from '@nestjs/cache-manager';
         JWT_REFRESH_EXPIRED: Joi.string().default('7d'),
 
         // Redis
-        REDIS_HOST: Joi.string().default('localhost'),
-        REDIS_PORT: Joi.number().default(6379),
+        REDIS_URL: Joi.string().required(),
 
         // Frontend
         FRONTEND_URL: Joi.string().required(),

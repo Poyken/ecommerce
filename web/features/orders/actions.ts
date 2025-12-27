@@ -138,6 +138,30 @@ export async function cancelOrderAction(orderId: string) {
 }
 
 /**
+ * Hủy đơn hàng với lý do - User cancel flow
+ */
+export async function cancelOrderWithReasonAction(
+  orderId: string,
+  cancellationReason: string
+) {
+  try {
+    await http(`/orders/${orderId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        status: "CANCELLED",
+        cancellationReason,
+        notify: true,
+      }),
+    });
+    revalidatePath("/orders");
+    revalidatePath(`/orders/${orderId}`);
+    return { success: true };
+  } catch (error: unknown) {
+    return { error: (error as Error).message };
+  }
+}
+
+/**
  * Lấy chi tiết một đơn hàng của người dùng hiện tại.
  */
 export async function getOrderDetailsAction(orderId: string) {

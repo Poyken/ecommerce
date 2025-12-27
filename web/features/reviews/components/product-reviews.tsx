@@ -79,9 +79,11 @@ export function ProductReviews({
         checkReviewEligibilityAction(productId),
       ]);
 
-      if (reviewsRes.success && reviewsRes.data) {
+      if (reviewsRes.success && Array.isArray(reviewsRes.data)) {
         setReviews(reviewsRes.data);
         setMeta(reviewsRes.meta);
+      } else {
+        setReviews([]);
       }
 
       if (eligibilityRes.success && eligibilityRes.data) {
@@ -232,11 +234,7 @@ export function ProductReviews({
         <div className="md:col-span-2 space-y-8">
           {loading ? (
             <ReviewListSkeleton count={3} />
-          ) : reviews.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground/60 font-medium">
-              {t("noReviews")}
-            </div>
-          ) : (
+          ) : Array.isArray(reviews) && reviews.length > 0 ? (
             <>
               {reviews.map((review, index) => (
                 <ReviewItem key={review.id} review={review} index={index} />
@@ -256,6 +254,10 @@ export function ProductReviews({
                 </div>
               )}
             </>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground/60 font-medium">
+              {t("noReviews")}
+            </div>
           )}
         </div>
       </div>

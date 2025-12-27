@@ -152,7 +152,13 @@ export class GHNService {
       this.configService.get('GHN_CREATE_ORDER_URL') ||
       `${this.v2Url}shipping-order/create`;
     try {
-      const response = await axios.post(createUrl, orderData, {
+      const payload = {
+        ...orderData,
+        from_district_id: parseInt(
+          this.configService.get('GHN_FROM_DISTRICT_ID') || '1482',
+        ),
+      };
+      const response = await axios.post(createUrl, payload, {
         headers: this.shopHeaders,
       });
       return response.data.data;

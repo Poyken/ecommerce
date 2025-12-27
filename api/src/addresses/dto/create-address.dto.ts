@@ -65,4 +65,16 @@ export class CreateAddressDto {
   @IsBoolean()
   @IsOptional()
   isDefault?: boolean;
+
+  @ApiProperty({ example: 1454, required: false })
+  @IsOptional()
+  districtId?: number;
+
+  @ApiProperty({ example: 202, required: false })
+  @IsOptional()
+  provinceId?: number;
+
+  @ApiProperty({ example: '21012', required: false })
+  @IsOptional()
+  wardCode?: string;
 }

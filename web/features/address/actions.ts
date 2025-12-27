@@ -42,6 +42,9 @@ interface AddressFormData {
   postalCode?: string;
   country?: string;
   isDefault: boolean;
+  districtId?: number;
+  provinceId?: number;
+  wardCode?: string;
 }
 
 // =============================================================================
@@ -66,6 +69,13 @@ function extractAddressData(formData: FormData): AddressFormData {
     postalCode: formData.get("postalCode")?.toString(),
     country: formData.get("country")?.toString(),
     isDefault: formData.get("isDefault") === "on",
+    districtId: formData.get("districtId")
+      ? Number(formData.get("districtId"))
+      : undefined,
+    provinceId: formData.get("provinceId")
+      ? Number(formData.get("provinceId"))
+      : undefined,
+    wardCode: formData.get("wardCode")?.toString(),
   };
 }
 
@@ -81,7 +91,9 @@ function validateRequiredFields(data: AddressFormData): boolean {
     data.phoneNumber &&
     data.street &&
     data.city &&
-    data.district
+    data.district &&
+    data.districtId &&
+    data.wardCode
   );
 }
 

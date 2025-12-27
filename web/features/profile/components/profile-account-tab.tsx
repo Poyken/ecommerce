@@ -20,12 +20,12 @@
 
 "use client";
 
-import { updateProfileAction } from "@/features/profile/actions";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
+import { useToast } from "@/components/shared/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/shared/use-toast";
+import { updateProfileAction } from "@/features/profile/actions";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Plus, Trash2, User as UserIcon } from "lucide-react";
@@ -37,7 +37,7 @@ interface User {
   firstName: string;
   lastName: string;
   email: string;
-  avatarUrl?: string;
+  avatarUrl?: string | null;
 }
 
 export function ProfileAccountTab({ user }: { user: User }) {

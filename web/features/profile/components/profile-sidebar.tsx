@@ -19,19 +19,19 @@
 
 "use client";
 
-import { logoutAction } from "@/features/auth/actions";
 import { GlassCard } from "@/components/shared/glass-card";
+import { logoutAction } from "@/features/auth/actions";
 import { cn } from "@/lib/utils";
 import {
-  FileText,
-  Heart,
-  KeyRound,
-  LayoutDashboard,
-  LogOut,
-  MapPin,
-  ShoppingBag,
-  Ticket,
-  User,
+    FileText,
+    Heart,
+    KeyRound,
+    LayoutDashboard,
+    LogOut,
+    MapPin,
+    ShoppingBag,
+    Ticket,
+    User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -43,7 +43,7 @@ interface ProfileSidebarProps {
     firstName: string;
     lastName: string;
     email: string;
-    avatarUrl?: string;
+    avatarUrl?: string | null;
   };
 }
 

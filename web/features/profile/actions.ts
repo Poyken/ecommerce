@@ -54,7 +54,6 @@ import { cache } from "react";
  *   console.log(`Hello, ${profile.data.firstName}!`);
  * }
  */
-import { deleteSession } from "@/lib/session";
 import { cookies } from "next/headers";
 
 export const getProfileAction = cache(async () => {
@@ -77,7 +76,7 @@ export const getProfileAction = cache(async () => {
       message.toLowerCase().includes("not found")
     ) {
       // Session is stale (DB reset?), clear it so user is logged out
-      await deleteSession();
+      // await deleteSession(); // Cannot modify cookies in Server Component rendering
       return { data: null, error: "Session expired" };
     }
 

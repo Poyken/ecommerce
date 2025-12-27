@@ -83,6 +83,7 @@ export function SalesTrendChart({ data }: { data: any[] }) {
                 borderRadius: "1rem",
                 border: "1px solid hsl(var(--foreground) / 0.1)",
                 backgroundColor: "hsl(var(--background))",
+                color: "hsl(var(--foreground))",
               }}
             />
             <Line
@@ -127,18 +128,20 @@ export function BestSellersChart({ data }: { data: any[] }) {
               className="font-medium"
             />
             <Tooltip
-              cursor={{ fill: "hsl(var(--foreground) / 0.05)" }}
+              cursor={false}
+              formatter={(value) => [`${value ?? 0} sold`, "Quantity"]}
+              labelFormatter={(label) => `Product: ${label}`}
               contentStyle={{
                 borderRadius: "1rem",
                 border: "1px solid hsl(var(--foreground) / 0.1)",
                 backgroundColor: "hsl(var(--background))",
+                color: "hsl(var(--foreground))",
               }}
             />
             <Bar
               dataKey="sales"
               fill="hsl(var(--primary))"
               radius={[8, 8, 0, 0]}
-              activeBar={{ fill: "hsl(var(--primary) / 0.8)" }}
             />
           </BarChart>
         </ResponsiveContainer>
@@ -177,6 +180,7 @@ export function OrderStatusChart({ data }: { data: any[] }) {
                 borderRadius: "1rem",
                 border: "1px solid hsl(var(--foreground) / 0.1)",
                 backgroundColor: "hsl(var(--background))",
+                color: "hsl(var(--foreground))",
                 fontWeight: 600,
               }}
             />

@@ -19,43 +19,44 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { OrderDetailsDialog } from "@/features/admin/components/order-details-dialog";
 import { UpdateOrderStatusDialog } from "@/features/admin/components/update-order-status-dialog";
 import {
-    Check,
-    Clock,
-    Download,
-    Edit,
-    Eye,
-    Package,
-    RefreshCw,
-    Search,
-    ShoppingBag,
-    Trash2,
-    Truck,
-    X,
+  Check,
+  Clock,
+  Download,
+  Edit,
+  Eye,
+  Package,
+  RefreshCw,
+  Search,
+  ShoppingBag,
+  Trash2,
+  Truck,
+  X,
 } from "lucide-react";
 
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-    AdminEmptyState,
-    AdminPageHeader,
-    AdminTableWrapper,
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import { Order, OrderStatus } from "@/types/models";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 type FilterType =
   | "all"
@@ -82,9 +83,42 @@ export function OrdersClient({
 }) {
   const t = useTranslations("admin");
   const { hasPermission } = useAuth();
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  
+  // Track processed orderId to prevent infinite loop/re-processing
+  const processedOrderIdRef = useRef<string | null>(null);
+
+  // Auto-open order details dialog when orderId query param is present (from notification click)
+  useEffect(() => {
+    const orderIdFromUrl = searchParams.get("orderId");
+    
+    // Only process if we have an orderId and we haven't processed this specific ID yet
+    // OR if we processed it but the dialog is closed (user clicked notification again)
+    if (orderIdFromUrl && (orderIdFromUrl !== processedOrderIdRef.current || !detailsDialogOpen)) {
+      processedOrderIdRef.current = orderIdFromUrl;
+
+      // Find the order in the list or create a temporary one just to open dialog
+      const order = orders.find((o) => o.id === orderIdFromUrl);
+      if (order) {
+        setSelectedOrder(order);
+        setDetailsDialogOpen(true);
+      } else {
+        // Order not in current page, create temporary order object to open dialog
+        setSelectedOrder({ id: orderIdFromUrl } as Order);
+        setDetailsDialogOpen(true);
+      }
+      
+      // Clean up URL without triggering a refresh that resets state
+      // window.history.replaceState is safer than router.replace here to avoid re-running server components
+      const newUrl = new URL(window.location.href);
+      newUrl.searchParams.delete("orderId");
+      window.history.replaceState(null, "", newUrl.toString());
+    }
+  }, [searchParams, orders, detailsDialogOpen]);
 
   // Stats from server
   const pendingCount = counts?.PENDING || 0;

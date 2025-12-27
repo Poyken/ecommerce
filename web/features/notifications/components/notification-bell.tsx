@@ -23,9 +23,9 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotifications } from "@/contexts/notification-context";
@@ -42,6 +42,19 @@ export function NotificationBell() {
   const t = useTranslations("notifications");
   const [open, setOpen] = useState(false);
   const router = useRouter();
+
+  // Filter out admin-specific notifications for the user bell
+  const safeNotifications = Array.isArray(notifications) ? notifications : [];
+  const userNotifications = safeNotifications.filter((n) => {
+    const type = n.type?.toUpperCase() || "";
+    // Hide notifications explicitly marked for admin
+    return !["ADMIN_NEW_ORDER", "LOW_STOCK", "REVIEW_CREATED"].some((t) =>
+      type.includes(t)
+    );
+  });
+
+  // Calculate unread count specifically for user notifications
+  const userUnreadCount = userNotifications.filter((n) => !n.isRead).length;
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
@@ -67,9 +80,9 @@ export function NotificationBell() {
             size={22}
             className="group-hover:scale-110 transition-transform"
           />
-          {unreadCount > 0 && (
+          {userUnreadCount > 0 && (
             <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground ring-2 ring-background">
-              {unreadCount > 99 ? "99+" : unreadCount}
+              {userUnreadCount > 99 ? "99+" : userUnreadCount}
             </span>
           )}
           <span className="sr-only">Notifications</span>
@@ -78,7 +91,7 @@ export function NotificationBell() {
       <PopoverContent className="w-80 p-0" align="end">
         <div className="flex items-center justify-between border-b px-4 py-3">
           <h4 className="font-semibold">{t("title")}</h4>
-          {unreadCount > 0 && (
+          {userUnreadCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
@@ -90,9 +103,9 @@ export function NotificationBell() {
           )}
         </div>
         <ScrollArea className="h-[300px]">
-          {notifications.length > 0 ? (
+          {userNotifications.length > 0 ? (
             <div className="flex flex-col">
-              {notifications.map((notification) => (
+              {userNotifications.map((notification) => (
                 <NotificationItem
                   key={notification.id}
                   notification={notification}

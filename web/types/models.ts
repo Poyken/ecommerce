@@ -61,10 +61,20 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  /** URL avatar của user */
+  avatarUrl?: string | null;
+  /** OAuth provider (google, facebook, etc.) */
+  provider?: string | null;
+  /** ID từ OAuth provider */
+  socialId?: string | null;
+  /** Đã bật xác thực 2 bước */
+  twoFactorEnabled?: boolean;
   createdAt: string;
   updatedAt: string;
   roles?: { role: Role }[];
   addresses?: Address[];
+  /** User's permissions */
+  permissions?: { permission: Permission }[];
 }
 
 /**
@@ -115,11 +125,21 @@ export interface Category {
   parentId?: string | null;
   createdAt: string;
   updatedAt: string;
+  /** SEO: Meta description */
+  metaDescription?: string | null;
+  /** SEO: Meta keywords */
+  metaKeywords?: string | null;
+  /** SEO: Meta title */
+  metaTitle?: string | null;
 
   // Prisma aggregation fields
   _count?: {
     products: number;
   };
+
+  // Relations
+  parent?: Category | null;
+  children?: Category[];
 
   // Frontend/API enriched fields
   imageUrl?: string | null;
@@ -201,6 +221,8 @@ export interface Sku {
   metadata?: unknown;
   createdAt: string;
   updatedAt: string;
+  /** Stock đang được reserve (chưa thanh toán) */
+  reservedStock?: number;
 
   // Relations
   /** Các OptionValue tạo nên SKU này (Join table structure) */
@@ -242,6 +264,14 @@ export interface Product {
   avgRating?: number | null;
   /** Cached review count */
   reviewCount?: number;
+  /** SEO: Meta description */
+  metaDescription?: string | null;
+  /** SEO: Meta keywords */
+  metaKeywords?: string | null;
+  /** SEO: Meta title */
+  metaTitle?: string | null;
+  /** Soft delete timestamp */
+  deletedAt?: string | null;
 
   // Relations (Partial - có thể không được include)
   category?: Category;
@@ -249,6 +279,8 @@ export interface Product {
   options?: ProductOption[];
   skus?: Sku[];
   reviews?: Review[];
+  /** Product images */
+  translations?: ProductTranslation[];
 
   createdAt: string;
   updatedAt: string;
@@ -259,7 +291,7 @@ export interface Product {
   };
 
   // Frontend enriched
-  images?: { url: string; alt?: string }[] | string[];
+  images?: ProductImage[] | { url: string; alt?: string }[] | string[];
 }
 
 // =============================================================================
@@ -280,12 +312,20 @@ export interface Review {
   /** Đã được duyệt chưa */
   isApproved: boolean;
   createdAt: string;
+  updatedAt?: string;
+  /** Hình ảnh đính kèm review */
+  images?: string[];
+  /** Phản hồi từ shop */
+  reply?: string | null;
+  /** Thời điểm phản hồi */
+  replyAt?: string | null;
 
   // Relations
   user?: User;
   /** SKU cụ thể được đánh giá (nếu có) */
   skuId?: string | null;
   sku?: Sku | null;
+  product?: Product;
 }
 
 // =============================================================================
@@ -319,6 +359,8 @@ export interface Address {
   provinceId?: number | null;
   districtId?: number | null;
   wardCode?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 // =============================================================================
@@ -347,13 +389,21 @@ export interface Order {
   paymentStatus: PaymentStatus;
   /** Mã giao dịch thanh toán */
   transactionId?: string | null;
+  /** Ngày đặt hàng */
+  orderDate?: string;
   createdAt: string;
+  updatedAt?: string;
+  /** Mã vận đơn (shipping tracking) */
+  shippingCode?: string | null;
+  /** Địa chỉ ID (reference) */
+  addressId?: string | null;
 
   // Relations
   items?: OrderItem[];
   user?: User;
   couponId?: string | null;
   coupon?: Coupon | null;
+  address?: Address | null;
   cancellationReason?: string | null;
 }
 
@@ -403,6 +453,8 @@ export interface CartItem {
   cartId: string;
   skuId: string;
   quantity: number;
+  createdAt?: string;
+  updatedAt?: string;
   sku?: Sku;
 }
 
@@ -412,6 +464,8 @@ export interface CartItem {
 export interface Cart {
   id: string;
   userId: string;
+  createdAt?: string;
+  updatedAt?: string;
   items: CartItem[];
   totalAmount?: number | string;
   totalItems?: number;
@@ -438,6 +492,12 @@ export interface Blog {
   publishedAt?: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Soft delete timestamp */
+  deletedAt?: string | null;
+  /** Author user ID */
+  userId?: string | null;
+  /** Author user relation */
+  user?: User | null;
 }
 
 // Update Blog interface to include products
@@ -456,7 +516,133 @@ export interface Notification {
   type: string;
   title: string;
   message: string;
-  link?: string;
+  link?: string | null;
   isRead: boolean;
   createdAt: string;
+  /** User ID của người nhận */
+  userId?: string;
+}
+
+// =============================================================================
+// 🖼️ IMAGES - Hình ảnh sản phẩm
+// =============================================================================
+
+/**
+ * Hình ảnh của sản phẩm.
+ */
+export interface ProductImage {
+  id: string;
+  url: string;
+  alt?: string | null;
+  displayOrder: number;
+  productId: string;
+}
+
+/**
+ * Hình ảnh của SKU (biến thể).
+ */
+export interface SkuImage {
+  id: string;
+  url: string;
+  alt?: string | null;
+  displayOrder: number;
+  skuId: string;
+}
+
+// =============================================================================
+// 🌐 TRANSLATIONS - Đa ngôn ngữ
+// =============================================================================
+
+/**
+ * Bản dịch sản phẩm cho các ngôn ngữ khác nhau.
+ */
+export interface ProductTranslation {
+  id: string;
+  productId: string;
+  /** Mã ngôn ngữ (vd: "vi", "en") */
+  locale: string;
+  name: string;
+  description?: string | null;
+}
+
+// =============================================================================
+// 📦 INVENTORY - Quản lý kho
+// =============================================================================
+
+/**
+ * Log thay đổi tồn kho.
+ */
+export interface InventoryLog {
+  id: string;
+  skuId: string;
+  /** Số lượng thay đổi (+/-) */
+  changeAmount: number;
+  /** Tồn kho trước thay đổi */
+  previousStock: number;
+  /** Tồn kho sau thay đổi */
+  newStock: number;
+  /** Lý do thay đổi (vd: "ORDER", "MANUAL_ADJUST") */
+  reason: string;
+  userId?: string | null;
+  createdAt: string;
+  // Relations
+  sku?: Sku;
+  user?: User | null;
+}
+
+// =============================================================================
+// 📋 AUDIT LOG - Lịch sử hoạt động
+// =============================================================================
+
+/**
+ * Log hoạt động hệ thống (security audit).
+ */
+export interface AuditLog {
+  id: string;
+  userId?: string | null;
+  /** Hành động (vd: "CREATE", "UPDATE", "DELETE") */
+  action: string;
+  /** Resource bị ảnh hưởng (vd: "Product", "Order") */
+  resource: string;
+  /** Dữ liệu chi tiết (JSON) */
+  payload?: unknown;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  createdAt: string;
+  // Relations
+  user?: User | null;
+}
+
+// =============================================================================
+// 🚩 FEATURE FLAGS - Quản lý tính năng
+// =============================================================================
+
+/**
+ * Feature flag để bật/tắt tính năng theo điều kiện.
+ */
+export interface FeatureFlag {
+  id: string;
+  /** Key unique (vd: "new_checkout_flow") */
+  key: string;
+  description?: string | null;
+  isEnabled: boolean;
+  /** Quy tắc kích hoạt (JSON) */
+  rules?: unknown;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// =============================================================================
+// 📧 NEWSLETTER - Đăng ký nhận tin
+// =============================================================================
+
+/**
+ * Người đăng ký nhận newsletter.
+ */
+export interface NewsletterSubscriber {
+  id: string;
+  email: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
 }

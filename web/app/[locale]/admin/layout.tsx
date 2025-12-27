@@ -4,6 +4,7 @@ import { getBrandsAction, getCategoriesAction } from "@/features/admin/actions";
 import { AdminHeader } from "@/features/admin/components/admin-header";
 import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
 import { AdminMetadataProvider } from "@/features/admin/providers/admin-metadata-provider";
+import { AuthRedirect } from "@/features/auth/components/auth-redirect";
 import { AuthProvider } from "@/features/auth/providers/auth-provider";
 import {
     getNotificationsAction,
@@ -13,7 +14,6 @@ import { getProfileAction } from "@/features/profile/actions";
 import { getPermissionsFromToken } from "@/lib/permission-utils";
 import { getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 /**
@@ -70,7 +70,7 @@ async function DynamicAdminContent({
 
   if (!user) {
     console.warn("[AdminLayout] No user found, redirecting to /login");
-    redirect("/login");
+    return <AuthRedirect />;
   }
 
   const initialBrands =

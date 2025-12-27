@@ -18,7 +18,10 @@
  */
 
 import { Button } from "@/components/ui/button";
-import { Notification } from "@/contexts/notification-context";
+import {
+    Notification,
+    useNotifications,
+} from "@/contexts/notification-context";
 import { updateOrderStatusAction } from "@/features/admin/actions";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
@@ -40,26 +43,44 @@ export function AdminNotificationItem({
 }: AdminNotificationItemProps) {
   const locale = useLocale();
   const t = useTranslations("admin");
+  const { markAsRead } = useNotifications();
   const [isLoading, setIsLoading] = useState<"accept" | "reject" | null>(null);
   const [hasActionTaken, setHasActionTaken] = useState(false);
 
   // Parse order ID from notification link (e.g., /orders/abc123)
-  const getOrderIdFromLink = (link?: string): string | null => {
+  const getOrderIdFromLink = (link?: string | null): string | null => {
     if (!link) return null;
     const match = link.match(/\/orders\/([a-zA-Z0-9-]+)/);
     return match ? match[1] : null;
   };
 
   const orderId = getOrderIdFromLink(notification.link);
-  const isOrderNotification =
+
+  // Only show quick actions for NEW order notifications (ORDER or ORDER_PLACED type)
+  // NOT for status update notifications like ORDER_CANCELLED, ORDER_PROCESSING, etc.
+  const isNewOrderNotification =
     notification.type?.toUpperCase() === "ORDER" ||
     notification.type?.toUpperCase() === "ORDER_PLACED" ||
     notification.title?.toLowerCase().includes("đơn hàng mới") ||
     notification.title?.toLowerCase().includes("new order");
 
+  // Exclude already processed notifications by type
+  const isAlreadyProcessedType = [
+    "ORDER_PROCESSING",
+    "ORDER_SHIPPED",
+    "ORDER_DELIVERED",
+    "ORDER_CANCELLED",
+    "ORDER_RETURNED",
+  ].includes(notification.type?.toUpperCase() || "");
+
   // Check if this is a pending order that can be acted upon
-  // Also hide if action taken locally
-  const canTakeAction = isOrderNotification && orderId && !notification.isRead && !hasActionTaken;
+  // Also hide if action taken locally or if it's a status update notification
+  const canTakeAction =
+    isNewOrderNotification &&
+    orderId &&
+    !notification.isRead &&
+    !hasActionTaken &&
+    !isAlreadyProcessedType;
 
   const handleAccept = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -70,6 +91,7 @@ export function AdminNotificationItem({
       const result = await updateOrderStatusAction(orderId, "PROCESSING");
       if (result.success) {
         setHasActionTaken(true);
+        markAsRead(notification.id);
         onActionComplete?.();
       }
     } catch (error) {
@@ -87,7 +109,8 @@ export function AdminNotificationItem({
     try {
       const result = await updateOrderStatusAction(orderId, "CANCELLED");
       if (result.success) {
-         setHasActionTaken(true);
+        setHasActionTaken(true);
+        markAsRead(notification.id);
         onActionComplete?.();
       }
     } catch (error) {

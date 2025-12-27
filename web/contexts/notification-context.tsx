@@ -1,17 +1,17 @@
 "use client";
 
 import {
-  markAllAsReadAction,
-  markAsReadAction as markAsReadServerAction,
+    markAllAsReadAction,
+    markAsReadAction as markAsReadServerAction,
 } from "@/features/notifications/actions";
 import { notificationSocket } from "@/lib/socket";
 import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useState,
 } from "react";
 /**
  * =====================================================================
@@ -44,8 +44,9 @@ export interface Notification {
   title: string;
   message: string;
   isRead: boolean;
-  link?: string;
+  link?: string | null;
   createdAt: string;
+  userId?: string;
 }
 
 interface NotificationContextType {

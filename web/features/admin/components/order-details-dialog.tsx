@@ -1,22 +1,22 @@
 "use client";
 
-import { getOrderDetailsAction } from "@/features/admin/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
+import { getOrderDetailsAction } from "@/features/admin/actions";
 import { formatCurrency } from "@/lib/utils";
 import { Order, OrderItem } from "@/types/models";
 import { useTranslations } from "next-intl";
@@ -177,6 +177,19 @@ function OrderDetailsContent({
                   <span className="font-medium">
                     {order.paymentMethod || "N/A"}
                   </span>
+
+                  {/* Show cancellation reason if order is cancelled */}
+                  {order.status === "CANCELLED" &&
+                    order.cancellationReason && (
+                      <>
+                        <span className="font-medium text-red-500">
+                          Cancellation Reason:
+                        </span>
+                        <span className="text-red-600 font-medium">
+                          {order.cancellationReason}
+                        </span>
+                      </>
+                    )}
                 </div>
               </div>
 

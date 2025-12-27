@@ -1,9 +1,9 @@
 "use client";
 
 import { GlassCard } from "@/components/shared/glass-card";
+import { Link } from "@/i18n/routing";
 import { Package, ShoppingBag, Ticket, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
-import Link from "next/link";
 
 /**
  * =====================================================================
@@ -66,7 +66,7 @@ export function QuickActions() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {actions.map((action) => (
-        <Link key={action.label} href={action.href as any}>
+        <Link key={action.label} href={action.href}>
           <GlassCard
             className={`p-4 hover:bg-white/5 transition-all duration-300 group ${action.border}`}
           >

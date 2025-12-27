@@ -83,7 +83,9 @@
     "ourCollection": "Our Collection",
     "showingPosts": "Showing {count} posts in {category}",
     "all": "All",
-    "productsFound": "{count} products found"
+    "productsFound": "{count} products found",
+    "previous": "Previous",
+    "next": "Next"
   },
   "notifications": {
     "title": "Notifications",
@@ -257,6 +259,7 @@
     "viewDetails": "View Details",
     "cancelOrder": "Cancel Order",
     "confirmCancel": "Are you sure you want to cancel this order?",
+    "cancellationReason": "Cancellation Reason",
     "reorder": "Reorder",
     "buyAgain": "Buy Again",
     "adding": "Adding...",
@@ -269,7 +272,8 @@
       "COMPLETED": "Completed",
       "RETURNED": "Returned",
       "PAID": "Paid",
-      "UNPAID": "Unpaid"
+      "UNPAID": "Unpaid",
+      "FAILED": "Failed"
     },
     "orderDetail": "Order Detail",
     "orderNotFound": "Order not found",
@@ -293,7 +297,10 @@
       "BANKING": "Bank Transfer",
       "CARD": "Credit Card",
       "VNPAY": "VNPay"
-    }
+    },
+    "scanToPay": "Scan to Pay",
+    "transferInfo": "Transfer Information",
+    "copied": "Copied!"
   },
   "home": {
     "heroTitle": "Premium Furniture Store",

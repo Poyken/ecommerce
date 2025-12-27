@@ -580,10 +580,12 @@ export class OrdersService {
     }
 
     // Additional Check: Prevent PROCESSING non-COD orders if not PAID
+    // BUT: If paymentStatus is being set to PAID in this request, allow it (payment confirmation flow)
+    const effectivePaymentStatus = dto.paymentStatus || order.paymentStatus;
     if (
       newStatus === OrderStatus.PROCESSING &&
       order.paymentMethod !== 'COD' &&
-      order.paymentStatus !== 'PAID'
+      effectivePaymentStatus !== 'PAID'
     ) {
       throw new BadRequestException(
         `Cannot process order with payment method ${order.paymentMethod} until payment is confirmed (Status: ${order.paymentStatus}).`,
@@ -685,7 +687,10 @@ export class OrdersService {
 
     // 🚀 OPTIMIZATION: Move External API Call (GHN) OUT of Transaction
     // This prevents DB locks if GHN service is slow
-    if (newStatus === OrderStatus.PROCESSING) {
+    if (
+      newStatus === OrderStatus.PROCESSING ||
+      (newStatus === OrderStatus.SHIPPED && !order.shippingCode)
+    ) {
       // Automatically sync with GHN if addressId exists
       if (transactionResult.addressId) {
         try {
@@ -740,7 +745,7 @@ export class OrdersService {
           name: item.sku.product.name,
           code: item.sku.skuCode,
           quantity: item.quantity,
-          price: Number(item.priceAtPurchase),
+          price: Math.round(Number(item.priceAtPurchase)),
         })),
       };
 

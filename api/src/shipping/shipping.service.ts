@@ -1,6 +1,6 @@
+import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
-import { PrismaService } from '@core/prisma/prisma.service';
 
 export interface Province {
   ProvinceID: number;
@@ -99,15 +99,23 @@ export class ShippingService {
         return { success: false, message: 'Order not found' };
       }
 
-      // Chỉ cập nhật nếu trạng thái mới khác trạng thái hiện tại
-      if (order.status !== newStatus) {
+      // Chỉ cập nhật nếu trạng thái mới khác trạng thái hiện tại hoặc có cập nhật GHN status
+      if (order.status !== newStatus || order.ghnStatus !== Status) {
+        const updateData: any = { ghnStatus: Status };
+        if (newStatus) updateData.status = newStatus;
+        if (payload.ExpectedDeliveryTime) {
+          updateData.expectedDeliveryTime = new Date(
+            payload.ExpectedDeliveryTime,
+          );
+        }
+
         await this.prisma.order.update({
           where: { id: order.id },
-          data: { status: newStatus },
+          data: updateData,
         });
 
         this.logger.log(
-          `Updated order ${order.id} status to ${newStatus} via GHN Webhook`,
+          `Updated order ${order.id} status to ${newStatus || order.status} (GHN: ${Status}) via GHN Webhook`,
         );
 
         // [Mở rộng]: Có thể bắn Notification hoặc Email ở đây nếu cần
