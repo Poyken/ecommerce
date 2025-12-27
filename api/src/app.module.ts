@@ -56,6 +56,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
 import * as Joi from 'joi';
 import { HealthController } from './health.controller';
@@ -197,6 +198,7 @@ import { CacheModule } from '@nestjs/cache-manager';
     BlogModule,
     FeatureFlagsModule,
     WorkerModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [HealthController],
   providers: [

@@ -2,12 +2,13 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { GHNService } from './ghn.service';
 import { ShippingController } from './shipping.controller';
+import { ShippingCronService } from './shipping.cron.service';
 import { ShippingService } from './shipping.service';
 
 @Module({
   imports: [HttpModule],
   controllers: [ShippingController],
-  providers: [ShippingService, GHNService],
+  providers: [ShippingService, GHNService, ShippingCronService],
   exports: [ShippingService, GHNService],
 })
 export class ShippingModule {}

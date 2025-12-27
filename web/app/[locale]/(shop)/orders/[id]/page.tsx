@@ -1,9 +1,9 @@
 import { StatusBadge } from "@/components/shared/status-badge";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { BankTransferQR } from "@/features/orders/components/bank-transfer-qr";
@@ -146,8 +146,7 @@ async function DynamicOrderDetail({ id }: { id: string }) {
     <div className="container mx-auto px-4 pt-24 pb-8 max-w-4xl font-sans">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">
-          {t("orderNumber")}
-          {order.id.slice(0, 8)}...
+          {t("orderNumber")} {order?.id?.slice(0, 8)}...
         </h1>
         <div className="flex items-center gap-4">
           {order.status === "PENDING" && (

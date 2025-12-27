@@ -300,7 +300,10 @@
     },
     "scanToPay": "Scan to Pay",
     "transferInfo": "Transfer Information",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "shippingCode": "Shipping Code",
+    "trackOrder": "Track Order",
+    "checkOrderId": "Please check the order ID and try again."
   },
   "home": {
     "heroTitle": "Premium Furniture Store",

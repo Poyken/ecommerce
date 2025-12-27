@@ -294,7 +294,10 @@
     },
     "scanToPay": "Quét mã để thanh toán",
     "transferInfo": "Thông tin chuyển khoản",
-    "copied": "Đã sao chép"
+    "copied": "Đã sao chép",
+    "shippingCode": "Mã vận đơn",
+    "trackOrder": "Theo dõi hành trình",
+    "checkOrderId": "Vui lòng kiểm tra lại mã đơn hàng và thử lại."
   },
   "home": {
     "heroTitle": "Cửa hàng nội thất cao cấp",

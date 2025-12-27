@@ -155,8 +155,9 @@ export class GHNService {
       const payload = {
         ...orderData,
         from_district_id: parseInt(
-          this.configService.get('GHN_FROM_DISTRICT_ID') || '1482',
+          this.configService.get('GHN_FROM_DISTRICT_ID') || '1442',
         ),
+        from_ward_code: this.configService.get('GHN_FROM_WARD_CODE') || '20308',
       };
       const response = await axios.post(createUrl, payload, {
         headers: this.shopHeaders,
@@ -168,6 +169,74 @@ export class GHNService {
         error.response?.data || error.message,
       );
       throw error;
+    }
+  }
+
+  /**
+   * Cancel order on GHN system
+   */
+  async cancelOrder(orderCode: string): Promise<boolean> {
+    const cancelUrl =
+      this.configService.get('GHN_CANCEL_ORDER_URL') ||
+      `${this.v2Url}switch-status/cancel`;
+
+    try {
+      const response = await axios.post(
+        cancelUrl,
+        {
+          order_codes: [orderCode],
+        },
+        {
+          headers: this.shopHeaders,
+        },
+      );
+
+      // GHN response format: { code: 200, data: [{ order_code: '...', result: true, message: '...' }] }
+      const result = response.data.data;
+      if (Array.isArray(result) && result.length > 0) {
+        if (result[0].result) {
+          this.logger.log(`Successfully cancelled order ${orderCode} on GHN`);
+          return true;
+        } else {
+          this.logger.warn(
+            `Failed to cancel order ${orderCode} on GHN: ${result[0].message}`,
+          );
+          return false;
+        }
+      }
+      return false;
+    } catch (error) {
+      this.logger.error(
+        `Failed to cancel order ${orderCode} on GHN`,
+        error.response?.data || error.message,
+      );
+      // Don't throw, just return false so main flow can decide
+      return false;
+    }
+  }
+
+  async getOrderDetail(orderCode: string): Promise<any> {
+    const detailUrl =
+      this.configService.get('GHN_DETAIL_ORDER_URL') ||
+      `${this.v2Url}shipping-order/detail`;
+
+    try {
+      const response = await axios.post(
+        detailUrl,
+        {
+          order_code: orderCode,
+        },
+        {
+          headers: this.shopHeaders,
+        },
+      );
+      return response.data.data;
+    } catch (error) {
+      this.logger.error(
+        `Failed to get order detail for ${orderCode} from GHN`,
+        error.response?.data || error.message,
+      );
+      return null;
     }
   }
 }

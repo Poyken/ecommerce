@@ -109,6 +109,11 @@ export class ShippingService {
           );
         }
 
+        // ✅ Lưu lý do hủy nếu có (từ GHN bắn về)
+        if (newStatus === OrderStatus.CANCELLED && payload.Reason) {
+          updateData.cancellationReason = payload.Reason;
+        }
+
         await this.prisma.order.update({
           where: { id: order.id },
           data: updateData,
