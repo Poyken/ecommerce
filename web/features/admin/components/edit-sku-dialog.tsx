@@ -1,11 +1,11 @@
 "use client";
 
-import { updateSkuAction } from "@/features/admin/actions";
 import { FormDialog } from "@/components/shared/form-dialog";
 import { ImageUpload } from "@/components/shared/image-upload";
+import { useToast } from "@/components/shared/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/shared/use-toast";
+import { updateSkuAction } from "@/features/admin/actions";
 import { Sku } from "@/types/models";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -48,15 +48,7 @@ export function EditSkuDialog({ sku, open, onOpenChange }: EditSkuDialogProps) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  useMemo(() => {
-    setFormData({
-      skuCode: sku.skuCode,
-      price: sku.price,
-      stock: sku.stock,
-      imageUrl: sku.imageUrl,
-    });
-    setImageFile(null);
-  }, [sku]);
+  // Removed (Handled by key prop in parent)
 
   const validate = () => {
     const newErrors: Record<string, string> = {};

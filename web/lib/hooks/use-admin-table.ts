@@ -32,6 +32,7 @@ export function useAdminTable(baseUrl: string) {
           params.delete("search");
         }
         params.set("page", "1"); // Reset to page 1 on search
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         router.push(`${baseUrl}?${params.toString()}` as any);
       });
     }
@@ -49,6 +50,7 @@ export function useAdminTable(baseUrl: string) {
         params.set(key, value);
       }
       params.set("page", "1"); // Reset to page 1 on filter change
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       router.push(`${baseUrl}?${params.toString()}` as any);
     });
   };
@@ -60,6 +62,7 @@ export function useAdminTable(baseUrl: string) {
     startTransition(() => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("page", page.toString());
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       router.push(`${baseUrl}?${params.toString()}` as any);
     });
   };

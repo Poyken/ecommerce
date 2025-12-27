@@ -79,6 +79,15 @@ export interface Role {
 }
 
 /**
+ * Role with its assigned permissions.
+ */
+export interface RoleWithPermissions extends Role {
+  permissions: {
+    permission: Permission;
+  }[];
+}
+
+/**
  * Quyền hạn cụ thể.
  * VD: read:products, write:orders, admin:users
  */

@@ -37,7 +37,7 @@ export function SimulatePaymentClient({ orderId }: { orderId: string }) {
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch (_error) {
       // console.error(error);
       toast({
         title: t("errorTitle"),

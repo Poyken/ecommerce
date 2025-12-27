@@ -3,9 +3,23 @@ import { UsersPageClient } from "./users-page-client";
 
 /**
  * =====================================================================
- * USERS PAGE (Server Component)
+ * ADMIN USERS PAGE - Quản lý người dùng (Server Component)
  * =====================================================================
- * Fetch users with server-side filtering (Role) and Counts.
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. QUẢN LÝ NGƯỜI DÙNG (User Management):
+ * - Trang này hiển thị danh sách tất cả người dùng đã đăng ký trong hệ thống.
+ * - Admin có thể xem thông tin, chỉnh sửa vai trò, hoặc vô hiệu hóa tài khoản.
+ *
+ * 2. ROLE-BASED FILTERING:
+ * - Hỗ trợ lọc người dùng theo vai trò (Role): All, Admin, User, Manager, v.v.
+ * - `getUserCounts` đếm số lượng người dùng theo từng vai trò để hiển thị trên Tab.
+ *
+ * 3. SEARCH & PAGINATION:
+ * - Tìm kiếm theo tên hoặc email người dùng.
+ * - Phân trang để xử lý hiệu quả khi có hàng nghìn người dùng.
+ * =====================================================================
  */
 
 async function getUserCounts() {

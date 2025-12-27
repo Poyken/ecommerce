@@ -1,8 +1,7 @@
 "use client";
-import { deleteRoleAction } from "@/features/admin/actions";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { deleteRoleAction } from "@/features/admin/actions";
 import {
   AdminEmptyState,
   AdminPageHeader,
@@ -29,9 +29,10 @@ import { AssignPermissionsDialog } from "@/features/admin/components/assign-perm
 import { CreateRoleDialog } from "@/features/admin/components/create-role-dialog";
 import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
 import { EditRoleDialog } from "@/features/admin/components/edit-role-dialog";
-import { useDebounce } from "@/lib/hooks/use-debounce";
 import { useAuth } from "@/features/auth/providers/auth-provider";
+import { useDebounce } from "@/lib/hooks/use-debounce";
 import { PaginationMeta } from "@/types/dtos";
+import { RoleWithPermissions } from "@/types/models";
 import {
   Edit2,
   Key,
@@ -43,13 +44,13 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 export function RolesPageClient({
   roles,
   meta,
 }: {
-  roles: any[];
+  roles: RoleWithPermissions[];
   meta?: PaginationMeta;
 }) {
   const t = useTranslations("admin");
@@ -58,7 +59,8 @@ export function RolesPageClient({
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<any>(null);
+  const [selectedRole, setSelectedRole] = useState<RoleWithPermissions | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const canCreate = hasPermission("role:create");
   const canUpdate = hasPermission("role:update");
@@ -78,27 +80,31 @@ export function RolesPageClient({
     const currentSearch = params.get("search") || "";
 
     if (currentSearch !== debouncedSearchTerm) {
-      if (debouncedSearchTerm) {
-        params.set("search", debouncedSearchTerm);
-        params.set("page", "1"); // Reset to page 1 on search
-      } else {
-        params.delete("search");
-      }
-      router.push(`/admin/roles?${params.toString()}` as any);
+      startTransition(() => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (debouncedSearchTerm) {
+          params.set("search", debouncedSearchTerm);
+          params.set("page", "1"); // Reset to page 1 on search
+        } else {
+          params.delete("search");
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        router.push(`/admin/roles?${params.toString()}` as any);
+      });
     }
   }, [debouncedSearchTerm, router, searchParams]);
 
-  const openEdit = (role: any) => {
+  const openEdit = (role: RoleWithPermissions) => {
     setSelectedRole(role);
     setEditDialogOpen(true);
   };
 
-  const openDelete = (role: any) => {
+  const openDelete = (role: RoleWithPermissions) => {
     setSelectedRole(role);
     setDeleteDialogOpen(true);
   };
 
-  const openPermissions = (role: any) => {
+  const openPermissions = (role: RoleWithPermissions) => {
     setSelectedRole(role);
     setPermissionsDialogOpen(true);
   };
@@ -137,7 +143,7 @@ export function RolesPageClient({
       </div>
 
       {/* 3. Table Wrapper */}
-      <AdminTableWrapper>
+      <AdminTableWrapper isLoading={isPending}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -160,7 +166,7 @@ export function RolesPageClient({
           </TableHeader>
           <TableBody>
             {roles && roles.length > 0 ? (
-              roles.map((role: any) => (
+              roles.map((role: RoleWithPermissions) => (
                 <TableRow
                   key={role.id}
                   className="hover:bg-muted/30 transition-colors"
@@ -177,7 +183,7 @@ export function RolesPageClient({
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1.5">
-                      {role.permissions?.slice(0, 4).map((rp: any) => (
+                      {role.permissions?.slice(0, 4).map((rp) => (
                         <Badge
                           key={rp.permission?.id}
                           variant="secondary"
@@ -299,6 +305,7 @@ export function RolesPageClient({
       {selectedRole && (
         <>
           <EditRoleDialog
+            key={selectedRole.id}
             roleId={selectedRole.id}
             currentName={selectedRole.name}
             open={editDialogOpen}
@@ -317,7 +324,7 @@ export function RolesPageClient({
             roleName={selectedRole.name}
             currentPermissions={
               selectedRole.permissions
-                ?.map((rp: any) => rp.permission?.name)
+                ?.map((rp) => rp.permission?.name)
                 .filter(Boolean) || []
             }
             open={permissionsDialogOpen}

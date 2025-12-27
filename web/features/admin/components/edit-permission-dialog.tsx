@@ -1,10 +1,10 @@
 "use client";
 
-import { updatePermissionAction } from "@/features/admin/actions";
 import { FormDialog } from "@/components/shared/form-dialog";
+import { useToast } from "@/components/shared/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/shared/use-toast";
+import { updatePermissionAction } from "@/features/admin/actions";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
@@ -40,9 +40,7 @@ export function EditPermissionDialog({
   const [name, setName] = useState(currentName);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  useMemo(() => {
-    setName(currentName);
-  }, [currentName]);
+  // REMOVED (Handled by key prop in parent)
 
   const validate = () => {
     const newErrors: Record<string, string> = {};

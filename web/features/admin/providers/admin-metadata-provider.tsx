@@ -77,9 +77,16 @@ export function AdminMetadataProvider({
     revalidateOnFocus: false,
   });
 
-  const brands = brandsRes && "data" in brandsRes ? brandsRes.data || [] : [];
-  const categories =
-    categoriesRes && "data" in categoriesRes ? categoriesRes.data || [] : [];
+  const brands = brandsRes?.data ? (
+    Array.isArray(brandsRes.data) 
+      ? brandsRes.data 
+      : (brandsRes.data as any).data || []
+  ) : [];
+  const categories = categoriesRes?.data ? (
+    Array.isArray(categoriesRes.data) 
+      ? categoriesRes.data 
+      : (categoriesRes.data as any).data || []
+  ) : [];
 
   return (
     <AdminMetadataContext.Provider

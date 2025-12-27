@@ -80,7 +80,7 @@ export const OptimizedImage = memo(function OptimizedImage({
 
   // QUYẾT ĐỊNH ẢNH NÀO SẼ ĐƯỢC RENDER:
   // Nếu ảnh chính lỗi -> Dùng fallback. Ngược lại dùng ảnh chính.
-  let imageSrc = finalError ? fallbackSrc : src;
+  const imageSrc = finalError ? fallbackSrc : src;
 
   // TRƯỜNG HỢP XẤU NHẤT: Cả ảnh chính và ảnh fallback đều lỗi
   if (finalError && fallbackError) {

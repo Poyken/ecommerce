@@ -149,6 +149,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
                 // Map API response to CartItem structure
                 const mappedItems: CartItem[] = res.data.map((sku: Sku) => {
                   const q =
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     parsed.find((p: any) => p.skuId === sku.id)?.quantity || 1;
                   return {
                     id: `guest-${sku.id}`,
@@ -169,7 +170,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
                 setGuestItems(mappedItems);
               }
             }
-          } catch (e) {
+          } catch (_e) {
             // console.error("Error loading guest cart", e);
           } finally {
             setIsInitializing(false);
@@ -300,7 +301,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
         setCouponError(res.error || t("couponInvalid"));
         setAppliedCoupon(null);
       }
-    } catch (error) {
+    } catch (_error) {
       setCouponError("Failed to validate coupon");
     } finally {
       setIsValidatingCoupon(false);

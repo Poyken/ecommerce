@@ -18,22 +18,26 @@ import { Suspense } from "react";
 
 /**
  * =====================================================================
- * ADMIN LAYOUT - Layout cho trang quản trị
+ * ADMIN LAYOUT - Khung sườn nền tảng cho trang quản trị
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * LAYOUT STRUCTURE:
- * - Sử dụng Flexbox để chia layout thành 2 phần: Sidebar (trái) và Main Content (phải).
- * - `min-h-screen`: Đảm bảo layout luôn cao ít nhất bằng màn hình.
+ * 1. CẤU TRÚC LAYOUT (Layout Structure):
+ * - Sử dụng CSS Flexbox: Chia màn hình thành Sidebar cố định (trái) và vùng Content linh hoạt (phải).
+ * - `min-h-screen`: Đảm bảo giao diện luôn phủ kín chiều cao màn hình trình duyệt.
  *
- * HYBRID & CACHING:
- * - `AdminMetadataProvider` sử dụng SWR để cache Brands và Categories toàn cục.
- * - Dữ liệu được pre-fetch trên server và truyền xuống client làm "initial data".
+ * 2. QUẢN LÝ DỮ LIỆU TOÀN CỤC (Providers):
+ * - `AuthProvider`: Lưu trữ và quản lý quyền hạn (Permissions) của Admin xuyên suốt các trang con.
+ * - `NotificationProvider`: Kết nối Socket và quản lý thông báo thời gian thực (Real-time).
+ * - `AdminMetadataProvider`: Sử dụng SWR để cache danh sách Brands và Categories, tránh việc fetch đi fetch lại ở nhiều trang khác nhau.
  *
- * PROVIDERS:
- * - `AuthProvider`: Quản lý quyền hạn.
- * - `NotificationProvider`: Quản lý thông báo thời gian thực.
+ * 3. DATA PRE-FETCHING (Hydration):
+ * - Fetch dữ liệu quan trọng ngay tại Server Layout và truyền xuống Client qua props (initial data).
+ * - Điều này giúp UI hiển thị ngay lập tức (SEO tốt và trải nghiệm mượt mà) mà không cần chờ Client gọi API.
+ *
+ * 4. BẢO MẬT & ĐIỀU HƯỚNG:
+ * - Kiểm tra profile người dùng trên Server. Nếu chưa đăng nhập hoặc không đủ quyền, thực hiện `redirect("/login")` ngay lập tức.
  * =====================================================================
  */
 

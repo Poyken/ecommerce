@@ -18,18 +18,18 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  AdminEmptyState,
-  AdminPageHeader,
-  AdminTableWrapper,
+    AdminEmptyState,
+    AdminPageHeader,
+    AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { CreateUserDialog } from "@/features/admin/components/create-user-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
@@ -39,13 +39,13 @@ import { cn } from "@/lib/utils";
 import { User } from "@/types/models";
 import { format } from "date-fns";
 import {
-  Download,
-  Mail,
-  Plus,
-  Search,
-  Shield,
-  User as UserIcon,
-  Users,
+    Download,
+    Mail,
+    Plus,
+    Search,
+    Shield,
+    User as UserIcon,
+    Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -168,7 +168,7 @@ export function UsersPageClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper>
+      <AdminTableWrapper isLoading={isPending}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

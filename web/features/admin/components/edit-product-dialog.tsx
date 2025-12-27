@@ -1,22 +1,22 @@
 "use client";
 
-import { updateProductAction } from "@/features/admin/actions";
-import { Button } from "@/components/ui/button";
 import { FormDialog } from "@/components/shared/form-dialog";
+import { useToast } from "@/components/shared/use-toast";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/shared/use-toast";
+import { updateProductAction } from "@/features/admin/actions";
 import {
-  useAdminBrands,
-  useAdminCategories,
+    useAdminBrands,
+    useAdminCategories,
 } from "@/features/admin/providers/admin-metadata-provider";
 import { OptionValue, Product, ProductOption } from "@/types/models";
 import { AnimatePresence, motion } from "framer-motion";
@@ -81,26 +81,7 @@ export function EditProductDialog({
     return [];
   });
 
-  // Update state when product prop changes
-  useMemo(() => {
-    setFormData({
-      name: product.name,
-      slug: product.slug,
-      description: product.description || "",
-      categoryId: product.categoryId,
-      brandId: product.brandId,
-    });
-    if (product.options && Array.isArray(product.options)) {
-      setOptions(
-        product.options.map((opt: ProductOption) => ({
-          name: opt.name,
-          values: opt.values ? opt.values.map((v: OptionValue) => v.value) : [],
-        }))
-      );
-    } else {
-      setOptions([]);
-    }
-  }, [product]);
+  // Update state when product prop changes - REMOVED (Handled by key prop in parent)
 
   const handleAddOption = () => {
     setOptions([...options, { name: "", values: [] }]);

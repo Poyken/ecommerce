@@ -85,7 +85,7 @@ export function ReviewPreview({
       {previewText && (
         <div className="mt-2 p-2.5 bg-muted/30 rounded-lg border border-white/5">
           <p className="text-xs text-muted-foreground line-clamp-2 italic">
-            "{previewText}"
+            &quot;{previewText}&quot;
           </p>
           {reviewerName && (
             <div className="flex items-center gap-2 mt-2">

@@ -13,12 +13,12 @@
  * =====================================================================
  */
 
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { StatusBadge } from "@/components/shared/status-badge";
 import {
   Table,
   TableBody,
@@ -34,9 +34,9 @@ import {
   AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { EditSkuDialog } from "@/features/admin/components/edit-sku-dialog";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { formatCurrency } from "@/lib/utils";
-import { useAuth } from "@/features/auth/providers/auth-provider";
 import { Sku } from "@/types/models";
 import { AlertTriangle, Barcode, Edit, Package, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -218,7 +218,7 @@ export function SkusClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper>
+      <AdminTableWrapper isLoading={isPending}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -328,6 +328,7 @@ export function SkusClient({
 
       {selectedSku && (
         <EditSkuDialog
+          key={selectedSku.id}
           sku={selectedSku}
           open={editDialogOpen}
           onOpenChange={setEditDialogOpen}

@@ -8,9 +8,16 @@ import { SkusClient } from "./skus-client";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. SERVER-SIDE FILTERING & COUNTS:
- * - Fetch counts từ server để đảm bảo tabs/stats hiển thị đúng số lượng toàn cục.
- * - getSkusAction hỗ trợ params status và stockLimit.
+ * 1. SKU LÀ GÌ? (Stock Keeping Unit):
+ * - SKU là các biến thể cụ thể của sản phẩm. Ví dụ: "Áo thun" là Product, nhưng "Áo thun - Đỏ - Size M" là một SKU.
+ * - Mỗi SKU có giá riêng, tồn kho riêng, và mã SKU riêng để quản lý.
+ *
+ * 2. SERVER-SIDE FILTERING & COUNTS:
+ * - `getSkuCounts` fetch song song để đếm số lượng SKU theo từng trạng thái (Active, Inactive, Low Stock).
+ * - Hỗ trợ lọc theo trạng thái và cảnh báo tồn kho thấp (`stockLimit`).
+ *
+ * 3. INVENTORY MANAGEMENT:
+ * - Trang này rất quan trọng cho việc quản lý kho hàng, giúp Admin biết sản phẩm nào sắp hết để nhập thêm.
  * =====================================================================
  */
 

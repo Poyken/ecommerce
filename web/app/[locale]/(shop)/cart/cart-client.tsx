@@ -28,41 +28,41 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import { useToast } from "@/components/shared/use-toast";
 import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
-    clearCartAction,
-    getGuestCartDetailsAction,
-    removeFromCartAction,
-    updateCartItemAction,
+  clearCartAction,
+  getGuestCartDetailsAction,
+  removeFromCartAction,
+  updateCartItemAction,
 } from "@/features/cart/actions";
 import { Link } from "@/i18n/routing";
 import { Cart, CartItem, Sku } from "@/types/models";
 import { motion } from "framer-motion";
 import {
-    Lock,
-    Minus,
-    Plus,
-    RefreshCcw,
-    ShieldCheck,
-    ShoppingBag,
-    Trash2,
-    Truck,
-    X,
+  Lock,
+  Minus,
+  Plus,
+  RefreshCcw,
+  ShieldCheck,
+  ShoppingBag,
+  Trash2,
+  Truck,
+  X,
 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useCallback, useEffect, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 // Extend shared types for stricter UI requirements (we know SKU must exist here)
 interface PopulatedCartItem extends Omit<CartItem, "sku"> {
@@ -119,11 +119,11 @@ export function CartClient({ cart }: CartClientProps) {
   };
 
   const isGuest = !cart;
-  // Cast server items to PopulatedCartItem assuming server returns valid structure
-  // In a real app we might validate this, but for now we trust the server layout fetch
-  const items = isGuest
-    ? guestItems
-    : ((cart?.items || []) as unknown as PopulatedCartItem[]);
+  const items = useMemo(() => {
+    if (isGuest) return guestItems;
+    return (cart?.items || []) as unknown as PopulatedCartItem[];
+  }, [isGuest, guestItems, cart]);
+  
   const total = isGuest ? totalGuest : Number(cart?.totalAmount) || 0;
 
   useEffect(() => {
@@ -184,7 +184,9 @@ export function CartClient({ cart }: CartClientProps) {
                         product: sku.product,
                         // Ensure optionValues structure matches what we expect from shared types
                         // API returns: { optionValueId, optionValue: { id, value, option: { name } } }
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         optionValues: (sku.optionValues as any)?.map(
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
                           (ov: any) => ({
                             optionValueId:
                               ov.optionValueId ||
@@ -214,7 +216,7 @@ export function CartClient({ cart }: CartClientProps) {
               setGuestItems([]);
               setTotalGuest(0);
             }
-          } catch (e) {
+          } catch (_e) {
             // console.error("Error loading guest cart", e);
             setGuestItems([]);
           } finally {
@@ -270,7 +272,7 @@ export function CartClient({ cart }: CartClientProps) {
       setSelectedItems(localItems.map((item) => item.id));
       isFirstRender.current = false;
     }
-  }, [localItems.length]);
+  }, [localItems, localItems.length]);
 
   const toggleSelectItem = useCallback((id: string) => {
     setSelectedItems((prev) =>
@@ -403,7 +405,7 @@ export function CartClient({ cart }: CartClientProps) {
               }
             }
           }
-        } catch (error) {
+        } catch (_error) {
           // console.error("Failed to update cart item", error);
           setLocalItems((prev) => {
             const serverItem = items.find((i) => i.id === id);

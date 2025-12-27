@@ -60,7 +60,7 @@ import {
   Permission,
   Product,
   Review,
-  Role,
+  RoleWithPermissions,
   Sku,
   User,
 } from "@/types/models";
@@ -94,6 +94,43 @@ async function handleAdminAction<T>(
   }
 }
 
+/**
+ * Helper to safely unwrap paginated data from API responses.
+ * Backend sometimes returns { data: Entity[] } and sometimes { data: { data: Entity[], meta: ... } }.
+ */
+function safeUnwrapApiResponse<T>(res: any): ApiResponse<T[]> {
+  if (!res || res.error) return res;
+
+  // Handle nested paginated data: { data: { data: Entity[], meta: ... } }
+  if (
+    res.data &&
+    typeof res.data === "object" &&
+    "data" in res.data &&
+    Array.isArray(res.data.data)
+  ) {
+    return {
+      ...res,
+      data: res.data.data,
+      meta: res.data.meta || res.meta,
+    };
+  }
+
+  // Handle case where data is already an array: { data: Entity[], meta: ... }
+  if (Array.isArray(res.data)) {
+    return res;
+  }
+
+  // Fallback for empty data
+  if (!res.data) {
+    return {
+      ...res,
+      data: [],
+    };
+  }
+
+  return res;
+}
+
 // =============================================================================
 // 👥 USERS - Quản lý người dùng
 // =============================================================================
@@ -122,7 +159,7 @@ export async function getUsersAction(
       url += `&role=${role}`;
     }
     const response = await http<ApiResponse<User[]>>(url);
-    return response;
+    return safeUnwrapApiResponse<User>(response);
   } catch (error: unknown) {
     console.error("getUsersAction error:", error);
     return { error: (error as Error).message };
@@ -217,8 +254,8 @@ export async function getRolesAction(page = 1, limit = 100, search?: string) {
     if (search) {
       url += `&search=${encodeURIComponent(search)}`;
     }
-    const res = await http<ApiResponse<Role[]>>(url);
-    return res;
+    const res = await http<ApiResponse<RoleWithPermissions[]>>(url);
+    return safeUnwrapApiResponse<RoleWithPermissions>(res);
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }
@@ -274,7 +311,7 @@ export async function assignPermissionsAction(
 export async function getPermissionsAction() {
   try {
     const res = await http<ApiResponse<Permission[]>>("/roles/permissions");
-    return { data: res.data };
+    return safeUnwrapApiResponse<Permission>(res);
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }
@@ -328,7 +365,7 @@ export async function getBrandsAction(page = 1, limit = 100, search?: string) {
       url += `&search=${encodeURIComponent(search)}`;
     }
     const res = await http<ApiResponse<Brand[]>>(url);
-    return res;
+    return safeUnwrapApiResponse<Brand>(res);
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }
@@ -397,7 +434,7 @@ export async function getCategoriesAction(
       url += `&search=${encodeURIComponent(search)}`;
     }
     const res = await http<ApiResponse<Category[]>>(url);
-    return res;
+    return safeUnwrapApiResponse<Category>(res);
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }
@@ -461,7 +498,7 @@ export async function getProductsAction(page = 1, limit = 10, search?: string) {
       url += `&search=${encodeURIComponent(search)}`;
     }
     const res = await http<ApiResponse<Product[]>>(url);
-    return res;
+    return safeUnwrapApiResponse<Product>(res);
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }
@@ -532,7 +569,7 @@ export async function getSkusAction(
       url += `&stockLimit=${stockLimit}`;
     }
     const res = await http<ApiResponse<Sku[]>>(url);
-    return res;
+    return safeUnwrapApiResponse<Sku>(res);
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }
@@ -581,7 +618,7 @@ export async function getOrdersAction(
       url += `&status=${status.toUpperCase()}`;
     }
     const res = await http<ApiResponse<Order[]>>(url);
-    return res;
+    return safeUnwrapApiResponse<Order>(res);
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }
@@ -626,7 +663,7 @@ export async function getCouponsAction(page = 1, limit = 10, search?: string) {
       url += `&search=${encodeURIComponent(search)}`;
     }
     const res = await http<ApiResponse<Coupon[]>>(url);
-    return res;
+    return safeUnwrapApiResponse<Coupon>(res);
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }
@@ -730,7 +767,7 @@ export async function getReviewsAction(
       url += `&status=${status}`;
     }
     const response = await http<ApiResponse<Review[]>>(url);
-    return response;
+    return safeUnwrapApiResponse<Review>(response);
   } catch (error: unknown) {
     console.error("getReviewsAction error:", error);
     return { error: (error as Error).message };

@@ -57,6 +57,7 @@ export function FloatingCart({ className }: FloatingCartProps) {
   }, [itemCount]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     updateCartCount();
     
     // Listen for cart updates

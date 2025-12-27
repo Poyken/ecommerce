@@ -1,6 +1,5 @@
 "use client";
 
-import { deleteUserAction } from "@/features/admin/actions";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -10,6 +9,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { deleteUserAction } from "@/features/admin/actions";
 import { AssignRolesDialog } from "@/features/admin/components/assign-roles-dialog";
 import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
 import { EditUserDialog } from "@/features/admin/components/edit-user-dialog";
@@ -93,6 +93,7 @@ export function UserActions({ user }: UserActionsProps) {
       </DropdownMenu>
 
       <EditUserDialog
+        key={user.id}
         user={user}
         open={editUserOpen}
         onOpenChange={setEditUserOpen}

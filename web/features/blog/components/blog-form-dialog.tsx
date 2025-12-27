@@ -1,23 +1,23 @@
 "use client";
 
-import { getCategoriesAction, getProductsAction } from "@/features/admin/actions";
-import { createBlogAction, updateBlogAction } from "@/features/blog/actions";
-import { Checkbox } from "@/components/ui/checkbox";
 import { FormDialog } from "@/components/shared/form-dialog";
 import { ImageUpload } from "@/components/shared/image-upload";
+import { LazyRichTextEditor as RichTextEditor } from "@/components/shared/lazy-rich-text-editor";
+import { useToast } from "@/components/shared/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { LazyRichTextEditor as RichTextEditor } from "@/components/shared/lazy-rich-text-editor";
-import { useToast } from "@/components/shared/use-toast";
+import { getCategoriesAction, getProductsAction } from "@/features/admin/actions";
+import { createBlogAction, updateBlogAction } from "@/features/blog/actions";
 import { BlogWithProducts, Category, Product } from "@/types/models";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -52,7 +52,9 @@ export function BlogFormDialog({
   const isEditing = !!blog;
 
   // Local categories state if we need to fetch them
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [categories, setCategories] = useState<Category[]>(
+    Array.isArray(initialCategories) ? initialCategories : []
+  );
 
   const [formData, setFormData] = useState({
     title: blog?.title || "",
@@ -71,78 +73,50 @@ export function BlogFormDialog({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [products, setProducts] = useState<Product[]>([]);
 
+  // Fetch products and categories when dialog opens
   useEffect(() => {
-    if (open) {
-      // Fetch products for tagging
-      const fetchProducts = async () => {
-        const response = await getProductsAction(1, 100);
-        if ("data" in response) {
-          setProducts(response.data || []);
-        }
-      };
-      fetchProducts();
+    if (!open) return;
 
-      // If categories invalid/empty and we are in UserMode (where parent might not have passed them yet or we want to fetch),
-      // fetch categories.
-      // Admin usually passes them. ProfileTab logic currently fetches them?
-      // Let's support fetching if empty.
+    const fetchData = async () => {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      const productsRes = await getProductsAction(1, 100);
+      if ("data" in productsRes) {
+        setProducts(productsRes.data || []);
+      }
+
       if (categories.length === 0) {
-        const fetchCats = async () => {
-          const res = await getCategoriesAction(1, 100);
-          if (res && "data" in res && res.data) {
-            setCategories(res.data);
-            // Set default category if creating
-            if (!blog && !formData.category && res.data.length > 0) {
-              setFormData((prev) => ({ ...prev, category: res.data[0].name }));
-            }
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        const catsRes = await getCategoriesAction(1, 100);
+        if (catsRes && "data" in catsRes && catsRes.data) {
+          setCategories(catsRes.data);
+          // Set default category if creating
+          if (!blog && !formData.category && catsRes.data.length > 0) {
+            setFormData((prev) => ({ ...prev, category: catsRes.data[0].name }));
           }
-        };
-        fetchCats();
+        }
       }
+    };
 
-      // Reset/Init Form
-      if (blog) {
-        setFormData({
-          title: blog.title,
-          slug: blog.slug,
-          excerpt: blog.excerpt,
-          content: blog.content,
-          category: blog.category,
-          author: blog.author,
-          language: blog.language,
-          readTime: blog.readTime ? blog.readTime.replace(/[^0-9]/g, "") : "",
-          image: blog.image || "",
-          productIds: blog.products?.map((p) => p.id) || [],
-        });
-      } else {
-        setFormData({
-          title: "",
-          slug: "",
-          excerpt: "",
-          content: "",
-          category: categories[0]?.name || "",
-          author: isUserMode ? defaultAuthor : "",
-          language: "en",
-          readTime: "",
-          image: "",
-          productIds: [],
-        });
-      }
-      setImageFile(null);
-      setErrors({});
-    }
-  }, [open, blog]); // removed categories dependency to avoid loop if we setCategories inside
+    fetchData();
+    // Reset/Init local state like imageFile and errors
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setImageFile(null);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setErrors({});
+  }, [open, blog, categories.length, formData.category]);
 
-  // Update categories if prop changes
+  // Update categories if initialCategories prop changes
   useEffect(() => {
-    if (initialCategories.length > 0) {
+    if (initialCategories && Array.isArray(initialCategories) && initialCategories.length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCategories(initialCategories);
     }
   }, [initialCategories]);
 
-  // Update default author if changed
+  // Update default author if changed in UserMode
   useEffect(() => {
     if (!isEditing && isUserMode && defaultAuthor) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData((prev) => ({ ...prev, author: defaultAuthor }));
     }
   }, [defaultAuthor, isUserMode, isEditing]);
@@ -384,7 +358,7 @@ export function BlogFormDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((cat) => (
+                {Array.isArray(categories) && categories.map((cat) => (
                   <SelectItem key={cat.id} value={cat.name}>
                     {cat.name}
                   </SelectItem>

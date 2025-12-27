@@ -13,46 +13,46 @@
  * =====================================================================
  */
 
-import { deleteBlogAction, toggleBlogPublishAction } from "@/features/blog/actions";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { StatusBadge } from "@/components/shared/status-badge";
+import { useToast } from "@/components/shared/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Input } from "@/components/ui/input";
-import { StatusBadge } from "@/components/shared/status-badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  AdminEmptyState,
-  AdminPageHeader,
-  AdminTableWrapper,
+    AdminEmptyState,
+    AdminPageHeader,
+    AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+import { useAuth } from "@/features/auth/providers/auth-provider";
+import { deleteBlogAction, toggleBlogPublishAction } from "@/features/blog/actions";
 import { BlogFormDialog } from "@/features/blog/components/blog-form-dialog";
 import { useDebounce } from "@/lib/hooks/use-debounce";
-import { useToast } from "@/components/shared/use-toast";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/features/auth/providers/auth-provider";
 import { PaginationMeta } from "@/types/dtos";
 import { BlogWithProducts, Category } from "@/types/models";
 import { format } from "date-fns";
 import {
-  BookOpen,
-  Edit,
-  Eye,
-  EyeOff,
-  FileText,
-  Globe,
-  Plus,
-  Search,
-  Trash2,
-  User,
+    BookOpen,
+    Edit,
+    Eye,
+    EyeOff,
+    FileText,
+    Globe,
+    Plus,
+    Search,
+    Trash2,
+    User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -235,7 +235,7 @@ export function BlogsClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper>
+      <AdminTableWrapper isLoading={isPending}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

@@ -19,9 +19,7 @@ export default async function OrderSuccessPage({
 
   const order = result.data;
 
-  // Ideally we would get the illustration URL from an asset folder
-  // For now we use the one we generated or a placeholder
-  const illustration = "/order-success-illustration.png";
+
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 mt-12">
@@ -102,7 +100,7 @@ export default async function OrderSuccessPage({
         <div className="pt-8 text-zinc-400 text-sm flex items-center justify-center gap-2">
           <Package className="w-4 h-4" />
           <span>
-            We'll send you an email with tracking details as soon as it ships.
+            We&apos;ll send you an email with tracking details as soon as it ships.
           </span>
         </div>
       </div>

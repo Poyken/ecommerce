@@ -1,31 +1,31 @@
 "use client";
 
-import {
-  getCouponsAction,
-  getOrdersAction,
-  getProductsAction,
-} from "@/features/admin/actions";
-import {
-  broadcastNotificationAction,
-  sendNotificationToUserAction,
-} from "@/features/notifications/actions";
+import { GlassCard } from "@/components/shared/glass-card";
+import { useToast } from "@/components/shared/use-toast";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Combobox, ComboboxOption } from "@/components/ui/combobox";
-import { GlassCard } from "@/components/shared/glass-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import {
+    getCouponsAction,
+    getOrdersAction,
+    getProductsAction,
+} from "@/features/admin/actions";
+import {
+    broadcastNotificationAction,
+    sendNotificationToUserAction,
+} from "@/features/notifications/actions";
 import { useDebounce } from "@/lib/hooks/use-debounce";
-import { useToast } from "@/components/shared/use-toast";
 import { Coupon, Order, Product } from "@/types/models";
 import { Bell, Mail, Send, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -74,6 +74,7 @@ export function NotificationsAdminClient({
 
   // Fetch products/orders/coupons when search changes
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     const fetchData = async () => {
       if (linkType === "product") {
         const res = await getProductsAction(1, 10, debouncedSearch);
@@ -390,7 +391,7 @@ export function NotificationsAdminClient({
                   <div className="space-y-0.5">
                     <Label className="text-base">{t("form.sendEmail")}</Label>
                     <p className="text-xs text-muted-foreground">
-                      Send a copy of this message to the user's email address
+                      Send a copy of this message to the user&apos;s email address
                     </p>
                   </div>
                 </div>

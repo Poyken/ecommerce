@@ -78,6 +78,14 @@ export interface PaginationMeta {
   limit: number;
 }
 
+/**
+ * Structure of data when it is nested in a paginated response
+ */
+export interface PaginatedData<T> {
+  data: T[];
+  meta: PaginationMeta;
+}
+
 // ==================== SERVER ACTION RESULT ====================
 
 /**

@@ -24,33 +24,36 @@ import { useToast } from "@/components/shared/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateOrderStatusAction } from "@/features/admin/actions";
 import {
-  getAdminNotificationsAction,
-  markAllAsReadAction,
+    AdminTableWrapper
+} from "@/features/admin/components/admin-page-components";
+import {
+    getAdminNotificationsAction,
+    markAllAsReadAction,
 } from "@/features/notifications/actions";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { Notification } from "@/types/models";
 import { format } from "date-fns";
 import {
-  Bell,
-  Check,
-  CheckCircle,
-  Clock,
-  ExternalLink,
-  Package,
-  RefreshCw,
-  Search,
-  X,
+    Bell,
+    Check,
+    CheckCircle,
+    Clock,
+    ExternalLink,
+    Package,
+    RefreshCw,
+    Search,
+    X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -262,7 +265,7 @@ export function NotificationHistoryTab() {
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border border-border overflow-hidden">
+      <AdminTableWrapper isLoading={loading}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -274,18 +277,7 @@ export function NotificationHistoryTab() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-12">
-                  <div className="flex flex-col items-center gap-3">
-                    <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">
-                      Loading...
-                    </span>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : filteredNotifications.length === 0 ? (
+            {filteredNotifications.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-12">
                   <div className="flex flex-col items-center gap-3">
@@ -403,7 +395,7 @@ export function NotificationHistoryTab() {
             )}
           </TableBody>
         </Table>
-      </div>
+      </AdminTableWrapper>
 
       {/* Pagination */}
       {totalPages > 1 && (

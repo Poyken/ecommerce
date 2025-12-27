@@ -10,14 +10,15 @@ import { BrandsPageClient } from "./brands-client";
  *
  * 1. SERVER-SIDE DATA FETCHING:
  * - Sử dụng `getBrandsAction` (Server Action) để lấy danh sách thương hiệu trực tiếp từ database trên server.
- * - Giúp giảm tải cho client và bảo mật thông tin tốt hơn.
+ * - Server Component giúp ẩn giấu logic fetch data nhạy cảm khỏi phía Client.
  *
- * 2. SEARCH PARAMS:
- * - Nhận `searchParams` từ URL để thực hiện tính năng tìm kiếm thương hiệu.
- * - Vì `searchParams` trong Next.js 15 là một Promise, ta cần `await` nó.
+ * 2. SEARCH PARAMS & PAGINATION:
+ * - Nhận `searchParams` để thực hiện tìm kiếm và phân trang thương hiệu.
+ * - `page` và `limit` được truyền vào Action để lấy đúng tập dữ liệu cần thiết.
  *
- * 3. ERROR HANDLING:
- * - Kiểm tra kết quả trả về từ Server Action. Nếu có lỗi, hiển thị thông báo lỗi ngay lập tức.
+ * 3. COMPONENT COMPOSITION:
+ * - Dữ liệu sau khi fetch thành công sẽ được truyền vào `BrandsPageClient`.
+ * - `BrandsPageClient` (Client Component) sẽ xử lý tương tác người dùng như mở Dialog Thêm/Sửa/Xoá.
  * =====================================================================
  */
 

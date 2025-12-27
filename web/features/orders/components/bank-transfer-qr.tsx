@@ -191,7 +191,7 @@ export function BankTransferQR({
                     variant: "destructive",
                   });
                 }
-              } catch (error) {
+              } catch (_error) {
                 toast({
                   title: "Error",
                   description: "An unexpected error occurred",
@@ -209,7 +209,7 @@ export function BankTransferQR({
             ) : (
               <ExternalLink className="w-3 h-3" />
             )}
-            Trigger "Payment Success"
+            Trigger &quot;Payment Success&quot;
           </button>
         </div>
       </GlassCard>
@@ -273,10 +273,9 @@ export function BankTransferQR({
         <div className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/30 p-4 rounded-xl border border-amber-200 dark:border-amber-900/50 flex gap-2">
           <span>⚠️</span>
           <span>
-            <span className="font-bold">Check:</span> This is a simulated
             environment. The QR code provided is a real VietQR that works with
             banking apps, but no real money will be processed by the system. Use
-            the "Dev Simulation" link to manually confirm payment.
+            the &quot;Dev Simulation&quot; link to manually confirm payment.
           </span>
         </div>
       </div>

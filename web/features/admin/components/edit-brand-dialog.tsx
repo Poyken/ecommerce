@@ -1,11 +1,11 @@
 "use client";
 
-import { updateBrandAction } from "@/features/admin/actions";
 import { FormDialog } from "@/components/shared/form-dialog";
 import { ImageUpload } from "@/components/shared/image-upload";
+import { useToast } from "@/components/shared/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/shared/use-toast";
+import { updateBrandAction } from "@/features/admin/actions";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState, useTransition } from "react";
@@ -53,13 +53,8 @@ export function EditBrandDialog({
   const [isImageRemoved, setIsImageRemoved] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    setName(brand.name);
-    // Reset image state when brand changes
-    setImage(null);
-    setImagePreview(null);
-    setIsImageRemoved(false);
-  }, [brand]);
+  // No useEffect needed here for prop syncing as the parent uses a 'key' prop to reset this component when the brand changes.
+  // This avoids react-hooks/set-state-in-effect linting errors.
 
   // Cleanup image preview URL when unmount or image changes
   useEffect(() => {

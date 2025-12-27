@@ -60,6 +60,7 @@ export function SearchInput({
    * -> URL thay đổi -> Input phải cập nhật theo để khớp.
    */
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTerm(searchParams.get("search")?.toString() || "");
   }, [searchParams]);
 

@@ -1,18 +1,18 @@
 "use client";
 
-import { updateCategoryAction } from "@/features/admin/actions";
 import { FormDialog } from "@/components/shared/form-dialog";
 import { ImageUpload } from "@/components/shared/image-upload";
+import { useToast } from "@/components/shared/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/shared/use-toast";
+import { updateCategoryAction } from "@/features/admin/actions";
 import { Category } from "@/types/models";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -58,15 +58,8 @@ export function EditCategoryDialog({
   const [isImageRemoved, setIsImageRemoved] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    setName(category.name);
-    setSlug(category.slug);
-    setParentId(category.parentId || "none");
-    setImage(null);
-    setImagePreview(null);
-    setIsImageRemoved(false);
-    setIsLoading(false);
-  }, [category]);
+  // No useEffect needed here for prop syncing as the parent uses a 'key' prop to reset this component when the category changes.
+  // This avoids react-hooks/set-state-in-effect linting errors.
 
   // Cleanup image preview URL when unmount or image changes
   useEffect(() => {

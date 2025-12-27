@@ -10,8 +10,8 @@
  * =====================================================================
  */
 
-import { getWishlistAction } from "@/features/wishlist/actions";
 import { LoadingScreen } from "@/components/shared/loading-screen";
+import { getWishlistAction } from "@/features/wishlist/actions";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { WishlistClient } from "./wishlist-client";
@@ -21,7 +21,8 @@ export const metadata = {
 };
 
 async function DynamicWishlist() {
-  let wishlistItems: unknown[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let wishlistItems: any[] = [];
   try {
     const items = await getWishlistAction();
     if (items) {
@@ -31,7 +32,7 @@ async function DynamicWishlist() {
     // Handle error or empty state
   }
 
-  return <WishlistClient wishlistItems={wishlistItems as any} />;
+  return <WishlistClient wishlistItems={wishlistItems} />;
 }
 
 export default async function WishlistPage() {

@@ -55,6 +55,7 @@ export function ProductGridView({
     if (columnsParam) {
       const val = Number(columnsParam);
       if (val === 3 || val === 4 || val === 5) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setColumnsState(val as 3 | 4 | 5);
       }
     }

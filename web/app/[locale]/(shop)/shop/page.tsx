@@ -56,16 +56,18 @@ export async function generateMetadata({
 
       if (categoryId) {
         const category = categories.find(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (c: any) => c.id === categoryId || c.name === categoryId
         );
         if (category) title = `${category.name} | Luxe`;
       } else if (brandId) {
         const brand = brandsRes.data?.find(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (b: any) => b.id === brandId || b.name === brandId
         );
         if (brand) title = `${brand.name} | Luxe`;
       }
-    } catch (e) {
+    } catch (_e) {
       if (categoryId) title = `${categoryId} | Luxe`;
       else if (brandId) title = `${brandId} | Luxe`;
     }
@@ -103,10 +105,7 @@ export default async function ShopPage({
 
     const getCachedBrands = async () => {
       "use cache";
-      const res = await http<ApiResponse<Brand[]>>("/brands", {
-        skipAuth: true,
-      });
-      return res.data || [];
+      return productService.getBrands();
     };
 
     const productsPromise = productService.getProducts({
@@ -131,7 +130,7 @@ export default async function ShopPage({
       if (items) {
         wishlistItems = items;
       }
-    } catch (error) {
+    } catch (_error) {
       // console.error("Failed to fetch wishlist", error);
     }
 
@@ -144,7 +143,7 @@ export default async function ShopPage({
         wishlistItems={wishlistItems}
       />
     );
-  } catch (e) {
+  } catch (_e) {
     // console.error("Failed to fetch data", e);
     const t = await getTranslations("shop");
     return <div>{t("errorLoading")}</div>;

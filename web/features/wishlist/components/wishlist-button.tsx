@@ -22,16 +22,16 @@
  * - Giúp React ưu tiên các update UI khác quan trọng hơn trong khi chờ action hoàn tất.
  * =====================================================================
  */
-import { toggleWishlistAction } from "@/features/wishlist/actions";
 import { MotionButton } from "@/components/shared/motion-button";
-import { useGuestWishlist } from "@/features/wishlist/hooks/use-guest-wishlist";
 import { useToast } from "@/components/shared/use-toast";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/features/auth/providers/auth-provider";
+import { toggleWishlistAction } from "@/features/wishlist/actions";
+import { useGuestWishlist } from "@/features/wishlist/hooks/use-guest-wishlist";
+import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 
 export interface WishlistButtonProps {
   productId: string;
@@ -48,28 +48,21 @@ export function WishlistButton({
 }: WishlistButtonProps) {
   const t = useTranslations("wishlist");
   const tToast = useTranslations("common.toast");
-  const [isWishlisted, setIsWishlisted] = useState(initialIsWishlisted);
+  const [localIsWishlisted, setLocalIsWishlisted] = useState(initialIsWishlisted);
   const [isPending, startTransition] = useTransition();
   const { toast, dismiss } = useToast();
   const router = useRouter();
   const { hasItem, addToWishlist, removeFromWishlist } = useGuestWishlist();
   const { isAuthenticated } = useAuth();
 
-  // Sync with guest wishlist state
-  useEffect(() => {
-    // For guest users, strictly sync with the guest wishlist storage
-    if (!isAuthenticated) {
-      setIsWishlisted(hasItem(productId));
-    }
-  }, [hasItem, productId, isAuthenticated]);
+  const isGuestWishlisted = hasItem(productId);
+  const isWishlisted = isAuthenticated ? localIsWishlisted : isGuestWishlisted;
 
   const handleToggle = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation(); // Prevent card click
 
-    // Optimistic Update
     const previousState = isWishlisted;
-    setIsWishlisted(!isWishlisted);
 
     if (!isAuthenticated) {
       if (!previousState) {
@@ -89,27 +82,34 @@ export function WishlistButton({
       return;
     }
 
+    // Optimistic Update for Authenticated User
+    setLocalIsWishlisted(!previousState);
+
     startTransition(async () => {
       const res = await toggleWishlistAction(productId);
 
       if (!res.success) {
         if ("requiresAuth" in res && res.requiresAuth) {
-          // Fallback to Guest Wishlist
+          // Fallback to Guest Wishlist mechanism but keep UI state consistent
+          // In reality, if we are here, isAuthenticated might need check, but we proceed with fallback logic
           if (previousState) {
             removeFromWishlist(productId);
           } else {
             addToWishlist(productId);
           }
-          // Keep the optimistic update (which is now correct for guest)
+           
+          // Since we updated localIsWishlisted, and we are still "authenticated" in client view,
+          // the UI shows the new state. If we eventually logout, isWishlisted will switch to guest state (which we just updated).
+          
           toast({
-            title: !previousState ? t("added") : t("removed"), // !previousState is the NEW desired state
+            title: !previousState ? t("added") : t("removed"),
             description: t("savedToGuestCartDesc"),
             variant: "success",
           });
           return;
         }
 
-        setIsWishlisted(previousState); // Revert
+        setLocalIsWishlisted(previousState); // Revert
         toast({
           title: tToast("error"),
           description: res.error,

@@ -1,11 +1,11 @@
 "use client";
 
-import { deleteBlogAction, getMyBlogsAction } from "@/features/blog/actions";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
-import { BlogFormDialog } from "@/features/blog/components/blog-form-dialog";
 import { useToast } from "@/components/shared/use-toast";
+import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+import { deleteBlogAction, getMyBlogsAction } from "@/features/blog/actions";
+import { BlogFormDialog } from "@/features/blog/components/blog-form-dialog";
 import { cn } from "@/lib/utils";
 import { BlogWithProducts } from "@/types/models";
 import { format } from "date-fns";
@@ -103,6 +103,7 @@ export function ProfileBlogsTab() {
           </GlassButton>
         </GlassCard>
         <BlogFormDialog
+          key={selectedBlog?.id || (isCreateDialogOpen ? "new" : "closed")}
           open={isCreateDialogOpen}
           onOpenChange={(open) => {
             setIsCreateDialogOpen(open);
@@ -208,6 +209,7 @@ export function ProfileBlogsTab() {
         </AnimatePresence>
       </div>
       <BlogFormDialog
+        key={selectedBlog?.id || (isCreateDialogOpen ? "new" : "closed")}
         open={isCreateDialogOpen}
         onOpenChange={(open) => {
           setIsCreateDialogOpen(open);

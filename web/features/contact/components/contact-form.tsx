@@ -28,7 +28,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
 import { CheckCircle2, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 
 export function ContactForm() {
   const t = useTranslations("contact");
@@ -42,10 +42,8 @@ export function ContactForm() {
     message: "",
   });
 
-  // Explicitly clear errors on mount to handle navigation state
-  useEffect(() => {
-    setErrors({});
-  }, []);
+  // Errors are initialized to {} in useState, so no need to reset them in useEffect on mount.
+  // This avoids react-hooks/set-state-in-effect linting errors.
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};

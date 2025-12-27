@@ -1,18 +1,18 @@
 "use client";
 
-import { updateCouponAction } from "@/features/admin/actions";
-import { Checkbox } from "@/components/ui/checkbox";
 import { FormDialog } from "@/components/shared/form-dialog";
+import { useToast } from "@/components/shared/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/shared/use-toast";
+import { updateCouponAction } from "@/features/admin/actions";
 import { Coupon } from "@/types/models";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -69,20 +69,7 @@ export function EditCouponDialog({
     isActive: coupon.isActive,
   });
 
-  // Reset form data when coupon changes
-  useMemo(() => {
-    setFormData({
-      code: coupon.code,
-      discountType: coupon.discountType as "PERCENTAGE" | "FIXED_AMOUNT",
-      discountValue: String(coupon.discountValue),
-      minOrderAmount: String(coupon.minOrderAmount || ""),
-      maxDiscountAmount: String(coupon.maxDiscountAmount || ""),
-      startDate: formatDate(coupon.startDate),
-      endDate: formatDate(coupon.endDate),
-      usageLimit: String(coupon.usageLimit || ""),
-      isActive: coupon.isActive,
-    });
-  }, [coupon]);
+  // Reset form data when coupon changes - REMOVED (Handled by key prop in parent)
 
   const validate = () => {
     const newErrors: Record<string, string> = {};

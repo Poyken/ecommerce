@@ -311,7 +311,7 @@ export function OrdersClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper>
+      <AdminTableWrapper isLoading={isPending}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

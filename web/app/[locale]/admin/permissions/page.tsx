@@ -9,15 +9,17 @@ import { PermissionsPageClient } from "./permissions-client";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. RBAC (Role-Based Access Control):
- * - Đây là trang quản lý các quyền (Permissions) cơ bản trong hệ thống (VD: `product:create`, `order:read`).
- * - Các quyền này sau đó sẽ được gán cho các vai trò (Roles).
+ * 1. QUYỀN HẠN CẤP THẤP (Low-level Permissions):
+ * - Hệ thống sử dụng mô hình RBAC (Role-Based Access Control).
+ * - Trang này quản lý các "nguyên tử" quyền hạn. Ví dụ: `product:create`, `user:delete`.
+ * - Chia nhỏ quyền giúp kiểm soát an ninh hệ thống cực kỳ chi tiết.
  *
- * 2. SERVER-SIDE DATA FETCHING:
- * - Sử dụng `getPermissionsAction` để lấy toàn bộ danh sách quyền từ database.
+ * 2. CƠ CHẾ FETCH DỮ LIỆU:
+ * - Dữ liệu được fetch trực tiếp từ Server qua `getPermissionsAction`.
+ * - Danh sách này thường không quá lớn nên có thể fetch toàn bộ mà không cần phân trang phức tạp.
  *
- * 3. ERROR HANDLING:
- * - Hiển thị thông báo lỗi rõ ràng nếu không thể kết nối API hoặc có lỗi từ phía server.
+ * 3. BẢO MẬT:
+ * - Chỉ những tài khoản có quyền `permission:read` mới có thể truy cập và xem danh sách này.
  * =====================================================================
  */
 

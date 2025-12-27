@@ -2,6 +2,27 @@ import { env } from "@/lib/env";
 import { Metadata } from "next";
 import { BlogsClient } from "./blogs-client";
 
+/**
+ * =====================================================================
+ * ADMIN BLOGS PAGE - Quản lý bài viết (Server Component)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. QUẢN LÝ CONTENT:
+ * - Trang này cho phép quản lý các bài viết trên trang web (Thêm, Xoá, Sửa, Đăng bài).
+ * - Sử dụng `getBlogs` để lấy danh sách bài viết kèm theo trạng thái (Published/Draft).
+ *
+ * 2. ĐA DẠNG DỮ LIỆU (Parallel Fetching):
+ * - Sử dụng `Promise.all` (dòng 100) để lấy đồng thời: Danh sách Blog, Danh mục (Categories) và Số lượng thống kê (Counts).
+ * - Việc này giúp UI hiển thị đầy đủ thông tin ngay khi page load xong.
+ *
+ * 3. STATUS FILTER:
+ * - Hỗ trợ lọc bài viết theo trạng thái thông qua URL parameter `status`.
+ * - Giúp Admin dễ dàng quản lý các bài nháp hoặc bài đã đăng.
+ * =====================================================================
+ */
+
 export const metadata: Metadata = {
   title: "Blog Management | Admin",
   description: "Manage blog posts",
@@ -76,6 +97,10 @@ async function getCategories() {
     }
 
     const data = await res.json();
+    // Support both { data: Category[] } and { data: { data: Category[] } }
+    if (data?.data && typeof data.data === "object" && "data" in data.data) {
+      return data.data.data || [];
+    }
     return data.data || [];
   } catch (error) {
     // console.error("Error fetching categories:", error);

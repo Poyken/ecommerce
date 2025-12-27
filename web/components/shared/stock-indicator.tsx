@@ -35,6 +35,7 @@ export function StockIndicator({
 
   useEffect(() => {
     // Simulate số người đang xem (trong thực tế sẽ lấy từ analytics)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setViewerCount(Math.floor(Math.random() * 15) + 3);
 
     // Cập nhật viewer count ngẫu nhiên mỗi 30 giây

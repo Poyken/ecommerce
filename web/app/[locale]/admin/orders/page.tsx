@@ -8,13 +8,16 @@ import { OrdersClient } from "./orders-client";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. SERVER-SIDE FILTERING:
- * - Status filter được xử lý trên server thay vì client.
- * - Đảm bảo pagination hoạt động chính xác.
+ * 1. QUẢN LÝ LUỒNG ĐƠN HÀNG (Order Management):
+ * - Đây là một trong những trang quan trọng nhất của hệ thống thương mại điện tử.
+ * - Cho phép theo dõi hành trình đơn hàng từ lúc PENDING (Chờ xử lý) cho đến khi DELIVERED (Đã giao) hoặc CANCELLED (Đã hủy).
  *
- * 2. COUNTS FETCHING:
- * - Fetch số lượng đơn hàng cho từng trạng thái để hiển thị trên tabs.
- * - Sử dụng getOrdersAction với limit=1 để lấy meta.total.
+ * 2. SERVER-SIDE FILTERING & COUNTS:
+ * - Để tối ưu, việc lọc theo trạng thái (`status`) được thực hiện ngay tại Server thông qua `getOrdersAction`.
+ * - `getOrderCounts` (dòng 21) sử dụng `Promise.all` để đếm số lượng đơn hàng ở mỗi trạng thái, giúp hiển thị các Badge/Tabs thống kê chính xác.
+ *
+ * 3. PHÂN TRANG (Pagination):
+ * - Chỉ load một lượng nhỏ đơn hàng mỗi trang để đảm bảo tốc độ phản hồi nhanh, ngay cả khi database có hàng triệu bản ghi.
  * =====================================================================
  */
 

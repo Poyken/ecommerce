@@ -50,13 +50,13 @@ interface ReviewSku {
 interface Review {
   id: string;
   rating: number;
-  content?: string;
+  content?: string | null;
   createdAt: string | Date;
-  user: ReviewUser;
-  sku?: ReviewSku;
+  user?: ReviewUser;
+  sku?: ReviewSku | null;
 }
 
-interface ReviewItemProps {
+export interface ReviewItemProps {
   review: Review;
   index?: number;
   showAnimation?: boolean;
@@ -118,13 +118,13 @@ export const ReviewItem = memo(function ReviewItem({
         <div className="flex items-center gap-4">
           <Avatar>
             <AvatarFallback>
-              {review.user.firstName?.[0]}
-              {review.user.lastName?.[0]}
+              {review.user?.firstName?.[0] || "U"}
+              {review.user?.lastName?.[0]}
             </AvatarFallback>
           </Avatar>
           <div>
             <div className="font-black text-base">
-              {review.user.firstName} {review.user.lastName}
+              {review.user ? `${review.user.firstName} ${review.user.lastName}` : "Verified User"}
             </div>
             <div className="text-xs text-muted-foreground/60 font-medium mt-0.5">
               {format(new Date(review.createdAt), "MMM d, yyyy")}

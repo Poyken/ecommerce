@@ -6,6 +6,20 @@ import { ProductsClient } from "./products-client";
  * =====================================================================
  * ADMIN PRODUCTS PAGE - Quản lý sản phẩm (Server Component)
  * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. QUẢN LÝ DANH MỤC SẢN PHẨM:
+ * - Đây là trang quản lý cốt lõi của eCommerce. Cho phép xem danh sách, lọc và tìm kiếm sản phẩm.
+ * - Mỗi sản phẩm ở đây là một "Product" tổng thể (tên, mô tả chung), chưa bao gồm các biến thể màu sắc/kích thước (SKUs).
+ *
+ * 2. TỐI ƯU HÓA DỮ LIỆU (Hybrid Data Management):
+ * - Dữ liệu danh sách sản phẩm được fetch tại đây (Server Side) vì nó thay đổi theo trang và từ khóa tìm kiếm.
+ * - Tuy nhiên, các dữ liệu bổ trợ như "Brands" và "Categories" (thường dùng ở nhiều nơi) đã được `AdminLayout` chuẩn bị sẵn để tối ưu bộ nhớ.
+ *
+ * 3. PAGINATION:
+ * - Sử dụng URL search params để quản lý trang hiện tại. Điều này giúp Admin có thể copy URL và gửi cho người khác mà vẫn giữ đúng trang đang xem.
+ * =====================================================================
  */
 
 export default async function ProductsPage({

@@ -1,6 +1,6 @@
 "use client";
-import { Badge } from "@/components/ui/badge";
 import { GlassButton } from "@/components/shared/glass-button";
+import { Badge } from "@/components/ui/badge";
 import { cn, formatCurrency } from "@/lib/utils";
 import { ProductOption, Sku } from "@/types/models";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -30,7 +30,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 interface ProductVariantSelectorProps {
   options: ProductOption[];
   skus: Sku[];
-  isLoggedIn: boolean;
   selectedSkuId?: string | null;
   onSkuChange?: (sku: Sku | null) => void;
   onImageChange?: (imageUrl: string) => void;
@@ -42,7 +41,6 @@ interface ProductVariantSelectorProps {
 export function ProductVariantSelector({
   options,
   skus,
-  isLoggedIn,
   selectedSkuId,
   onSkuChange,
   onImageChange,
@@ -70,6 +68,7 @@ export function ProductVariantSelector({
             newSelectedOptions[ov.optionValue.optionId] = ov.optionValue.id;
           }
         });
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedOptions(newSelectedOptions);
       }
     }
@@ -95,6 +94,7 @@ export function ProductVariantSelector({
 
     // 2. If valid options found from SKU, use them.
     if (Object.keys(newSelectedOptions).length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedOptions(newSelectedOptions);
       return;
     }
@@ -116,7 +116,7 @@ export function ProductVariantSelector({
         setSelectedOptions(newSelectedOptions);
       }
     }
-  }, [searchParams, skus, options]); // Keep this for initial hydration from server URL
+  }, [searchParams, skus, options, selectedOptions]); // Keep this for initial hydration from server URL
 
   /*
    * SMART SELECTION LOGIC

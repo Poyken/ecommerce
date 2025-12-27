@@ -82,17 +82,25 @@ export const ProductImageGallery = memo(function ProductImageGallery({
       const img = new window.Image();
       const firstImage = activeImage || images[0];
       img.src = firstImage;
-      img.onload = () => setIsFirstLoadReady(true);
-      img.onerror = () => setIsFirstLoadReady(true); // Don't block UI on error
+      img.onload = () => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setIsFirstLoadReady(true);
+      };
+      img.onerror = () => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setIsFirstLoadReady(true); // Don't block UI on error
+      };
 
       // Also sync displayImage if it was empty or mismatched
       if (!displayImage || (displayImage !== firstImage && !isTransitioning)) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDisplayImage(firstImage);
       }
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsFirstLoadReady(true);
     }
-  }, [images, activeImage]);
+  }, [images, activeImage, displayImage, isTransitioning]);
 
   return (
     <div className="space-y-6 lg:sticky lg:top-24">

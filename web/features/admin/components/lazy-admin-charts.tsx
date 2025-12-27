@@ -21,10 +21,10 @@
 "use client";
 
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import dynamic from "next/dynamic";
@@ -44,12 +44,12 @@ function ChartSkeleton({ title }: { title?: string }) {
       <CardContent className="pl-2">
         <div className="h-[350px] flex items-end justify-between gap-2 p-4">
           {/* Bar chart skeleton */}
-          {[...Array(7)].map((_, i) => (
+          {[40, 70, 45, 80, 55, 90, 65].map((height, i) => (
             <Skeleton
               key={i}
               className="flex-1 rounded-t-md"
               style={{
-                height: `${Math.random() * 60 + 30}%`,
+                height: `${height}%`,
               }}
             />
           ))}

@@ -21,6 +21,7 @@ export function SocialCallbackClient() {
     const refreshToken = searchParams.get("refreshToken");
 
     if (accessToken && refreshToken) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStatus("Syncing data...");
       socialLoginAction(accessToken, refreshToken).then(async (res) => {
         if (res.success) {

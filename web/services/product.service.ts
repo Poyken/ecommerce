@@ -26,7 +26,7 @@
  */
 
 import { http } from "@/lib/http";
-import { ApiResponse } from "@/types/dtos";
+import { ApiResponse, PaginatedData } from "@/types/dtos";
 import { Category, Product } from "@/types/models";
 
 // =============================================================================
@@ -192,7 +192,9 @@ export const productService = {
     next?: NextFetchRequestConfig;
   }): Promise<Category[]> {
     try {
-      const response = await http<ApiResponse<Category[]>>("/categories", {
+      const response = await http<
+        ApiResponse<Category[]> | ApiResponse<PaginatedData<Category>>
+      >("/categories", {
         skipAuth: true,
         next: {
           revalidate: 3600, // Cache 1 giờ - categories ít thay đổi
@@ -201,8 +203,17 @@ export const productService = {
         },
       });
 
+      // Handle direct array in data
       if (Array.isArray(response?.data)) {
         return response.data;
+      }
+      // Handle nested data in paginated response
+      if (
+        response?.data &&
+        "data" in response.data &&
+        Array.isArray(response.data.data)
+      ) {
+        return response.data.data;
       }
       return [];
     } catch (error) {
@@ -221,7 +232,8 @@ export const productService = {
   }): Promise<import("@/types/models").Brand[]> {
     try {
       const response = await http<
-        ApiResponse<import("@/types/models").Brand[]>
+        | ApiResponse<import("@/types/models").Brand[]>
+        | ApiResponse<PaginatedData<import("@/types/models").Brand>>
       >("/brands", {
         skipAuth: true,
         next: {
@@ -231,8 +243,17 @@ export const productService = {
         },
       });
 
+      // Handle direct array in data
       if (Array.isArray(response?.data)) {
         return response.data;
+      }
+      // Handle nested data in paginated response
+      if (
+        response?.data &&
+        "data" in response.data &&
+        Array.isArray(response.data.data)
+      ) {
+        return response.data.data;
       }
       return [];
     } catch (error) {

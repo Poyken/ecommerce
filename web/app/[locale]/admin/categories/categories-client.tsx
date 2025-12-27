@@ -13,10 +13,9 @@
  * =====================================================================
  */
 
-import { deleteCategoryAction, getCategoriesAction } from "@/features/admin/actions";
+import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -26,6 +25,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { deleteCategoryAction, getCategoriesAction } from "@/features/admin/actions";
 import {
   AdminEmptyState,
   AdminPageHeader,
@@ -34,9 +34,9 @@ import {
 import { CreateCategoryDialog } from "@/features/admin/components/create-category-dialog";
 import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
 import { EditCategoryDialog } from "@/features/admin/components/edit-category-dialog";
-import { useDebounce } from "@/lib/hooks/use-debounce";
 import { useAdminCategories } from "@/features/admin/providers/admin-metadata-provider";
 import { useAuth } from "@/features/auth/providers/auth-provider";
+import { useDebounce } from "@/lib/hooks/use-debounce";
 import { PaginationMeta } from "@/types/dtos";
 import { Category } from "@/types/models";
 import { format } from "date-fns";
@@ -86,7 +86,7 @@ export function CategoriesPageClient({
   const limit = Number(searchParams.get("limit")) || 10;
 
   // Hybrid Fetching: SWR for the table list
-  const { data: categoriesRes, mutate: mutateLocalCategories } = useSWR(
+  const { data: categoriesRes, mutate: mutateLocalCategories, isValidating } = useSWR(
     ["admin-categories-list", page, limit, debouncedSearchTerm],
     () => getCategoriesAction(page, limit, debouncedSearchTerm),
     {
@@ -102,15 +102,19 @@ export function CategoriesPageClient({
 
   const { mutate: mutateGlobalCategories } = useAdminCategories();
 
-  const categories =
-    categoriesRes && "data" in categoriesRes ? categoriesRes.data || [] : [];
+  const categories = categoriesRes && "data" in categoriesRes ? (
+    Array.isArray(categoriesRes.data) 
+      ? categoriesRes.data 
+      : (categoriesRes.data as any).data || []
+  ) : [];
   const currentMeta =
-    categoriesRes && "meta" in categoriesRes ? categoriesRes.meta : meta;
+    categoriesRes && "meta" in categoriesRes ? (categoriesRes as any).meta : meta;
   const total = currentMeta?.total || 0;
 
   // Count stats
-  const parentCount = categories.filter((c: Category) => !c.parentId).length;
-  const childCount = categories.filter((c: Category) => c.parentId).length;
+  const safeCategories = Array.isArray(categories) ? categories : [];
+  const parentCount = safeCategories.filter((c: Category) => !c.parentId).length;
+  const childCount = safeCategories.filter((c: Category) => c.parentId).length;
 
   const refreshData = () => {
     mutateLocalCategories();
@@ -186,7 +190,7 @@ export function CategoriesPageClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper>
+      <AdminTableWrapper isLoading={isValidating}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -341,6 +345,7 @@ export function CategoriesPageClient({
       {selectedCategory && (
         <>
           <EditCategoryDialog
+            key={selectedCategory.id}
             categories={categories}
             category={selectedCategory}
             open={editDialogOpen}

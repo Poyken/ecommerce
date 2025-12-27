@@ -14,6 +14,7 @@ import { unstable_cache } from "next/cache";
  * Cache wrapper with tags for selective invalidation
  */
 export function createCachedFunction<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T extends (...args: any[]) => Promise<any>
 >(
   fn: T,
@@ -41,16 +42,18 @@ export function createCachedFunction<
  * Stale-While-Revalidate pattern
  * Returns cached data immediately, revalidates in background
  */
-export function createSWRCache<T extends (...args: any[]) => Promise<any>>(
+export function createSWRCache<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends (...args: any[]) => Promise<any>
+>(
   fn: T,
   {
     keyPrefix,
     staleTime = 60, // 1 minute stale
-    revalidateTime = 300, // 5 minutes revalidate
   }: {
     keyPrefix: string;
     staleTime?: number;
-    revalidateTime?: number;
+    // revalidateTime?: number; // Removed unused parameter
   }
 ): T {
   return ((...args: Parameters<T>) => {
@@ -105,9 +108,11 @@ export async function warmCache<T>(
  * 2. Next.js cache (server-side, persistent)
  * 3. API call (slowest, when cache miss)
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const memoryCache = new Map<string, { data: any; expires: number }>();
 
 export function createMultiLevelCache<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T extends (...args: any[]) => Promise<any>
 >(
   fn: T,
@@ -166,12 +171,13 @@ export function createMultiLevelCache<
  * Deduplicate concurrent requests
  * Multiple simultaneous requests for same data = only 1 API call
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const pendingRequests = new Map<string, Promise<any>>();
 
-export function createDedupedCache<T extends (...args: any[]) => Promise<any>>(
-  fn: T,
-  keyPrefix: string
-): T {
+export function createDedupedCache<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T extends (...args: any[]) => Promise<any>
+>(fn: T, keyPrefix: string): T {
   return (async (...args: Parameters<T>) => {
     const cacheKey = `${keyPrefix}-${JSON.stringify(args)}`;
 
@@ -204,8 +210,8 @@ export function createBatchedCache<T>(
     maxWaitMs?: number;
   }
 ) {
-  let batch: string[] = [];
-  let resolvers: Array<(value: T | null) => void> = [];
+  const batch: string[] = [];
+  const resolvers: Array<(value: T | null) => void> = [];
   let timeoutId: NodeJS.Timeout | null = null;
 
   const executeBatch = async () => {
@@ -216,12 +222,14 @@ export function createBatchedCache<T>(
 
     try {
       const results = await fetcher(currentBatch);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const resultMap = new Map(results.map((item: any) => [item.id, item]));
 
       currentBatch.forEach((id, index) => {
         currentResolvers[index](resultMap.get(id) || null);
       });
     } catch (error) {
+      console.error(error); // Log error
       currentResolvers.forEach((resolve) => resolve(null));
     }
   };

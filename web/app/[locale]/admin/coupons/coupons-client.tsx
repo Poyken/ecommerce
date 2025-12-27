@@ -7,54 +7,63 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * - Filter theo status (All/Active/Expired)
- * - Stats hiển thị tổng quan
- * - Quick actions: Copy, Edit, Delete
+ * 1. QUẢN LÝ COUPONS (Promotion Management):
+ * - Hiển thị danh sách các mã giảm giá hiện có trong hệ thống.
+ * - Hỗ trợ lọc theo trạng thái: All (Tất cả), Active (Đang hiệu lực), Expired (Hết hạn).
+ *
+ * 2. SEARCH & SYNC URL:
+ * - Sử dụng `useDebounce` để trì hoãn việc gọi API (Server Action) khi người dùng gõ tìm kiếm.
+ * - Khi tìm kiếm, URL sẽ được cập nhật (Sync URL), cho phép bookmark hoặc chia sẻ bộ lọc.
+ *
+ * 3. TRẠNG THÁI LOADING (isPending):
+ * - Sử dụng `useTransition` để theo dõi trạng thái chuyển trang/lọc dữ liệu.
+ * - `isPending` được truyền vào `AdminTableWrapper` để hiển thị lớp phủ mờ (blur overlay) khi đang tải.
  * =====================================================================
  */
 
-import { deleteCouponAction } from "@/features/admin/actions";
-import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { useToast } from "@/components/shared/use-toast";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { deleteCouponAction } from "@/features/admin/actions";
 import {
-  AdminActionBadge,
-  AdminEmptyState,
-  AdminPageHeader,
-  AdminTableWrapper,
+    AdminActionBadge,
+    AdminEmptyState,
+    AdminPageHeader,
+    AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { CreateCouponDialog } from "@/features/admin/components/create-coupon-dialog";
 import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
 import { EditCouponDialog } from "@/features/admin/components/edit-coupon-dialog";
-import { useToast } from "@/components/shared/use-toast";
-import { cn, formatCurrency } from "@/lib/utils";
 import { useAuth } from "@/features/auth/providers/auth-provider";
+import { useDebounce } from "@/lib/hooks/use-debounce";
+import { cn, formatCurrency } from "@/lib/utils";
 import { PaginationMeta } from "@/types/dtos";
 import { Coupon } from "@/types/models";
 import { format } from "date-fns";
 import {
-  Calendar,
-  Copy,
-  Edit,
-  Percent,
-  Plus,
-  Search,
-  Tag,
-  Ticket,
-  Trash2,
+    Calendar,
+    Copy,
+    Edit,
+    Percent,
+    Plus,
+    Search,
+    Tag,
+    Ticket,
+    Trash2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 interface CouponsClientProps {
   initialCoupons: Coupon[];
@@ -73,7 +82,11 @@ export function CouponsClient({ initialCoupons, meta }: CouponsClientProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [filter, setFilter] = useState<FilterType>("all");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState(
+    searchParams.get("search") || ""
+  );
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
 
   const canCreate = hasPermission("coupon:create");
@@ -87,6 +100,24 @@ export function CouponsClient({ initialCoupons, meta }: CouponsClientProps) {
       description: t("coupons.copiedDescription", { code: text }),
     });
   };
+
+  // Sync Search with URL
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    const currentSearch = params.get("search") || "";
+
+    if (currentSearch !== debouncedSearchTerm) {
+      startTransition(() => {
+        if (debouncedSearchTerm) {
+          params.set("search", debouncedSearchTerm);
+        } else {
+          params.delete("search");
+        }
+        params.set("page", "1");
+        router.push(`/admin/coupons?${params.toString()}`);
+      });
+    }
+  }, [debouncedSearchTerm, router, searchParams]);
 
   // Check if coupon is expired
   const isExpired = (coupon: Coupon) => {
@@ -129,9 +160,11 @@ export function CouponsClient({ initialCoupons, meta }: CouponsClientProps) {
   const totalPages = meta ? Math.ceil(meta.total / meta.limit) : 1;
 
   const goToPage = (newPage: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", newPage.toString());
-    router.push(`/admin/coupons?${params.toString()}`);
+    startTransition(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", newPage.toString());
+      router.push(`/admin/coupons?${params.toString()}`);
+    });
   };
 
   return (
@@ -187,7 +220,7 @@ export function CouponsClient({ initialCoupons, meta }: CouponsClientProps) {
       </div>
 
       {/* Table */}
-      <AdminTableWrapper>
+      <AdminTableWrapper isLoading={isPending}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -378,6 +411,7 @@ export function CouponsClient({ initialCoupons, meta }: CouponsClientProps) {
       {selectedCoupon && (
         <>
           <EditCouponDialog
+            key={selectedCoupon.id}
             coupon={selectedCoupon}
             open={isEditDialogOpen}
             onOpenChange={setIsEditDialogOpen}

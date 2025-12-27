@@ -21,33 +21,33 @@
 
 "use client";
 
+import { GlassCard } from "@/components/shared/glass-card";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
-import { GlassCard } from "@/components/shared/glass-card";
 import {
-  Notification,
-  useNotifications,
+    Notification,
+    useNotifications,
 } from "@/contexts/notification-context";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
 import { AnimatePresence, motion } from "framer-motion";
 import {
-  Bell,
-  CheckCheck,
-  ExternalLink,
-  MessageSquare,
-  Package,
-  ShoppingBag,
-  Tag,
-  Zap,
+    Bell,
+    CheckCheck,
+    ExternalLink,
+    MessageSquare,
+    Package,
+    ShoppingBag,
+    Tag,
+    Zap,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -335,6 +335,7 @@ export function NotificationsClient() {
                     <Button
                       onClick={() => {
                         setSelectedNotification(null);
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         router.push((selectedNotification.link || "/") as any);
                       }}
                       className="flex-1 gap-2"

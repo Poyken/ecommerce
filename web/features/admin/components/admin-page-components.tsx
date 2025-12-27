@@ -118,6 +118,7 @@ interface AdminTableWrapperProps {
   description?: string;
   headerActions?: React.ReactNode;
   className?: string;
+  isLoading?: boolean;
 }
 
 export function AdminTableWrapper({
@@ -126,6 +127,7 @@ export function AdminTableWrapper({
   description,
   headerActions,
   className,
+  isLoading,
 }: AdminTableWrapperProps) {
   return (
     <div
@@ -145,7 +147,19 @@ export function AdminTableWrapper({
           {headerActions}
         </div>
       )}
-      {children}
+      <div className="relative">
+        {isLoading && (
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-[1px]">
+            <div className="flex flex-col items-center gap-3">
+              <div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <span className="text-sm font-medium text-muted-foreground">
+                Loading data...
+              </span>
+            </div>
+          </div>
+        )}
+        {children}
+      </div>
     </div>
   );
 }

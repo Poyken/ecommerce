@@ -1,18 +1,18 @@
 "use client";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  VisuallyHidden,
-} from "@/components/ui/dialog";
 import { GlassCard } from "@/components/shared/glass-card";
+import { useToast } from "@/components/shared/use-toast";
+import {
+    Dialog,
+    DialogContent,
+    DialogTitle,
+    VisuallyHidden,
+} from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCart } from "@/features/cart/hooks/use-cart";
+import { ProductImageGallery } from "@/features/products/components/product-image-gallery";
 import { ProductVariantSelector } from "@/features/products/components/product-variant-selector";
 import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
-import { ProductImageGallery } from "@/features/products/components/product-image-gallery";
-import { useCart } from "@/features/cart/hooks/use-cart";
-import { useToast } from "@/components/shared/use-toast";
 import { Link } from "@/i18n/routing";
 import { cn, formatCurrency } from "@/lib/utils";
 import { productService } from "@/services/product.service";
@@ -80,6 +80,7 @@ export function ProductQuickViewDialog({
 
     // Reset product if it doesn't match current ID
     // This prevents showing old data while loading
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setProduct((prev) => (prev?.id === productId ? prev : null));
     setLoading(true);
 

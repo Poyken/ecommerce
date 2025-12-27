@@ -1,18 +1,39 @@
-import { getOrderDetailsAction } from "@/features/admin/actions";
 import { Badge } from "@/components/ui/badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
+import { getOrderDetailsAction } from "@/features/admin/actions";
 import { formatCurrency } from "@/lib/utils";
 import { OrderItem } from "@/types/models";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+/**
+ * =====================================================================
+ * ORDER DETAILS PAGE - Chi tiết đơn hàng (Server Component)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. DYNAMIC ROUTE:
+ * - Đây là trang động với URL pattern: `/admin/orders/[orderId]`
+ * - `[orderId]` là dynamic segment, Next.js sẽ tự động truyền vào params.
+ *
+ * 2. CHI TIẾT ĐƠN HÀNG:
+ * - Hiển thị đầy đủ thông tin: Thông tin đơn hàng, Khách hàng, Danh sách sản phẩm.
+ * - Sử dụng `getOrderDetailsAction` để fetch dữ liệu từ Server.
+ *
+ * 3. ERROR HANDLING:
+ * - Nếu đơn hàng không tồn tại, gọi `notFound()` để hiển thị 404 page.
+ * - Nếu có lỗi khác, hiển thị thông báo lỗi rõ ràng.
+ * =====================================================================
+ */
 
 export default async function OrderDetailsPage({
   params,

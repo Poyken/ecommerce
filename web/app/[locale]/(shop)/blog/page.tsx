@@ -37,7 +37,7 @@ export default async function BlogPage() {
     ]);
     posts = postsResult.data;
     stats = statsResult;
-  } catch (error) {
+  } catch (_error) {
     // console.error("Failed to fetch blogs:", error);
   }
 

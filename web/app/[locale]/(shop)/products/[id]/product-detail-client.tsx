@@ -1,18 +1,18 @@
 "use client";
 
 import { GlassCard } from "@/components/shared/glass-card";
-import { ProductVariantSelector } from "@/features/products/components/product-variant-selector";
-import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
-import { MobileStickyCart } from "@/features/cart/components/mobile-sticky-cart";
-import { ProductImageGallery } from "@/features/products/components/product-image-gallery";
-import { ProductReviews } from "@/features/reviews/components/product-reviews";
-import { useCart } from "@/features/cart/hooks/use-cart";
 import { useToast } from "@/components/shared/use-toast";
+import { MobileStickyCart } from "@/features/cart/components/mobile-sticky-cart";
+import { useCart } from "@/features/cart/hooks/use-cart";
+import { ProductImageGallery } from "@/features/products/components/product-image-gallery";
+import { ProductVariantSelector } from "@/features/products/components/product-variant-selector";
+import { ProductReviews } from "@/features/reviews/components/product-reviews";
+import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
 import { cn } from "@/lib/utils";
-import { Product, Sku } from "@/types/models";
+import { Product, Review, Sku } from "@/types/models";
 import { motion } from "framer-motion";
 import { Check, Shield, Truck } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 /**
@@ -44,8 +44,10 @@ interface ProductDetailClientProps {
   product: Product;
   initialImages: string[];
   isLoggedIn: boolean;
-  initialReviews?: any[];
+  initialReviews?: Review[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialMeta?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialPurchasedSkus?: any[];
 }
 
@@ -57,7 +59,6 @@ export function ProductDetailClient({
   initialMeta = null,
   initialPurchasedSkus = [],
 }: ProductDetailClientProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const { addToCart, isAdding } = useCart(product.name);
@@ -269,7 +270,6 @@ export function ProductDetailClient({
             <ProductVariantSelector
               options={product.options || []}
               skus={product.skus || []}
-              isLoggedIn={isLoggedIn}
               selectedSkuId={currentSkuId}
               onSkuChange={handleSkuChange}
               onImageChange={(url) => setActiveImage(url)}

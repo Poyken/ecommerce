@@ -14,44 +14,44 @@
  * =====================================================================
  */
 
-import {
-  deleteReviewAction,
-  replyToReviewAction,
-  toggleReviewStatusAction,
-} from "@/features/admin/actions";
-import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { useToast } from "@/components/shared/use-toast";
+import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  AdminActionBadge,
-  AdminEmptyState,
-  AdminPageHeader,
-  AdminTableWrapper,
+    deleteReviewAction,
+    replyToReviewAction,
+    toggleReviewStatusAction,
+} from "@/features/admin/actions";
+import {
+    AdminActionBadge,
+    AdminEmptyState,
+    AdminPageHeader,
+    AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
-import { useDebounce } from "@/lib/hooks/use-debounce";
-import { useToast } from "@/components/shared/use-toast";
-import { useRouter } from "@/i18n/routing";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/features/auth/providers/auth-provider";
+import { useRouter } from "@/i18n/routing";
+import { useDebounce } from "@/lib/hooks/use-debounce";
+import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { Eye, EyeOff, MessageSquare, Search, Star, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -286,7 +286,7 @@ export function ReviewsClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper>
+      <AdminTableWrapper isLoading={isPending}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

@@ -13,7 +13,7 @@ export interface ListParams {
   page?: number;
   limit?: number;
   search?: string;
-  [key: string]: any;
+  [key: string]: string | number | boolean | undefined;
 }
 
 /**
@@ -36,12 +36,13 @@ export async function fetchList<T>(baseUrl: string, params: ListParams) {
     });
 
     return await http<ApiResponse<T[]>>(url);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error(`Fetch error for ${baseUrl}:`, error);
+    const message = error instanceof Error ? error.message : "Unknown error";
     return {
       data: [] as T[],
       meta: { total: 0, page: 1, limit: 10, lastPage: 1 },
-      error: error.message,
+      error: message,
     };
   }
 }
@@ -68,8 +69,9 @@ export async function handleMutation<T>(
     }
 
     return { success: true, data: result };
-  } catch (error: any) {
-    const message = error.message || "An unknown error occurred";
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "An unknown error occurred";
     return { success: false, error: message };
   }
 }

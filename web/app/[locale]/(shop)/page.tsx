@@ -45,7 +45,7 @@ export default async function Home() {
       productService.getCategories(),
       productService.getBrands(),
     ]);
-  } catch (e) {
+  } catch (_e) {
     // console.error("Failed to fetch data", e);
   }
 

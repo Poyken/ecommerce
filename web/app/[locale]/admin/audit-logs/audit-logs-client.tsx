@@ -14,8 +14,8 @@
  * =====================================================================
  */
 
-import { Button } from "@/components/ui/button";
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -38,9 +38,9 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
-import { useDebounce } from "@/lib/hooks/use-debounce";
-import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/features/auth/providers/auth-provider";
+import { useRouter } from "@/i18n/routing";
+import { useDebounce } from "@/lib/hooks/use-debounce";
 import { format } from "date-fns";
 import {
   Activity,
@@ -55,7 +55,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 type FilterType = "all" | "create" | "update" | "delete";
 
@@ -82,23 +82,28 @@ export function AuditLogsClient({
   );
   const [filter, setFilter] = useState<FilterType>("all");
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
+  const [isPending, startTransition] = useTransition();
 
   const [selectedLog, setSelectedLog] = useState<Record<string, any> | null>(
     null
   );
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     const params = new URLSearchParams(searchParams.toString());
     const currentSearch = params.get("search") || "";
 
     if (currentSearch !== debouncedSearchTerm) {
-      if (debouncedSearchTerm) {
-        params.set("search", debouncedSearchTerm);
-      } else {
-        params.delete("search");
-      }
-      params.set("page", "1");
-      router.push(`/admin/audit-logs?${params.toString()}`);
+      startTransition(() => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (debouncedSearchTerm) {
+          params.set("search", debouncedSearchTerm);
+        } else {
+          params.delete("search");
+        }
+        params.set("page", "1");
+        router.push(`/admin/audit-logs?${params.toString()}`);
+      });
     }
   }, [debouncedSearchTerm, router, searchParams]);
 
@@ -177,9 +182,11 @@ export function AuditLogsClient({
   ).length;
 
   const goToPage = (newPage: number) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("page", newPage.toString());
-    router.push(`/admin/audit-logs?${params.toString()}`);
+    startTransition(() => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("page", newPage.toString());
+      router.push(`/admin/audit-logs?${params.toString()}`);
+    });
   };
 
   return (
@@ -236,7 +243,7 @@ export function AuditLogsClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper>
+      <AdminTableWrapper isLoading={isPending}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

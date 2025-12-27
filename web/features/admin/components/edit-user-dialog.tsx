@@ -1,10 +1,10 @@
 "use client";
 
-import { updateUserAction } from "@/features/admin/actions";
 import { FormDialog } from "@/components/shared/form-dialog";
+import { useToast } from "@/components/shared/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/shared/use-toast";
+import { updateUserAction } from "@/features/admin/actions";
 import { User } from "@/types/models";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslations } from "next-intl";
@@ -44,14 +44,7 @@ export function EditUserDialog({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // Reset form when user prop changes
-  useMemo(() => {
-    setFormData({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    });
-  }, [user]);
+  // Reset form when user prop changes - Removed (Handled by key prop in parent)
 
   const validate = () => {
     const newErrors: Record<string, string> = {};

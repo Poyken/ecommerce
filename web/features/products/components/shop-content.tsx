@@ -1,27 +1,27 @@
 "use client";
 
+import { ShopStats } from "@/components/molecules/shop-stats";
 import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav";
+import { SearchInput } from "@/components/shared/search-input";
+import { ProductsSkeleton } from "@/components/shared/skeletons/home-skeleton";
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
+    Sheet,
+    SheetContent,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
-import { SearchInput } from "@/components/shared/search-input";
-import { ShopStats } from "@/components/molecules/shop-stats";
 import { FilterSidebar } from "@/features/products/components/filter-sidebar";
 import { ShopGrid } from "@/features/products/components/shop-grid";
-import { ProductsSkeleton } from "@/components/shared/skeletons/home-skeleton";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { ApiResponse } from "@/types/dtos";
@@ -31,12 +31,12 @@ import { Filter, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import {
-  Suspense,
-  use,
-  useCallback,
-  useEffect,
-  useState,
-  useTransition,
+    Suspense,
+    use,
+    useCallback,
+    useEffect,
+    useState,
+    useTransition,
 } from "react";
 
 /**
@@ -92,6 +92,7 @@ export function ShopContent({
     if (columnsParam) {
       const val = Number(columnsParam);
       if (val === 3 || val === 4 || val === 5) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setColumnsState(val as 3 | 4 | 5);
       }
     }
@@ -113,10 +114,12 @@ export function ShopContent({
   const currentBrand = searchParams.get("brandId");
   const currentSort = searchParams.get("sort") || "newest";
 
-  const activeCategoryName = categories.find(
-    (c) => c.id === currentCategory
-  )?.name;
-  const activeBrandName = brands.find((b) => b.id === currentBrand)?.name;
+  const activeCategoryName = Array.isArray(categories)
+    ? categories.find((c) => c.id === currentCategory)?.name
+    : undefined;
+  const activeBrandName = Array.isArray(brands)
+    ? brands.find((b) => b.id === currentBrand)?.name
+    : undefined;
   const hasActiveFilters = !!(
     currentCategory ||
     currentBrand ||

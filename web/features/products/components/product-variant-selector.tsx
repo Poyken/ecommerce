@@ -84,6 +84,7 @@ export function ProductVariantSelector({
             newSelectedOptions[ov.optionValue.optionId] = ov.optionValue.id;
           }
         });
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedOptions(newSelectedOptions);
       }
     }
@@ -109,6 +110,7 @@ export function ProductVariantSelector({
     }
 
     if (Object.keys(newSelectedOptions).length > 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedOptions(newSelectedOptions);
       // Notify initial selection
       if (options.length > 0) {
@@ -134,6 +136,7 @@ export function ProductVariantSelector({
           if (ov?.optionValue)
             newSelectedOptions[ov.optionValue.optionId] = ov.optionValue.id;
         });
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedOptions(newSelectedOptions);
         
         // Notify auto-selection
@@ -143,7 +146,7 @@ export function ProductVariantSelector({
         }
       }
     }
-  }, [searchParams, skus, options]); // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, skus, options]);  
 
   // 3. CORE LOGIC: XỬ LÝ KHI USER CLICK CHỌN OPTION
   const handleSelect = (optionId: string, valueId: string) => {

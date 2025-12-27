@@ -63,6 +63,9 @@ export const FilterSidebar = memo(function FilterSidebar({
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [showAllBrands, setShowAllBrands] = useState(false);
 
+  const safeCategories = Array.isArray(categories) ? categories : [];
+  const safeBrands = Array.isArray(brands) ? brands : [];
+
   // useCallback để function reference không đổi qua các lần render -> Props cho Child không đổi -> memo hoạt động hiệu quả
   const handleFilter = useCallback(
     (type: "categoryId" | "brandId", value: string | null) => {
@@ -159,7 +162,7 @@ export const FilterSidebar = memo(function FilterSidebar({
           )}
 
           {/* Top 6 categories */}
-          {categories
+          {safeCategories
             .slice(0, 6)
             .map((cat) =>
               renderFilterButton(
@@ -180,7 +183,7 @@ export const FilterSidebar = memo(function FilterSidebar({
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="overflow-hidden space-y-2"
               >
-                {categories
+                {safeCategories
                   .slice(6)
                   .map((cat) =>
                     renderFilterButton(
@@ -195,7 +198,7 @@ export const FilterSidebar = memo(function FilterSidebar({
           </AnimatePresence>
 
           {/* Nút Show More/Less chỉ hiện khi có > 6 categories */}
-          {categories.length > 6 && (
+          {safeCategories.length > 6 && (
             <button
               onClick={() => setShowAllCategories(!showAllCategories)}
               className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-primary transition-colors px-4 py-1"
@@ -229,7 +232,7 @@ export const FilterSidebar = memo(function FilterSidebar({
             true
           )}
 
-          {brands
+          {safeBrands
             .slice(0, 6)
             .map((brand) =>
               renderFilterButton(
@@ -250,7 +253,7 @@ export const FilterSidebar = memo(function FilterSidebar({
                 transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="overflow-hidden space-y-2"
               >
-                {brands
+                {safeBrands
                   .slice(6)
                   .map((brand) =>
                     renderFilterButton(
@@ -265,7 +268,7 @@ export const FilterSidebar = memo(function FilterSidebar({
             )}
           </AnimatePresence>
 
-          {brands.length > 6 && (
+          {safeBrands.length > 6 && (
             <button
               onClick={() => setShowAllBrands(!showAllBrands)}
               className="flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 transition-colors px-4 py-1"
