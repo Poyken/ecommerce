@@ -1,10 +1,10 @@
-import { Logo } from "@/features/layout/components/logo";
+import { StickyHeader } from "@/components/shared/sticky-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CartBadge } from "@/features/cart/components/cart-badge";
 import { HeaderActions } from "@/features/layout/components/header-actions";
 import { HeaderNav } from "@/features/layout/components/header-nav";
+import { Logo } from "@/features/layout/components/logo";
 import { NotificationBell } from "@/features/notifications/components/notification-bell";
-import { StickyHeader } from "@/components/shared/sticky-header";
 import { WishlistBadge } from "@/features/wishlist/components/wishlist-badge";
 import { Link } from "@/i18n/routing";
 import { Heart, ShoppingCart } from "lucide-react";
@@ -113,7 +113,7 @@ export function Header({
           {/* Wishlist Button */}
           <Link
             href="/wishlist"
-            className="transition-all hover:text-primary text-foreground/70 relative w-10 h-10 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-white/5 rounded-full group"
+            className="hidden md:flex transition-all hover:text-primary text-foreground/70 relative w-10 h-10 items-center justify-center hover:bg-neutral-100 dark:hover:bg-white/5 rounded-full group"
             title={t("wishlist")}
           >
             <span className="relative inline-flex">
@@ -132,7 +132,7 @@ export function Header({
           <Link
             href="/cart"
             prefetch={true} // Tải trước trang Cart ngay khi hover -> Tăng tốc độ chuyển trang
-            className="transition-all hover:text-primary text-foreground/70 relative w-10 h-10 flex items-center justify-center hover:bg-neutral-100 dark:hover:bg-white/5 rounded-full group"
+            className="hidden md:flex transition-all hover:text-primary text-foreground/70 relative w-10 h-10 items-center justify-center hover:bg-neutral-100 dark:hover:bg-white/5 rounded-full group"
           >
             <span className="relative inline-flex">
               <ShoppingCart
@@ -146,7 +146,7 @@ export function Header({
             </span>
           </Link>
 
-          <div className="hidden sm:block h-6 w-px bg-foreground/10 mx-1" />
+          <div className="hidden md:block h-6 w-px bg-foreground/10 mx-1" />
 
           {/* Notification & User Actions */}
           <NotificationBell />

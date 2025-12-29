@@ -74,14 +74,29 @@ export function HeaderActions({ initialUser }: HeaderActionsProps) {
         <LanguageSwitcher />
         <ThemeToggle />
         <div className="flex gap-2">
-          <Link href="/login">
-            <Button variant="ghost" size="sm" className="cursor-pointer">
-              {t("login")}
-            </Button>
-          </Link>
-          <Link href="/register">
-            <Button size="sm" className="cursor-pointer">
-              {t("register")}
+          {/* Desktop: Buttons with text */}
+          <div className="hidden md:flex gap-2">
+            <Link href="/login">
+              <Button variant="ghost" size="sm" className="cursor-pointer">
+                {t("login")}
+              </Button>
+            </Link>
+            <Link href="/register">
+              <Button size="sm" className="cursor-pointer">
+                {t("register")}
+              </Button>
+            </Link>
+          </div>
+
+          {/* Mobile: Icon only */}
+          <Link href="/login" className="md:hidden">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-9 w-9 rounded-full"
+            >
+              <User className="h-5 w-5" />
+              <span className="sr-only">{t("login")}</span>
             </Button>
           </Link>
         </div>
@@ -94,13 +109,13 @@ export function HeaderActions({ initialUser }: HeaderActionsProps) {
       <LanguageSwitcher />
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-              <UserAvatar 
-                src={user?.avatar} 
-                alt={user?.firstName || "User"} 
-                className="h-9 w-9"
-              />
-            </Button>
+          <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+            <UserAvatar
+              src={user?.avatar}
+              alt={user?.firstName || "User"}
+              className="h-9 w-9"
+            />
+          </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>

@@ -1,7 +1,7 @@
 import { SocialProofToast } from "@/components/shared/purchase-toast";
 import {
-    NotificationProvider,
-    type Notification,
+  NotificationProvider,
+  type Notification,
 } from "@/contexts/notification-context";
 import { getCartCountAction } from "@/features/cart/actions";
 import { CartProvider } from "@/features/cart/providers/cart-provider";
@@ -11,8 +11,8 @@ import { Footer } from "@/features/layout/components/footer";
 import { Header, HeaderFallback } from "@/features/layout/components/header";
 import { MobileBottomNav } from "@/features/layout/components/mobile-nav";
 import {
-    getNotificationsAction,
-    getUnreadCountAction,
+  getNotificationsAction,
+  getUnreadCountAction,
 } from "@/features/notifications/actions";
 import { getProfileAction } from "@/features/profile/actions";
 import { getWishlistAction } from "@/features/wishlist/actions";
@@ -108,6 +108,7 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
         <MobileBottomNav
           initialUser={user}
           initialCartCount={initialCartCount}
+          initialWishlistCount={initialWishlistCount}
         />
         <SocialProofToast />
         <ChatWidget user={user} accessToken={token} />

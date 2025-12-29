@@ -1,11 +1,12 @@
 "use client";
 
 import { CartBadge } from "@/features/cart/components/cart-badge";
+import { WishlistBadge } from "@/features/wishlist/components/wishlist-badge";
 import { Link, usePathname } from "@/i18n/routing";
 import { slideInFromBottom } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { Home, Menu, ShoppingBag, User, X } from "lucide-react";
+import { Heart, Home, LogIn, Menu, ShoppingBag, User, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -43,11 +44,13 @@ interface NavItem {
 interface MobileBottomNavProps {
   initialUser?: any;
   initialCartCount?: number;
+  initialWishlistCount?: number;
 }
 
 export function MobileBottomNav({
   initialUser,
   initialCartCount,
+  initialWishlistCount,
 }: MobileBottomNavProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
@@ -57,7 +60,9 @@ export function MobileBottomNav({
     { href: "/", icon: Home, label: t("home") },
     { href: "/shop", icon: ShoppingBag, label: t("shop") },
     { href: "/cart", icon: ShoppingBag, label: t("cart") },
-    { href: "/profile", icon: User, label: t("profile") },
+    initialUser
+      ? { href: "/profile", icon: User, label: t("profile") }
+      : { href: "/login", icon: LogIn, label: t("login") || "Login" },
   ];
 
   return (
@@ -159,7 +164,7 @@ export function MobileBottomNav({
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="fixed bottom-16 left-0 right-0 z-101 bg-background/98 backdrop-blur-2xl rounded-t-4xl border-t border-foreground/5 p-8 space-y-6 md:hidden safe-area-pb shadow-2xl"
+              className="fixed bottom-16 left-0 right-0 z-101 bg-background/98 backdrop-blur-2xl rounded-t-4xl border-t border-foreground/5 p-8 pb-12 overflow-y-auto max-h-[85vh] space-y-6 md:hidden safe-area-pb shadow-2xl"
             >
               <div className="w-16 h-1.5 bg-foreground/10 rounded-full mx-auto mb-6" />
 
@@ -168,11 +173,33 @@ export function MobileBottomNav({
               </h3>
 
               <div className="grid grid-cols-2 gap-4">
+                <Link
+                  href="/wishlist"
+                  onClick={() => setIsSearchOpen(false)}
+                  className="relative flex items-center justify-center p-5 rounded-2xl bg-foreground/2 border border-foreground/5 text-sm font-bold uppercase tracking-wide hover:bg-foreground/5 hover:border-primary/20 transition-all duration-300 active:scale-95"
+                >
+                  <span className="flex items-center gap-2">
+                    <Heart size={18} />
+                    {t("wishlist") || "Wishlist"}
+                  </span>
+                  <WishlistBadge
+                    initialUser={initialUser}
+                    initialCount={initialWishlistCount}
+                  />
+                </Link>
+
                 {[
+                  { href: "/shop", label: t("search") || "Search" },
+                  {
+                    href: "/notifications",
+                    label: t("notifications") || "Notifications",
+                  },
+                  ...(initialUser
+                    ? [{ href: "/orders", label: t("orders") }]
+                    : []),
                   { href: "/about", label: t("about") },
                   { href: "/blog", label: t("journal") },
                   { href: "/contact", label: t("contact") },
-                  { href: "/orders", label: t("orders") },
                 ].map((link) => (
                   <Link
                     key={link.href}
