@@ -28,8 +28,8 @@ import {
     RefreshCw,
     Search,
     ShoppingBag,
-    Trash2,
     Truck,
+    Upload,
     X,
 } from "lucide-react";
 
@@ -88,6 +88,7 @@ export function OrdersClient({
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Track processed orderId to prevent infinite loop/re-processing
   const processedOrderIdRef = useRef<string | null>(null);
@@ -130,7 +131,7 @@ export function OrdersClient({
 
   const canRead = hasPermission("order:read");
   const canUpdate = hasPermission("order:update");
-  const canDelete = hasPermission("order:delete");
+  // const canDelete = hasPermission("order:delete"); // Delete removed
 
   // Bulk Selection State
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -170,10 +171,18 @@ export function OrdersClient({
     }
   };
 
-  const handleBulkDelete = () => {
-    if (confirm(t("confirmTitle"))) {
-      // console.log("Deleting:", Array.from(selectedRows));
-      setSelectedRows(new Set());
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // TODO: Implement actual import logic (call API)
+      console.log("Importing file:", file.name);
+      // alert(`File ${file.name} selected for import. Backend integration pending.`);
+      // Reset input
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -237,6 +246,13 @@ export function OrdersClient({
 
   return (
     <div className="space-y-6">
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        className="hidden"
+        accept=".csv,.xlsx"
+      />
       {/* Page Header */}
       <AdminPageHeader
         title={t("orders.management")}
@@ -252,34 +268,30 @@ export function OrdersClient({
           { label: "delivered", value: deliveredCount, variant: "success" },
         ]}
         actions={
-          selectedRows.size > 0 ? (
-            <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg">
-              <span className="text-sm font-medium text-primary">
-                {t("orders.selectedCount", { count: selectedRows.size })}
-              </span>
-              <div className="h-4 w-px bg-primary/20 mx-2" />
-              {canDelete && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                  onClick={handleBulkDelete}
-                >
-                  <Trash2 size={16} className="mr-2" />
-                  {t("delete")}
+            <div className="flex items-center gap-2">
+                {selectedRows.size > 0 && (
+                    <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg mr-2">
+                    <span className="text-sm font-medium text-primary">
+                        {t("orders.selectedCount", { count: selectedRows.size })}
+                    </span>
+                    <div className="h-4 w-px bg-primary/20 mx-2" />
+                    <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-8 hover:bg-primary/10"
+                        onClick={handleExport}
+                    >
+                        <Download size={16} className="mr-2" />
+                        {t("orders.exportLabel")}
+                    </Button>
+                    </div>
+                )}
+                
+                <Button onClick={handleImportClick}>
+                    <Upload size={16} className="mr-2" />
+                    Import
                 </Button>
-              )}
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 hover:bg-primary/10"
-                onClick={handleExport}
-              >
-                <Download size={16} className="mr-2" />
-                {t("orders.exportLabel")}
-              </Button>
             </div>
-          ) : undefined
         }
       />
 

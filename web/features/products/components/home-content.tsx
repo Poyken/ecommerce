@@ -1,10 +1,9 @@
 "use client";
 
-import { ChatWidget } from "@/features/chat/components/chat-widget";
 
 import {
-  CategoriesSkeleton,
-  ProductsSkeleton,
+    CategoriesSkeleton,
+    ProductsSkeleton,
 } from "@/components/shared/skeletons/home-skeleton";
 import { FeaturedBrands } from "@/features/brands/components/featured-brands";
 import { FeaturedCategories } from "@/features/categories/components/featured-categories";
@@ -17,11 +16,11 @@ import { NewArrivals } from "@/features/products/components/new-arrivals";
 import { TrendingProducts } from "@/features/products/components/trending-products";
 import { Link } from "@/i18n/routing";
 import {
-  fadeInLeft,
-  fadeInRight,
-  fadeInUp,
-  scaleUp,
-  zoomIn,
+    fadeInLeft,
+    fadeInRight,
+    fadeInUp,
+    scaleUp,
+    zoomIn,
 } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { Brand, Category, Product } from "@/types/models";
@@ -75,9 +74,6 @@ export function HomeContent({
       </div>
 
       <HeroSection />
-
-      {/* Floating Chat Widget */}
-      <ChatWidget />
 
       <main className="space-y-16 pb-16">
         {/* 1. Featured Categories */}

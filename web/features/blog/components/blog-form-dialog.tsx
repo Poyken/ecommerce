@@ -78,14 +78,14 @@ export function BlogFormDialog({
     if (!open) return;
 
     const fetchData = async () => {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       const productsRes = await getProductsAction(1, 100);
       if ("data" in productsRes) {
         setProducts(productsRes.data || []);
       }
 
       if (categories.length === 0) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+         
         const catsRes = await getCategoriesAction(1, 100);
         if (catsRes && "data" in catsRes && catsRes.data) {
           setCategories(catsRes.data);
@@ -101,7 +101,7 @@ export function BlogFormDialog({
     // Reset/Init local state like imageFile and errors
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setImageFile(null);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     setErrors({});
   }, [open, blog, categories.length, formData.category]);
 

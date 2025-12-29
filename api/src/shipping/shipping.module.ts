@@ -5,8 +5,11 @@ import { ShippingController } from './shipping.controller';
 import { ShippingCronService } from './shipping.cron.service';
 import { ShippingService } from './shipping.service';
 
+import { NotificationsModule } from '@/notifications/notifications.module';
+import { EmailModule } from '@integrations/email/email.module';
+
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, NotificationsModule, EmailModule],
   controllers: [ShippingController],
   providers: [ShippingService, GHNService, ShippingCronService],
   exports: [ShippingService, GHNService],

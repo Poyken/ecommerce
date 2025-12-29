@@ -1,72 +1,166 @@
 "use client";
 
-import { useToast } from "@/components/shared/use-toast";
+import { Button } from "@/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useChatSocket } from "@/features/chat/hooks/use-chat-socket";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import { MessageCircle } from "lucide-react";
-import { useState } from "react";
+import { MessageCircle, Minus, Paperclip, Send, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
-/**
- * =====================================================================
- * CHAT WIDGET - Floating Chat Button
- * =====================================================================
- * Replaces the Floating Cart on the Home Page.
- * Positioned Bottom-Left as requested.
- */
-export function ChatWidget() {
-  const [isVisible, setIsVisible] = useState(true);
-  const { toast } = useToast();
+interface ChatWidgetProps {
+    user: { id: string; firstName: string; lastName: string; email: string; avatarUrl?: string | null } | null;
+    accessToken?: string;
+}
 
-  const handleClick = () => {
-    toast({
-      title: "Chat Support",
-      description: "Live chat system is under development.",
-    });
+export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [input, setInput] = useState("");
+  const scrollRef = useRef<HTMLDivElement>(null);
+  
+  const { isConnected, messages, sendMessage, setMessages } = useChatSocket(accessToken, user);
+
+  // Fetch history on open
+  useEffect(() => {
+    if (isOpen && user && accessToken) {
+        // We need to strip '/api/v1' from the API URL to get the root URL for the socket
+        // But for fetch we USE the API URL (with /api/v1)
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/my-history`, {
+             headers: { Authorization: `Bearer ${accessToken}` }
+        })
+        .then(res => res.json())
+        .then(resData => {
+            const conversationData = resData.data;
+            if(conversationData && conversationData.messages) {
+                setMessages(conversationData.messages);
+            }
+        })
+        .catch(err => console.error(err));
+    }
+  }, [isOpen, user, accessToken, setMessages]);
+
+  // Auto-scroll to bottom on new message
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, isOpen]);
+
+  const handleSend = () => {
+    if (!input.trim()) return;
+    sendMessage(input);
+    setInput("");
   };
 
+  if (!isOpen) {
+    return (
+      <Button
+        className="fixed bottom-4 right-4 h-14 w-14 rounded-full shadow-lg z-50 animate-in zoom-in"
+        onClick={() => setIsOpen(true)}
+      >
+        <MessageCircle size={28} />
+      </Button>
+    );
+  }
+
+  if (isMinimized) {
+      return (
+        <div className="fixed bottom-4 right-4 z-50">
+             <Button 
+                variant="outline" 
+                className="shadow-lg bg-background flex gap-2 items-center"
+                onClick={() => setIsMinimized(false)}
+            >
+                <div className={cn("h-2 w-2 rounded-full", isConnected ? "bg-green-500" : "bg-gray-400")} />
+                <span>Chat</span>
+                <Button variant="ghost" size="icon" className="h-6 w-6 ml-2" onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}>
+                    <X size={14} />
+                </Button>
+            </Button>
+        </div>
+      )
+  }
+
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.button
-          data-fixed-element
-          initial={{ opacity: 0, scale: 0.8, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.8, y: 20 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          onClick={handleClick}
-          className={cn(
-            "fixed bottom-6 right-6 z-50", // Positioned Bottom-Right
-            "lg:bottom-8 lg:right-8",
-            "group"
-          )}
-        >
-          <div
-            className={cn(
-              "relative flex items-center justify-center",
-              "w-14 h-14 lg:w-16 lg:h-16 rounded-full",
-              "bg-foreground/5 backdrop-blur-md border border-white/10 dark:border-white/5", // Glass effect manual fallback if class missing
-              "hover:bg-primary hover:text-primary-foreground", // Hover effect
-              "text-foreground shadow-2xl shadow-black/10",
-              "transition-all duration-500 ease-[0.16,1,0.3,1]",
-              "hover:scale-110"
-            )}
-          >
-            <MessageCircle
-              className={cn(
-                "w-6 h-6 lg:w-7 lg:h-7",
-                "transition-transform duration-300",
-                "group-hover:scale-110 group-hover:-rotate-12"
-              )}
+    <Card className="fixed bottom-4 right-4 w-[350px] h-[500px] shadow-2xl z-50 flex flex-col animate-in slide-in-from-bottom-10 fade-in">
+      <CardHeader className="p-3 border-b flex flex-row items-center justify-between space-y-0 shrink-0">
+        <div className="flex items-center gap-2">
+            <div className={cn("h-2 w-2 rounded-full", isConnected ? "bg-green-500" : "bg-gray-400")} />
+            <CardTitle className="text-base">Support Chat</CardTitle>
+        </div>
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setIsMinimized(true)}>
+            <Minus size={14} />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setIsOpen(false)}>
+            <X size={14} />
+          </Button>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="flex-1 p-0 overflow-hidden relative">
+         {!user ? (
+             <div className="h-full flex flex-col items-center justify-center p-6 text-center space-y-4">
+                 <MessageCircle size={48} className="text-muted-foreground/50" />
+                 <h3 className="font-semibold">Sign in to chat</h3>
+                 <p className="text-sm text-muted-foreground">Please login to start a conversation with our support team.</p>
+                 <Button asChild className="w-full">
+                     <a href="/login">Login Now</a>
+                 </Button>
+             </div>
+         ) : (
+             <ScrollArea className="h-full p-4 w-full">
+                 <div className="flex flex-col gap-3">
+                     <div className="flex justify-start">
+                         <div className="bg-muted px-3 py-2 rounded-lg rounded-tl-none max-w-[80%] text-sm">
+                             Hello {user.firstName}! How can we help you today?
+                         </div>
+                     </div>
+
+                     {messages.map((msg, index) => {
+                         const isMe = msg.senderType === 'USER' && msg.senderId === user.id;
+                         return (
+                             <div key={index} className={cn("flex", isMe ? "justify-end" : "justify-start")}>
+                                 <div className={cn(
+                                     "px-3 py-2 rounded-lg text-sm max-w-[80%]",
+                                     isMe ? "bg-primary text-primary-foreground rounded-tr-none" : "bg-muted rounded-tl-none"
+                                 )}>
+                                     {msg.content}
+                                 </div>
+                             </div>
+                         )
+                     })}
+                     <div ref={scrollRef} />
+                 </div>
+             </ScrollArea>
+         )}
+      </CardContent>
+
+      {user && (
+          <CardFooter className="p-3 border-t gap-2 shrink-0 bg-background">
+            <Button variant="ghost" size="icon" title="Attach file (Coming soon)">
+                <Paperclip size={18} />
+            </Button>
+            <Input 
+                placeholder="Type a message..." 
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                disabled={!isConnected}
             />
-            
-            {/* Status Indicator */}
-            <span className="absolute top-0 right-0 flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-            </span>
-          </div>
-        </motion.button>
+            <Button size="icon" onClick={handleSend} disabled={!isConnected || !input.trim()}>
+                <Send size={16} />
+            </Button>
+          </CardFooter>
       )}
-    </AnimatePresence>
+    </Card>
   );
 }

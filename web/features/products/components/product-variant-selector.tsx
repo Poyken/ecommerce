@@ -136,7 +136,7 @@ export function ProductVariantSelector({
           if (ov?.optionValue)
             newSelectedOptions[ov.optionValue.optionId] = ov.optionValue.id;
         });
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+         
         setSelectedOptions(newSelectedOptions);
         
         // Notify auto-selection

@@ -83,11 +83,11 @@ export const ProductImageGallery = memo(function ProductImageGallery({
       const firstImage = activeImage || images[0];
       img.src = firstImage;
       img.onload = () => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+         
         setIsFirstLoadReady(true);
       };
       img.onerror = () => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+         
         setIsFirstLoadReady(true); // Don't block UI on error
       };
 
@@ -97,7 +97,7 @@ export const ProductImageGallery = memo(function ProductImageGallery({
         setDisplayImage(firstImage);
       }
     } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setIsFirstLoadReady(true);
     }
   }, [images, activeImage, displayImage, isTransitioning]);

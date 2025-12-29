@@ -59,7 +59,7 @@ export function ProductReviews({
   const [reviews, setReviews] = useState<any[]>(initialReviews);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [meta, setMeta] = useState<any>(initialMeta);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const [purchasedSkus, setPurchasedSkus] =
     useState<any[]>(initialPurchasedSkus);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
@@ -128,7 +128,7 @@ export function ProductReviews({
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     fetchData();
   }, [productId]);
   /* eslint-enable react-hooks/exhaustive-deps */

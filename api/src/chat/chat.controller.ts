@@ -1,0 +1,39 @@
+import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
+import { Permissions } from '../auth/decorators/permissions.decorator';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { PermissionsGuard } from '../auth/permissions.guard';
+import { ChatService } from './chat.service';
+
+@Controller('chat')
+@UseGuards(JwtAuthGuard)
+export class ChatController {
+  constructor(private readonly chatService: ChatService) {}
+
+  /**
+   * ADMIN: List all conversations
+   */
+  @Get('conversations')
+  @UseGuards(PermissionsGuard)
+  @Permissions('user:read')
+  async getConversations(@Query('page') page = 1, @Query('limit') limit = 20) {
+    return this.chatService.getAdminConversations(Number(page), Number(limit));
+  }
+
+  /**
+   * ADMIN: Get specific conversation history by UserId (Customer ID)
+   */
+  @Get('history/:userId')
+  @UseGuards(PermissionsGuard)
+  @Permissions('user:read')
+  async getUserHistory(@Param('userId') userId: string) {
+    return this.chatService.getConversation(userId);
+  }
+
+  /**
+   * USER: Get my own conversation history
+   */
+  @Get('my-history')
+  async getMyHistory(@Req() req: any) {
+    return this.chatService.getConversation(req.user.id);
+  }
+}

@@ -17,6 +17,9 @@ export interface Ward {
   WardName: string;
 }
 
+import { NotificationsGateway } from '@/notifications/notifications.gateway';
+import { NotificationsService } from '@/notifications/notifications.service';
+import { EmailService } from '@integrations/email/email.service';
 import { GHNService } from './ghn.service';
 
 @Injectable()
@@ -26,6 +29,9 @@ export class ShippingService {
   constructor(
     public readonly ghnService: GHNService,
     private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+    private readonly notificationsGateway: NotificationsGateway,
+    private readonly emailService: EmailService,
   ) {}
 
   getProvinces(): Promise<Province[]> {
@@ -77,6 +83,10 @@ export class ShippingService {
       ['picked', 'delivering', 'money_collect_delivering'].includes(ghnStatus)
     ) {
       newStatus = OrderStatus.SHIPPED;
+    } else if (ghnStatus === 'ready_to_pick') {
+      this.logger.log(`Order ${OrderCode} is ready to pick at GHN`);
+      // Optional: Force status to PROCESSING if currently PENDING?
+      // newStatus = OrderStatus.PROCESSING;
     } else if (ghnStatus === 'delivered') {
       newStatus = OrderStatus.DELIVERED;
     } else if (ghnStatus === 'cancel') {
@@ -123,7 +133,75 @@ export class ShippingService {
           `Updated order ${order.id} status to ${newStatus || order.status} (GHN: ${Status}) via GHN Webhook`,
         );
 
-        // [Mở rộng]: Có thể bắn Notification hoặc Email ở đây nếu cần
+        // ✅ Send Notification & Email
+        if (
+          [
+            OrderStatus.SHIPPED,
+            OrderStatus.DELIVERED,
+            OrderStatus.CANCELLED,
+            OrderStatus.RETURNED,
+          ].includes(newStatus || order.status)
+        ) {
+          const updatedOrder = await this.prisma.order.findUnique({
+            where: { id: order.id },
+            include: {
+              user: true,
+              items: { include: { sku: { include: { product: true } } } },
+              address: true,
+            },
+          });
+
+          if (updatedOrder) {
+            // Send Email
+            await this.emailService.sendOrderStatusUpdate(updatedOrder);
+
+            // Send In-App Notification
+            let title = 'Cập nhật đơn hàng';
+            let message = `Đơn hàng #${order.id.slice(-8)} đã chuyển sang trạng thái ${newStatus}`;
+            let notiType = 'ORDER';
+
+            const targetStatus = newStatus || order.status;
+
+            switch (targetStatus) {
+              case OrderStatus.SHIPPED:
+                title = 'Đơn hàng đang giao';
+                message = `Đơn hàng #${order.id.slice(-8)} đã được bàn giao cho đơn vị vận chuyển.`;
+                notiType = 'ORDER_SHIPPED';
+                break;
+              case OrderStatus.DELIVERED:
+                title = 'Giao hàng thành công';
+                message = `Đơn hàng #${order.id.slice(-8)} đã được giao thành công. Cảm ơn bạn đã mua sắm!`;
+                notiType = 'ORDER_DELIVERED';
+                break;
+              case OrderStatus.CANCELLED:
+                title = 'Đơn hàng đã hủy';
+                message = `Đơn hàng #${order.id.slice(-8)} của bạn đã bị hủy.`;
+                notiType = 'ORDER_CANCELLED';
+                break;
+              case OrderStatus.RETURNED:
+                title = 'Đơn hàng đã hoàn';
+                message = `Đơn hàng #${order.id.slice(-8)} của bạn đã được hoàn trả.`;
+                notiType = 'ORDER_RETURNED';
+                break;
+            }
+
+            try {
+              const notification = await this.notificationsService.create({
+                userId: updatedOrder.userId,
+                type: notiType,
+                title,
+                message,
+                link: `/orders/${order.id}`,
+              });
+              this.notificationsGateway.sendNotificationToUser(
+                updatedOrder.userId,
+                notification,
+              );
+            } catch (e) {
+              this.logger.error('Failed to send notification in webhook', e);
+            }
+          }
+        }
       }
 
       return { success: true };

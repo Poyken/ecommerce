@@ -89,7 +89,7 @@ export function AuditLogsClient({
   );
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     const params = new URLSearchParams(searchParams.toString());
     const currentSearch = params.get("search") || "";
 

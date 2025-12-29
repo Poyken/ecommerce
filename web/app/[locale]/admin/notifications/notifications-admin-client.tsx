@@ -74,7 +74,7 @@ export function NotificationsAdminClient({
 
   // Fetch products/orders/coupons when search changes
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     const fetchData = async () => {
       if (linkType === "product") {
         const res = await getProductsAction(1, 10, debouncedSearch);

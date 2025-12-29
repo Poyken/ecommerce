@@ -4,8 +4,10 @@ import * as path from 'path';
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-const PORT = process.env.PORT || 8088;
-const API_URL = `http://localhost:${PORT}/api/v1/shipping/webhook`;
+const PORT = process.env.PORT || 8080;
+const BASE_URL = process.env.APP_URL || `http://localhost:${PORT}`;
+const API_URL =
+  process.env.WEBHOOK_URL || `${BASE_URL}/api/v1/shipping/webhook`;
 
 async function main() {
   const args = process.argv.slice(2);

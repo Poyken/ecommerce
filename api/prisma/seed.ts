@@ -31,6 +31,8 @@ async function main() {
 
   // 1. Clean up database (Order matters due to foreign keys, though cascade helps)
   console.log('🧹 Cleaning up database...');
+  await prisma.chatMessage.deleteMany();
+  await prisma.chatConversation.deleteMany();
   await prisma.blog.deleteMany();
   await prisma.wishlist.deleteMany();
   await prisma.orderItem.deleteMany();

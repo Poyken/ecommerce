@@ -579,6 +579,13 @@ export class OrdersService {
       );
     }
 
+    // BLOCK MANUAL 'SHIPPED': Ensure flow follows GHN Webhook
+    if (newStatus === OrderStatus.SHIPPED) {
+      throw new BadRequestException(
+        'Không được cập nhật thủ công sang "Đã Giao ĐVVC". Trạng thái này sẽ tự động cập nhật khi GHN qua lấy hàng (Picked). Nếu đang test, hãy dùng script: simulate-ghn-webhook.ts',
+      );
+    }
+
     // Additional Check: Prevent PROCESSING non-COD orders if not PAID
     // BUT: If paymentStatus is being set to PAID in this request, allow it (payment confirmation flow)
     const effectivePaymentStatus = dto.paymentStatus || order.paymentStatus;
@@ -656,11 +663,7 @@ export class OrdersService {
               message = `Đơn hàng #${id.slice(-8)} của bạn đang được chuẩn bị.`;
               notiType = 'ORDER_PROCESSING';
               break;
-            case OrderStatus.SHIPPED:
-              title = 'Đơn hàng đang giao';
-              message = `Đơn hàng #${id.slice(-8)} đã được bàn giao cho đơn vị vận chuyển.`;
-              notiType = 'ORDER_SHIPPED';
-              break;
+            // SHIPPED case removed as it is handled by webhook now
             case OrderStatus.DELIVERED:
               title = 'Giao hàng thành công';
               message = `Đơn hàng #${id.slice(-8)} đã được giao thành công. Cảm ơn bạn đã mua sắm!`;
@@ -703,10 +706,7 @@ export class OrdersService {
 
     // 🚀 OPTIMIZATION: Move External API Call (GHN) OUT of Transaction
     // This prevents DB locks if GHN service is slow
-    if (
-      newStatus === OrderStatus.PROCESSING ||
-      (newStatus === OrderStatus.SHIPPED && !order.shippingCode)
-    ) {
+    if (newStatus === OrderStatus.PROCESSING) {
       // Automatically sync with GHN if addressId exists
       if (transactionResult.addressId) {
         try {
