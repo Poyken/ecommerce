@@ -7,7 +7,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { BaseCrudService } from '../common/base-crud.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -131,7 +131,7 @@ export class UsersService extends BaseCrudService<
     search?: string,
     role?: string,
   ) {
-    const where: any = {};
+    const where: Prisma.UserWhereInput = {};
 
     if (role && role !== 'all') {
       where.roles = {
@@ -176,7 +176,7 @@ export class UsersService extends BaseCrudService<
       select: {
         ...this.USER_FULL_SELECT,
       },
-    } as any);
+    });
 
     return new UserEntity(user);
   }

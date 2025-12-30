@@ -30,6 +30,7 @@ import {
  * =====================================================================
  */
 import { Permissions } from '@/auth/decorators/permissions.decorator';
+import * as requestWithUserInterface from '@/auth/interfaces/request-with-user.interface';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import {
@@ -55,7 +56,10 @@ export class OrdersController {
 
   @Post()
   @ApiOperation({ summary: 'Thanh toán / Tạo đơn hàng' })
-  async create(@Request() req, @Body() createOrderDto: CreateOrderDto) {
+  async create(
+    @Request() req: requestWithUserInterface.RequestWithUser,
+    @Body() createOrderDto: CreateOrderDto,
+  ) {
     const data = await this.ordersService.create(req.user.id, createOrderDto);
     return { data };
   }
@@ -63,7 +67,7 @@ export class OrdersController {
   @Get('my-orders')
   @ApiOperation({ summary: 'Lấy lịch sử đơn hàng của người dùng hiện tại' })
   async findMyOrders(
-    @Request() req,
+    @Request() req: requestWithUserInterface.RequestWithUser,
     @Query('page') page = 1,
     @Query('limit') limit = 10,
   ) {
@@ -76,7 +80,10 @@ export class OrdersController {
 
   @Get('my-orders/:id')
   @ApiOperation({ summary: 'Lấy chi tiết một đơn hàng cụ thể' })
-  async findOneMyOrder(@Request() req, @Param('id') id: string) {
+  async findOneMyOrder(
+    @Request() req: requestWithUserInterface.RequestWithUser,
+    @Param('id') id: string,
+  ) {
     // TODO: Thêm kiểm tra quyền sở hữu bên trong service
     const data = await this.ordersService.findOne(id, req.user.id);
     return { data };

@@ -7,7 +7,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { OrderStatus } from '@prisma/client';
+import { OrderStatus, Prisma } from '@prisma/client';
 import { Queue } from 'bullmq';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
@@ -278,7 +278,7 @@ export class OrdersService {
             items: {
               create: orderItemsData,
             },
-          } as any,
+          } as Prisma.OrderUncheckedCreateInput,
           include: { items: true },
         });
 
@@ -667,9 +667,9 @@ export class OrdersService {
     }
 
     // BLOCK MANUAL 'SHIPPED': Ensure flow follows GHN Webhook
-    if (newStatus === OrderStatus.SHIPPED) {
+    if (newStatus === OrderStatus.SHIPPED && !dto.force) {
       throw new BadRequestException(
-        'Không được cập nhật thủ công sang "Đã Giao ĐVVC". Trạng thái này sẽ tự động cập nhật khi GHN qua lấy hàng (Picked). Nếu đang test, hãy dùng script: simulate-ghn-webhook.ts',
+        'Không được cập nhật thủ công sang "Đã Giao ĐVVC". Trạng thái này sẽ tự động cập nhật khi GHN qua lấy hàng (Picked). Nếu cần thiết, hãy dùng flag "force: true".',
       );
     }
 
@@ -821,8 +821,26 @@ export class OrdersService {
   /**
    * Đồng bộ đơn hàng sang Giao Hàng Nhanh (GHN)
    */
-  private async syncWithGHN(order: any) {
+  private async syncWithGHN(
+    order: Prisma.OrderGetPayload<{
+      include: {
+        items: {
+          include: {
+            sku: {
+              include: {
+                product: true;
+              };
+            };
+          };
+        };
+      };
+    }>,
+  ) {
     try {
+      if (!order.addressId) {
+        this.logger.warn(`Missing addressId for order ${order.id}`);
+        return;
+      }
       const address = await this.prisma.address.findUnique({
         where: { id: order.addressId },
       });
@@ -834,7 +852,7 @@ export class OrdersService {
 
       // Validate and sanitize phone number
       // Regex: Starts with 0, followed by 3,5,7,8,9, and 8 digit numbers (Total 10)
-      let toPhone = order.phoneNumber?.replace(/\D/g, '') || '';
+      let toPhone = (order.phoneNumber || '').replace(/\D/g, '');
       if (!/^0[35789]\d{8}$/.test(toPhone)) {
         this.logger.warn(
           `Invalid phone number '${order.phoneNumber}' for order ${order.id}. Using fallback.`,

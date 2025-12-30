@@ -101,37 +101,40 @@ async function handleAdminAction<T>(
  * - Backend thỉnh thoảng trả về `{ data: items[] }`, thỉnh thoảng lại lồng thêm `{ data: { data: items[], meta: ... } }`.
  * - Hàm này giúp "phẳng hóa" (unwrap) dữ liệu để frontend luôn nhận được một format chuẩn nhất, tránh lỗi `undefined` khi render.
  */
-function safeUnwrapApiResponse<T>(res: any): ApiResponse<T[]> {
-  if (!res || res.error) return res;
+function safeUnwrapApiResponse<T>(res: unknown): ApiResponse<T[]> {
+  if (!res || (typeof res === "object" && "error" in res))
+    return res as ApiResponse<T[]>;
+
+  const response = res as any;
 
   // Handle nested paginated data: { data: { data: Entity[], meta: ... } }
   if (
-    res.data &&
-    typeof res.data === "object" &&
-    "data" in res.data &&
-    Array.isArray(res.data.data)
+    response.data &&
+    typeof response.data === "object" &&
+    "data" in response.data &&
+    Array.isArray(response.data.data)
   ) {
     return {
-      ...res,
-      data: res.data.data,
-      meta: res.data.meta || res.meta,
+      ...response,
+      data: response.data.data,
+      meta: response.data.meta || response.meta,
     };
   }
 
   // Handle case where data is already an array: { data: Entity[], meta: ... }
-  if (Array.isArray(res.data)) {
-    return res;
+  if (Array.isArray(response.data)) {
+    return response;
   }
 
   // Fallback for empty data
-  if (!res.data) {
+  if (!response.data) {
     return {
-      ...res,
+      ...response,
       data: [],
     };
   }
 
-  return res;
+  return response;
 }
 
 // =============================================================================

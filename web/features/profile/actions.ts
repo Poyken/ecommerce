@@ -211,7 +211,7 @@ export async function updateProfileAction(formData: FormData) {
 export async function generateTwoFactorAction() {
   await cookies();
   try {
-    const res = await http<{ data: { secret: string; qrCode: string } }>(
+    const res = await http<ApiResponse<{ secret: string; qrCode: string }>>(
       "/auth/2fa/generate",
       {
         method: "POST",

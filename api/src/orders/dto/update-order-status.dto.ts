@@ -47,6 +47,15 @@ export class UpdateOrderStatusDto {
   @IsBoolean()
   notify?: boolean;
 
+  @ApiProperty({
+    example: false,
+    required: false,
+    description: 'Force status update (Admin only)',
+  })
+  @IsOptional()
+  @IsBoolean()
+  force?: boolean;
+
   @ApiProperty({ example: 'Customer changed mind', required: false })
   @IsOptional()
   cancellationReason?: string;

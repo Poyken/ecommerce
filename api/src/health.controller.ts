@@ -44,7 +44,11 @@ export class HealthController {
   @Get('ready')
   @ApiOperation({ summary: 'Kiểm tra sẵn sàng với database, Redis và Queues' })
   async ready() {
-    const checks: any = {
+    const checks: {
+      database: boolean;
+      redis: boolean;
+      queues: { email: boolean; orders: boolean; queuesError?: string };
+    } = {
       database: false,
       redis: false,
       queues: {
@@ -132,7 +136,7 @@ export class HealthController {
   @Get('debug-orders')
   async debugOrders() {
     try {
-      const include: any = {
+      const include = {
         user: { select: { email: true, firstName: true, lastName: true } },
         items: {
           include: {

@@ -44,11 +44,13 @@ import {
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { TwoFactorService } from './two-factor.service';
 
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import type { RequestWithUser } from './interfaces/request-with-user.interface';
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
@@ -75,7 +77,7 @@ export class AuthController {
   async register(
     @Body() dto: RegisterDto,
     @Res({ passthrough: true }) res: Response,
-    @Request() req: any,
+    @Request() req: RequestWithUser,
   ) {
     const fp = getFingerprint(req);
     const data = await this.authService.register(dto, fp);
@@ -100,7 +102,7 @@ export class AuthController {
   async login(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
-    @Request() req: any,
+    @Request() req: RequestWithUser,
   ) {
     const fp = getFingerprint(req);
     const data = await this.authService.login(dto, fp);
@@ -119,7 +121,10 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Đăng xuất (Revoke Refresh Token)' })
   @ApiResponse({ status: 200, description: 'Đăng xuất thành công.' })
-  async logout(@Request() req: any, @Res({ passthrough: true }) res: Response) {
+  async logout(
+    @Request() req: RequestWithUser,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     res.clearCookie('refreshToken', { ...COOKIE_OPTIONS, maxAge: 0 });
 
     const data = await this.authService.logout(req.user.userId, req.user.jti);
@@ -131,7 +136,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Lấy thông tin profile & quyền hạn của tôi' })
   @ApiResponse({ status: 200, description: 'Trả về thông tin user chi tiết.' })
-  async getProfile(@Request() req: any) {
+  async getProfile(@Request() req: RequestWithUser) {
     const data = await this.authService.getMe(req.user.userId);
     return { data };
   }
@@ -141,7 +146,10 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Cập nhật thông tin cá nhân' })
   @ApiResponse({ status: 200, description: 'Cập nhật thành công.' })
-  async updateProfile(@Request() req: any, @Body() body: any) {
+  async updateProfile(
+    @Request() req: RequestWithUser,
+    @Body() body: UpdateProfileDto,
+  ) {
     const data = await this.authService.updateProfile(req.user.userId, body);
     return { data };
   }
@@ -157,7 +165,7 @@ export class AuthController {
     description: 'Refresh token không hợp lệ hoặc đã hết hạn.',
   })
   async refresh(
-    @Request() req: any,
+    @Request() req: RequestWithUser,
     @Res({ passthrough: true }) res: Response,
   ) {
     const tokenFromCookie = req.cookies['refreshToken'];
@@ -201,19 +209,25 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(AuthGuard('google'))
   @ApiOperation({ summary: 'Google Callback' })
-  async googleCallback(@Request() req, @Res() res: Response) {
+  async googleCallback(@Request() req: RequestWithUser, @Res() res: Response) {
     const fp = getFingerprint(req);
+    const user = req.user as unknown as {
+      email: string;
+      firstName: string;
+      lastName: string;
+      picture?: string;
+      googleId: string;
+    };
+
     const data = await this.authService.validateSocialLogin(
       {
-        ...req.user,
+        ...user,
         provider: 'google',
-        socialId: req.user.googleId,
+        socialId: user.googleId,
       },
       fp,
     );
-
     res.cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
-
     res.redirect(
       `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/social-callback?accessToken=${data.accessToken}`,
     );
@@ -229,13 +243,24 @@ export class AuthController {
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
   @ApiOperation({ summary: 'Facebook Callback' })
-  async facebookCallback(@Request() req, @Res() res: Response) {
+  async facebookCallback(
+    @Request() req: RequestWithUser,
+    @Res() res: Response,
+  ) {
     const fp = getFingerprint(req);
+    const user = req.user as unknown as {
+      email: string;
+      firstName: string;
+      lastName: string;
+      picture?: string;
+      facebookId: string;
+    };
+
     const data = await this.authService.validateSocialLogin(
       {
-        ...req.user,
+        ...user,
         provider: 'facebook',
-        socialId: req.user.facebookId,
+        socialId: user.facebookId,
       },
       fp,
     );
@@ -255,7 +280,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Tạo mã 2FA secret & QR Code' })
-  async generate2FA(@Request() req: any) {
+  async generate2FA(@Request() req: RequestWithUser) {
     const user = await this.authService.getMe(req.user.userId);
     const { secret, otpauthUrl } = this.twoFactorService.generateSecret(
       user.email,
@@ -270,7 +295,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Kích hoạt 2FA' })
   async enable2FA(
-    @Request() req: any,
+    @Request() req: RequestWithUser,
     @Body() body: { token: string; secret: string },
   ) {
     const isValid = this.twoFactorService.verifyToken(body.token, body.secret);
@@ -285,7 +310,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Vô hiệu hóa 2FA' })
-  async disable2FA(@Request() req: any, @Body() body: { token: string }) {
+  async disable2FA(
+    @Request() req: RequestWithUser,
+    @Body() body: { token: string },
+  ) {
     const user = await this.authService.getMe(req.user.userId);
     const isValid = this.twoFactorService.verifyToken(
       body.token,
@@ -304,7 +332,7 @@ export class AuthController {
   async login2FA(
     @Body() body: { userId: string; token: string },
     @Res({ passthrough: true }) res: Response,
-    @Request() req: any,
+    @Request() req: RequestWithUser,
   ) {
     const fp = getFingerprint(req);
     const data = await this.authService.verify2FALogin(

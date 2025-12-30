@@ -178,7 +178,7 @@ export async function getOrderDetailsAction(orderId: string) {
  */
 export async function simulatePaymentSuccessAction(orderId: string) {
   try {
-    const res = await http(`/orders/${orderId}/status`, {
+    await http<ApiResponse<void>>(`/orders/${orderId}/status`, {
       method: "PATCH",
       body: JSON.stringify({
         status: "PROCESSING",

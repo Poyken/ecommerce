@@ -319,7 +319,13 @@ export class CartService {
 
     return await this.prisma.$transaction(
       async (tx) => {
-        const results: any[] = [];
+        const results: {
+          skuId: string;
+          success: boolean;
+          data?: any;
+          error?: string;
+          capped?: boolean;
+        }[] = [];
 
         // 1. Get or create cart once
         const cart = await tx.cart.upsert({

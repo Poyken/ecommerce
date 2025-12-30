@@ -100,12 +100,21 @@ export abstract class BaseCrudService<T, CreateDto, UpdateDto> {
 
   /**
    * Generic FindOne
+   * Supports both 'select' and 'include' via options object
    */
-  async findOneBase(id: string, include: any = {}): Promise<T> {
-    const item = await this.model.findUnique({
-      where: { id },
-      include: Object.keys(include).length > 0 ? include : undefined,
-    });
+  async findOneBase(
+    id: string,
+    options?: { select?: any; include?: any },
+  ): Promise<T> {
+    const queryOptions: any = { where: { id } };
+
+    if (options?.select) {
+      queryOptions.select = options.select;
+    } else if (options?.include) {
+      queryOptions.include = options.include;
+    }
+
+    const item = await this.model.findUnique(queryOptions);
 
     if (!item) {
       throw new NotFoundException(`Record with ID ${id} not found`);

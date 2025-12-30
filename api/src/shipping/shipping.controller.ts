@@ -49,7 +49,7 @@ export class ShippingController {
 
   @Post('webhook')
   @ApiOperation({ summary: 'GHN Webhook - Tự động cập nhật trạng thái' })
-  handleWebhook(@Body() body: any) {
+  handleWebhook(@Body() body: Record<string, any>) {
     return this.shippingService.handleGHNWebhook(body);
   }
 }

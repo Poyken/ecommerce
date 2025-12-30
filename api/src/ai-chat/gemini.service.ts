@@ -27,7 +27,9 @@ import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class GeminiService {
   private readonly logger = new Logger(GeminiService.name);
+
   private genAI: GoogleGenerativeAI | null = null;
+
   private model: GenerativeModel | null = null;
 
   constructor(private configService: ConfigService) {
@@ -144,7 +146,10 @@ export class GeminiService {
 
       return fullResponse;
     } catch (error) {
-      this.logger.error('Gemini streaming error keys:', Object.keys(error));
+      this.logger.error(
+        'Gemini streaming error keys:',
+        Object.keys(error as object),
+      );
       this.logger.error('Gemini streaming error toString:', error.toString());
       if (error instanceof Error) {
         this.logger.error('Gemini streaming error message:', error.message);

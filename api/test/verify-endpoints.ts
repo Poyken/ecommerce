@@ -45,7 +45,10 @@ async function main() {
   let token = '';
   try {
     console.log('\n🔐 Attempting Admin Login...');
-    const loginRes = await axios.post(`${API_URL}/v1/auth/login`, {
+    const loginRes = await axios.post<{
+      accessToken: string;
+      user?: { email: string };
+    }>(`${API_URL}/v1/auth/login`, {
       email: 'admin@example.com',
       password: '123456',
     });
@@ -70,10 +73,18 @@ async function main() {
   if (token) {
     try {
       console.log('\n👥 Fetching Users (Protected Endpoint)...');
-      const usersRes = await axios.get(`${API_URL}/v1/users`, {
+
+      const usersRes = await axios.get<any[]>(`${API_URL}/v1/users`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(`✅ Fetched ${usersRes.data.length || 'some'} users.`);
+      console.log(
+        `✅ Fetched ${
+          Array.isArray(usersRes.data)
+            ? usersRes.data.length
+            : // @ts-expect-error - handling potential wrapper format
+              usersRes.data.data?.length || 0
+        } users.`,
+      );
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.log(`❌ Fetch Users Failed: ${error.message}`);

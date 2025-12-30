@@ -152,7 +152,7 @@ export class BlogController {
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
 
-    @GetUser() user: any,
+    @GetUser() user: User,
     @UploadedFile() file: Express.Multer.File,
   ) {
     if (file) {
@@ -168,7 +168,7 @@ export class BlogController {
   @ApiBearerAuth()
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Soft delete a blog post' })
-  remove(@Param('id') id: string, @GetUser() user: any) {
+  remove(@Param('id') id: string, @GetUser() user: User) {
     return this.blogService.remove(id, user);
   }
 }

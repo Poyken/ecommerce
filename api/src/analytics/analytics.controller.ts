@@ -100,7 +100,17 @@ export class AnalyticsController {
 
   @Post('vitals')
   @ApiOperation({ summary: 'Receive Web Vitals telemetry' })
-  async postVitals(@Body() data: any) {
+  async postVitals(
+    @Body()
+    data: {
+      name: string;
+      value: number;
+      rating: string;
+      url: string;
+      userAgent?: string;
+      navigationType?: string;
+    },
+  ) {
     return this.analyticsService.savePerformanceMetric(data);
   }
 }

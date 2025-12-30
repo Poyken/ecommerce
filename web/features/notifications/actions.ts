@@ -2,6 +2,7 @@
 
 import { fetchList, handleMutation } from "@/lib/action-helpers";
 import { http } from "@/lib/http";
+import { ApiResponse } from "@/types/dtos";
 import { Notification } from "@/types/models";
 import { cookies } from "next/headers";
 
@@ -28,11 +29,15 @@ import { cookies } from "next/headers";
 /**
  * Lấy danh sách thông báo của người dùng hiện tại.
  */
+/**
+ * Lấy danh sách thông báo của người dùng hiện tại.
+ */
 export async function getNotificationsAction(limit = 10) {
   await cookies();
   try {
     const res = await fetchList<Notification>("/notifications", {
       limit,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       skipRedirectOn401: true,
     } as any);
     return { data: res.data || [] };
@@ -47,9 +52,12 @@ export async function getNotificationsAction(limit = 10) {
 export async function getUnreadCountAction() {
   await cookies();
   try {
-    const res = await http<any>("/notifications/unread-count", {
-      skipRedirectOn401: true,
-    });
+    const res = await http<ApiResponse<{ count: number }>>(
+      "/notifications/unread-count",
+      {
+        skipRedirectOn401: true,
+      }
+    );
     return { count: res.data?.count || 0 };
   } catch (error) {
     return { count: 0 };
@@ -79,7 +87,13 @@ export async function markAllAsReadAction() {
 /**
  * [ADMIN] Gửi thông báo (Broadcast hoặc tới User cụ thể).
  */
-export async function broadcastNotificationAction(data: any) {
+export async function broadcastNotificationAction(data: {
+  title: string;
+  message: string;
+  type?: string;
+  link?: string;
+  sendEmail?: boolean;
+}) {
   return handleMutation(() =>
     http("/notifications/admin/broadcast", {
       method: "POST",
@@ -88,7 +102,15 @@ export async function broadcastNotificationAction(data: any) {
   );
 }
 
-export async function sendNotificationToUserAction(data: any) {
+export async function sendNotificationToUserAction(data: {
+  userId: string;
+  title: string;
+  message: string;
+  type?: string;
+  link?: string;
+  sendEmail?: boolean;
+  email?: string;
+}) {
   return handleMutation(() =>
     http("/notifications/admin/send", {
       method: "POST",

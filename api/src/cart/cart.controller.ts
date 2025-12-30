@@ -24,6 +24,7 @@
  * =====================================================================
  */
 
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import {
   Body,
   Controller,
@@ -36,7 +37,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import type { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
 import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
@@ -54,7 +55,7 @@ export class CartController {
    */
   @Get()
   @ApiOperation({ summary: 'Lấy giỏ hàng của người dùng hiện tại' })
-  async getCart(@Request() req) {
+  async getCart(@Request() req: RequestWithUser) {
     const data = await this.cartService.getCart(req.user.id);
     return { data };
   }
@@ -65,7 +66,7 @@ export class CartController {
    */
   @Post()
   @ApiOperation({ summary: 'Thêm sản phẩm vào giỏ hàng' })
-  async addToCart(@Request() req, @Body() dto: AddToCartDto) {
+  async addToCart(@Request() req: RequestWithUser, @Body() dto: AddToCartDto) {
     const data = await this.cartService.addToCart(req.user.id, dto);
     return { data };
   }
@@ -77,7 +78,7 @@ export class CartController {
   @Patch('items/:id')
   @ApiOperation({ summary: 'Cập nhật số lượng sản phẩm trong giỏ' })
   async updateItem(
-    @Request() req,
+    @Request() req: RequestWithUser,
     @Param('id') itemId: string,
     @Body() dto: UpdateCartItemDto,
   ) {
@@ -90,7 +91,10 @@ export class CartController {
    */
   @Delete('items/:id')
   @ApiOperation({ summary: 'Xóa một sản phẩm khỏi giỏ hàng' })
-  async removeItem(@Request() req, @Param('id') itemId: string) {
+  async removeItem(
+    @Request() req: RequestWithUser,
+    @Param('id') itemId: string,
+  ) {
     const data = await this.cartService.removeItem(req.user.id, itemId);
     return { data };
   }
@@ -100,7 +104,7 @@ export class CartController {
    */
   @Delete()
   @ApiOperation({ summary: 'Xóa toàn bộ giỏ hàng' })
-  async clearCart(@Request() req) {
+  async clearCart(@Request() req: RequestWithUser) {
     const data = await this.cartService.clearCart(req.user.id);
     return { data };
   }
@@ -116,7 +120,7 @@ export class CartController {
   @Post('merge')
   @ApiOperation({ summary: 'Gộp giỏ hàng guest vào tài khoản user' })
   async mergeCart(
-    @Request() req,
+    @Request() req: RequestWithUser,
     @Body() items: { skuId: string; quantity: number }[],
   ) {
     const data = await this.cartService.mergeCart(req.user.id, items);

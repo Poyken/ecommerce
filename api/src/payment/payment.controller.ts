@@ -45,7 +45,7 @@ export class PaymentController {
 
   @Get('vnpay_return')
   @ApiOperation({ summary: 'Handle VNPay Return URL' })
-  async vnpayReturn(@Query() query: any, @Res() res) {
+  async vnpayReturn(@Query() query: Record<string, any>, @Res() res) {
     const vnp_Params = { ...query };
     const secureHash = vnp_Params['vnp_SecureHash'];
 
@@ -99,7 +99,7 @@ export class PaymentController {
 
   @Get('vnpay_ipn')
   @ApiOperation({ summary: 'Handle VNPay IPN (Server to Server)' })
-  async vnpayIpn(@Query() query: any) {
+  async vnpayIpn(@Query() query: Record<string, any>) {
     const vnp_Params = { ...query };
     const secureHash = vnp_Params['vnp_SecureHash'];
 
@@ -157,7 +157,7 @@ export class PaymentController {
   @Post('momo_ipn')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Handle MoMo IPN (Server to Server)' })
-  async momoIpn(@Body() body: any) {
+  async momoIpn(@Body() body: Record<string, any>) {
     const {
       partnerCode,
       orderId,

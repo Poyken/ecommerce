@@ -1,4 +1,6 @@
+import type { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
 import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 import { Permissions } from '../auth/decorators/permissions.decorator';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/permissions.guard';
@@ -48,7 +50,8 @@ export class ChatController {
    * USER: Get my own conversation history
    */
   @Get('my-history')
-  async getMyHistory(@Req() req: any) {
-    return this.chatService.getConversation(req.user.id);
+  @ApiOperation({ summary: 'Lấy lịch sử chat' })
+  async getMyHistory(@Req() req: RequestWithUser) {
+    return this.chatService.getConversation(req.user.userId);
   }
 }

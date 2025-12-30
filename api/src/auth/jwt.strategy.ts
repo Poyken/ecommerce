@@ -1,6 +1,6 @@
 import { getFingerprint } from '@/common/utils/fingerprint';
 import { RedisService } from '@core/redis/redis.service';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -106,7 +106,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         );
 
         // In production, we might want to be stricter, but for now we just log
-        // throw new UnauthorizedException('Device fingerprint mismatch');
+        throw new UnauthorizedException(
+          'Device fingerprint mismatch. Please login again.',
+        );
       } else {
         this.logger.debug(`[JWT] Fingerprint verified for user ${userId}`);
       }

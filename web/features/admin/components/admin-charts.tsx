@@ -1,26 +1,26 @@
 "use client";
 
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import {
-  Bar,
-  BarChart,
-  Cell,
-  Legend,
-  Line,
-  LineChart,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
+    Bar,
+    BarChart,
+    Cell,
+    Legend,
+    Line,
+    LineChart,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
 } from "recharts";
 
 /**
@@ -44,7 +44,14 @@ import {
  * =====================================================================
  */
 
-export function SalesTrendChart({ data }: { data: any[] }) {
+
+
+export interface SalesTrendData {
+  name: string;
+  sales: number;
+}
+
+export function SalesTrendChart({ data }: { data: SalesTrendData[] }) {
   const t = useTranslations("admin");
   return (
     <Card className="h-full rounded-4xl border-foreground/5">
@@ -70,7 +77,7 @@ export function SalesTrendChart({ data }: { data: any[] }) {
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) =>
-                formatCurrency(value, {
+                formatCurrency(value || 0, {
                   notation: "compact",
                   maximumFractionDigits: 1,
                 })
@@ -100,7 +107,12 @@ export function SalesTrendChart({ data }: { data: any[] }) {
   );
 }
 
-export function BestSellersChart({ data }: { data: any[] }) {
+export interface BestSellerData {
+  name: string;
+  sales: number;
+}
+
+export function BestSellersChart({ data }: { data: BestSellerData[] }) {
   const t = useTranslations("admin");
   return (
     <Card className="h-full rounded-4xl border-foreground/5">
@@ -150,7 +162,14 @@ export function BestSellersChart({ data }: { data: any[] }) {
   );
 }
 
-export function OrderStatusChart({ data }: { data: any[] }) {
+export interface OrderStatusData {
+  name: string;
+  value: number;
+  color: string;
+  [key: string]: any; // Recharts compatibility
+}
+
+export function OrderStatusChart({ data }: { data: OrderStatusData[] }) {
   const t = useTranslations("admin");
   return (
     <Card className="h-full rounded-4xl border-foreground/5">

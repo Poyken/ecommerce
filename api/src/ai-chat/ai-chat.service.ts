@@ -136,12 +136,12 @@ export class AiChatService {
 
     this.logger.log(`Found ${products.length} products for context`);
 
-    return products.map((p: any) => ({
+    return products.map((p) => ({
       id: p.id,
       name: p.name,
       category: p.category?.name || 'Uncategorized',
       brand: p.brand?.name || 'No Brand',
-      price: p.skus[0]?.price || 0,
+      price: Number(p.skus[0]?.price) || 0,
       inStock: (p.skus[0]?.stock || 0) > 0,
       description: p.description?.substring(0, 200) || '',
     }));

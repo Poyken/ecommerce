@@ -2,24 +2,24 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAiChat } from "@/features/chat/hooks/use-ai-chat";
 import { cn } from "@/lib/utils";
 import {
-  Bot,
-  Loader2,
-  MessageCircle,
-  Minus,
-  Send,
-  Sparkles,
-  X,
+    Bot,
+    Loader2,
+    MessageCircle,
+    Minus,
+    Send,
+    Sparkles,
+    X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -66,6 +66,7 @@ export function AiChatWidget({ user, accessToken }: AiChatWidgetProps) {
     useAiChat({ accessToken });
 
   useEffect(() => {
+    // eslint-disable-next-line
     setMounted(true);
   }, []);
 

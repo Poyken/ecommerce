@@ -5,15 +5,15 @@ import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { FeaturedProducts } from "@/features/products/components/featured-products";
 import { Link } from "@/i18n/routing";
-import { fadeInRight, fadeInUp, staggerContainer } from "@/lib/animations";
+import { fadeInRight, fadeInUp, m, staggerContainer } from "@/lib/animations";
 import { BlogWithProducts } from "@/types/models";
-import { m } from "@/lib/animations";
+import DOMPurify from "isomorphic-dompurify";
 import { ArrowLeft, Calendar, Clock, Share2, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/components/shared/use-toast";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -215,7 +215,17 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
           <m.article
             className="lg:col-span-8 prose prose-lg dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary prose-img:rounded-2xl max-w-none"
             variants={fadeInUp}
-            dangerouslySetInnerHTML={{ __html: post.content }}
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(post.content, {
+                ADD_TAGS: ["iframe"],
+                ADD_ATTR: [
+                  "allow",
+                  "allowfullscreen",
+                  "frameborder",
+                  "scrolling",
+                ],
+              }),
+            }}
           />
 
           <m.aside

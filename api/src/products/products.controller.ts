@@ -23,6 +23,9 @@
  * =====================================================================
  */
 
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import {
   Body,
@@ -40,10 +43,6 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-// import { Response } from 'express';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -189,7 +188,7 @@ export class ProductsController {
   @ApiBearerAuth()
   @Permissions('product:read')
   @ApiOperation({ summary: 'Export Products & SKUs to Excel' })
-  async export(@Res() res: any) {
+  async export(@Res() res: Response) {
     return this.exportService.exportToExcel(res);
   }
 
@@ -202,7 +201,7 @@ export class ProductsController {
   @Permissions('product:create')
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({ summary: 'Import Products & SKUs from Excel' })
-  async import(@UploadedFile() file: any) {
+  async import(@UploadedFile() file: Express.Multer.File) {
     const data = await this.importService.importFromExcel(file);
     return { data };
   }

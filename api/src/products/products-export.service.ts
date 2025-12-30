@@ -106,7 +106,7 @@ export class ProductsExportService {
             stock: sku.stock,
             attributes,
             status: sku.status,
-          } as any);
+          });
         }
       }
 

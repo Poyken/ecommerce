@@ -268,7 +268,8 @@ export async function getGuestCartDetailsAction(skuIds: string[]) {
       method: "POST",
       body: JSON.stringify({ skuIds }),
     });
-    const items = Array.isArray(res) ? res : res.data;
+    // Ensure we always default to an array, even if API response is unexpected
+    const items = res.data || [];
     return { success: true, data: items };
   } catch (error: unknown) {
     return {
@@ -290,19 +291,18 @@ export async function getCartCountAction() {
         totalItems: number;
       }>
     >("/cart", {
-      next: { revalidate: 0 }, // Không cache, luôn lấy mới nhất
-      skipRedirectOn401: true, // Nếu chưa login thì trả về cart rỗng, không redirect
+      next: { revalidate: 0 },
+      skipRedirectOn401: true,
     });
 
-    const cartData = response.data || response;
+    const cartData = response.data;
 
-    // Tính tổng số lượng
     const count =
-      cartData.totalItems ||
+      cartData.totalItems ??
       cartData.items?.reduce(
         (acc: number, item: { quantity: number }) => acc + (item.quantity || 0),
         0
-      ) ||
+      ) ??
       0;
 
     return { success: true, count };
