@@ -29,15 +29,15 @@ import {
  * - `@ApiOperation`: Mô tả ngắn gọn chức năng của từng API, giúp tài liệu Swagger dễ hiểu hơn cho các thành viên khác trong team.
  * =====================================================================
  */
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiQuery,
   ApiTags,
 } from '@nestjs/swagger';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { InvoiceService } from './invoice.service';
@@ -90,12 +90,14 @@ export class OrdersController {
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'userId', required: false, type: String })
   findAll(
     @Query('search') search?: string,
     @Query('status') status?: string,
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10,
     @Query('includeItems') includeItems?: string,
+    @Query('userId') userId?: string,
   ) {
     return this.ordersService.findAll(
       search,
@@ -103,6 +105,7 @@ export class OrdersController {
       Number(page),
       Number(limit),
       includeItems === 'true',
+      userId,
     );
   }
 

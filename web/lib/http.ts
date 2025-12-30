@@ -141,8 +141,6 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   }
 
   const requestHeaders: Record<string, string> = {
-    // Đính kèm Bearer token nếu có
-    Authorization: accessToken ? `Bearer ${accessToken}` : "",
     // Đính kèm CSRF token cho security (P0 compliance)
     "X-CSRF-Token": csrfToken || "",
     // Backend yêu cầu Double Submit Cookie: Phải có cả Header VÀ Cookie
@@ -151,9 +149,19 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     // Forward headers for Fingerprinting
     ...(forwardedUserAgent ? { "User-Agent": forwardedUserAgent } : {}),
     ...(forwardedIp ? { "X-Forwarded-For": forwardedIp } : {}),
-
-    ...(headers as Record<string, string>),
   };
+
+  // Đính kèm Bearer token nếu có (Ưu tiên token từ server-side session)
+  if (accessToken) {
+    requestHeaders["Authorization"] = `Bearer ${accessToken}`;
+  }
+
+  // Merge headers from options (cho phép override)
+  if (headers) {
+    Object.entries(headers).forEach(([key, value]) => {
+      requestHeaders[key] = String(value);
+    });
+  }
 
   // Chỉ thêm Content-Type: application/json nếu body không phải FormData
   // (FormData cần browser tự set Content-Type với boundary)
@@ -167,10 +175,13 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   let res: Response;
   try {
     console.log(
-      `[HTTP] Fetching: ${url.toString()} (Authorized: ${!!accessToken})`
+      `[HTTP] Fetching: ${url.toString()} (Authorized: ${
+        !!accessToken || !!requestHeaders["Authorization"]
+      })`
     );
     res = await fetch(url.toString(), {
       headers: requestHeaders,
+      credentials: "include", // Quan trọng để gửi Cookie khi gọi API khác origin (CORS)
       ...rest,
     });
   } catch (error) {

@@ -74,7 +74,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('sendMessage')
   async handleMessage(
     client: Socket,
-    payload: { content: string; toUserId?: string; clientTempId?: string },
+    payload: {
+      content: string;
+      toUserId?: string;
+      clientTempId?: string;
+      type?: 'TEXT' | 'IMAGE' | 'PRODUCT' | 'ORDER';
+      metadata?: any;
+    },
   ) {
     const userId = client.data.userId;
     const roles = client.data.roles || [];
@@ -107,6 +113,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         payload.content,
         senderType as any,
         userId,
+        payload.type || 'TEXT',
+        payload.metadata,
       );
 
       const messageWithTempId = {
@@ -126,6 +134,50 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } catch (error) {
       this.logger.error(error);
       return { success: false, error: error.message };
+    }
+  }
+
+  @SubscribeMessage('markAsRead')
+  async handleMarkAsRead(
+    client: Socket,
+    payload: { conversationId: string; targetUserId?: string },
+  ) {
+    const userId = client.data.userId;
+    const roles = client.data.roles || [];
+
+    if (!userId) return; // Silent fail
+
+    const isAdmin = roles.some(
+      (r: string) =>
+        r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPER_ADMIN',
+    );
+
+    if (isAdmin) {
+      // Admin marking User's messages as read
+      if (!payload.conversationId) return;
+
+      // Mark messages FROM USER as read in this conversation
+      await this.chatService.markAsRead(payload.conversationId, 'USER' as any);
+
+      // Notify other admins that this conversation is read (optional, to update their UI)
+      // And maybe notify the user that their message was read?
+      this.server.to('admin-room').emit('conversationRead', {
+        conversationId: payload.conversationId,
+        readBy: userId,
+      });
+    } else {
+      // User marking Admin's messages as read
+      // User only has one conversation usually
+      // Retrieve conversation ID if not passed, or trust passed one if valid ownership
+      const conversation = await this.chatService.getConversation(userId);
+      if (conversation) {
+        await this.chatService.markAsRead(conversation.id, 'ADMIN' as any);
+        // Notify Admin that user read the message
+        this.server.to('admin-room').emit('messageRead', {
+          conversationId: conversation.id,
+          userId,
+        });
+      }
     }
   }
 }

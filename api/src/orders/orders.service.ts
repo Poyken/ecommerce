@@ -461,9 +461,14 @@ export class OrdersService {
     page = 1,
     limit = 10,
     includeItems = false,
+    userId?: string,
   ) {
     const skip = (page - 1) * limit;
     const where: any = {};
+
+    if (userId) {
+      where.userId = userId;
+    }
 
     if (status && status !== 'all') {
       where.status = status as OrderStatus;

@@ -3,10 +3,10 @@
 import { GlassCard } from "@/components/shared/glass-card";
 import { useToast } from "@/components/shared/use-toast";
 import {
-    Dialog,
-    DialogContent,
-    DialogTitle,
-    VisuallyHidden,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  VisuallyHidden,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCart } from "@/features/cart/hooks/use-cart";
@@ -25,6 +25,7 @@ interface ProductQuickViewDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   productId: string;
+  initialSkuId?: string;
   initialData?: {
     name: string;
     price: number;
@@ -57,6 +58,7 @@ export function ProductQuickViewDialog({
   isOpen,
   onOpenChange,
   productId,
+  initialSkuId,
   initialData,
 }: ProductQuickViewDialogProps) {
   const t = useTranslations("common.shop");
@@ -65,9 +67,16 @@ export function ProductQuickViewDialog({
   const [loading, setLoading] = useState(false);
   const [activeImage, setActiveImage] = useState<string | undefined>(undefined);
   const [currentSkuId, setCurrentSkuId] = useState<string | undefined>(
-    undefined
+    initialSkuId
   );
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  // Sync initialSkuId when it changes or dialog opens
+  useEffect(() => {
+    if (isOpen && initialSkuId) {
+      setCurrentSkuId(initialSkuId);
+    }
+  }, [isOpen, initialSkuId]);
 
   // No manual scroll lock here - controlled by Radix UI Dialog
 

@@ -42,6 +42,8 @@ export class ChatService {
     content: string,
     senderType: SenderType,
     senderId: string,
+    type: 'TEXT' | 'IMAGE' | 'PRODUCT' | 'ORDER' = 'TEXT',
+    metadata?: any,
   ) {
     // Ensure conversation exists
     let conversation = await this.prisma.chatConversation.findFirst({
@@ -67,11 +69,26 @@ export class ChatService {
         content,
         senderType,
         senderId,
+        type,
+        metadata: metadata || undefined,
         isRead: false,
       },
     });
 
     return message;
+  }
+
+  async markAsRead(conversationId: string, senderTypeToCheck: SenderType) {
+    // If I am ADMIN, I want to mark messages FROM USER as read.
+    // So senderTypeToCheck should be the OTHER party.
+    await this.prisma.chatMessage.updateMany({
+      where: {
+        conversationId,
+        senderType: senderTypeToCheck,
+        isRead: false,
+      },
+      data: { isRead: true },
+    });
   }
 
   /**

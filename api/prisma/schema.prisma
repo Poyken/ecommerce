@@ -585,6 +585,8 @@ model ChatMessage {
   senderId       String
   senderType     SenderType       @default(USER)
   content        String
+  type           MessageType      @default(TEXT)
+  metadata       Json?
   isRead         Boolean          @default(false)
   sentAt         DateTime         @default(now())
   conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
@@ -596,4 +598,11 @@ model ChatMessage {
 enum SenderType {
   USER
   ADMIN
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  PRODUCT
+  ORDER
 }

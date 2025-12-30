@@ -14,26 +14,20 @@ interface CloudinarySignatureResponse {
  */
 export async function uploadToCloudinary(
   file: File,
+  accessToken?: string,
   folder = "ecommerce-reviews"
 ): Promise<string> {
   // 1. Get Signature from Backend
-  // Note: http client automatically handles auth headers if needed by backend (it does)
-  const sigRes = await http<CloudinarySignatureResponse>(
-    `/common/cloudinary/signature?folder=${folder}`
+  const sigRes = await http<any>(
+    `/common/cloudinary/signature?folder=${folder}`,
+    {
+      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+      skipRedirectOn401: true,
+    }
   );
 
-  // The http wrapper returns the response body directly usually,
-  // but let's check standard usage.
-  // If http returns { data: ... } wrapper or just data?
-  // Checking actions/review.ts: const res = await http<ApiResponse<...>>
-  // So it returns the parsed JSON. The signature endpoint returns the object directly
-  // (NestJS default) unless wrapped in { data: ... }.
-  // The CloudinaryController calls service.generateSignature returning object directly.
-
-  // BUT the http function might wrap it? or just return result?
-  // Let's assume standard behavior: returns parsed JSON.
-
-  const signData = sigRes as unknown as CloudinarySignatureResponse;
+  // NestJS TransformInterceptor wraps results in { data: ... }
+  const signData = (sigRes.data || sigRes) as CloudinarySignatureResponse;
 
   // 2. Direct Upload to Cloudinary
   const formData = new FormData();

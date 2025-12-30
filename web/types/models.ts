@@ -646,3 +646,31 @@ export interface NewsletterSubscriber {
   createdAt: string;
   updatedAt: string;
 }
+// =============================================================================
+// 💬 CHAT - Tin nhắn hỗ trợ
+// =============================================================================
+
+export interface ChatMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  senderType: "USER" | "ADMIN";
+  content: string;
+  type: "TEXT" | "IMAGE" | "PRODUCT" | "ORDER";
+  metadata?: any;
+  isRead: boolean;
+  sentAt: string;
+  conversation?: ChatConversation;
+}
+
+export interface ChatConversation {
+  id: string;
+  userId: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  user?: User;
+  messages?: ChatMessage[];
+  lastMessage?: ChatMessage;
+  unreadCount?: number;
+}

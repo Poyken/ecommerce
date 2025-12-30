@@ -47,7 +47,9 @@ interface CartContextType {
   decrement: (amount?: number) => void;
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined);
+export const CartContext = createContext<CartContextType | undefined>(
+  undefined
+);
 
 interface CartProviderProps {
   children: React.ReactNode;
