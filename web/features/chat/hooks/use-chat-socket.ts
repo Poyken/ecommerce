@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 // Update local ChatMessage interface to match models.ts or import it.
@@ -35,10 +35,12 @@ export function useChatSocket(
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    if (!user || !accessToken) return;
+    if (!user || !accessToken || isConnected) return;
+
+    // Use a flag to prevent multiple connection attempts
+    let isMounted = true;
 
     // Initialize Socket
-    // We need to strip '/api/v1' from the API URL to get the root URL for the socket
     const baseUrl = (
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1"
     ).replace(/\/api\/v1\/?$/, "");
@@ -47,40 +49,43 @@ export function useChatSocket(
     const socket = io(socketUrl, {
       auth: { token: accessToken },
       transports: ["websocket"],
-      path: "/socket.io/", // Ensure path matches NestJS Gateway default
+      path: "/socket.io/",
+      reconnection: true,
+      reconnectionAttempts: 5,
     });
 
     socket.on("connect", () => {
+      if (!isMounted) {
+        socket.disconnect();
+        return;
+      }
       console.log("Chat Connected");
       setIsConnected(true);
     });
 
     socket.on("disconnect", () => {
-      console.log("Chat Disconnected");
-      setIsConnected(false);
+      if (isMounted) {
+        console.log("Chat Disconnected");
+        setIsConnected(false);
+      }
     });
 
     socket.on("newMessage", (message: ChatMessage) => {
+      if (!isMounted) return;
       setMessages((prev) => {
-        // Check if we have a temp message with the same clientTempId
         if (message.clientTempId) {
           const tempIndex = prev.findIndex(
             (m) => m.clientTempId === message.clientTempId
           );
           if (tempIndex !== -1) {
-            // Replace temp message with real one
             const newMessages = [...prev];
             newMessages[tempIndex] = { ...message, status: "sent" };
             return newMessages;
           }
         }
 
-        // Prevent duplicates by ID just in case
-        if (prev.some((m) => m.id === message.id)) {
-          return prev;
-        }
+        if (prev.some((m) => m.id === message.id)) return prev;
 
-        // Increment unread count if message is from Admin and not read
         if (message.senderType === "ADMIN" && !message.isRead) {
           setUnreadCount((c) => c + 1);
         }
@@ -92,6 +97,7 @@ export function useChatSocket(
     socket.on(
       "messageRead",
       (payload: { conversationId: string; userId: string }) => {
+        if (!isMounted) return;
         setMessages((prev) =>
           prev.map((m) => {
             if (m.senderType === "USER" && !m.isRead) {
@@ -103,71 +109,79 @@ export function useChatSocket(
       }
     );
 
-    // Listen for history load
     socket.on("history", (history: ChatMessage[]) => {
+      if (!isMounted) return;
       setMessages(history.map((m) => ({ ...m, status: "sent" })));
     });
 
     socketRef.current = socket;
 
     return () => {
+      isMounted = false;
       socket.disconnect();
+      socketRef.current = null;
     };
-  }, [user, accessToken, namespace]);
+  }, [user?.id, accessToken, namespace, isConnected]);
 
-  const sendMessage = (
-    content: string,
-    toUserId?: string,
-    type: "TEXT" | "IMAGE" | "PRODUCT" | "ORDER" = "TEXT",
-    metadata?: any
-  ) => {
-    if (!user) return;
+  const sendMessage = useCallback(
+    (
+      content: string,
+      toUserId?: string,
+      type: "TEXT" | "IMAGE" | "PRODUCT" | "ORDER" = "TEXT",
+      metadata?: any
+    ) => {
+      if (!user) return;
 
-    // Generate temp ID
-    const clientTempId = Date.now().toString();
+      // Generate temp ID
+      const clientTempId = Date.now().toString();
 
-    // Optimistic update
-    const tempMessage: ChatMessage = {
-      id: `temp-${clientTempId}`,
-      senderId: user.id,
-      senderType: "USER",
-      content,
-      type,
-      metadata,
-      sentAt: new Date().toISOString(),
-      clientTempId,
-      status: "sending",
-      isRead: false,
-    };
-
-    setMessages((prev) => [...prev, tempMessage]);
-
-    if (socketRef.current && isConnected) {
-      socketRef.current.emit("sendMessage", {
+      // Optimistic update
+      const tempMessage: ChatMessage = {
+        id: `temp-${clientTempId}`,
+        senderId: user.id,
+        senderType: "USER",
         content,
-        toUserId,
-        clientTempId,
         type,
         metadata,
-      });
-    }
-  };
+        sentAt: new Date().toISOString(),
+        clientTempId,
+        status: "sending",
+        isRead: false,
+      };
 
-  const markAsRead = (conversationId?: string) => {
-    if (socketRef.current && isConnected) {
-      socketRef.current.emit("markAsRead", { conversationId });
-    }
-    setUnreadCount(0);
+      setMessages((prev) => [...prev, tempMessage]);
 
-    setMessages((prev) =>
-      prev.map((m) => {
-        if (m.senderType === "ADMIN" && !m.isRead) {
-          return { ...m, isRead: true };
-        }
-        return m;
-      })
-    );
-  };
+      if (socketRef.current && socketRef.current.connected) {
+        socketRef.current.emit("sendMessage", {
+          content,
+          toUserId,
+          clientTempId,
+          type,
+          metadata,
+        });
+      }
+    },
+    [user, isConnected]
+  );
+
+  const markAsRead = useCallback(
+    (conversationId?: string) => {
+      if (socketRef.current && socketRef.current.connected) {
+        socketRef.current.emit("markAsRead", { conversationId });
+      }
+      setUnreadCount(0);
+
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.senderType === "ADMIN" && !m.isRead) {
+            return { ...m, isRead: true };
+          }
+          return m;
+        })
+      );
+    },
+    [] // Stable setUnreadCount and setMessages don't need to be in deps
+  );
 
   return {
     isConnected,

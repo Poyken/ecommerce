@@ -69,7 +69,7 @@ interface Order {
   recipientName: string;
   phoneNumber: string;
   shippingAddress: string;
-  orderDate: string;
+  createdAt: string;
   items: OrderItem[];
   paymentMethod?: string;
   paymentStatus?: string;
@@ -260,7 +260,7 @@ async function DynamicOrderDetail({ id }: { id: string }) {
                   amount={order.totalAmount}
                   orderCode={order.id.slice(0, 8).toUpperCase()}
                   orderId={order.id}
-                  createdAt={order.orderDate}
+                  createdAt={order.createdAt}
                 />
               </div>
             )}
@@ -353,7 +353,7 @@ async function DynamicOrderDetail({ id }: { id: string }) {
 
               <div className="mt-4 pt-2 border-t text-xs text-gray-400">
                 {t("placedOn")}{" "}
-                {format(new Date(order.orderDate), "dd/MM/yyyy HH:mm")}
+                {format(new Date(order.createdAt), "dd/MM/yyyy HH:mm")}
               </div>
             </CardContent>
           </Card>

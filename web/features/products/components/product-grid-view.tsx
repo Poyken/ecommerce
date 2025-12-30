@@ -79,12 +79,12 @@ export function ProductGridView({
   return (
     <div className="space-y-6">
       {/* View Options Control Bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 rounded-[2rem] bg-foreground/2 border border-foreground/5 backdrop-blur-xl gap-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 rounded-[2.5rem] bg-foreground/3 border border-foreground/8 backdrop-blur-2xl shadow-sm gap-6">
         <div className="flex items-center gap-6">
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 whitespace-nowrap">
-            Grid View
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/50 whitespace-nowrap">
+            Layout Grid
           </span>
-          <div className="relative flex bg-foreground/3 p-1 rounded-2xl border border-foreground/5">
+          <div className="relative flex bg-foreground/3 p-1.5 rounded-[1.25rem] border border-foreground/5">
             {[3, 4, 5].map((val) => {
               const Icon =
                 val === 3 ? Grid3x3 : val === 4 ? LayoutGrid : Grid2x2;
@@ -95,22 +95,27 @@ export function ProductGridView({
                   key={val}
                   onClick={() => setColumns(val as 3 | 4 | 5)}
                   className={cn(
-                    "relative p-3 rounded-xl transition-colors duration-300 z-10",
+                    "relative p-3.5 rounded-xl transition-all duration-300 z-10",
                     isActive
-                      ? "text-primary"
-                      : "text-muted-foreground/40 hover:text-foreground"
+                      ? "text-primary brightness-110"
+                      : "text-muted-foreground/30 hover:text-foreground/60 hover:bg-foreground/2"
                   )}
                   title={`${val} Columns`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon
+                    className={cn(
+                      "w-4 h-4 transition-transform duration-300",
+                      isActive && "scale-110"
+                    )}
+                  />
                   {isActive && (
                     <m.div
                       layoutId="activeGridView"
-                      className="absolute inset-0 bg-background rounded-xl shadow-lg shadow-primary/5 -z-10"
+                      className="absolute inset-0 bg-background rounded-xl shadow-[0_8px_24px_-12px_rgba(0,0,0,0.15)] -z-10"
                       transition={{
                         type: "spring",
-                        stiffness: 400,
-                        damping: 30,
+                        stiffness: 450,
+                        damping: 35,
                       }}
                     />
                   )}

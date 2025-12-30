@@ -1,6 +1,5 @@
 "use client";
 
-import { Link } from "@/i18n/routing";
 import { AlertCircle, RotateCcw } from "lucide-react";
 import { Component, ErrorInfo, ReactNode } from "react";
 
@@ -93,12 +92,12 @@ export class ErrorBoundary extends Component<Props, State> {
               Try Again
             </button>
 
-            <Link
+            <a
               href="/"
               className="flex items-center gap-2 px-8 py-4 bg-white text-black font-black uppercase text-[10px] tracking-[0.2em] rounded-full hover:scale-105 transition-all shadow-xl border border-black/5"
             >
               Back to Home
-            </Link>
+            </a>
           </div>
         </div>
       );

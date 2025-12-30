@@ -52,14 +52,20 @@ import {
   PaymentMethodType,
 } from "@/features/checkout/components/payment-method-selector";
 import { Link, useRouter } from "@/i18n/routing";
+import { m } from "@/lib/animations";
 import { formatCurrency } from "@/lib/utils";
 import { Address, Cart, CartItem, Coupon, Sku } from "@/types/models";
-import { m } from "@/lib/animations";
 import { ArrowLeft, Lock, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 
 const AddAddressDialog = dynamic(
   () =>
@@ -272,43 +278,46 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
   }, [selectedAddress]);
 
   // Handlers
-  const handleApplyCoupon = async (code?: string) => {
-    const targetCode = code || couponCode;
-    if (!targetCode.trim()) return;
+  const handleApplyCoupon = useCallback(
+    async (code?: string) => {
+      const targetCode = code || couponCode;
+      if (!targetCode.trim()) return;
 
-    setIsValidatingCoupon(true);
-    setCouponError("");
+      setIsValidatingCoupon(true);
+      setCouponError("");
 
-    try {
-      const res = await validateCouponAction(targetCode, subtotal);
+      try {
+        const res = await validateCouponAction(targetCode, subtotal);
 
-      if (res.success) {
-        if (res.isValid) {
-          setAppliedCoupon({
-            code: targetCode,
-            discount: res.discountAmount || 0,
-          });
-          toast({
-            title: t("couponApplied"),
-            description: tCommon("toast.success"),
-            variant: "success",
-          });
+        if (res.success) {
+          if (res.isValid) {
+            setAppliedCoupon({
+              code: targetCode,
+              discount: res.discountAmount || 0,
+            });
+            toast({
+              title: t("couponApplied"),
+              description: tCommon("toast.success"),
+              variant: "success",
+            });
+          } else {
+            setCouponError(res.message || t("couponInvalid"));
+            setAppliedCoupon(null);
+          }
         } else {
-          setCouponError(res.message || t("couponInvalid"));
+          setCouponError(res.error || t("couponInvalid"));
           setAppliedCoupon(null);
         }
-      } else {
-        setCouponError(res.error || t("couponInvalid"));
-        setAppliedCoupon(null);
+      } catch (_error) {
+        setCouponError("Failed to validate coupon");
+      } finally {
+        setIsValidatingCoupon(false);
       }
-    } catch (_error) {
-      setCouponError("Failed to validate coupon");
-    } finally {
-      setIsValidatingCoupon(false);
-    }
-  };
+    },
+    [couponCode, subtotal, t, tCommon, toast]
+  );
 
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = useCallback(() => {
     if (!selectedAddress) {
       toast({
         title: t("missingInfo"),
@@ -326,7 +335,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
       const res = await placeOrderAction({
         recipientName: selectedAddress.recipientName,
         phoneNumber: selectedAddress.phoneNumber,
-        shippingAddress: addressString, // Changed from address to shippingAddress
+        shippingAddress: addressString,
         addressId: selectedAddress.id,
         paymentMethod: paymentMethod,
         itemIds: items.map((i) => i.id),
@@ -338,7 +347,6 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
           window.location.href = res.paymentUrl;
           return;
         }
-        // Dispatch event to refresh cart count immediately
         window.dispatchEvent(new Event("cart_updated"));
 
         if (paymentMethod === "BANKING") {
@@ -356,7 +364,6 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
           description: t("toast.successDesc"),
           variant: "success",
         });
-        // Redirect to success page instead of direct order details
         router.push(`/checkout/success?orderId=${res.orderId}`);
       } else {
         toast({
@@ -366,7 +373,16 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
         });
       }
     });
-  };
+  }, [
+    selectedAddress,
+    paymentMethod,
+    items,
+    appliedCoupon,
+    total,
+    router,
+    t,
+    toast,
+  ]);
 
   const handleEditAddress = (address: Address) => {
     setEditingAddress(address);

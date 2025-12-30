@@ -390,7 +390,6 @@ export interface Order {
   /** Mã giao dịch thanh toán */
   transactionId?: string | null;
   /** Ngày đặt hàng */
-  orderDate?: string;
   createdAt: string;
   updatedAt?: string;
   /** Mã vận đơn (shipping tracking) */
