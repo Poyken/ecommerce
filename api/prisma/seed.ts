@@ -119,28 +119,39 @@ async function main() {
   ];
 
   for (const perm of permissions) {
-    await prisma.permission.create({ data: { name: perm } });
+    await prisma.permission.upsert({
+      where: { name: perm },
+      update: {},
+      create: { name: perm },
+    });
   }
   console.log('✅ Permissions created.');
 
-  // 3. Create ADMIN Role
-  const adminRole = await prisma.role.create({ data: { name: 'ADMIN' } });
+  // 3. Create ADMIN Role (upsert to be idempotent)
+  const adminRole = await prisma.role.upsert({
+    where: { name: 'ADMIN' },
+    update: {},
+    create: { name: 'ADMIN' },
+  });
   console.log('✅ ADMIN Role created.');
 
-  // 4. Assign All Permissions to ADMIN
+  // 4. Assign All Permissions to ADMIN (skip duplicates)
   const allPermissions = await prisma.permission.findMany();
   await prisma.rolePermission.createMany({
     data: allPermissions.map((p) => ({
       roleId: adminRole.id,
       permissionId: p.id,
     })),
+    skipDuplicates: true,
   });
   console.log('✅ Assigned permissions to ADMIN.');
 
-  // 5. Create Admin User
+  // 5. Create Admin User (upsert to be idempotent)
   const password = await bcrypt.hash('123456', 10);
-  const adminUser = await prisma.user.create({
-    data: {
+  const adminUser = await prisma.user.upsert({
+    where: { email: 'admin@example.com' },
+    update: {},
+    create: {
       email: 'admin@example.com',
       password,
       firstName: 'Super',
@@ -148,12 +159,15 @@ async function main() {
     },
   });
 
-  // 6. Assign ADMIN Role to User
-  await prisma.userRole.create({
-    data: {
-      userId: adminUser.id,
-      roleId: adminRole.id,
-    },
+  // 6. Assign ADMIN Role to User (skip duplicates)
+  await prisma.userRole.createMany({
+    data: [
+      {
+        userId: adminUser.id,
+        roleId: adminRole.id,
+      },
+    ],
+    skipDuplicates: true,
   });
 
   console.log('✅ Admin user created: admin@example.com / 123456');
