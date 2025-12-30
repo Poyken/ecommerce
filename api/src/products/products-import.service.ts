@@ -1,6 +1,6 @@
+import { PrismaService } from '@core/prisma/prisma.service';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
-import { PrismaService } from '@core/prisma/prisma.service';
 import { SkuManagerService } from './sku-manager.service';
 
 @Injectable()
@@ -25,18 +25,23 @@ export class ProductsImportService {
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) return; // Skip header
 
+      const getString = (val: ExcelJS.CellValue) => {
+        if (val === null || val === undefined) return undefined;
+        return typeof val === 'object' ? JSON.stringify(val) : String(val);
+      };
+
       const rowData = {
-        productId: row.getCell(1).value?.toString(),
-        productName: row.getCell(2).value?.toString(),
-        productSlug: row.getCell(3).value?.toString(),
-        categoryName: row.getCell(4).value?.toString(),
-        brandName: row.getCell(5).value?.toString(),
-        skuId: row.getCell(6).value?.toString(),
-        skuCode: row.getCell(7).value?.toString(),
+        productId: getString(row.getCell(1).value),
+        productName: getString(row.getCell(2).value),
+        productSlug: getString(row.getCell(3).value),
+        categoryName: getString(row.getCell(4).value),
+        brandName: getString(row.getCell(5).value),
+        skuId: getString(row.getCell(6).value),
+        skuCode: getString(row.getCell(7).value),
         price: Number(row.getCell(8).value),
         salePrice: row.getCell(9).value ? Number(row.getCell(9).value) : null,
         stock: Number(row.getCell(10).value),
-        status: row.getCell(12).value?.toString() || 'ACTIVE',
+        status: getString(row.getCell(12).value) || 'ACTIVE',
       };
       rows.push(rowData);
     });

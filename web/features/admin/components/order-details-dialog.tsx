@@ -3,23 +3,24 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { getOrderDetailsAction } from "@/features/admin/actions";
 import { formatCurrency } from "@/lib/utils";
 import { Order, OrderItem } from "@/types/models";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -179,17 +180,16 @@ function OrderDetailsContent({
                   </span>
 
                   {/* Show cancellation reason if order is cancelled */}
-                  {order.status === "CANCELLED" &&
-                    order.cancellationReason && (
-                      <>
-                        <span className="font-medium text-red-500">
-                          Cancellation Reason:
-                        </span>
-                        <span className="text-red-600 font-medium">
-                          {order.cancellationReason}
-                        </span>
-                      </>
-                    )}
+                  {order.status === "CANCELLED" && order.cancellationReason && (
+                    <>
+                      <span className="font-medium text-red-500">
+                        Cancellation Reason:
+                      </span>
+                      <span className="text-red-600 font-medium">
+                        {order.cancellationReason}
+                      </span>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -229,6 +229,9 @@ function OrderDetailsContent({
                 <Table>
                   <TableHeader className="bg-gray-50">
                     <TableRow>
+                      <TableHead className="w-[80px]">
+                        {t("orders.imageLabel") || "Image"}
+                      </TableHead>
                       <TableHead>{t("orders.productLabel")}</TableHead>
                       <TableHead>{t("orders.skuLabel")}</TableHead>
                       <TableHead className="text-right">
@@ -245,6 +248,22 @@ function OrderDetailsContent({
                   <TableBody>
                     {order.items?.map((item: OrderItem) => (
                       <TableRow key={item.id}>
+                        <TableCell>
+                          <div className="relative w-12 h-12 rounded overflow-hidden bg-gray-100 border border-gray-100">
+                            <Image
+                              src={
+                                (item.sku as any)?.imageUrl ||
+                                (item.sku as any)?.image ||
+                                (item.sku?.product?.images?.[0] as any)?.url ||
+                                item.sku?.product?.images?.[0] ||
+                                `https://picsum.photos/seed/${item.sku?.product?.id}/100`
+                              }
+                              alt={item.sku?.product?.name || "Product"}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        </TableCell>
                         <TableCell className="font-medium">
                           <Link
                             href={

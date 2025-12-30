@@ -1,10 +1,7 @@
 "use client";
 
-import {
-  createReviewAction,
-  deleteReviewAction,
-  updateReviewAction,
-} from "@/features/reviews/actions";
+import { ImageUpload } from "@/components/shared/image-upload";
+import { useToast } from "@/components/shared/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,9 +19,12 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ImageUpload } from "@/components/shared/image-upload";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/shared/use-toast";
+import {
+  createReviewAction,
+  deleteReviewAction,
+  updateReviewAction,
+} from "@/features/reviews/actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -139,20 +139,18 @@ function ReviewForm({
 
     setLoading(true);
 
+    // let imageUrls: string[] = []; // If we remove formData logic completely?
+    // Actually, just remove the unused formData = new FormData() line.
+
     let imageUrls: string[] = [];
     if (files.length > 0) {
-      const formData = new FormData();
-      // files.forEach((f) => formData.append("images", f)); // Old server logic
+      // const formData = new FormData(); // REMOVED
 
       try {
-        // Use Client-Side Signed Upload
         const { uploadToCloudinary } = await import("@/lib/cloudinary");
-
-        // Parallel uploads
         const uploadedUrls = await Promise.all(
           files.map((file) => uploadToCloudinary(file))
         );
-
         imageUrls = uploadedUrls;
       } catch (e) {
         console.error("Upload failed", e);
@@ -168,15 +166,12 @@ function ReviewForm({
 
     let result: { success: boolean; error?: string };
     if (sku.review) {
-      // Update existing review
       result = await updateReviewAction(sku.review.id, {
         rating: values.rating,
         content: values.content,
-        images: imageUrls.length > 0 ? imageUrls : sku.review.images, // Append or replace? Logic decision: Replace usually, or UI logic?
-        // Current UI: "Add Image". If I support existing images, I need to load them.
+        images: imageUrls.length > 0 ? imageUrls : sku.review.images,
       });
     } else {
-      // Create new review
       result = await createReviewAction({
         productId,
         skuId: sku.id,
@@ -185,7 +180,25 @@ function ReviewForm({
         images: imageUrls,
       });
     }
-    // ...
+
+    setLoading(false);
+    if (result.success) {
+      toast({
+        variant: "success",
+        title: tCommon("toast.success"),
+        description: sku.review
+          ? t("form.editSuccess")
+          : t("form.createSuccess"),
+      });
+      onOpenChange(false);
+      onSuccess();
+    } else {
+      toast({
+        variant: "destructive",
+        title: tCommon("toast.error"),
+        description: result.error || t("form.error"),
+      });
+    }
   };
 
   const formSchema = z.object({

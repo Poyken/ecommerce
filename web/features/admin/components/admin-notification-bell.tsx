@@ -60,9 +60,13 @@ export function AdminNotificationBell() {
   const safeNotifications = Array.isArray(notifications) ? notifications : [];
   const adminNotifications = safeNotifications.filter((n) => {
     const type = n.type?.toUpperCase() || "";
-    return ["ORDER_PLACED", "ORDER_CANCELLED", "LOW_STOCK", "REVIEW"].some(
-      (t) => type.includes(t)
-    );
+    return [
+      "ORDER_PLACED",
+      "ADMIN_NEW_ORDER",
+      "ORDER_CANCELLED",
+      "LOW_STOCK",
+      "REVIEW",
+    ].some((t) => type.includes(t));
   });
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -103,7 +107,7 @@ export function AdminNotificationBell() {
     if (!notification) return null;
 
     const orderId = notification.link?.match(/\/orders\/([a-zA-Z0-9-]+)/)?.[1];
-    
+
     return {
       orderId: orderId || "N/A",
       shortId: orderId ? `#${orderId.slice(0, 8).toUpperCase()}` : "N/A",

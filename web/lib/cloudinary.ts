@@ -18,16 +18,17 @@ export async function uploadToCloudinary(
   folder = "ecommerce-reviews"
 ): Promise<string> {
   // 1. Get Signature from Backend
-  const sigRes = await http<any>(
-    `/common/cloudinary/signature?folder=${folder}`,
-    {
-      headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
-      skipRedirectOn401: true,
-    }
-  );
+  const sigRes = await http<
+    CloudinarySignatureResponse | { data: CloudinarySignatureResponse }
+  >(`/common/cloudinary/signature?folder=${folder}`, {
+    headers: accessToken ? { Authorization: `Bearer ${accessToken}` } : {},
+    skipRedirectOn401: true,
+  });
 
   // NestJS TransformInterceptor wraps results in { data: ... }
-  const signData = (sigRes.data || sigRes) as CloudinarySignatureResponse;
+  const signData = (
+    "data" in sigRes ? sigRes.data : sigRes
+  ) as CloudinarySignatureResponse;
 
   // 2. Direct Upload to Cloudinary
   const formData = new FormData();

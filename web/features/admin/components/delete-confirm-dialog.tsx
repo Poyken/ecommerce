@@ -1,5 +1,6 @@
 "use client";
 
+import { useToast } from "@/components/shared/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +11,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useToast } from "@/components/shared/use-toast";
 import { AlertTriangle, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
@@ -69,7 +69,6 @@ export function DeleteConfirmDialog({
         const result = await action();
         if (result?.success) {
           toast({
-            // @ts-ignore
             variant: "success",
             title: t("success"),
             description: successMessage || t("successDelete"),

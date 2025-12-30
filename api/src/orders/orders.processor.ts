@@ -162,8 +162,12 @@ export class OrdersProcessor extends WorkerHost {
             },
           },
         },
-        select: { id: true },
+        select: { id: true, email: true },
       });
+
+      this.logger.log(
+        `[Job] Found ${admins.length} admins to notify: ${admins.map((a) => a.email).join(', ')}`,
+      );
 
       if (admins.length > 0) {
         const adminIds = admins.map((admin) => admin.id);

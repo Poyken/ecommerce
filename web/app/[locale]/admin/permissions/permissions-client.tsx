@@ -21,8 +21,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { deletePermissionAction } from "@/features/admin/actions";
 import {
-    AdminEmptyState,
-    AdminPageHeader,
+  AdminEmptyState,
+  AdminPageHeader,
 } from "@/features/admin/components/admin-page-components";
 import { CreatePermissionDialog } from "@/features/admin/components/create-permission-dialog";
 import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
@@ -31,21 +31,21 @@ import { useAuth } from "@/features/auth/providers/auth-provider";
 import { cn } from "@/lib/utils";
 import { Permission } from "@/types/models";
 import {
-    ChevronDown,
-    ChevronRight,
-    Edit2,
-    Eye,
-    FileEdit,
-    Key,
-    Lock,
-    Plus,
-    Search,
-    Settings,
-    Shield,
-    Trash2,
+  ChevronDown,
+  ChevronRight,
+  Edit2,
+  Eye,
+  FileEdit,
+  Key,
+  Lock,
+  Plus,
+  Search,
+  Settings,
+  Shield,
+  Trash2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 // Action icons mapping
 const actionIcons: Record<string, React.ReactNode> = {
@@ -68,13 +68,18 @@ const actionColors: Record<string, string> = {
     "bg-purple-500/10 text-purple-600 border-purple-500/20 hover:bg-purple-500/20",
 };
 
-export function PermissionsPageClient({ permissions }: { permissions: Permission[] }) {
+export function PermissionsPageClient({
+  permissions,
+}: {
+  permissions: Permission[];
+}) {
   const t = useTranslations("admin");
   const { hasPermission } = useAuth();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedPermission, setSelectedPermission] = useState<Permission | null>(null);
+  const [selectedPermission, setSelectedPermission] =
+    useState<Permission | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
 
@@ -111,7 +116,7 @@ export function PermissionsPageClient({ permissions }: { permissions: Permission
   };
 
   // Group permissions by resource
-  const groupedPermissions = useMemo(() => {
+  const groupedPermissions = (() => {
     const groups: Record<string, Permission[]> = {};
 
     permissions.forEach((perm) => {
@@ -136,10 +141,10 @@ export function PermissionsPageClient({ permissions }: { permissions: Permission
     return Object.fromEntries(
       Object.entries(groups).sort(([a], [b]) => a.localeCompare(b))
     );
-  }, [permissions]);
+  })();
 
   // Filter groups based on search
-  const filteredGroups = useMemo(() => {
+  const filteredGroups = (() => {
     if (!searchTerm) return groupedPermissions;
 
     const lowerSearch = searchTerm.toLowerCase();
@@ -159,7 +164,7 @@ export function PermissionsPageClient({ permissions }: { permissions: Permission
     });
 
     return filtered;
-  }, [groupedPermissions, searchTerm]);
+  })();
 
   // Extract action from permission name
   const getAction = (permName: string) => {

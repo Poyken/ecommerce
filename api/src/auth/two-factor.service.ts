@@ -10,7 +10,7 @@ export class TwoFactorService {
   /**
    * Tạo secret key cho 2FA
    */
-  async generateSecret(userEmail: string) {
+  generateSecret(userEmail: string) {
     const secret = authenticator.generateSecret();
     const otpauthUrl = authenticator.keyuri(
       userEmail,

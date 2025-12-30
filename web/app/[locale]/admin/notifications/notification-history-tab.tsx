@@ -24,36 +24,34 @@ import { useToast } from "@/components/shared/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateOrderStatusAction } from "@/features/admin/actions";
+import { AdminTableWrapper } from "@/features/admin/components/admin-page-components";
 import {
-    AdminTableWrapper
-} from "@/features/admin/components/admin-page-components";
-import {
-    getAdminNotificationsAction,
-    markAllAsReadAction,
+  getAdminNotificationsAction,
+  markAllAsReadAction,
 } from "@/features/notifications/actions";
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { Notification } from "@/types/models";
 import { format } from "date-fns";
 import {
-    Bell,
-    Check,
-    CheckCircle,
-    Clock,
-    ExternalLink,
-    Package,
-    RefreshCw,
-    Search,
-    X,
+  Bell,
+  Check,
+  CheckCircle,
+  Clock,
+  ExternalLink,
+  Package,
+  RefreshCw,
+  Search,
+  X,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -75,14 +73,21 @@ export function NotificationHistoryTab() {
 
   const fetchNotifications = async () => {
     setLoading(true);
-    const typeFilter = filter === "all" ? undefined : filter.toUpperCase();
+    let typeFilter: string | string[] | undefined = undefined;
+
+    if (filter === "order") {
+      typeFilter = ["ORDER", "ORDER_PLACED", "ADMIN_NEW_ORDER"];
+    } else if (filter === "system") {
+      typeFilter = ["SYSTEM", "LOW_STOCK", "REVIEW", "PROMO"];
+    }
+
     const res = await getAdminNotificationsAction(
       page,
       15,
       undefined,
-      typeFilter
+      typeFilter as any // Cast to any because the action signature might need update or supports 'any'
     );
-    if (res && 'data' in res && res.data) {
+    if (res && "data" in res && res.data) {
       setNotifications(res.data);
       if (res.meta) {
         setTotalPages(res.meta.lastPage);
@@ -305,7 +310,10 @@ export function NotificationHistoryTab() {
                 const orderId = getOrderId(notif.link);
                 // Only show actions for NEW orders, not status updates
                 const canTakeAction =
-                  isNewOrderNotification(notif) && orderId && !notif.isRead && !isAlreadyProcessedType(notif);
+                  isNewOrderNotification(notif) &&
+                  orderId &&
+                  !notif.isRead &&
+                  !isAlreadyProcessedType(notif);
 
                 return (
                   <TableRow

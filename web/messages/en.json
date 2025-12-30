@@ -554,6 +554,13 @@
   },
   "checkout": {
     "backToCart": "Back to Cart",
+    "success": {
+      "title": "Order Successful!",
+      "description": "Thank you for your purchase. Your order has been placed successfully.",
+      "orderNumber": "Order Number",
+      "viewOrder": "View Order Details",
+      "continueShopping": "Continue Shopping"
+    },
     "secureCheckout": "Secure Checkout",
     "title": "Complete Your Order",
     "shippingAddress": "Shipping Address",
@@ -742,6 +749,7 @@
     }
   },
   "admin": {
+    "refresh": "Refresh",
     "adminPanel": "Admin Panel",
     "dashboard": "Dashboard",
     "product": "Product",
@@ -1184,6 +1192,7 @@
       "phoneLabel": "Phone",
       "addressLabel": "Address",
       "productLabel": "Product",
+      "imageLabel": "Image",
       "skuLabel": "SKU",
       "priceLabel": "Price",
       "qtyLabel": "Qty",

@@ -3,16 +3,16 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Injectable()
 export class CustomThrottlerGuard extends ThrottlerGuard {
-  protected async getTracker(req: any): Promise<string> {
-    return req.user?.id || req.ip;
+  protected getTracker(req: any): Promise<string> {
+    return Promise.resolve(req.user?.id || req.ip);
   }
 
-  protected async getLimit(context: ExecutionContext): Promise<number> {
+  protected getLimit(context: ExecutionContext): Promise<number> {
     const request = context.switchToHttp().getRequest();
-    return request.user ? 100 : 20;
+    return Promise.resolve(request.user ? 100 : 20);
   }
 
-  protected async getTimeToLive(): Promise<number> {
-    return 60;
+  protected getTimeToLive(): Promise<number> {
+    return Promise.resolve(60);
   }
 }

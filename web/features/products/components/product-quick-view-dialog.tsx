@@ -72,9 +72,12 @@ export function ProductQuickViewDialog({
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   // Sync initialSkuId when it changes or dialog opens
+  // Sync initialSkuId when it changes or dialog opens
   useEffect(() => {
     if (isOpen && initialSkuId) {
-      setCurrentSkuId(initialSkuId);
+      setTimeout(() => {
+        setCurrentSkuId(initialSkuId);
+      }, 0);
     }
   }, [isOpen, initialSkuId]);
 

@@ -6,18 +6,18 @@ import { SearchInput } from "@/components/shared/search-input";
 import { ProductsSkeleton } from "@/components/shared/skeletons/home-skeleton";
 import { Button } from "@/components/ui/button";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { FilterSidebar } from "@/features/products/components/filter-sidebar";
@@ -31,12 +31,12 @@ import { Filter, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import {
-    Suspense,
-    use,
-    useCallback,
-    useEffect,
-    useState,
-    useTransition,
+  Suspense,
+  use,
+  useCallback,
+  useEffect,
+  useState,
+  useTransition,
 } from "react";
 
 /**
@@ -146,18 +146,18 @@ export function ShopContent({
     [searchParams]
   );
 
-  const handleFilter = useCallback(
-    (type: "categoryId" | "brandId", value: string | null) => {
-      // Avoid redundant navigation if value hasn't changed
-      if (searchParams.get(type) === value) return;
+  const handleFilter = (
+    type: "categoryId" | "brandId",
+    value: string | null
+  ) => {
+    // Avoid redundant navigation if value hasn't changed
+    if (searchParams.get(type) === value) return;
 
-      startTransition(() => {
-        const queryString = createQueryString(type, value);
-        router.replace(`${pathname}?${queryString}`, { scroll: false });
-      });
-    },
-    [createQueryString, pathname, router]
-  );
+    startTransition(() => {
+      const queryString = createQueryString(type, value);
+      router.replace(`${pathname}?${queryString}`, { scroll: false });
+    });
+  };
 
   const handleSortChange = (value: string) => {
     startTransition(() => {

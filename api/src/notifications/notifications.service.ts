@@ -273,7 +273,11 @@ export class NotificationsService {
       where.userId = filters.userId;
     }
     if (filters?.type) {
-      where.type = filters.type;
+      if (Array.isArray(filters.type)) {
+        where.type = { in: filters.type };
+      } else {
+        where.type = filters.type;
+      }
     }
     if (filters?.isRead !== undefined) {
       where.isRead = filters.isRead;

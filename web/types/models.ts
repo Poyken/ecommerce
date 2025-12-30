@@ -657,7 +657,7 @@ export interface ChatMessage {
   senderType: "USER" | "ADMIN";
   content: string;
   type: "TEXT" | "IMAGE" | "PRODUCT" | "ORDER";
-  metadata?: any;
+  metadata?: Record<string, unknown>;
   isRead: boolean;
   sentAt: string;
   conversation?: ChatConversation;

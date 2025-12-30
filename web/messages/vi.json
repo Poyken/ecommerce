@@ -548,6 +548,13 @@
   },
   "checkout": {
     "backToCart": "Quay lại giỏ hàng",
+    "success": {
+      "title": "Đặt Hàng Thành Công!",
+      "description": "Cảm ơn bạn đã mua hàng. Đơn hàng của bạn đã được ghi nhận.",
+      "orderNumber": "Mã Đơn Hàng",
+      "viewOrder": "Xem Chi Tiết Đơn Hàng",
+      "continueShopping": "Tiếp Tục Mua Sắm"
+    },
     "secureCheckout": "Thanh toán bảo mật",
     "title": "Hoàn tất đơn hàng",
     "shippingAddress": "Địa chỉ giao hàng",
@@ -732,6 +739,7 @@
     }
   },
   "admin": {
+    "refresh": "Làm mới",
     "dashboard": "Bảng điều khiển",
     "product": "Sản phẩm",
     "openMenu": "Mở menu",
@@ -1105,6 +1113,7 @@
       "phoneLabel": "Số điện thoại",
       "addressLabel": "Địa chỉ",
       "productLabel": "Sản phẩm",
+      "imageLabel": "Hình ảnh",
       "skuLabel": "SKU",
       "priceLabel": "Giá",
       "qtyLabel": "SL",

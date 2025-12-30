@@ -317,7 +317,7 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
   }
 
   return (
-    <Card className="fixed bottom-24 md:bottom-4 right-4 w-[calc(100vw-32px)] md:w-[380px] h-[550px] max-h-[60vh] md:max-h-[600px] shadow-2xl z-105 flex flex-col animate-in slide-in-from-bottom-10 fade-in">
+    <Card className="fixed bottom-24 md:bottom-4 right-4 w-[calc(100vw-32px)] md:w-[380px] h-[550px] max-h-[60vh] md:max-h-[600px] shadow-2xl z-90 flex flex-col animate-in slide-in-from-bottom-10 fade-in">
       <CardHeader className="p-3 border-b flex flex-row items-center justify-between space-y-0 shrink-0 bg-primary text-primary-foreground">
         <div className="flex items-center gap-2">
           <div
@@ -357,7 +357,7 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
               Please login to start a conversation with our support team.
             </p>
             <Button asChild className="w-full">
-              <a href="/login">Login Now</a>
+              <Link href="/login">Login Now</Link>
             </Button>
           </div>
         ) : (

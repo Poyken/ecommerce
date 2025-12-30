@@ -3,16 +3,16 @@
 import { FormDialog } from "@/components/shared/form-dialog";
 import { useToast } from "@/components/shared/use-toast";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { updateOrderStatusAction } from "@/features/admin/actions";
 import { cn } from "@/lib/utils";
 import { OrderStatus } from "@/types/models";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
@@ -162,17 +162,27 @@ export function UpdateOrderStatusDialog({
         </div>
 
         {status === "CANCELLED" && (
-          <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
-            <label className="text-sm font-medium text-red-500">
-              Cancellation Reason (Required)
-            </label>
+          <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300 p-4 rounded-xl border-2 border-red-100 bg-red-50/30">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-bold text-red-600 flex items-center gap-2">
+                <X className="h-4 w-4" />
+                Cancellation Reason (Required)
+              </label>
+              <span className="text-[10px] bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                Mandatory
+              </span>
+            </div>
             <textarea
-              className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              placeholder="Why is this order being cancelled?"
+              className="flex min-h-[100px] w-full rounded-lg border-2 border-red-100 bg-white px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-200 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all resize-none"
+              placeholder="Please explain why this order is being cancelled (this will be sent to the customer)..."
               value={cancellationReason}
               onChange={(e) => setCancellationReason(e.target.value)}
               required
             />
+            <p className="text-[11px] text-red-500/70 font-medium italic">
+              * This reason will be included in the notification sent to the
+              customer.
+            </p>
           </div>
         )}
 

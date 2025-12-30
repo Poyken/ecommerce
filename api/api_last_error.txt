@@ -1,0 +1,10 @@
+
+> api@0.0.1 lint
+> eslint "{src,apps,libs,test}/**/*.ts" --fix --quiet
+
+
+/home/mguser/ducnv/ecommerce-main/api/src/auth/auth.controller.ts
+  246:36  error  Unexpected `await` of a non-Promise (non-"Thenable") value  @typescript-eslint/await-thenable
+
+✖ 1 problem (1 error, 0 warnings)
+

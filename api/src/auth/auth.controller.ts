@@ -243,7 +243,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Tạo mã 2FA secret & QR Code' })
   async generate2FA(@Request() req: any) {
     const user = await this.authService.getMe(req.user.userId);
-    const { secret, otpauthUrl } = await this.twoFactorService.generateSecret(
+    const { secret, otpauthUrl } = this.twoFactorService.generateSecret(
       user.email,
     );
     const qrCode =

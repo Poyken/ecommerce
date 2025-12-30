@@ -1,14 +1,14 @@
 "use client";
 
 import {
-    ReviewItem,
-    ReviewItemProps,
-    ReviewListSkeleton,
+  ReviewItem,
+  ReviewItemProps,
+  ReviewListSkeleton,
 } from "@/components/molecules/review-item";
 import { Button } from "@/components/ui/button";
 import {
-    checkReviewEligibilityAction,
-    getReviewsAction,
+  checkReviewEligibilityAction,
+  getReviewsAction,
 } from "@/features/reviews/actions";
 import { ReviewFormDialog } from "@/features/reviews/components/review-form-dialog";
 import { Sku } from "@/types/models";
@@ -46,7 +46,16 @@ interface ProductReviewsProps {
   initialReviews?: ReviewItemProps["review"][];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialMeta?: any;
-  initialPurchasedSkus?: Sku[];
+  initialPurchasedSkus?: PurchasedSku[];
+}
+
+interface PurchasedSku extends Sku {
+  review?: {
+    id: string;
+    rating: number;
+    content?: string;
+    images?: string[];
+  };
 }
 
 export function ProductReviews({
@@ -56,15 +65,20 @@ export function ProductReviews({
   initialPurchasedSkus = [],
 }: ProductReviewsProps) {
   const t = useTranslations("reviews");
-  const [reviews, setReviews] = useState<any[]>(initialReviews);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [meta, setMeta] = useState<any>(initialMeta);
-   
+  const [reviews, setReviews] =
+    useState<ReviewItemProps["review"][]>(initialReviews);
+  const [meta, setMeta] = useState<{
+    totalReviews: number;
+    averageRating: number;
+    nextCursor?: string;
+  } | null>(initialMeta);
+
   const [purchasedSkus, setPurchasedSkus] =
-    useState<any[]>(initialPurchasedSkus);
+    useState<PurchasedSku[]>(initialPurchasedSkus);
   const [showReviewDialog, setShowReviewDialog] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [selectedSkuForReview, setSelectedSkuForReview] = useState<any>(null);
+  const [selectedSkuForReview, setSelectedSkuForReview] =
+    useState<PurchasedSku | null>(null);
   const [loading, setLoading] = useState(initialReviews.length === 0);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -81,13 +95,15 @@ export function ProductReviews({
 
       if (reviewsRes.success && Array.isArray(reviewsRes.data)) {
         setReviews(reviewsRes.data);
-        setMeta(reviewsRes.meta);
+        setMeta((reviewsRes.meta as any) || null);
       } else {
         setReviews([]);
       }
 
       if (eligibilityRes.success && eligibilityRes.data) {
-        setPurchasedSkus(eligibilityRes.data.purchasedSkus || []);
+        setPurchasedSkus(
+          (eligibilityRes.data.purchasedSkus as unknown as PurchasedSku[]) || []
+        );
       }
     } catch (_e) {
       // console.error(e);
@@ -103,7 +119,7 @@ export function ProductReviews({
       const res = await getReviewsAction(productId, meta.nextCursor);
       if (res.success && res.data) {
         setReviews((prev) => [...prev, ...res.data]);
-        setMeta(res.meta);
+        setMeta((res.meta as any) || null);
       }
     } catch (_e) {
       // console.error("Failed to load more reviews", e);
@@ -116,19 +132,19 @@ export function ProductReviews({
     hasFetched.current = true;
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productId]); // fetchData dependency is omitted to avoid infinite loop usage pattern if fetchData wasn't memoized correctly (though it is) or to keep logic simple checking only productId. 
+  }, [productId]); // fetchData dependency is omitted to avoid infinite loop usage pattern if fetchData wasn't memoized correctly (though it is) or to keep logic simple checking only productId.
   // actually, fetchData IS memoized on productId. So [fetchData] is correct.
   // But hasFetched logic combined with strict mode is tricky.
   // Let's just suppress exhaustive-deps as we want to control exactly when it runs (on mount/id change)
-  
+
   // Wait, let's just use [fetchData] and suppress set-state-in-effect if needed.
   // The error is set-state-in-effect.
-  
+
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
-     
+
     fetchData();
   }, [productId]);
   /* eslint-enable react-hooks/exhaustive-deps */
@@ -156,8 +172,7 @@ export function ProductReviews({
                 <div>
                   <div className="font-bold text-base">
                     {sku.optionValues
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      ?.map((ov: any) => ov.optionValue?.value)
+                      ?.map((ov) => ov.optionValue?.value)
                       .join(" / ") || "Default Variant"}
                   </div>
                   {sku.review ? (
@@ -169,7 +184,7 @@ export function ProductReviews({
                           <Star
                             key={star}
                             className={`w-3.5 h-3.5 ${
-                              star <= sku.review.rating
+                              star <= sku.review!.rating
                                 ? "fill-amber-400 text-amber-400"
                                 : "text-foreground/10"
                             }`}
@@ -264,7 +279,18 @@ export function ProductReviews({
 
       <ReviewFormDialog
         productId={productId}
-        sku={selectedSkuForReview}
+        sku={
+          selectedSkuForReview as unknown as {
+            id: string;
+            optionValues?: { optionValue: { value: string } }[];
+            review?: {
+              id: string;
+              rating: number;
+              content: string;
+              images?: string[];
+            };
+          }
+        }
         open={showReviewDialog}
         onOpenChange={setShowReviewDialog}
         onSuccess={() => {

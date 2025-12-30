@@ -43,6 +43,7 @@ export function NotificationItem({
       case "ORDER_PLACED":
       case "ORDER_SHIPPED":
       case "ORDER_DELIVERED":
+      case "ADMIN_NEW_ORDER":
         return {
           bg: "bg-emerald-50/50 dark:bg-emerald-900/10",
           icon: "bg-emerald-500",

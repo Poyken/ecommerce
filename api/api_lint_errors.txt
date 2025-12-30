@@ -1,0 +1,24 @@
+
+> api@0.0.1 lint
+> eslint "{src,apps,libs,test}/**/*.ts" --fix --quiet
+
+
+/home/mguser/ducnv/ecommerce-main/api/src/auth/two-factor.service.ts
+  13:3  error  Async method 'generateSecret' has no 'await' expression  @typescript-eslint/require-await
+
+/home/mguser/ducnv/ecommerce-main/api/src/core/guards/custom-throttler.guard.ts
+   6:3  error  Async method 'getTracker' has no 'await' expression     @typescript-eslint/require-await
+  10:3  error  Async method 'getLimit' has no 'await' expression       @typescript-eslint/require-await
+  15:3  error  Async method 'getTimeToLive' has no 'await' expression  @typescript-eslint/require-await
+
+/home/mguser/ducnv/ecommerce-main/api/src/integrations/email/email.service.ts
+  80:3  error  Async method 'sendInvoice' has no 'await' expression  @typescript-eslint/require-await
+
+/home/mguser/ducnv/ecommerce-main/api/src/orders/orders.service.ts
+  211:37  error  Invalid type "Decimal" of template literal expression  @typescript-eslint/restrict-template-expressions
+
+/home/mguser/ducnv/ecommerce-main/api/src/products/products-import.service.ts
+  30:23  error  'val' may use Object's default stringification format ('[object Object]') when stringified  @typescript-eslint/no-base-to-string
+
+✖ 7 problems (7 errors, 0 warnings)
+

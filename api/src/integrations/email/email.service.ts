@@ -77,9 +77,10 @@ export class EmailService {
     return this.sendOrderStatusUpdate(order);
   }
 
-  async sendInvoice(order: any): Promise<void> {
+  sendInvoice(order: any): Promise<void> {
     // Implementation for sending invoice PDF could be added here
     this.logger.log(`Invoice email requested for order ${order.id}`);
+    return Promise.resolve();
   }
 
   async sendCustomEmail(

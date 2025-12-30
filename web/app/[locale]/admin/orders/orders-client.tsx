@@ -19,36 +19,37 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { OrderDetailsDialog } from "@/features/admin/components/order-details-dialog";
 import { UpdateOrderStatusDialog } from "@/features/admin/components/update-order-status-dialog";
 import {
-    Check,
-    Clock,
-    Download,
-    Edit,
-    Eye,
-    Package,
-    RefreshCw,
-    Search,
-    ShoppingBag,
-    Truck,
-    Upload,
-    X,
+  Check,
+  Clock,
+  Download,
+  Edit,
+  Eye,
+  Package,
+  RefreshCw,
+  Search,
+  ShoppingBag,
+  Truck,
+  Upload,
+  X,
 } from "lucide-react";
 
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNotifications } from "@/contexts/notification-context";
 import {
-    AdminEmptyState,
-    AdminPageHeader,
-    AdminTableWrapper,
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
@@ -56,7 +57,7 @@ import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import { Order, OrderStatus } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 type FilterType =
   | "all"
@@ -85,41 +86,70 @@ export function OrdersClient({
   const { hasPermission } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const { notifications } = useNotifications();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+  const lastProcessedNotiId = useRef<string | null>(null);
+
   // Track processed orderId to prevent infinite loop/re-processing
   const processedOrderIdRef = useRef<string | null>(null);
 
   // Auto-open order details dialog when orderId query param is present (from notification click)
   useEffect(() => {
     const orderIdFromUrl = searchParams.get("orderId");
-    
+
     // Only process if we have an orderId and we haven't processed this specific ID yet
     // OR if we processed it but the dialog is closed (user clicked notification again)
-    if (orderIdFromUrl && (orderIdFromUrl !== processedOrderIdRef.current || !detailsDialogOpen)) {
+    if (
+      orderIdFromUrl &&
+      (orderIdFromUrl !== processedOrderIdRef.current || !detailsDialogOpen)
+    ) {
       processedOrderIdRef.current = orderIdFromUrl;
 
-      // Find the order in the list or create a temporary one just to open dialog
-      const order = orders.find((o) => o.id === orderIdFromUrl);
-      if (order) {
-        setSelectedOrder(order);
-        setDetailsDialogOpen(true);
-      } else {
-        // Order not in current page, create temporary order object to open dialog
-        setSelectedOrder({ id: orderIdFromUrl } as Order);
-        setDetailsDialogOpen(true);
-      }
-      
-      // Clean up URL without triggering a refresh that resets state
-      // window.history.replaceState is safer than router.replace here to avoid re-running server components
-      const newUrl = new URL(window.location.href);
-      newUrl.searchParams.delete("orderId");
-      window.history.replaceState(null, "", newUrl.toString());
+      // Process inside setTimeout to avoid set-state-in-effect warning and allow render to complete
+      setTimeout(() => {
+        const order = orders.find((o) => o.id === orderIdFromUrl);
+        if (order) {
+          setSelectedOrder(order);
+          setDetailsDialogOpen(true);
+        } else {
+          // Order not in current page, create temporary order object to open dialog
+          setSelectedOrder({ id: orderIdFromUrl } as Order);
+          setDetailsDialogOpen(true);
+        }
+
+        // Clean up URL without triggering a refresh that resets state
+        // window.history.replaceState is safer than router.replace here to avoid re-running server components
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("orderId");
+        window.history.replaceState(null, "", newUrl.toString());
+      }, 0);
     }
   }, [searchParams, orders, detailsDialogOpen]);
+
+  // Auto-refresh order list when a new ADMIN_NEW_ORDER notification arrives
+  useEffect(() => {
+    if (!notifications || notifications.length === 0) return;
+
+    const latestNoti = notifications[0];
+    if (!latestNoti) return;
+
+    // Only trigger if it's a new order and we haven't processed this specific notification ID yet
+    if (
+      latestNoti.type === "ADMIN_NEW_ORDER" &&
+      latestNoti.id !== lastProcessedNotiId.current
+    ) {
+      lastProcessedNotiId.current = latestNoti.id;
+
+      // Use router.refresh() to revalidate server components (refreshes the 'orders' prop)
+      startTransition(() => {
+        router.refresh();
+      });
+    }
+  }, [notifications, router]);
 
   // Stats from server
   const pendingCount = counts?.PENDING || 0;
@@ -136,8 +166,12 @@ export function OrdersClient({
   // Bulk Selection State
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
-  const { searchTerm, setSearchTerm, isPending, handleFilterChange } =
-    useAdminTable("/admin/orders");
+  const {
+    searchTerm,
+    setSearchTerm,
+    isPending: isTablePending,
+    handleFilterChange,
+  } = useAdminTable("/admin/orders");
 
   const handleStatusChange = (status: FilterType) => {
     handleFilterChange("status", status);
@@ -268,30 +302,47 @@ export function OrdersClient({
           { label: "delivered", value: deliveredCount, variant: "success" },
         ]}
         actions={
-            <div className="flex items-center gap-2">
-                {selectedRows.size > 0 && (
-                    <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg mr-2">
-                    <span className="text-sm font-medium text-primary">
-                        {t("orders.selectedCount", { count: selectedRows.size })}
-                    </span>
-                    <div className="h-4 w-px bg-primary/20 mx-2" />
-                    <Button
-                        size="sm"
-                        variant="ghost"
-                        className="h-8 hover:bg-primary/10"
-                        onClick={handleExport}
-                    >
-                        <Download size={16} className="mr-2" />
-                        {t("orders.exportLabel")}
-                    </Button>
-                    </div>
-                )}
-                
-                <Button onClick={handleImportClick}>
-                    <Upload size={16} className="mr-2" />
-                    Import
+          <div className="flex items-center gap-2">
+            {selectedRows.size > 0 && (
+              <div className="flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg mr-2">
+                <span className="text-sm font-medium text-primary">
+                  {t("orders.selectedCount", { count: selectedRows.size })}
+                </span>
+                <div className="h-4 w-px bg-primary/20 mx-2" />
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 hover:bg-primary/10"
+                  onClick={handleExport}
+                >
+                  <Download size={16} className="mr-2" />
+                  {t("orders.exportLabel")}
                 </Button>
-            </div>
+              </div>
+            )}
+
+            <Button
+              variant="outline"
+              onClick={() => {
+                startTransition(() => {
+                  router.refresh();
+                });
+              }}
+              disabled={isPending}
+              className="gap-2"
+            >
+              <RefreshCw
+                size={16}
+                className={cn(isPending && "animate-spin")}
+              />
+              {t("refresh") || "Refresh"}
+            </Button>
+
+            <Button onClick={handleImportClick}>
+              <Upload size={16} className="mr-2" />
+              Import
+            </Button>
+          </div>
         }
       />
 
@@ -305,36 +356,24 @@ export function OrdersClient({
             <TabsTrigger value="all" className="gap-2" disabled={isPending}>
               All ({totalCount})
             </TabsTrigger>
-            <TabsTrigger value="PENDING" className="gap-2" disabled={isPending}>
+            <TabsTrigger value="PENDING" className="gap-2">
               <Clock className="h-3 w-3" />
               Pending ({pendingCount})
             </TabsTrigger>
-            <TabsTrigger
-              value="PROCESSING"
-              className="gap-2"
-              disabled={isPending}
-            >
+            <TabsTrigger value="PROCESSING" className="gap-2">
               <RefreshCw className="h-3 w-3" />
               Processing ({processingCount})
             </TabsTrigger>
-            <TabsTrigger value="SHIPPED" className="gap-2" disabled={isPending}>
+            <TabsTrigger value="SHIPPED" className="gap-2">
               <Truck className="h-3 w-3" />
               Shipped ({shippedCount})
             </TabsTrigger>
-            <TabsTrigger
-              value="DELIVERED"
-              className="gap-2"
-              disabled={isPending}
-            >
+            <TabsTrigger value="DELIVERED" className="gap-2">
               <Check className="h-3 w-3" />
               Delivered ({deliveredCount})
             </TabsTrigger>
             {cancelledCount > 0 && (
-              <TabsTrigger
-                value="CANCELLED"
-                className="gap-2"
-                disabled={isPending}
-              >
+              <TabsTrigger value="CANCELLED" className="gap-2">
                 <X className="h-3 w-3" />
                 Cancelled ({cancelledCount})
               </TabsTrigger>
@@ -350,14 +389,14 @@ export function OrdersClient({
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10"
           />
-          {isPending && (
+          {(isPending || isTablePending) && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
           )}
         </div>
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending}>
+      <AdminTableWrapper isLoading={isPending || isTablePending}>
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -470,6 +509,37 @@ export function OrdersClient({
                   {(canRead || canUpdate) && (
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-1">
+                        {/* Quick Actions for PENDING orders */}
+                        {canUpdate &&
+                          order.status?.toUpperCase() === "PENDING" && (
+                            <>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-emerald-600 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300"
+                                onClick={() => {
+                                  setSelectedOrder(order);
+                                  setStatusDialogOpen(true);
+                                }}
+                                title={t("orders.statusMapping.PROCESSING")}
+                              >
+                                <Check className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-300"
+                                onClick={() => {
+                                  setSelectedOrder(order);
+                                  setStatusDialogOpen(true);
+                                }}
+                                title={t("orders.statusMapping.CANCELLED")}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+
                         {canRead && (
                           <Button
                             variant="ghost"

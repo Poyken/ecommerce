@@ -30,7 +30,6 @@ import { useGuestWishlist } from "@/features/wishlist/hooks/use-guest-wishlist";
 import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 export interface WishlistButtonProps {
@@ -48,10 +47,11 @@ export function WishlistButton({
 }: WishlistButtonProps) {
   const t = useTranslations("wishlist");
   const tToast = useTranslations("common.toast");
-  const [localIsWishlisted, setLocalIsWishlisted] = useState(initialIsWishlisted);
+  const [localIsWishlisted, setLocalIsWishlisted] =
+    useState(initialIsWishlisted);
   const [isPending, startTransition] = useTransition();
   const { toast, dismiss } = useToast();
-  const router = useRouter();
+  // const router = useRouter(); // Unused
   const { hasItem, addToWishlist, removeFromWishlist } = useGuestWishlist();
   const { isAuthenticated } = useAuth();
 
@@ -97,10 +97,10 @@ export function WishlistButton({
           } else {
             addToWishlist(productId);
           }
-           
+
           // Since we updated localIsWishlisted, and we are still "authenticated" in client view,
           // the UI shows the new state. If we eventually logout, isWishlisted will switch to guest state (which we just updated).
-          
+
           toast({
             title: !previousState ? t("added") : t("removed"),
             description: t("savedToGuestCartDesc"),

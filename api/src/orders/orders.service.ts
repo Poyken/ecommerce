@@ -208,7 +208,7 @@ export class OrdersService {
             totalAmount < Number(coupon.minOrderAmount)
           ) {
             throw new BadRequestException(
-              `Đơn hàng tối thiểu ${coupon.minOrderAmount} để sử dụng mã này`,
+              `Đơn hàng tối thiểu ${Number(coupon.minOrderAmount)} để sử dụng mã này`,
             );
           }
 
@@ -431,7 +431,14 @@ export class OrdersService {
           include: {
             sku: {
               include: {
-                product: true,
+                product: {
+                  include: {
+                    images: {
+                      orderBy: { displayOrder: 'asc' },
+                      take: 1,
+                    },
+                  },
+                },
                 optionValues: {
                   include: {
                     optionValue: {
@@ -525,7 +532,16 @@ export class OrdersService {
         items: {
           include: {
             sku: {
-              include: { product: true },
+              include: {
+                product: {
+                  include: {
+                    images: {
+                      orderBy: { displayOrder: 'asc' },
+                      take: 1,
+                    },
+                  },
+                },
+              },
             },
           },
         },
@@ -604,6 +620,13 @@ export class OrdersService {
       );
     }
 
+    // 🔴 ENFORCE CANCELLATION REASON
+    if (newStatus === OrderStatus.CANCELLED && !dto.cancellationReason) {
+      throw new BadRequestException(
+        'Vui lòng cung cấp lý do hủy đơn hàng (Required cancellationReason).',
+      );
+    }
+
     const transactionResult = await this.prisma.$transaction(async (tx) => {
       if (newStatus === OrderStatus.CANCELLED) {
         // Validation: If order has shipping code, try to cancel on GHN first
@@ -676,7 +699,7 @@ export class OrdersService {
               break;
             case OrderStatus.CANCELLED:
               title = 'Đơn hàng đã hủy';
-              message = `Đơn hàng #${id.slice(-8)} của bạn đã bị hủy.`;
+              message = `Đơn hàng #${id.slice(-8)} của bạn đã bị hủy.${dto.cancellationReason ? ` Lý do: ${dto.cancellationReason}` : ''}`;
               notiType = 'ORDER_CANCELLED';
               break;
             case 'RETURNED' as any:

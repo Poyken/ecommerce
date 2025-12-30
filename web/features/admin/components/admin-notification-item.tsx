@@ -19,8 +19,8 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Notification,
-    useNotifications,
+  Notification,
+  useNotifications,
 } from "@/contexts/notification-context";
 import { updateOrderStatusAction } from "@/features/admin/actions";
 import { cn } from "@/lib/utils";
@@ -61,6 +61,7 @@ export function AdminNotificationItem({
   const isNewOrderNotification =
     notification.type?.toUpperCase() === "ORDER" ||
     notification.type?.toUpperCase() === "ORDER_PLACED" ||
+    notification.type?.toUpperCase() === "ADMIN_NEW_ORDER" ||
     notification.title?.toLowerCase().includes("đơn hàng mới") ||
     notification.title?.toLowerCase().includes("new order");
 
@@ -107,7 +108,12 @@ export function AdminNotificationItem({
 
     setIsLoading("reject");
     try {
-      const result = await updateOrderStatusAction(orderId, "CANCELLED");
+      const result = await updateOrderStatusAction(
+        orderId,
+        "CANCELLED",
+        true,
+        "Admin rejected from notification quick action"
+      );
       if (result.success) {
         setHasActionTaken(true);
         markAsRead(notification.id);
@@ -124,6 +130,7 @@ export function AdminNotificationItem({
     switch (type?.toUpperCase()) {
       case "ORDER":
       case "ORDER_PLACED":
+      case "ADMIN_NEW_ORDER":
         return {
           bg: "bg-amber-50/50 dark:bg-amber-900/20",
           icon: "bg-amber-500",

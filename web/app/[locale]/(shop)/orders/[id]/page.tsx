@@ -1,10 +1,5 @@
 import { StatusBadge } from "@/components/shared/status-badge";
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { BankTransferQR } from "@/features/orders/components/bank-transfer-qr";
 import { BuyAgainButton } from "@/features/orders/components/buy-again-button";
@@ -60,6 +55,7 @@ interface OrderItem {
     }[];
     skuCode?: string;
     image?: string | null;
+    imageUrl?: string | null;
   };
   quantity: number;
   priceAtPurchase: number;
@@ -192,7 +188,9 @@ async function DynamicOrderDetail({ id }: { id: string }) {
                     <div className="shrink-0 w-20 h-20 bg-gray-100 rounded-md overflow-hidden relative border border-black/5 dark:border-white/5">
                       <Image
                         src={
+                          item.sku.imageUrl ||
                           item.sku.image ||
+                          (item.sku.product.images?.[0] as any)?.url ||
                           item.sku.product.images?.[0] ||
                           `https://picsum.photos/seed/${item.sku.product.id}/200`
                         }

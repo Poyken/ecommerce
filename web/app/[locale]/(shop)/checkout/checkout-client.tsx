@@ -356,7 +356,8 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
           description: t("successDesc"),
           variant: "success",
         });
-        router.push(`/orders/${res.orderId}`);
+        // Redirect to success page instead of direct order details
+        router.push(`/checkout/success?orderId=${res.orderId}`);
       } else {
         toast({
           title: t("failed"),
@@ -523,7 +524,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
         open={isPaymentModalOpen}
         onOpenChange={(open) => {
           if (!open && tempOrderData) {
-            router.push(`/orders/${tempOrderData.id}`);
+            router.push(`/checkout/success?orderId=${tempOrderData.id}`);
           }
           setIsPaymentModalOpen(open);
         }}
@@ -547,7 +548,9 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
 
               <div className="flex gap-4 mt-6 w-full justify-center">
                 <GlassButton
-                  onClick={() => router.push(`/orders/${tempOrderData.id}`)}
+                  onClick={() =>
+                    router.push(`/checkout/success?orderId=${tempOrderData.id}`)
+                  }
                   className="w-full max-w-sm"
                 >
                   {t("finishAndViewOrder")}
