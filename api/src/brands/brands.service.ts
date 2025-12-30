@@ -68,15 +68,13 @@ export class BrandsService extends BaseCrudService<
       : {};
 
     // Use usage of Base Service helper
-    return this.findAllBase(
+    // NOTE: When using `select`, `include` is ignored by Prisma.
+    // So we put _count directly inside select.
+    const result = await this.findAllBase(
       page,
       limit,
       where,
-      {
-        _count: {
-          select: { products: true },
-        },
-      },
+      {}, // include - ignored when select is used
       { name: 'asc' }, // Order by Name A-Z
       {
         id: true,
@@ -84,8 +82,22 @@ export class BrandsService extends BaseCrudService<
         imageUrl: true,
         createdAt: true,
         updatedAt: true,
+        _count: {
+          select: { products: true },
+        },
       },
     );
+
+    // Map count to productCount
+    const data = result.data.map((b) => ({
+      ...b,
+      productCount: (b as any)._count?.products || 0,
+    }));
+
+    return {
+      ...result,
+      data,
+    };
   }
 
   async findOne(id: string) {

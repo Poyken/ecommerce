@@ -7,7 +7,6 @@ import {
 import { FeaturedBrands } from "@/features/brands/components/featured-brands";
 import { FeaturedCategories } from "@/features/categories/components/featured-categories";
 import { DealSection } from "@/features/marketing/components/deal-section";
-import { HeroSection } from "@/features/products/components/hero-section";
 import { NewArrivals } from "@/features/products/components/new-arrivals";
 import { TrendingProducts } from "@/features/products/components/trending-products";
 import { Link } from "@/i18n/routing";
@@ -27,7 +26,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Suspense } from "react";
 
-// [P8 OPTIMIZATION] Lazy load below-the-fold components
+// [TỐI ƯU HÓA P8] Lazy load các component nằm dưới màn hình đầu tiên (below-the-fold)
 const TestimonialsCarousel = dynamic(
   () =>
     import("@/features/marketing/components/testimonials-carousel").then(
@@ -66,217 +65,182 @@ export function HomeContent({
   const t = useTranslations("home");
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-accent/30 relative overflow-hidden">
-      {/* Subtle Background Elements */}
-      <div data-fixed-element className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-1/4 w-3/4 h-[40vh] bg-accent/5 rounded-full blur-[200px]" />
-        <div className="absolute bottom-1/4 right-0 w-1/2 h-[30vh] bg-secondary/30 rounded-full blur-[150px]" />
-      </div>
-
-      <HeroSection />
-
-      <main className="space-y-16 pb-16">
-        <Suspense
-          fallback={
-            <div className="container mx-auto px-4 mt-8">
-              <CategoriesSkeleton />
-            </div>
-          }
-        >
-          <FeaturedCategories categories={categories} />
-        </Suspense>
-
-        <Suspense fallback={null}>
-          <FeaturedBrands brands={brands} />
-        </Suspense>
-
-        <Suspense
-          fallback={
-            <div className="container mx-auto px-4">
-              <ProductsSkeleton count={5} />
-            </div>
-          }
-        >
-          <TrendingProducts products={products} />
-        </Suspense>
-
-        <m.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={zoomIn}
-        >
-          <DealSection />
-        </m.div>
-
-        <Suspense
-          fallback={
-            <div className="container mx-auto px-4">
-              <ProductsSkeleton count={4} />
-            </div>
-          }
-        >
-          <NewArrivals products={products} />
-        </Suspense>
-
-        <section className="container mx-auto px-4 overflow-hidden">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <m.div
-              className="relative h-[45vh] min-h-[400px] rounded-[2.5rem] overflow-hidden group shadow-2xl"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={fadeInLeft}
-            >
-              <Image
-                src="/images/home/promo-living.jpg"
-                alt="Promo 1"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
-              <div className="absolute inset-0 flex flex-col justify-end items-start p-10 text-white z-10">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] mb-3 opacity-80">
-                  Exclusive
-                </span>
-                <h3 className="text-4xl font-black mb-4 tracking-tighter uppercase italic">
-                  {t("womensCollection")}
-                </h3>
-                <p className="text-sm mb-6 text-white/70 font-medium max-w-xs leading-relaxed">
-                  {t("exploreTrends")}
-                </p>
-                <Link
-                  href="/shop?categoryId=living-room"
-                  className="group/btn inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all duration-300 shadow-xl"
-                >
-                  {t("shopNow")}
-                  <ArrowRight
-                    size={14}
-                    className="group-hover/btn:translate-x-1 transition-transform"
-                  />
-                </Link>
-              </div>
-            </m.div>
-            <m.div
-              className="relative h-[45vh] min-h-[400px] rounded-[2.5rem] overflow-hidden group shadow-2xl"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-100px" }}
-              variants={fadeInRight}
-            >
-              <Image
-                src="/images/home/promo-dining.jpg"
-                alt="Promo 2"
-                fill
-                sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
-              <div className="absolute inset-0 flex flex-col justify-end items-start p-10 text-white z-10">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] mb-3 opacity-80">
-                  Essentials
-                </span>
-                <h3 className="text-4xl font-black mb-4 tracking-tighter uppercase italic">
-                  {t("mensEssentials")}
-                </h3>
-                <p className="text-sm mb-6 text-white/70 font-medium max-w-xs leading-relaxed">
-                  {t("timelessClassics")}
-                </p>
-                <Link
-                  href="/shop?categoryId=dining-space"
-                  className="group/btn inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all duration-300 shadow-xl"
-                >
-                  {t("discover")}
-                  <ArrowRight
-                    size={14}
-                    className="group-hover/btn:translate-x-1 transition-transform"
-                  />
-                </Link>
-              </div>
-            </m.div>
+    <main className="space-y-16 pb-16">
+      <Suspense
+        fallback={
+          <div className="container mx-auto px-4 mt-8">
+            <CategoriesSkeleton />
           </div>
-        </section>
+        }
+      >
+        <FeaturedCategories categories={categories} />
+      </Suspense>
 
-        <section className="container mx-auto px-4">
+      <Suspense fallback={null}>
+        <FeaturedBrands brands={brands} />
+      </Suspense>
+
+      <Suspense
+        fallback={
+          <div className="container mx-auto px-4">
+            <ProductsSkeleton count={5} />
+          </div>
+        }
+      >
+        <TrendingProducts products={products} />
+      </Suspense>
+
+      <m.div
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={zoomIn}
+      >
+        <DealSection />
+      </m.div>
+
+      <Suspense
+        fallback={
+          <div className="container mx-auto px-4">
+            <ProductsSkeleton count={4} />
+          </div>
+        }
+      >
+        <NewArrivals products={products} />
+      </Suspense>
+
+      <section className="container mx-auto px-4 overflow-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           <m.div
-            className="grid grid-cols-2 md:grid-cols-4 gap-8"
+            className="relative h-[45vh] min-h-[400px] rounded-[2.5rem] overflow-hidden group shadow-2xl"
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: { staggerChildren: 0.1 },
-              },
-            }}
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInLeft}
           >
-            {[
-              { label: "happyCustomers", value: "10k+", color: "primary" },
-              { label: "premiumProducts", value: "500+", color: "secondary" },
-              { label: "globalBrands", value: "50+", color: "primary" },
-              { label: "customerSupport", value: "24/7", color: "secondary" },
-            ].map((stat, idx) => (
-              <m.div
-                key={idx}
-                variants={{
-                  hidden: { opacity: 0, y: 30 },
-                  visible: {
-                    opacity: 1,
-                    y: 0,
-                    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-                  },
-                }}
-                className="group relative text-center p-8 rounded-4xl bg-foreground/2 border border-foreground/5 hover:border-primary/20 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5"
-              >
-                <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-primary/20 group-hover:scale-150 transition-transform duration-500" />
-                <h3
-                  className={cn(
-                    "text-5xl font-black mb-2 tracking-tighter transition-transform duration-500 group-hover:-translate-y-1",
-                    stat.color === "primary"
-                      ? "text-primary"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {stat.value}
-                </h3>
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
-                  {t(stat.label)}
-                </p>
-              </m.div>
-            ))}
-          </m.div>
-        </section>
-
-        <section className="bg-foreground/2 py-24 border-y border-foreground/5 overflow-hidden">
-          <div className="container mx-auto px-4">
-            <m.div
-              className="text-center mb-16"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-            >
-              <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">
-                {t("testimonials.subtitle")}
+            <Image
+              src="/images/home/promo-living.jpg"
+              alt="Promo 1"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+            <div className="absolute inset-0 flex flex-col justify-end items-start p-10 text-white z-10">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] mb-3 opacity-80">
+                Exclusive
               </span>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">
-                {t("testimonials.title")}
-              </h2>
-            </m.div>
-            <m.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeInUp}
-            >
-              <TestimonialsCarousel />
-            </m.div>
-          </div>
-        </section>
+              <h3 className="text-4xl font-black mb-4 tracking-tighter uppercase italic">
+                {t("womensCollection")}
+              </h3>
+              <p className="text-sm mb-6 text-white/70 font-medium max-w-xs leading-relaxed">
+                {t("exploreTrends")}
+              </p>
+              <Link
+                href="/shop?categoryId=living-room"
+                className="group/btn inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all duration-300 shadow-xl"
+              >
+                {t("shopNow")}
+                <ArrowRight
+                  size={14}
+                  className="group-hover/btn:translate-x-1 transition-transform"
+                />
+              </Link>
+            </div>
+          </m.div>
+          <m.div
+            className="relative h-[45vh] min-h-[400px] rounded-[2.5rem] overflow-hidden group shadow-2xl"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={fadeInRight}
+          >
+            <Image
+              src="/images/home/promo-dining.jpg"
+              alt="Promo 2"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+            <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-500" />
+            <div className="absolute inset-0 flex flex-col justify-end items-start p-10 text-white z-10">
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] mb-3 opacity-80">
+                Essentials
+              </span>
+              <h3 className="text-4xl font-black mb-4 tracking-tighter uppercase italic">
+                {t("mensEssentials")}
+              </h3>
+              <p className="text-sm mb-6 text-white/70 font-medium max-w-xs leading-relaxed">
+                {t("timelessClassics")}
+              </p>
+              <Link
+                href="/shop?categoryId=dining-space"
+                className="group/btn inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all duration-300 shadow-xl"
+              >
+                {t("discover")}
+                <ArrowRight
+                  size={14}
+                  className="group-hover/btn:translate-x-1 transition-transform"
+                />
+              </Link>
+            </div>
+          </m.div>
+        </div>
+      </section>
 
-        <section className="container mx-auto px-4 max-w-4xl py-12">
+      <section className="container mx-auto px-4">
+        <m.div
+          className="grid grid-cols-2 md:grid-cols-4 gap-8"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: { staggerChildren: 0.1 },
+            },
+          }}
+        >
+          {[
+            { label: "happyCustomers", value: "10k+", color: "primary" },
+            { label: "premiumProducts", value: "500+", color: "secondary" },
+            { label: "globalBrands", value: "50+", color: "primary" },
+            { label: "customerSupport", value: "24/7", color: "secondary" },
+          ].map((stat, idx) => (
+            <m.div
+              key={idx}
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
+                },
+              }}
+              className="group relative text-center p-8 rounded-4xl bg-foreground/2 border border-foreground/5 hover:border-primary/20 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5"
+            >
+              <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-primary/20 group-hover:scale-150 transition-transform duration-500" />
+              <h3
+                className={cn(
+                  "text-5xl font-black mb-2 tracking-tighter transition-transform duration-500 group-hover:-translate-y-1",
+                  stat.color === "primary"
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                )}
+              >
+                {stat.value}
+              </h3>
+              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                {t(stat.label)}
+              </p>
+            </m.div>
+          ))}
+        </m.div>
+      </section>
+
+      <section className="bg-foreground/2 py-24 border-y border-foreground/5 overflow-hidden">
+        <div className="container mx-auto px-4">
           <m.div
             className="text-center mb-16"
             initial="hidden"
@@ -285,10 +249,10 @@ export function HomeContent({
             variants={fadeInUp}
           >
             <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">
-              {t("faq.subtitle")}
+              {t("testimonials.subtitle")}
             </span>
-            <h2 className="text-4xl font-black tracking-tighter uppercase italic">
-              {t("faq.title")}
+            <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">
+              {t("testimonials.title")}
             </h2>
           </m.div>
           <m.div
@@ -297,25 +261,50 @@ export function HomeContent({
             viewport={{ once: true }}
             variants={fadeInUp}
           >
-            <FAQAccordion />
+            <TestimonialsCarousel />
           </m.div>
-        </section>
+        </div>
+      </section>
 
-        <m.section
-          className="container mx-auto px-4 py-12"
+      <section className="container mx-auto px-4 max-w-4xl py-12">
+        <m.div
+          className="text-center mb-16"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={scaleUp}
+          viewport={{ once: true }}
+          variants={fadeInUp}
         >
-          <div className="relative overflow-hidden bg-foreground/2 rounded-[3rem] p-12 md:p-24 text-center border border-foreground/5 shadow-2xl backdrop-blur-xl">
-            <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
+          <span className="text-primary font-black uppercase tracking-[0.3em] text-[10px] mb-4 block">
+            {t("faq.subtitle")}
+          </span>
+          <h2 className="text-4xl font-black tracking-tighter uppercase italic">
+            {t("faq.title")}
+          </h2>
+        </m.div>
+        <m.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={fadeInUp}
+        >
+          <FAQAccordion />
+        </m.div>
+      </section>
 
-            <NewsletterForm />
-          </div>
-        </m.section>
-      </main>
-    </div>
+      <m.section
+        className="container mx-auto px-4 py-12"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-100px" }}
+        variants={scaleUp}
+      >
+        <div className="relative overflow-hidden bg-foreground/2 rounded-[3rem] p-12 md:p-24 text-center border border-foreground/5 shadow-2xl backdrop-blur-xl">
+          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
+
+          <NewsletterForm />
+        </div>
+      </m.section>
+    </main>
   );
 }

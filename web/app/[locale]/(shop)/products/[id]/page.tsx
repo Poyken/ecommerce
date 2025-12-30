@@ -21,11 +21,14 @@
  * =====================================================================
  */
 
-export const revalidate = 3600; // Cache 1 hour
+// [FIX] Force dynamic rendering because this page uses cookies/headers (via profile/auth check)
+// which prevents static generation (SSG).
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
-import { getProfileAction } from "@/features/profile/actions";
 import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav";
 import { ProductDetailSkeleton } from "@/components/shared/skeletons/product-detail-skeleton";
+import { getProfileAction } from "@/features/profile/actions";
 import { productService } from "@/services/product.service";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";

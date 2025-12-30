@@ -20,8 +20,8 @@ export function HeroSection() {
   const t = useTranslations("hero");
   const [isImageReady, setIsImageReady] = useState(false);
 
-  // [P15 OPTIMIZATION] Removed redundant manual Image preloading.
-  // Next.js <Image priority /> already handles preloading via <link rel="preload">.
+  // [TỐI ƯU HÓA P15] Đã loại bỏ việc preload hình ảnh thủ công thừa thãi.
+  // Next.js <Image priority /> đã tự động xử lý preload thông qua thẻ <link rel="preload">.
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background pt-28">

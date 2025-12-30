@@ -33,6 +33,7 @@ model User {
   wishlist      Wishlist[]
   blogs         Blog[]
   conversations ChatConversation[]
+  aiChatSessions AiChatSession[]
 
   @@index([email])
 }
@@ -623,4 +624,42 @@ model PerformanceMetric {
 
   @@index([name])
   @@index([createdAt])
+}
+
+// =====================================================================
+// AI CHAT - Tính năng chat với AI sử dụng Google Gemini
+// =====================================================================
+
+model AiChatSession {
+  id        String   @id @default(uuid())
+  userId    String?  // null = guest user
+  guestId   String?  // UUID stored in localStorage for guest
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  messages  AiChatMessage[]
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([guestId])
+  @@index([createdAt])
+}
+
+model AiChatMessage {
+  id        String   @id @default(uuid())
+  sessionId String
+  role      AiChatRole // user | assistant
+  content   String   @db.Text
+  metadata  Json?    // product IDs mentioned, tokens used, etc.
+  createdAt DateTime @default(now())
+
+  session   AiChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([createdAt])
+}
+
+enum AiChatRole {
+  USER
+  ASSISTANT
 }

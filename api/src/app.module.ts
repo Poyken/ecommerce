@@ -67,6 +67,7 @@ import { RedisThrottlerStorageService } from '@core/config/throttler/redis-throt
 import { LoggingInterceptor } from '@core/interceptors/logging.interceptor';
 import { RedisService } from '@core/redis/redis.service';
 import { CacheModule } from '@nestjs/cache-manager';
+import { AiChatModule } from './ai-chat/ai-chat.module';
 import { ChatModule } from './chat/chat.module';
 
 @Module({
@@ -201,6 +202,7 @@ import { ChatModule } from './chat/chat.module';
     WorkerModule,
     ScheduleModule.forRoot(),
     ChatModule,
+    AiChatModule,
   ],
   controllers: [HealthController],
   providers: [

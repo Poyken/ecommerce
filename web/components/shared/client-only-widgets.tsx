@@ -9,6 +9,14 @@ const ChatWidget = dynamic(
   { ssr: false }
 );
 
+const AiChatWidget = dynamic(
+  () =>
+    import("@/features/chat/components/ai-chat-widget").then(
+      (m) => m.AiChatWidget
+    ),
+  { ssr: false }
+);
+
 const SocialProofToast = dynamic(
   () =>
     import("@/components/shared/purchase-toast").then(
@@ -29,7 +37,10 @@ export function ClientOnlyWidgets({
   return (
     <>
       <SocialProofToast />
-      <ChatWidget user={user} accessToken={accessToken} />
+      {/* AI Chat: Only for guests */}
+      {!user && <AiChatWidget user={user} accessToken={accessToken} />}
+      {/* Support Chat: Only for logged-in users */}
+      {user && <ChatWidget user={user} accessToken={accessToken} />}
     </>
   );
 }

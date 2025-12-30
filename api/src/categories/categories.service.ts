@@ -119,15 +119,13 @@ export class CategoriesService extends BaseCrudService<
           : {};
 
         // Use BaseCrudService helper
+        // NOTE: When using `select`, `include` is ignored by Prisma.
+        // So we put _count directly inside select.
         const result = await this.findAllBase(
           page,
           limit,
           where,
-          {
-            _count: {
-              select: { products: true },
-            },
-          },
+          {}, // include - ignored when select is used
           { createdAt: 'desc' },
           {
             id: true,
@@ -137,6 +135,9 @@ export class CategoriesService extends BaseCrudService<
             parentId: true,
             createdAt: true,
             updatedAt: true,
+            _count: {
+              select: { products: true },
+            },
           },
         );
 
