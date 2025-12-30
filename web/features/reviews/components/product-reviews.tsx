@@ -85,9 +85,12 @@ export function ProductReviews({
   const hasFetched = useRef(initialReviews.length > 0);
 
   const fetchData = useCallback(async () => {
-    setLoading(true);
+    await Promise.resolve(); // Move state updates to microtask to avoid sync effect render
     setError(null);
     try {
+      // Only set loading if not already in initial loading state
+      setLoading((prev) => (prev ? prev : true));
+
       const [reviewsRes, eligibilityRes] = await Promise.all([
         getReviewsAction(productId), // Initial fetch (limit 5)
         checkReviewEligibilityAction(productId),
@@ -130,6 +133,7 @@ export function ProductReviews({
   useEffect(() => {
     if (hasFetched.current) return;
     hasFetched.current = true;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 

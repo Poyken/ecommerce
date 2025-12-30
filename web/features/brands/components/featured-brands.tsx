@@ -21,7 +21,7 @@ import { BrandCard } from "@/features/brands/components/brand-card";
 import { Link } from "@/i18n/routing";
 import { fadeInUp, itemScaleVariant, staggerContainer } from "@/lib/animations";
 import { Brand } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -34,7 +34,7 @@ export function FeaturedBrands({ brands }: FeaturedBrandsProps) {
 
   return (
     <section className="container mx-auto px-4 mt-16">
-      <motion.div
+      <m.div
         className="flex justify-between items-end mb-10"
         initial="hidden"
         whileInView="visible"
@@ -62,8 +62,8 @@ export function FeaturedBrands({ brands }: FeaturedBrandsProps) {
             className="group-hover:translate-x-1 transition-transform"
           />
         </Link>
-      </motion.div>
-      <motion.div
+      </m.div>
+      <m.div
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6"
         variants={staggerContainer}
         initial="hidden"
@@ -71,16 +71,16 @@ export function FeaturedBrands({ brands }: FeaturedBrandsProps) {
         viewport={{ once: true, margin: "-50px" }}
       >
         {brands.slice(0, 8).map((brand) => (
-          <motion.div key={brand.id} variants={itemScaleVariant}>
+          <m.div key={brand.id} variants={itemScaleVariant}>
             <BrandCard
               id={brand.id}
               name={brand.name}
               count={brand._count?.products || 0}
               imageUrl={brand.imageUrl || undefined}
             />
-          </motion.div>
+          </m.div>
         ))}
-      </motion.div>
+      </m.div>
     </section>
   );
 }

@@ -1,56 +1,56 @@
 "use client";
 
-
 import {
-    CategoriesSkeleton,
-    ProductsSkeleton,
+  CategoriesSkeleton,
+  ProductsSkeleton,
 } from "@/components/shared/skeletons/home-skeleton";
 import { FeaturedBrands } from "@/features/brands/components/featured-brands";
 import { FeaturedCategories } from "@/features/categories/components/featured-categories";
 import { DealSection } from "@/features/marketing/components/deal-section";
-import { FAQAccordion } from "@/features/marketing/components/faq-accordion";
-import { NewsletterForm } from "@/features/marketing/components/newsletter-form";
-import { TestimonialsCarousel } from "@/features/marketing/components/testimonials-carousel";
 import { HeroSection } from "@/features/products/components/hero-section";
 import { NewArrivals } from "@/features/products/components/new-arrivals";
 import { TrendingProducts } from "@/features/products/components/trending-products";
 import { Link } from "@/i18n/routing";
 import {
-    fadeInLeft,
-    fadeInRight,
-    fadeInUp,
-    scaleUp,
-    zoomIn,
+  fadeInLeft,
+  fadeInRight,
+  fadeInUp,
+  scaleUp,
+  zoomIn,
 } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { Brand, Category, Product } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Suspense } from "react";
 
-/**
- * =====================================================================
- * HOME CONTENT - Nội dung chính của trang chủ
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPOSITION PATTERN:
- * - `HomeContent` đóng vai trò là "Container" component.
- * - Nó tập hợp các section nhỏ hơn (Hero, Featured, Trending...) để tạo thành trang hoàn chỉnh.
- *
- * 2. REACT SUSPENSE & STREAMING:
- * - Mỗi section nặng (cần fetch data) được bọc trong `<Suspense>`.
- * - `fallback`: Hiển thị Skeleton (khung xương loading) trong khi chờ data.
- * - Giúp trang hiển thị ngay lập tức (Instant Loading), các phần nặng sẽ hiện dần sau.
- *
- * 3. DATA PROPS:
- * - Nhận resolved data (không phải Promise) từ server component parent.
- * - Điều này tránh blocking waterfalls khi nhiều component con gọi use() trên cùng một promise.
- * =====================================================================
- */
+// [P8 OPTIMIZATION] Lazy load below-the-fold components
+const TestimonialsCarousel = dynamic(
+  () =>
+    import("@/features/marketing/components/testimonials-carousel").then(
+      (m) => m.TestimonialsCarousel
+    ),
+  { ssr: true }
+);
+
+const FAQAccordion = dynamic(
+  () =>
+    import("@/features/marketing/components/faq-accordion").then(
+      (m) => m.FAQAccordion
+    ),
+  { ssr: true }
+);
+
+const NewsletterForm = dynamic(
+  () =>
+    import("@/features/marketing/components/newsletter-form").then(
+      (m) => m.NewsletterForm
+    ),
+  { ssr: true }
+);
 
 interface HomeContentProps {
   products: Product[];
@@ -76,7 +76,6 @@ export function HomeContent({
       <HeroSection />
 
       <main className="space-y-16 pb-16">
-        {/* 1. Featured Categories */}
         <Suspense
           fallback={
             <div className="container mx-auto px-4 mt-8">
@@ -87,12 +86,10 @@ export function HomeContent({
           <FeaturedCategories categories={categories} />
         </Suspense>
 
-        {/* 1.5 Featured Brands */}
         <Suspense fallback={null}>
           <FeaturedBrands brands={brands} />
         </Suspense>
 
-        {/* 2. Trending Now */}
         <Suspense
           fallback={
             <div className="container mx-auto px-4">
@@ -103,17 +100,15 @@ export function HomeContent({
           <TrendingProducts products={products} />
         </Suspense>
 
-        {/* 3. Deal of the Month */}
-        <motion.div
+        <m.div
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
           variants={zoomIn}
         >
           <DealSection />
-        </motion.div>
+        </m.div>
 
-        {/* 4. New Arrivals */}
         <Suspense
           fallback={
             <div className="container mx-auto px-4">
@@ -124,10 +119,9 @@ export function HomeContent({
           <NewArrivals products={products} />
         </Suspense>
 
-        {/* 5. Promotional Banners - Luxe Style */}
         <section className="container mx-auto px-4 overflow-hidden">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <motion.div
+            <m.div
               className="relative h-[45vh] min-h-[400px] rounded-[2.5rem] overflow-hidden group shadow-2xl"
               initial="hidden"
               whileInView="visible"
@@ -163,8 +157,8 @@ export function HomeContent({
                   />
                 </Link>
               </div>
-            </motion.div>
-            <motion.div
+            </m.div>
+            <m.div
               className="relative h-[45vh] min-h-[400px] rounded-[2.5rem] overflow-hidden group shadow-2xl"
               initial="hidden"
               whileInView="visible"
@@ -200,13 +194,12 @@ export function HomeContent({
                   />
                 </Link>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
-        {/* Stats Section - Luxe Style */}
         <section className="container mx-auto px-4">
-          <motion.div
+          <m.div
             className="grid grid-cols-2 md:grid-cols-4 gap-8"
             initial="hidden"
             whileInView="visible"
@@ -225,7 +218,7 @@ export function HomeContent({
               { label: "globalBrands", value: "50+", color: "primary" },
               { label: "customerSupport", value: "24/7", color: "secondary" },
             ].map((stat, idx) => (
-              <motion.div
+              <m.div
                 key={idx}
                 variants={{
                   hidden: { opacity: 0, y: 30 },
@@ -251,15 +244,14 @@ export function HomeContent({
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
                   {t(stat.label)}
                 </p>
-              </motion.div>
+              </m.div>
             ))}
-          </motion.div>
+          </m.div>
         </section>
 
-        {/* 6. Testimonials - Luxe Style */}
         <section className="bg-foreground/2 py-24 border-y border-foreground/5 overflow-hidden">
           <div className="container mx-auto px-4">
-            <motion.div
+            <m.div
               className="text-center mb-16"
               initial="hidden"
               whileInView="visible"
@@ -272,21 +264,20 @@ export function HomeContent({
               <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic">
                 {t("testimonials.title")}
               </h2>
-            </motion.div>
-            <motion.div
+            </m.div>
+            <m.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeInUp}
             >
               <TestimonialsCarousel />
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
-        {/* 7. FAQ - Luxe Style */}
         <section className="container mx-auto px-4 max-w-4xl py-12">
-          <motion.div
+          <m.div
             className="text-center mb-16"
             initial="hidden"
             whileInView="visible"
@@ -299,19 +290,18 @@ export function HomeContent({
             <h2 className="text-4xl font-black tracking-tighter uppercase italic">
               {t("faq.title")}
             </h2>
-          </motion.div>
-          <motion.div
+          </m.div>
+          <m.div
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
             variants={fadeInUp}
           >
             <FAQAccordion />
-          </motion.div>
+          </m.div>
         </section>
 
-        {/* 8. Newsletter - Luxe Style */}
-        <motion.section
+        <m.section
           className="container mx-auto px-4 py-12"
           initial="hidden"
           whileInView="visible"
@@ -319,13 +309,12 @@ export function HomeContent({
           variants={scaleUp}
         >
           <div className="relative overflow-hidden bg-foreground/2 rounded-[3rem] p-12 md:p-24 text-center border border-foreground/5 shadow-2xl backdrop-blur-xl">
-            {/* Minimalist decorative elements */}
             <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
             <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-secondary/5 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
             <NewsletterForm />
           </div>
-        </motion.section>
+        </m.section>
       </main>
     </div>
   );

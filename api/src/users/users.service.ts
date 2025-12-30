@@ -52,6 +52,42 @@ export class UsersService extends BaseCrudService<
     return this.prisma.user;
   }
 
+  private readonly USER_FULL_SELECT = {
+    id: true,
+    email: true,
+    firstName: true,
+    lastName: true,
+    avatarUrl: true,
+    phone: true,
+    gender: true,
+    birthday: true,
+    isActive: true,
+    createdAt: true,
+    permissions: {
+      select: {
+        permission: {
+          select: { name: true },
+        },
+      },
+    },
+    roles: {
+      select: {
+        role: {
+          select: {
+            name: true,
+            permissions: {
+              select: {
+                permission: {
+                  select: { name: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+
   /**
    * Tạo User mới (Admin tạo).
    * - Hash password trước khi lưu.
@@ -137,18 +173,10 @@ export class UsersService extends BaseCrudService<
 
   async findOne(id: string) {
     const user = await this.findOneBase(id, {
-      // Load full permission rights (Direct + Role-based)
-      permissions: { include: { permission: true } },
-      roles: {
-        include: {
-          role: {
-            include: {
-              permissions: { include: { permission: true } },
-            },
-          },
-        },
+      select: {
+        ...this.USER_FULL_SELECT,
       },
-    });
+    } as any);
 
     return new UserEntity(user);
   }
@@ -220,7 +248,9 @@ export class UsersService extends BaseCrudService<
       // Trả về User đã update
       const updatedUser = await tx.user.findUnique({
         where: { id: userId },
-        include: { roles: { include: { role: true } } },
+        select: {
+          ...this.USER_FULL_SELECT,
+        },
       });
 
       if (!updatedUser) {

@@ -67,6 +67,41 @@ export class AuthService {
     private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
+  private readonly USER_PERMISSION_SELECT = {
+    id: true,
+    email: true,
+    firstName: true,
+    lastName: true,
+    avatarUrl: true,
+    socialId: true,
+    password: true,
+    twoFactorEnabled: true,
+    twoFactorSecret: true,
+    permissions: {
+      select: {
+        permission: {
+          select: { name: true },
+        },
+      },
+    },
+    roles: {
+      select: {
+        role: {
+          select: {
+            name: true,
+            permissions: {
+              select: {
+                permission: {
+                  select: { name: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+
   async register(dto: RegisterDto, fingerprint?: string) {
     const { email, password, firstName, lastName } = dto;
 
@@ -142,18 +177,7 @@ export class AuthService {
 
     let user = await this.prisma.user.findUnique({
       where: { email },
-      include: {
-        permissions: { include: { permission: true } },
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: { include: { permission: true } },
-              },
-            },
-          },
-        },
-      },
+      select: this.USER_PERMISSION_SELECT,
     });
 
     if (user) {
@@ -177,18 +201,7 @@ export class AuthService {
           socialId,
           avatarUrl: picture,
         },
-        include: {
-          permissions: { include: { permission: true } },
-          roles: {
-            include: {
-              role: {
-                include: {
-                  permissions: { include: { permission: true } },
-                },
-              },
-            },
-          },
-        },
+        select: this.USER_PERMISSION_SELECT,
       })) as any;
 
       if (!user) throw new UnauthorizedException('Failed to create user');
@@ -196,16 +209,7 @@ export class AuthService {
 
       const reloaded = await this.prisma.user.findUnique({
         where: { id: user.id },
-        include: {
-          permissions: { include: { permission: true } },
-          roles: {
-            include: {
-              role: {
-                include: { permissions: { include: { permission: true } } },
-              },
-            },
-          },
-        },
+        select: this.USER_PERMISSION_SELECT,
       });
 
       if (!reloaded) throw new UnauthorizedException('Failed to reload user');
@@ -259,18 +263,7 @@ export class AuthService {
 
     const user = await this.prisma.user.findUnique({
       where: { email },
-      include: {
-        permissions: { include: { permission: true } },
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: { include: { permission: true } },
-              },
-            },
-          },
-        },
-      },
+      select: this.USER_PERMISSION_SELECT,
     });
 
     if (!user) {
@@ -322,18 +315,7 @@ export class AuthService {
   async verify2FALogin(userId: string, token: string, fingerprint?: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        permissions: { include: { permission: true } },
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: { include: { permission: true } },
-              },
-            },
-          },
-        },
-      },
+      select: this.USER_PERMISSION_SELECT,
     });
 
     if (
@@ -414,18 +396,7 @@ export class AuthService {
 
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        permissions: { include: { permission: true } },
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: { include: { permission: true } },
-              },
-            },
-          },
-        },
-      },
+      select: this.USER_PERMISSION_SELECT,
     });
 
     if (!user) {
@@ -501,18 +472,9 @@ export class AuthService {
   async getMe(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        permissions: { include: { permission: true } },
+      select: {
+        ...this.USER_PERMISSION_SELECT,
         addresses: true,
-        roles: {
-          include: {
-            role: {
-              include: {
-                permissions: { include: { permission: true } },
-              },
-            },
-          },
-        },
       },
     });
 

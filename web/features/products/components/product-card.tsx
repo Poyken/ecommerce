@@ -20,14 +20,20 @@
 import { MotionButton } from "@/components/shared/motion-button";
 import { Button } from "@/components/ui/button";
 import { useFeatureFlags } from "@/features/admin/hooks/use-feature-flags";
-import { ProductQuickViewDialog } from "@/features/products/components/product-quick-view-dialog";
 import { useStock } from "@/features/products/hooks/use-stock";
 import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
 import { ProductOption, Sku } from "@/types/models";
 import { Eye } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { memo, useEffect, useState } from "react";
+import dynamic from "next/dynamic";
+import { memo, useCallback, useEffect, useState } from "react";
+import { preload } from "swr";
 import { ProductCardBase } from "./product-card-base";
+const ProductQuickViewDialog = dynamic(() =>
+  import("@/features/products/components/product-quick-view-dialog").then(
+    (mod) => mod.ProductQuickViewDialog
+  )
+);
 
 // Định nghĩa Props cho component
 interface ProductCardProps {
@@ -83,6 +89,16 @@ export const ProductCard = memo(function ProductCard({
 
   // Hook kiểm tra Feature Flags
   const { isEnabled } = useFeatureFlags();
+
+  // 1.1 LOGIC PRE-FETCHING (Tối ưu trải nghiệm)
+  // Khi user hover vào card, ta tải trước thông tin chi tiết
+  // Giúp QuickView hoặc Navigation trang sau nhanh tức thì
+  const prefetchProduct = useCallback(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    preload(`${apiUrl}/products/${id}`, (url) =>
+      fetch(url).then((res) => res.json())
+    );
+  }, [id]);
 
   // 2. XỬ LÝ LOGIC BUSINESS
   const defaultSku = skus?.[0];
@@ -144,6 +160,7 @@ export const ProductCard = memo(function ProductCard({
           wishlist: wishlistAction,
           quickView: quickViewAction,
         }}
+        onMouseEnter={prefetchProduct}
       />
 
       <ProductQuickViewDialog

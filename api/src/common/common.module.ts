@@ -1,8 +1,9 @@
-import { Global, Module } from '@nestjs/common';
-import { RedisModule } from '@core/redis/redis.module';
 import { CacheService } from '@core/cache/cache.service';
-import { EmailService } from '@integrations/email/email.service';
 import { LoggerService } from '@core/logger/logger.service';
+import { RedisModule } from '@core/redis/redis.module';
+import { EmailService } from '@integrations/email/email.service';
+import { Global, Module } from '@nestjs/common';
+import { CacheL1Service } from './cache-l1.service';
 
 /**
  * =====================================================================
@@ -25,7 +26,7 @@ import { LoggerService } from '@core/logger/logger.service';
 @Global()
 @Module({
   imports: [RedisModule],
-  providers: [LoggerService, CacheService, EmailService],
-  exports: [LoggerService, CacheService, EmailService],
+  providers: [LoggerService, CacheService, EmailService, CacheL1Service],
+  exports: [LoggerService, CacheService, EmailService, CacheL1Service],
 })
 export class CommonModule {}

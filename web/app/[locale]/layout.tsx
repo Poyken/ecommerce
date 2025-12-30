@@ -1,9 +1,12 @@
+import { PerformanceTracker } from "@/components/shared/performance-tracker";
 import { SmoothScroll } from "@/components/shared/smooth-scroll";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { FeatureFlagProvider } from "@/features/admin/hooks/use-feature-flags";
 import { AuthProvider } from "@/features/auth/providers/auth-provider";
 import { routing } from "@/i18n/routing";
+import { MotionProvider } from "@/providers/motion-provider";
+import { SWRProvider } from "@/providers/swr-provider";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -78,23 +81,28 @@ async function RootProviders({
 
   return (
     <NextIntlClientProvider messages={messages} locale={locale}>
-      <AuthProvider
-        initialPermissions={initialPermissions}
-        isAuthenticated={!!accessToken}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+      <SWRProvider>
+        <AuthProvider
+          initialPermissions={initialPermissions}
+          isAuthenticated={!!accessToken}
         >
-          <FeatureFlagProvider>
-            <SmoothScroll />
-            {children}
-            <Toaster />
-          </FeatureFlagProvider>
-        </ThemeProvider>
-      </AuthProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <FeatureFlagProvider>
+              <MotionProvider>
+                <PerformanceTracker />
+                <SmoothScroll />
+                {children}
+                <Toaster />
+              </MotionProvider>
+            </FeatureFlagProvider>
+          </ThemeProvider>
+        </AuthProvider>
+      </SWRProvider>
     </NextIntlClientProvider>
   );
 }

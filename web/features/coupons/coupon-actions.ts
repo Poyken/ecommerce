@@ -57,3 +57,21 @@ export async function validateCouponAction(code: string, amount: number) {
     };
   }
 }
+
+/**
+ * [P17 PARITY] Lấy danh sách các mã giảm giá công khai đang khả dụng.
+ * Giúp người dùng dễ dàng chọn mã mà không cần nhớ code.
+ */
+export async function getAvailableCouponsAction() {
+  try {
+    const res = await http<ApiResponse<Coupon[]>>("/coupons/available", {
+      skipAuth: true, // Ai cũng có thể xem danh sách khuyến mãi
+    });
+    return { success: true, data: res.data || [] };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to fetch coupons",
+    };
+  }
+}

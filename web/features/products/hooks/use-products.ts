@@ -41,17 +41,8 @@ interface GetProductsParams {
   includeSkus?: string;
 }
 
-// =============================================================================
-// 🔧 FETCHER FUNCTION
-// =============================================================================
-
-const fetcher = async (url: string): Promise<ApiResponse<Product[]>> => {
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error("Failed to fetch products");
-  }
-  return res.json();
-};
+// REMOVED local fetcher to use global SWR fetcher from SWRProvider
+// which already uses the optimized http utility.
 
 // =============================================================================
 // 🛒 USE PRODUCTS HOOK
@@ -80,21 +71,8 @@ export function useProducts(params?: GetProductsParams) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   const url = `${apiUrl}/products?${searchParams.toString()}`;
 
-  const { data, error, isLoading, isValidating, mutate } = useSWR<
-    ApiResponse<Product[]>
-  >(url, fetcher, {
-    // Không refetch khi focus lại tab (tránh request không cần thiết)
-    revalidateOnFocus: false,
-
-    // Giữ data cũ trong 60 giây (stale time)
-    dedupingInterval: 60000,
-
-    // Không refetch tự động mỗi interval
-    refreshInterval: 0,
-
-    // Giữ data cũ khi đang revalidate
-    keepPreviousData: true,
-  });
+  const { data, error, isLoading, isValidating, mutate } =
+    useSWR<ApiResponse<Product[]>>(url);
 
   return {
     products: data?.data || [],
@@ -120,18 +98,7 @@ export function useProduct(id: string | null) {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
   const url = id ? `${apiUrl}/products/${id}` : null;
 
-  const { data, error, isLoading } = useSWR<{ data: Product }>(
-    url,
-    async (url: string) => {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Failed to fetch product");
-      return res.json();
-    },
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 300000, // 5 phút cho product detail
-    }
-  );
+  const { data, error, isLoading } = useSWR<{ data: Product }>(url);
 
   return {
     product: data?.data || null,
@@ -153,18 +120,7 @@ export function useCategories() {
 
   const { data, error, isLoading } = useSWR<{
     data: import("@/types/models").Category[];
-  }>(
-    url,
-    async (url: string) => {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Failed to fetch categories");
-      return res.json();
-    },
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 3600000, // 1 giờ
-    }
-  );
+  }>(url);
 
   return {
     categories: data?.data || [],
@@ -186,18 +142,7 @@ export function useBrands() {
 
   const { data, error, isLoading } = useSWR<{
     data: import("@/types/models").Brand[];
-  }>(
-    url,
-    async (url: string) => {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Failed to fetch brands");
-      return res.json();
-    },
-    {
-      revalidateOnFocus: false,
-      dedupingInterval: 3600000, // 1 giờ
-    }
-  );
+  }>(url);
 
   return {
     brands: data?.data || [],

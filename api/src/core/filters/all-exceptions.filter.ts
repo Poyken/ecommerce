@@ -46,20 +46,39 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    const exceptionResponse =
+      exception instanceof HttpException ? exception.getResponse() : null;
+
+    // Standardized Error Response Structure
     const responseBody = {
-      statusCode: httpStatus,
-      timestamp: new Date().toISOString(),
-      path: httpAdapter.getRequestUrl(ctx.getRequest()),
-      message:
-        exception instanceof HttpException
-          ? exception.getResponse()
-          : 'Internal Server Error',
+      success: false,
+      error: {
+        statusCode: httpStatus,
+        message:
+          typeof exceptionResponse === 'object' &&
+          (exceptionResponse as any).message
+            ? (exceptionResponse as any).message
+            : exception instanceof Error
+              ? exception.message
+              : 'Internal Server Error',
+        code:
+          exception instanceof HttpException
+            ? exception.name
+            : 'INTERNAL_SERVER_ERROR',
+        timestamp: new Date().toISOString(),
+        path: httpAdapter.getRequestUrl(ctx.getRequest()),
+      },
     };
 
-    if (httpStatus === (HttpStatus.INTERNAL_SERVER_ERROR as number)) {
+    // Log critical errors with full stack trace
+    if (httpStatus >= 500) {
       this.logger.error(
-        `Exception: ${exception instanceof Error ? exception.message : String(exception)}`,
+        `[StandardError] ${httpAdapter.getRequestMethod(ctx.getRequest())} ${responseBody.error.path} - ${responseBody.error.message}`,
         exception instanceof Error ? exception.stack : '',
+      );
+    } else {
+      this.logger.warn(
+        `[StandardError] ${httpAdapter.getRequestMethod(ctx.getRequest())} ${responseBody.error.path} - ${responseBody.error.message}`,
       );
     }
 

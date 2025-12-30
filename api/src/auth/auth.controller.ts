@@ -18,7 +18,21 @@ import type { Response } from 'express';
 
 /**
  * =====================================================================
- * AUTH CONTROLLER - Cổng xác thực và quản lý tài khoản
+ * AUTH CONTROLLER - CỔNG XÁC THỰC & QUẢN LÝ TÀI KHOẢN
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. HTTP-ONLY COOKIES:
+ * - Để bảo mật, `refreshToken` không được trả về trong JSON body mà được set vào HttpOnly Cookie.
+ * - Điều này ngăn chặn việc JavaScript (XSS) có thể đọc được token, giúp hệ thống an toàn hơn.
+ *
+ * 2. DOUBLE SUBMIT COOKIE (CSRF):
+ * - Hệ thống sử dụng CSRF protection. Khi đăng nhập/đổi session, ta reset và set lại CSRF cookie.
+ *
+ * 3. SOCIAL LOGIN FLOW:
+ * - Với Google/Facebook, Backend nhận callback -> Tạo User -> Redirect kèm `accessToken` về frontend.
+ * - Sau khi redirect, frontend sẽ dùng token này để thiết lập session.
  * =====================================================================
  */
 import {

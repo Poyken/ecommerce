@@ -1,4 +1,5 @@
 import { ClientOnlyWidgets } from "@/components/shared/client-only-widgets";
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import {
   NotificationProvider,
   type Notification,
@@ -102,7 +103,9 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
           initialCartCount={initialCartCount}
           initialWishlistCount={initialWishlistCount}
         />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1">
+          <ErrorBoundary name="ShopContent">{children}</ErrorBoundary>
+        </main>
         <ConditionalFooter />
         <MobileBottomNav
           initialUser={user}

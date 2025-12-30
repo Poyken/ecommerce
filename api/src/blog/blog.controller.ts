@@ -1,3 +1,8 @@
+import { GetUser } from '@/auth/decorators/get-user.decorator';
+import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
+import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
 import {
   Body,
   Controller,
@@ -22,15 +27,29 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import type { User } from '@prisma/client';
-import { GetUser } from '@/auth/decorators/get-user.decorator';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
-import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
 import { BlogService } from './blog.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 
+/**
+ * =====================================================================
+ * BLOG CONTROLLER - QUẢN LÝ BÀI VIẾT (TIN TỨC)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MULTIPART FORM DATA (Tải lên hình ảnh):
+ * - API dùng `FileInterceptor` để nhận file ảnh bìa gửi từ Client.
+ * - Ảnh sẽ được đẩy lên Cloudinary trước, sau đó link ảnh mới được lưu vào Database.
+ *
+ * 2. OWNER-STRICT UPDATE (Bảo vệ bài viết):
+ * - Hệ thống cho phép cả User (thành viên) viết blog.
+ * - Tuy nhiên, Service sẽ kiểm tra: Nếu bạn không phải Admin và cũng không phải chủ bài viết -> Bạn sẽ bị từ chối cập nhật.
+ *
+ * 3. PUBLISH FLOW:
+ * - Admin có quyền tối cao dùng API `/toggle-publish` để cho phép bài viết hiển thị hoặc ẩn đi.
+ * =====================================================================
+ */
 @ApiTags('blogs')
 @Controller('blogs')
 export class BlogController {

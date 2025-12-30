@@ -3,13 +3,24 @@ import { ConfigService } from '@nestjs/config';
 import Redis from 'ioredis';
 
 /**
- * Enhanced Redis Service with Distributed Caching Patterns
+ * =====================================================================
+ * ENHANCED REDIS SERVICE - QUẢN LÝ CƠ SỞ DỮ LIỆU TẠM THỜI (CACHE)
+ * =====================================================================
  *
- * Features:
- * - Connection pooling for high throughput
- * - Distributed cache invalidation
- * - Cache warming strategies
- * - Circuit breaker pattern
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CACHE-ASIDE PATTERN:
+ * - Hệ thống sẽ kiểm tra trong Redis trước. Nếu có dữ liệu (`Cache Hit`) -> Trả về ngay.
+ * - Nếu không có (`Cache Miss`) -> Lấy từ Database -> Lưu ngược lại vào Redis -> Trả về.
+ *
+ * 2. CIRCUIT BREAKER (Cầu chì bảo vệ):
+ * - Nếu Redis bị sập (lỗi kết nối liên tục), "cầu chì" sẽ ngắt.
+ * - Hệ thống sẽ tự động bypass Redis và gọi trực tiếp vào Database để web không bị chết hoàn toàn.
+ *
+ * 3. PUB/SUB (Thông báo phân tán):
+ * - Khi dữ liệu ở Server A thay đổi, nó sẽ `Publish` một tin nhắn.
+ * - Server B (nếu đang chạy song song) sẽ `Subscribe` để biết đường xóa Cache cũ của mình đi.
+ * =====================================================================
  */
 
 @Injectable()

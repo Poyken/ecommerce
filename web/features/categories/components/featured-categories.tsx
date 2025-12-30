@@ -24,7 +24,7 @@ import { CategoryCard } from "@/features/categories/components/category-card";
 import { Link } from "@/i18n/routing";
 import { fadeInUp, itemScaleVariant, staggerContainer } from "@/lib/animations";
 import { Category } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -37,7 +37,7 @@ export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
 
   return (
     <section className="container mx-auto px-4 mt-8">
-      <motion.div
+      <m.div
         className="flex justify-between items-end mb-10"
         initial="hidden"
         whileInView="visible"
@@ -65,8 +65,8 @@ export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
             className="group-hover:translate-x-1 transition-transform"
           />
         </Link>
-      </motion.div>
-      <motion.div
+      </m.div>
+      <m.div
         className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6"
         variants={staggerContainer}
         initial="hidden"
@@ -74,16 +74,16 @@ export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
         viewport={{ once: true, margin: "-50px" }}
       >
         {categories.slice(0, 8).map((category) => (
-          <motion.div key={category.id} variants={itemScaleVariant}>
+          <m.div key={category.id} variants={itemScaleVariant}>
             <CategoryCard
               id={category.id}
               name={category.name}
               count={category.productCount || 0}
               imageUrl={category.imageUrl || undefined}
             />
-          </motion.div>
+          </m.div>
         ))}
-      </motion.div>
+      </m.div>
     </section>
   );
 }

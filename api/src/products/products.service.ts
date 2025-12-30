@@ -139,7 +139,16 @@ export class ProductsService {
    * Lấy danh sách sản phẩm với bộ lọc nâng cao (Search, Filter, Sort, Pagination).
    */
   async findAll(query: FilterProductDto) {
-    const cacheKey = `products:filter:${JSON.stringify(query)}`;
+    // [P9 OPTIMIZATION] Canonicalize query to increase cache hits
+    // Ensures ?cat=1&brand=2 and ?brand=2&cat=1 use the same cache key
+    const sortedQuery = Object.keys(query)
+      .sort()
+      .reduce((acc, key) => {
+        acc[key] = (query as any)[key];
+        return acc;
+      }, {} as any);
+
+    const cacheKey = `products:filter:${JSON.stringify(sortedQuery)}`;
 
     return this.cacheService.getOrSet(
       cacheKey,

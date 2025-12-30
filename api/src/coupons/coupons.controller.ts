@@ -20,6 +20,22 @@ import { UpdateCouponDto } from './dto/update-coupon.dto';
 
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+/**
+ * =====================================================================
+ * COUPONS CONTROLLER - QUẢN LÝ MÃ GIẢM GIÁ
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. COUPON VALIDATION (Kiểm tra mã):
+ * - API `/validate` được Frontend gọi liên tục khi khách hàng nhập mã giảm giá.
+ * - Nó kiểm tra: Mã có tồn tại không? Còn hạn không? Có đủ điều kiện giá trị đơn hàng tối thiểu không?
+ *
+ * 2. PUBLIC vs PRIVATE:
+ * - `available`: Trả về danh sách mã giảm giá công khai mà ai cũng thấy. Được CACHE 5 phút để tối ưu hiệu năng.
+ * - Các hàm CRUD khác: Chỉ Admin mới có quyền thực hiện.
+ * =====================================================================
+ */
 @ApiTags('Coupons')
 @Controller('coupons')
 export class CouponsController {

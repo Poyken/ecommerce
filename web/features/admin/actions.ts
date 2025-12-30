@@ -96,7 +96,10 @@ async function handleAdminAction<T>(
 
 /**
  * Helper to safely unwrap paginated data from API responses.
- * Backend sometimes returns { data: Entity[] } and sometimes { data: { data: Entity[], meta: ... } }.
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ * - Backend thỉnh thoảng trả về `{ data: items[] }`, thỉnh thoảng lại lồng thêm `{ data: { data: items[], meta: ... } }`.
+ * - Hàm này giúp "phẳng hóa" (unwrap) dữ liệu để frontend luôn nhận được một format chuẩn nhất, tránh lỗi `undefined` khi render.
  */
 function safeUnwrapApiResponse<T>(res: any): ApiResponse<T[]> {
   if (!res || res.error) return res;

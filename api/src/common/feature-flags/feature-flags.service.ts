@@ -1,7 +1,31 @@
+/**
+ * =====================================================================
+ * FEATURE FLAGS SERVICE - QUẢN LÝ TÍNH NĂNG ĐỘNG (BẬT/TẮT TỨC THÌ)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MULTI-LEVEL CACHING (Cấu trúc cache đa tầng):
+ * - Vì Feature Flag được check liên tục ở mọi nơi, ta dùng cache 2 lớp để tối ưu:
+ *   + Lớp 1 (L1 - RAM): Lưu trên bộ nhớ của Service (15 giây). Cực nhanh, không tốn network.
+ *   + Lớp 2 (L2 - Redis): Lưu tập trung cho toàn bộ server (1 giờ).
+ *   + Cuối cùng mới đến Database.
+ *
+ * 2. TARGETING RULES (Quy tắc nhắm mục tiêu):
+ * - Hệ thống cho phép bật tính năng theo:
+ *   + Environment: Chỉ bật ở Staging, chưa bật ở Production.
+ *   + User IDs: Chỉ bật cho một nhóm tester.
+ *   + Percentage (%) Rollout: Bật cho 10% người dùng ngẫu nhiên để thử nghiệm (Canary Release).
+ *
+ * 3. FALLBACK (Cơ chế dự phòng):
+ * - Nếu hệ thống cache/DB lỗi, mặc định sẽ trả về `false` (Disabled) để đảm bảo an toàn.
+ * =====================================================================
+ */
+import { PrismaService } from '@core/prisma/prisma.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import type { Cache } from 'cache-manager';
-import { PrismaService } from '@core/prisma/prisma.service';
+import { CacheL1Service } from '../cache-l1.service';
 import {
   CreateFeatureFlagDto,
   UpdateFeatureFlagDto,
@@ -15,6 +39,7 @@ export class FeatureFlagsService {
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly cacheL1: CacheL1Service,
   ) {}
 
   /**
@@ -25,22 +50,31 @@ export class FeatureFlagsService {
     context?: { userId?: string; environment?: string },
   ): Promise<boolean> {
     try {
-      // 1. Check Cache first
-      const cached = await this.cacheManager.get<any>(
-        `${this.CACHE_PREFIX}${key}`,
-      );
-      let flag = cached;
+      const cacheKey = `${this.CACHE_PREFIX}${key}`;
+
+      // 1. Check L1 (RAM) Cache first
+      const l1Cached = this.cacheL1.get<any>(cacheKey);
+      let flag = l1Cached;
 
       if (!flag) {
-        // 2. Fallback to DB
-        flag = await this.prisma.featureFlag.findUnique({
-          where: { key },
-        });
+        // 2. Check L2 (Redis) Cache
+        const cached = await this.cacheManager.get<any>(cacheKey);
+        flag = cached;
 
-        if (!flag) return false;
+        if (!flag) {
+          // 3. Fallback to DB
+          flag = await this.prisma.featureFlag.findUnique({
+            where: { key },
+          });
 
-        // 3. Cache it (TTL 1 minute for flags to keep them relatively fresh but fast)
-        await this.cacheManager.set(`${this.CACHE_PREFIX}${key}`, flag, 60000);
+          if (!flag) return false;
+
+          // Cache in L2 (Redis) for 1 hour
+          await this.cacheManager.set(cacheKey, flag, 3600000);
+        }
+
+        // 4. Cache in L1 (RAM) for 15 seconds
+        this.cacheL1.set(cacheKey, flag, 15);
       }
 
       // 4. Basic check
@@ -100,7 +134,9 @@ export class FeatureFlagsService {
     const flag = await this.prisma.featureFlag.create({
       data: dto,
     });
-    await this.cacheManager.del(`${this.CACHE_PREFIX}${dto.key}`);
+    const cacheKey = `${this.CACHE_PREFIX}${dto.key}`;
+    await this.cacheManager.del(cacheKey);
+    this.cacheL1.delete(cacheKey);
     return flag;
   }
 
@@ -112,7 +148,9 @@ export class FeatureFlagsService {
       where: { key },
       data: dto,
     });
-    await this.cacheManager.del(`${this.CACHE_PREFIX}${key}`);
+    const cacheKey = `${this.CACHE_PREFIX}${key}`;
+    await this.cacheManager.del(cacheKey);
+    this.cacheL1.delete(cacheKey);
     return flag;
   }
 
@@ -121,7 +159,9 @@ export class FeatureFlagsService {
    */
   async remove(key: string) {
     await this.prisma.featureFlag.delete({ where: { key } });
-    await this.cacheManager.del(`${this.CACHE_PREFIX}${key}`);
+    const cacheKey = `${this.CACHE_PREFIX}${key}`;
+    await this.cacheManager.del(cacheKey);
+    this.cacheL1.delete(cacheKey);
     return { success: true };
   }
 

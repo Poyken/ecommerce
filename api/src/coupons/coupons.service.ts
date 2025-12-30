@@ -10,6 +10,25 @@ import { BaseCrudService } from '../common/base-crud.service';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
 
+/**
+ * =====================================================================
+ * COUPONS SERVICE - QUẢN LÝ MÃ GIẢM GIÁ
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. VALIDATION LOGIC:
+ * - Khi kiểm tra mã giảm giá, ta cần check nhiều điều kiện: `isActive`, `startDate`, `endDate`, `usageLimit`, và `minOrderAmount`.
+ * - Thuật toán tính toán số tiền giảm giá dựa trên loại: PERCENTAGE (Phần trăm) hoặc FIXED (Số tiền cố định).
+ * - Nếu dùng % thì phải cẩn thận với `maxDiscountAmount` (giới hạn giảm tối đa).
+ *
+ * 2. TIMEZONE LENIENCE (Độ trễ thời gian):
+ * - Hệ thống thêm một buffer nhỏ (2 phút) khi so sánh thời gian để tránh lỗi lệch múi giờ giữa client và server (Clock Skew).
+ *
+ * 3. USAGE COUNTER (Biến đếm):
+ * - Mỗi khi đơn hàng hoàn tất, `usedCount` sẽ tăng lên. Khi đạt `usageLimit`, mã sẽ không còn hiệu lực.
+ * =====================================================================
+ */
 @Injectable()
 export class CouponsService extends BaseCrudService<
   Coupon,

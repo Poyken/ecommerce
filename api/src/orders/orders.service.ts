@@ -118,18 +118,22 @@ export class OrdersService {
           priceAtPurchase: number;
         }[] = [];
 
+        // [P10 OPTIMIZATION] Batch fetch SKUs to avoid n+1 inside loop
+        const uniqueSkuIds = [...new Set(itemsToProcess.map((i) => i.skuId))];
+        const skus = await tx.sku.findMany({
+          where: { id: { in: uniqueSkuIds } },
+          select: {
+            id: true,
+            skuCode: true,
+            stock: true,
+            status: true,
+            price: true,
+          },
+        });
+        const skuMap = new Map(skus.map((s) => [s.id, s]));
+
         for (const item of itemsToProcess) {
-          // ✅ Re-fetch SKU with latest stock (atomic read)
-          const sku = await tx.sku.findUnique({
-            where: { id: item.skuId },
-            select: {
-              id: true,
-              skuCode: true,
-              stock: true,
-              status: true,
-              price: true,
-            },
-          });
+          const sku = skuMap.get(item.skuId);
 
           if (!sku) {
             throw new BadRequestException(
@@ -426,23 +430,52 @@ export class OrdersService {
   async findOne(id: string, userId: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        userId: true,
+        totalAmount: true,
+        status: true,
+        paymentStatus: true,
+        paymentMethod: true,
+        recipientName: true,
+        phoneNumber: true,
+        shippingAddress: true,
+        shippingFee: true,
+        shippingCode: true,
+        transactionId: true,
+        createdAt: true,
+        updatedAt: true,
+        cancellationReason: true,
         items: {
-          include: {
+          select: {
+            id: true,
+            quantity: true,
+            priceAtPurchase: true,
             sku: {
-              include: {
+              select: {
+                id: true,
+                skuCode: true,
+                imageUrl: true,
                 product: {
-                  include: {
+                  select: {
+                    id: true,
+                    name: true,
+                    slug: true,
                     images: {
+                      select: { url: true, alt: true },
                       orderBy: { displayOrder: 'asc' },
                       take: 1,
                     },
                   },
                 },
                 optionValues: {
-                  include: {
+                  select: {
                     optionValue: {
-                      include: { option: true },
+                      select: {
+                        id: true,
+                        value: true,
+                        option: { select: { name: true } },
+                      },
                     },
                   },
                 },
@@ -528,14 +561,48 @@ export class OrdersService {
   async findOneAdmin(id: string) {
     const order = await this.prisma.order.findUnique({
       where: { id },
-      include: {
+      select: {
+        id: true,
+        userId: true,
+        status: true,
+        totalAmount: true,
+        shippingFee: true,
+        recipientName: true,
+        phoneNumber: true,
+        shippingAddress: true,
+        paymentMethod: true,
+        paymentStatus: true,
+        transactionId: true,
+        shippingCode: true,
+        ghnStatus: true,
+        createdAt: true,
+        updatedAt: true,
+        cancellationReason: true,
+        user: {
+          select: {
+            id: true,
+            email: true,
+            firstName: true,
+            lastName: true,
+            avatarUrl: true,
+          },
+        },
         items: {
-          include: {
+          select: {
+            id: true,
+            quantity: true,
+            priceAtPurchase: true,
             sku: {
-              include: {
+              select: {
+                id: true,
+                skuCode: true,
+                price: true,
                 product: {
-                  include: {
+                  select: {
+                    id: true,
+                    name: true,
                     images: {
+                      select: { url: true, alt: true },
                       orderBy: { displayOrder: 'asc' },
                       take: 1,
                     },
@@ -545,7 +612,6 @@ export class OrdersService {
             },
           },
         },
-        user: true,
       },
     });
     if (!order) throw new NotFoundException('Không tìm thấy đơn hàng');

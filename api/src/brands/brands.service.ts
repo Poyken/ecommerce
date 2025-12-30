@@ -11,12 +11,17 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
 
 /**
  * =====================================================================
- * BRANDS SERVICE - Dịch vụ quản lý thương hiệu
+ * BRANDS SERVICE - QUẢN LÝ THƯƠNG HIỆU
  * =====================================================================
  *
- * 📚 UPDATED:
- * - Refactored to use `BaseCrudService` for standardization.
- * - Custom logic (conflict checks, constraints) remains here.
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CRUD STANDARDIZATION:
+ * - `BrandsService` kế thừa `BaseCrudService` để tái sử dụng các hàm tìm kiếm, phân trang chuẩn.
+ *
+ * 2. BUSINESS CONSTRAINTS (Ràng buộc nghiệp vụ):
+ * - Trước khi tạo mới: Kiểm tra trùng tên thương hiệu (Conflict check).
+ * - Trước khi xóa: Phải kiểm tra xem thương hiệu đó có đang chứa sản phẩm nào không. Nếu có -> KHÔNG được xóa để đảm bảo toàn vẹn dữ liệu (Integrity).
  * =====================================================================
  */
 
@@ -73,6 +78,13 @@ export class BrandsService extends BaseCrudService<
         },
       },
       { name: 'asc' }, // Order by Name A-Z
+      {
+        id: true,
+        name: true,
+        imageUrl: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     );
   }
 

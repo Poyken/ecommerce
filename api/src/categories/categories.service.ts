@@ -129,6 +129,15 @@ export class CategoriesService extends BaseCrudService<
             },
           },
           { createdAt: 'desc' },
+          {
+            id: true,
+            name: true,
+            slug: true,
+            imageUrl: true,
+            parentId: true,
+            createdAt: true,
+            updatedAt: true,
+          },
         );
 
         // Map count to productCount

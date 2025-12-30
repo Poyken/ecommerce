@@ -2,6 +2,22 @@ import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ShippingService } from './shipping.service';
 
+/**
+ * =====================================================================
+ * SHIPPING CONTROLLER - API GIAO HÀNG & WEBHOOK
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. ĐỊA CHÍNH (Geo-location):
+ * - Cung cấp API để frontend lấy danh sách Tỉnh/Huyện/Xã chuẩn từ đối tác GHN.
+ * - Giúp user chọn địa chỉ chính xác, tránh việc nhập tay sai sót.
+ *
+ * 2. WEBHOOK (CỰC KỲ QUAN TRỌNG):
+ * - Khi trạng thái đơn hàng thay đổi trên hệ thống GHN (Đang giao, Đã giao...), GHN sẽ gọi vào API `/webhook` này.
+ * - Hệ thống tự động cập nhật trạng thái đơn hàng trong DB mà không cần Admin phải làm thủ công.
+ * =====================================================================
+ */
 @ApiTags('Shipping')
 @Controller('shipping')
 export class ShippingController {

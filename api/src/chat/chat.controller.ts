@@ -4,6 +4,21 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/permissions.guard';
 import { ChatService } from './chat.service';
 
+/**
+ * =====================================================================
+ * CHAT CONTROLLER - QUẢN LÝ LỊCH SỬ HỘI THOẠI
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. ADMIN VIEW:
+ * - Admin cần API `/conversations` để xem danh sách tất cả các khách hàng đang chờ hỗ trợ.
+ * - API `/history/:userId` cho phép Admin xem lại toàn bộ tin nhắn cũ với một khách hàng cụ thể.
+ *
+ * 2. USER VIEW:
+ * - API `/my-history` giúp khách hàng load lại tin nhắn của chính họ khi F5 trang web hoặc chuyển đổi thiết bị.
+ * =====================================================================
+ */
 @Controller('chat')
 @UseGuards(JwtAuthGuard)
 export class ChatController {

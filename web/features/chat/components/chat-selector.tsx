@@ -164,7 +164,7 @@ export function ChatSelector({
     activeTab,
     hasMoreProducts,
     hasMoreOrders,
-    search,
+    debouncedSearch,
     fetchProducts,
     fetchOrders,
   ]);

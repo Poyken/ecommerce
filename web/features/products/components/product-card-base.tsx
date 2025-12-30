@@ -4,9 +4,10 @@ import { CompactRating } from "@/components/molecules/review-preview";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import { Link } from "@/i18n/routing";
 import { cn, formatCurrency } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { ReactNode, useCallback } from "react";
 
 export interface ProductCardBaseProps {
   id: string;
@@ -17,14 +18,14 @@ export interface ProductCardBaseProps {
   category?: string;
   rating?: number;
   reviewCount?: number;
-  
+
   // State flags
   isNew?: boolean;
   isHot?: boolean;
   isSale?: boolean;
   isLowStock?: boolean;
   isCompact?: boolean;
-  
+
   // Actions (Slots for flexibility)
   actions?: {
     wishlist?: ReactNode;
@@ -34,6 +35,7 @@ export interface ProductCardBaseProps {
   };
 
   className?: string;
+  onMouseEnter?: () => void;
 }
 
 export function ProductCardBase({
@@ -52,10 +54,18 @@ export function ProductCardBase({
   isCompact = false,
   actions,
   className,
+  onMouseEnter,
 }: ProductCardBaseProps) {
   const t = useTranslations("productCard");
+  const router = useRouter();
 
-  // Discount calculation moved to pure logic or passed in, 
+  // [P10 OPTIMIZATION] Predictive prefetching on hover
+  const handleMouseEnter = useCallback(() => {
+    router.prefetch(`/products/${id}` as any);
+    if (onMouseEnter) onMouseEnter();
+  }, [id, router, onMouseEnter]);
+
+  // Discount calculation moved to pure logic or passed in,
   // but simple calculation here is fine for display component.
   const discountPercentage =
     originalPrice && originalPrice > price
@@ -71,6 +81,7 @@ export function ProductCardBase({
         !isCompact && "hover:-translate-y-2",
         className
       )}
+      onMouseEnter={handleMouseEnter}
     >
       {/* A. IMAGE CONTAINER */}
       <div className="relative aspect-4/5 overflow-hidden bg-neutral-50 dark:bg-neutral-900">
@@ -97,36 +108,46 @@ export function ProductCardBase({
           )}
         >
           {isNew && (
-            <span className="w-fit bg-accent/90 text-accent-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg">
+            <span
+              key="badge-new"
+              className="w-fit bg-accent/90 text-accent-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg"
+            >
               {t("new")}
             </span>
           )}
 
           {isLowStock && (
-            <motion.span
+            <m.span
+              key="badge-low-stock"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               className="w-fit bg-orange-500/90 text-white text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg animate-pulse"
             >
               {t("lowStock") || "Low Stock"}
-            </motion.span>
+            </m.span>
           )}
 
           {!isNew && isHot && (
-            <span className="w-fit bg-primary/90 text-primary-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg">
+            <span
+              key="badge-hot"
+              className="w-fit bg-primary/90 text-primary-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg"
+            >
               {t("hot")}
             </span>
           )}
 
           {!isNew && !isHot && isSale && discountPercentage > 0 && (
-            <span className="w-fit bg-destructive/90 text-destructive-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg">
+            <span
+              key="badge-sale"
+              className="w-fit bg-destructive/90 text-destructive-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg"
+            >
               -{discountPercentage}%
             </span>
           )}
         </div>
 
         {/* C. ACTIONS (SLOTS) */}
-        
+
         {/* Wishlist Button Slot */}
         {actions?.wishlist && (
           <div
@@ -145,9 +166,9 @@ export function ProductCardBase({
         {actions?.quickView && (
           <>
             {!isCompact ? (
-               <div className="absolute bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-500 z-20 translate-y-4 group-hover:translate-y-0 text-center">
-                 {actions.quickView}
-               </div>
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-500 z-20 translate-y-4 group-hover:translate-y-0 text-center">
+                {actions.quickView}
+              </div>
             ) : (
               <div className="absolute inset-x-3 bottom-3 z-20 opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-300 translate-y-2 group-hover:translate-y-0">
                 {actions.quickView}
@@ -155,7 +176,7 @@ export function ProductCardBase({
             )}
           </>
         )}
-        
+
         {/* Extra Overlay Actions (e.g. Add to Cart direct) */}
         {actions?.overlay}
       </div>
@@ -216,13 +237,9 @@ export function ProductCardBase({
               />
             )}
         </div>
-        
+
         {/* Additional Actions (below price) */}
-        {actions?.addToCart && (
-          <div className="pt-2">
-            {actions.addToCart}
-          </div>
-        )}
+        {actions?.addToCart && <div className="pt-2">{actions.addToCart}</div>}
       </div>
     </div>
   );

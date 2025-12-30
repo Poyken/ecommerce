@@ -42,7 +42,7 @@ interface ProductVariantSelectorProps {
   onImageChange?: (imageUrl: string) => void;
   onAddToCart?: () => void;
   onConfirm?: () => void; // Generic alternative to onAddToCart
-  
+
   isAdding?: boolean;
   showBuyNow?: boolean;
   confirmLabel?: string; // e.g., "Add to Cart", "Update Cart"
@@ -69,6 +69,7 @@ export function ProductVariantSelector({
   >({});
 
   const lastNotifiedSkuId = useRef<string | undefined>(undefined);
+  const isInitialized = useRef(false);
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -92,6 +93,8 @@ export function ProductVariantSelector({
 
   // 2. AUTO-SELECT DEFAULT: Tự động chọn SKU đầu tiên còn hàng khi mới vào
   useEffect(() => {
+    // Skip if already initialized or selectedSkuId from props is being used
+    if (isInitialized.current || selectedSkuId) return;
     // Nếu đã có lựa chọn thì thôi
     if (Object.keys(selectedOptions).length > 0) return;
 
@@ -110,20 +113,23 @@ export function ProductVariantSelector({
     }
 
     if (Object.keys(newSelectedOptions).length > 0) {
+      isInitialized.current = true;
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedOptions(newSelectedOptions);
       // Notify initial selection
       if (options.length > 0) {
-         const initialSku = skus.find((sku) => {
-            if (!sku.optionValues) return false;
-            return sku.optionValues.every((ov) => {
-              return newSelectedOptions[ov.optionValue.optionId] === ov.optionValue.id;
-            });
-         });
-         if (initialSku && initialSku.id !== lastNotifiedSkuId.current) {
-            lastNotifiedSkuId.current = initialSku.id;
-            onSkuChange?.(initialSku);
-         }
+        const initialSku = skus.find((sku) => {
+          if (!sku.optionValues) return false;
+          return sku.optionValues.every((ov) => {
+            return (
+              newSelectedOptions[ov.optionValue.optionId] === ov.optionValue.id
+            );
+          });
+        });
+        if (initialSku && initialSku.id !== lastNotifiedSkuId.current) {
+          lastNotifiedSkuId.current = initialSku.id;
+          onSkuChange?.(initialSku);
+        }
       }
       return;
     }
@@ -136,17 +142,25 @@ export function ProductVariantSelector({
           if (ov?.optionValue)
             newSelectedOptions[ov.optionValue.optionId] = ov.optionValue.id;
         });
-         
+
+        isInitialized.current = true;
         setSelectedOptions(newSelectedOptions);
-        
+
         // Notify auto-selection
         if (availableSku.id !== lastNotifiedSkuId.current) {
-            lastNotifiedSkuId.current = availableSku.id;
-            onSkuChange?.(availableSku);
+          lastNotifiedSkuId.current = availableSku.id;
+          onSkuChange?.(availableSku);
         }
       }
     }
-  }, [searchParams, skus, options]);  
+  }, [
+    searchParams,
+    skus,
+    options,
+    selectedSkuId,
+    selectedOptions,
+    onSkuChange,
+  ]);
 
   // 3. CORE LOGIC: XỬ LÝ KHI USER CLICK CHỌN OPTION
   const handleSelect = (optionId: string, valueId: string) => {
@@ -221,11 +235,11 @@ export function ProductVariantSelector({
       if (bestSku.imageUrl && onImageChange) {
         onImageChange(bestSku.imageUrl);
       }
-      
+
       // Notify parent immediately (No extra render cycle)
       if (bestSku.id !== lastNotifiedSkuId.current) {
-          lastNotifiedSkuId.current = bestSku.id;
-          onSkuChange?.(bestSku);
+        lastNotifiedSkuId.current = bestSku.id;
+        onSkuChange?.(bestSku);
       }
     }
   };
@@ -242,8 +256,6 @@ export function ProductVariantSelector({
       });
     });
   }, [selectedOptions, skus, options]);
-
-
 
   // Helper: Kiểm tra trạng thái của một option value (Có hàng/Hết hàng/Không khả dụng)
   const getOptionValueStatus = (optionId: string, valueId: string) => {

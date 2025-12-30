@@ -172,6 +172,10 @@ model Product {
   // Covers: WHERE avgRating >= 4 ORDER BY avgRating DESC
   @@index([avgRating(sort: Desc), reviewCount(sort: Desc)], name: "idx_product_rating")
   
+  // 8. Search Optimization (B-tree indexing for common searches)
+  @@index([name])
+  @@index([description])
+  
   // Legacy indexes (keep for backward compatibility, will remove in next version)
   @@index([categoryId, name])
   @@index([slug])
@@ -605,4 +609,18 @@ enum MessageType {
   IMAGE
   PRODUCT
   ORDER
+}
+
+model PerformanceMetric {
+  id             String   @id @default(uuid())
+  name           String   // LCP, FID, CLS, FCP, TTFB, INP
+  value          Float
+  rating         String   // good, needs-improvement, poor
+  url            String
+  userAgent      String?
+  navigationType String?
+  createdAt      DateTime @default(now())
+
+  @@index([name])
+  @@index([createdAt])
 }

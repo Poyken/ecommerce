@@ -7,7 +7,21 @@ import { cookies } from "next/headers";
 
 /**
  * =====================================================================
- * NOTIFICATIONS SERVER ACTIONS - Quản lý thông báo (REFACTORED)
+ * NOTIFICATIONS SERVER ACTIONS - QUẢN LÝ THÔNG BÁO
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. REAL-TIME NOTIFICATIONS:
+ * - Hệ thống sử dụng cơ chế kéo (Pull) qua API này và đẩy (Push) qua WebSocket (`NotificationsGateway` ở Backend).
+ * - `getNotificationsAction`: Lấy danh sách thông báo để hiển thị trong chuông thông báo.
+ *
+ * 2. MARK AS READ:
+ * - Khi user nhấn vào thông báo, ta gọi `markAsReadAction` để DB cập nhật `isRead = true`.
+ * - Việc này giúp đồng bộ số lượng tin chưa đọc (Unread Count) chính xác.
+ *
+ * 3. ADMIN BROADCAST:
+ * - Admin có quyền gửi thông báo tới tất cả người dùng (Broadcast) hoặc một người dùng cụ thể.
  * =====================================================================
  */
 

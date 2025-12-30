@@ -22,6 +22,27 @@ import { NotificationsService } from '@/notifications/notifications.service';
 import { EmailService } from '@integrations/email/email.service';
 import { GHNService } from './ghn.service';
 
+/**
+ * =====================================================================
+ * SHIPPING SERVICE - QUẢN LÝ VẬN CHUYỂN & GIAO VẬN
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. ĐƠN VỊ VẬN CHUYỂN (GHN):
+ * - Hệ thống sử dụng Giao Hàng Nhanh (GHN) làm đối tác vận chuyển chính.
+ * - Mọi thao tác lấy Tỉnh/Thành, tính phí ship đều được ủy quyền cho `ghnService`.
+ *
+ * 2. WEBHOOK & AUTO-UPDATE:
+ * - `handleGHNWebhook`: Đây là endpoint "hứng" thông tin từ phía GHN bắn về.
+ * - Khi shipper cập nhật trạng thái (Đã lấy hàng, Đang giao, Đã giao), GHN sẽ gọi vào đây.
+ * - Hệ thống tự động map trạng thái của GHN sang `OrderStatus` của mình và cập nhật DB -> Gửi Email/Noti cho khách ngay lập tức mà không cần Admin can thiệp.
+ *
+ * 3. FEE CALCULATION:
+ * - Phí vận chuyển được tính dựa trên DistrictID và WardCode.
+ * - Mặc định tính theo gói 1kg để có giá dự kiến nhanh nhất cho khách.
+ * =====================================================================
+ */
 @Injectable()
 export class ShippingService {
   private readonly logger = new Logger(ShippingService.name);

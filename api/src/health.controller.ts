@@ -7,7 +7,18 @@ import { Queue } from 'bullmq';
 
 /**
  * =====================================================================
- * HEALTH CONTROLLER - Kiểm tra sức khỏe hệ thống (P2 Enhanced)
+ * HEALTH CONTROLLER - GIÁM SÁT SỨC KHỎE HỆ THỐNG
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. LIVENESS vs READINESS:
+ * - API `/health` dùng để biết server có đang sống (`Liveness`) hay không.
+ * - API `/health/ready` khắt khe hơn: Phải kết nối được Database, Redis và các Queue (`Readiness`) thì Web mới được coi là sẵn sàng phục vụ.
+ *
+ * 2. MONITORING (Giám sát):
+ * - Hàm `info` trả về các thông số kỹ thuật như: Lượng RAM đang dùng, CPU, Uptime (thời gian server đã chạy liên tục).
+ * - Giúp phát hiện sớm các lỗi tràn bộ nhớ (Memory Leak).
  * =====================================================================
  */
 @ApiTags('Health')

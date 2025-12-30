@@ -1,3 +1,4 @@
+import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { HomeContent } from "@/features/products/components/home-content";
 import { productService } from "@/services/product.service";
 import { Brand, Category, Product } from "@/types/models";
@@ -51,11 +52,13 @@ export default async function Home() {
 
   return (
     <Suspense fallback={<div>Loading...</div>}>
-      <HomeContent
-        products={products}
-        categories={categories}
-        brands={brands}
-      />
+      <ErrorBoundary name="HomePage">
+        <HomeContent
+          products={products}
+          categories={categories}
+          brands={brands}
+        />
+      </ErrorBoundary>
     </Suspense>
   );
 }

@@ -1,3 +1,4 @@
+import { LoggerService } from '@core/logger/logger.service';
 import {
   CallHandler,
   ExecutionContext,
@@ -6,11 +7,24 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { LoggerService } from '@core/logger/logger.service';
 
 /**
  * =====================================================================
- * LOGGING INTERCEPTOR - Giám sát và ghi nhật ký yêu cầu HTTP (P2 Optimized)
+ * LOGGING INTERCEPTOR - GIÁM SÁT HIỆU NĂNG & NHẬT KÝ REQUEST
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. REQUEST LIFECYCLE:
+ * - Interceptor này đo thời gian từ lúc request đi vào cho đến khi có response trả về.
+ * - Giúp ta biết được API nào đang chậm (Slow Request) để tối ưu.
+ *
+ * 2. STRUCTURED LOGGING:
+ * - Thay vì log text đơn thuần, ta log dưới dạng JSON.
+ * - Điều này giúp các hệ thống như ELK (Elasticsearch, Logstash, Kibana) hoặc Grafana Loki có thể parse và vẽ biểu đồ giám sát.
+ *
+ * 3. SLOW REQUEST ALERT:
+ * - Nếu một request tốn hơn 500ms, hệ thống sẽ tự động in ra Warning kèm icon 🐢 để thu hút sự chú ý của developer.
  * =====================================================================
  */
 @Injectable()
@@ -45,6 +59,13 @@ export class LoggingInterceptor implements NestInterceptor {
               userAgent: userAgent.substring(0, 100),
             }),
           );
+
+          // Alert for slow requests
+          if (duration > 500) {
+            this.logger.warn(
+              `🐢 Slow Request detected: ${method} ${url} took ${duration}ms`,
+            );
+          }
         },
         error: (error) => {
           const duration = Date.now() - startTime;

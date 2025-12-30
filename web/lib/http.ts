@@ -170,122 +170,165 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   }
 
   // ========================================
-  // 4. THỰC HIỆN REQUEST
+  // REQUEST DEDUPLICATION (CLIENT SIDE ONLY)
   // ========================================
-  let res: Response;
-  try {
-    console.log(
-      `[HTTP] Fetching: ${url.toString()} (Authorized: ${
-        !!accessToken || !!requestHeaders["Authorization"]
-      })`
-    );
-    res = await fetch(url.toString(), {
-      headers: requestHeaders,
-      credentials: "include", // Quan trọng để gửi Cookie khi gọi API khác origin (CORS)
-      ...rest,
-    });
-  } catch (error) {
-    console.warn(`[HTTP Fetch Error] Failed to reach ${url}:`, error);
-    // Return a dummy response that won't break the build logic
-    // We return a mock response that looks like a successful empty response
-    // to prevent components from crashing on build.
-    return {
-      data: [],
-      meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
-    } as T;
+  const isGet = rest.method?.toUpperCase() === "GET" || !rest.method;
+  const isClient = typeof window !== "undefined";
+  const dedupKey = `${url.toString()}-${JSON.stringify(requestHeaders)}`;
+
+  if (isClient && isGet) {
+    const existingRequest = (window as any)._pendingRequests?.get(dedupKey);
+    if (existingRequest) {
+      if (process.env.NODE_ENV === "development") {
+        console.log(`[HTTP] Deduplicating Parallel Request: ${url.toString()}`);
+      }
+      return existingRequest;
+    }
   }
 
-  // ========================================
-  // 5. XỬ LÝ LỖI
-  // ========================================
-  if (!res.ok) {
-    // Extract error message từ response body first, as it's needed for isUserNotFound
-    let errorMessage = `API Error: ${res.status} ${res.statusText}`;
-    let errorBody: unknown = null;
+  // Khởi tạo map nếu chưa có (trên client)
+  if (isClient && !(window as any)._pendingRequests) {
+    (window as any)._pendingRequests = new Map<string, Promise<any>>();
+  }
 
+  // Define executeFetch internal function
+  const executeFetch = async (): Promise<T> => {
+    // ========================================
+    // 4. THỰC HIỆN REQUEST
+    // ========================================
+    let res: Response;
     try {
-      errorBody = await res.json();
-      if (errorBody && typeof errorBody === "object") {
-        const body = errorBody as Record<string, unknown>;
-        // Handle NestJS validation errors and standard error messages
-        const rawMessage = body.message || body.error;
+      if (process.env.NODE_ENV === "development") {
+        console.log(
+          `[HTTP] Fetching: ${url.toString()} (Authorized: ${
+            !!accessToken || !!requestHeaders["Authorization"]
+          })`
+        );
+      }
+      res = await fetch(url.toString(), {
+        headers: requestHeaders,
+        credentials: "include", // Quan trọng để gửi Cookie khi gọi API khác origin (CORS)
+        ...rest,
+      });
+    } catch (error) {
+      console.warn(`[HTTP Fetch Error] Failed to reach ${url}:`, error);
+      // Return a dummy response that won't break the build logic
+      // We return a mock response that looks like a successful empty response
+      // to prevent components from crashing on build.
+      return {
+        data: [],
+        meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
+      } as T;
+    }
 
-        if (Array.isArray(rawMessage)) {
-          errorMessage = rawMessage.join(", ");
-        } else if (typeof rawMessage === "string") {
-          errorMessage = rawMessage;
-        } else if (typeof rawMessage === "object" && rawMessage !== null) {
-          // Handle nested NestJS exception response
-          const innerMessage =
-            (rawMessage as Record<string, unknown>).message ||
-            (rawMessage as Record<string, unknown>).error;
-          if (Array.isArray(innerMessage)) {
-            errorMessage = innerMessage.join(", ");
-          } else if (typeof innerMessage === "string") {
-            errorMessage = innerMessage;
-          } else {
-            errorMessage = JSON.stringify(innerMessage);
+    // ========================================
+    // 5. XỬ LÝ LỖI
+    // ========================================
+    if (!res.ok) {
+      // Extract error message từ response body first, as it's needed for isUserNotFound
+      let errorMessage = `API Error: ${res.status} ${res.statusText}`;
+      let errorBody: unknown = null;
+
+      try {
+        errorBody = await res.json();
+        if (errorBody && typeof errorBody === "object") {
+          const body = errorBody as Record<string, unknown>;
+          // Handle NestJS validation errors and standard error messages
+          const rawMessage = body.message || body.error;
+
+          if (Array.isArray(rawMessage)) {
+            errorMessage = rawMessage.join(", ");
+          } else if (typeof rawMessage === "string") {
+            errorMessage = rawMessage;
+          } else if (typeof rawMessage === "object" && rawMessage !== null) {
+            // Handle nested NestJS exception response
+            const innerMessage =
+              (rawMessage as Record<string, unknown>).message ||
+              (rawMessage as Record<string, unknown>).error;
+            if (Array.isArray(innerMessage)) {
+              errorMessage = innerMessage.join(", ");
+            } else if (typeof innerMessage === "string") {
+              errorMessage = innerMessage;
+            } else {
+              errorMessage = JSON.stringify(innerMessage);
+            }
           }
         }
+      } catch {
+        // Keep default message if JSON parsing fails
       }
-    } catch {
-      // Keep default message if JSON parsing fails
-    }
 
-    const isUserNotFound = res.status === 404;
+      const isUserNotFound = res.status === 404;
 
-    // 401 Unauthorized OR 404 User Not Found → Chuyển về trang login
-    if ((res.status === 401 || isUserNotFound) && !options.skipRedirectOn401) {
-      console.warn(
-        `[HTTP ${res.status}] ${
-          isUserNotFound ? "User Not Found" : "Unauthorized"
-        } request to: ${url}. Redirecting to /login.`
-      );
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
-        // Stop execution to avoid throwing error downstream
-        return new Promise<T>(() => {});
-      } else {
-        redirect("/login");
-      }
-    }
-
-    const error = new Error(errorMessage) as Error & {
-      status: number;
-      body: unknown;
-    };
-    error.status = res.status;
-    error.body = errorBody;
-
-    const isUnauthorized = res.status === 401 || isUserNotFound;
-    if (!isUnauthorized || options.skipRedirectOn401) {
-      if (isUnauthorized) {
+      // 401 Unauthorized OR 404 User Not Found → Chuyển về trang login
+      if (
+        (res.status === 401 || isUserNotFound) &&
+        !options.skipRedirectOn401
+      ) {
         console.warn(
-          `[HTTP ${
-            res.status
-          } Received] Expected for guest or stale session, handled by client: ${url.toString()}`
+          `[HTTP ${res.status}] ${
+            isUserNotFound ? "User Not Found" : "Unauthorized"
+          } request to: ${url}. Redirecting to /login.`
         );
-      } else {
-        console.error(
-          `[HTTP Error] Status: ${
-            res.status
-          }, URL: ${url.toString()}, Message: ${errorMessage}`
-        );
-        console.error(`[HTTP Error Body]:`, JSON.stringify(errorBody, null, 2));
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
+          // Stop execution to avoid throwing error downstream
+          return new Promise<T>(() => {});
+        } else {
+          redirect("/login");
+        }
       }
+
+      const error = new Error(errorMessage) as Error & {
+        status: number;
+        body: unknown;
+      };
+      error.status = res.status;
+      error.body = errorBody;
+
+      const isUnauthorized = res.status === 401 || isUserNotFound;
+      if (!isUnauthorized || options.skipRedirectOn401) {
+        if (isUnauthorized) {
+          console.warn(
+            `[HTTP ${
+              res.status
+            } Received] Expected for guest or stale session, handled by client: ${url.toString()}`
+          );
+        } else {
+          console.error(
+            `[HTTP Error] Status: ${
+              res.status
+            }, URL: ${url.toString()}, Message: ${errorMessage}`
+          );
+          console.error(
+            `[HTTP Error Body]:`,
+            JSON.stringify(errorBody, null, 2)
+          );
+        }
+      }
+
+      throw error;
     }
 
-    throw error;
+    // ========================================
+    // 6. PARSE VÀ TRẢ VỀ DATA
+    // ========================================
+    // Handle 204 No Content (DELETE typically returns this)
+    if (res.status === 204) {
+      return null as T;
+    }
+
+    const data = await res.json();
+    return data as T;
+  };
+
+  if (isClient && isGet) {
+    const promise = executeFetch().finally(() => {
+      (window as any)._pendingRequests?.delete(dedupKey);
+    });
+    (window as any)._pendingRequests?.set(dedupKey, promise);
+    return promise;
   }
 
-  // ========================================
-  // 6. PARSE VÀ TRẢ VỀ DATA
-  // ========================================
-  // Handle 204 No Content (DELETE typically returns this)
-  if (res.status === 204) {
-    return null as T;
-  }
-
-  const data = await res.json();
-  return data as T;
+  return executeFetch();
 }

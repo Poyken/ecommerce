@@ -2,12 +2,18 @@ import * as crypto from 'crypto';
 
 /**
  * =====================================================================
- * FINGERPRINT UTILITY - Tạo chữ ký định danh thiết bị
+ * FINGERPRINT UTILITY - ĐỊNH DANH THIẾT BỊ NGƯỜI DÙNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH:
- * - Dùng để tránh việc đánh cắp JWT Token (Token Hijacking).
- * - Kết hợp IP (đã qua proxy) và User-Agent để tạo mã băm.
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. TẠI SAO CẦN FINGERPRINT?
+ * - Nếu hacker ăn trộm được `accessToken` của bạn, họ có thể giả mạo bạn.
+ * - Fingerprint giúp ngăn chặn điều này bằng cách gắn chặt Token với thiết bị cụ thể (dựa trên IP và User-Agent).
+ * - Nếu Token bị dùng ở một thiết bị có IP/UA khác -> Hệ thống sẽ từ chối.
+ *
+ * 2. SHA-256 HASHING:
+ * - Ta không lưu trực tiếp thông tin thô mà băm (Hash) nó thành một chuỗi ký tự duy nhất để bảo mật thông tin người dùng.
  * =====================================================================
  */
 export function getFingerprint(req: any): string {

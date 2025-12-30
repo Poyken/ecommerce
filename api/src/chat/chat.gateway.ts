@@ -10,6 +10,25 @@ import {
 import { Server, Socket } from 'socket.io';
 import { ChatService } from './chat.service';
 
+/**
+ * =====================================================================
+ * CHAT GATEWAY - CỔNG KẾT NỐI WEBSOCKET THỜI GIAN THỰC
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. WEBSOCKET (Bi-directional):
+ * - Khác với HTTP (Client gọi -> Server trả lời), WebSocket cho phép Server chủ động gửi dữ liệu về Client bất cứ lúc nào (Real-time).
+ * - Dùng cho tính năng Chat, thông báo đơn hàng mới, v.v.
+ *
+ * 2. ROOMS (Phòng chat):
+ * - `handleConnection`: Khi user kết nối, ta cho họ vào một "phòng" riêng (`user:userId`).
+ * - Admin sẽ vào phòng `admin-room` để nhận tất cả tin nhắn từ mọi khách hàng.
+ *
+ * 3. SURGICAL EMITS:
+ * - Thay vì gửi nguyên object DB cồng kềnh, ta chỉ gửi những field cần thiết (Sanitization) qua socket để tiết kiệm băng thông.
+ * =====================================================================
+ */
 @WebSocketGateway({
   cors: {
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
@@ -67,9 +86,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
   }
 
-  handleDisconnect(client: Socket) {
-    // Cleanup if needed
-  }
+  private readonly cooldowns = new Map<string, number>();
 
   @SubscribeMessage('sendMessage')
   async handleMessage(
@@ -89,8 +106,16 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return { success: false, error: 'Unauthorized' };
     }
 
+    // [P14 OPTIMIZATION] WebSocket Throttling (1s cooldown)
+    const now = Date.now();
+    const lastMessageTime = this.cooldowns.get(client.id) || 0;
+    if (now - lastMessageTime < 1000) {
+      return { success: false, error: 'Throttled: Please wait 1 second' };
+    }
+    this.cooldowns.set(client.id, now);
+
     let senderType: 'USER' | 'ADMIN' = 'USER';
-    let targetUserId = userId; // Default: User sending to Admin (so target conversation is their own)
+    let targetUserId = userId; // Default: User sending to Admin
 
     const isAdmin = roles.some(
       (r: string) =>
@@ -100,7 +125,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     if (isAdmin) {
       senderType = 'ADMIN';
       if (!payload.toUserId) {
-        // If admin is replying to a conversation, toUserId must be provided
         return { success: false, error: 'Admin must specify toUserId' };
       }
       targetUserId = payload.toUserId;
@@ -117,24 +141,35 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         payload.metadata,
       );
 
-      const messageWithTempId = {
-        ...message,
+      // [P14 OPTIMIZATION] Surgical Serialization for Emits
+      const sanitizedMessage = {
+        id: message.id,
+        content: message.content,
+        type: message.type,
+        senderId: message.senderId,
+        senderType: message.senderType,
+        sentAt: message.sentAt,
+        metadata: message.metadata,
         clientTempId: payload.clientTempId,
       };
 
       // Broadcast to User Room
       this.server
         .to(`user:${targetUserId}`)
-        .emit('newMessage', messageWithTempId);
+        .emit('newMessage', sanitizedMessage);
 
-      // Broadcast to Admin Room (so all admins see it)
-      this.server.to('admin-room').emit('newMessage', messageWithTempId);
+      // Broadcast to Admin Room
+      this.server.to('admin-room').emit('newMessage', sanitizedMessage);
 
-      return { success: true, data: message };
+      return { success: true, data: sanitizedMessage };
     } catch (error) {
       this.logger.error(error);
       return { success: false, error: error.message };
     }
+  }
+
+  handleDisconnect(client: Socket) {
+    this.cooldowns.delete(client.id);
   }
 
   @SubscribeMessage('markAsRead')

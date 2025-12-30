@@ -1,17 +1,17 @@
 "use client";
 
 import {
-    markAllAsReadAction,
-    markAsReadAction as markAsReadServerAction,
+  markAllAsReadAction,
+  markAsReadAction as markAsReadServerAction,
 } from "@/features/notifications/actions";
 import { notificationSocket } from "@/lib/socket";
 import {
-    createContext,
-    useCallback,
-    useContext,
-    useEffect,
-    useMemo,
-    useState,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
 } from "react";
 /**
  * =====================================================================
@@ -212,11 +212,12 @@ export function NotificationProvider({
     };
   }, [userId, accessToken]);
 
-  // Polling every 60 seconds (backup to WebSocket, only when tab is visible)
+  // Polling every 120 seconds (backup to WebSocket, only when tab is visible)
   useEffect(() => {
     if (!userId) return;
 
     let interval: ReturnType<typeof setInterval>;
+    let visibilityDebounce: ReturnType<typeof setTimeout>;
 
     const startPolling = () => {
       // Only poll if document is visible and WebSocket might be disconnected
@@ -224,13 +225,16 @@ export function NotificationProvider({
         if (document.visibilityState === "visible") {
           fetchNotifications();
         }
-      }, 60000); // Increased from 30s to 60s as WebSocket is primary
+      }, 120000); // Increased from 60s to 120s as WebSocket is primary
     };
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        // Refresh when tab becomes visible again
-        fetchNotifications();
+        // Debounce to avoid multiple rapid fetches
+        clearTimeout(visibilityDebounce);
+        visibilityDebounce = setTimeout(() => {
+          fetchNotifications();
+        }, 500);
       }
     };
 
@@ -240,6 +244,7 @@ export function NotificationProvider({
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       clearInterval(interval);
+      clearTimeout(visibilityDebounce);
     };
   }, [userId, fetchNotifications]);
 

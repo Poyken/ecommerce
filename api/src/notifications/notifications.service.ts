@@ -1,5 +1,6 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 /**
  * =====================================================================
@@ -208,7 +209,9 @@ export class NotificationsService {
 
   /**
    * Xóa thông báo đã đọc cũ hơn 30 ngày (Cleanup job)
+   * [P11 OPTIMIZATION] Tự động hóa quá trình dọn dẹp hàng ngày
    */
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async deleteOldReadNotifications(daysOld = 30) {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - daysOld);

@@ -83,11 +83,20 @@ async function bootstrap() {
         action: 'deny',
       },
       xssFilter: true,
+      referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+      dnsPrefetchControl: { allow: true },
     }),
   );
 
   // Use cookie-parser middleware
   app.use(cookieParser());
+
+  // ============================================================================
+  // LIMITS - Giới hạn kích thước request để tránh tấn công DoS
+  // ============================================================================
+  const { json, urlencoded } = await import('express');
+  app.use(json({ limit: '5mb' }));
+  app.use(urlencoded({ extended: true, limit: '5mb' }));
 
   // ============================================================================
   // 2. PERFORMANCE - Tối ưu hiệu năng với Compression

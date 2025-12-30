@@ -1,11 +1,22 @@
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { CloudinaryService } from './cloudinary.service';
 
 /**
  * =====================================================================
- * CLOUDINARY CONTROLLER - Quản lý upload và signature
+ * CLOUDINARY CONTROLLER - QUẢN LÝ TẢI ẢNH LÊN ĐÁM MÂY
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SIGNED UPLOAD (Tải lên có chữ ký):
+ * - Thay vì gửi ảnh qua Server của mình (làm chậm server), ta cho phép Frontend (Client) gửi ảnh TRỰC TIẾP lên Cloudinary.
+ * - Tuy nhiên, để bảo mật, Frontend phải xin Server một `signature` (chữ ký xác thực).
+ * - API này tạo ra chữ ký đó dựa trên API Key và Secret Key của shop.
+ *
+ * 2. FOLDER MANAGEMENT:
+ * - Ảnh sẽ được tổ chức theo các folder (VD: `products`, `blogs`) để dễ quản lý trên giao diện Cloudinary dashboard.
  * =====================================================================
  */
 @ApiTags('Cloudinary')

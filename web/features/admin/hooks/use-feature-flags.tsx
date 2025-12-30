@@ -1,7 +1,14 @@
 "use client";
 
 import { http } from "@/lib/http";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 /**
  * =====================================================================
@@ -76,10 +83,19 @@ export function FeatureFlagProvider({
     fetchFlags();
   }, []);
 
-  const isEnabled = (key: string) => enabledFlags.includes(key);
+  const isEnabled = useCallback(
+    (key: string) => enabledFlags.includes(key),
+    [enabledFlags]
+  );
+
+  // Memoize context value to prevent unnecessary re-renders of consumers
+  const contextValue = useMemo(
+    () => ({ enabledFlags, isLoading, isEnabled }),
+    [enabledFlags, isLoading, isEnabled]
+  );
 
   return (
-    <FeatureFlagContext.Provider value={{ enabledFlags, isLoading, isEnabled }}>
+    <FeatureFlagContext.Provider value={contextValue}>
       {children}
     </FeatureFlagContext.Provider>
   );

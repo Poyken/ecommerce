@@ -28,6 +28,7 @@
 import { http } from "@/lib/http";
 import { ApiResponse, PaginatedData } from "@/types/dtos";
 import { Category, Product } from "@/types/models";
+import { unstable_cache } from "next/cache";
 
 // =============================================================================
 // 📦 TYPES - Định nghĩa kiểu dữ liệu
@@ -191,35 +192,46 @@ export const productService = {
   async getCategories(options?: {
     next?: NextFetchRequestConfig;
   }): Promise<Category[]> {
-    try {
-      const response = await http<
-        ApiResponse<Category[]> | ApiResponse<PaginatedData<Category>>
-      >("/categories", {
-        skipAuth: true,
-        next: {
-          revalidate: 3600, // Cache 1 giờ - categories ít thay đổi
-          tags: ["categories"],
-          ...options?.next,
-        },
-      });
+    const fetcher = unstable_cache(
+      async () => {
+        try {
+          const response = await http<
+            ApiResponse<Category[]> | ApiResponse<PaginatedData<Category>>
+          >("/categories", {
+            skipAuth: true,
+            next: {
+              revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - categories change very rarely
+              tags: ["categories"],
+              ...options?.next,
+            },
+          });
 
-      // Handle direct array in data
-      if (Array.isArray(response?.data)) {
-        return response.data;
+          // Handle direct array in data
+          if (Array.isArray(response?.data)) {
+            return response.data;
+          }
+          // Handle nested data in paginated response
+          if (
+            response?.data &&
+            "data" in response.data &&
+            Array.isArray(response.data.data)
+          ) {
+            return response.data.data;
+          }
+          return [];
+        } catch (error) {
+          console.error("Lấy danh mục thất bại:", error);
+          return [];
+        }
+      },
+      ["categories-all"],
+      {
+        revalidate: 86400,
+        tags: ["categories"],
       }
-      // Handle nested data in paginated response
-      if (
-        response?.data &&
-        "data" in response.data &&
-        Array.isArray(response.data.data)
-      ) {
-        return response.data.data;
-      }
-      return [];
-    } catch (error) {
-      console.error("Lấy danh mục thất bại:", error);
-      return [];
-    }
+    );
+
+    return fetcher();
   },
 
   /**
@@ -230,36 +242,47 @@ export const productService = {
   async getBrands(options?: {
     next?: NextFetchRequestConfig;
   }): Promise<import("@/types/models").Brand[]> {
-    try {
-      const response = await http<
-        | ApiResponse<import("@/types/models").Brand[]>
-        | ApiResponse<PaginatedData<import("@/types/models").Brand>>
-      >("/brands", {
-        skipAuth: true,
-        next: {
-          revalidate: 3600, // Cache 1 giờ - brands ít thay đổi
-          tags: ["brands"],
-          ...options?.next,
-        },
-      });
+    const fetcher = unstable_cache(
+      async () => {
+        try {
+          const response = await http<
+            | ApiResponse<import("@/types/models").Brand[]>
+            | ApiResponse<PaginatedData<import("@/types/models").Brand>>
+          >("/brands", {
+            skipAuth: true,
+            next: {
+              revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - brands change very rarely
+              tags: ["brands"],
+              ...options?.next,
+            },
+          });
 
-      // Handle direct array in data
-      if (Array.isArray(response?.data)) {
-        return response.data;
+          // Handle direct array in data
+          if (Array.isArray(response?.data)) {
+            return response.data;
+          }
+          // Handle nested data in paginated response
+          if (
+            response?.data &&
+            "data" in response.data &&
+            Array.isArray(response.data.data)
+          ) {
+            return response.data.data;
+          }
+          return [];
+        } catch (error) {
+          console.error("Lấy thương hiệu thất bại:", error);
+          return [];
+        }
+      },
+      ["brands-all"],
+      {
+        revalidate: 86400,
+        tags: ["brands"],
       }
-      // Handle nested data in paginated response
-      if (
-        response?.data &&
-        "data" in response.data &&
-        Array.isArray(response.data.data)
-      ) {
-        return response.data.data;
-      }
-      return [];
-    } catch (error) {
-      console.error("Lấy thương hiệu thất bại:", error);
-      return [];
-    }
+    );
+
+    return fetcher();
   },
 
   /**

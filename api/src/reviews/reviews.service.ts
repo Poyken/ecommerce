@@ -11,7 +11,21 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 
 /**
  * =====================================================================
- * REVIEWS SERVICE - Dịch vụ quản lý đánh giá sản phẩm
+ * REVIEWS SERVICE - QUẢN LÝ ĐÁNH GIÁ SẢN PHẨM
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. ELIGIBILITY (Điều kiện đánh giá):
+ * - Hệ thống bắt buộc user phải mua hàng và đơn hàng phải ở trạng thái `DELIVERED` mới được đánh giá.
+ * - Tránh việc đánh giá ảo (Spam Reviews).
+ *
+ * 2. RATING AGGREGATION:
+ * - Khi có đánh giá mới hoặc thay đổi, ta dùng `updateProductRatingCache` để tính lại điểm trung bình (`avgRating`) và tổng số đánh giá (`reviewCount`) của sản phẩm đó.
+ * - Dữ liệu này được lưu trực tiếp vào bảng `Product` để hiển thị nhanh ở trang danh sách mà không cần đếm lại từ đầu.
+ *
+ * 3. CACHE INVALIDATION:
+ * - Sau khi cập nhật rating, ta phải xóa cache của sản phẩm đó (`/api/products/:id`) và các danh sách listing liên quan để khách hàng thấy thông tin mới nhất.
  * =====================================================================
  */
 

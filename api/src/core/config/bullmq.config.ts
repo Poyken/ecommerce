@@ -2,12 +2,24 @@ import { BullModule } from '@nestjs/bullmq';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
 /**
- * BullMQ Configuration for High-Throughput Scenarios
+ * =====================================================================
+ * BULLMQ CONFIGURATION - QUẢN LÝ TÁC VỤ CHẠY NGẦM
+ * =====================================================================
  *
- * Optimized for:
- * - 1000+ jobs/second
- * - Fault tolerance
- * - Auto-scaling
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. BACKGROUND JOBS (Tác vụ chạy ngầm):
+ * - Dùng để xử lý các việc tốn thời gian mà không bắt khách hàng phải chờ (VD: Gửi mail, xử lý ảnh, tính toán báo cáo).
+ * - BullMQ sử dụng Redis để lưu trữ danh sách các công việc (`Queue`).
+ *
+ * 2. PRIORITY (Độ ưu tiên):
+ * - `priority: 1` là cao nhất: Mail xác nhận đơn hàng phải được gửi ngay.
+ * - `priority: 10` là thấp nhất: Tính toán Analytics có thể chậm một chút cũng không sao.
+ *
+ * 3. RETRY STRATEGY (Cơ chế thử lại):
+ * - Nếu một job bị lỗi (VD: Server gửi mail bị tèo), BullMQ sẽ tự động thử lại (`attempts`).
+ * - `backoff` giúp tăng dần thời gian chờ giữa các lần thử lại để tránh làm nghẽn hệ thống.
+ * =====================================================================
  */
 
 export const bullMQConfig = BullModule.forRootAsync({

@@ -19,13 +19,36 @@ interface Metric {
   delta: number;
 }
 
+import { savePerformanceMetricAction } from "@/features/analytics/actions";
+
 export function reportWebVitals(metric: Metric) {
   // Log to console in development
   if (process.env.NODE_ENV === "development") {
     console.log("[Web Vitals]", metric);
   }
 
-  // Send to analytics in production
+  // [P17 OPTIMIZATION] Send to internal analytics
+  // Convert value to a rating based on standard thresholds
+  let rating = "good";
+  if (metric.name === "CLS") {
+    if (metric.value > 0.25) rating = "poor";
+    else if (metric.value > 0.1) rating = "needs-improvement";
+  } else if (metric.name === "LCP") {
+    if (metric.value > 4000) rating = "poor";
+    else if (metric.value > 2500) rating = "needs-improvement";
+  } else if (metric.name === "FID") {
+    if (metric.value > 300) rating = "poor";
+    else if (metric.value > 100) rating = "needs-improvement";
+  }
+
+  savePerformanceMetricAction({
+    name: metric.name,
+    value: metric.value,
+    rating,
+    url: typeof window !== "undefined" ? window.location.href : "unknown",
+  });
+
+  // Send to Google Analytics if available
   if (typeof window !== "undefined" && window.gtag) {
     window.gtag("event", metric.name, {
       value: Math.round(
@@ -34,22 +57,6 @@ export function reportWebVitals(metric: Metric) {
       metric_id: metric.id,
       metric_value: metric.value,
       metric_delta: metric.delta,
-    });
-  }
-
-  // Can also send to custom analytics endpoint
-  if (process.env.NEXT_PUBLIC_ANALYTICS_URL) {
-    fetch(process.env.NEXT_PUBLIC_ANALYTICS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        metric: metric.name,
-        value: metric.value,
-        id: metric.id,
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {
-      // Silently fail
     });
   }
 }

@@ -4,6 +4,26 @@ import { Blog } from '@prisma/client';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 
+/**
+ * =====================================================================
+ * BLOG SERVICE - QUẢN LÝ NỘI DUNG VÀ TIN TỨC
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CONTENT COMMERCE (Bán hàng qua nội dung):
+ * - Hệ thống cho phép gắn các sản phẩm (`Product`) vào bài viết Blog.
+ * - Điều này giúp khách hàng có thể mua hàng ngay khi đang đọc bài review hoặc hướng dẫn.
+ *
+ * 2. PUBLISH WORKFLOW:
+ * - Mặc định mọi bài viết khi tạo mới đều là `Draft` (Nháp - `publishedAt = null`).
+ * - Chỉ khi Admin phê duyệt và bấm Publish thì bài viết mới hiển thị ra ngoài web.
+ *
+ * 3. SEO-FRIENDLY SLUG:
+ * - Hệ thống sử dụng `slug` thay vì `id` trên URL (VD: `/blog/huong-dan-chon-giay`) để tối ưu SEO.
+ * =====================================================================
+ */
+
 @Injectable()
 export class BlogService {
   private readonly logger = new Logger(BlogService.name);

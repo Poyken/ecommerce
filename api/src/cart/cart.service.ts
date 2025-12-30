@@ -5,6 +5,7 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 
@@ -37,6 +38,32 @@ export class CartService {
   private readonly logger = new Logger(CartService.name);
 
   constructor(private readonly prisma: PrismaService) {}
+
+  /**
+   * [P14 OPTIMIZATION] Automated Abandoned Cart Cleanup (Daily)
+   * Purge carts not updated for more than 30 days.
+   */
+  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+  async pruneAbandonedCarts(daysOld = 30) {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+
+    try {
+      const result = await this.prisma.cart.deleteMany({
+        where: {
+          updatedAt: { lt: cutoffDate },
+        },
+      });
+
+      if (result.count > 0) {
+        this.logger.log(
+          `[Prune] Abandoned carts cleanup complete. Removed ${result.count} carts inactive for ${daysOld} days.`,
+        );
+      }
+    } catch (error) {
+      this.logger.error('Failed to prune abandoned carts:', error);
+    }
+  }
 
   /**
    * Lấy giỏ hàng của người dùng.
@@ -288,26 +315,91 @@ export class CartService {
     userId: string,
     items: { skuId: string; quantity: number }[],
   ) {
-    const results: any[] = [];
+    if (!items.length) return [];
 
-    // Xử lý từng item một để đảm bảo validation đầy đủ
-    for (const item of items) {
-      try {
-        const res = await this.addToCart(userId, {
-          skuId: item.skuId,
-          quantity: item.quantity,
-        });
-        results.push({ skuId: item.skuId, success: true, data: res });
-      } catch (error: any) {
-        // Nếu item nào fail (hết hàng, SKU không tồn tại, etc), vẫn tiếp tục merge items còn lại
-        results.push({
-          skuId: item.skuId,
-          success: false,
-          error: error.message,
-        });
-      }
-    }
+    return await this.prisma.$transaction(
+      async (tx) => {
+        const results: any[] = [];
 
-    return results;
+        // 1. Get or create cart once
+        const cart = await tx.cart.upsert({
+          where: { userId },
+          update: {},
+          create: { userId },
+        });
+
+        // 2. Fetch all SKUs in one go for validation
+        const skuIds = items.map((i) => i.skuId);
+        const skus = await tx.sku.findMany({
+          where: { id: { in: skuIds } },
+          select: {
+            id: true,
+            skuCode: true,
+            stock: true,
+            status: true,
+          },
+        });
+
+        const skuMap = new Map(skus.map((s) => [s.id, s]));
+
+        // 3. Process items
+        for (const item of items) {
+          try {
+            const sku = skuMap.get(item.skuId);
+            if (!sku) throw new Error('Sản phẩm (SKU) không tồn tại');
+            if (sku.status !== 'ACTIVE')
+              throw new Error('Sản phẩm không còn được bán');
+
+            // Atomic upsert for each item within the same transaction
+            const cartItem = await tx.cartItem.upsert({
+              where: {
+                cartId_skuId: {
+                  cartId: cart.id,
+                  skuId: item.skuId,
+                },
+              },
+              update: {
+                quantity: { increment: item.quantity },
+              },
+              create: {
+                cartId: cart.id,
+                skuId: item.skuId,
+                quantity: item.quantity,
+              },
+            });
+
+            // Stock check validation
+            if (cartItem.quantity > sku.stock) {
+              const capped = await tx.cartItem.update({
+                where: { id: cartItem.id },
+                data: { quantity: sku.stock },
+              });
+              results.push({
+                skuId: item.skuId,
+                success: true,
+                data: capped,
+                capped: true,
+              });
+            } else {
+              results.push({
+                skuId: item.skuId,
+                success: true,
+                data: cartItem,
+                capped: false,
+              });
+            }
+          } catch (error: any) {
+            results.push({
+              skuId: item.skuId,
+              success: false,
+              error: error.message,
+            });
+          }
+        }
+
+        return results;
+      },
+      { isolationLevel: 'Serializable' },
+    );
   }
 }

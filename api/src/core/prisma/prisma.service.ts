@@ -38,22 +38,59 @@ export class PrismaService
       log: ['error', 'warn'],
       errorFormat: 'pretty',
     });
+
+    const threshold = 200;
+
+    // [P8 OPTIMIZATION] Use $extends for modern logging and performance monitoring
+    // Returns the extended client which will be used as the actual singleton instance
+    return this.$extends({
+      query: {
+        $allModels: {
+          async $allOperations({ operation, model, args, query }) {
+            const start = Date.now();
+            const result = await query(args);
+            const duration = Date.now() - start;
+
+            if (duration > threshold) {
+              const logger = new Logger('PrismaPerformance');
+              // Sanitize args to avoid logging sensitive info like passwords
+              const sanitizedArgs = JSON.parse(JSON.stringify(args));
+              const sensitiveFields = ['password', 'token', 'secret', 'key'];
+
+              const sanitize = (obj: any) => {
+                if (!obj || typeof obj !== 'object') return;
+                for (const key in obj) {
+                  if (sensitiveFields.includes(key.toLowerCase())) {
+                    obj[key] = '[REDACTED]';
+                  } else if (typeof obj[key] === 'object') {
+                    sanitize(obj[key]);
+                  }
+                }
+              };
+              sanitize(sanitizedArgs);
+
+              logger.warn(
+                `🐢 Slow Query [${model}.${operation}] - ${duration}ms\nArgs: ${JSON.stringify(sanitizedArgs)}`,
+              );
+            }
+            return result;
+          },
+        },
+      },
+    }) as any;
   }
 
-  /**
-   * 🚀 OPTIMIZED: Enhanced connection management với logging
-   * Connection pooling được quản lý tự động bởi Prisma qua DATABASE_URL
-   */
   async onModuleInit() {
-    await this.$connect();
+    await (this as any).$connect();
     this.logger.log('✅ Database connected successfully');
+
     this.logger.debug(
       `📊 Connection pool size: ${process.env.DATABASE_POOL_SIZE || '10 (default)'}`,
     );
   }
 
   async onModuleDestroy() {
-    await this.$disconnect();
+    await (this as any).$disconnect();
     this.logger.log('🔌 Database disconnected');
   }
 }

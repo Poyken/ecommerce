@@ -48,11 +48,10 @@ export async function getPermissionsAction() {
 /**
  * Action Đăng nhập.
  *
- * FLOW:
- * 1. Validate form data với Zod
- * 2. Gọi API /auth/login
- * 3. Lưu tokens vào Session (cookies)
- * 4. Trả về { success: true } hoặc { error: "..." }
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ * 1. FLOW XỬ LÝ: Validate -> Gọi API -> Nhận Token -> Lưu Session.
+ * 2. MFA HANDLING: Nếu backend trả về `mfaRequired`, ta không tạo session ngay mà trả về flag để frontend hiển thị ô nhập mã OTP.
+ * 3. SECURITY: Luôn reset CSRF token khi tạo session mới để tránh tấn công Session Fixation.
  *
  * @param prevState - State trước đó (dùng với useActionState)
  * @param formData - Dữ liệu form (email, password)

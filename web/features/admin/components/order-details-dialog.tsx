@@ -1,5 +1,7 @@
 "use client";
 
+import { ErrorBoundary } from "@/components/shared/error-boundary";
+import { useToast } from "@/components/shared/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +21,7 @@ import {
 import { getOrderDetailsAction } from "@/features/admin/actions";
 import { formatCurrency } from "@/lib/utils";
 import { Order, OrderItem } from "@/types/models";
+import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -62,7 +65,9 @@ export function OrderDetailsDialog({
         <DialogHeader className="p-6 pb-4 border-b">
           <DialogTitle>{t("orders.details")}</DialogTitle>
         </DialogHeader>
-        <OrderDetailsContent orderId={orderId} onOpenChange={onOpenChange} />
+        <ErrorBoundary name="OrderDetails">
+          <OrderDetailsContent orderId={orderId} onOpenChange={onOpenChange} />
+        </ErrorBoundary>
       </DialogContent>
     </Dialog>
   );
@@ -79,6 +84,18 @@ function OrderDetailsContent({
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState(false);
+  const { toast } = useToast();
+
+  const handleCopyId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    setCopiedId(true);
+    toast({
+      title: "Copied!",
+      description: "Order ID copied to clipboard",
+    });
+    setTimeout(() => setCopiedId(false), 2000);
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -130,7 +147,23 @@ function OrderDetailsContent({
                   <span className="font-medium text-gray-500">
                     {t("orders.idLabel")}:
                   </span>
-                  <span className="font-mono">{order.id}</span>
+                  <div className="flex items-center gap-2 group">
+                    <span className="font-mono font-bold text-primary">
+                      {order.id}
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => handleCopyId(order.id)}
+                    >
+                      {copiedId ? (
+                        <Check className="h-3 w-3 text-green-500" />
+                      ) : (
+                        <Copy className="h-3 w-3" />
+                      )}
+                    </Button>
+                  </div>
 
                   <span className="font-medium text-gray-500">
                     {t("orders.dateLabel")}:

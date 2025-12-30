@@ -3,6 +3,25 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
 import { SkuManagerService } from './sku-manager.service';
 
+/**
+ * =====================================================================
+ * PRODUCTS IMPORT SERVICE - NHẬP DỮ LIỆU SẢN PHẨM TỪ EXCEL
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. PRE-FETCH CACHING (Cơ chế nạp trước):
+ * - Thay vì mỗi dòng trong Excel lại gọi DB để tìm Category/Brand, ta load TOÀN BỘ chúng vào RAM ngay từ đầu (`categoryMap`, `brandMap`).
+ * - Việc tìm kiếm trong RAM (Map) nhanh hơn gấp hàng ngàn lần so với gọi DB liên tục (N+1 Query Problem).
+ *
+ * 2. GROUPING BY PRODUCT:
+ * - Trong Excel, 1 sản phẩm có thể có nhiều SKU (nhiều dòng).
+ * - Ta group các dòng này lại theo `productId` hoặc `slug` để chỉ thực hiện `upsert` sản phẩm 1 lần duy nhất, sau đó mới xử lý các SKU bên dưới.
+ *
+ * 3. UPSERT (Update or Insert):
+ * - Dùng `upsert` giúp code ngắn gọn: Nếu sản phẩm đã tồn tại -> Cập nhật thông tin; Nếu chưa có -> Tạo mới.
+ * =====================================================================
+ */
 @Injectable()
 export class ProductsImportService {
   private readonly logger = new Logger(ProductsImportService.name);
@@ -53,6 +72,19 @@ export class ProductsImportService {
       errors: [] as { key: string; error: any }[],
     };
 
+    // [P15 OPTIMIZATION] Batch lookup caching - Prefetch all categories & brands
+    const [allCategories, allBrands] = await Promise.all([
+      this.prisma.category.findMany({ select: { id: true, name: true } }),
+      this.prisma.brand.findMany({ select: { id: true, name: true } }),
+    ]);
+
+    const categoryMap = new Map(
+      allCategories.map((c) => [c.name.toLowerCase(), c.id]),
+    );
+    const brandMap = new Map(
+      allBrands.map((b) => [b.name.toLowerCase(), b.id]),
+    );
+
     // Group by Product to avoid redundant product upserts
     const groupedByProduct = rows.reduce((acc, row) => {
       const key = row.productId || row.productSlug;
@@ -66,15 +98,15 @@ export class ProductsImportService {
         const item = groupedByProduct[key];
         const productRow = item.info;
 
-        // 1. Find or Validate Category/Brand
-        const category = await this.prisma.category.findFirst({
-          where: { name: productRow.categoryName },
-        });
-        const brand = await this.prisma.brand.findFirst({
-          where: { name: productRow.brandName },
-        });
+        // 1. Find or Validate Category/Brand (Using Cache)
+        const categoryId = categoryMap.get(
+          (productRow.categoryName || '').toLowerCase(),
+        );
+        const brandId = brandMap.get(
+          (productRow.brandName || '').toLowerCase(),
+        );
 
-        if (!category || !brand) {
+        if (!categoryId || !brandId) {
           throw new Error(
             `Category (${productRow.categoryName}) hoặc Brand (${productRow.brandName}) không tồn tại`,
           );
@@ -87,16 +119,16 @@ export class ProductsImportService {
             : { slug: productRow.productSlug },
           update: {
             name: productRow.productName,
-            categoryId: category.id,
-            brandId: brand.id,
+            categoryId,
+            brandId,
           },
           create: {
             name: productRow.productName,
             slug:
               productRow.productSlug ||
               `${productRow.productName.toLowerCase().replace(/ /g, '-')}-${Date.now()}`,
-            categoryId: category.id,
-            brandId: brand.id,
+            categoryId,
+            brandId,
           },
         });
 

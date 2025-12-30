@@ -5,7 +5,22 @@ import * as crypto from 'crypto';
 
 /**
  * =====================================================================
- * TOKEN SERVICE - Dịch vụ quản lý mã định danh (JWT)
+ * TOKEN SERVICE - QUẢN LÝ MÃ ĐỊNH DANH (JWT)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. ACCESS TOKEN vs REFRESH TOKEN:
+ * - `accessToken`: Dùng để xác thực mọi request gửi lên server. Có thời hạn ngắn (VD: 15 phút) để tăng tính bảo mật.
+ * - `refreshToken`: Dùng để lấy `accessToken` mới khi cái cũ hết hạn mà không bắt user phải login lại. Có thời hạn dài (VD: 7 ngày).
+ *
+ * 2. FINGERPRINT (Dấu vân tay số):
+ * - Ta lưu `fp` (Fingerprint) vào trong Payload của Token.
+ * - Khi xác thực, ta so sánh `fp` trong Token với `fp` thực tế của thiết bị đang gửi request.
+ * - Nếu hacker lấy được Token nhưng dùng ở thiết bị khác -> Token sẽ bị coi là vô hiệu.
+ *
+ * 3. JTI (JWT ID):
+ * - Mỗi Token sinh ra có một mã `jti` duy nhất để tránh việc tái sử dụng Token (Replay Attack).
  * =====================================================================
  */
 

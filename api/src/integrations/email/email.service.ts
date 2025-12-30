@@ -2,6 +2,25 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 
+/**
+ * =====================================================================
+ * EMAIL SERVICE - HỆ THỐNG GỬI EMAIL TỰ ĐỘNG
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CÔNG CỤ (Nodemailer):
+ * - Hệ thống sử dụng thư viện `nodemailer` để kết nối với SMTP Server.
+ * - Cấu hình được lấy từ `ConfigService` (biến môi trường .env).
+ *
+ * 2. TRANSACTIONAL EMAILS:
+ * - Đây là loại email gửi dựa trên hành động của user (Xác nhận đơn, Reset pass).
+ * - Nội dung được viết dưới dạng HTML template đơn giản để đảm bảo hiển thị tốt trên mọi thiết bị (Outlook, Gmail).
+ *
+ * 3. ASYNC NOTIFICATION:
+ * - Việc gửi email có độ trễ (latency). Thường ta nên gọi qua BullMQ Queue (như trong OrdersService) để tránh treo request của user.
+ * =====================================================================
+ */
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);

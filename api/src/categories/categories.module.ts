@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
 import { PrismaModule } from '@core/prisma/prisma.module';
+import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
+import { Module } from '@nestjs/common';
 
 /**
  * =====================================================================
@@ -24,5 +24,6 @@ import { CategoriesService } from './categories.service';
   imports: [PrismaModule, CloudinaryModule],
   controllers: [CategoriesController],
   providers: [CategoriesService],
+  exports: [CategoriesService],
 })
 export class CategoriesModule {}

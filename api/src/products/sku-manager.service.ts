@@ -104,20 +104,24 @@ export class SkuManagerService {
    * Được gọi sau khi có bất kỳ thay đổi nào về SKU (Thêm/Sửa/Xóa).
    */
   async updateProductPriceRange(productId: string) {
-    // 1. Lấy tất cả SKU đang ACTIVE
-    const skus = await this.prisma.sku.findMany({
+    // [P10 OPTIMIZATION] Use DB aggregate for much better performance than in-memory Math.min/max
+    const aggregate = await this.prisma.sku.aggregate({
       where: {
         productId,
         status: 'ACTIVE',
       },
-      select: {
+      _min: {
+        price: true,
+        salePrice: true,
+      },
+      _max: {
         price: true,
         salePrice: true,
       },
     });
 
-    if (skus.length === 0) {
-      // Nếu không có SKU nào, reset về null
+    if (!aggregate._min.price && !aggregate._min.salePrice) {
+      // No active SKUs
       await this.prisma.product.update({
         where: { id: productId },
         data: { minPrice: null, maxPrice: null },
@@ -125,23 +129,24 @@ export class SkuManagerService {
       return;
     }
 
-    // 2. Tính toán Min/Max
-    // Ưu tiên dùng salePrice nếu có, nếu không thì dùng price
-    const prices = skus.map((s) => {
-      const finalPrice =
-        s.salePrice && Number(s.salePrice) > 0 ? s.salePrice : s.price;
-      return Number(finalPrice || 0);
-    });
+    // Min price is the minimum of (min of price) and (min of salePrice if > 0)
+    const minP = Number(aggregate._min.price || 0);
+    const minS = aggregate._min.salePrice
+      ? Number(aggregate._min.salePrice)
+      : minP;
+    const finalMin = minS > 0 && minS < minP ? minS : minP;
 
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
+    // Max price is the maximum of (max of price) and (max of salePrice)
+    const maxP = Number(aggregate._max.price || 0);
+    const maxS = Number(aggregate._max.salePrice || 0);
+    const finalMax = Math.max(maxP, maxS);
 
     // 3. Update lại Product
     await this.prisma.product.update({
       where: { id: productId },
       data: {
-        minPrice,
-        maxPrice,
+        minPrice: finalMin,
+        maxPrice: finalMax,
       },
     });
   }
@@ -215,12 +220,16 @@ export class SkuManagerService {
       const validSkuCodes = new Set<string>();
       const migratedOldSkuIds = new Set<string>();
 
+      // [P10 OPTIMIZATION] Batch fetch existing SKUs to avoid n+1 inside the loop
+      const existingSkus = await this.prisma.sku.findMany({
+        where: { productId },
+      });
+      const skuMap = new Map(existingSkus.map((s) => [s.skuCode, s]));
+
       for (const combo of combinations) {
         const skuCode = this.generateSkuCode(freshProduct.slug, combo);
         validSkuCodes.add(skuCode);
-        const existingSku = await this.prisma.sku.findUnique({
-          where: { skuCode },
-        });
+        const existingSku = skuMap.get(skuCode);
 
         if (!existingSku) {
           let migratedPrice = 0;

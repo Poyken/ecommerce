@@ -8,35 +8,25 @@ import Redis, { Cluster } from 'ioredis';
 
 /**
  * =====================================================================
- * REDIS SERVICE - Production-Ready Redis Client
+ * REDIS SERVICE - HỆ THỐNG CACHING & LƯU TRỮ TẠM THỜI
  * =====================================================================
  *
- * 🚀 PRODUCTION FEATURES:
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. CONNECTION POOLING & RETRY STRATEGY:
- * - Auto-reconnect with exponential backoff
- * - Connection keep-alive to prevent timeouts
- * - Offline queue for resilience
+ * 1. TẠI SAO DÙNG REDIS?
+ * - DB (PostgreSQL) truy xuất ổ cứng nên khá chậm. Redis lưu dữ liệu trên RAM nên tốc độ cực nhanh (Microseconds).
+ * - Dùng để cache kết quả API, session người dùng, hoặc các biến đếm (Throttling).
  *
- * 2. CLUSTER SUPPORT:
- * - Redis Cluster for horizontal scaling
- * - Automatic failover
- * - Load balancing across nodes
+ * 2. CLUSTER VS SINGLE:
+ * - Local/Dev: Dùng 1 instance duy nhất cho đơn giản.
+ * - Production: Dùng Redis Cluster (nhiều node) để đảm bảo High Availability (Hệ thống vẫn chạy nếu 1 node chết).
  *
- * 3. ERROR HANDLING:
- * - Graceful degradation on Redis failures
- * - Comprehensive error logging
- * - Health check endpoint
+ * 3. SCAN VS KEYS (CỰC KỲ QUAN TRỌNG):
+ * - TUYỆT ĐỐI không dùng lệnh `KEYS *` trong production vì nó sẽ quét toàn bộ RAM, làm treo Redis (Single-threaded).
+ * - Luôn dùng `SCAN` để duyệt key theo từng đợt nhỏ (Batching), đảm bảo không gây nghẽn hệ thống.
  *
- * 4. PERFORMANCE OPTIMIZATIONS:
- * - Batch operations (MGET, MSET)
- * - SCAN instead of KEYS (non-blocking)
- * - Connection pooling
- *
- * 5. MONITORING:
- * - Event listeners for all connection states
- * - Latency tracking
- * - Health checks
+ * 4. RETRY STRATEGY:
+ * - Khi mất kết nối, hệ thống tự động thử lại (Retry) với độ trễ tăng dần để tránh làm quá tải server khi nó vừa sống dậy.
  * =====================================================================
  */
 @Injectable()

@@ -1,10 +1,58 @@
 import { PrismaService } from '@core/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { SenderType } from '@prisma/client';
 
+/**
+ * =====================================================================
+ * CHAT SERVICE - HỆ THỐNG CHĂM SÓC KHÁCH HÀNG TRỰC TUYẾN
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CONVERSATION MODEL (Mô hình hội thoại):
+ * - Mỗi User sẽ có 1 `ChatConversation` duy nhất với Admin.
+ * - Mọi tin nhắn (`ChatMessage`) đều thuộc về hội thoại này.
+ *
+ * 2. MESSAGE TYPES:
+ * - Hệ thống hỗ trợ nhiều loại tin nhắn: TEXT, IMAGE, PRODUCT (gửi thông tin sản phẩm), ORDER (gửi thông tin đơn hàng).
+ * - Điều này giúp việc hỗ trợ khách hàng trở nên trực quan hơn.
+ *
+ * 3. DATA PRUNING (Dọn dẹp dữ liệu):
+ * - Chat sinh ra rất nhiều dữ liệu rác. Hàm `pruneOldMessages` chạy định kỳ hàng tuần để xóa các tin nhắn cũ hơn 180 ngày, giữ cho DB luôn nhẹ nhàng.
+ * =====================================================================
+ */
 @Injectable()
 export class ChatService {
+  private readonly logger = new Logger(ChatService.name);
+
   constructor(private readonly prisma: PrismaService) {}
+
+  /**
+   * [P14 OPTIMIZATION] Automated Chat Pruning (Weekly)
+   * Purge messages older than 180 days to keep DB lean.
+   */
+  @Cron(CronExpression.EVERY_WEEK)
+  async pruneOldMessages(daysOld = 180) {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - daysOld);
+
+    try {
+      const result = await this.prisma.chatMessage.deleteMany({
+        where: {
+          sentAt: { lt: cutoffDate },
+        },
+      });
+
+      if (result.count > 0) {
+        this.logger.log(
+          `[Prune] Chat messages cleanup complete. Removed ${result.count} records older than ${daysOld} days.`,
+        );
+      }
+    } catch (error) {
+      this.logger.error('Failed to prune chat messages:', error);
+    }
+  }
 
   /**
    * Finds or creates a conversation for a user

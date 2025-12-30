@@ -73,7 +73,7 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
     if (isOpen && !isMinimized) {
       markAsRead();
     }
-  }, [isOpen, isMinimized]);
+  }, [isOpen, isMinimized, markAsRead]);
 
   // Blinking Title Effect
   useEffect(() => {
@@ -98,19 +98,28 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
 
   // Fetch history on open
   useEffect(() => {
-    if (isOpen && user && accessToken) {
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/my-history`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
+    if (!isOpen || !user || !accessToken) return;
+
+    const abortController = new AbortController();
+
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/chat/my-history`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      signal: abortController.signal,
+    })
+      .then((res) => res.json())
+      .then((resData) => {
+        const conversationData = resData.data;
+        if (conversationData && conversationData.messages) {
+          setMessages(conversationData.messages);
+        }
       })
-        .then((res) => res.json())
-        .then((resData) => {
-          const conversationData = resData.data;
-          if (conversationData && conversationData.messages) {
-            setMessages(conversationData.messages);
-          }
-        })
-        .catch((err) => console.error(err));
-    }
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          console.error(err);
+        }
+      });
+
+    return () => abortController.abort();
   }, [isOpen, user, accessToken, setMessages]);
 
   useEffect(() => {

@@ -1,6 +1,24 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable, Logger } from '@nestjs/common';
 
+/**
+ * =====================================================================
+ * WISHLIST SERVICE - QUẢN LÝ DANH SÁCH YÊU THÍCH
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. TOGGLE LOGIC:
+ * - Hàm `toggle` kết hợp cả Thêm và Xóa.
+ * - Nếu sản phẩm đã có trong wishlist -> Xóa đi.
+ * - Nếu chưa có -> Tạo mới.
+ * - Đây là pattern phổ biến cho các nút "Like" hoặc "Tim" trên UI.
+ *
+ * 2. COMPOSITE KEY:
+ * - Trong DB, `userId` và `productId` tạo thành một Unique Constraint.
+ * - Điều này ngăn chặn việc một User thêm trùng 1 sản phẩm vào Wishlist nhiều lần.
+ * =====================================================================
+ */
 @Injectable()
 export class WishlistService {
   private readonly logger = new Logger(WishlistService.name);
