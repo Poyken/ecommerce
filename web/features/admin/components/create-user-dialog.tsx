@@ -5,7 +5,8 @@ import { FormDialog } from "@/components/shared/form-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/shared/use-toast";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
@@ -116,14 +117,14 @@ export function CreateUserDialog({
           />
           <AnimatePresence>
             {errors.email && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.email}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>
@@ -143,14 +144,14 @@ export function CreateUserDialog({
             />
             <AnimatePresence>
               {errors.firstName && (
-                <motion.p
+                <m.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="text-xs text-destructive"
                 >
                   {errors.firstName}
-                </motion.p>
+                </m.p>
               )}
             </AnimatePresence>
           </div>
@@ -169,14 +170,14 @@ export function CreateUserDialog({
             />
             <AnimatePresence>
               {errors.lastName && (
-                <motion.p
+                <m.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="text-xs text-destructive"
                 >
                   {errors.lastName}
-                </motion.p>
+                </m.p>
               )}
             </AnimatePresence>
           </div>
@@ -197,14 +198,14 @@ export function CreateUserDialog({
           />
           <AnimatePresence>
             {errors.password && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.password}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>

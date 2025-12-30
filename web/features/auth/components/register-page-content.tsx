@@ -1,17 +1,18 @@
 "use client";
 
+import { GlassButton } from "@/components/shared/glass-button";
+import { GlassCard } from "@/components/shared/glass-card";
+import { PasswordInput } from "@/components/shared/password-input";
+import { useToast } from "@/components/shared/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { registerAction } from "@/features/auth/actions";
 import { mergeGuestCartAction } from "@/features/cart/actions";
 import { mergeGuestWishlistAction } from "@/features/wishlist/actions";
-import { GlassButton } from "@/components/shared/glass-button";
-import { GlassCard } from "@/components/shared/glass-card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { PasswordInput } from "@/components/shared/password-input";
-import { useToast } from "@/components/shared/use-toast";
 import { Link, useRouter } from "@/i18n/routing";
+import { m } from "@/lib/animations";
 import { registerSchema } from "@/lib/schemas";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
@@ -178,7 +179,7 @@ export function RegisterPageContent() {
   };
 
   return (
-    <motion.div
+    <m.div
       initial="hidden"
       animate="visible"
       variants={sectionVariants}
@@ -198,12 +199,7 @@ export function RegisterPageContent() {
           <p className="text-muted-foreground font-light">{t("subtitle")}</p>
         </div>
 
-        <motion.form
-          layout
-          action={handleAction}
-          className="space-y-5"
-          noValidate
-        >
+        <m.form layout action={handleAction} className="space-y-5" noValidate>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label
@@ -239,7 +235,7 @@ export function RegisterPageContent() {
               />
               <AnimatePresence initial={false}>
                 {localErrors.firstName && (
-                  <motion.div
+                  <m.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
@@ -249,7 +245,7 @@ export function RegisterPageContent() {
                     <p className="text-red-500 text-sm mt-1">
                       {localErrors.firstName[0]}
                     </p>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
             </div>
@@ -287,7 +283,7 @@ export function RegisterPageContent() {
               />
               <AnimatePresence initial={false}>
                 {localErrors.lastName && (
-                  <motion.div
+                  <m.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
@@ -297,7 +293,7 @@ export function RegisterPageContent() {
                     <p className="text-red-500 text-sm mt-1">
                       {localErrors.lastName[0]}
                     </p>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
             </div>
@@ -334,7 +330,7 @@ export function RegisterPageContent() {
             />
             <AnimatePresence initial={false}>
               {localErrors.email && (
-                <motion.div
+                <m.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
@@ -344,7 +340,7 @@ export function RegisterPageContent() {
                   <p className="text-red-500 text-sm mt-1">
                     {localErrors.email[0]}
                   </p>
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
           </div>
@@ -378,7 +374,7 @@ export function RegisterPageContent() {
             />
             <AnimatePresence initial={false}>
               {localErrors.password && (
-                <motion.div
+                <m.div
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
@@ -388,7 +384,7 @@ export function RegisterPageContent() {
                   <p className="text-red-500 text-sm mt-1">
                     {localErrors.password[0]}
                   </p>
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
           </div>
@@ -414,8 +410,8 @@ export function RegisterPageContent() {
               {t("signIn")}
             </Link>
           </div>
-        </motion.form>
+        </m.form>
       </GlassCard>
-    </motion.div>
+    </m.div>
   );
 }

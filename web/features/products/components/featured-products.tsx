@@ -18,7 +18,7 @@
 
 import { ProductCard } from "@/features/products/components/product-card";
 import { Product } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { useTranslations } from "next-intl";
 
 interface FeaturedProductsProps {
@@ -55,7 +55,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
   };
 
   return (
-    <motion.section
+    <m.section
       className="mt-24 pt-16 border-t border-foreground/5"
       initial="hidden"
       animate="visible"
@@ -75,7 +75,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product) => (
-          <motion.div key={product.id} variants={itemVariants}>
+          <m.div key={product.id} variants={itemVariants}>
             <ProductCard
               id={product.id}
               name={product.name}
@@ -93,9 +93,9 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
               category={product.category?.name}
               skus={product.skus}
             />
-          </motion.div>
+          </m.div>
         ))}
       </div>
-    </motion.section>
+    </m.section>
   );
 }

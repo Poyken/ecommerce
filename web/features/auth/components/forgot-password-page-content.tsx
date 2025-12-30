@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/shared/use-toast";
 import { Link } from "@/i18n/routing";
 import { forgotPasswordSchema } from "@/lib/schemas";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useActionState, useEffect, useRef, useState } from "react";
@@ -69,7 +70,7 @@ export function ForgotPasswordPageContent() {
   };
 
   return (
-    <motion.div
+    <m.div
       initial="hidden"
       animate="visible"
       variants={sectionVariants}
@@ -111,7 +112,7 @@ export function ForgotPasswordPageContent() {
             </Link>
           </div>
         ) : (
-          <motion.form
+          <m.form
             layout
             action={handleAction}
             className="space-y-6"
@@ -149,7 +150,7 @@ export function ForgotPasswordPageContent() {
               />
               <AnimatePresence initial={false}>
                 {localErrors.email && (
-                  <motion.div
+                  <m.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
@@ -159,7 +160,7 @@ export function ForgotPasswordPageContent() {
                     <p className="text-red-500 text-sm mt-1">
                       {localErrors.email[0]}
                     </p>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
             </div>
@@ -181,9 +182,9 @@ export function ForgotPasswordPageContent() {
                 {t("signIn")}
               </Link>
             </div>
-          </motion.form>
+          </m.form>
         )}
       </GlassCard>
-    </motion.div>
+    </m.div>
   );
 }

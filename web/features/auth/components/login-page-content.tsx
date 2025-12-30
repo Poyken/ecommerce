@@ -10,9 +10,10 @@ import { login2FAAction, loginAction } from "@/features/auth/actions";
 import { mergeGuestCartAction } from "@/features/cart/actions";
 import { mergeGuestWishlistAction } from "@/features/wishlist/actions";
 import { Link, useRouter } from "@/i18n/routing";
+import { m } from "@/lib/animations";
 import { env } from "@/lib/env";
 import { loginSchema } from "@/lib/schemas";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { ShieldCheck } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -41,7 +42,7 @@ import {
  * - Nếu có, gọi `mergeGuestCartAction` để đồng bộ sản phẩm vào tài khoản user.
  *
  * 3. ANIMATED ERRORS:
- * - Sử dụng `AnimatePresence` và `motion.p` để thông báo lỗi xuất hiện mượt mà, không làm "nhảy" layout đột ngột.
+ * - Sử dụng `AnimatePresence` và `m.p` để thông báo lỗi xuất hiện mượt mà, không làm "nhảy" layout đột ngột.
  * =====================================================================
  */
 export function LoginPageContent() {
@@ -239,7 +240,7 @@ export function LoginPageContent() {
   };
 
   return (
-    <motion.div
+    <m.div
       initial="hidden"
       animate="visible"
       variants={sectionVariants}
@@ -259,14 +260,9 @@ export function LoginPageContent() {
           <p className="text-muted-foreground font-light">{t("subtitle")}</p>
         </div>
 
-        <motion.form
-          layout
-          action={handleAction}
-          className="space-y-6"
-          noValidate
-        >
+        <m.form layout action={handleAction} className="space-y-6" noValidate>
           {mfaRequired ? (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="space-y-6"
@@ -315,7 +311,7 @@ export function LoginPageContent() {
               >
                 {t("twoFactor.backToLogin")}
               </button>
-            </motion.div>
+            </m.div>
           ) : (
             <>
               <div className="space-y-2">
@@ -358,7 +354,7 @@ export function LoginPageContent() {
                 />
                 <AnimatePresence initial={false}>
                   {localErrors.email && (
-                    <motion.div
+                    <m.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
@@ -368,7 +364,7 @@ export function LoginPageContent() {
                       <p className="text-red-500 text-sm mt-1">
                         {localErrors.email[0]}
                       </p>
-                    </motion.div>
+                    </m.div>
                   )}
                 </AnimatePresence>
               </div>
@@ -415,7 +411,7 @@ export function LoginPageContent() {
                 />
                 <AnimatePresence initial={false}>
                   {localErrors.password && (
-                    <motion.div
+                    <m.div
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
@@ -425,7 +421,7 @@ export function LoginPageContent() {
                       <p className="text-red-500 text-sm mt-1">
                         {localErrors.password[0]}
                       </p>
-                    </motion.div>
+                    </m.div>
                   )}
                 </AnimatePresence>
               </div>
@@ -525,8 +521,8 @@ export function LoginPageContent() {
               </div>
             </>
           )}
-        </motion.form>
+        </m.form>
       </GlassCard>
-    </motion.div>
+    </m.div>
   );
 }

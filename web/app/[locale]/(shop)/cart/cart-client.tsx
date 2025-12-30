@@ -49,7 +49,7 @@ import {
 } from "@/features/cart/actions";
 import { Link } from "@/i18n/routing";
 import { Cart, CartItem, Sku } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import {
   Lock,
   Minus,
@@ -435,7 +435,7 @@ export function CartClient({ cart }: CartClientProps) {
       <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-secondary/30 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
-        <motion.div
+        <m.div
           className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -486,7 +486,7 @@ export function CartClient({ cart }: CartClientProps) {
               </AlertDialogContent>
             </AlertDialog>
           )}
-        </motion.div>
+        </m.div>
 
         {isInitializing ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -513,7 +513,7 @@ export function CartClient({ cart }: CartClientProps) {
             </div>
           </div>
         ) : localItems.length === 0 ? (
-          <motion.div
+          <m.div
             className="flex flex-col items-center justify-center py-24 px-4 text-center space-y-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -535,7 +535,7 @@ export function CartClient({ cart }: CartClientProps) {
                 {t("startShopping")}
               </GlassButton>
             </Link>
-          </motion.div>
+          </m.div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-8 space-y-4">
@@ -565,7 +565,7 @@ export function CartClient({ cart }: CartClientProps) {
                   </span>
                 </div>
                 <div className="h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
-                  <motion.div
+                  <m.div
                     className="h-full bg-linear-to-r from-success to-info"
                     initial={{ width: 0 }}
                     animate={{
@@ -579,7 +579,7 @@ export function CartClient({ cart }: CartClientProps) {
                 </div>
               </GlassCard>
 
-              <motion.div
+              <m.div
                 className="space-y-4"
                 variants={containerVariants}
                 initial="hidden"
@@ -607,7 +607,7 @@ export function CartClient({ cart }: CartClientProps) {
                 </div>
 
                 {localItems.map((item) => (
-                  <motion.div key={item.id} variants={itemVariants}>
+                  <m.div key={item.id} variants={itemVariants}>
                     <GlassCard className="p-4 md:p-6 group hover:bg-white/10 transition-all duration-300">
                       <div className="flex gap-4 md:gap-6">
                         <div className="flex items-center">
@@ -724,9 +724,9 @@ export function CartClient({ cart }: CartClientProps) {
                         </div>
                       </div>
                     </GlassCard>
-                  </motion.div>
+                  </m.div>
                 ))}
-              </motion.div>
+              </m.div>
             </div>
 
             <div className="lg:col-span-4 space-y-6">

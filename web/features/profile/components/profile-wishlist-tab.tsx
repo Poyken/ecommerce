@@ -25,7 +25,8 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { ProductCard } from "@/features/products/components/product-card";
 import { Link } from "@/i18n/routing";
 import { Product } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -110,7 +111,7 @@ export function ProfileWishlistTab() {
               : 5;
 
             return (
-              <motion.div
+              <m.div
                 key={product.id}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -135,7 +136,7 @@ export function ProfileWishlistTab() {
                   reviewCount={reviewCount}
                   initialIsWishlisted={true}
                 />
-              </motion.div>
+              </m.div>
             );
           })}
         </AnimatePresence>

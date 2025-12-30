@@ -3,7 +3,8 @@
 import { GlassButton } from "@/components/shared/glass-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/routing";
-import { AnimatePresence, m } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";

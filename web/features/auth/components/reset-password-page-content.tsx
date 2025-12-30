@@ -8,7 +8,8 @@ import { PasswordInput } from "@/components/shared/password-input";
 import { useToast } from "@/components/shared/use-toast";
 import { Link } from "@/i18n/routing";
 import { resetPasswordSchema } from "@/lib/schemas";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { AlertCircle, CheckCircle2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -104,7 +105,7 @@ export function ResetPasswordPageContent() {
   }
 
   return (
-    <motion.div
+    <m.div
       initial="hidden"
       animate="visible"
       variants={sectionVariants}
@@ -146,7 +147,7 @@ export function ResetPasswordPageContent() {
             </Link>
           </div>
         ) : (
-          <motion.form
+          <m.form
             layout
             action={handleAction}
             className="space-y-6"
@@ -188,7 +189,7 @@ export function ResetPasswordPageContent() {
               />
               <AnimatePresence initial={false}>
                 {localErrors.newPassword && (
-                  <motion.div
+                  <m.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
@@ -198,7 +199,7 @@ export function ResetPasswordPageContent() {
                     <p className="text-red-500 text-sm mt-1">
                       {localErrors.newPassword[0]}
                     </p>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
             </div>
@@ -239,7 +240,7 @@ export function ResetPasswordPageContent() {
               />
               <AnimatePresence initial={false}>
                 {localErrors.confirmPassword && (
-                  <motion.div
+                  <m.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
@@ -249,7 +250,7 @@ export function ResetPasswordPageContent() {
                     <p className="text-red-500 text-sm mt-1">
                       {localErrors.confirmPassword[0]}
                     </p>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
             </div>
@@ -261,9 +262,9 @@ export function ResetPasswordPageContent() {
             >
               {t("submit")}
             </GlassButton>
-          </motion.form>
+          </m.form>
         )}
       </GlassCard>
-    </motion.div>
+    </m.div>
   );
 }

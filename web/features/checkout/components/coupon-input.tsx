@@ -29,7 +29,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Coupon } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { TicketPercent, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -114,18 +115,18 @@ export function CouponInput({
 
       <AnimatePresence mode="wait">
         {error && (
-          <motion.p
+          <m.p
             initial={{ height: 0, opacity: 0, marginTop: 0 }}
             animate={{ height: "auto", opacity: 1, marginTop: 4 }}
             exit={{ height: 0, opacity: 0, marginTop: 0 }}
             className="text-xs text-red-500 font-medium overflow-hidden"
           >
             {error}
-          </motion.p>
+          </m.p>
         )}
 
         {appliedCoupon && (
-          <motion.div
+          <m.div
             initial={{ height: 0, opacity: 0, marginTop: 0 }}
             animate={{ height: "auto", opacity: 1, marginTop: 8 }}
             exit={{ height: 0, opacity: 0, marginTop: 0 }}
@@ -138,7 +139,7 @@ export function CouponInput({
               </span>
               <span>-{formatMoney(appliedCoupon.discount)}</span>
             </div>
-          </motion.div>
+          </m.div>
         )}
       </AnimatePresence>
     </div>

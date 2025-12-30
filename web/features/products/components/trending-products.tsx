@@ -24,7 +24,7 @@
 import { ProductCard } from "@/features/products/components/product-card";
 import { fadeInUp, itemVariant, staggerContainer } from "@/lib/animations";
 import { Product } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { useTranslations } from "next-intl";
 
 interface TrendingProductsProps {
@@ -40,7 +40,7 @@ export function TrendingProducts({ products }: TrendingProductsProps) {
 
   return (
     <section className="container mx-auto px-4 py-16">
-      <motion.div
+      <m.div
         className="flex flex-col items-center text-center space-y-4 mb-16"
         initial="hidden"
         whileInView="visible"
@@ -59,9 +59,9 @@ export function TrendingProducts({ products }: TrendingProductsProps) {
           </span>
         </h2>
         <div className="w-24 h-1.5 bg-accent/40 rounded-full shadow-lg shadow-accent/20" />
-      </motion.div>
+      </m.div>
 
-      <motion.div
+      <m.div
         className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8"
         variants={staggerContainer}
         initial="hidden"
@@ -69,7 +69,7 @@ export function TrendingProducts({ products }: TrendingProductsProps) {
         viewport={{ once: true, margin: "-100px" }}
       >
         {trendingProducts.map((product) => (
-          <motion.div key={product.id} variants={itemVariant}>
+          <m.div key={product.id} variants={itemVariant}>
             <ProductCard
               id={product.id}
               name={product.name}
@@ -91,9 +91,9 @@ export function TrendingProducts({ products }: TrendingProductsProps) {
               skus={product.skus}
               options={product.options}
             />
-          </motion.div>
+          </m.div>
         ))}
-      </motion.div>
+      </m.div>
     </section>
   );
 }

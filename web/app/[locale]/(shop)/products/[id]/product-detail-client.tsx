@@ -10,7 +10,7 @@ import { ProductReviews } from "@/features/reviews/components/product-reviews";
 import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
 import { cn } from "@/lib/utils";
 import { Product, Review, Sku } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { Check, Shield, Truck } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
@@ -212,7 +212,7 @@ export function ProductDetailClient({
 
       {/* Product Info (Scrollable) */}
       <div className="lg:col-span-5 flex flex-col gap-6">
-        <motion.div
+        <m.div
           className="space-y-2"
           initial={{ opacity: 0, y: 0 }}
           animate={{ opacity: 1, y: 0 }}
@@ -263,7 +263,7 @@ export function ProductDetailClient({
           <p className="text-lg text-muted-foreground leading-relaxed border-l-2 border-emerald-500/20 pl-6">
             {product.description}
           </p>
-        </motion.div>
+        </m.div>
 
         <div>
           <GlassCard className="p-6 md:p-8 space-y-4 backdrop-blur-xl bg-linear-to-br from-emerald-500/5 via-blue-500/5 to-purple-500/5 border-emerald-500/10">

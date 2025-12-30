@@ -31,7 +31,8 @@ import {
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import { memo, useEffect, useState } from "react";
 
@@ -105,7 +106,7 @@ export const ProductImageGallery = memo(function ProductImageGallery({
   return (
     <div className="space-y-6 lg:sticky lg:top-24">
       {/* Main Image Stage */}
-      <motion.div
+      <m.div
         className="relative aspect-4/5 lg:aspect-auto lg:h-[70vh] w-full rounded-3xl overflow-hidden shadow-2xl border border-white/5 bg-neutral-900/50 group backdrop-blur-sm cursor-zoom-in"
         onMouseEnter={() => setIsZoomed(true)}
         onMouseLeave={() => setIsZoomed(false)}
@@ -120,7 +121,7 @@ export const ProductImageGallery = memo(function ProductImageGallery({
         {/* Initial Loading Skeleton */}
         <AnimatePresence>
           {!isFirstLoadReady && (
-            <motion.div
+            <m.div
               key="skeleton"
               initial={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -128,12 +129,12 @@ export const ProductImageGallery = memo(function ProductImageGallery({
               className="absolute inset-0 z-50"
             >
               <Skeleton className="w-full h-full" />
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 
         {/* 1. The Stable Display Image (Always Visible) */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0, filter: "blur(20px)" }}
           animate={{
             opacity: isFirstLoadReady ? 1 : 0,
@@ -154,7 +155,7 @@ export const ProductImageGallery = memo(function ProductImageGallery({
             )}
             priority
           />
-        </motion.div>
+        </m.div>
 
         {/* 2. The Incoming Image (Loading in Background) */}
         {isTransitioning && (
@@ -183,7 +184,7 @@ export const ProductImageGallery = memo(function ProductImageGallery({
             Zoom Ready
           </div>
         </div>
-      </motion.div>
+      </m.div>
 
       {/* Thumbnails Carousel */}
       <div className="relative w-full">

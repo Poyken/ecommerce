@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { cn, formatCurrency } from "@/lib/utils";
-import { motion, useMotionValueEvent, useScroll } from "framer-motion";
+import { m } from "@/lib/animations";
+import { useMotionValueEvent, useScroll } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
 
@@ -58,7 +59,7 @@ export function MobileStickyCart({
   const displayPrice = salePrice || price;
 
   return (
-    <motion.div
+    <m.div
       data-fixed-element
       initial={{ y: 100 }}
       animate={{ y: isVisible ? 0 : 100 }}
@@ -93,6 +94,6 @@ export function MobileStickyCart({
           )}
         </Button>
       </div>
-    </motion.div>
+    </m.div>
   );
 }

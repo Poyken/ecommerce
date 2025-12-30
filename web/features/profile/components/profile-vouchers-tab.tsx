@@ -25,7 +25,8 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { useToast } from "@/components/shared/use-toast";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Coupon } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { Copy, Ticket } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -95,7 +96,7 @@ export function ProfileVouchersTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <AnimatePresence>
           {coupons.map((coupon, index) => (
-            <motion.div
+            <m.div
               key={coupon.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -155,7 +156,7 @@ export function ProfileVouchersTab() {
                 {/* Dashed Line */}
                 <div className="absolute left-0 bottom-0 w-full h-1 bg-linear-to-r from-transparent via-primary/20 to-transparent" />
               </GlassCard>
-            </motion.div>
+            </m.div>
           ))}
         </AnimatePresence>
       </div>

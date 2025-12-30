@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
@@ -53,21 +53,21 @@ export function LoadingScreen({
         {/* Main Animation Container */}
         <div className="relative w-24 h-24 flex items-center justify-center">
           {/* Outer Orbiting Ring */}
-          <motion.div
+          <m.div
             animate={{ rotate: 360 }}
             transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
             className="absolute inset-0 rounded-full border-t-2 border-r-2 border-primary/40"
           />
 
           {/* Inner Orbiting Ring (Faster & Reverse) */}
-          <motion.div
+          <m.div
             animate={{ rotate: -360 }}
             transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
             className="absolute inset-4 rounded-full border-b-2 border-l-2 border-accent/40"
           />
 
           {/* Center Pulsing Core */}
-          <motion.div
+          <m.div
             animate={{
               scale: [1, 1.2, 1],
               opacity: [0.5, 1, 0.5],
@@ -77,27 +77,27 @@ export function LoadingScreen({
           />
 
           {/* Floating Particles around the core */}
-          <motion.div
+          <m.div
             animate={{ rotate: 360 }}
             transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
             className="absolute inset-0"
           >
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
-          </motion.div>
+          </m.div>
         </div>
       </div>
 
       {/* Text Content */}
       <div className="mt-12 flex flex-col items-center gap-3">
-        <motion.h2
+        <m.h2
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-2xl font-bold tracking-[0.4em] text-foreground uppercase"
         >
           Luxe
-        </motion.h2>
+        </m.h2>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
@@ -111,7 +111,7 @@ export function LoadingScreen({
             <span className="w-1 h-1 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
             <span className="w-1 h-1 rounded-full bg-primary animate-bounce" />
           </span>
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

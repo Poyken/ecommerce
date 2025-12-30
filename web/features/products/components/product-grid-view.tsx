@@ -3,10 +3,11 @@
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { ProductCard } from "@/features/products/components/product-card";
 import { usePathname, useRouter } from "@/i18n/routing";
+import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { PaginationMeta } from "@/types/dtos";
 import { Product } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { Grid2x2, Grid3x3, LayoutGrid } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -78,61 +79,63 @@ export function ProductGridView({
   return (
     <div className="space-y-6">
       {/* View Options Control Bar */}
-      <div className="flex justify-between items-center bg-background/50 backdrop-blur-sm p-4 rounded-xl border border-border/50">
-        <div className="flex items-center gap-2">
-          <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground mr-2">
-            View
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 rounded-[2rem] bg-foreground/2 border border-foreground/5 backdrop-blur-xl gap-6">
+        <div className="flex items-center gap-6">
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 whitespace-nowrap">
+            Grid View
           </span>
-          <div className="flex bg-muted/50 p-1 rounded-lg">
-            <button
-              onClick={() => setColumns(3)}
-              className={cn(
-                "p-2 rounded-md transition-all duration-200",
-                columns === 3
-                  ? "bg-background text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-              title="3 Columns"
-            >
-              <Grid3x3 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setColumns(4)}
-              className={cn(
-                "p-2 rounded-md transition-all duration-200",
-                columns === 4
-                  ? "bg-background text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-              title="4 Columns"
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setColumns(5)}
-              className={cn(
-                "p-2 rounded-md transition-all duration-200",
-                columns === 5
-                  ? "bg-background text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-              title="5 Columns"
-            >
-              <Grid2x2 className="w-4 h-4" />
-            </button>
+          <div className="relative flex bg-foreground/3 p-1 rounded-2xl border border-foreground/5">
+            {[3, 4, 5].map((val) => {
+              const Icon =
+                val === 3 ? Grid3x3 : val === 4 ? LayoutGrid : Grid2x2;
+              const isActive = columns === val;
+
+              return (
+                <button
+                  key={val}
+                  onClick={() => setColumns(val as 3 | 4 | 5)}
+                  className={cn(
+                    "relative p-3 rounded-xl transition-colors duration-300 z-10",
+                    isActive
+                      ? "text-primary"
+                      : "text-muted-foreground/40 hover:text-foreground"
+                  )}
+                  title={`${val} Columns`}
+                >
+                  <Icon className="w-4 h-4" />
+                  {isActive && (
+                    <m.div
+                      layoutId="activeGridView"
+                      className="absolute inset-0 bg-background rounded-xl shadow-lg shadow-primary/5 -z-10"
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
-        <div className="text-sm text-muted-foreground font-medium">
-          {t("shop.showing", {
-            from: (pagination.page - 1) * pagination.limit + 1,
-            to: Math.min(pagination.page * pagination.limit, pagination.total),
-            total: pagination.total,
-          })}
+        <div className="flex items-center gap-4">
+          <div className="h-1 w-1 rounded-full bg-primary/30" />
+          <div className="text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground/80">
+            {t("shop.showing", {
+              from: (pagination.page - 1) * pagination.limit + 1,
+              to: Math.min(
+                pagination.page * pagination.limit,
+                pagination.total
+              ),
+              total: pagination.total,
+            })}
+          </div>
         </div>
       </div>
 
       {/* Grid */}
-      <motion.div
+      <m.div
         layout
         className={cn(
           "grid grid-cols-2 gap-4 md:gap-6 lg:gap-8",
@@ -157,7 +160,7 @@ export function ProductGridView({
               "";
 
             return (
-              <motion.div
+              <m.div
                 layout
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -188,11 +191,11 @@ export function ProductGridView({
                   options={product.options}
                   className="h-full"
                 />
-              </motion.div>
+              </m.div>
             );
           })}
         </AnimatePresence>
-      </motion.div>
+      </m.div>
 
       {/* Pagination */}
       {pagination && pagination.lastPage > 1 && (

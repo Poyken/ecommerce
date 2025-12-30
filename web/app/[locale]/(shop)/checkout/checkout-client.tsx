@@ -54,7 +54,7 @@ import {
 import { Link, useRouter } from "@/i18n/routing";
 import { formatCurrency } from "@/lib/utils";
 import { Address, Cart, CartItem, Coupon, Sku } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { ArrowLeft, Lock, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
@@ -395,7 +395,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
           </Link>
         </div>
 
-        <motion.div
+        <m.div
           className="text-center mb-10"
           initial="hidden"
           animate="visible"
@@ -410,7 +410,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
           <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
             {t("title")}
           </h1>
-        </motion.div>
+        </m.div>
 
         {isInitializing ? (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">

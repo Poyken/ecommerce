@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/shared/use-toast";
 import { Category } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { FolderTree } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
@@ -127,14 +128,14 @@ export function CreateCategoryDialog({
           />
           <AnimatePresence>
             {errors.name && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.name}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>
@@ -153,14 +154,14 @@ export function CreateCategoryDialog({
           />
           <AnimatePresence>
             {errors.slug && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.slug}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
           <p className="text-sm text-gray-500">{t("categories.slugHint")}</p>

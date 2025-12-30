@@ -17,7 +17,7 @@
 
 import { GlassCard } from "@/components/shared/glass-card";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -77,7 +77,7 @@ export function ContactInfoCards({ className }: ContactInfoCardsProps) {
   ];
 
   return (
-    <motion.div
+    <m.div
       className={cn("grid grid-cols-1 md:grid-cols-3 gap-8 mb-16", className)}
       initial="hidden"
       whileInView="visible"
@@ -85,7 +85,7 @@ export function ContactInfoCards({ className }: ContactInfoCardsProps) {
       variants={containerVariants}
     >
       {cards.map((card, index) => (
-        <motion.div key={index} variants={itemVariants} className="h-full">
+        <m.div key={index} variants={itemVariants} className="h-full">
           <GlassCard
             className={`p-6 h-full hover:scale-105 transition-all duration-500 hover:shadow-2xl ${card.shadow} border border-foreground/5 ${card.border} flex flex-col items-center text-center group rounded-3xl`}
           >
@@ -106,8 +106,8 @@ export function ContactInfoCards({ className }: ContactInfoCardsProps) {
               </p>
             ))}
           </GlassCard>
-        </motion.div>
+        </m.div>
       ))}
-    </motion.div>
+    </m.div>
   );
 }

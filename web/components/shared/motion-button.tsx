@@ -6,10 +6,11 @@ import {
   hoverGlow,
   hoverLift,
   hoverScale,
+  m,
   tapScale,
 } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { HTMLMotionProps, motion } from "framer-motion";
+import { type HTMLMotionProps } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { forwardRef } from "react";
 
@@ -68,7 +69,7 @@ export const MotionButton = forwardRef<HTMLButtonElement, MotionButtonProps>(
     const { hover, tap } = animationVariants[animation];
 
     return (
-      <motion.button
+      <m.button
         ref={ref}
         className={cn(
           buttonVariants({ variant, size, className }),
@@ -81,7 +82,7 @@ export const MotionButton = forwardRef<HTMLButtonElement, MotionButtonProps>(
       >
         {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
         {children as React.ReactNode}
-      </motion.button>
+      </m.button>
     );
   }
 );

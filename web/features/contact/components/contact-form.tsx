@@ -25,7 +25,7 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { CheckCircle2, Send } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
@@ -118,7 +118,7 @@ export function ContactForm() {
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -277,6 +277,6 @@ export function ContactForm() {
           </form>
         )}
       </GlassCard>
-    </motion.div>
+    </m.div>
   );
 }

@@ -29,7 +29,8 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/components/shared/use-toast";
 import { Address } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 
@@ -427,14 +428,14 @@ function ErrorMessage({ message }: { message?: string }) {
   return (
     <AnimatePresence mode="wait">
       {message && (
-        <motion.p
+        <m.p
           initial={{ height: 0, opacity: 0, y: -5 }}
           animate={{ height: "auto", opacity: 1, y: 0 }}
           exit={{ height: 0, opacity: 0, y: -5 }}
           className="text-xs text-red-500 font-medium mt-1 overflow-hidden"
         >
           {message}
-        </motion.p>
+        </m.p>
       )}
     </AnimatePresence>
   );

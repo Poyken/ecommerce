@@ -3,7 +3,7 @@
 import { ProfileForm } from "@/components/organisms/profile-form";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { User } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 
 /**
  * =====================================================================
@@ -37,13 +37,13 @@ export function ProfilePageContent({ user }: ProfilePageContentProps) {
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[150px] -z-10" />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[150px] -z-10" />
       <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[180px] -translate-x-1/2 -translate-y-1/2 -z-10" />
-      <motion.div
+      <m.div
         className="container mx-auto px-4 max-w-7xl"
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
       >
-        <motion.div className="mb-10" variants={fadeInUp}>
+        <m.div className="mb-10" variants={fadeInUp}>
           <div>
             <h1 className="text-3xl md:text-4xl font-black tracking-tight">
               Account Settings
@@ -52,12 +52,12 @@ export function ProfilePageContent({ user }: ProfilePageContentProps) {
               Manage your profile and preferences
             </p>
           </div>
-        </motion.div>
+        </m.div>
 
-        <motion.div variants={fadeInUp}>
+        <m.div variants={fadeInUp}>
           <ProfileForm user={user} />
-        </motion.div>
-      </motion.div>
+        </m.div>
+      </m.div>
     </div>
   );
 }

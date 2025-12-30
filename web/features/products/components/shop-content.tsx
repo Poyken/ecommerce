@@ -26,7 +26,8 @@ import { usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { ApiResponse } from "@/types/dtos";
 import { Brand, Category, Product } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { Filter, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -269,7 +270,7 @@ export function ShopContent({
 
               <AnimatePresence mode="popLayout">
                 {hasActiveFilters && (
-                  <motion.div
+                  <m.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
@@ -304,7 +305,7 @@ export function ShopContent({
                     >
                       {t("clearAll")}
                     </button>
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
             </div>

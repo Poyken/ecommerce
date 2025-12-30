@@ -7,7 +7,7 @@ import { FeaturedProducts } from "@/features/products/components/featured-produc
 import { Link } from "@/i18n/routing";
 import { fadeInRight, fadeInUp, staggerContainer } from "@/lib/animations";
 import { BlogWithProducts } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { ArrowLeft, Calendar, Clock, Share2, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -113,7 +113,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
       />
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
-        <motion.div
+        <m.div
           initial="hidden"
           animate="visible"
           variants={staggerContainer}
@@ -176,7 +176,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
             <div className="relative aspect-21/9 w-full rounded-3xl overflow-hidden mb-12 border border-white/10 shadow-2xl bg-muted/20">
               <AnimatePresence mode="wait">
                 {!isImageReady && (
-                  <motion.div
+                  <m.div
                     key="skeleton"
                     initial={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -184,13 +184,13 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                     className="absolute inset-0 z-20"
                   >
                     <Skeleton className="w-full h-full" />
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
 
               <AnimatePresence>
                 {isImageReady && (
-                  <motion.div
+                  <m.div
                     key="image"
                     initial={{ opacity: 0, filter: "blur(20px)" }}
                     animate={{ opacity: 1, filter: "blur(0px)" }}
@@ -204,21 +204,21 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                       className="object-cover"
                       priority
                     />
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
             </div>
           )}
-        </motion.div>
+        </m.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          <motion.article
+          <m.article
             className="lg:col-span-8 prose prose-lg dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-a:text-primary prose-img:rounded-2xl max-w-none"
             variants={fadeInUp}
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
-          <motion.aside
+          <m.aside
             className="lg:col-span-4 space-y-8"
             variants={fadeInRight}
           >
@@ -334,7 +334,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                 </div>
               </div>
             </GlassCard>
-          </motion.aside>
+          </m.aside>
         </div>
 
         {/* Featured Products Section */}

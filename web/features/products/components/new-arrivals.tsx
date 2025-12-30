@@ -23,7 +23,7 @@ import { ProductCard } from "@/features/products/components/product-card";
 import { Link } from "@/i18n/routing";
 import { fadeInRight, itemVariant, staggerContainer } from "@/lib/animations";
 import { Product } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -40,7 +40,7 @@ export function NewArrivals({ products }: NewArrivalsProps) {
 
   return (
     <section className="container mx-auto px-4 overflow-hidden py-16">
-      <motion.div
+      <m.div
         className="flex flex-col md:flex-row justify-between items-center md:items-end gap-6 mb-12"
         initial="hidden"
         whileInView="visible"
@@ -69,9 +69,9 @@ export function NewArrivals({ products }: NewArrivalsProps) {
             className="transition-transform group-hover:translate-x-2"
           />
         </Link>
-      </motion.div>
+      </m.div>
 
-      <motion.div
+      <m.div
         className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8"
         variants={staggerContainer}
         initial="hidden"
@@ -79,7 +79,7 @@ export function NewArrivals({ products }: NewArrivalsProps) {
         viewport={{ once: true, margin: "-100px" }}
       >
         {newArrivals.map((product) => (
-          <motion.div key={product.id} variants={itemVariant}>
+          <m.div key={product.id} variants={itemVariant}>
             <ProductCard
               id={product.id}
               name={product.name}
@@ -96,9 +96,9 @@ export function NewArrivals({ products }: NewArrivalsProps) {
               skus={product.skus}
               options={product.options}
             />
-          </motion.div>
+          </m.div>
         ))}
-      </motion.div>
+      </m.div>
     </section>
   );
 }

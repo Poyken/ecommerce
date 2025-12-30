@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateSkuAction } from "@/features/admin/actions";
 import { Sku } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 
@@ -153,14 +154,14 @@ export function EditSkuDialog({ sku, open, onOpenChange }: EditSkuDialogProps) {
             />
             <AnimatePresence>
               {errors.price && (
-                <motion.p
+                <m.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="text-xs text-destructive"
                 >
                   {errors.price}
-                </motion.p>
+                </m.p>
               )}
             </AnimatePresence>
           </div>
@@ -179,14 +180,14 @@ export function EditSkuDialog({ sku, open, onOpenChange }: EditSkuDialogProps) {
             />
             <AnimatePresence>
               {errors.stock && (
-                <motion.p
+                <m.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="text-xs text-destructive"
                 >
                   {errors.stock}
-                </motion.p>
+                </m.p>
               )}
             </AnimatePresence>
           </div>

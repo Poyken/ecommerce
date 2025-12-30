@@ -19,7 +19,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { getCategoriesAction, getProductsAction } from "@/features/admin/actions";
 import { createBlogAction, updateBlogAction } from "@/features/blog/actions";
 import { BlogWithProducts, Category, Product } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 
@@ -246,14 +247,14 @@ export function BlogFormDialog({
             />
             <AnimatePresence>
               {errors.title && (
-                <motion.p
+                <m.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="text-xs text-destructive"
                 >
                   {errors.title}
-                </motion.p>
+                </m.p>
               )}
             </AnimatePresence>
           </div>
@@ -273,14 +274,14 @@ export function BlogFormDialog({
             />
             <AnimatePresence>
               {errors.slug && (
-                <motion.p
+                <m.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="text-xs text-destructive"
                 >
                   {errors.slug}
-                </motion.p>
+                </m.p>
               )}
             </AnimatePresence>
           </div>
@@ -303,14 +304,14 @@ export function BlogFormDialog({
           />
           <AnimatePresence>
             {errors.excerpt && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.excerpt}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>
@@ -328,14 +329,14 @@ export function BlogFormDialog({
           />
           <AnimatePresence>
             {errors.content && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.content}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>
@@ -367,14 +368,14 @@ export function BlogFormDialog({
             </Select>
             <AnimatePresence>
               {errors.category && (
-                <motion.p
+                <m.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="text-xs text-destructive"
                 >
                   {errors.category}
-                </motion.p>
+                </m.p>
               )}
             </AnimatePresence>
           </div>
@@ -417,14 +418,14 @@ export function BlogFormDialog({
             />
             <AnimatePresence>
               {errors.author && (
-                <motion.p
+                <m.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="text-xs text-destructive"
                 >
                   {errors.author}
-                </motion.p>
+                </m.p>
               )}
               {isUserMode && (
                 <p className="text-xs text-muted-foreground mt-1">

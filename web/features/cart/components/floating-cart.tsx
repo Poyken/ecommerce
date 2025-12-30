@@ -2,7 +2,8 @@
 
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -78,7 +79,7 @@ export function FloatingCart({ className }: FloatingCartProps) {
   return (
     <AnimatePresence>
       {isVisible && (
-        <motion.div
+        <m.div
           data-fixed-element
           initial={{ opacity: 0, scale: 0.8, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -91,7 +92,7 @@ export function FloatingCart({ className }: FloatingCartProps) {
           )}
         >
           <Link href="/cart">
-            <motion.div
+            <m.div
               animate={isAnimating ? { scale: [1, 1.15, 1] } : {}}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className={cn(
@@ -114,7 +115,7 @@ export function FloatingCart({ className }: FloatingCartProps) {
               {/* Item Count Badge */}
               <AnimatePresence>
                 {itemCount > 0 && (
-                  <motion.div
+                  <m.div
                     initial={{ scale: 0, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0, opacity: 0 }}
@@ -129,7 +130,7 @@ export function FloatingCart({ className }: FloatingCartProps) {
                     )}
                   >
                     {itemCount > 99 ? "99+" : itemCount}
-                  </motion.div>
+                  </m.div>
                 )}
               </AnimatePresence>
 
@@ -141,9 +142,9 @@ export function FloatingCart({ className }: FloatingCartProps) {
                   "group-hover:border-accent/40 group-hover:scale-110"
                 )}
               />
-            </motion.div>
+            </m.div>
           </Link>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

@@ -27,7 +27,8 @@ import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { ApiResponse } from "@/types/dtos";
 import { Product } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -124,7 +125,7 @@ export function ShopGrid({
 
   return (
     <div className="space-y-6">
-      <motion.div
+      <m.div
         layout
         className={cn(
           "grid grid-cols-2 gap-4 md:gap-6 lg:gap-8",
@@ -152,7 +153,7 @@ export function ShopGrid({
               );
 
               return (
-                <motion.div
+                <m.div
                   layout
                   key={product.id}
                   variants={itemVariants}
@@ -190,11 +191,11 @@ export function ShopGrid({
                     className="h-full"
                     initialIsWishlisted={isWishlisted}
                   />
-                </motion.div>
+                </m.div>
               );
             })
           ) : (
-            <motion.div
+            <m.div
               layout
               key="empty"
               variants={itemVariants}
@@ -256,10 +257,10 @@ export function ShopGrid({
                   {t("clearFilters")}
                 </GlassButton>
               </Link>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
-      </motion.div>
+      </m.div>
 
       {/* Pagination Controls */}
       {pagination && pagination.lastPage > 1 && (

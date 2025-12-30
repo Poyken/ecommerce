@@ -41,7 +41,7 @@ import { fadeInUp, itemVariant, staggerContainer } from "@/lib/animations";
 import { formatCurrency } from "@/lib/utils";
 import { Order as BaseOrder } from "@/types/models";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { ArrowRight, Box, Calendar, CreditCard, Package } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { ReorderButton } from "./reorder-button";
@@ -81,7 +81,7 @@ export function OrdersClient({ orders, meta }: OrdersClientProps) {
       <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[150px] pointer-events-none" />
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
-        <motion.div
+        <m.div
           className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10"
           initial="hidden"
           animate="visible"
@@ -95,9 +95,9 @@ export function OrdersClient({ orders, meta }: OrdersClientProps) {
               {t("subtitle", { count: orders.length })}
             </p>
           </div>
-        </motion.div>
+        </m.div>
 
-        <motion.div
+        <m.div
           className="space-y-6"
           initial="hidden"
           animate="visible"
@@ -106,7 +106,7 @@ export function OrdersClient({ orders, meta }: OrdersClientProps) {
           {orders.length > 0 ? (
             <>
               {orders.map((order) => (
-                <motion.div key={order.id} variants={itemVariant}>
+                <m.div key={order.id} variants={itemVariant}>
                   <GlassCard className="p-6 transition-all hover:bg-white/10 group border border-transparent hover:border-primary/20 hover:shadow-lg hover:shadow-primary/10">
                     <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
                       <div className="space-y-4 flex-1">
@@ -204,7 +204,7 @@ export function OrdersClient({ orders, meta }: OrdersClientProps) {
                       </div>
                     </div>
                   </GlassCard>
-                </motion.div>
+                </m.div>
               ))}
 
               {/* Pagination Controls */}
@@ -236,7 +236,7 @@ export function OrdersClient({ orders, meta }: OrdersClientProps) {
             </>
           ) : (
             // ... empty state ...
-            <motion.div
+            <m.div
               className="flex flex-col items-center justify-center py-24 px-4 text-center space-y-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm"
               variants={itemVariant}
             >
@@ -257,9 +257,9 @@ export function OrdersClient({ orders, meta }: OrdersClientProps) {
                   {t("startShopping")}
                 </GlassButton>
               </Link>
-            </motion.div>
+            </m.div>
           )}
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

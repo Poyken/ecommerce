@@ -28,7 +28,7 @@ import { ProductCard } from "@/features/products/components/product-card";
 import { useGuestWishlist } from "@/features/wishlist/hooks/use-guest-wishlist";
 import { Link } from "@/i18n/routing";
 import { useAuth } from "@/features/auth/providers/auth-provider";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -118,7 +118,7 @@ export function WishlistClient({
       <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-pink-500/10 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[150px] pointer-events-none" />
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
-        <motion.div
+        <m.div
           className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10"
           initial="hidden"
           animate="visible"
@@ -132,7 +132,7 @@ export function WishlistClient({
               {t("subtitle", { count: items.length })}
             </p>
           </div>
-        </motion.div>
+        </m.div>
 
         <div>
           {isInitializing ? (

@@ -17,7 +17,8 @@ import {
   generateTwoFactorAction,
 } from "@/features/profile/actions";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { Check, Copy, Shield, ShieldAlert, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -114,7 +115,7 @@ export function ProfileSecurityTab({ user }: ProfileSecurityTabProps) {
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -175,7 +176,7 @@ export function ProfileSecurityTab({ user }: ProfileSecurityTabProps) {
 
           <AnimatePresence mode="wait">
             {!user.twoFactorEnabled && !qrData && (
-              <motion.div
+              <m.div
                 key="enable-start"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -188,11 +189,11 @@ export function ProfileSecurityTab({ user }: ProfileSecurityTabProps) {
                 >
                   {isPending ? tCommon("loading") : t("twoFactor.enable")}
                 </GlassButton>
-              </motion.div>
+              </m.div>
             )}
 
             {!user.twoFactorEnabled && qrData && (
-              <motion.div
+              <m.div
                 key="enable-qr"
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
@@ -269,11 +270,11 @@ export function ProfileSecurityTab({ user }: ProfileSecurityTabProps) {
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             )}
 
             {user.twoFactorEnabled && (
-              <motion.div
+              <m.div
                 key="disable"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -305,11 +306,11 @@ export function ProfileSecurityTab({ user }: ProfileSecurityTabProps) {
                       : t("twoFactor.confirmDisable")}
                   </GlassButton>
                 </div>
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
         </div>
       </GlassCard>
-    </motion.div>
+    </m.div>
   );
 }

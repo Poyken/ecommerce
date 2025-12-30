@@ -4,7 +4,8 @@ import { GlassButton } from "@/components/shared/glass-button";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import { Brand, Category } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, Filter, Loader2, Tag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -176,7 +177,7 @@ export const FilterSidebar = memo(function FilterSidebar({
           {/* Phần mở rộng có animation */}
           <AnimatePresence>
             {showAllCategories && (
-              <motion.div
+              <m.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
@@ -193,7 +194,7 @@ export const FilterSidebar = memo(function FilterSidebar({
                       "categoryId"
                     )
                   )}
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 
@@ -246,7 +247,7 @@ export const FilterSidebar = memo(function FilterSidebar({
 
           <AnimatePresence>
             {showAllBrands && (
-              <motion.div
+              <m.div
                 initial={{ height: 0, opacity: 0 }}
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
@@ -264,7 +265,7 @@ export const FilterSidebar = memo(function FilterSidebar({
                       true
                     )
                   )}
-              </motion.div>
+              </m.div>
             )}
           </AnimatePresence>
 

@@ -1,7 +1,8 @@
 "use client";
 
 import { UserAvatar } from "@/components/molecules/user-avatar";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
 /**
@@ -78,7 +79,7 @@ export function SocialProofToast() {
   return (
     <AnimatePresence>
       {visible && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 50, x: 20 }}
           animate={{ opacity: 1, y: 0, x: 0 }}
           exit={{ opacity: 0, y: 20, x: 0 }}
@@ -101,7 +102,7 @@ export function SocialProofToast() {
             </p>
             <p className="text-xs text-muted-foreground">{message}</p>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

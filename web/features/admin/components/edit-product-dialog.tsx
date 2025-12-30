@@ -19,7 +19,8 @@ import {
     useAdminCategories,
 } from "@/features/admin/providers/admin-metadata-provider";
 import { OptionValue, Product, ProductOption } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 
@@ -202,14 +203,14 @@ export function EditProductDialog({
           />
           <AnimatePresence>
             {errors.name && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.name}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>
@@ -264,14 +265,14 @@ export function EditProductDialog({
           </Select>
           <AnimatePresence>
             {errors.categoryId && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.categoryId}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>
@@ -300,14 +301,14 @@ export function EditProductDialog({
           </Select>
           <AnimatePresence>
             {errors.brandId && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.brandId}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>

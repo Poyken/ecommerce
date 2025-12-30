@@ -39,7 +39,7 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { AddAddressDialog } from "@/features/admin/components/add-address-dialog";
 import { useToast } from "@/components/shared/use-toast";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { Edit, MapPin, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -101,7 +101,7 @@ export function ProfileAddressesTab({ addresses }: { addresses: Address[] }) {
 
   return (
     <>
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
@@ -198,7 +198,7 @@ export function ProfileAddressesTab({ addresses }: { addresses: Address[] }) {
             )}
           </div>
         </GlassCard>
-      </motion.div>
+      </m.div>
 
       <AddAddressDialog
         open={addAddressOpen}

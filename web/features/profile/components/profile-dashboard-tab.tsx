@@ -26,7 +26,7 @@ import { getWishlistCountAction } from "@/features/wishlist/actions";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { User } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { Heart, ShoppingBag, Ticket } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -117,7 +117,7 @@ export function ProfileDashboardTab({
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <motion.div
+            <m.div
               key={stat.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -140,7 +140,7 @@ export function ProfileDashboardTab({
                   </p>
                 </div>
               </GlassCard>
-            </motion.div>
+            </m.div>
           );
         })}
       </div>

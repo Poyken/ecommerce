@@ -1,4 +1,6 @@
-import { Variants } from "framer-motion";
+import { m, Variants } from "framer-motion";
+
+export { m };
 
 /**
  * =====================================================================

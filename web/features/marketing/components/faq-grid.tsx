@@ -16,7 +16,7 @@
 "use client";
 
 import { GlassCard } from "@/components/shared/glass-card";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { useTranslations } from "next-intl";
 
 const containerVariants = {
@@ -86,7 +86,7 @@ export function FAQGrid() {
   ];
 
   return (
-    <motion.div
+    <m.div
       className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto"
       variants={containerVariants}
       initial="hidden"
@@ -94,7 +94,7 @@ export function FAQGrid() {
       viewport={{ once: true }}
     >
       {faqs.map((item, i) => (
-        <motion.div
+        <m.div
           variants={itemVariants}
           custom={i}
           key={i}
@@ -123,8 +123,8 @@ export function FAQGrid() {
               </div>
             </div>
           </GlassCard>
-        </motion.div>
+        </m.div>
       ))}
-    </motion.div>
+    </m.div>
   );
 }

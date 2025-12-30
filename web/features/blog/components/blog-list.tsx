@@ -3,7 +3,7 @@
 import { GlassCard } from "@/components/shared/glass-card";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import { BlogWithProducts } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { ArrowRight, Calendar, Clock, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
@@ -47,7 +47,7 @@ export function BlogList({ posts }: BlogListProps) {
   return (
     <>
       {/* Featured Post */}
-      <motion.div
+      <m.div
         className="mb-16"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -95,7 +95,7 @@ export function BlogList({ posts }: BlogListProps) {
             </div>
           </div>
         </Link>
-      </motion.div>
+      </m.div>
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">

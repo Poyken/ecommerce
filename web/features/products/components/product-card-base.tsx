@@ -3,8 +3,8 @@
 import { CompactRating } from "@/components/molecules/review-preview";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import { Link } from "@/i18n/routing";
+import { m } from "@/lib/animations";
 import { cn, formatCurrency } from "@/lib/utils";
-import { m } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { ReactNode, useCallback } from "react";

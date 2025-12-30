@@ -1,7 +1,8 @@
 "use client";
 
+import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { motion, type HTMLMotionProps } from "framer-motion";
+import { type HTMLMotionProps } from "framer-motion";
 
 /**
  * =====================================================================
@@ -46,11 +47,11 @@ export function GlassCard({
   };
 
   return (
-    <motion.div
+    <m.div
       className={cn("rounded-2xl border", variants[variant], className)}
       {...props}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }

@@ -38,7 +38,8 @@ import {
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import {
     Bell,
     CheckCheck,
@@ -192,7 +193,7 @@ export function NotificationsClient() {
 
         <AnimatePresence mode="wait">
           {filteredNotifications.length > 0 ? (
-            <motion.div
+            <m.div
               key="list"
               variants={containerVariants}
               initial="hidden"
@@ -200,7 +201,7 @@ export function NotificationsClient() {
               className="space-y-4"
             >
               {filteredNotifications.map((notification) => (
-                <motion.div key={notification.id} variants={itemVariants}>
+                <m.div key={notification.id} variants={itemVariants}>
                   <GlassCard
                     onClick={() => {
                       markAsRead(notification.id);
@@ -261,11 +262,11 @@ export function NotificationsClient() {
                       )}
                     </div>
                   </GlassCard>
-                </motion.div>
+                </m.div>
               ))}
-            </motion.div>
+            </m.div>
           ) : (
-            <motion.div
+            <m.div
               key="empty"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -280,7 +281,7 @@ export function NotificationsClient() {
                   {t("emptyDesc")}
                 </p>
               </div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 

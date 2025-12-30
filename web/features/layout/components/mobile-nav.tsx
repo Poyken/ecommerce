@@ -5,7 +5,8 @@ import { WishlistBadge } from "@/features/wishlist/components/wishlist-badge";
 import { Link, usePathname } from "@/i18n/routing";
 import { slideInFromBottom } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { Heart, Home, LogIn, Menu, ShoppingBag, User, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -103,7 +104,7 @@ export function MobileBottomNav({
                     <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                   )}
                   {isActive && (
-                    <motion.div
+                    <m.div
                       layoutId="activeTab"
                       className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary shadow-lg shadow-primary/50"
                       transition={{
@@ -148,7 +149,7 @@ export function MobileBottomNav({
         {isSearchOpen && (
           <>
             {/* Backdrop */}
-            <motion.div
+            <m.div
               data-fixed-element
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -158,7 +159,7 @@ export function MobileBottomNav({
             />
 
             {/* Menu Sheet */}
-            <motion.div
+            <m.div
               data-fixed-element
               variants={slideInFromBottom}
               initial="hidden"
@@ -211,7 +212,7 @@ export function MobileBottomNav({
                   </Link>
                 ))}
               </div>
-            </motion.div>
+            </m.div>
           </>
         )}
       </AnimatePresence>

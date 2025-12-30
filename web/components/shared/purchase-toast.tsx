@@ -1,6 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { ShoppingBag, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
@@ -123,7 +124,7 @@ export function SocialProofToast() {
   return (
     <AnimatePresence>
       {isVisible && currentNotification && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, x: -100, y: 20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           exit={{ opacity: 0, x: -100 }}
@@ -161,7 +162,7 @@ export function SocialProofToast() {
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

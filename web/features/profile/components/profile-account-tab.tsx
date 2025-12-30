@@ -27,7 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateProfileAction } from "@/features/profile/actions";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { Plus, Trash2, User as UserIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -106,7 +106,7 @@ export function ProfileAccountTab({ user }: { user: User }) {
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -213,6 +213,6 @@ export function ProfileAccountTab({ user }: { user: User }) {
           </div>
         </form>
       </GlassCard>
-    </motion.div>
+    </m.div>
   );
 }

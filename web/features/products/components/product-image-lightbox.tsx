@@ -10,7 +10,8 @@ import {
     type CarouselApi,
 } from "@/components/ui/carousel";
 import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { X, ZoomIn } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -121,7 +122,7 @@ export function ProductImageLightbox({
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -306,7 +307,7 @@ export function ProductImageLightbox({
           <div className="absolute top-4 left-4 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full text-white/90 text-xs font-medium border border-white/10 z-50">
             {current} / {images.length}
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>,
     document.body

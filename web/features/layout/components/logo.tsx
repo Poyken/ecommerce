@@ -7,7 +7,7 @@
  *
  * 1. BRAND IDENTITY:
  * - Hiển thị tên thương hiệu "LUXE" với phong cách hiện đại (font-black, tracking-tighter).
- * - Sử dụng `motion.div` để tạo hiệu ứng xoay nhẹ khi hover, tăng tính sinh động.
+ * - Sử dụng `m.div` để tạo hiệu ứng xoay nhẹ khi hover, tăng tính sinh động.
  *
  * 2. VARIANTS & SIZES:
  * - Hỗ trợ nhiều kích thước (sm, md, lg) và biến thể màu sắc (light, dark) để linh hoạt sử dụng ở Header, Footer hoặc Sidebar.
@@ -18,7 +18,7 @@
 
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 
 interface LogoProps {
   className?: string;
@@ -49,7 +49,7 @@ export function Logo({
 
   return (
     <Link href={href} className={cn("flex items-center gap-2.5 group", className)}>
-      <motion.div
+      <m.div
         whileHover={{ scale: 1.1, rotate: 5 }}
         whileTap={{ scale: 0.95 }}
         className={cn(
@@ -59,7 +59,7 @@ export function Logo({
         )}
       >
         <span className={sizes[size].char}>L</span>
-      </motion.div>
+      </m.div>
 
       {!collapsed && (
         <span

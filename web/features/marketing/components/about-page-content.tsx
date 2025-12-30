@@ -11,7 +11,8 @@ import {
     itemVariant,
     staggerContainer,
 } from "@/lib/animations";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { Heart, ShieldCheck, Truck, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -26,7 +27,7 @@ import { useEffect, useState } from "react";
  *
  * 1. VISUAL STORYTELLING:
  * - Sử dụng hình ảnh chất lượng cao từ Unsplash kết hợp với `opacity` và `gradient` để tạo chiều sâu.
- * - `motion.div` từ Framer Motion giúp các đoạn text xuất hiện mượt mà, tạo cảm giác cao cấp.
+ * - `m.div` từ Framer Motion giúp các đoạn text xuất hiện mượt mà, tạo cảm giác cao cấp.
  *
  * 2. ANIMATION VARIANTS:
  * - Sử dụng các animation variants từ `@/lib/animations` thay vì inline.
@@ -63,7 +64,7 @@ export function AboutPageContent() {
         {/* Background Image - shows after preloaded */}
         <AnimatePresence>
           {isHeroReady && (
-            <motion.div
+            <m.div
               className="absolute inset-0"
               initial={{ opacity: 0, filter: "blur(20px)" }}
               animate={{ opacity: 1, filter: "blur(0px)" }}
@@ -78,14 +79,14 @@ export function AboutPageContent() {
               />
               {/* Gradient overlay */}
               <div className="absolute inset-0 bg-linear-to-b from-background/20 via-background/60 to-background" />
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 
         {/* Skeleton while loading - for both background AND text */}
         <AnimatePresence>
           {!isHeroReady && (
-            <motion.div
+            <m.div
               className="absolute inset-0 z-20"
               initial={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -101,26 +102,26 @@ export function AboutPageContent() {
                   <Skeleton className="h-8 w-[500px] max-w-full" />
                 </div>
               </div>
-            </motion.div>
+            </m.div>
           )}
         </AnimatePresence>
 
         {/* Actual content - only animate in after image is loaded */}
         <AnimatePresence>
           {isHeroReady && (
-            <motion.div
+            <m.div
               className="container relative z-10 px-4 text-center space-y-6"
               initial="hidden"
               animate="visible"
               variants={staggerContainer}
             >
-              <motion.div
+              <m.div
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground shadow-sm"
                 variants={fadeInUp}
               >
                 <span>{t("established")}</span>
-              </motion.div>
-              <motion.h1
+              </m.div>
+              <m.h1
                 className="text-6xl md:text-8xl font-serif font-normal tracking-tight text-foreground"
                 variants={fadeInUp}
               >
@@ -128,14 +129,14 @@ export function AboutPageContent() {
                 <span className="text-gradient-champagne italic">
                   {t("visionaries")}
                 </span>
-              </motion.h1>
-              <motion.p
+              </m.h1>
+              <m.p
                 className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-light leading-relaxed"
                 variants={fadeInUp}
               >
                 {t("heroSubtitle")}
-              </motion.p>
-            </motion.div>
+              </m.p>
+            </m.div>
           )}
         </AnimatePresence>
       </section>
@@ -143,7 +144,7 @@ export function AboutPageContent() {
       <div className="container mx-auto px-4 py-24 space-y-32">
         {/* Mission & Vision */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          <motion.div
+          <m.div
             className="space-y-8"
             initial="hidden"
             whileInView="visible"
@@ -195,8 +196,8 @@ export function AboutPageContent() {
                 </div>
               ))}
             </div>
-          </motion.div>
-          <motion.div
+          </m.div>
+          <m.div
             className="relative aspect-square rounded-[2.5rem] overflow-hidden border border-foreground/5 shadow-2xl rotate-3 hover:rotate-0 transition-transform duration-700"
             initial="hidden"
             whileInView="visible"
@@ -210,12 +211,12 @@ export function AboutPageContent() {
               className="object-cover"
               wrapperClassName="absolute inset-0"
             />
-          </motion.div>
+          </m.div>
         </section>
 
         {/* Core Values */}
         <section>
-          <motion.h2
+          <m.h2
             className="text-4xl md:text-5xl font-serif font-normal tracking-tight text-center mb-20 text-gradient-champagne"
             initial="hidden"
             whileInView="visible"
@@ -223,8 +224,8 @@ export function AboutPageContent() {
             variants={fadeInUp}
           >
             {t("coreValues")}
-          </motion.h2>
-          <motion.div
+          </m.h2>
+          <m.div
             className="grid grid-cols-1 md:grid-cols-4 gap-6"
             variants={staggerContainer}
             initial="hidden"
@@ -266,7 +267,7 @@ export function AboutPageContent() {
                 },
                 i
               ) => (
-                <motion.div key={i} variants={itemVariant} className="h-full">
+                <m.div key={i} variants={itemVariant} className="h-full">
                   <GlassCard
                     className={`h-full p-8 space-y-4 hover:bg-white/5 transition-all duration-150 group border border-transparent hover:shadow-lg ${
                       item.color === "primary"
@@ -286,15 +287,15 @@ export function AboutPageContent() {
                     <h3 className="text-xl font-bold">{item.title}</h3>
                     <p className="text-muted-foreground text-sm">{item.desc}</p>
                   </GlassCard>
-                </motion.div>
+                </m.div>
               )
             )}
-          </motion.div>
+          </m.div>
         </section>
 
         {/* Team Section */}
         <section className="space-y-16">
-          <motion.div
+          <m.div
             className="text-center max-w-2xl mx-auto space-y-4"
             initial="hidden"
             whileInView="visible"
@@ -308,7 +309,7 @@ export function AboutPageContent() {
               {t("meetTeam")}
             </h2>
             <p className="text-muted-foreground font-light">{t("teamSubtitle")}</p>
-          </motion.div>
+          </m.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
@@ -328,7 +329,7 @@ export function AboutPageContent() {
                 image: "/images/about/team-marcus.webp",
               },
             ].map((member, i) => (
-              <motion.div
+              <m.div
                 key={i}
                 className="group relative"
                 initial="hidden"
@@ -356,13 +357,13 @@ export function AboutPageContent() {
                 <p className="text-primary text-sm font-medium">
                   {member.role}
                 </p>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </section>
 
         {/* CTA */}
-        <motion.section
+        <m.section
           className="relative rounded-[2.5rem] overflow-hidden border border-primary/20 shadow-2xl shadow-primary/5"
           initial="hidden"
           whileInView="visible"
@@ -392,7 +393,7 @@ export function AboutPageContent() {
               </Link>
             </div>
           </div>
-        </motion.section>
+        </m.section>
       </div>
     </div>
   );

@@ -12,7 +12,7 @@ import {
 } from "@/features/reviews/actions";
 import { ReviewFormDialog } from "@/features/reviews/components/review-form-dialog";
 import { Sku } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -205,7 +205,7 @@ export function ProductReviews({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
         {/* Summary */}
-        <motion.div
+        <m.div
           className="md:col-span-1 space-y-6"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -231,7 +231,7 @@ export function ProductReviews({
               {t("basedOn", { count: meta?.totalReviews || 0 })}
             </div>
           </div>
-        </motion.div>
+        </m.div>
 
         {/* Reviews List */}
         <div className="md:col-span-2 space-y-8">

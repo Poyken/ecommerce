@@ -5,7 +5,7 @@ import { LoadingScreen } from "@/components/shared/loading-screen";
 import { BlogList } from "@/features/blog/components/blog-list";
 import { tapScale } from "@/lib/animations";
 import { BlogWithProducts } from "@/types/models";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
@@ -133,7 +133,7 @@ export function BlogPageClient({
     <div className="min-h-screen bg-background font-sans selection:bg-primary/30 pt-24 pb-12 relative overflow-hidden">
       {/* ... existing header ... */}
       <div className="container mx-auto px-4 relative z-10">
-        <motion.div
+        <m.div
           className="text-center space-y-4 mb-10"
           initial="hidden"
           animate="visible"
@@ -145,15 +145,15 @@ export function BlogPageClient({
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             {t("subtitle")}
           </p>
-        </motion.div>
+        </m.div>
         {/* Category Filter */}
-        <motion.div
+        <m.div
           className="flex flex-wrap justify-center gap-2 mb-12"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <motion.button
+          <m.button
             whileTap={tapScale}
             onClick={() => setSelectedCategory(null)}
             className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2.5 ${
@@ -172,10 +172,10 @@ export function BlogPageClient({
             >
               {totalPosts}
             </span>
-          </motion.button>
+          </m.button>
 
           {categoryStats.map((stat) => (
-            <motion.button
+            <m.button
               key={stat.category}
               whileTap={tapScale}
               onClick={() => setSelectedCategory(stat.category)}
@@ -195,9 +195,9 @@ export function BlogPageClient({
               >
                 {stat.count}
               </span>
-            </motion.button>
+            </m.button>
           ))}
-        </motion.div>
+        </m.div>
         {/* Posts count */}
         {isLoading && posts.length === 0 ? (
           <LoadingScreen fullScreen={false} className="min-h-[40vh]" />

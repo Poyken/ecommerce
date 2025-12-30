@@ -10,7 +10,7 @@
  * - Giúp tổ chức thông tin người dùng một cách khoa học và dễ sử dụng.
  *
  * 2. ANIMATED TRANSITIONS:
- * - Sử dụng `AnimatePresence` và `motion.div` để tạo hiệu ứng trượt khi chuyển đổi giữa các tab.
+ * - Sử dụng `AnimatePresence` và `m.div` để tạo hiệu ứng trượt khi chuyển đổi giữa các tab.
  *
  * 3. COMPONENT COMPOSITION:
  * - Mỗi tab là một component riêng biệt (ví dụ: `ProfileAccountTab`, `ProfileOrdersTab`) giúp code dễ bảo trì và mở rộng.
@@ -30,7 +30,8 @@ import { ProfileSidebar } from "@/features/profile/components/profile-sidebar";
 import { ProfileVouchersTab } from "@/features/profile/components/profile-vouchers-tab";
 import { ProfileWishlistTab } from "@/features/profile/components/profile-wishlist-tab";
 import { User } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 
 export function ProfileForm({ user }: { user: User }) {
@@ -75,7 +76,7 @@ export function ProfileForm({ user }: { user: User }) {
       {/* Right Content Area */}
       <div className="lg:col-span-3">
         <AnimatePresence mode="wait">
-          <motion.div
+          <m.div
             key={activeTab}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -83,7 +84,7 @@ export function ProfileForm({ user }: { user: User }) {
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
             {renderContent()}
-          </motion.div>
+          </m.div>
         </AnimatePresence>
       </div>
     </div>

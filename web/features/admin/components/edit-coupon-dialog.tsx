@@ -14,7 +14,8 @@ import {
 } from "@/components/ui/select";
 import { updateCouponAction } from "@/features/admin/actions";
 import { Coupon } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 
@@ -162,14 +163,14 @@ export function EditCouponDialog({
           />
           <AnimatePresence>
             {errors.code && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.code}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>
@@ -216,14 +217,14 @@ export function EditCouponDialog({
             />
             <AnimatePresence>
               {errors.discountValue && (
-                <motion.p
+                <m.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="text-xs text-destructive"
                 >
                   {errors.discountValue}
-                </motion.p>
+                </m.p>
               )}
             </AnimatePresence>
           </div>
@@ -277,14 +278,14 @@ export function EditCouponDialog({
             />
             <AnimatePresence>
               {errors.startDate && (
-                <motion.p
+                <m.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="text-xs text-destructive"
                 >
                   {errors.startDate}
-                </motion.p>
+                </m.p>
               )}
             </AnimatePresence>
           </div>
@@ -303,14 +304,14 @@ export function EditCouponDialog({
             />
             <AnimatePresence>
               {errors.endDate && (
-                <motion.p
+                <m.p
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   className="text-xs text-destructive"
                 >
                   {errors.endDate}
-                </motion.p>
+                </m.p>
               )}
             </AnimatePresence>
           </div>

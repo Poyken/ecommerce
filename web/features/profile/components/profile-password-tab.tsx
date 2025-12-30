@@ -25,7 +25,7 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/shared/password-input";
 import { useToast } from "@/components/shared/use-toast";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 
@@ -55,7 +55,7 @@ export function ProfilePasswordTab() {
   };
 
   return (
-    <motion.div
+    <m.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -109,6 +109,6 @@ export function ProfilePasswordTab() {
           </div>
         </form>
       </GlassCard>
-    </motion.div>
+    </m.div>
   );
 }

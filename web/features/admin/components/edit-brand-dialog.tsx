@@ -6,7 +6,8 @@ import { useToast } from "@/components/shared/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateBrandAction } from "@/features/admin/actions";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState, useTransition } from "react";
 
@@ -141,14 +142,14 @@ export function EditBrandDialog({
           />
           <AnimatePresence>
             {errors.name && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.name}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>

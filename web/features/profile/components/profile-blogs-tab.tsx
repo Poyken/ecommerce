@@ -9,7 +9,8 @@ import { BlogFormDialog } from "@/features/blog/components/blog-form-dialog";
 import { cn } from "@/lib/utils";
 import { BlogWithProducts } from "@/types/models";
 import { format } from "date-fns";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { Calendar, Edit, FileText, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -142,7 +143,7 @@ export function ProfileBlogsTab() {
           {blogs.map((blog, index) => {
             const isPublished = !!blog.publishedAt;
             return (
-              <motion.div
+              <m.div
                 key={blog.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -203,7 +204,7 @@ export function ProfileBlogsTab() {
                     </div>
                   </div>
                 </GlassCard>
-              </motion.div>
+              </m.div>
             );
           })}
         </AnimatePresence>

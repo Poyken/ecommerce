@@ -3,7 +3,7 @@
 import { GlassButton } from "@/components/shared/glass-button";
 import { Link, useRouter } from "@/i18n/routing";
 import confetti from "canvas-confetti";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { Check, Package, ShoppingBag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -59,7 +59,7 @@ export default function CheckoutSuccessPage() {
       <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-success/10 rounded-full blur-[150px] pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-info/10 rounded-full blur-[150px] pointer-events-none" />
 
-      <motion.div
+      <m.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
@@ -99,7 +99,7 @@ export default function CheckoutSuccessPage() {
             </GlassButton>
           </Link>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   );
 }

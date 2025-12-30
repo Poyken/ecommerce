@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateUserAction } from "@/features/admin/actions";
 import { User } from "@/types/models";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 
@@ -115,14 +116,14 @@ export function EditUserDialog({
           />
           <AnimatePresence>
             {errors.firstName && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.firstName}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>
@@ -140,14 +141,14 @@ export function EditUserDialog({
           />
           <AnimatePresence>
             {errors.lastName && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.lastName}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>
@@ -167,14 +168,14 @@ export function EditUserDialog({
         />
         <AnimatePresence>
           {errors.email && (
-            <motion.p
+            <m.p
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               className="text-xs text-destructive"
             >
               {errors.email}
-            </motion.p>
+            </m.p>
           )}
         </AnimatePresence>
       </div>

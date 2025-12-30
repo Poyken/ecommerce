@@ -6,7 +6,8 @@ import { ImageUpload } from "@/components/shared/image-upload";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/shared/use-toast";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { Award } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
@@ -136,14 +137,14 @@ export function CreateBrandDialog({
           />
           <AnimatePresence>
             {errors.name && (
-              <motion.p
+              <m.p
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="text-xs text-destructive"
               >
                 {errors.name}
-              </motion.p>
+              </m.p>
             )}
           </AnimatePresence>
         </div>

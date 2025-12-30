@@ -24,8 +24,8 @@
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
+import { m } from "@/lib/animations";
 import { format } from "date-fns";
-import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { memo } from "react";
@@ -124,7 +124,9 @@ export const ReviewItem = memo(function ReviewItem({
           </Avatar>
           <div>
             <div className="font-black text-base">
-              {review.user ? `${review.user.firstName} ${review.user.lastName}` : "Verified User"}
+              {review.user
+                ? `${review.user.firstName} ${review.user.lastName}`
+                : "Verified User"}
             </div>
             <div className="text-xs text-muted-foreground/60 font-medium mt-0.5">
               {format(new Date(review.createdAt), "MMM d, yyyy")}
@@ -162,14 +164,14 @@ export const ReviewItem = memo(function ReviewItem({
 
   if (showAnimation) {
     return (
-      <motion.div
+      <m.div
         className="border-b border-foreground/5 pb-8 last:border-0"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
       >
         {content}
-      </motion.div>
+      </m.div>
     );
   }
 

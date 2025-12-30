@@ -2,7 +2,7 @@
 
 import { Link } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 
@@ -57,7 +57,7 @@ export function BentoGrid({ items, className }: BentoGridProps) {
       )}
     >
       {/* Featured Cell - Spans 2 rows on desktop */}
-      <motion.div
+      <m.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -65,11 +65,11 @@ export function BentoGrid({ items, className }: BentoGridProps) {
         className="md:col-span-1 lg:row-span-2"
       >
         <BentoCell item={featuredItem} featured />
-      </motion.div>
+      </m.div>
 
       {/* Regular Cells */}
       {regularItems.map((item, index) => (
-        <motion.div
+        <m.div
           key={item.id}
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -81,7 +81,7 @@ export function BentoGrid({ items, className }: BentoGridProps) {
           }}
         >
           <BentoCell item={item} />
-        </motion.div>
+        </m.div>
       ))}
     </div>
   );

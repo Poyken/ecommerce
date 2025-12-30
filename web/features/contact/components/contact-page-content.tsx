@@ -4,7 +4,7 @@ import { ContactForm } from "@/features/contact/components/contact-form";
 import { ContactInfoCards } from "@/features/contact/components/contact-info-cards";
 import { ContactMap } from "@/features/contact/components/contact-map";
 import { FAQGrid } from "@/features/marketing/components/faq-grid";
-import { motion } from "framer-motion";
+import { m } from "@/lib/animations";
 import { useTranslations } from "next-intl";
 
 /**
@@ -43,7 +43,7 @@ export function ContactPageContent() {
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         {/* Header Section */}
-        <motion.div
+        <m.div
           className="text-center mb-16"
           initial="hidden"
           animate="visible"
@@ -58,29 +58,29 @@ export function ContactPageContent() {
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
             {t("subtitle")}
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Main Content - Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-24 items-start">
           {/* Left Column: Contact Info */}
-          <motion.div
+          <m.div
             className="lg:col-span-4"
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <ContactInfoCards className="grid-cols-1 md:grid-cols-1 lg:grid-cols-1 mb-0 gap-6" />
-          </motion.div>
+          </m.div>
 
           {/* Right Column: Contact Form */}
-          <motion.div
+          <m.div
             className="lg:col-span-8"
             initial={{ x: 50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <ContactForm />
-          </motion.div>
+          </m.div>
         </div>
 
         {/* Map Section */}
@@ -89,7 +89,7 @@ export function ContactPageContent() {
         </div>
 
         {/* FAQ Section */}
-        <motion.div
+        <m.div
           className="mt-20"
           initial="hidden"
           whileInView="visible"
@@ -105,7 +105,7 @@ export function ContactPageContent() {
             </h2>
           </div>
           <FAQGrid />
-        </motion.div>
+        </m.div>
       </div>
     </div>
   );

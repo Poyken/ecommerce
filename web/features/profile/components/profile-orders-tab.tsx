@@ -27,7 +27,8 @@ import { Link } from "@/i18n/routing";
 import { formatCurrency } from "@/lib/utils";
 import { Order } from "@/types/models";
 import { format } from "date-fns";
-import { AnimatePresence, motion } from "framer-motion";
+import { m } from "@/lib/animations";
+import { AnimatePresence } from "framer-motion";
 import { ArrowRight, Box, Calendar, CreditCard, Package } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -94,7 +95,7 @@ export function ProfileOrdersTab() {
       <div className="space-y-4">
         <AnimatePresence>
           {orders.map((order, index) => (
-            <motion.div
+            <m.div
               key={order.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -150,7 +151,7 @@ export function ProfileOrdersTab() {
                   </Link>
                 </div>
               </GlassCard>
-            </motion.div>
+            </m.div>
           ))}
         </AnimatePresence>
       </div>
