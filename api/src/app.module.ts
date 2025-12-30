@@ -53,7 +53,7 @@ import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
 import { NewsletterModule } from '@integrations/newsletter/newsletter.module';
 import { SitemapModule } from '@integrations/sitemap/sitemap.module';
 import { BullModule } from '@nestjs/bullmq';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -65,6 +65,7 @@ import { WorkerModule } from '@/worker/worker.module';
 import { CACHE_CONFIG } from '@core/config/constants';
 import { RedisThrottlerStorageService } from '@core/config/throttler/redis-throttler.storage';
 import { LoggingInterceptor } from '@core/interceptors/logging.interceptor';
+import { CorrelationIdMiddleware } from '@core/middlewares/correlation-id.middleware';
 import { RedisService } from '@core/redis/redis.service';
 import { CacheModule } from '@nestjs/cache-manager';
 import { AiChatModule } from './ai-chat/ai-chat.module';
@@ -226,4 +227,10 @@ import { ChatModule } from './chat/chat.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Apply Correlation ID middleware to all routes
+    // This runs before any interceptor and adds correlationId to request
+    consumer.apply(CorrelationIdMiddleware).forRoutes('*');
+  }
+}

@@ -28,6 +28,7 @@ export const revalidate = 0;
 
 import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav";
 import { ProductDetailSkeleton } from "@/components/shared/skeletons/product-detail-skeleton";
+import { ProductRecommendations } from "@/features/products/components/product-recommendations";
 import { getProfileAction } from "@/features/profile/actions";
 import { productService } from "@/services/product.service";
 import { notFound } from "next/navigation";
@@ -152,6 +153,21 @@ async function BreadcrumbStreamer({ id }: { id: string }) {
   );
 }
 
+// Recommendations cũng cần fetch product để lấy categoryId
+async function RecommendationsStreamer({ id }: { id: string }) {
+  const product = await productService.getProduct(id);
+  if (!product || !product.category?.id) return null;
+
+  return (
+    <ProductRecommendations
+      currentProductId={id}
+      categoryId={product.category.id}
+      maxItems={8}
+      title="Có thể bạn cũng thích"
+    />
+  );
+}
+
 /**
  * MAIN PAGE COMPONENT
  * Cấu trúc trang sử dụng Streaming SSR.
@@ -180,6 +196,11 @@ export default async function ProductDetailPage({
         {/* Main Content: Load độc lập với Skeleton riêng */}
         <Suspense fallback={<ProductDetailSkeleton />}>
           <ProductDetailStreamer id={id} />
+        </Suspense>
+
+        {/* Product Recommendations - Fetched server-side */}
+        <Suspense fallback={null}>
+          <RecommendationsStreamer id={id} />
         </Suspense>
       </div>
     </div>

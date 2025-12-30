@@ -6,14 +6,16 @@ import { MobileStickyCart } from "@/features/cart/components/mobile-sticky-cart"
 import { useCart } from "@/features/cart/hooks/use-cart";
 import { ProductImageGallery } from "@/features/products/components/product-image-gallery";
 import { ProductVariantSelector } from "@/features/products/components/product-variant-selector";
+import { RecentlyViewedSection } from "@/features/products/components/recently-viewed-section";
+import { useRecentlyViewedStore } from "@/features/products/store/recently-viewed.store";
 import { ProductReviews } from "@/features/reviews/components/product-reviews";
 import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
+import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { Product, Review, Sku } from "@/types/models";
-import { m } from "@/lib/animations";
 import { Check, Shield, Truck } from "lucide-react";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 /**
  * =====================================================================
@@ -62,6 +64,22 @@ export function ProductDetailClient({
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const { addToCart, isAdding } = useCart(product.name);
+  const addRecentlyViewed = useRecentlyViewedStore((state) => state.addProduct);
+
+  // Track product view for Recently Viewed feature
+  useEffect(() => {
+    const firstImage = initialImages[0] || "";
+    addRecentlyViewed({
+      id: product.id,
+      name: product.name,
+      slug: product.slug,
+      imageUrl: firstImage,
+      price: Number(product.skus?.[0]?.price || 0),
+      salePrice: product.skus?.[0]?.salePrice ? Number(product.skus[0].salePrice) : undefined,
+      categoryName: product.category?.name,
+      brandName: product.brand?.name,
+    });
+  }, [product.id]);
 
   // Initialize activeImage from URL to prevent flicker
   const initialSkuId = searchParams.get("skuId");
@@ -306,6 +324,15 @@ export function ProductDetailClient({
             initialReviews={initialReviews}
             initialMeta={initialMeta}
             initialPurchasedSkus={initialPurchasedSkus}
+          />
+        </div>
+
+        {/* Recently Viewed Section */}
+        <div className="pt-8 border-t border-white/5">
+          <RecentlyViewedSection
+            currentProductId={product.id}
+            maxDisplay={6}
+            title="Đã xem gần đây"
           />
         </div>
       </div>

@@ -44,12 +44,14 @@ export class LoggingInterceptor implements NestInterceptor {
           const response = context.switchToHttp().getResponse();
           const statusCode = response.statusCode;
           const duration = Date.now() - startTime;
+          const correlationId = request.correlationId || 'unknown';
 
-          // Production Grade Structured Log
+          // Production Grade Structured Log with Correlation ID
           this.logger.log(
-            `${method} ${url} ${statusCode} - ${duration}ms`,
+            `${method} ${url} ${statusCode} - ${duration}ms [${correlationId}]`,
             JSON.stringify({
               type: 'access',
+              correlationId,
               method,
               url,
               statusCode,
@@ -70,12 +72,14 @@ export class LoggingInterceptor implements NestInterceptor {
         error: (error) => {
           const duration = Date.now() - startTime;
           const statusCode = error.status || 500;
+          const correlationId = request.correlationId || 'unknown';
 
           this.logger.error(
-            `${method} ${url} ${statusCode} - ${duration}ms - ${error.message}`,
+            `${method} ${url} ${statusCode} - ${duration}ms [${correlationId}] - ${error.message}`,
             error.stack,
             JSON.stringify({
               type: 'error',
+              correlationId,
               method,
               url,
               statusCode,

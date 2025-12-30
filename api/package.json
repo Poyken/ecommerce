@@ -24,7 +24,8 @@
     "seed:blog": "ts-node prisma/seed-blog.ts",
     "seed:all": "npm run seed && npm run seed:products && npm run seed:blog && npm run seed:feature-flags",
     "seed:prod": "node dist/prisma/seed.js",
-    "seed:feature-flags": "ts-node prisma/seed-feature-flags.ts"
+    "seed:feature-flags": "ts-node prisma/seed-feature-flags.ts",
+    "cache:clear": "ts-node scripts/clear-cache.ts"
   },
   "prisma": {
     "seed": "npm run seed:all"
