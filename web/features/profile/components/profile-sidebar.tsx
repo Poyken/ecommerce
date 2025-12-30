@@ -23,15 +23,16 @@ import { GlassCard } from "@/components/shared/glass-card";
 import { logoutAction } from "@/features/auth/actions";
 import { cn } from "@/lib/utils";
 import {
-    FileText,
-    Heart,
-    KeyRound,
-    LayoutDashboard,
-    LogOut,
-    MapPin,
-    ShoppingBag,
-    Ticket,
-    User,
+  FileText,
+  Heart,
+  KeyRound,
+  LayoutDashboard,
+  LogOut,
+  MapPin,
+  Shield,
+  ShoppingBag,
+  Ticket,
+  User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -95,6 +96,11 @@ export function ProfileSidebar({
       id: "password",
       label: t("password"),
       icon: KeyRound,
+    },
+    {
+      id: "security",
+      label: t("security"), // Will need to ensure translation key exists or use fallback
+      icon: Shield,
     },
   ];
 

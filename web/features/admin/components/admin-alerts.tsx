@@ -1,7 +1,7 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { GlassCard } from "@/components/shared/glass-card";
+import { Badge } from "@/components/ui/badge";
 import { AlertTriangle, ArrowUpRight, Package, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -30,18 +30,20 @@ import Link from "next/link";
 
 interface AdminAlertsProps {
   lowStockSkus: any[];
+  lowStockCount: number;
   trendingProducts: any[];
 }
 
 export function AdminAlerts({
   lowStockSkus,
+  lowStockCount,
   trendingProducts,
 }: AdminAlertsProps) {
   const t = useTranslations("admin");
   return (
     <div className="space-y-8">
       {/* Low Stock Alerts */}
-      <GlassCard className="p-8 relative overflow-hidden group rounded-[2rem] border-foreground/5">
+      <GlassCard className="p-8 relative overflow-hidden group rounded-4xl border-foreground/5">
         <div className="absolute top-0 right-0 w-40 h-40 bg-destructive/5 rounded-full blur-[120px] -mr-20 -mt-20 pointer-events-none" />
 
         <div className="flex items-center justify-between mb-6">
@@ -57,7 +59,7 @@ export function AdminAlerts({
             variant="outline"
             className="text-destructive border-destructive/20 bg-destructive/5 font-bold uppercase tracking-wider"
           >
-            {t("alerts.itemsCount", { count: lowStockSkus.length })}
+            {t("alerts.itemsCount", { count: lowStockCount })}
           </Badge>
         </div>
 
@@ -65,7 +67,7 @@ export function AdminAlerts({
           {lowStockSkus.slice(0, 5).map((sku) => (
             <div
               key={sku.id}
-              className="flex items-center justify-between p-4 rounded-2xl bg-foreground/[0.02] border border-foreground/5 hover:bg-foreground/[0.05] transition-all duration-300"
+              className="flex items-center justify-between p-4 rounded-2xl bg-foreground/2 border border-foreground/5 hover:bg-foreground/5 transition-all duration-300"
             >
               <div className="flex items-center gap-4">
                 <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-foreground/5">
@@ -120,7 +122,7 @@ export function AdminAlerts({
       </GlassCard>
 
       {/* Trending Now */}
-      <GlassCard className="p-8 relative overflow-hidden group rounded-[2rem] border-foreground/5">
+      <GlassCard className="p-8 relative overflow-hidden group rounded-4xl border-foreground/5">
         <div className="absolute top-0 right-0 w-40 h-40 bg-primary/5 rounded-full blur-[120px] -mr-20 -mt-20 pointer-events-none" />
 
         <div className="flex items-center justify-between mb-6">
@@ -157,7 +159,7 @@ export function AdminAlerts({
                 </div>
                 <div className="h-2 w-full bg-foreground/5 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-primary via-amber-500 to-primary rounded-full transition-all duration-500"
+                    className="h-full bg-linear-to-r from-primary via-amber-500 to-primary rounded-full transition-all duration-500"
                     style={{
                       width: `${
                         (product.sales / trendingProducts[0].sales) * 100

@@ -204,3 +204,55 @@ export async function updateProfileAction(formData: FormData) {
     return { error: message };
   }
 }
+
+/**
+ * Generate 2FA Secret & QR Code
+ */
+export async function generateTwoFactorAction() {
+  await cookies();
+  try {
+    const res = await http<{ data: { secret: string; qrCode: string } }>(
+      "/auth/2fa/generate",
+      {
+        method: "POST",
+      }
+    );
+    return { success: true, data: res.data };
+  } catch (error: unknown) {
+    return { success: false, error: (error as Error).message };
+  }
+}
+
+/**
+ * Enable 2FA
+ */
+export async function enableTwoFactorAction(token: string, secret: string) {
+  await cookies();
+  try {
+    await http("/auth/2fa/enable", {
+      method: "POST",
+      body: JSON.stringify({ token, secret }),
+    });
+    revalidatePath("/profile");
+    return { success: true };
+  } catch (error: unknown) {
+    return { success: false, error: (error as Error).message };
+  }
+}
+
+/**
+ * Disable 2FA
+ */
+export async function disableTwoFactorAction(token: string) {
+  await cookies();
+  try {
+    await http("/auth/2fa/disable", {
+      method: "POST",
+      body: JSON.stringify({ token }),
+    });
+    revalidatePath("/profile");
+    return { success: true };
+  } catch (error: unknown) {
+    return { success: false, error: (error as Error).message };
+  }
+}

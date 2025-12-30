@@ -352,8 +352,8 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
         }
 
         toast({
-          title: t("success"),
-          description: t("successDesc"),
+          title: t("toast.success"),
+          description: t("toast.successDesc"),
           variant: "success",
         });
         // Redirect to success page instead of direct order details

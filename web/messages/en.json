@@ -129,7 +129,18 @@
       "createAccount": "Create Account",
       "heroTitle": "Elevate Your Lifestyle",
       "heroSubtitle": "Join our exclusive community and discover a world of premium products curated just for you.",
-      "success": "Login successful! Redirecting..."
+      "success": "Login successful! Redirecting...",
+      "twoFactor": {
+        "title": "Two-Factor Verification",
+        "subtitle": "Secure your account with 2FA",
+        "description": "Please enter the 6-digit code from your authenticator app to complete the login.",
+        "otpLabel": "Verification Code",
+        "otpPlaceholder": "000000",
+        "verify": "Verify",
+        "verifying": "Verifying...",
+        "backToLogin": "Back to Login",
+        "invalidCode": "Invalid 2FA code. Please try again."
+      }
     },
     "register": {
       "title": "Create Account",
@@ -581,8 +592,10 @@
     "secureTransaction": "Secure SSL Encrypted Transaction",
     "missingInfo": "Missing Information",
     "selectAddress": "Please select a shipping address.",
-    "success": "🎉 Order Placed Successfully!",
-    "successDesc": "Thank you for your purchase! Redirecting to order details...",
+    "toast": {
+      "success": "🎉 Order Placed Successfully!",
+      "successDesc": "Thank you for your purchase! Redirecting to order details..."
+    },
     "failed": "❌ Order Failed",
     "error": "Something went wrong. Please try again.",
     "discount": "Discount",
@@ -621,6 +634,7 @@
       "wishlist": "Wishlist",
       "addresses": "Addresses",
       "password": "Password",
+      "security": "Security",
       "vouchers": "Vouchers",
       "blogs": "My Blogs"
     },
@@ -677,6 +691,32 @@
       "new": "New Password",
       "change": "Change Password",
       "changing": "Changing..."
+    },
+    "security": {
+      "title": "Security Settings",
+      "subtitle": "Manage your account security and two-factor authentication.",
+      "twoFactor": {
+        "title": "Two-Factor Authentication",
+        "description": "Protect your account with an extra layer of security. Once enabled, you'll be asked for a verification code when you log in.",
+        "status": "Status",
+        "enabled": "Enabled",
+        "disabled": "Disabled",
+        "enable": "Enable 2FA",
+        "disable": "Disable 2FA",
+        "setupTitle": "Set up 2FA",
+        "scanQr": "Scan this QR code with your authenticator app (e.g. Google Authenticator, Authy):",
+        "manualSecret": "Or enter this secret key manually:",
+        "otpLabel": "Authentication Code",
+        "otpPlaceholder": "Enter 6-digit code",
+        "confirmEnable": "Confirm and Enable",
+        "confirmDisable": "Confirm and Disable",
+        "copySecret": "Copy Secret",
+        "copied": "Secret copied to clipboard!",
+        "successEnabled": "Two-factor authentication enabled successfully.",
+        "successDisabled": "Two-factor authentication disabled successfully.",
+        "successGenerated": "2FA secret generated successfully.",
+        "errorInvalidCode": "Invalid authentication code. Please try again."
+      }
     },
     "sessionExpired": "Session Expired",
     "sessionExpiredDesc": "Please log in again to access your profile and order history.",

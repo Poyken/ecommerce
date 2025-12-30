@@ -127,7 +127,18 @@
       "createAccount": "Tạo tài khoản",
       "heroTitle": "Nâng tầm phong cách sống",
       "heroSubtitle": "Tham gia cộng đồng độc quyền của chúng tôi và khám phá thế giới sản phẩm cao cấp được tuyển chọn riêng cho bạn.",
-      "success": "Đăng nhập thành công! Đang chuyển hướng..."
+      "success": "Đăng nhập thành công! Đang chuyển hướng...",
+      "twoFactor": {
+        "title": "Xác thực 2 lớp",
+        "subtitle": "Bảo mật tài khoản của bạn với 2FA",
+        "description": "Vui lòng nhập mã 6 số từ ứng dụng xác thực của bạn để hoàn tất đăng nhập.",
+        "otpLabel": "Mã xác thực",
+        "otpPlaceholder": "000000",
+        "verify": "Xác nhận",
+        "verifying": "Đang xác nhận...",
+        "backToLogin": "Quay lại đăng nhập",
+        "invalidCode": "Mã 2FA không hợp lệ. Vui lòng thử lại."
+      }
     },
     "register": {
       "title": "Tạo tài khoản",
@@ -575,8 +586,10 @@
     "secureTransaction": "Giao dịch được mã hóa SSL bảo mật",
     "missingInfo": "Thiếu thông tin",
     "selectAddress": "Vui lòng chọn địa chỉ giao hàng.",
-    "success": "🎉 Đặt hàng thành công!",
-    "successDesc": "Cảm ơn bạn đã mua hàng! Đang chuyển hướng đến chi tiết đơn hàng...",
+    "toast": {
+      "success": "🎉 Đặt hàng thành công!",
+      "successDesc": "Cảm ơn bạn đã mua hàng! Đang chuyển hướng đến chi tiết đơn hàng..."
+    },
     "failed": "❌ Đặt hàng thất bại",
     "error": "Đã xảy ra lỗi. Vui lòng thử lại.",
     "discount": "Giảm giá",
@@ -611,7 +624,8 @@
       "wishlist": "Yêu thích",
       "addresses": "Địa chỉ",
       "password": "Mật khẩu",
-      "vouchers": "Kho Voucher",
+      "security": "Bảo mật",
+      "vouchers": "Mã giảm giá",
       "blogs": "Bài viết của tôi"
     },
     "dashboard": {
@@ -666,7 +680,33 @@
       "current": "Mật khẩu hiện tại",
       "new": "Mật khẩu mới",
       "change": "Đổi mật khẩu",
-      "changing": "Đang đổi..."
+      "changing": "Đang xử lý..."
+    },
+    "security": {
+      "title": "Cài đặt bảo mật",
+      "subtitle": "Quản lý bảo mật tài khoản và xác thực hai lớp.",
+      "twoFactor": {
+        "title": "Xác thực hai lớp (2FA)",
+        "description": "Bảo vệ tài khoản của bạn với một lớp bảo mật bổ sung. Sau khi bật, bạn sẽ được yêu cầu nhập mã xác thực khi đăng nhập.",
+        "status": "Trạng thái",
+        "enabled": "Đã bật",
+        "disabled": "Đang tắt",
+        "enable": "Bật 2FA",
+        "disable": "Tắt 2FA",
+        "setupTitle": "Thiết lập 2FA",
+        "scanQr": "Quét mã QR này bằng ứng dụng xác thực của bạn (VD: Google Authenticator, Authy):",
+        "manualSecret": "Hoặc nhập khoá bí mật này thủ công:",
+        "otpLabel": "Mã xác thực",
+        "otpPlaceholder": "Nhập mã 6 chữ số",
+        "confirmEnable": "Xác nhận và Bật",
+        "confirmDisable": "Xác nhận và Tắt",
+        "copySecret": "Sao chép mã",
+        "copied": "Đã sao chép mã bí mật!",
+        "successEnabled": "Đã bật xác thực hai lớp thành công.",
+        "successDisabled": "Đã tắt xác thực hai lớp thành công.",
+        "successGenerated": "Đã tạo mã bí mật 2FA thành công.",
+        "errorInvalidCode": "Mã xác thực không hợp lệ. Vui lòng thử lại."
+      }
     },
     "sessionExpired": "Phiên đăng nhập hết hạn",
     "sessionExpiredDesc": "Vui lòng đăng nhập lại để truy cập hồ sơ và lịch sử đơn hàng của bạn.",

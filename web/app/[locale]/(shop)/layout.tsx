@@ -1,11 +1,10 @@
-import { SocialProofToast } from "@/components/shared/purchase-toast";
+import { ClientOnlyWidgets } from "@/components/shared/client-only-widgets";
 import {
   NotificationProvider,
   type Notification,
 } from "@/contexts/notification-context";
 import { getCartCountAction } from "@/features/cart/actions";
 import { CartProvider } from "@/features/cart/providers/cart-provider";
-import { ChatWidget } from "@/features/chat/components/chat-widget";
 import { ConditionalFooter } from "@/features/layout/components/conditional-footer";
 import { Footer } from "@/features/layout/components/footer";
 import { Header, HeaderFallback } from "@/features/layout/components/header";
@@ -110,8 +109,7 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
           initialCartCount={initialCartCount}
           initialWishlistCount={initialWishlistCount}
         />
-        <SocialProofToast />
-        <ChatWidget user={user} accessToken={token} />
+        <ClientOnlyWidgets user={user} accessToken={token} />
       </CartProvider>
     </NotificationProvider>
   );

@@ -91,12 +91,13 @@ export function ShopContent({
   useEffect(() => {
     if (columnsParam) {
       const val = Number(columnsParam);
-      if (val === 3 || val === 4 || val === 5) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setColumnsState(val as 3 | 4 | 5);
+      if (val === 3 || val === 4 || (val === 5 && val !== columns)) {
+        setTimeout(() => {
+          setColumnsState(val as 3 | 4 | 5);
+        }, 0);
       }
     }
-  }, [columnsParam]);
+  }, [columnsParam, columns]);
 
   const setColumns = (newCols: 3 | 4 | 5) => {
     setColumnsState(newCols);

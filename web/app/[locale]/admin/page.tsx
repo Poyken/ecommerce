@@ -96,7 +96,9 @@ export default async function AdminDashboardPage() {
       getSalesDataAction(7),
       getTopProductsAction(5),
       http<{ data: Order[] }>("/orders?limit=5&includeItems=true"),
-      http<{ data: unknown[] }>("/skus?limit=1000&includeProduct=true"),
+      http<{ data: any[]; meta: { total: number } }>(
+        "/skus?limit=5&stockLimit=5&includeProduct=true"
+      ),
       getReviewsAction(1, 4), // 4 recent reviews
     ]);
 
@@ -132,12 +134,8 @@ export default async function AdminDashboardPage() {
 
   const recentOrders = ordersRes.data || [];
   const recentReviews = (reviewsRes as any).data || []; // reviewsRes is ActionResult
-  const skus = skusRes.data || [];
-
-  // Calculate Low Stock SKUs
-  const lowStockSkus = skus.filter(
-    (sku: unknown) => (sku as { stock: number }).stock < 5
-  );
+  const lowStockSkus = (skusRes as any).data || [];
+  const lowStockCount = (skusRes as any).meta?.total || lowStockSkus.length;
 
   const getStatusStyle = (status: string) => {
     switch (status) {
@@ -439,6 +437,7 @@ export default async function AdminDashboardPage() {
         <div className="w-full xl:w-[380px] shrink-0 space-y-6">
           <AdminAlerts
             lowStockSkus={lowStockSkus}
+            lowStockCount={lowStockCount}
             trendingProducts={bestSellersData}
           />
         </div>

@@ -25,6 +25,7 @@ import { ProfileBlogsTab } from "@/features/profile/components/profile-blogs-tab
 import { ProfileDashboardTab } from "@/features/profile/components/profile-dashboard-tab";
 import { ProfileOrdersTab } from "@/features/profile/components/profile-orders-tab";
 import { ProfilePasswordTab } from "@/features/profile/components/profile-password-tab";
+import { ProfileSecurityTab } from "@/features/profile/components/profile-security-tab";
 import { ProfileSidebar } from "@/features/profile/components/profile-sidebar";
 import { ProfileVouchersTab } from "@/features/profile/components/profile-vouchers-tab";
 import { ProfileWishlistTab } from "@/features/profile/components/profile-wishlist-tab";
@@ -51,6 +52,8 @@ export function ProfileForm({ user }: { user: User }) {
         return <ProfileVouchersTab />;
       case "password":
         return <ProfilePasswordTab />;
+      case "security":
+        return <ProfileSecurityTab user={user} />;
       case "blogs":
         return <ProfileBlogsTab />;
       default:

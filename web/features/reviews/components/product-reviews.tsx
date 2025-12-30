@@ -131,23 +131,7 @@ export function ProductReviews({
     if (hasFetched.current) return;
     hasFetched.current = true;
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [productId]); // fetchData dependency is omitted to avoid infinite loop usage pattern if fetchData wasn't memoized correctly (though it is) or to keep logic simple checking only productId.
-  // actually, fetchData IS memoized on productId. So [fetchData] is correct.
-  // But hasFetched logic combined with strict mode is tricky.
-  // Let's just suppress exhaustive-deps as we want to control exactly when it runs (on mount/id change)
-
-  // Wait, let's just use [fetchData] and suppress set-state-in-effect if needed.
-  // The error is set-state-in-effect.
-
-  /* eslint-disable react-hooks/exhaustive-deps */
-  useEffect(() => {
-    if (hasFetched.current) return;
-    hasFetched.current = true;
-
-    fetchData();
-  }, [productId]);
-  /* eslint-enable react-hooks/exhaustive-deps */
+  }, [fetchData]);
 
   return (
     <div className="space-y-8">

@@ -75,11 +75,13 @@ export async function loginAction(prevState: unknown, formData: FormData) {
   }
 
   try {
-    // Gọi API đăng nhập - Trả về { data: { accessToken, refreshToken } }
+    // Gọi API đăng nhập - Trả về { data: { accessToken, refreshToken, mfaRequired, userId } }
     const response = await http<
       ApiResponse<{
-        accessToken: string;
-        refreshToken: string;
+        accessToken?: string;
+        refreshToken?: string;
+        mfaRequired?: boolean;
+        userId?: string;
       }>
     >("/auth/login", {
       method: "POST",
@@ -87,15 +89,28 @@ export async function loginAction(prevState: unknown, formData: FormData) {
       skipRedirectOn401: true,
     });
 
-    const { accessToken, refreshToken } = response.data;
+    const { accessToken, refreshToken, mfaRequired, userId } = response.data;
 
-    // Lưu tokens vào Session (HttpOnly cookies)
-    await createSession(accessToken, refreshToken);
-    // Reset CSRF token for New Session
-    await generateCsrfToken();
+    // Handle 2FA Case
+    if (mfaRequired && userId) {
+      return {
+        success: false,
+        mfaRequired: true,
+        userId: userId,
+      };
+    }
 
-    // Revalidate to ensure all components get the new session state
-    revalidatePath("/", "layout");
+    if (accessToken && refreshToken) {
+      // Lưu tokens vào Session (HttpOnly cookies)
+      await createSession(accessToken, refreshToken);
+      // Reset CSRF token for New Session
+      await generateCsrfToken();
+
+      // Revalidate to ensure all components get the new session state
+      revalidatePath("/", "layout");
+    } else {
+      return { error: "Login failed - No tokens received" };
+    }
   } catch (error: unknown) {
     return {
       error: (error as Error).message || "Failed to login",
@@ -103,6 +118,33 @@ export async function loginAction(prevState: unknown, formData: FormData) {
   }
 
   return { success: true };
+}
+
+/**
+ * Action Login với 2FA Code
+ */
+export async function login2FAAction(userId: string, token: string) {
+  try {
+    const response = await http<
+      ApiResponse<{ accessToken: string; refreshToken: string }>
+    >("/auth/2fa/login", {
+      method: "POST",
+      body: JSON.stringify({ userId, token }),
+      skipRedirectOn401: true,
+    });
+
+    const { accessToken, refreshToken } = response.data;
+    // Lưu tokens vào Session (HttpOnly cookies)
+    await createSession(accessToken, refreshToken);
+    await generateCsrfToken();
+    revalidatePath("/", "layout");
+    return { success: true };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      error: (error as Error).message || "Invalid 2FA Code",
+    };
+  }
 }
 
 /**
