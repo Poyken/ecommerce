@@ -386,6 +386,15 @@ function getRandomPastDate(daysBack: number): Date {
 async function main() {
   console.log('📝 Starting Blog Seed...\n');
 
+  // Check if blog posts already exist - skip seeding to prevent race conditions on restart
+  const existingPosts = await prisma.blog.count();
+  if (existingPosts > 0) {
+    console.log(
+      `✅ Blog posts already exist (${existingPosts} found). Skipping seed.`,
+    );
+    return;
+  }
+
   // Clear existing blog posts
   console.log('🧹 Clearing existing blog posts...');
   await prisma.blogProduct.deleteMany();

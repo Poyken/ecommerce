@@ -29,6 +29,17 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting clean seed...');
 
+  // Check if admin user already exists - skip seeding to prevent data loss on restart
+  const existingAdmin = await prisma.user.findUnique({
+    where: { email: 'admin@example.com' },
+  });
+  if (existingAdmin) {
+    console.log(
+      '✅ Admin user already exists. Skipping seed to preserve data.',
+    );
+    return;
+  }
+
   // 1. Clean up database (Order matters due to foreign keys, though cascade helps)
   console.log('🧹 Cleaning up database...');
   await prisma.chatMessage.deleteMany();

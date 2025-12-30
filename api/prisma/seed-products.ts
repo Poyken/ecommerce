@@ -598,6 +598,15 @@ function getRandomPrice(base: number, variance: number = 0.2): number {
 async function main() {
   console.log('🪑 Starting Luxury Furniture Seed...');
 
+  // Check if products already exist - skip seeding to prevent race conditions on restart
+  const existingProducts = await prisma.product.count();
+  if (existingProducts > 0) {
+    console.log(
+      `✅ Products already exist (${existingProducts} found). Skipping seed.`,
+    );
+    return;
+  }
+
   // Clean existing products first
   console.log('🧹 Cleaning existing products...');
   await prisma.blogProduct.deleteMany();
