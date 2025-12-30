@@ -2,8 +2,8 @@
 
 ## Dành cho Thực tập sinh và Lập trình viên mới
 
-**Phiên bản:** 2.1  
-**Cập nhật lần cuối:** 26/12/2025  
+**Phiên bản:** 2.2  
+**Cập nhật lần cuối:** 30/12/2025  
 **Trạng thái:** ✅ SẴN SÀNG TRIỂN KHAI
 
 ---
@@ -13,7 +13,12 @@
 - [I. TỔNG QUAN DỰ ÁN](#i-tổng-quan-dự-án)
 - [II. CÔNG NGHỆ SỬ DỤNG (TECH STACK)](#ii-công-nghệ-sử-dụng-tech-stack)
 - [III. CẤU TRÚC THƯ MỤC CHI TIẾT (ATOMIC DESIGN)](#iii-cấu-trúc-thư-mục-chi-tiết)
-- [IV. KIẾN TRÚC ỨNG DỤNG](#iv-kiến-trúc-ứng-dụng)
+- [IV. KIẾN TRÚC HỆ THỐNG](#iv-kiến-trúc-hệ-thống)
+  - [4.1. Server & Client Components](#41-server--client-components)
+  - [4.2. HTTP Client & Data Fetching](#42-http-client--data-fetching)
+  - [4.3. Safe Actions & Middleware](#43-safe-actions--middleware)
+  - [4.4. Bảo mật (CSRF & Session)](#44-bảo-mật-csrf--session)
+  - [4.5. Theo dõi hiệu năng (RUM)](#45-theo-dõi-hiệu-năng-rum)
 - [V. LUỒNG DỮ LIỆU (DATA FLOW)](#v-luồng-dữ-liệu-data-flow)
 - [VI. TÍNH NĂNG CHI TIẾT (DETAILED FEATURES)](#vi-tính-năng-chi-tiết-detailed-features)
 - [VII. CÁC THÀNH PHẦN CỐT LÕI](#vii-các-thành-phần-cốt-lõi)
@@ -105,6 +110,10 @@ Hệ thống thiết kế tập trung vào sự tối giản, sang trọng và k
 | **React Context**   | Global state (Auth, Theme) |
 | **React Hook Form** | Form management            |
 | **Zod**             | Schema validation          |
+| **Zustand**         | Client state management    |
+| **Socket.io**       | Real-time communication    |
+| **Nuqs**            | Type-safe search params    |
+| **Next-intl**       | Internationalization       |
 
 ## 2.4. Đa ngôn ngữ (Internationalization)
 
@@ -187,7 +196,7 @@ web/
 
 ---
 
-# IV. KIẾN TRÚC ỨNG DỤNG
+# IV. KIẾN TRÚC HỆ THỐNG
 
 ## 4.1. Next.js App Router Architecture
 
@@ -200,10 +209,12 @@ web/
 ┌─────────────────────────────────────────────────────────────┐
 │                    NEXT.JS SERVER                           │
 │  ┌─────────────────────────────────────────────────────┐   │
-│  │  MIDDLEWARE (middleware.ts)                          │   │
-│  │  - Check auth cookies                                │   │
-│  │  - Refresh token if expired                          │   │
-│  │  - Redirect if unauthorized                          │   │
+│  │  PROXY / MIDDLEWARE (`proxy.ts`)                     │   │
+│  │  - Chạy tại Edge (mỗi khi có request)                │   │
+│  │  - **i18n Routing**: Quản lý đa ngôn ngữ (/vi, /en)  │   │
+│  │  - **Silent Refresh**: Tự động làm mới Access Token  │   │
+│  │  - **Admin RBAC**: Chặn route quản trị từ Edge       │   │
+│  │  - **CSRF Auto-Gen**: Tạo mã bảo mật cho mỗi phiên   │   │
 │  └─────────────────────────┬───────────────────────────┘   │
 │                            ▼                                │
 │  ┌─────────────────────────────────────────────────────┐   │
@@ -276,6 +287,45 @@ export function ShopContent({ initialProducts }) {
   return <div>...</div>;
 }
 ```
+
+## 4.4. Safe Actions & Middleware
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+Trong Next.js App Router, **Server Actions** là các hàm chạy hoàn toàn ở Server nhưng có thể được gọi từ Client. Để đảm bảo an toàn, chúng ta không gọi trực tiếp mà qua một `actionClient`.
+
+- **Middleware Chain**: Mọi Action đều phải đi qua các lớp kiểm tra:
+  1. **CSRF Check**: Đảm bảo request không bị giả mạo.
+  2. **Auth Check**: Kiểm tra User đã đăng nhập chưa.
+- **Type Safety**: Sử dụng `zod` để validate dữ liệu đầu vào ngay tại Server Action, ngăn chặn dữ liệu rác.
+- **Global Error Handling**: Tự động bắt lỗi và trả về thông báo thân thiện, không làm lộ stack trace kỹ thuật của Server.
+
+---
+
+## 4.5. Bảo mật (CSRF & Session)
+
+### Double Submit Cookie (CSRF Protection)
+
+- Hệ thống sử dụng cơ chế so sánh Token giữa **Cookie** và **Custom Header** (`x-csrf-token`).
+- Hacker từ web khác có thể khiến browser gửi cookie, nhưng KHÔNG THỂ đọc cookie để gắn vào Header. Do đó request sẽ bị chặn.
+
+### HttpOnly Session Management
+
+- **Access Token** (15 phút) và **Refresh Token** (7 ngày) được lưu hoàn toàn trong **HttpOnly Cookie**.
+- JavaScript phía Client (XSS) không thể truy cập các token này, giúp tăng tối đa bảo mật tài khoản.
+
+---
+
+## 4.6. Theo dõi hiệu năng (RUM)
+
+### Real-user Monitoring (`performance-monitor.ts`)
+
+Chúng ta không chỉ dựa vào chỉ số Lighthouse (môi trường giả lập) mà đo đạc trải nghiệm thực tế của người dùng:
+
+- **LCP (Largest Contentful Paint)**: Tốc độ hiện thị nội dung chính.
+- **CLS (Cumulative Layout Shift)**: Độ ổn định của giao diện.
+- **INP (Interaction to Next Paint)**: Tốc độ phản hồi khi người dùng tương tác.
+  Dữ liệu được gửi về backend qua `navigator.sendBeacon` để không làm chậm quá trình chuyển trang.
 
 ---
 
@@ -372,9 +422,102 @@ Dành cho Quản trị viên và Nhân viên vận hành.
 - **Feature Flags**: Bật/Tắt tính năng nóng mà không cần deploy lại code (VD: Tắt tính năng thanh toán online khi bảo trì).
 - **Audit Logs**: Ghi lại nhật ký hoạt động của hệ thống để tra soát.
 
+## 6.6. 🤖 AI Chat Assistant
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+Interface AI Chat được thiết kế như một pop-up nổi (floating bubble) ở góc màn hình.
+
+- **Client Logic**: Sử dụng `useAiChat` hook để quản lý tin nhắn.
+- **QuickView Bridge**: AI có thể gửi tin nhắn chứa mã `quickview:id`. Component tin nhắn sẽ parse mã này và hiển thị nút mở Modal chi tiết sản phẩm ngay lập tức -> **Tăng tỷ lệ chuyển đổi**.
+
+### Chức năng
+
+- Hội thoại tự nhiên với AI để tìm sản phẩm.
+- Hiển thị Markdown trong tin nhắn AI.
+- Hỗ trợ Guest chat (lưu `guestId` trong LocalStorage).
+
+## 6.7. 💬 Hỗ trợ trực tuyến (Real-time Support)
+
+### Chức năng
+
+- Kết nối trực tiếp với nhân viên qua Socket.io.
+- Thu nhỏ/Phóng to cửa sổ chat.
+- Thông báo tin nhắn chưa đọc bằng Badge màu đỏ.
+
+### Luồng kỹ thuật
+
+1. `ChatProvider` khởi tạo connection khi user vào web.
+2. Tin nhắn được gửi qua Event `message`.
+3. Server nhận và broadcast lại cho Admin qua dashboard quản lý chat.
+
+## 6.8. 🚩 Feature Flags System
+
+### Cách hoạt động
+
+1. `FeatureFlagInitializer` gọi API fetch toàn bộ flags khi app start.
+2. Flags được lưu vào **Zustand Store**.
+3. Sử dụng helper `hasFlag('feature-name')` để ẩn hiện UI.
+
+```tsx
+{
+  hasFlag("ai-chat") && <AiChatButton />;
+}
+```
+
+## 6.9. 🛡️ Advanced HTTP Client (`lib/http.ts`)
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+Đây không phải là hàm `fetch` thông thường. Nó là một bộ công cụ mạnh mẽ được tùy chỉnh cho Next.js App Router.
+
+### 1. Static Cache Preservation (`skipAuth`)
+
+Next.js sẽ tự động chuyển trang thành "Dynamic Rendering" nếu code có truy cập `cookies()`.
+
+- Với các trang cần cache mạnh (như TRANG CHỦ, CHI TIẾT SẢN PHẨM cho khách xem), ta dùng `skipAuth: true`.
+- Điều này bỏ qua việc đọc cookie -> Trang vẫn là **Static** -> Load cực nhanh từ CDN.
+
+### 2. Parallel Request Deduplication
+
+- Nếu bạn có 3 components trên cùng 1 page cùng gọi API "lấy thông tin user".
+- HttpClient sẽ nhận diện chúng giống nhau và chỉ thực hiện duy nhất **1 request mạng**. Kết quả sau đó được chia sẻ cho cả 3.
+- Tiết kiệm băng thông và giảm tải cho Backend.
+
+### 3. Double Submit Cookie (CSRF)
+
+- Mọi request thay đổi dữ liệu (POST/PUT/DELETE) tự động lấy `csrf-token` từ Cookie và gắn vào Header `X-CSRF-Token`.
+- Đây là tiêu chuẩn bảo mật cao cấp ngăn chặn tấn công giả mạo.
+
+### 4. Fingerprint Forwarding
+
+- Tự động lấy `User-Agent` và `IP` của trình duyệt để forward sang API.
+- Giúp hệ thống Analytics và Security của API có đủ thông tin để phân tích rủi ro.
+
 ---
 
-# VII. CÁC THÀNH PHẦN CỐT LÕI
+# VII. KIẾN TRÚC LUXE UI (DESIGN SYSTEM DEPTH)
+
+### 1. Triết lý "White Space & Serif"
+
+- Sử dụng font **Playfair Display** cho tiêu đề để tạo cảm giác "Classy".
+- Khoảng cách (padding/margin) được tính toán rộng rãi để người dùng không cảm thấy bị ngợp.
+
+### 2. Motion Architecture (Framer Motion)
+
+- **Lazy Motion**: Chỉ load library animation khi cần thiết để giảm bundle size.
+- **Micro-interactions**:
+  - Nút bấm có hiệu ứng "Scale down" nhẹ (95%) khi click để tạo feedback vật lý.
+  - Các phần tử trượt lên (Slide up) mượt mà khi xuất hiện lần đầu (Viewport observer).
+
+### 3. Server vs Client Components
+
+- **Server Components (Default)**: Dùng để fetch data sản phẩm (SEO tốt, không lộ API key).
+- **Client Components ('use client')**: Dùng cho các tương tác như Giỏ hàng, Chat, Toggle Feature Flags (Zustand).
+
+---
+
+# VIII. CÁC THÀNH PHẦN CỐT LÕI
 
 ## 7.1. Types & Models (`types/models.ts`)
 
@@ -788,13 +931,25 @@ Sử dụng hướng dẫn ở Section X, tự trace và ghi chú lại:
 2. Duyệt qua các trang Admin
 3. Trace luồng "Cập nhật SKU" từ UI đến Database
 
-## 12.5. Ngày 5: Thực hành nhỏ
+## 12.5. Ngày 5: Thực hành & Nâng cao
 
-### Bài tập đề xuất:
+### Bài tập 1: Làm quen với AI Chat
 
-1. Thêm một field mới vào form profile
-2. Thêm validation cho một form
-3. Tạo một component UI đơn giản
+1. Mở console browser, quan sát network khi chat với AI.
+2. Tìm hiểu cách `useAiChat` hook xử lý tin nhắn streaming (nếu có) hoặc pending state.
+3. Thử chỉnh sửa `System Prompt` ở backend và xem AI thay đổi cách trả lời ở frontend thế nào.
+
+### Bài tập 2: Feature Flags
+
+1. Truy cập Admin Dashboard, tìm trang quản lý Feature Flags.
+2. Tạo một Flag mới (VD: `test-button`).
+3. Ở code frontend, sử dụng `hasFlag('test-button')` để ẩn/hiện một component bất kỳ.
+4. Bật/Tắt flag ở Admin và xem UI thay đổi ngay lập tức không cần F5 (Zustand sync).
+
+### Bài tập 3: State Management
+
+1. Xem file `store/feature-flag.store.ts`.
+2. Thử thêm một action mới vào store này và sử dụng nó trong một component.
 
 ---
 

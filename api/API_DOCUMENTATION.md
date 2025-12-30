@@ -2,8 +2,8 @@
 
 ## Tài liệu Hướng dẫn Toàn bộ Dự án API
 
-**Phiên bản:** 2.0  
-**Cập nhật lần cuối:** 25/12/2025  
+**Phiên bản:** 2.2  
+**Cập nhật lần cuối:** 30/12/2025  
 **Trạng thái:** ✅ SẴN SÀNG TRIỂN KHAI
 
 ---
@@ -14,6 +14,12 @@
 - [II. KIẾN TRÚC HỆ THỐNG](#ii-kiến-trúc-hệ-thống)
 - [III. CẤU TRÚC DỰ ÁN](#iii-cấu-trúc-dự-án)
 - [IV. MODULES VÀ CHỨC NĂNG](#iv-modules-và-chức-năng)
+  - [4.30. 🛡️ Cơ chế Security & Anti-Spam](#430-bảo-mật--chống-spam)
+  - [4.31. ⚙️ Trình xử lý toàn cục (Interceptors & Filters)](#431-global-processing)
+  - [4.32. 👷 Worker & Background Jobs Deep Dive](#432-worker-deep-dive)
+  - [4.33. 📊 Analytics Engine (P16 Optimization)](#433-analytics-engine)
+  - [4.34. 🔔 Real-time Notifications (WebSocket)](#434-real-time-notifications)
+  - [4.35. 🔍 Audit System (Security & Traceability)](#435-audit-system)
   - [4.1. 🔐 Auth Module](#41-auth-module-srcauth)
   - [4.2. 👤 Users Module](#42-users-module-srcusers)
   - [4.3. 🎭 Roles Module](#43-roles-module-srcroles)
@@ -36,6 +42,9 @@
   - [4.20. 🚚 Shipping Module](#420-shipping-module-srcshipping)
   - [4.21. 🛡️ Audit Module](#421-audit-module-srcaudit)
   - [4.22. 👷 Worker Module](#422-worker-module-srcworker)
+  - [4.23. 🤖 AI Chat Module](#423-ai-chat-module-srcai-chat)
+  - [4.24. 💬 Chat Module](#424-chat-module-srcchat)
+  - [4.25. 🚩 Feature Flags Module](#425-feature-flags-module)
 - [V. LƯỢC ĐỒ CƠ SỞ DỮ LIỆU](#v-database-schema)
 - [VI. XÁC THỰC VÀ PHÂN QUYỀN](#vi-authentication--authorization)
 - [VII. DANH SÁCH API ENDPOINTS](#vii-api-endpoints)
@@ -61,6 +70,7 @@
 - **JWT** - JSON Web Tokens cho authentication
 - **BullMQ** - Background job processing
 - **Swagger** - API documentation
+- **Joi** - Environment validation (Bảo vệ app ngay từ startup)
 
 ### Tính năng chính
 
@@ -104,6 +114,22 @@
 
 - Email notifications
 - Background job processing với BullMQ
+
+✅ **AI Assistant (RAG)**
+
+- Chat hỗ trợ tìm kiếm sản phẩm thông minh
+- Tích hợp Google Gemini AI
+- Retrieval Augmented Generation (RAG) từ database sản phẩm
+
+✅ **Real-time Chat**
+
+- Chat trực tuyến giữa khách hàng và Admin
+- Hỗ trợ Socket.io cho phản hồi tức thì
+
+✅ **Feature Management**
+
+- Hệ thống Feature Flags tiện lợi
+- Bật/Tắt tính năng động không cần deploy
 
 ## 1.2. Số liệu dự án
 
@@ -1243,11 +1269,190 @@ export class CacheWarmingProcessor extends WorkerHost {
     // 1. Warm Home Products
     const products = await this.prisma.product.findMany({ ... });
     await this.redis.set('home:products', JSON.stringify(products));
-    
+
     return { warmed: true, count: products.length };
   }
 }
 ```
+
+---
+
+## 4.23. 🤖 AI Chat Module (`src/ai-chat/`)
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+Hệ thống AI Chat không chỉ là một con bot trả lời tự động dựa trên từ khóa. Nó sử dụng kỹ thuật **RAG (Retrieval-Augmented Generation)**:
+1. **Truy xuất (Retrieve)**: Khi user hỏi, hệ thống tìm kiếm trong Database các sản phẩm liên quan nhất.
+2. **Tăng cường (Augment)**: Gộp thông tin sản phẩm tìm được vào một "System Prompt".
+3. **Tạo phản hồi (Generate)**: Gửi Prompt (kèm context sản phẩm) cho Google Gemini AI để nó tư vấn một cách thông minh và chính xác nhất.
+
+### Chức năng chính
+
+- Tư vấn sản phẩm thông minh dựa trên dữ liệu thực tế của shop.
+- Nhận diện linh hoạt câu hỏi của khách hàng (Natural Language Processing).
+- Hỗ trợ cả khách vãng lai (Guest) và User đã đăng nhập.
+- Tự động gợi ý link "Xem nhanh" (QuickView) cho sản phẩm AI đề xuất.
+
+### Công nghệ lõi
+
+- **Google Generative AI (Gemini)**: Model AI thực hiện việc suy luận và tạo văn bản.
+- **Prisma + PostgreSQL**: Thực hiện tìm kiếm sản phẩm ("Semantic-ish" search qua từ khóa).
+- **Session Management**: Lưu lịch sử hội thoại trong `AiChatSession` và `AiChatMessage`.
+
+### Endpoints
+
+```
+POST   /ai-chat/message       # Gửi tin nhắn cho AI
+GET    /ai-chat/history       # Lấy lịch sử chat (cho User)
+DELETE /ai-chat/session       # Xóa/Reset session chat
+```
+
+---
+
+## 4.24. 💬 Chat Module (`src/chat/`)
+
+### Chức năng
+
+- Chat thời gian thực (Real-time) sử dụng **WebSockets**.
+- Quản lý hội thoại giữa khách hàng và bộ phận chăm sóc khách hàng (Admin).
+- Trạng thái trực tuyến, thông báo tin nhắn mới.
+
+### Kiến trúc Real-time
+
+- **Socket.io**: Library nền tảng cho kết nối song công.
+- **ChatGateway**: Xử lý các sự kiện `joinRoom`, `sendMessage`, `typing`...
+- **Redis Adapter**: (Khuyên dùng) Để đồng bộ WebSocket khi chạy scale nhiều instances server.
+
+### Luồng tin nhắn
+
+1. Client phát sự kiện `message` qua socket.
+2. Gateway nhận, lưu tin nhắn vào Database.
+3. Gateway phát lại (broadcast) tin nhắn đến đúng `room` (userId) của người nhận.
+
+---
+
+## 4.25. 🚩 Feature Flags Module
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+**Feature Flags** là công cụ cho phép bạn "giấu" code mới sau một cái công tắc.
+- Bạn có thể code xong tính năng `Thanh toán bằng Bitcoin`, deploy lên production nhưng CHƯA bật nó lên.
+- Khi cần test, bạn chỉ cần bật Flag cho riêng account của mình.
+- Khi sẵn sàng, bạn bật cho 100% users mà không cần deploy lại code.
+
+### Chức năng
+
+- Bật/Tắt tính năng nóng (Hot toggle).
+- Phân tách việc Deploy (đưa code lên) và Release (cho user dùng).
+- Rollback tức thì nếu tính năng mới gặp lỗi nghiêm trọng (chỉ cần tắt Flag).
+
+### Cơ chế Multi-level Caching (P0 Performance)
+
+Để tối ưu tốc độ kiểm tra Flag (vốn xảy ra ở mọi request), Service sử dụng cache 2 lớp:
+1. **Lớp 1 (RAM)**: Lưu trên bộ nhớ Server (15 giây). Gần như không tốn thời gian truy xuất.
+2. **Lớp 2 (Redis)**: Lưu tập trung cho toàn bộ máy chủ (1 giờ).
+3. **Database**: Chỉ truy cập khi cả 2 lớp trên đều không có dữ liệu.
+
+### Quy tắc nhắm mục tiêu (Targeting Rules)
+
+Hệ thống cho phép bật tính năng theo nhiều tiêu chí linh hoạt:
+- **Environment**: Chỉ bật ở môi trường nội bộ (Development/Staging).
+- **User List**: Chỉ bật cho một số tài khoản Tester cụ thể.
+- **Percentage Rollout**: Bật cho X% người dùng bất kỳ (sử dụng **Deterministic Hashing** để đảm bảo 1 user luôn thấy kết quả nhất quán).
+
+---
+
+## 4.30. 🛡️ Bảo mật & Chống Spam (Security)
+
+### 1. CSRF Protection (Double Submit Cookie)
+Hệ thống sử dụng cơ chế **Double Submit Cookie**:
+- Server yêu cầu header `X-CSRF-Token` phải khớp với giá trị trong Cookie `csrf-token`.
+- Điều này ngăn chặn các cuộc tấn công Cross-Site Request Forgery từ domain ẩn danh.
+
+### 2. Device Fingerprinting
+API nhận diện thiết bị qua Client forwarding:
+- Headers `User-Agent` và `X-Forwarded-For` được truyền từ Web sang API.
+- Dữ liệu này dùng để phát hiện các request bất thường từ cùng một IP hoặc trình duyệt lạ.
+
+### 3. Rate Limiting (Redis-backed)
+- Sử dụng `ThrottlerModule` kết hợp với Redis.
+- Giới hạn request được đồng bộ ngay cả khi ứng dụng chạy trên nhiều cụm (Cluster/Replica).
+
+---
+
+## 4.31. ⚙️ Global Processing (Interceptors & Filters)
+
+### 1. Transform Interceptor
+- **Decimal to Number**: Prisma lưu số thập phân (tiền tệ) dưới dạng Object đặc biệt. Interceptor này tự động chuyển chúng về kiểu `Number` thông thường để Frontend dễ dàng tính toán và hiển thị.
+- **Unified Format**: Mọi response đều có cấu trúc: `{ success, statusCode, message, data, meta }`.
+
+### 2. All Exceptions Filter
+- **Standard Error**: Biến mọi lỗi code (Crash) hoặc lỗi Logic (4xx) thành một format JSON chuẩn.
+- **Stack Trace Logging**: Chỉ ghi lại và báo động (Error log) đối với các lỗi hệ thống (5xx), giúp Developer debug nhanh chóng mà không làm phiền khách hàng.
+
+---
+
+## 4.32. 👷 Worker Deep Dive
+
+### 🌀 Quy trình Đơn hàng (Orders Lifecycle)
+1. **Transaction (Serializable)**: Tạo đơn hàng với mức độ cô lập cao nhất.
+   - Trừ tồn kho (Stock Reservation).
+   - Tăng lượt dùng Coupon (Atomic).
+   - Xóa giỏ hàng.
+   => Mọi bước phải thành công 100%, nếu không sẽ tự động Quay lui (Rollback).
+2. **Background Jobs (delayed)**:
+   - `check-stock-release`: Sau 15 phút, nếu đơn hàng chưa được thanh toán, Worker tự động "nhả" kho để người khác mua.
+   - `order-created-post-process`: Xử lý gửi Email và thông báo Push sau khi đơn được tạo.
+
+### 🔥 Cache Warming (Speed Booster)
+Worker tự động chạy định kỳ (15-60 phút) để:
+- "Làm nóng" dữ liệu trang chủ (Sản phẩm mới nhất, hot sale).
+- Nạp sẵn Categories và Brands vào Redis.
+=> Đảm bảo khách hàng luôn nhận được kết quả tức thì ngay lần truy cập đầu tiên.
+
+---
+
+## 4.33. 📊 Analytics Engine (P16 Optimization)
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+Hệ thống thống kê không đơn giản là `COUNT(*)` từ Database. Nó được thiết kế để xử lý dữ liệu lớn mà không làm treo Server.
+
+### 1. Metric Write Buffering (Chống nghẽn IO)
+- Thay vì ghi vào DB mỗi khi có sự kiện (như user click vào sản phẩm), ta lưu vào một **Buffer (RAM)**.
+- Khi Buffer đầy (50 items) hoặc định kỳ mỗi 1 phút, một tác vụ "Flush" sẽ ghi toàn bộ vào Database bằng `createMany`.
+- Giúp giảm 90% số lượng truy vấn ghi (Write IOPS).
+
+### 2. Historical Pre-computation
+- Các thống kê phức tạp (doanh thu 30 ngày, top sản phẩm) được **Cron Job** tính toán sẵn vào lúc 0 giờ mỗi ngày.
+- Kết quả được lưu vào Redis. Khi Admin mở Dashboard, dữ liệu hiện ra tức thì mà không cần quét lại hàng triệu dòng bản ghi.
+
+### 3. Raw SQL for Performance
+- Với các truy vấn `GROUP BY` phức tạp, Prisma đôi khi sinh ra câu lệnh lồng nhau rất chậm.
+- Chúng ta sử dụng **Raw SQL** (`$queryRaw`) để Database thực hiện tính toán ở tầng thấp nhất, tối ưu tốc độ gấp 5-10 lần.
+
+---
+
+## 4.34. 🔔 Real-time Notifications (WebSocket)
+
+### Kiến trúc Gateway (`/notifications`)
+
+- **Room-based Messaging**: Mỗi User được đưa vào một "Room" riêng dựa trên `userId`.
+- **JWT Handshake**: Xác thực người dùng ngay khi kết nối. Nếu không có Token hợp lệ, kết nối bị ngắt ngay lập tức.
+- **Auto-push Unread Count**: Ngay khi kết nối thành công, Server tự động đẩy số lượng thông báo chưa đọc xuống Client để hiển thị Badge.
+
+---
+
+## 4.35. 🔍 Audit System (Security & Traceability)
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+Trong các hệ thống Enterprise, chúng ta cần biết **"Ai đã làm gì, lúc nào?"**.
+
+- **Audit Interceptor**: Tự động bắt mọi yêu cầu thay đổi dữ liệu (POST/PUT/DELETE) trên các route Admin.
+- **Resource Extraction**: Tự động nhận diện tài nguyên đang bị tác động (Sản phẩm, User, SKU...).
+- **Background Queue**: Nhật ký được đẩy vào **Audit Queue** để xử lý ngầm, đảm bảo việc ghi log không làm chậm trải nghiệm của User.
+- **Auto-Cleanup**: Log cũ (trên 90 ngày) được tự động xóa bởi một Cron Job để giữ Database gọn nhẹ.
 
 ---
 
@@ -2166,12 +2371,12 @@ POST /api/v1/auth/login
 - ✅ Read database schema
 - ✅ Test complete user journey
 
-### Day 4: Advanced Topics
+### Day 4: Advanced Topics (AI & Real-time)
 
-- ✅ Study Redis usage
-- ✅ Understand background jobs
-- ✅ Review security implementation
-- ✅ Explore deployment options
+- ✅ Study `ai-chat/` module and RAG implementation
+- ✅ Understand Gemini Service integration
+- ✅ Review `chat/` module and Socket.io gateway
+- ✅ Explore Feature Flags implementation
 
 ### Day 5: Practice
 
@@ -2710,5 +2915,5 @@ Dự án đã sẵn sàng để:
 
 **Status:** ✅ **COMPLETED**  
 **Quality:** ⭐⭐⭐⭐⭐ **EXCELLENT**  
-**Date:** 07/12/2025  
-**Version:** 1.0
+**Date:** 30/12/2025  
+**Version:** 2.2
