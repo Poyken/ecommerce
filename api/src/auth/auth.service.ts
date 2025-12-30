@@ -99,13 +99,7 @@ export class AuthService {
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
       [], // Permissions will be fetched/cached next time or derived?
-      // Actually generateTokens expects explicit permissions.
-      // New user has GUEST role permissions.
-      // Ideally we fetch them back, but for registration speed we might skip or fetching is better.
-      // Let's stick to original logic: it passed user.id but original code had generateTokens(userId).
-      // Oh, my view of original code showed generateTokens(userId) call in register().
-      // But generateTokens definition has (userId, permissions). Typescript optional?
-      // I added permissions=[] default in TokenService.
+      ['GUEST'], // New user has GUEST role
       fingerprint,
     );
 
@@ -236,6 +230,7 @@ export class AuthService {
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
       allPermissions,
+      user.roles.map((r) => r.role.name),
       fingerprint,
     );
 
@@ -307,6 +302,7 @@ export class AuthService {
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
       allPermissions,
+      user.roles.map((r) => r.role.name),
       fingerprint,
     );
 
@@ -364,6 +360,7 @@ export class AuthService {
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
       allPermissions,
+      user.roles.map((r) => r.role.name),
       fingerprint,
     );
 
@@ -443,6 +440,7 @@ export class AuthService {
     const tokens = this.tokenService.generateTokens(
       userId,
       allPermissions,
+      user.roles.map((r) => r.role.name),
       currentFingerprint, // Maintain binding to current device
     );
 

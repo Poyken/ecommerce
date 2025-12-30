@@ -19,6 +19,7 @@ export class TokenService {
   generateTokens(
     userId: string,
     permissions: string[] = [],
+    roles: string[] = [],
     fingerprint?: string,
   ) {
     const jti = crypto.randomUUID();
@@ -27,6 +28,7 @@ export class TokenService {
     const accessPayload = {
       userId,
       permissions,
+      roles,
       jti,
       fp: fingerprint, // Fingerprint (Hash of IP + UserAgent)
     };

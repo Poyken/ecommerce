@@ -38,7 +38,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       const payload = this.jwtService.verify(token as string);
       const userId = payload.userId;
-      const role = payload.role; // Assuming role is in JWT
+      const roles = payload.roles || []; // Use roles array
 
       if (!userId) {
         client.disconnect();
@@ -46,16 +46,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
 
       client.data.userId = userId;
-      client.data.role = role;
+      client.data.roles = roles;
 
       // Join user specific room
       client.join(`user:${userId}`);
 
       // If admin, join admin room
-      if (
-        role?.toUpperCase() === 'ADMIN' ||
-        role?.toUpperCase() === 'SUPER_ADMIN'
-      ) {
+      const isAdmin = roles.some(
+        (r: string) =>
+          r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPER_ADMIN',
+      );
+
+      if (isAdmin) {
         client.join('admin-room');
       }
 
@@ -75,7 +77,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     payload: { content: string; toUserId?: string; clientTempId?: string },
   ) {
     const userId = client.data.userId;
-    const role = client.data.role;
+    const roles = client.data.roles || [];
 
     if (!userId) {
       return { success: false, error: 'Unauthorized' };
@@ -84,12 +86,15 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     let senderType: 'USER' | 'ADMIN' = 'USER';
     let targetUserId = userId; // Default: User sending to Admin (so target conversation is their own)
 
-    if (
-      role?.toUpperCase() === 'ADMIN' ||
-      role?.toUpperCase() === 'SUPER_ADMIN'
-    ) {
+    const isAdmin = roles.some(
+      (r: string) =>
+        r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPER_ADMIN',
+    );
+
+    if (isAdmin) {
       senderType = 'ADMIN';
       if (!payload.toUserId) {
+        // If admin is replying to a conversation, toUserId must be provided
         return { success: false, error: 'Admin must specify toUserId' };
       }
       targetUserId = payload.toUserId;

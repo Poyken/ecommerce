@@ -1,9 +1,9 @@
+import { PrismaService } from '@core/prisma/prisma.service';
+import { RedisService } from '@core/redis/redis.service';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Queue } from 'bullmq';
-import { PrismaService } from '@core/prisma/prisma.service';
-import { RedisService } from '@core/redis/redis.service';
 
 /**
  * =====================================================================
@@ -102,5 +102,55 @@ export class HealthController {
       cpuUsage: process.cpuUsage(),
       uptime: Math.round(process.uptime()) + 's',
     };
+  }
+  @Get('debug-db')
+  async debugDb() {
+    try {
+      const order = await this.prisma.order.findFirst();
+      return { status: 'ok', order };
+    } catch (error) {
+      return {
+        status: 'error',
+        message: error.message,
+        code: error.code,
+        meta: error.meta,
+      };
+    }
+  }
+
+  @Get('debug-orders')
+  async debugOrders() {
+    try {
+      const include: any = {
+        user: { select: { email: true, firstName: true, lastName: true } },
+        items: {
+          include: {
+            sku: {
+              include: { product: true },
+            },
+          },
+        },
+      };
+      const orders = await this.prisma.order.findMany({
+        take: 1,
+        include,
+      });
+      return { status: 'ok', orders };
+    } catch (error) {
+      return { status: 'error', message: error.message, stack: error.stack };
+    }
+  }
+
+  @Get('debug-skus')
+  async debugSkus() {
+    try {
+      const skus = await this.prisma.sku.findMany({
+        take: 1,
+        include: { product: true },
+      });
+      return { status: 'ok', skus };
+    } catch (e) {
+      return { status: 'error', message: e.message };
+    }
   }
 }
