@@ -25,7 +25,7 @@ services:
     name: api
     env: node
     plan: free
-    buildCommand: ls -R && cd api && npm install && npx prisma generate && npm run build && npx tsc prisma/*.ts --outDir dist/prisma --esModuleInterop --skipLibCheck
+    buildCommand: ls -R && cd api && npm install && npx prisma generate && npm run build && npm run build:seeds
     startCommand: cd api && npx prisma db push && npm run seed:all:prod && node dist/src/main.js
     envVars:
       - key: NODE_ENV

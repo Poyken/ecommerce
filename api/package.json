@@ -7,6 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "npx nest build",
+    "build:seeds": "npx tsc prisma/seed.ts prisma/seed-products.ts prisma/seed-blog.ts prisma/seed-feature-flags.ts --outDir dist/prisma --esModuleInterop --skipLibCheck --resolveJsonModule",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
