@@ -22,9 +22,13 @@
     "seed": "ts-node prisma/seed.ts",
     "seed:products": "ts-node prisma/seed-products.ts",
     "seed:blog": "ts-node prisma/seed-blog.ts",
+    "seed:feature-flags": "ts-node prisma/seed-feature-flags.ts",
     "seed:all": "npm run seed && npm run seed:products && npm run seed:blog && npm run seed:feature-flags",
     "seed:prod": "node dist/prisma/seed.js",
-    "seed:feature-flags": "ts-node prisma/seed-feature-flags.ts",
+    "seed:products:prod": "node dist/prisma/seed-products.js",
+    "seed:blog:prod": "node dist/prisma/seed-blog.js",
+    "seed:feature-flags:prod": "node dist/prisma/seed-feature-flags.js",
+    "seed:all:prod": "npm run seed:prod && npm run seed:products:prod && npm run seed:blog:prod && npm run seed:feature-flags:prod",
     "cache:clear": "ts-node scripts/clear-cache.ts"
   },
   "prisma": {
