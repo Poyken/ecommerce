@@ -8,6 +8,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useDebounce } from "@/lib/hooks/use-debounce";
 import { http } from "@/lib/http";
 import { Loader2, Package, Search, ShoppingBag } from "lucide-react";
 import Image from "next/image";
@@ -43,25 +44,34 @@ export function ChatSelector({
   const observerRef = useRef<IntersectionObserver | null>(null);
   const productBottomRef = useRef<HTMLDivElement>(null);
   const orderBottomRef = useRef<HTMLDivElement>(null);
+  const isFetchingRef = useRef(false);
+
+  const debouncedSearch = useDebounce(search, 500);
 
   // Fetch Products
   const fetchProducts = useCallback(
     async (page: number, currentSearch: string, isNew: boolean = false) => {
-      if (!accessToken) return;
+      if (!accessToken || isFetchingRef.current) return;
+      isFetchingRef.current = true;
       setIsLoading(true);
       try {
         const resData = await http<any>(
           `/products?search=${currentSearch}&page=${page}&limit=20`
         );
         const newProducts = resData.data || [];
-        setProducts((prev) =>
-          isNew ? newProducts : [...prev, ...newProducts]
-        );
+        setProducts((prev) => {
+          const combined = isNew ? newProducts : [...prev, ...newProducts];
+          // Deduplicate by ID
+          const uniqueMap = new Map();
+          combined.forEach((p: any) => uniqueMap.set(p.id, p));
+          return Array.from(uniqueMap.values());
+        });
         setHasMoreProducts(newProducts.length === 20);
       } catch (e) {
         console.error(e);
       } finally {
         setIsLoading(false);
+        isFetchingRef.current = false;
       }
     },
     [accessToken]
@@ -70,7 +80,8 @@ export function ChatSelector({
   // Fetch Orders
   const fetchOrders = useCallback(
     async (page: number, isNew: boolean = false) => {
-      if (!accessToken) return;
+      if (!accessToken || isFetchingRef.current) return;
+      isFetchingRef.current = true;
       setIsLoading(true);
       const url = userId
         ? `/orders?userId=${userId}&page=${page}&limit=20`
@@ -81,12 +92,19 @@ export function ChatSelector({
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         const newOrders = resData.data || [];
-        setOrders((prev) => (isNew ? newOrders : [...prev, ...newOrders]));
+        setOrders((prev) => {
+          const combined = isNew ? newOrders : [...prev, ...newOrders];
+          // Deduplicate by ID
+          const uniqueMap = new Map();
+          combined.forEach((o: any) => uniqueMap.set(o.id, o));
+          return Array.from(uniqueMap.values());
+        });
         setHasMoreOrders(newOrders.length === 20);
       } catch (e) {
         console.error(e);
       } finally {
         setIsLoading(false);
+        isFetchingRef.current = false;
       }
     },
     [accessToken, userId]
@@ -96,9 +114,9 @@ export function ChatSelector({
   useEffect(() => {
     if (isOpen && activeTab === "product") {
       setProductPage(1);
-      fetchProducts(1, search, true);
+      fetchProducts(1, debouncedSearch, true);
     }
-  }, [isOpen, activeTab, search, fetchProducts]);
+  }, [isOpen, activeTab, debouncedSearch, fetchProducts]);
 
   useEffect(() => {
     if (isOpen && activeTab === "order") {
@@ -115,11 +133,11 @@ export function ChatSelector({
 
     observerRef.current = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries[0].isIntersecting && !isFetchingRef.current) {
           if (activeTab === "product" && hasMoreProducts) {
             setProductPage((prev) => {
               const next = prev + 1;
-              fetchProducts(next, search);
+              fetchProducts(next, debouncedSearch);
               return next;
             });
           } else if (activeTab === "order" && hasMoreOrders) {
