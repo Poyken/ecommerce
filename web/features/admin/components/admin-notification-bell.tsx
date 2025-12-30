@@ -19,23 +19,21 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Notification,
-  useNotifications,
-} from "@/contexts/notification-context";
+import { useNotificationStore } from "@/features/notifications/store/notification.store";
 import { Link, useRouter } from "@/i18n/routing";
+import { type Notification } from "@/types/models";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
 import { Bell, ExternalLink, Package, User } from "lucide-react";
@@ -44,8 +42,8 @@ import { useState } from "react";
 import { AdminNotificationItem } from "./admin-notification-item";
 
 export function AdminNotificationBell() {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, refetch } =
-    useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, refresh } =
+    useNotificationStore();
   const t = useTranslations("notifications");
   const tAdmin = useTranslations("admin");
   const locale = useLocale();
@@ -72,7 +70,7 @@ export function AdminNotificationBell() {
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     if (newOpen) {
-      refetch();
+      refresh();
     }
   };
 
@@ -99,7 +97,7 @@ export function AdminNotificationBell() {
   };
 
   const handleActionComplete = () => {
-    refetch();
+    refresh();
   };
 
   // Parse order info from notification for Dialog details (fallback)

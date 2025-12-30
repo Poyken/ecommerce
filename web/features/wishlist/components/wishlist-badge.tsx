@@ -20,9 +20,9 @@
 
 "use client";
 
-import { getWishlistCountAction } from "@/features/wishlist/actions";
 import { useGuestWishlist } from "@/features/wishlist/hooks/use-guest-wishlist";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
+import { useWishlistStore } from "@/features/wishlist/store/wishlist.store";
+import { memo, useEffect } from "react";
 
 interface WishlistBadgeProps {
   initialUser?: unknown;
@@ -33,41 +33,32 @@ export const WishlistBadge = memo(function WishlistBadge({
   initialUser,
   initialCount,
 }: WishlistBadgeProps) {
-  const [count, setCount] = useState(initialCount || 0);
-  const isFetching = useRef(false);
+  const { count, updateCount, refreshWishlist } = useWishlistStore();
   const { wishlistIds } = useGuestWishlist();
 
-  const fetchCount = useCallback(async () => {
-    if (isFetching.current || !initialUser) return;
-
-    try {
-      isFetching.current = true;
-      const countValue = await getWishlistCountAction();
-      setCount(countValue);
-    } catch (error) {
-      console.error("Failed to fetch wishlist count", error);
-    } finally {
-      isFetching.current = false;
+  // Initial sync from props
+  useEffect(() => {
+    if (initialCount !== undefined) {
+      updateCount(initialCount);
     }
-  }, [initialUser]);
+  }, [initialCount, updateCount]);
 
-  // Sync with guest wishlist for guest users
+  // Sync with guest wishlist
   useEffect(() => {
     if (!initialUser) {
-      setCount(wishlistIds.length);
+      updateCount(wishlistIds.length);
     }
-  }, [wishlistIds.length, initialUser]);
+  }, [wishlistIds.length, initialUser, updateCount]);
 
-  // Fetch and listen for updates for logged-in users
+  // Sync with server for logged-in users and listen for events
   useEffect(() => {
     if (!initialUser) return;
-
-    // Initial fetch only if we don't have a count
-    if (count === 0 || initialCount === undefined) {
-      fetchCount();
-    }
-
-    const handleUpdate = () => fetchCount();
+    
+    // Only fetch if explicitly needed or to sync listeners
+    // We can also just listen to window events if we want to keep that pattern
+    // or rely on the store's state if updated by `WishlistButton`
+    
+    const handleUpdate = () => refreshWishlist();
     window.addEventListener("wishlist_updated", handleUpdate);
     window.addEventListener("guest_wishlist_updated", handleUpdate);
 
@@ -75,7 +66,7 @@ export const WishlistBadge = memo(function WishlistBadge({
       window.removeEventListener("wishlist_updated", handleUpdate);
       window.removeEventListener("guest_wishlist_updated", handleUpdate);
     };
-  }, [initialUser, fetchCount, count, initialCount]);
+  }, [initialUser, refreshWishlist]);
 
   if (count === 0) return null;
 

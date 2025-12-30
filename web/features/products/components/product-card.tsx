@@ -25,15 +25,10 @@ import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
 import { ProductOption, Sku } from "@/types/models";
 import { Eye } from "lucide-react";
 import { useTranslations } from "next-intl";
-import dynamic from "next/dynamic";
 import { memo, useCallback, useEffect, useState } from "react";
 import { preload } from "swr";
+import { useQuickViewStore } from "../store/quick-view.store";
 import { ProductCardBase } from "./product-card-base";
-const ProductQuickViewDialog = dynamic(() =>
-  import("@/features/products/components/product-quick-view-dialog").then(
-    (mod) => mod.ProductQuickViewDialog
-  )
-);
 
 // Định nghĩa Props cho component
 interface ProductCardProps {
@@ -79,7 +74,7 @@ export const ProductCard = memo(function ProductCard({
 }: ProductCardProps) {
   // 1. HOOKS KHỞI TẠO
   const t = useTranslations("productCard");
-  const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
+  const { openQuickView } = useQuickViewStore();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -112,7 +107,7 @@ export const ProductCard = memo(function ProductCard({
       className="pointer-events-auto min-w-[140px] bg-white text-foreground hover:bg-accent hover:text-accent-foreground h-12 rounded-full font-bold text-xs tracking-wider uppercase shadow-2xl border-none hover:shadow-accent/30 hover:shadow-2xl transition-[background-color,color,box-shadow,opacity] duration-300 px-6 backdrop-blur-md transform-gpu"
       onClick={(e) => {
         e.preventDefault();
-        setIsQuickViewOpen(true);
+        openQuickView(id, undefined, { name, price, imageUrl, category });
       }}
     >
       <Eye size={16} className="mr-2 shrink-0" />
@@ -124,7 +119,7 @@ export const ProductCard = memo(function ProductCard({
       className="w-full bg-white/95 backdrop-blur-xl text-foreground border-none hover:bg-accent hover:text-accent-foreground rounded-full text-[10px] font-black h-9 shadow-xl hover:shadow-accent/20 transition-[background-color,color,box-shadow] duration-300 transform-gpu"
       onClick={(e) => {
         e.preventDefault();
-        setIsQuickViewOpen(true);
+        openQuickView(id, undefined, { name, price, imageUrl, category });
       }}
     >
       {t("quickView") || "Quick View"}
@@ -163,17 +158,7 @@ export const ProductCard = memo(function ProductCard({
         onMouseEnter={prefetchProduct}
       />
 
-      <ProductQuickViewDialog
-        isOpen={isQuickViewOpen}
-        onOpenChange={setIsQuickViewOpen}
-        productId={id}
-        initialData={{
-          name,
-          price,
-          imageUrl,
-          category,
-        }}
-      />
+
     </>
   );
 });

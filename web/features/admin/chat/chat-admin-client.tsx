@@ -11,13 +11,13 @@ import { ProductQuickViewDialog } from "@/features/products/components/product-q
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";
 import {
-  Image as ImageIcon,
-  Loader2,
-  MessageSquare,
-  Paperclip,
-  Search,
-  Send,
-  X,
+    Image as ImageIcon,
+    Loader2,
+    MessageSquare,
+    Paperclip,
+    Search,
+    Send,
+    X,
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -55,8 +55,10 @@ interface ChatConversation {
   };
 }
 
+import { User as UserType } from "@/types/models";
+
 interface ChatAdminClientProps {
-  user: any;
+  user: UserType | null;
   accessToken: string;
 }
 

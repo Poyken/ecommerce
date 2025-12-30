@@ -1,18 +1,18 @@
 "use client";
 
 import {
-  ReviewItem,
-  ReviewItemProps,
-  ReviewListSkeleton,
+    ReviewItem,
+    ReviewItemProps,
+    ReviewListSkeleton,
 } from "@/components/molecules/review-item";
 import { Button } from "@/components/ui/button";
 import {
-  checkReviewEligibilityAction,
-  getReviewsAction,
+    checkReviewEligibilityAction,
+    getReviewsAction,
 } from "@/features/reviews/actions";
 import { ReviewFormDialog } from "@/features/reviews/components/review-form-dialog";
-import { Sku } from "@/types/models";
 import { m } from "@/lib/animations";
+import { Sku } from "@/types/models";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -44,8 +44,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 interface ProductReviewsProps {
   productId: string;
   initialReviews?: ReviewItemProps["review"][];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  initialMeta?: any;
+  initialMeta?: {
+    totalReviews: number;
+    averageRating: number;
+    nextCursor?: string;
+  } | null;
   initialPurchasedSkus?: PurchasedSku[];
 }
 
@@ -65,7 +68,6 @@ export function ProductReviews({
   initialPurchasedSkus = [],
 }: ProductReviewsProps) {
   const t = useTranslations("reviews");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [reviews, setReviews] =
     useState<ReviewItemProps["review"][]>(initialReviews);
   const [meta, setMeta] = useState<{

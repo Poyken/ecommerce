@@ -1,5 +1,4 @@
 import { LoadingScreen } from "@/components/shared/loading-screen";
-import { NotificationProvider } from "@/contexts/notification-context";
 import { getBrandsAction, getCategoriesAction } from "@/features/admin/actions";
 import { AdminHeader } from "@/features/admin/components/admin-header";
 import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
@@ -10,6 +9,7 @@ import {
     getNotificationsAction,
     getUnreadCountAction,
 } from "@/features/notifications/actions";
+import { NotificationInitializer } from "@/features/notifications/components/notification-initializer";
 import { getProfileAction } from "@/features/profile/actions";
 import { getPermissionsFromToken } from "@/lib/permission-utils";
 import { getTranslations } from "next-intl/server";
@@ -86,27 +86,26 @@ async function DynamicAdminContent({
 
   return (
     <AuthProvider initialPermissions={permissions}>
-      <NotificationProvider
+      <NotificationInitializer
         userId={user.id}
         initialNotifications={initialNotifications}
         initialUnreadCount={initialUnreadCount}
         accessToken={token}
+      />
+      <AdminMetadataProvider
+        initialBrands={initialBrands}
+        initialCategories={initialCategories}
       >
-        <AdminMetadataProvider
-          initialBrands={initialBrands}
-          initialCategories={initialCategories}
-        >
-          <div className="flex min-h-screen bg-muted/40 dark:bg-background text-foreground font-sans">
-            <AdminSidebar />
-            <main className="relative z-10 flex-1 flex flex-col min-w-0">
-              <AdminHeader user={user} />
-              <div className="max-w-7xl mx-auto p-4 md:p-8 w-full">
-                {children}
-              </div>
-            </main>
-          </div>
-        </AdminMetadataProvider>
-      </NotificationProvider>
+        <div className="flex min-h-screen bg-muted/40 dark:bg-background text-foreground font-sans">
+          <AdminSidebar />
+          <main className="relative z-10 flex-1 flex flex-col min-w-0">
+            <AdminHeader user={user} />
+            <div className="max-w-7xl mx-auto p-4 md:p-8 w-full">
+              {children}
+            </div>
+          </main>
+        </div>
+      </AdminMetadataProvider>
     </AuthProvider>
   );
 }

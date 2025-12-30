@@ -11,15 +11,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAiChat } from "@/features/chat/hooks/use-ai-chat";
+import { useQuickViewStore } from "@/features/products/store/quick-view.store";
 import { cn } from "@/lib/utils";
 import {
     Bot,
+    Eye,
     Loader2,
     MessageCircle,
     Minus,
     Send,
     Sparkles,
-    X,
+    X
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -198,7 +200,46 @@ export function AiChatWidget({ user, accessToken }: AiChatWidgetProps) {
                       >
                         {msg.role === "assistant" ? (
                           <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0">
-                            <ReactMarkdown>{msg.content}</ReactMarkdown>
+                            <ReactMarkdown
+                              components={{
+                                a: ({ href, children }) => {
+                                  if (href?.startsWith("quickview:")) {
+                                    // eslint-disable-next-line react-hooks/rules-of-hooks
+                                    const { openQuickView } = useQuickViewStore();
+                                    const handleClick = (e: React.MouseEvent) => {
+                                      e.preventDefault();
+                                      const path = href.replace("quickview:", "");
+                                      const [id, query] = path.split("?");
+                                      const params = new URLSearchParams(query);
+                                      const skuId = params.get("sku") || undefined;
+                                      openQuickView(id, skuId);
+                                    };
+
+                                    return (
+                                      <button
+                                        onClick={handleClick}
+                                        className="inline-flex items-center gap-1 font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer"
+                                      >
+                                        <Eye className="w-3 h-3" />
+                                        {children}
+                                      </button>
+                                    );
+                                  }
+                                  return (
+                                    <a
+                                      href={href}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-primary underline"
+                                    >
+                                      {children}
+                                    </a>
+                                  );
+                                },
+                              }}
+                            >
+                              {msg.content}
+                            </ReactMarkdown>
                           </div>
                         ) : (
                           msg.content

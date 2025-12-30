@@ -31,14 +31,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import {
-    Notification,
-    useNotifications,
-} from "@/contexts/notification-context";
+import { useNotificationStore } from "@/features/notifications/store/notification.store";
+import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
+import { type Notification } from "@/types/models";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
-import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import {
     Bell,
@@ -56,7 +54,7 @@ import { useState } from "react";
 
 export function NotificationsClient() {
   const { notifications, unreadCount, markAsRead, markAllAsRead } =
-    useNotifications();
+    useNotificationStore();
   const t = useTranslations("notifications");
   const locale = useLocale();
   const router = useRouter();
@@ -64,7 +62,7 @@ export function NotificationsClient() {
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
 
-  const filteredNotifications = notifications.filter((n) => {
+  const filteredNotifications = notifications.filter((n: Notification) => {
     if (filter === "unread") return !n.isRead;
     return true;
   });
@@ -200,7 +198,7 @@ export function NotificationsClient() {
               animate="visible"
               className="space-y-4"
             >
-              {filteredNotifications.map((notification) => (
+              {filteredNotifications.map((notification: Notification) => (
                 <m.div key={notification.id} variants={itemVariants}>
                   <GlassCard
                     onClick={() => {

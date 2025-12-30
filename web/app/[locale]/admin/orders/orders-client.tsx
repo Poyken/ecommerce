@@ -19,39 +19,39 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { OrderDetailsDialog } from "@/features/admin/components/order-details-dialog";
 import { UpdateOrderStatusDialog } from "@/features/admin/components/update-order-status-dialog";
 import {
-  Check,
-  Clock,
-  Download,
-  Edit,
-  Eye,
-  Package,
-  RefreshCw,
-  Search,
-  ShoppingBag,
-  Truck,
-  Upload,
-  X,
+    Check,
+    Clock,
+    Download,
+    Edit,
+    Eye,
+    Package,
+    RefreshCw,
+    Search,
+    ShoppingBag,
+    Truck,
+    Upload,
+    X,
 } from "lucide-react";
 
 import { StatusBadge } from "@/components/shared/status-badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useNotifications } from "@/contexts/notification-context";
 import {
-  AdminEmptyState,
-  AdminPageHeader,
-  AdminTableWrapper,
+    AdminEmptyState,
+    AdminPageHeader,
+    AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
+import { useNotificationStore } from "@/features/notifications/store/notification.store";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { cn, formatCurrency, formatDate } from "@/lib/utils";
 import { Order, OrderStatus } from "@/types/models";
@@ -90,7 +90,7 @@ export function OrdersClient({
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const { notifications } = useNotifications();
+  const { notifications } = useNotificationStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastProcessedNotiId = useRef<string | null>(null);
 

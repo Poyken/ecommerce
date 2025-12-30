@@ -1,22 +1,20 @@
 import { ClientOnlyWidgets } from "@/components/shared/client-only-widgets";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
-import {
-  NotificationProvider,
-  type Notification,
-} from "@/contexts/notification-context";
 import { getCartCountAction } from "@/features/cart/actions";
-import { CartProvider } from "@/features/cart/providers/cart-provider";
+import { CartInitializer } from "@/features/cart/components/cart-initializer";
 import { ConditionalFooter } from "@/features/layout/components/conditional-footer";
 import { Footer } from "@/features/layout/components/footer";
 import { Header, HeaderFallback } from "@/features/layout/components/header";
 import { MobileBottomNav } from "@/features/layout/components/mobile-nav";
 import {
-  getNotificationsAction,
-  getUnreadCountAction,
+    getNotificationsAction,
+    getUnreadCountAction,
 } from "@/features/notifications/actions";
+import { NotificationInitializer } from "@/features/notifications/components/notification-initializer";
 import { getProfileAction } from "@/features/profile/actions";
 import { getWishlistAction } from "@/features/wishlist/actions";
 import { getPermissionsFromToken } from "@/lib/permission-utils";
+import { type Notification } from "@/types/models";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 
@@ -90,31 +88,31 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <NotificationProvider
-      userId={user?.id}
-      initialNotifications={initialNotifications}
-      initialUnreadCount={initialUnreadCount}
-      accessToken={token}
-    >
-      <CartProvider initialCount={initialCartCount} initialUser={user}>
-        <Header
-          initialUser={user}
-          permissions={permissions}
-          initialCartCount={initialCartCount}
-          initialWishlistCount={initialWishlistCount}
-        />
-        <main className="flex-1">
-          <ErrorBoundary name="ShopContent">{children}</ErrorBoundary>
-        </main>
-        <ConditionalFooter />
-        <MobileBottomNav
-          initialUser={user}
-          initialCartCount={initialCartCount}
-          initialWishlistCount={initialWishlistCount}
-        />
-        <ClientOnlyWidgets user={user} accessToken={token} />
-      </CartProvider>
-    </NotificationProvider>
+    <>
+      <NotificationInitializer
+        userId={user?.id}
+        initialNotifications={initialNotifications}
+        initialUnreadCount={initialUnreadCount}
+        accessToken={token}
+      />
+      <CartInitializer initialCount={initialCartCount} initialUser={user} />
+      <Header
+        initialUser={user}
+        permissions={permissions}
+        initialCartCount={initialCartCount}
+        initialWishlistCount={initialWishlistCount}
+      />
+      <main className="flex-1">
+        <ErrorBoundary name="ShopContent">{children}</ErrorBoundary>
+      </main>
+      <ConditionalFooter />
+      <MobileBottomNav
+        initialUser={user}
+        initialCartCount={initialCartCount}
+        initialWishlistCount={initialWishlistCount}
+      />
+      <ClientOnlyWidgets user={user} accessToken={token} />
+    </>
   );
 }
 

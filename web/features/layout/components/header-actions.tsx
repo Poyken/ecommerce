@@ -4,27 +4,27 @@ import { UserAvatar } from "@/components/molecules/user-avatar";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { logoutAction } from "@/features/auth/actions";
 import { Link } from "@/i18n/routing";
 import {
-  Laptop,
-  Loader2,
-  LogOut,
-  Moon,
-  Palette,
-  Sun,
-  User,
+    Laptop,
+    Loader2,
+    LogOut,
+    Moon,
+    Palette,
+    Sun,
+    User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -57,8 +57,10 @@ import { useState } from "react";
 
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 
+import { User as UserType } from "@/types/models"; // Renamed to avoid conflict with lucide-react User icon
+
 interface HeaderActionsProps {
-  initialUser?: any;
+  initialUser?: UserType | null; // Use UserType here
 }
 
 export function HeaderActions({ initialUser }: HeaderActionsProps) {
@@ -111,7 +113,7 @@ export function HeaderActions({ initialUser }: HeaderActionsProps) {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-9 w-9 rounded-full">
             <UserAvatar
-              src={user?.avatar}
+              src={user?.avatarUrl}
               alt={user?.firstName || "User"}
               className="h-9 w-9"
             />

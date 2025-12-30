@@ -28,8 +28,9 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useNotifications } from "@/contexts/notification-context";
+import { useNotificationStore } from "@/features/notifications/store/notification.store";
 import { Link } from "@/i18n/routing";
+import { Notification } from "@/types/models";
 import { Bell } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -37,8 +38,8 @@ import { useState } from "react";
 import { NotificationItem } from "./notification-item";
 
 export function NotificationBell() {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, refetch } =
-    useNotifications();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, refresh } =
+    useNotificationStore();
   const t = useTranslations("notifications");
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -60,15 +61,15 @@ export function NotificationBell() {
     setOpen(newOpen);
     if (newOpen) {
       // Fetch latest notifications when opening the dropdown
-      refetch();
+      refresh();
     }
   };
 
-  const handleNotificationClick = (notification: any) => {
+  const handleNotificationClick = (notification: Notification) => {
     markAsRead(notification.id);
     setOpen(false);
     if (notification.link) {
-      router.push(notification.link);
+      router.push(notification.link as any);
     }
   };
 

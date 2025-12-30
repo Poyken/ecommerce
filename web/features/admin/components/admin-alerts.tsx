@@ -2,6 +2,7 @@
 
 import { GlassCard } from "@/components/shared/glass-card";
 import { Badge } from "@/components/ui/badge";
+import { Product, Sku } from "@/types/models";
 import { AlertTriangle, ArrowUpRight, Package, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
@@ -29,9 +30,9 @@ import Link from "next/link";
  */
 
 interface AdminAlertsProps {
-  lowStockSkus: any[];
+  lowStockSkus: (Sku & { product?: Product })[];
   lowStockCount: number;
-  trendingProducts: any[];
+  trendingProducts: { name: string; sales: number }[];
 }
 
 export function AdminAlerts({
@@ -71,18 +72,26 @@ export function AdminAlerts({
             >
               <div className="flex items-center gap-4">
                 <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-foreground/5">
-                  {sku.product?.images?.[0] ? (
-                    <Image
-                      src={sku.product.images[0]}
-                      alt={sku.skuCode}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <Package className="w-5 h-5 text-muted-foreground/40" />
-                    </div>
-                  )}
+                  {(() => {
+                    const firstImage = sku.product?.images?.[0];
+                    const src = typeof firstImage === 'string' ? firstImage : (firstImage as any)?.url;
+                    
+                    if (src) {
+                      return (
+                        <Image
+                          src={src}
+                          alt={sku.skuCode}
+                          fill
+                          className="object-cover"
+                        />
+                      );
+                    }
+                    return (
+                      <div className="flex items-center justify-center h-full">
+                        <Package className="w-5 h-5 text-muted-foreground/40" />
+                      </div>
+                    );
+                  })()}
                 </div>
                 <div>
                   <p className="text-sm font-bold truncate w-40 md:w-48">

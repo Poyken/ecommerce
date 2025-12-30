@@ -30,8 +30,8 @@ import {
     type CarouselApi,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 import { m } from "@/lib/animations";
+import { cn } from "@/lib/utils";
 import { AnimatePresence } from "framer-motion";
 import dynamic from "next/dynamic";
 import { memo, useEffect, useState } from "react";
@@ -44,13 +44,15 @@ const ProductImageLightbox = dynamic(
   { ssr: false }
 );
 
+import { ProductOption, Sku } from "@/types/models";
+
 interface ProductImageGalleryProps {
   images: string[];
   productName: string;
   activeImage?: string;
   onImageClick?: (image: string) => void;
-  skus?: any[];
-  options?: any[];
+  skus?: Sku[];
+  options?: ProductOption[];
   onLightboxChange?: (isOpen: boolean) => void;
 }
 

@@ -27,6 +27,7 @@ import { useToast } from "@/components/shared/use-toast";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { toggleWishlistAction } from "@/features/wishlist/actions";
 import { useGuestWishlist } from "@/features/wishlist/hooks/use-guest-wishlist";
+import { useWishlistStore } from "@/features/wishlist/store/wishlist.store";
 import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -121,6 +122,12 @@ export function WishlistButton({
           title: res.isWishlisted ? t("added") : t("removed"),
           variant: res.isWishlisted ? "success" : "info",
         });
+        
+        // Update Global Store directly (faster than waiting for window event)
+        const { updateCount, refreshWishlist } = useWishlistStore.getState();
+        refreshWishlist(); // Or simpler: updateCount(prevCount + (res.isWishlisted ? 1 : -1));
+        
+        // Keep window event for other listeners if any (e.g. multi-tab)
         window.dispatchEvent(new Event("wishlist_updated"));
       }
     });

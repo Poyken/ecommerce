@@ -32,6 +32,13 @@ interface ProductContext {
   price: number | string;
   inStock: boolean;
   description: string;
+  skus?: {
+    id: string;
+    code: string;
+    price: number;
+    stock: number;
+    attributes: string;
+  }[];
 }
 
 @Injectable()
@@ -127,8 +134,18 @@ export class AiChatService {
         brand: { select: { name: true } },
         skus: {
           where: { status: 'ACTIVE' },
-          select: { price: true, stock: true },
-          take: 1,
+          select: {
+            id: true,
+            price: true,
+            stock: true,
+            skuCode: true,
+            optionValues: {
+              include: {
+                optionValue: { include: { option: true } },
+              },
+            },
+          },
+          take: 5, // Take more SKUs to give AI choices
         },
       },
       take: limit,
@@ -144,6 +161,15 @@ export class AiChatService {
       price: Number(p.skus[0]?.price) || 0,
       inStock: (p.skus[0]?.stock || 0) > 0,
       description: p.description?.substring(0, 200) || '',
+      skus: p.skus.map((s) => ({
+        id: s.id,
+        code: s.skuCode,
+        price: Number(s.price),
+        stock: s.stock,
+        attributes: s.optionValues
+          .map((ov) => `${ov.optionValue.option.name}: ${ov.optionValue.value}`)
+          .join(', '),
+      })),
     }));
   }
 
@@ -154,10 +180,19 @@ export class AiChatService {
     const productList =
       productContext.length > 0
         ? productContext
-            .map(
-              (p) =>
-                `- ${p.name} (${p.category}): ${Number(p.price).toLocaleString('vi-VN')}đ ${p.inStock ? '✓ Còn hàng' : '✗ Hết hàng'}`,
-            )
+            .map((p) => {
+              const skuInfo =
+                p.skus && p.skus.length > 0
+                  ? '\n    Variants:\n' +
+                    p.skus
+                      .map(
+                        (s) =>
+                          `    - ${s.attributes} (Price: ${s.price.toLocaleString('vi-VN')}đ) [ID: ${s.id}]`,
+                      )
+                      .join('\n')
+                  : '';
+              return `- ${p.name} (ID: ${p.id}) - ${p.category}: ${Number(p.price).toLocaleString('vi-VN')}đ ${p.inStock ? '✓ Còn hàng' : '✗ Hết hàng'}${skuInfo}`;
+            })
             .join('\n')
         : 'Không có sản phẩm phù hợp trong hệ thống (No products found).';
 
@@ -175,9 +210,13 @@ CHÍNH SÁCH CỬA HÀNG:
 HƯỚNG DẪN TRẢ LỜI:
 1. Trả lời ngắn gọn, thân thiện và chuyên nghiệp bằng TIẾNG VIỆT.
 2. Nếu DANH SÁCH SẢN PHẨM PHÙ HỢP ở trên có dữ liệu, hãy ưu tiên tư vấn các sản phẩm đó.
-3. Nếu khách hỏi về các sản phẩm như "áo khoác", "giày dép", hãy khéo léo thông báo là shop chuyên về nội thất cao cấp (thảm, bàn, đèn...) và gợi ý họ xem các mẫu hiện có.
-4. Định dạng giá tiền theo kiểu Việt Nam (ví dụ: 1.500.000đ).
-5. Tuyệt đối không bịa đặt thông tin sản phẩm không có trong database.`;
+3. Khi bạn đề xuất cụ thể một sản phẩm hoặc một biến thể (Variant), BẮT BUỘC phải kèm theo link xem nhanh theo định dạng sau:
+   - Cho sản phẩm: \`[Tên Sản Phẩm](quickview:{productId})\` (Ví dụ: [Sofa Da Bò](quickview:prod-123))
+   - Cho biến thể cụ thể: \`[Tên SP - Thuộc tính](quickview:{productId}?sku={skuId})\` (Ví dụ: [Sofa - Màu Đỏ](quickview:prod-123?sku=sku-456))
+   -> Link này giúp khách hàng mở ngay cửa sổ xem nhanh sản phẩm.
+4. Nếu khách hỏi về các sản phẩm như "áo khoác", "giày dép", hãy khéo léo thông báo là shop chuyên về nội thất cao cấp (thảm, bàn, đèn...) và gợi ý họ xem các mẫu hiện có.
+5. Định dạng giá tiền theo kiểu Việt Nam (ví dụ: 1.500.000đ).
+6. Tuyệt đối không bịa đặt thông tin sản phẩm không có trong database.`;
 
     this.logger.debug(
       `Generated System Prompt with ${productContext.length} products`,

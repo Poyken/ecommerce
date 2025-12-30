@@ -20,8 +20,8 @@
 
 "use client";
 
-import { Notification } from "@/contexts/notification-context";
 import { cn } from "@/lib/utils";
+import { Notification } from "@/types/models";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
 import { useLocale } from "next-intl";

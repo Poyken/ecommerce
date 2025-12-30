@@ -24,7 +24,7 @@
 
 "use client";
 
-import { useCartContext } from "@/features/cart/providers/cart-provider";
+import { useCartStore } from "@/features/cart/store/cart.store";
 import { memo } from "react";
 
 // Props kept for compatibility with parent component, but not used internally
@@ -34,7 +34,7 @@ interface CartBadgeProps {
 }
 
 export const CartBadge = memo(function CartBadge(_props: CartBadgeProps) {
-  const { count } = useCartContext();
+  const { count } = useCartStore();
 
   // Không hiển thị badge nếu giỏ hàng trống
   if (count === 0) return null;

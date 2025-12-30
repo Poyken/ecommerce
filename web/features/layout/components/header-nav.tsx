@@ -1,15 +1,15 @@
 "use client";
 
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/features/auth/providers/auth-provider";
 import {
-  BookOpen,
-  Home,
-  Info,
-  Phone,
-  ShieldCheck,
-  ShoppingBag,
+    BookOpen,
+    Home,
+    Info,
+    Phone,
+    ShieldCheck,
+    ShoppingBag,
 } from "lucide-react";
 
 /**
@@ -33,8 +33,10 @@ import {
  * =====================================================================
  */
 
+import { User } from "@/types/models";
+
 interface HeaderNavProps {
-  initialUser?: any;
+  initialUser?: User | null;
   permissions?: string[];
 }
 

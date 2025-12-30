@@ -258,17 +258,10 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
         // Keep default message if JSON parsing fails
       }
 
-      const isUserNotFound = res.status === 404;
-
-      // 401 Unauthorized OR 404 User Not Found → Chuyển về trang login
-      if (
-        (res.status === 401 || isUserNotFound) &&
-        !options.skipRedirectOn401
-      ) {
+      // 401 Unauthorized → Chuyển về trang login
+      if (res.status === 401 && !options.skipRedirectOn401) {
         console.warn(
-          `[HTTP ${res.status}] ${
-            isUserNotFound ? "User Not Found" : "Unauthorized"
-          } request to: ${url}. Redirecting to /login.`
+          `[HTTP ${res.status}] Unauthorized request to: ${url}. Redirecting to /login.`
         );
         if (typeof window !== "undefined") {
           window.location.href = "/login";
@@ -286,7 +279,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
       error.status = res.status;
       error.body = errorBody;
 
-      const isUnauthorized = res.status === 401 || isUserNotFound;
+      const isUnauthorized = res.status === 401;
       if (!isUnauthorized || options.skipRedirectOn401) {
         if (isUnauthorized) {
           console.warn(

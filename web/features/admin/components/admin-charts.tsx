@@ -85,7 +85,7 @@ export function SalesTrendChart({ data }: { data: SalesTrendData[] }) {
               className="font-medium"
             />
             <Tooltip
-              formatter={(value: any) => formatCurrency(value)}
+              formatter={(value: any) => formatCurrency(Number(value) || 0)}
               contentStyle={{
                 borderRadius: "1rem",
                 border: "1px solid hsl(var(--foreground) / 0.1)",

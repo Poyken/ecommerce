@@ -1,8 +1,8 @@
 import { useToast } from "@/components/shared/use-toast";
 import { addToCartAction } from "@/features/cart/actions";
-import { CartContext } from "@/features/cart/providers/cart-provider";
+import { useCartStore } from "@/features/cart/store/cart.store";
 import { useTranslations } from "next-intl";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useState } from "react";
 
 /**
  * =====================================================================
@@ -41,10 +41,8 @@ export function useCart(productName?: string): UseCartResult {
   // Hook hiển thị thông báo
   const { toast } = useToast();
 
-  // Context giỏ hàng toàn cục (cung cấp hàm refresh và update badge)
-  const cartContext = useContext(CartContext);
-  const refreshCart = cartContext?.refreshCart || (() => Promise.resolve());
-  const increment = cartContext?.increment || (() => {});
+  // Store giỏ hàng toàn cục (thay thế Context)
+  const { refreshCart, increment } = useCartStore();
 
   /**
    * Hàm chính: Thêm vào giỏ hàng

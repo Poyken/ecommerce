@@ -18,12 +18,10 @@
  */
 
 import { Button } from "@/components/ui/button";
-import {
-  Notification,
-  useNotifications,
-} from "@/contexts/notification-context";
 import { updateOrderStatusAction } from "@/features/admin/actions";
+import { useNotificationStore } from "@/features/notifications/store/notification.store";
 import { cn } from "@/lib/utils";
+import { type Notification } from "@/types/models";
 import { formatDistanceToNow } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
 import { Check, Eye, Package, X } from "lucide-react";
@@ -43,7 +41,7 @@ export function AdminNotificationItem({
 }: AdminNotificationItemProps) {
   const locale = useLocale();
   const t = useTranslations("admin");
-  const { markAsRead } = useNotifications();
+  const { markAsRead } = useNotificationStore();
   const [isLoading, setIsLoading] = useState<"accept" | "reject" | null>(null);
   const [hasActionTaken, setHasActionTaken] = useState(false);
 
