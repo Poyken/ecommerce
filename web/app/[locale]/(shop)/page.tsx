@@ -7,6 +7,7 @@ import { HomeWrapper } from "@/features/home/components/home-wrapper";
 import { HeroSection } from "@/features/products/components/hero-section";
 import { HomeContent } from "@/features/products/components/home-content";
 import { productService } from "@/services/product.service";
+import { Brand, Category, Product } from "@/types/models";
 import { Metadata } from "next";
 import { Suspense } from "react";
 
@@ -81,15 +82,20 @@ function HomeContentSkeleton() {
  * Async Component để lấy dữ liệu riêng biệt khỏi luồng chính của trang
  */
 async function HomeDataFetcher() {
-  // Parallel data fetching
-  // Note: We intentionally do not wrap this in try/catch to ensure that:
-  // 1. Build fails if API is down (preventing empty cache)
-  // 2. ISR revalidation throws error to keep stale cache (instead of overwriting with empty data)
-  const [products, categories, brands] = await Promise.all([
-    productService.getFeaturedProducts(20),
-    productService.getCategories(),
-    productService.getBrands(),
-  ]);
+  let products: Product[] = [];
+  let categories: Category[] = [];
+  let brands: Brand[] = [];
+
+  try {
+    // Parallel data fetching
+    [products, categories, brands] = await Promise.all([
+      productService.getFeaturedProducts(20),
+      productService.getCategories(),
+      productService.getBrands(),
+    ]);
+  } catch (_e) {
+    // console.error("Failed to fetch home data", _e);
+  }
 
   return (
     <HomeContent products={products} categories={categories} brands={brands} />

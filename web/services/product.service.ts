@@ -127,22 +127,30 @@ export const productService = {
     params?: GetProductsParams,
     options?: { next?: NextFetchRequestConfig }
   ): Promise<ApiResponse<Product[]>> {
-    console.log("[ProductService] Fetching products with params:", params);
-    const response = await http<ApiResponse<Product[]>>("/products", {
-      params: params as Record<string, string | number | boolean>,
-      skipAuth: true,
-      next: {
-        revalidate: 60, // Cache 60 giây - cân bằng giữa fresh data và performance
-        tags: ["products"],
-        ...options?.next,
-      },
-    });
-    return (
-      response || {
+    try {
+      console.log("[ProductService] Fetching products with params:", params);
+      const response = await http<ApiResponse<Product[]>>("/products", {
+        params: params as Record<string, string | number | boolean>,
+        skipAuth: true,
+        next: {
+          revalidate: 60, // Cache 60 giây - cân bằng giữa fresh data và performance
+          tags: ["products"],
+          ...options?.next,
+        },
+      });
+      return (
+        response || {
+          data: [],
+          meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
+        }
+      );
+    } catch (error) {
+      console.error("Lấy sản phẩm thất bại:", error);
+      return {
         data: [],
         meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
-      }
-    );
+      } as unknown as ApiResponse<Product[]>;
+    }
   },
 
   /**
@@ -162,8 +170,13 @@ export const productService = {
     limit = 8,
     options?: { next?: NextFetchRequestConfig }
   ): Promise<Product[]> {
-    const result = await this.getProducts({ limit }, options);
-    return result.data || [];
+    try {
+      const result = await this.getProducts({ limit }, options);
+      return result.data || [];
+    } catch (error) {
+      console.error("Lấy sản phẩm nổi bật thất bại:", error);
+      return [];
+    }
   },
 
   /**
@@ -181,30 +194,35 @@ export const productService = {
   }): Promise<Category[]> {
     const fetcher = unstable_cache(
       async () => {
-        const response = await http<
-          ApiResponse<Category[]> | ApiResponse<PaginatedData<Category>>
-        >("/categories", {
-          skipAuth: true,
-          next: {
-            revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - categories change very rarely
-            tags: ["categories"],
-            ...options?.next,
-          },
-        });
+        try {
+          const response = await http<
+            ApiResponse<Category[]> | ApiResponse<PaginatedData<Category>>
+          >("/categories", {
+            skipAuth: true,
+            next: {
+              revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - categories change very rarely
+              tags: ["categories"],
+              ...options?.next,
+            },
+          });
 
-        // Handle direct array in data
-        if (Array.isArray(response?.data)) {
-          return response.data;
+          // Handle direct array in data
+          if (Array.isArray(response?.data)) {
+            return response.data;
+          }
+          // Handle nested data in paginated response
+          if (
+            response?.data &&
+            "data" in response.data &&
+            Array.isArray(response.data.data)
+          ) {
+            return response.data.data;
+          }
+          return [];
+        } catch (error) {
+          console.error("Lấy danh mục thất bại:", error);
+          return [];
         }
-        // Handle nested data in paginated response
-        if (
-          response?.data &&
-          "data" in response.data &&
-          Array.isArray(response.data.data)
-        ) {
-          return response.data.data;
-        }
-        return [];
       },
       ["categories-all"],
       {
@@ -226,31 +244,36 @@ export const productService = {
   }): Promise<import("@/types/models").Brand[]> {
     const fetcher = unstable_cache(
       async () => {
-        const response = await http<
-          | ApiResponse<import("@/types/models").Brand[]>
-          | ApiResponse<PaginatedData<import("@/types/models").Brand>>
-        >("/brands", {
-          skipAuth: true,
-          next: {
-            revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - brands change very rarely
-            tags: ["brands"],
-            ...options?.next,
-          },
-        });
+        try {
+          const response = await http<
+            | ApiResponse<import("@/types/models").Brand[]>
+            | ApiResponse<PaginatedData<import("@/types/models").Brand>>
+          >("/brands", {
+            skipAuth: true,
+            next: {
+              revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - brands change very rarely
+              tags: ["brands"],
+              ...options?.next,
+            },
+          });
 
-        // Handle direct array in data
-        if (Array.isArray(response?.data)) {
-          return response.data;
+          // Handle direct array in data
+          if (Array.isArray(response?.data)) {
+            return response.data;
+          }
+          // Handle nested data in paginated response
+          if (
+            response?.data &&
+            "data" in response.data &&
+            Array.isArray(response.data.data)
+          ) {
+            return response.data.data;
+          }
+          return [];
+        } catch (error) {
+          console.error("Lấy thương hiệu thất bại:", error);
+          return [];
         }
-        // Handle nested data in paginated response
-        if (
-          response?.data &&
-          "data" in response.data &&
-          Array.isArray(response.data.data)
-        ) {
-          return response.data.data;
-        }
-        return [];
       },
       ["brands-all"],
       {
