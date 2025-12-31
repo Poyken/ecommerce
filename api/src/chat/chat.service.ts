@@ -62,8 +62,18 @@ export class ChatService {
       where: { userId },
       include: {
         messages: {
-          orderBy: { sentAt: 'asc' },
+          orderBy: { sentAt: 'desc' }, // Get LATEST messages
           take: 50, // Limit initial load
+        },
+        _count: {
+          select: {
+            messages: {
+              where: {
+                isRead: false,
+                senderType: SenderType.ADMIN,
+              },
+            },
+          },
         },
       },
     });
@@ -75,8 +85,18 @@ export class ChatService {
         },
         include: {
           messages: true,
+          _count: {
+            select: { messages: true }, // Include count even on create
+          },
         },
       });
+    }
+
+    if (conversation) {
+      // [P14 FIX] Sort by DESC to get the LATEST 50 messages, then reverse to ASC for display
+      conversation.messages = conversation.messages.sort(
+        (a, b) => a.sentAt.getTime() - b.sentAt.getTime(),
+      );
     }
 
     return conversation;
@@ -93,6 +113,9 @@ export class ChatService {
     type: 'TEXT' | 'IMAGE' | 'PRODUCT' | 'ORDER' = 'TEXT',
     metadata?: any,
   ) {
+    this.logger.log(
+      `[ChatService] saveMessage: saving for conversationOwner=${userId} sender=${senderId} type=${senderType}`,
+    );
     // Ensure conversation exists
     let conversation = await this.prisma.chatConversation.findFirst({
       where: { userId },

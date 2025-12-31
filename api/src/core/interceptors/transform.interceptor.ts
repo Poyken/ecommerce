@@ -48,16 +48,29 @@ export class TransformInterceptor<T> implements NestInterceptor<
   ): Observable<Response<T>> {
     return next.handle().pipe(
       map((data) => {
-        const responseData = data?.data || data;
-        const meta = data?.meta; // Trích xuất meta nếu tồn tại
-        const message = data?.message || 'Success';
+        try {
+          // [WS SUPPORT] If WebSocket, just return data directly (Gateway handles structure)
+          if (context.getType() === 'ws') {
+            return this.transformData(data);
+          }
 
-        return {
-          statusCode: context.switchToHttp().getResponse().statusCode,
-          message,
-          data: this.transformData(responseData),
-          meta, // Bao gồm meta trong phản hồi
-        } as any;
+          const response = context.switchToHttp().getResponse();
+          const statusCode = response.statusCode;
+
+          const responseData = data?.data || data;
+          const meta = data?.meta; // Trích xuất meta nếu tồn tại
+          const message = data?.message || 'Success';
+
+          return {
+            statusCode: statusCode,
+            message,
+            data: this.transformData(responseData),
+            meta, // Bao gồm meta trong phản hồi
+          } as any;
+        } catch (err) {
+          console.error('[TransformInterceptor] Error:', err);
+          throw err;
+        }
       }),
     );
   }

@@ -50,6 +50,9 @@ export class CsrfGuard implements CanActivate {
   ];
 
   canActivate(context: ExecutionContext): boolean {
+    if (context.getType() === 'ws') {
+      return true; // Skip CSRF check for WebSockets
+    }
     const request = context.switchToHttp().getRequest<Request>();
 
     // 1. Chỉ kiểm tra các phương thức làm thay đổi dữ liệu (State-changing)

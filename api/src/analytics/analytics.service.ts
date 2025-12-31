@@ -74,13 +74,13 @@ export class AnalyticsService {
           this.prisma.order.aggregate({
             _sum: { totalAmount: true },
             where: {
-              status: 'DELIVERED',
+              status: { notIn: ['CANCELLED', 'RETURNED'] },
               createdAt: { gte: start, lte: end },
             },
           }),
           this.prisma.order.count({
             where: {
-              status: 'DELIVERED',
+              status: { notIn: ['CANCELLED', 'RETURNED'] },
               createdAt: { gte: start, lte: end },
             },
           }),
@@ -99,13 +99,13 @@ export class AnalyticsService {
           this.prisma.order.aggregate({
             _sum: { totalAmount: true },
             where: {
-              status: 'DELIVERED',
+              status: { notIn: ['CANCELLED', 'RETURNED'] },
               createdAt: { gte: todayStart, lte: todayEnd },
             },
           }),
           this.prisma.order.count({
             where: {
-              status: 'DELIVERED',
+              status: { notIn: ['CANCELLED', 'RETURNED'] },
               createdAt: { gte: todayStart, lte: todayEnd },
             },
           }),
@@ -126,7 +126,7 @@ export class AnalyticsService {
           this.prisma.order.aggregate({
             _sum: { totalAmount: true },
             where: {
-              status: 'DELIVERED',
+              status: { notIn: ['CANCELLED', 'RETURNED'] },
               createdAt: { gte: prevStart, lte: prevEnd },
             },
           }),
@@ -173,7 +173,7 @@ export class AnalyticsService {
             DATE("createdAt") as date, 
             SUM("totalAmount") as amount
           FROM "Order"
-          WHERE "status" = 'DELIVERED'
+          WHERE "status" NOT IN ('CANCELLED', 'RETURNED')
           AND "createdAt" >= ${start} 
           AND "createdAt" <= ${end}
           GROUP BY DATE("createdAt")
@@ -337,7 +337,7 @@ export class AnalyticsService {
           JOIN "Sku" s ON s."productId" = p."id"
           JOIN "OrderItem" oi ON oi."skuId" = s."id"
           JOIN "Order" o ON o."id" = oi."orderId"
-          WHERE o."status" = 'DELIVERED'
+          WHERE o."status" NOT IN ('CANCELLED', 'RETURNED')
           AND o."createdAt" >= ${start}
           AND o."createdAt" <= ${end}
           GROUP BY c."id", c."name"

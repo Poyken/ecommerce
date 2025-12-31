@@ -32,12 +32,14 @@ interface AdminNotificationItemProps {
   notification: Notification;
   onClick: (notification: Notification) => void;
   onActionComplete?: () => void;
+  isAlreadyProcessed?: boolean;
 }
 
 export function AdminNotificationItem({
   notification,
   onClick,
   onActionComplete,
+  isAlreadyProcessed = false,
 }: AdminNotificationItemProps) {
   const locale = useLocale();
   const t = useTranslations("admin");
@@ -74,12 +76,14 @@ export function AdminNotificationItem({
 
   // Check if this is a pending order that can be acted upon
   // Also hide if action taken locally or if it's a status update notification
+  // OR if we know from parent that this order is processed
   const canTakeAction =
     isNewOrderNotification &&
     orderId &&
     !notification.isRead &&
     !hasActionTaken &&
-    !isAlreadyProcessedType;
+    !isAlreadyProcessedType &&
+    !isAlreadyProcessed;
 
   const handleAccept = async (e: React.MouseEvent) => {
     e.stopPropagation();

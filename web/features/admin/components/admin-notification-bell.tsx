@@ -19,16 +19,16 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotificationStore } from "@/features/notifications/store/notification.store";
@@ -42,8 +42,11 @@ import { useState } from "react";
 import { AdminNotificationItem } from "./admin-notification-item";
 
 export function AdminNotificationBell() {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, refresh } =
-    useNotificationStore();
+  const {
+    notifications: globalNotifications,
+    markAsRead,
+    markAllAsRead,
+  } = useNotificationStore();
   const t = useTranslations("notifications");
   const tAdmin = useTranslations("admin");
   const locale = useLocale();
@@ -53,30 +56,90 @@ export function AdminNotificationBell() {
     useState<Notification | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  // Filter notifications relevant to Admin
-  // Only show notifications related to admin workflow: Orders, Stock, Reviews
-  const safeNotifications = Array.isArray(notifications) ? notifications : [];
-  const adminNotifications = safeNotifications.filter((n) => {
-    const type = n.type?.toUpperCase() || "";
-    return [
-      "ORDER_PLACED",
-      "ADMIN_NEW_ORDER",
-      "ORDER_CANCELLED",
-      "LOW_STOCK",
-      "REVIEW",
-    ].some((t) => type.includes(t));
-  });
+  // Local state for Admin Notifications (independent of user store, but synced)
+  const [adminNotifications, setAdminNotifications] = useState<Notification[]>(
+    []
+  );
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Admin relevant types defined for both count and filtering
+  const ADMIN_RELEVANT_TYPES = [
+    "ADMIN_NEW_ORDER",
+    "ADMIN_ORDER_ACCEPTED",
+    "ADMIN_ORDER_PROCESSING",
+    "ADMIN_ORDER_SHIPPED",
+    "ADMIN_ORDER_DELIVERED",
+    "ADMIN_ORDER_CANCELLED",
+    "LOW_STOCK",
+    "STOCK_ALERT",
+    "REVIEW_CREATED",
+    "SYSTEM_ALERT",
+    "ORDER_RETURNED",
+  ];
+
+  // REAL-TIME: Combine local fetched notifications with global real-time notifications
+  // to ensure the latest ones are always visible and count is accurate.
+  const displayNotifications = (() => {
+    const combined = [...adminNotifications];
+    // Add real-time notifications from store that aren't already in local state
+    globalNotifications.forEach((gn) => {
+      if (
+        ADMIN_RELEVANT_TYPES.includes(gn.type?.toUpperCase() || "") &&
+        !combined.some((cn) => cn.id === gn.id)
+      ) {
+        combined.unshift(gn);
+      }
+    });
+    return combined
+      .filter((n) => ADMIN_RELEVANT_TYPES.includes(n.type?.toUpperCase() || ""))
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+      .slice(0, 50); // limit to reasonable amount
+  })();
+
+  const adminUnreadCount = displayNotifications.filter((n) => !n.isRead).length;
+
+  // Helper to extract Order ID from link
+  const getOrderIdFromLink = (link?: string | null): string | null => {
+    if (!link) return null;
+    const match = link.match(/\/orders\/([a-zA-Z0-9-]+)/);
+    return match ? match[1] : null;
+  };
+
+  // Fetch admin notifications when popover opens
+  const fetchAdminNotifications = async () => {
+    setIsLoading(true);
+    try {
+      const { getAdminNotificationsAction } = await import(
+        "@/features/notifications/actions"
+      );
+      const res = await getAdminNotificationsAction(1, 30); // Get top 30
+      if (res && "data" in res && Array.isArray(res.data)) {
+        setAdminNotifications(res.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch admin notifications", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
     if (newOpen) {
-      refresh();
+      fetchAdminNotifications();
     }
   };
 
   const handleNotificationClick = (notification: Notification) => {
     markAsRead(notification.id);
-    // If it's an order notification, go to admin orders page with orderId to open dialog
+    // Update local state if it's there
+    setAdminNotifications((prev) =>
+      prev.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n))
+    );
+
     if (
       (notification.type?.includes("ORDER") ||
         notification.link?.includes("/orders/")) &&
@@ -84,7 +147,6 @@ export function AdminNotificationBell() {
     ) {
       const orderId = notification.link.match(/\/orders\/([a-zA-Z0-9-]+)/)?.[1];
       if (orderId) {
-        // Redirect to admin orders page with orderId query param to auto-open dialog
         router.push(`/admin/orders?orderId=${orderId}`);
       } else {
         router.push(notification.link);
@@ -97,7 +159,7 @@ export function AdminNotificationBell() {
   };
 
   const handleActionComplete = () => {
-    refresh();
+    fetchAdminNotifications();
   };
 
   // Parse order info from notification for Dialog details (fallback)
@@ -114,9 +176,21 @@ export function AdminNotificationBell() {
 
   const orderInfo = getOrderInfo(selectedNotification);
 
-  // Calculate admin-specific unread count based on loaded notifications
-  // This ensures the badge matches the visual list, resolving "User vs Admin notification" confusion
-  const adminUnreadCount = adminNotifications.filter((n) => !n.isRead).length;
+  // Compute processed orders Set
+  const processedOrderIds = new Set<string>();
+  displayNotifications.forEach((n) => {
+    const type = n.type?.toUpperCase() || "";
+    if (
+      type === "ORDER_PROCESSING" ||
+      type === "ORDER_SHIPPED" ||
+      type === "ORDER_DELIVERED" ||
+      type === "ORDER_CANCELLED" ||
+      type === "ORDER_RETURNED"
+    ) {
+      const oid = getOrderIdFromLink(n.link);
+      if (oid) processedOrderIds.add(oid);
+    }
+  });
 
   return (
     <>
@@ -143,12 +217,17 @@ export function AdminNotificationBell() {
                 </span>
               )}
             </div>
-            {adminUnreadCount > 0 && (
+            {displayNotifications.length > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
                 className="h-auto px-2 text-xs text-muted-foreground hover:text-primary"
-                onClick={() => markAllAsRead()}
+                onClick={async () => {
+                  // Mark all as read in the store/server
+                  await markAllAsRead();
+                  // For the admin bell specifically, re-fetch immediately since it uses local state
+                  await fetchAdminNotifications();
+                }}
               >
                 {t("markAllRead")}
               </Button>
@@ -157,47 +236,63 @@ export function AdminNotificationBell() {
 
           {/* Notification List */}
           <ScrollArea className="h-[360px]">
-            {adminNotifications.length > 0 ? (
-              <div className="flex flex-col">
-                {adminNotifications.slice(0, 10).map((notification) => (
-                  <AdminNotificationItem
-                    key={notification.id}
-                    notification={notification}
-                    onClick={handleNotificationClick}
-                    onActionComplete={handleActionComplete}
-                  />
-                ))}
+            {isLoading ? (
+              <div className="flex h-[200px] items-center justify-center">
+                <span className="loading loading-spinner loading-md opacity-50">
+                  Loading...
+                </span>
               </div>
             ) : (
-              <div className="flex h-[200px] flex-col items-center justify-center gap-3 text-center text-muted-foreground">
-                <div className="p-4 rounded-full bg-muted/50">
-                  <Bell className="h-8 w-8 opacity-30" />
-                </div>
-                <p className="text-sm">{t("noNotifications")}</p>
+              <div className="flex flex-col">
+                {(() => {
+                  if (displayNotifications.length === 0) {
+                    return (
+                      <div className="flex h-[200px] flex-col items-center justify-center gap-3 text-center text-muted-foreground">
+                        <div className="p-4 rounded-full bg-muted/50">
+                          <Bell className="h-8 w-8 opacity-30" />
+                        </div>
+                        <p className="text-sm">{t("noNotifications")}</p>
+                      </div>
+                    );
+                  }
+
+                  return displayNotifications.map((notification) => {
+                    const oid = getOrderIdFromLink(notification.link);
+                    const isProcessed = oid
+                      ? processedOrderIds.has(oid)
+                      : false;
+                    return (
+                      <AdminNotificationItem
+                        key={notification.id}
+                        notification={notification}
+                        onClick={handleNotificationClick}
+                        onActionComplete={handleActionComplete}
+                        isAlreadyProcessed={isProcessed}
+                      />
+                    );
+                  });
+                })()}
               </div>
             )}
           </ScrollArea>
 
           {/* Footer - View All */}
-          {safeNotifications.length > 0 && (
-            <div className="border-t p-2 bg-muted/20">
-              <Link href="/admin/notifications" onClick={() => setOpen(false)}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full text-xs hover:bg-primary/10 hover:text-primary"
-                >
-                  {t("viewAllNotifications")}
-                  <ExternalLink className="h-3 w-3 ml-1" />
-                </Button>
-              </Link>
-            </div>
-          )}
+          <div className="border-t p-2 bg-muted/20">
+            <Link href="/admin/notifications" onClick={() => setOpen(false)}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full text-xs hover:bg-primary/10 hover:text-primary"
+              >
+                {t("viewAllNotifications")}
+                <ExternalLink className="h-3 w-3 ml-1" />
+              </Button>
+            </Link>
+          </div>
         </PopoverContent>
       </Popover>
 
-      {/* Order Detail Dialog - Fallback used by AdminNotificationItem actions if needed, 
-          but primarily we redirect to admin/orders page */}
+      {/* Order Detail Dialog - Fallback */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>

@@ -23,10 +23,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { FilterSidebar } from "@/features/products/components/filter-sidebar";
 import { ShopGrid } from "@/features/products/components/shop-grid";
 import { usePathname, useRouter } from "@/i18n/routing";
+import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { ApiResponse } from "@/types/dtos";
 import { Brand, Category, Product } from "@/types/models";
-import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import { Filter, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -368,9 +368,12 @@ export function ShopContent({
                 </div>
               </div>
 
-              {isPending ? (
-                <ProductsSkeleton count={12} columns={columns} />
-              ) : (
+              <div
+                className={cn(
+                  "transition-opacity duration-300",
+                  isPending && "opacity-50 pointer-events-none"
+                )}
+              >
                 <Suspense
                   fallback={<ProductsSkeleton count={12} columns={columns} />}
                 >
@@ -381,7 +384,7 @@ export function ShopContent({
                     columns={columns}
                   />
                 </Suspense>
-              )}
+              </div>
             </div>
           </div>
         </section>

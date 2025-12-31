@@ -37,7 +37,7 @@ export class GeminiService {
 
     if (apiKey) {
       this.genAI = new GoogleGenerativeAI(apiKey);
-      const modelName = 'gemini-flash-latest';
+      const modelName = 'gemini-2.0-flash'; // Stable available model
       this.model = this.genAI.getGenerativeModel({
         model: modelName,
       });
@@ -73,15 +73,15 @@ export class GeminiService {
     }
 
     try {
+      this.logger.debug(
+        `Generating response. Prompt length: ${prompt.length}, History items: ${history.length}`,
+      );
       const chat = this.model.startChat({
         history,
-        systemInstruction: {
-          role: 'system',
-          parts: [{ text: systemPrompt }],
-        },
+        systemInstruction: systemPrompt,
         generationConfig: {
           maxOutputTokens: 1024,
-          temperature: 0.7, // 0 = deterministic, 1 = creative
+          temperature: 0.7,
           topP: 0.9,
         },
       });
@@ -89,17 +89,24 @@ export class GeminiService {
       const result = await chat.sendMessage(prompt);
       const response = result.response;
       return response.text();
-    } catch (error) {
-      this.logger.error('Gemini API error keys:', Object.keys(error));
-      this.logger.error('Gemini API error toString:', error.toString());
-      if (error instanceof Error) {
-        this.logger.error('Gemini API error message:', error.message);
-        this.logger.error('Gemini API error stack:', error.stack);
+    } catch (error: any) {
+      this.logger.error('Gemini API error occurred');
+      if (error && typeof error === 'object') {
+        this.logger.error(`Error message: ${error.message || 'No message'}`);
+        if (error.stack) this.logger.error(`Stack trace: ${error.stack}`);
+
+        // Safe logging of error properties
+        try {
+          const detail = JSON.stringify(error);
+          this.logger.error(
+            `Error detail (safe): ${detail.substring(0, 1000)}`,
+          );
+        } catch (e) {
+          this.logger.error('Could not stringify error object');
+        }
+      } else {
+        this.logger.error(`Error: ${String(error)}`);
       }
-      this.logger.error(
-        'Gemini API error json:',
-        JSON.stringify(error, null, 2),
-      );
       throw error;
     }
   }
@@ -122,12 +129,12 @@ export class GeminiService {
     }
 
     try {
+      this.logger.debug(
+        `Generating streaming response. Prompt length: ${prompt.length}, History items: ${history.length}`,
+      );
       const chat = this.model.startChat({
         history,
-        systemInstruction: {
-          role: 'system',
-          parts: [{ text: systemPrompt }],
-        },
+        systemInstruction: systemPrompt,
         generationConfig: {
           maxOutputTokens: 1024,
           temperature: 0.7,
@@ -145,19 +152,13 @@ export class GeminiService {
       }
 
       return fullResponse;
-    } catch (error) {
-      this.logger.error(
-        'Gemini streaming error keys:',
-        Object.keys(error as object),
-      );
-      this.logger.error('Gemini streaming error toString:', error.toString());
-      if (error instanceof Error) {
-        this.logger.error('Gemini streaming error message:', error.message);
+    } catch (error: any) {
+      this.logger.error('Gemini streaming error occurred');
+      if (error && typeof error === 'object') {
+        this.logger.error(`Error message: ${error.message || 'No message'}`);
+      } else {
+        this.logger.error(`Error: ${String(error)}`);
       }
-      this.logger.error(
-        'Gemini streaming error json:',
-        JSON.stringify(error, null, 2),
-      );
       throw error;
     }
   }

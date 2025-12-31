@@ -38,6 +38,26 @@ export class AllExceptionsFilter implements ExceptionFilter {
   constructor(private readonly httpAdapterHost: HttpAdapterHost) {}
 
   catch(exception: unknown, host: ArgumentsHost): void {
+    if (host.getType() === 'ws') {
+      const ctx = host.switchToWs();
+      const client = ctx.getClient();
+      const callback = host.getArgByIndex(2); // Ack callback is usually the 3rd arg
+
+      const errorMsg =
+        exception instanceof Error ? exception.message : 'Internal WS Error';
+
+      this.logger.error(`[WS-Error] ${errorMsg}`, (exception as any).stack);
+
+      // Verify if callback is a function (Ack)
+      if (typeof callback === 'function') {
+        callback({ success: false, error: errorMsg });
+      } else {
+        // If no ack, maybe emit an error event?
+        // client.emit('error', { message: errorMsg });
+      }
+      return;
+    }
+
     const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
 
@@ -55,6 +75,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
       error: {
         statusCode: httpStatus,
         message:
+          exceptionResponse !== null &&
           typeof exceptionResponse === 'object' &&
           (exceptionResponse as any).message
             ? (exceptionResponse as any).message

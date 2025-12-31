@@ -604,7 +604,11 @@
     "edit": "Chỉnh sửa",
     "completePayment": "Thanh toán",
     "scanQrDesc": "Quét mã QR bằng ứng dụng ngân hàng",
-    "finishAndViewOrder": "Hoàn tất và xem đơn hàng"
+    "finishAndViewOrder": "Hoàn tất và xem đơn hàng",
+    "subtotal": "Tạm tính",
+    "shipping": "Vận chuyển",
+    "total": "Tổng cộng",
+    "selectCoupon": "Chọn mã giảm giá"
   },
   "simulatePayment": {
     "title": "Xác nhận thanh toán",

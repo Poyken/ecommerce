@@ -11,16 +11,16 @@ import { ProductQuickViewDialog } from "@/features/products/components/product-q
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";
 import {
-    Image as ImageIcon,
-    Loader2,
-    MessageSquare,
-    Paperclip,
-    Search,
-    Send,
-    X,
+  Image as ImageIcon,
+  Loader2,
+  MessageSquare,
+  Paperclip,
+  Search,
+  Send,
+  X,
 } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { io, Socket } from "socket.io-client";
 import { ChatSelector } from "../../chat/components/chat-selector"; // Import selector
@@ -106,6 +106,14 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
       .catch((err) => console.error(err));
   }, [accessToken, user]);
 
+  // Ref to track selected conversation without triggering effect re-runs
+  const selectedConversationRef = useRef<ChatConversation | null>(null);
+
+  // Sync ref with state
+  useEffect(() => {
+    selectedConversationRef.current = selectedConversation;
+  }, [selectedConversation]);
+
   // Socket Connection
   useEffect(() => {
     if (!user || !accessToken) return;
@@ -124,18 +132,19 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
     });
 
     socket.on("connect", () => {
-      console.log("Admin Chat Connected");
       setIsConnected(true);
     });
 
     socket.on("newMessage", (message: ChatMessage) => {
+      const currentSelected = selectedConversationRef.current; // Use Ref
+
       // Update Messages in Active Chat
-      if (selectedConversation) {
+      if (currentSelected) {
         // More reliable check: if message.conversationId matches selectedConversation.id
         // If not present, fallback to checks.
         const isRelevant = message.conversationId
-          ? message.conversationId === selectedConversation.id
-          : message.senderId === selectedConversation.userId ||
+          ? message.conversationId === currentSelected.id
+          : message.senderId === currentSelected.userId ||
             message.senderId === user.id; // Loose check
 
         if (isRelevant) {
@@ -147,6 +156,7 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
                   m.clientTempId === message.clientTempId ||
                   m.id === message.clientTempId
               );
+
               if (tempIndex !== -1) {
                 const newMsgs = [...prev];
                 newMsgs[tempIndex] = message;
@@ -179,11 +189,10 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
 
         if (convIndex !== -1) {
           const existing = prev[convIndex];
-          const isSelected = selectedConversation?.id === existing.id;
+          const isSelected =
+            selectedConversationRef.current?.id === existing.id; // Use ref
 
-          // Increment count only if NOT selected or if it's a background update
-          // Actually, if selected, we should probably still increment in list but ideally clear it.
-          // For now let's increment.
+          // Increment count only if NOT selected
           const shouldIncrement =
             message.senderType === "USER" && !message.isRead && !isSelected;
 
@@ -201,8 +210,25 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
           newConvs.splice(convIndex, 1);
           return [updatedConv, ...newConvs];
         } else {
-          // If conversation not in list (New Conversation?), we might need to fetch it.
-          // For now, ignore or implement fetch.
+          // NEW CONVERSATION detected!
+          // Trigger a re-fetch of the conversation list to get full user data
+          fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/chat/conversations?limit=50`,
+            {
+              headers: { Authorization: `Bearer ${accessToken}` },
+            }
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              if (data.data) {
+                const filtered = (data.data as ChatConversation[]).filter(
+                  (c) => c.userId !== user?.id
+                );
+                setConversations(filtered);
+              }
+            })
+            .catch((err) => console.error(err));
+
           return prev;
         }
       });
@@ -227,10 +253,8 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
       "messageRead",
       (payload: { conversationId: string; userId: string }) => {
         // If user reads my messages
-        if (
-          selectedConversation &&
-          selectedConversation.id === payload.conversationId
-        ) {
+        const currentSelected = selectedConversationRef.current;
+        if (currentSelected && currentSelected.id === payload.conversationId) {
           setMessages((prev) =>
             prev.map((m) => {
               if (m.senderType === "ADMIN" && !m.isRead) {
@@ -248,7 +272,7 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
     return () => {
       socket.disconnect();
     };
-  }, [user, accessToken, selectedConversation]);
+  }, [user, accessToken]); // Remove selectedConversation from deps
 
   // Load messages when selecting conversation
   useEffect(() => {
@@ -287,12 +311,29 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
     }
   }, [selectedConversation, accessToken]); // socketRef is ref
 
-  // Scroll to bottom
+  // Scroll to bottom helper
+  const scrollToBottom = useCallback((behavior: ScrollBehavior = "smooth") => {
+    // Add a small delay for DOM updates
+    setTimeout(() => {
+      if (scrollRef.current) {
+        scrollRef.current.scrollIntoView({ behavior, block: "end" });
+      }
+    }, 100);
+  }, []);
+
+  // Scroll when messages change
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollIntoView({ behavior: "smooth" });
+    if (messages.length > 0) {
+      scrollToBottom(messages.length <= 1 ? "auto" : "smooth");
     }
-  }, [messages]);
+  }, [messages, scrollToBottom]);
+
+  // Scroll on conversation change
+  useEffect(() => {
+    if (selectedConversation && messages.length > 0) {
+      scrollToBottom("auto");
+    }
+  }, [selectedConversation, messages.length, scrollToBottom]);
 
   const handleSend = () => {
     if (!input.trim() || !selectedConversation || !socketRef.current) return;
@@ -316,6 +357,7 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
       content: input,
       sentAt: new Date().toISOString(),
       type: "TEXT",
+      clientTempId, // Add this explicitly
     };
     setMessages((prev) => [...prev, optimisticMsg]);
     setInput("");
@@ -343,22 +385,25 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
     try {
       setIsUploading(true);
       const url = await uploadToCloudinary(file, accessToken, "chat-uploads");
+      const clientTempId = Date.now().toString();
       socketRef.current?.emit("sendMessage", {
         content: "Sent an image",
         toUserId: selectedConversation.userId,
         type: "IMAGE",
         metadata: { url, alt: file.name },
+        clientTempId,
       });
 
       // Optimistic
       const optimisticMsg: ChatMessage = {
-        id: Date.now().toString(),
+        id: clientTempId,
         senderId: user!.id,
         senderType: "ADMIN",
         content: "Sent an image",
         sentAt: new Date().toISOString(),
         type: "IMAGE",
         metadata: { url, alt: file.name },
+        clientTempId,
       };
       setMessages((prev) => [...prev, optimisticMsg]);
     } catch (error) {
@@ -376,6 +421,8 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
   const handleSelectContent = (type: "PRODUCT" | "ORDER", data: any) => {
     if (!selectedConversation) return;
 
+    const clientTempId = Date.now().toString();
+
     socketRef.current?.emit("sendMessage", {
       content:
         type === "PRODUCT"
@@ -384,11 +431,12 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
       toUserId: selectedConversation.userId,
       type: type,
       metadata: data,
+      clientTempId,
     });
 
     // Optimistic
     const optimisticMsg: ChatMessage = {
-      id: Date.now().toString(),
+      id: clientTempId,
       senderId: user!.id,
       senderType: "ADMIN",
       content:
@@ -398,6 +446,7 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
       sentAt: new Date().toISOString(),
       type: type,
       metadata: data,
+      clientTempId,
     };
     setMessages((prev) => [...prev, optimisticMsg]);
   };

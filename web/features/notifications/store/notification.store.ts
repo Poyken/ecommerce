@@ -48,7 +48,8 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   unreadCount: 0,
   isLoading: false,
 
-  setNotifications: (notifications) => set({ notifications }),
+  setNotifications: (notifications) =>
+    set({ notifications: Array.isArray(notifications) ? notifications : [] }),
 
   setUnreadCount: (countOrFn) =>
     set((state) => ({
@@ -62,10 +63,10 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
 
   addNotification: (notification) => {
     set((state) => {
-      const newNotifications = [notification, ...state.notifications].slice(
-        0,
-        10
-      );
+      const currentList = Array.isArray(state.notifications)
+        ? state.notifications
+        : [];
+      const newNotifications = [notification, ...currentList].slice(0, 10);
       const newUnreadCount = notification.isRead
         ? state.unreadCount
         : state.unreadCount + 1;
@@ -79,30 +80,37 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   markAsRead: async (id) => {
     // Optimistic
     set((state) => ({
-      notifications: state.notifications.map((n) =>
-        n.id === id ? { ...n, isRead: true } : n
-      ),
+      notifications: (Array.isArray(state.notifications)
+        ? state.notifications
+        : []
+      ).map((n) => (n.id === id ? { ...n, isRead: true } : n)),
       unreadCount: Math.max(0, state.unreadCount - 1),
     }));
 
     try {
       await markAsReadServerAction(id);
+      await get().refresh();
     } catch (error) {
       console.error("Failed to mark notification as read", error);
-      // Not refetching here to avoid store dependency on complex refetch logic
-      // Initializer can handle deep sync if needed
     }
   },
 
   markAllAsRead: async () => {
     // Optimistic
     set((state) => ({
-      notifications: state.notifications.map((n) => ({ ...n, isRead: true })),
+      notifications: (Array.isArray(state.notifications)
+        ? state.notifications
+        : []
+      ).map((n) => ({
+        ...n,
+        isRead: true,
+      })),
       unreadCount: 0,
     }));
 
     try {
       await markAllAsReadAction();
+      await get().refresh();
     } catch (error) {
       console.error("Failed to mark all as read", error);
     }
@@ -113,16 +121,38 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     // but we can expose it if we have access to fetch
     set({ isLoading: true });
     try {
+      const apiUrl =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
       const [listRes, countRes] = await Promise.all([
-        fetch("/api/v1/notifications?limit=10").then((r) => r.json()),
-        fetch("/api/v1/notifications/unread-count").then((r) => r.json()),
+        fetch(`${apiUrl}/notifications?limit=10`, {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((r) => r.json()),
+        fetch(`${apiUrl}/notifications/unread-count`, {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }).then((r) => r.json()),
       ]);
 
-      if (listRes.data?.items) {
+      // API returns { data: { items: [], unreadCount: number } }
+      if (listRes.data && Array.isArray(listRes.data.items)) {
         set({ notifications: listRes.data.items });
+        // Also get unreadCount from list response if available
+        if (typeof listRes.data.unreadCount === "number") {
+          set({ unreadCount: listRes.data.unreadCount });
+        }
+      } else if (Array.isArray(listRes.data)) {
+        set({ notifications: listRes.data });
       }
 
-      if (typeof countRes.data?.count === "number") {
+      // API returns { data: number } for unread count
+      if (typeof countRes.data === "number") {
+        set({ unreadCount: countRes.data });
+      } else if (typeof countRes.data?.count === "number") {
         set({ unreadCount: countRes.data.count });
       }
     } catch (e) {

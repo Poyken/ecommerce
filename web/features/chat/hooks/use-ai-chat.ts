@@ -34,9 +34,10 @@ interface AiMessage {
 
 interface UseAiChatOptions {
   accessToken?: string;
+  onResponse?: (message: string) => void;
 }
 
-export function useAiChat({ accessToken }: UseAiChatOptions = {}) {
+export function useAiChat({ accessToken, onResponse }: UseAiChatOptions = {}) {
   const [messages, setMessages] = useState<AiMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -89,6 +90,7 @@ export function useAiChat({ accessToken }: UseAiChatOptions = {}) {
         const response = await fetch(`${apiUrl}/ai-chat/message`, {
           method: "POST",
           headers,
+          credentials: "include", // Important: Send cookies with request
           body: JSON.stringify({ message: content, guestId }),
         });
 
@@ -106,6 +108,11 @@ export function useAiChat({ accessToken }: UseAiChatOptions = {}) {
             createdAt: new Date().toISOString(),
           };
           setMessages((prev) => [...prev, aiMessage]);
+
+          // Trigger callback for the widget to handle unread counts/titles
+          if (onResponse) {
+            onResponse(data.data.response);
+          }
 
           if (data.data.sessionId) {
             setSessionId(data.data.sessionId);
@@ -146,6 +153,7 @@ export function useAiChat({ accessToken }: UseAiChatOptions = {}) {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
+        credentials: "include", // Important: Send cookies with request
       });
 
       if (response.ok) {

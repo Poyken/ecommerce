@@ -78,6 +78,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (isAdmin) {
         client.join('admin-room');
+        this.logger.log(`[Chat] Admin ${userId} joined admin-room`);
       }
 
       this.logger.log(`[Chat] User ${userId} connected`);
@@ -89,16 +90,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly cooldowns = new Map<string, number>();
 
   @SubscribeMessage('sendMessage')
-  async handleMessage(
-    client: Socket,
-    payload: {
-      content: string;
-      toUserId?: string;
-      clientTempId?: string;
-      type?: 'TEXT' | 'IMAGE' | 'PRODUCT' | 'ORDER';
-      metadata?: any;
-    },
-  ) {
+  async handleMessage(client: Socket, payload: any) {
     const userId = client.data.userId;
     const roles = client.data.roles || [];
 
@@ -106,11 +98,11 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       return { success: false, error: 'Unauthorized' };
     }
 
-    // [P14 OPTIMIZATION] WebSocket Throttling (1s cooldown)
+    // [P14 OPTIMIZATION] WebSocket Throttling (200ms cooldown)
     const now = Date.now();
     const lastMessageTime = this.cooldowns.get(client.id) || 0;
-    if (now - lastMessageTime < 1000) {
-      return { success: false, error: 'Throttled: Please wait 1 second' };
+    if (now - lastMessageTime < 200) {
+      return { success: false, error: 'Throttled: Please wait 0.2 second' };
     }
     this.cooldowns.set(client.id, now);
 
@@ -144,6 +136,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // [P14 OPTIMIZATION] Surgical Serialization for Emits
       const sanitizedMessage = {
         id: message.id,
+        conversationId: message.conversationId,
         content: message.content,
         type: message.type,
         senderId: message.senderId,
@@ -154,21 +147,28 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       };
 
       // Broadcast to User Room
+      // Broadcast to User Room
+      this.logger.log(`[Chat] Broadcasting to user:${targetUserId}`);
       this.server
         .to(`user:${targetUserId}`)
         .emit('newMessage', sanitizedMessage);
 
       // Broadcast to Admin Room
+      this.logger.log(`[Chat] Broadcasting to admin-room`);
       this.server.to('admin-room').emit('newMessage', sanitizedMessage);
 
       return { success: true, data: sanitizedMessage };
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(
+        `[ChatGateway] HandleMessage Error: ${error.message}`,
+        error.stack,
+      );
       return { success: false, error: error.message };
     }
   }
 
   handleDisconnect(client: Socket) {
+    this.logger.log(`[ChatGateway] Disconnected: ${client.id}`);
     this.cooldowns.delete(client.id);
   }
 

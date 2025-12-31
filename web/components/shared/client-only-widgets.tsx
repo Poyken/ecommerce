@@ -25,6 +25,14 @@ const SocialProofToast = dynamic(
   { ssr: false }
 );
 
+const UnifiedChatWidget = dynamic(
+  () =>
+    import("@/features/chat/components/unified-chat-widget").then(
+      (m) => m.UnifiedChatWidget
+    ),
+  { ssr: false }
+);
+
 interface ClientOnlyWidgetsProps {
   user: User | null;
   accessToken?: string;
@@ -37,10 +45,11 @@ export function ClientOnlyWidgets({
   return (
     <>
       <SocialProofToast />
-      {/* AI Chat: Only for guests */}
-      {!user && <AiChatWidget user={user} accessToken={accessToken} />}
-      {/* Support Chat: Only for logged-in users */}
-      {user && <ChatWidget user={user} accessToken={accessToken} />}
+      {/* 
+        LOGGED IN: Use Unified Widget (AI + Support Tabs)
+        GUEST: Use AI Widget Only (Previous behavior)
+       */}
+      <UnifiedChatWidget user={user} accessToken={accessToken} />
     </>
   );
 }

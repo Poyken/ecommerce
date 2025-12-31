@@ -66,7 +66,7 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
     unreadCount,
     setUnreadCount,
     markAsRead,
-  } = useChatSocket(accessToken, user);
+  } = useChatSocket(accessToken, user, isOpen && !isMinimized);
 
   // Mark as read when opening
   useEffect(() => {
@@ -109,8 +109,16 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
       .then((res) => res.json())
       .then((resData) => {
         const conversationData = resData.data;
-        if (conversationData && conversationData.messages) {
-          setMessages(conversationData.messages);
+        if (conversationData) {
+          if (conversationData.messages) {
+            setMessages(conversationData.messages);
+          }
+          if (
+            conversationData._count &&
+            typeof conversationData._count.messages === "number"
+          ) {
+            setUnreadCount(conversationData._count.messages);
+          }
         }
       })
       .catch((err) => {
@@ -289,9 +297,8 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
   if (isMinimized) {
     return (
       <div className="fixed bottom-24 md:bottom-4 right-4 z-40">
-        <Button
-          variant="outline"
-          className="shadow-lg bg-background flex gap-2 items-center relative"
+        <div
+          className="shadow-lg bg-background flex gap-2 items-center relative cursor-pointer border rounded-md px-4 py-2 hover:bg-accent hover:text-accent-foreground"
           onClick={() => setIsMinimized(false)}
         >
           <div
@@ -300,7 +307,7 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
               isConnected ? "bg-green-500" : "bg-gray-400"
             )}
           />
-          <span>Chat</span>
+          <span className="text-sm font-medium">Chat</span>
           {unreadCount > 0 && (
             <Badge
               variant="destructive"
@@ -312,7 +319,7 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="h-6 w-6 ml-2"
+            className="h-6 w-6 ml-2 -mr-2"
             onClick={(e) => {
               e.stopPropagation();
               setIsOpen(false);
@@ -320,7 +327,7 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
           >
             <X size={14} />
           </Button>
-        </Button>
+        </div>
       </div>
     );
   }

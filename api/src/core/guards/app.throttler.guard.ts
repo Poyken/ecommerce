@@ -29,6 +29,16 @@ export class AppThrottlerGuard extends ThrottlerGuard {
   ): Promise<boolean> {
     const { context } = requestProps;
 
+    if (context.getType() === 'ws') {
+      const client = context.switchToWs().getClient();
+      const isUser = !!client.handshake?.user || !!client.request?.user; // Depends on how auth is attached
+      const effectiveLimit = isUser ? 2000 : 1000;
+      return super.handleRequest({
+        ...requestProps,
+        limit: effectiveLimit,
+      });
+    }
+
     const req = context.switchToHttp().getRequest();
     const isUser = !!req.user;
 

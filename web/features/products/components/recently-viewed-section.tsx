@@ -25,8 +25,8 @@ import { OptimizedImage } from "@/components/shared/optimized-image";
 import { Button } from "@/components/ui/button";
 import { useQuickViewStore } from "@/features/products/store/quick-view.store";
 import {
-    RecentlyViewedProduct,
-    useRecentlyViewedStore,
+  RecentlyViewedProduct,
+  useRecentlyViewedStore,
 } from "@/features/products/store/recently-viewed.store";
 import { formatCurrency } from "@/lib/utils";
 import { Clock, X } from "lucide-react";
@@ -57,7 +57,10 @@ export function RecentlyViewedSection({
   const openQuickView = useQuickViewStore((state) => state.openQuickView);
 
   useEffect(() => {
-    setMounted(true);
+    const frame = requestAnimationFrame(() => {
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(frame);
   }, []);
 
   // Lọc và giới hạn số lượng sản phẩm
@@ -134,7 +137,7 @@ function RecentlyViewedCard({
     <div className="group relative bg-card rounded-lg overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-md">
       {/* Image */}
       <Link href={`/products/${product.slug || product.id}`}>
-        <div className="relative aspect-[4/5] overflow-hidden">
+        <div className="relative aspect-4/5 overflow-hidden">
           <OptimizedImage
             src={product.imageUrl}
             alt={product.name}

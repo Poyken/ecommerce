@@ -52,6 +52,8 @@ export async function ProductRecommendations({
     return null;
   }
 
+  let recommendations: Product[] = [];
+
   try {
     // Fetch sản phẩm cùng category, loại trừ sản phẩm hiện tại
     const response = await productService.getProducts({
@@ -61,47 +63,41 @@ export async function ProductRecommendations({
     });
 
     // Filter out current product
-    const recommendations = response.data
+    recommendations = response.data
       .filter((p) => p.id !== currentProductId)
       .slice(0, maxItems);
-
-    // Không hiển thị nếu không có recommendations
-    if (recommendations.length === 0) {
-      return null;
-    }
-
-    return (
-      <section className="py-12 md:py-16 border-t border-border/50">
-        {/* Header */}
-        <div className="flex items-center gap-3 mb-8">
-          <Sparkles className="w-5 h-5 text-primary" />
-          <h2 className="text-2xl md:text-3xl font-serif font-medium">
-            {title}
-          </h2>
-        </div>
-
-        {/* Product Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
-          {recommendations.map((product) => (
-            <RecommendationCard key={product.id} product={product} />
-          ))}
-        </div>
-      </section>
-    );
   } catch (error) {
     console.error("Failed to fetch recommendations:", error);
     return null;
   }
+
+  // Không hiển thị nếu không có recommendations
+  if (recommendations.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="py-12 md:py-16 border-t border-border/50">
+      {/* Header */}
+      <div className="flex items-center gap-3 mb-8">
+        <Sparkles className="w-5 h-5 text-primary" />
+        <h2 className="text-2xl md:text-3xl font-serif font-medium">{title}</h2>
+      </div>
+
+      {/* Product Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+        {recommendations.map((product) => (
+          <RecommendationCard key={product.id} product={product} />
+        ))}
+      </div>
+    </section>
+  );
 }
 
 /**
  * Card cho sản phẩm gợi ý
  */
-function RecommendationCard({
-  product,
-}: {
-  product: Product;
-}) {
+function RecommendationCard({ product }: { product: Product }) {
   // Get first image
   const firstImage = product.images?.[0];
   const imageUrl =
@@ -113,7 +109,9 @@ function RecommendationCard({
   const price = Number(
     product.skus?.[0]?.price || product.minPrice || product.maxPrice || 0
   );
-  const salePrice = product.skus?.[0]?.salePrice ? Number(product.skus[0].salePrice) : undefined;
+  const salePrice = product.skus?.[0]?.salePrice
+    ? Number(product.skus[0].salePrice)
+    : undefined;
   const hasDiscount = salePrice && salePrice < price;
 
   return (

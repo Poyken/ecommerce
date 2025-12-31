@@ -145,12 +145,10 @@ export async function cancelOrderWithReasonAction(
   cancellationReason: string
 ) {
   try {
-    await http(`/orders/${orderId}/status`, {
+    await http(`/orders/my-orders/${orderId}/cancel`, {
       method: "PATCH",
       body: JSON.stringify({
-        status: "CANCELLED",
         cancellationReason,
-        notify: true,
       }),
     });
     revalidatePath("/orders");

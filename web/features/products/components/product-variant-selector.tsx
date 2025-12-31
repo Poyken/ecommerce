@@ -41,6 +41,7 @@ interface ProductVariantSelectorProps {
   onSkuChange?: (sku: Sku | null) => void;
   onImageChange?: (imageUrl: string) => void;
   onAddToCart?: () => void;
+  onBuyNow?: () => void;
   onConfirm?: () => void; // Generic alternative to onAddToCart
 
   isAdding?: boolean;
@@ -56,6 +57,7 @@ export function ProductVariantSelector({
   onSkuChange,
   onImageChange,
   onAddToCart,
+  onBuyNow,
   onConfirm,
   isAdding = false,
   showBuyNow = true,
@@ -366,7 +368,9 @@ export function ProductVariantSelector({
             variant="outline"
             size="lg"
             onClick={() => {
-              if (onAddToCart) {
+              if (onBuyNow) {
+                onBuyNow();
+              } else if (onAddToCart) {
                 onAddToCart();
                 setTimeout(() => router.push("/cart"), 500);
               }

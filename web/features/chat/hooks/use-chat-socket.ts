@@ -1,5 +1,6 @@
 "use client";
 
+import { useNotificationStore } from "@/features/notifications/store/notification.store";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -7,6 +8,7 @@ import { io, Socket } from "socket.io-client";
 // Here we redefine for simplicity but should ideally import.
 export interface ChatMessage {
   id: string;
+  conversationId: string;
   senderId: string;
   senderType: "USER" | "ADMIN";
   content: string;
@@ -27,12 +29,33 @@ export function useChatSocket(
     email: string;
     avatarUrl?: string | null;
   } | null,
+  isChatOpen: boolean = false, // New param
   namespace = "/chat"
 ) {
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
+
+  // Track processed message IDs to prevent duplication
+  const processedMessageIdsRef = useRef(new Set<string>());
+  // Keep track of current messages for duplication check without dependency cycle
+  const messagesRef = useRef(messages);
+  // Track open state in ref to avoid reconnecting socket
+  const isChatOpenRef = useRef(isChatOpen);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  useEffect(() => {
+    isChatOpenRef.current = isChatOpen;
+  }, [isChatOpen]);
+
+  // Sync processed IDs with initial/history messages
+  useEffect(() => {
+    messages.forEach((m) => processedMessageIdsRef.current.add(m.id));
+  }, [messages]);
 
   useEffect(() => {
     if (!user || !accessToken || isConnected) return;
@@ -59,38 +82,87 @@ export function useChatSocket(
         socket.disconnect();
         return;
       }
-      console.log("Chat Connected");
       setIsConnected(true);
     });
 
     socket.on("disconnect", () => {
       if (isMounted) {
-        console.log("Chat Disconnected");
         setIsConnected(false);
       }
     });
 
     socket.on("newMessage", (message: ChatMessage) => {
       if (!isMounted) return;
+
+      // Deduplication check
+      // Check Ref (processed in this session) OR State (loaded from history)
+      const alreadyProcessed =
+        processedMessageIdsRef.current.has(message.id) ||
+        messagesRef.current.some((m) => m.id === message.id);
+
+      // If we have a matching temp ID, it's an optimistic update confirmation
+      const isOptimisticConfirmation =
+        message.clientTempId &&
+        messagesRef.current.some(
+          (m) => m.clientTempId === message.clientTempId
+        );
+
+      if (alreadyProcessed && !isOptimisticConfirmation) {
+        return;
+      }
+
+      // Mark as processed
+      processedMessageIdsRef.current.add(message.id);
+
+      const isFromAdmin = message.senderType === "ADMIN";
+      const isOpen = isChatOpenRef.current;
+
+      // Handle Unread Count & Auto-Read
+      let finalIsRead = message.isRead;
+
+      if (!isOptimisticConfirmation && isFromAdmin) {
+        if (isOpen) {
+          // If chat is open, mark as read immediately on server and locally
+          socket.emit("markAsRead", { conversationId: message.conversationId });
+          finalIsRead = true;
+        } else if (!message.isRead) {
+          // Only increment if closed and unread
+          setUnreadCount((c) => c + 1);
+
+          // PUSH TO GLOBAL NOTIFICATION STORE
+          useNotificationStore.getState().addNotification({
+            id: message.id,
+            title: "Support Message",
+            message: message.content.substring(0, 100),
+            type: "CHAT_MESSAGE",
+            isRead: false,
+            createdAt: message.sentAt,
+            link: "/chat?tab=SUPPORT",
+          } as any);
+        }
+      }
+
       setMessages((prev) => {
+        // Handle Optimistic Confirmation replacement
         if (message.clientTempId) {
           const tempIndex = prev.findIndex(
             (m) => m.clientTempId === message.clientTempId
           );
           if (tempIndex !== -1) {
             const newMessages = [...prev];
-            newMessages[tempIndex] = { ...message, status: "sent" };
+            newMessages[tempIndex] = {
+              ...message,
+              isRead: finalIsRead,
+              status: "sent",
+            };
             return newMessages;
           }
         }
 
+        // Final safety check inside updater (though outer check should catch most)
         if (prev.some((m) => m.id === message.id)) return prev;
 
-        if (message.senderType === "ADMIN" && !message.isRead) {
-          setUnreadCount((c) => c + 1);
-        }
-
-        return [...prev, { ...message, status: "sent" }];
+        return [...prev, { ...message, isRead: finalIsRead, status: "sent" }];
       });
     });
 
@@ -121,7 +193,7 @@ export function useChatSocket(
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [user?.id, accessToken, namespace, isConnected]);
+  }, [user?.id, accessToken, namespace]);
 
   const sendMessage = useCallback(
     (
@@ -138,6 +210,7 @@ export function useChatSocket(
       // Optimistic update
       const tempMessage: ChatMessage = {
         id: `temp-${clientTempId}`,
+        conversationId: "temp", // Placeholder for optimistic update
         senderId: user.id,
         senderType: "USER",
         content,
@@ -152,13 +225,28 @@ export function useChatSocket(
       setMessages((prev) => [...prev, tempMessage]);
 
       if (socketRef.current && socketRef.current.connected) {
-        socketRef.current.emit("sendMessage", {
-          content,
-          toUserId,
-          clientTempId,
-          type,
-          metadata,
-        });
+        socketRef.current.emit(
+          "sendMessage",
+          {
+            content,
+            toUserId,
+            clientTempId,
+            type,
+            metadata,
+          },
+          (response: any) => {
+            if (!response?.success) {
+              setMessages((prev) =>
+                prev.map((m) =>
+                  m.clientTempId === clientTempId
+                    ? { ...m, status: "error" }
+                    : m
+                )
+              );
+              console.error("Failed to send message:", response?.error);
+            }
+          }
+        );
       }
     },
     [user, isConnected]

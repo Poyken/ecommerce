@@ -2,17 +2,17 @@
  * =====================================================================
  * NOTIFICATION INITIALIZER - Khởi tạo Socket và Đồng bộ Thông báo
  * =====================================================================
- * 
+ *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- * 
+ *
  * 1. SIDE EFFECT ENCAPSULATION:
  * - Phân tách việc quản lý Socket/Polling ra khỏi Layout hoặc App component.
  * - Chỉ cần mount 1 lần ở Root Layout để theo dõi thông báo xuyên suốt các trang.
- * 
+ *
  * 2. SOCKET & POLLING HYBRID:
  * - Ưu tiên Socket để cập nhật Real-time (độ trễ thấp).
  * - Fallback Polling (mỗi 120s) và Visibility Check để đảm bảo data không bị "stale" nếu mất kết nối socket.
- * 
+ *
  * 3. AUTH SYNC:
  * - Tự động connect socket khi có `accessToken` và dọn dẹp (cleanup) khi User logout.
  * =====================================================================
@@ -38,15 +38,17 @@ export function NotificationInitializer({
   initialUnreadCount,
   accessToken,
 }: NotificationInitializerProps) {
-  const { 
-    setNotifications, 
-    setUnreadCount, 
-    setIsLoading, 
-    addNotification, 
-    refresh 
+  const {
+    setNotifications,
+    setUnreadCount,
+    setIsLoading,
+    addNotification,
+    refresh,
   } = useNotificationStore();
-  
-  const [isInitialized, setIsInitialized] = useState(initialNotifications !== undefined);
+
+  const [isInitialized, setIsInitialized] = useState(
+    initialNotifications !== undefined
+  );
   const lastUserId = useRef<string | undefined>(userId);
 
   // Sync initial data
@@ -57,21 +59,30 @@ export function NotificationInitializer({
     if (initialUnreadCount !== undefined) {
       setUnreadCount(initialUnreadCount);
     }
-  }, [initialNotifications, initialUnreadCount, setNotifications, setUnreadCount]);
+  }, [
+    initialNotifications,
+    initialUnreadCount,
+    setNotifications,
+    setUnreadCount,
+  ]);
 
   // Initial fetch and re-fetch on userId change
   useEffect(() => {
     if (userId && (userId !== lastUserId.current || !isInitialized)) {
       refresh().then(() => {
-        setIsInitialized(true);
-        lastUserId.current = userId;
+        requestAnimationFrame(() => {
+          setIsInitialized(true);
+          lastUserId.current = userId;
+        });
       });
     } else if (!userId && lastUserId.current) {
       // User logged out
-      setNotifications([]);
-      setUnreadCount(0);
-      setIsInitialized(false);
-      lastUserId.current = undefined;
+      requestAnimationFrame(() => {
+        setNotifications([]);
+        setUnreadCount(0);
+        setIsInitialized(false);
+        lastUserId.current = undefined;
+      });
     }
   }, [userId, isInitialized, refresh, setNotifications, setUnreadCount]);
 

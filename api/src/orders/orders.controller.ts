@@ -137,6 +137,21 @@ export class OrdersController {
     return { data };
   }
 
+  @Patch('my-orders/:id/cancel')
+  @ApiOperation({ summary: 'Hủy đơn hàng của chính mình (User)' })
+  async cancelMyOrder(
+    @Request() req: requestWithUserInterface.RequestWithUser,
+    @Param('id') id: string,
+    @Body() dto: { cancellationReason: string },
+  ) {
+    const data = await this.ordersService.cancelMyOrder(
+      req.user.id,
+      id,
+      dto.cancellationReason,
+    );
+    return { data };
+  }
+
   @Get(':id/invoice')
   @UseGuards(PermissionsGuard)
   @Permissions('order:read')

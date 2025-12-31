@@ -114,6 +114,12 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
         // "use cache" context hoặc static generation thì không có cookies
       }
     }
+  } else {
+    // Client-side: Read CSRF token from document.cookie
+    if (isStateChanging) {
+      const match = document.cookie.match(/csrf-token=([^;]+)/);
+      csrfToken = match ? match[1] : undefined;
+    }
   }
 
   // ... (URL construction code remains mainly effectively same but ensure variable scope) ...

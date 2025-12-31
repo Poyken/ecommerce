@@ -80,7 +80,9 @@ export function AuditLogsClient({
   const [searchTerm, setSearchTerm] = useState(
     searchParams.get("search") || ""
   );
-  const [filter, setFilter] = useState<FilterType>("all");
+  const [filter, setFilter] = useState<FilterType>(
+    (searchParams.get("filter") as FilterType) || "all"
+  );
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [isPending, startTransition] = useTransition();
 
@@ -89,7 +91,6 @@ export function AuditLogsClient({
   );
 
   useEffect(() => {
-     
     const params = new URLSearchParams(searchParams.toString());
     const currentSearch = params.get("search") || "";
 
@@ -161,12 +162,8 @@ export function AuditLogsClient({
     return `${action} on ${resource}`;
   };
 
-  // Filter logs by action type
-  const filteredLogs = logs.filter((log) => {
-    if (filter === "all") return true;
-    const actionLower = log.action.toLowerCase();
-    return actionLower.includes(filter);
-  });
+  // Server-side filtering is now used, so we use logs directly
+  const filteredLogs = logs;
 
   // Stats
   const createCount = logs.filter((l) =>
@@ -210,7 +207,23 @@ export function AuditLogsClient({
 
       {/* Filters & Search */}
       <div className="flex flex-col md:flex-row md:items-center gap-4">
-        <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterType)}>
+        <Tabs
+          value={filter}
+          onValueChange={(v) => {
+            const newFilter = v as FilterType;
+            setFilter(newFilter);
+            startTransition(() => {
+              const params = new URLSearchParams(searchParams.toString());
+              if (newFilter !== "all") {
+                params.set("filter", newFilter);
+              } else {
+                params.delete("filter");
+              }
+              params.set("page", "1");
+              router.push(`/admin/audit-logs?${params.toString()}`);
+            });
+          }}
+        >
           <TabsList>
             <TabsTrigger value="all" className="gap-2">
               <Filter className="h-4 w-4" />

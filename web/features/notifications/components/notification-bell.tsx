@@ -23,9 +23,9 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useNotificationStore } from "@/features/notifications/store/notification.store";
@@ -44,14 +44,21 @@ export function NotificationBell() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
+  // Define Admin-specific notification types that should NOT show in User Bell
+  const ADMIN_TYPES = [
+    "ADMIN_NEW_ORDER",
+    "LOW_STOCK",
+    "REVIEW_CREATED",
+    "STOCK_ALERT",
+    "SYSTEM_ALERT",
+    "ORDER_RETURNED",
+  ];
+
   // Filter out admin-specific notifications for the user bell
   const safeNotifications = Array.isArray(notifications) ? notifications : [];
   const userNotifications = safeNotifications.filter((n) => {
     const type = n.type?.toUpperCase() || "";
-    // Hide notifications explicitly marked for admin
-    return !["ADMIN_NEW_ORDER", "LOW_STOCK", "REVIEW_CREATED"].some((t) =>
-      type.includes(t)
-    );
+    return !ADMIN_TYPES.includes(type);
   });
 
   // Calculate unread count specifically for user notifications
@@ -92,7 +99,7 @@ export function NotificationBell() {
       <PopoverContent className="w-80 p-0" align="end">
         <div className="flex items-center justify-between border-b px-4 py-3">
           <h4 className="font-semibold">{t("title")}</h4>
-          {userUnreadCount > 0 && (
+          {userNotifications.length > 0 && (
             <Button
               variant="ghost"
               size="sm"
@@ -121,7 +128,7 @@ export function NotificationBell() {
             </div>
           )}
         </ScrollArea>
-        {notifications.length > 0 && (
+        {userNotifications.length > 0 && (
           <div className="border-t p-2 text-center">
             <Link href="/notifications" onClick={() => setOpen(false)}>
               <Button variant="ghost" size="sm" className="w-full text-xs">

@@ -40,11 +40,9 @@ export const REQUEST_ID_HEADER = 'x-request-id';
 export const CORRELATION_ID_KEY = 'correlationId';
 
 // Augment Express Request type to include correlationId
-declare global {
-  namespace Express {
-    interface Request {
-      correlationId: string;
-    }
+declare module 'express' {
+  interface Request {
+    correlationId: string;
   }
 }
 

@@ -24,10 +24,10 @@ import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { GlassButton } from "@/components/shared/glass-button";
 import { ProductCard } from "@/features/products/components/product-card";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
+import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { ApiResponse } from "@/types/dtos";
 import { Product } from "@/types/models";
-import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -138,9 +138,9 @@ export function ShopGrid({
         transition={{
           layout: {
             type: "spring",
-            stiffness: 250,
-            damping: 30,
-            mass: 1,
+            stiffness: 100, // Softer spring
+            damping: 20, // Less bouncy
+            mass: 0.8, // Lighter feel
           },
         }}
       >

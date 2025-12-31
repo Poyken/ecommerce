@@ -278,6 +278,11 @@ export class NotificationsService {
     if (filters?.type) {
       if (Array.isArray(filters.type)) {
         where.type = { in: filters.type };
+      } else if (
+        typeof filters.type === 'string' &&
+        filters.type.includes(',')
+      ) {
+        where.type = { in: filters.type.split(',') };
       } else {
         where.type = filters.type;
       }

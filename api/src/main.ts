@@ -21,8 +21,6 @@
  */
 
 import { SECURITY_HEADERS } from '@core/config/constants';
-import { AllExceptionsFilter } from '@core/filters/all-exceptions.filter';
-import { TransformInterceptor } from '@core/interceptors/transform.interceptor';
 import { LoggerService } from '@core/logger/logger.service';
 import {
   ClassSerializerInterceptor,
@@ -40,6 +38,8 @@ import { AppModule } from './app.module';
  * Hàm Bootstrap - Khởi tạo và cấu hình ứng dụng
  */
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { AllExceptionsFilter } from './core/filters/all-exceptions.filter';
+import { TransformInterceptor } from './core/interceptors/transform.interceptor';
 
 async function bootstrap() {
   // Tạo instance ứng dụng NestJS

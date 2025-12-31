@@ -2,11 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -14,14 +14,14 @@ import { useAiChat } from "@/features/chat/hooks/use-ai-chat";
 import { useQuickViewStore } from "@/features/products/store/quick-view.store";
 import { cn } from "@/lib/utils";
 import {
-    Bot,
-    Eye,
-    Loader2,
-    MessageCircle,
-    Minus,
-    Send,
-    Sparkles,
-    X
+  Bot,
+  Eye,
+  Loader2,
+  MessageCircle,
+  Minus,
+  Send,
+  Sparkles,
+  X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -56,6 +56,49 @@ interface AiChatWidgetProps {
   } | null;
   accessToken?: string;
 }
+
+// Separate component for Markdown links to follow hook rules properly
+const MarkdownLink = ({
+  href,
+  children,
+}: {
+  href?: string;
+  children: React.ReactNode;
+}) => {
+  const { openQuickView } = useQuickViewStore();
+
+  if (href?.startsWith("quickview:")) {
+    const handleClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      const path = href.replace("quickview:", "");
+      const [id, query] = path.split("?");
+      const params = new URLSearchParams(query);
+      const skuId = params.get("sku") || undefined;
+      openQuickView(id, skuId);
+    };
+
+    return (
+      <button
+        onClick={handleClick}
+        className="inline-flex items-center gap-1 font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer"
+      >
+        <Eye className="w-3 h-3" />
+        {children}
+      </button>
+    );
+  }
+
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="text-primary underline"
+    >
+      {children}
+    </a>
+  );
+};
 
 export function AiChatWidget({ user, accessToken }: AiChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -107,7 +150,7 @@ export function AiChatWidget({ user, accessToken }: AiChatWidgetProps) {
     return createPortal(
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-110 transition-all duration-300 flex items-center justify-center group"
+        className="fixed bottom-4 right-4 z-50 w-14 h-14 rounded-full bg-linear-to-br from-violet-500 to-purple-600 text-white shadow-xl shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-110 transition-all duration-300 flex items-center justify-center group"
       >
         <Bot className="w-6 h-6 group-hover:scale-110 transition-transform" />
         <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse" />
@@ -122,13 +165,13 @@ export function AiChatWidget({ user, accessToken }: AiChatWidgetProps) {
       className={cn(
         "fixed z-50 transition-all duration-300 ease-out",
         isMinimized
-          ? "bottom-6 right-6 w-72"
-          : "bottom-6 right-6 w-96 max-h-[600px]"
+          ? "bottom-4 right-4 w-72"
+          : "bottom-4 right-4 w-96 max-h-[600px]"
       )}
     >
       <Card className="border-purple-500/20 shadow-2xl shadow-purple-500/10 backdrop-blur-xl bg-background/95 overflow-hidden">
         {/* Header */}
-        <CardHeader className="p-4 bg-gradient-to-r from-violet-500 to-purple-600 text-white">
+        <CardHeader className="p-4 bg-linear-to-r from-violet-500 to-purple-600 text-white">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2 text-sm font-bold">
               <Sparkles className="w-4 h-4" />
@@ -185,7 +228,7 @@ export function AiChatWidget({ user, accessToken }: AiChatWidgetProps) {
                       )}
                     >
                       {msg.role === "assistant" && (
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">
+                        <div className="w-7 h-7 rounded-full bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center shrink-0">
                           <Bot className="w-4 h-4 text-white" />
                         </div>
                       )}
@@ -202,40 +245,11 @@ export function AiChatWidget({ user, accessToken }: AiChatWidgetProps) {
                           <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0">
                             <ReactMarkdown
                               components={{
-                                a: ({ href, children }) => {
-                                  if (href?.startsWith("quickview:")) {
-                                    // eslint-disable-next-line react-hooks/rules-of-hooks
-                                    const { openQuickView } = useQuickViewStore();
-                                    const handleClick = (e: React.MouseEvent) => {
-                                      e.preventDefault();
-                                      const path = href.replace("quickview:", "");
-                                      const [id, query] = path.split("?");
-                                      const params = new URLSearchParams(query);
-                                      const skuId = params.get("sku") || undefined;
-                                      openQuickView(id, skuId);
-                                    };
-
-                                    return (
-                                      <button
-                                        onClick={handleClick}
-                                        className="inline-flex items-center gap-1 font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer"
-                                      >
-                                        <Eye className="w-3 h-3" />
-                                        {children}
-                                      </button>
-                                    );
-                                  }
-                                  return (
-                                    <a
-                                      href={href}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-primary underline"
-                                    >
-                                      {children}
-                                    </a>
-                                  );
-                                },
+                                a: ({ href, children }) => (
+                                  <MarkdownLink href={href}>
+                                    {children}
+                                  </MarkdownLink>
+                                ),
                               }}
                             >
                               {msg.content}
@@ -256,7 +270,7 @@ export function AiChatWidget({ user, accessToken }: AiChatWidgetProps) {
 
                   {isLoading && (
                     <div className="flex gap-2 justify-start">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                      <div className="w-7 h-7 rounded-full bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center">
                         <Bot className="w-4 h-4 text-white" />
                       </div>
                       <div className="bg-muted rounded-2xl rounded-bl-sm px-4 py-3">
@@ -285,7 +299,7 @@ export function AiChatWidget({ user, accessToken }: AiChatWidgetProps) {
                   size="icon"
                   onClick={handleSend}
                   disabled={!input.trim() || isLoading}
-                  className="bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white shrink-0"
+                  className="bg-linear-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white shrink-0"
                 >
                   <Send className="h-4 w-4" />
                 </Button>

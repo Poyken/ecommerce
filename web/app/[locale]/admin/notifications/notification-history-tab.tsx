@@ -73,19 +73,31 @@ export function NotificationHistoryTab() {
 
   const fetchNotifications = async () => {
     setLoading(true);
-    let typeFilter: string | string[] | undefined = undefined;
+    let typeFilter: string | undefined = undefined;
 
     if (filter === "order") {
-      typeFilter = ["ORDER", "ORDER_PLACED", "ADMIN_NEW_ORDER"];
+      // Include ALL order-related statuses so they show up in filter
+      const types = [
+        "ORDER",
+        "ORDER_PLACED",
+        "ADMIN_NEW_ORDER",
+        "ORDER_PROCESSING",
+        "ORDER_SHIPPED",
+        "ORDER_DELIVERED",
+        "ORDER_CANCELLED",
+        "ORDER_RETURNED",
+      ];
+      typeFilter = types.join(",");
     } else if (filter === "system") {
-      typeFilter = ["SYSTEM", "LOW_STOCK", "REVIEW", "PROMO"];
+      const types = ["SYSTEM", "LOW_STOCK", "REVIEW", "PROMO"];
+      typeFilter = types.join(",");
     }
 
     const res = await getAdminNotificationsAction(
       page,
       15,
       undefined,
-      typeFilter as any // Cast to any because the action signature might need update or supports 'any'
+      typeFilter
     );
     if (res && "data" in res && res.data) {
       setNotifications(res.data);
@@ -116,6 +128,22 @@ export function NotificationHistoryTab() {
     const match = link.match(/\/orders\/([a-zA-Z0-9-]+)/);
     return match ? match[1] : null;
   };
+
+  // Compute processed orders
+  const processedOrderIds = new Set<string>();
+  notifications.forEach((n) => {
+    const type = n.type?.toUpperCase() || "";
+    if (
+      type === "ORDER_PROCESSING" ||
+      type === "ORDER_SHIPPED" ||
+      type === "ORDER_DELIVERED" ||
+      type === "ORDER_CANCELLED" ||
+      type === "ORDER_RETURNED"
+    ) {
+      const oid = getOrderId(n.link);
+      if (oid) processedOrderIds.add(oid);
+    }
+  });
 
   const handleAccept = async (notification: Notification) => {
     const orderId = getOrderId(notification.link);
@@ -180,7 +208,13 @@ export function NotificationHistoryTab() {
     const type = notif.type?.toUpperCase() || "";
     // Only ORDER or ORDER_PLACED = new order needing action
     // Exclude status updates like ORDER_PROCESSING, ORDER_CANCELLED, etc.
-    return type === "ORDER" || type === "ORDER_PLACED";
+    return (
+      type === "ORDER" ||
+      type === "ORDER_PLACED" ||
+      type === "ADMIN_NEW_ORDER" ||
+      notif.title?.toLowerCase().includes("đơn hàng mới") ||
+      notif.title?.toLowerCase().includes("new order")
+    );
   };
 
   // Check if notification is about an already processed order
@@ -198,6 +232,7 @@ export function NotificationHistoryTab() {
     switch (type?.toUpperCase()) {
       case "ORDER":
       case "ORDER_PLACED":
+      case "ADMIN_NEW_ORDER":
         return "bg-amber-500/10 text-amber-600 dark:text-amber-400";
       case "ORDER_SHIPPED":
       case "ORDER_DELIVERED":
@@ -308,12 +343,18 @@ export function NotificationHistoryTab() {
             ) : (
               filteredNotifications.map((notif) => {
                 const orderId = getOrderId(notif.link);
+                const isProcessed = orderId
+                  ? processedOrderIds.has(orderId)
+                  : false;
+
                 // Only show actions for NEW orders, not status updates
+                // And ONLY if we haven't seen a "Processing" status update for this order in the list
                 const canTakeAction =
                   isNewOrderNotification(notif) &&
                   orderId &&
                   !notif.isRead &&
-                  !isAlreadyProcessedType(notif);
+                  !isAlreadyProcessedType(notif) &&
+                  !isProcessed;
 
                 return (
                   <TableRow

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 import { PaymentService } from '@/payment/payment.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -618,6 +617,29 @@ export class OrdersService {
     return order;
   }
 
+  async cancelMyOrder(userId: string, orderId: string, reason: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId },
+    });
+    if (!order) throw new NotFoundException('Order not found');
+    if (order.userId !== userId) {
+      throw new BadRequestException('Bạn không có quyền hủy đơn hàng này');
+    }
+
+    // Only allow cancelling PENDING orders
+    if (order.status !== OrderStatus.PENDING) {
+      throw new BadRequestException(
+        'Chỉ có thể hủy đơn hàng đang ở trạng thái Chờ xử lý (Pending).',
+      );
+    }
+
+    return this.updateStatus(orderId, {
+      status: OrderStatus.CANCELLED,
+      cancellationReason: reason,
+      notify: true,
+    });
+  }
+
   async updateStatus(id: string, dto: UpdateOrderStatusDto) {
     const order = await this.prisma.order.findUnique({
       where: { id },
@@ -722,7 +744,7 @@ export class OrdersService {
       const updatedOrder = await tx.order.update({
         where: { id },
         data: {
-          status: dto.status as OrderStatus,
+          status: dto.status,
           cancellationReason: dto.cancellationReason,
           ...(dto.paymentStatus && { paymentStatus: dto.paymentStatus }),
         } as any,
@@ -787,6 +809,54 @@ export class OrdersService {
             updatedOrder.userId,
             notification,
           );
+
+          // ALSO: Notify ALL admins about this order status change
+          // This fulfills the user request: "admin yes order đó thì nên có 1 noti cho admin"
+          try {
+            const adminUsers = await this.prisma.user.findMany({
+              where: {
+                roles: {
+                  some: {
+                    role: {
+                      name: 'ADMIN',
+                    },
+                  },
+                },
+              },
+              select: { id: true },
+            });
+
+            const adminIds = adminUsers.map((u) => u.id);
+            if (adminIds.length > 0) {
+              const adminNotiType =
+                newStatus === OrderStatus.PROCESSING
+                  ? 'ADMIN_ORDER_ACCEPTED'
+                  : `ADMIN_ORDER_${newStatus}`;
+
+              await this.notificationsService.broadcastToUserIds(adminIds, {
+                type: adminNotiType,
+                title: `[Admin] ${title}`,
+                message: `Admin notification: ${message}`,
+                link: `/admin/orders/${id}`,
+              });
+
+              // Broadcast to all connected admins via socket
+              adminIds.forEach((adminId) => {
+                this.notificationsGateway.sendNotificationToUser(adminId, {
+                  type: adminNotiType,
+                  title: `[Admin] ${title}`,
+                  message,
+                  link: `/admin/orders/${id}`,
+                  createdAt: new Date(),
+                } as any);
+              });
+            }
+          } catch (adminNotiError) {
+            this.logger.error(
+              'Failed to notify admins about status update',
+              adminNotiError,
+            );
+          }
         } catch (error) {
           this.logger.error(
             'Failed to create status update notification',

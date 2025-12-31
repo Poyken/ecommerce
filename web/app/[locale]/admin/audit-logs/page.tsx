@@ -30,8 +30,9 @@ export default async function AuditLogsPage({
   const params = await searchParams;
   const page = Number(params?.page) || 1;
   const search = (params?.search as string) || "";
+  const filter = (params?.filter as string) || "all";
 
-  const response = await getAuditLogsAction(page, 10, search);
+  const response = await getAuditLogsAction(page, 20, search, filter);
 
   if ("error" in response) {
     return (

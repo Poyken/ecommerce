@@ -19,6 +19,7 @@ import { productService } from "@/services/product.service";
 import { Product, Sku } from "@/types/models";
 import { Shield, Truck } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 interface ProductQuickViewDialogProps {
@@ -63,6 +64,7 @@ export function ProductQuickViewDialog({
 }: ProductQuickViewDialogProps) {
   const t = useTranslations("common.shop");
   const { toast } = useToast();
+  const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(false);
   const [activeImage, setActiveImage] = useState<string | undefined>(undefined);
@@ -218,6 +220,7 @@ export function ProductQuickViewDialog({
     }
 
     await addToCart(currentSkuId, 1);
+    // Do NOT close dialog on regular add to cart (User request)
   };
 
   // Render Skeleton if loading
@@ -339,6 +342,12 @@ export function ProductQuickViewDialog({
                       onSkuChange={handleSkuChange}
                       onImageChange={setActiveImage}
                       onAddToCart={handleAddToCart}
+                      onBuyNow={async () => {
+                        if (!currentSkuId) return;
+                        await addToCart(currentSkuId, 1);
+                        onOpenChange(false);
+                        router.push("/cart");
+                      }}
                       isAdding={isAdding}
                     />
                   </GlassCard>

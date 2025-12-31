@@ -20,21 +20,8 @@ import { IsBoolean, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
  * =====================================================================
  */
 
-export enum OrderStatus {
-  PENDING = 'PENDING',
-  PROCESSING = 'PROCESSING',
-  SHIPPED = 'SHIPPED',
-  DELIVERED = 'DELIVERED',
-  CANCELLED = 'CANCELLED',
-}
-
-export enum PaymentStatus {
-  UNPAID = 'UNPAID',
-  PENDING = 'PENDING',
-  PAID = 'PAID',
-  REFUNDED = 'REFUNDED',
-  FAILED = 'FAILED',
-}
+import { OrderStatus, PaymentStatus } from '@prisma/client';
+export { OrderStatus, PaymentStatus };
 
 export class UpdateOrderStatusDto {
   @ApiProperty({ enum: OrderStatus, example: OrderStatus.PROCESSING })

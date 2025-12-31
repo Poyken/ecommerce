@@ -55,6 +55,9 @@ export class AiChatService {
    * Lấy hoặc tạo session chat
    */
   async getOrCreateSession(userId?: string, guestId?: string) {
+    this.logger.debug(
+      `getOrCreateSession: userId=${userId}, guestId=${guestId}`,
+    );
     if (userId) {
       // Tìm session của logged-in user
       let session = await this.prisma.aiChatSession.findFirst({
@@ -63,6 +66,7 @@ export class AiChatService {
       });
 
       if (!session) {
+        this.logger.debug(`Creating new session for userId=${userId}`);
         session = await this.prisma.aiChatSession.create({
           data: { userId },
         });
@@ -79,6 +83,7 @@ export class AiChatService {
       });
 
       if (!session) {
+        this.logger.debug(`Creating new session for guestId=${guestId}`);
         session = await this.prisma.aiChatSession.create({
           data: { guestId },
         });
@@ -88,6 +93,9 @@ export class AiChatService {
     }
 
     // Không có userId lẫn guestId -> tạo session mới
+    this.logger.debug(
+      'No userId or guestId provided. Creating anonymous session.',
+    );
     return this.prisma.aiChatSession.create({
       data: {},
     });
@@ -153,24 +161,29 @@ export class AiChatService {
 
     this.logger.log(`Found ${products.length} products for context`);
 
-    return products.map((p) => ({
-      id: p.id,
-      name: p.name,
-      category: p.category?.name || 'Uncategorized',
-      brand: p.brand?.name || 'No Brand',
-      price: Number(p.skus[0]?.price) || 0,
-      inStock: (p.skus[0]?.stock || 0) > 0,
-      description: p.description?.substring(0, 200) || '',
-      skus: p.skus.map((s) => ({
-        id: s.id,
-        code: s.skuCode,
-        price: Number(s.price),
-        stock: s.stock,
-        attributes: s.optionValues
-          .map((ov) => `${ov.optionValue.option.name}: ${ov.optionValue.value}`)
-          .join(', '),
-      })),
-    }));
+    return products.map((p) => {
+      const mainSku = p.skus && p.skus.length > 0 ? p.skus[0] : null;
+      return {
+        id: p.id,
+        name: p.name,
+        category: p.category?.name || 'Uncategorized',
+        brand: p.brand?.name || 'No Brand',
+        price: mainSku ? Number(mainSku.price) : 0,
+        inStock: mainSku ? (mainSku.stock || 0) > 0 : false,
+        description: p.description?.substring(0, 200) || '',
+        skus: p.skus.map((s) => ({
+          id: s.id,
+          code: s.skuCode,
+          price: Number(s.price),
+          stock: s.stock,
+          attributes: s.optionValues
+            .map(
+              (ov) => `${ov.optionValue.option.name}: ${ov.optionValue.value}`,
+            )
+            .join(', '),
+        })),
+      };
+    });
   }
 
   /**
