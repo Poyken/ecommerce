@@ -1,0 +1,285 @@
+ID,Phase,Module,Sub-Task,Description,Estimated Hours,Priority
+1.1,Infra,Workspace,pnpm-workspace.yaml,"Configure monorepo workspace.",1,High
+1.2,Infra,Workspace,package.json (root),"Setup root dependencies and scripts.",2,High
+1.3,Infra,Shared,shared/types/index.ts,"Entry point for shared types.",1,Medium
+1.4,Infra,Shared,shared/types/enums.ts,"Global enums (OrderStatus, Role, etc).",2,High
+1.5,Infra,Shared,shared/types/api.ts,"Common API response interfaces.",2,Medium
+1.6,Infra,Config,.vscode/settings.json,"Unified editor configuration.",1,Low
+1.7,Infra,Config,.vscode/extensions.json,"Recommended extensions setup.",1,Low
+1.8,Infra,Docker,docker-compose.yml,"Main infrastructure orchestration.",2,High
+1.9,Infra,Docker,postgres/Dockerfile,"Custom postgres image setup.",1,Medium
+1.10,Infra,Docker,redis/redis.conf,"Performance tuning for Redis.",1,Low
+1.11,Infra,Docker,mailhog/config.json,"Mailhog testing config.",1,Low
+1.12,Infra,API,api/nest-cli.json,"NestJS CLI configuration.",1,Medium
+1.13,Infra,API,api/package.json,"Backend dependency management.",1,High
+1.14,Infra,API,api/src/main.ts,"Bootstrap NestJS app with pipes/guards.",3,High
+1.15,Infra,API,api/src/app.module.ts,"Central module registry.",2,High
+1.16,Infra,API,api/src/app.controller.ts,"Root health heartbeat.",1,Medium
+1.17,Infra,API,api/src/app.service.ts,"Root business logic (minimal).",1,Low
+1.18,Infra,API,api/.env.example,"Document required environment variables.",1,Medium
+1.19,Infra,Web,web/package.json,"Frontend dependency management.",1,High
+2.1,API Core,Filter,all-exceptions.filter.ts,"Global error normalization.",3,High
+2.2,API Core,Interceptor,logging.interceptor.ts,"Request/Response perf logs.",2,Medium
+2.3,API Core,Interceptor,transform.interceptor.ts,"Response success wrapper.",2,Medium
+2.4,API Core,Guard,jwt-auth.guard.ts,"JWT Authentication Guard.",2,High
+2.5,API Core,Guard,roles.guard.ts,"Role-Based Access Control Guard.",2,High
+2.6,API Core,Service,prisma.service.ts,"Prisma Client instantiation.",1,High
+2.7,API Core,Service,redis.service.ts,"Redis Client instantiation.",1,High
+3.1,API Addresses,Controller,addresses.controller.ts,"Addresses API Endpoints",2,High
+3.2,API Addresses,Service,addresses.service.ts,"Addresses Business Logic",4,High
+3.3,API Addresses,Module,addresses.module.ts,"Addresses Dependency Injection",2,High
+3.4,API Addresses,DTO,dto/*.ts,"Addresses Data Transfer Objects",2,High
+3.5,API Addresses,Test,addresses.spec.ts,"Addresses Unit Tests",2,Medium
+3.6,API Admin,Controller,admin.controller.ts,"Admin API Endpoints",2,High
+3.7,API Admin,Service,admin.service.ts,"Admin Business Logic",4,High
+3.8,API Admin,Module,admin.module.ts,"Admin Dependency Injection",2,High
+3.9,API Admin,DTO,dto/*.ts,"Admin Data Transfer Objects",2,High
+3.10,API Admin,Test,admin.spec.ts,"Admin Unit Tests",2,Medium
+3.11,API Analytics,Controller,analytics.controller.ts,"Analytics API Endpoints",2,High
+3.12,API Analytics,Service,analytics.service.ts,"Analytics Business Logic",4,High
+3.13,API Analytics,Module,analytics.module.ts,"Analytics Dependency Injection",2,High
+3.14,API Analytics,DTO,dto/*.ts,"Analytics Data Transfer Objects",2,High
+3.15,API Analytics,Test,analytics.spec.ts,"Analytics Unit Tests",2,Medium
+3.16,API Audit,Controller,audit.controller.ts,"Audit API Endpoints",2,High
+3.17,API Audit,Service,audit.service.ts,"Audit Business Logic",4,High
+3.18,API Audit,Module,audit.module.ts,"Audit Dependency Injection",2,High
+3.19,API Audit,DTO,dto/*.ts,"Audit Data Transfer Objects",2,High
+3.20,API Audit,Test,audit.spec.ts,"Audit Unit Tests",2,Medium
+3.21,API Auth,Controller,auth.controller.ts,"Auth API Endpoints",2,High
+3.22,API Auth,Service,auth.service.ts,"Auth Business Logic",4,High
+3.23,API Auth,Module,auth.module.ts,"Auth Dependency Injection",2,High
+3.24,API Auth,DTO,dto/*.ts,"Auth Data Transfer Objects",2,High
+3.25,API Auth,Entity,entities/user.entity.ts,"User Entity Definition",2,High
+3.26,API Auth,Test,auth.spec.ts,"Auth Unit Tests",2,Medium
+3.27,API Blog,Controller,blog.controller.ts,"Blog API Endpoints",2,High
+3.28,API Blog,Service,blog.service.ts,"Blog Business Logic",4,High
+3.29,API Blog,Module,blog.module.ts,"Blog Dependency Injection",2,High
+3.30,API Blog,DTO,dto/*.ts,"Blog Data Transfer Objects",2,High
+3.31,API Blog,Test,blog.spec.ts,"Blog Unit Tests",2,Medium
+3.32,API Brands,Controller,brands.controller.ts,"Brands API Endpoints",2,High
+3.33,API Brands,Service,brands.service.ts,"Brands Business Logic",4,High
+3.34,API Brands,Module,brands.module.ts,"Brands Dependency Injection",2,High
+3.35,API Brands,DTO,dto/*.ts,"Brands Data Transfer Objects",2,High
+3.36,API Brands,Test,brands.spec.ts,"Brands Unit Tests",2,Medium
+3.37,API Cart,Controller,cart.controller.ts,"Cart API Endpoints",2,High
+3.38,API Cart,Service,cart.service.ts,"Cart Business Logic",4,High
+3.39,API Cart,Module,cart.module.ts,"Cart Dependency Injection",2,High
+3.40,API Cart,DTO,dto/*.ts,"Cart Data Transfer Objects",2,High
+3.42,API Cart,Test,cart.spec.ts,"Cart Unit Tests",2,Medium
+3.43,API Categories,Controller,categories.controller.ts,"Categories API Endpoints",2,High
+3.44,API Categories,Service,categories.service.ts,"Categories Business Logic",4,High
+3.45,API Categories,Module,categories.module.ts,"Categories Dependency Injection",2,High
+3.46,API Categories,DTO,dto/*.ts,"Categories Data Transfer Objects",2,High
+3.47,API Categories,Test,categories.spec.ts,"Categories Unit Tests",2,Medium
+3.48,API Chat,Controller,chat.controller.ts,"Chat API Endpoints",2,High
+3.49,API Chat,Service,chat.service.ts,"Chat Business Logic",4,High
+3.50,API Chat,Module,chat.module.ts,"Chat Dependency Injection",2,High
+3.51,API Chat,DTO,dto/*.ts,"Chat Data Transfer Objects",2,High
+3.52,API Chat,Test,chat.spec.ts,"Chat Unit Tests",2,Medium
+3.53,API Common,Controller,common.controller.ts,"Common API Endpoints",2,High
+3.54,API Common,Service,common.service.ts,"Common Business Logic",4,High
+3.55,API Common,Module,common.module.ts,"Common Dependency Injection",2,High
+3.56,API Common,DTO,dto/*.ts,"Common Data Transfer Objects",2,High
+3.57,API Common,Test,common.spec.ts,"Common Unit Tests",2,Medium
+3.58,API Core,Controller,core.controller.ts,"Core API Endpoints",2,High
+3.59,API Core,Service,core.service.ts,"Core Business Logic",4,High
+3.60,API Core,Module,core.module.ts,"Core Dependency Injection",2,High
+3.61,API Core,DTO,dto/*.ts,"Core Data Transfer Objects",2,High
+3.62,API Core,Test,core.spec.ts,"Core Unit Tests",2,Medium
+3.63,API Coupons,Controller,coupons.controller.ts,"Coupons API Endpoints",2,High
+3.64,API Coupons,Service,coupons.service.ts,"Coupons Business Logic",4,High
+3.65,API Coupons,Module,coupons.module.ts,"Coupons Dependency Injection",2,High
+3.66,API Coupons,DTO,dto/*.ts,"Coupons Data Transfer Objects",2,High
+3.67,API Coupons,Test,coupons.spec.ts,"Coupons Unit Tests",2,Medium
+3.68,API Integrations,Controller,integrations.controller.ts,"Integrations API Endpoints",2,High
+3.69,API Integrations,Service,integrations.service.ts,"Integrations Business Logic",4,High
+3.70,API Integrations,Module,integrations.module.ts,"Integrations Dependency Injection",2,High
+3.71,API Integrations,DTO,dto/*.ts,"Integrations Data Transfer Objects",2,High
+3.72,API Integrations,Test,integrations.spec.ts,"Integrations Unit Tests",2,Medium
+3.73,API Notifications,Controller,notifications.controller.ts,"Notifications API Endpoints",2,High
+3.74,API Notifications,Service,notifications.service.ts,"Notifications Business Logic",4,High
+3.75,API Notifications,Module,notifications.module.ts,"Notifications Dependency Injection",2,High
+3.76,API Notifications,DTO,dto/*.ts,"Notifications Data Transfer Objects",2,High
+3.77,API Notifications,Test,notifications.spec.ts,"Notifications Unit Tests",2,Medium
+3.78,API Orders,Controller,orders.controller.ts,"Orders API Endpoints",2,High
+3.79,API Orders,Service,orders.service.ts,"Orders Business Logic",4,High
+3.80,API Orders,Module,orders.module.ts,"Orders Dependency Injection",2,High
+3.81,API Orders,DTO,dto/*.ts,"Orders Data Transfer Objects",2,High
+3.82,API Orders,Test,orders.spec.ts,"Orders Unit Tests",2,Medium
+3.84,API Payment,Controller,payment.controller.ts,"Payment API Endpoints",2,High
+3.85,API Payment,Service,payment.service.ts,"Payment Business Logic",4,High
+3.86,API Payment,Module,payment.module.ts,"Payment Dependency Injection",2,High
+3.87,API Payment,DTO,dto/*.ts,"Payment Data Transfer Objects",2,High
+3.88,API Payment,Test,payment.spec.ts,"Payment Unit Tests",2,Medium
+3.89,API Products,Controller,products.controller.ts,"Products API Endpoints",2,High
+3.90,API Products,Service,products.service.ts,"Products Business Logic",4,High
+3.91,API Products,Module,products.module.ts,"Products Dependency Injection",2,High
+3.92,API Products,DTO,dto/*.ts,"Products Data Transfer Objects",2,High
+3.94,API Products,Test,products.spec.ts,"Products Unit Tests",2,Medium
+3.95,API Reviews,Controller,reviews.controller.ts,"Reviews API Endpoints",2,High
+3.96,API Reviews,Service,reviews.service.ts,"Reviews Business Logic",4,High
+3.97,API Reviews,Module,reviews.module.ts,"Reviews Dependency Injection",2,High
+3.98,API Reviews,DTO,dto/*.ts,"Reviews Data Transfer Objects",2,High
+3.100,API Reviews,Test,reviews.spec.ts,"Reviews Unit Tests",2,Medium
+3.101,API Roles,Controller,roles.controller.ts,"Roles API Endpoints",2,High
+3.102,API Roles,Service,roles.service.ts,"Roles Business Logic",4,High
+3.103,API Roles,Module,roles.module.ts,"Roles Dependency Injection",2,High
+3.104,API Roles,DTO,dto/*.ts,"Roles Data Transfer Objects",2,High
+3.105,API Roles,Test,roles.spec.ts,"Roles Unit Tests",2,Medium
+3.106,API Shipping,Controller,shipping.controller.ts,"Shipping API Endpoints",2,High
+3.107,API Shipping,Service,shipping.service.ts,"Shipping Business Logic",4,High
+3.108,API Shipping,Module,shipping.module.ts,"Shipping Dependency Injection",2,High
+3.109,API Shipping,DTO,dto/*.ts,"Shipping Data Transfer Objects",2,High
+3.110,API Shipping,Test,shipping.spec.ts,"Shipping Unit Tests",2,Medium
+3.111,API Skus,Controller,skus.controller.ts,"Skus API Endpoints",2,High
+3.112,API Skus,Service,skus.service.ts,"Skus Business Logic",4,High
+3.113,API Skus,Module,skus.module.ts,"Skus Dependency Injection",2,High
+3.114,API Skus,DTO,dto/*.ts,"Skus Data Transfer Objects",2,High
+3.115,API Skus,Test,skus.spec.ts,"Skus Unit Tests",2,Medium
+3.116,API Users,Controller,users.controller.ts,"Users API Endpoints",2,High
+3.117,API Users,Service,users.service.ts,"Users Business Logic",4,High
+3.118,API Users,Module,users.module.ts,"Users Dependency Injection",2,High
+3.119,API Users,DTO,dto/*.ts,"Users Data Transfer Objects",2,High
+3.121,API Users,Test,users.spec.ts,"Users Unit Tests",2,Medium
+3.122,API Wishlist,Controller,wishlist.controller.ts,"Wishlist API Endpoints",2,High
+3.123,API Wishlist,Service,wishlist.service.ts,"Wishlist Business Logic",4,High
+3.124,API Wishlist,Module,wishlist.module.ts,"Wishlist Dependency Injection",2,High
+3.125,API Wishlist,DTO,dto/*.ts,"Wishlist Data Transfer Objects",2,High
+3.126,API Wishlist,Test,wishlist.spec.ts,"Wishlist Unit Tests",2,Medium
+3.127,API Worker,Controller,worker.controller.ts,"Worker API Endpoints",2,High
+3.128,API Worker,Service,worker.service.ts,"Worker Business Logic",4,High
+3.129,API Worker,Module,worker.module.ts,"Worker Dependency Injection",2,High
+3.130,API Worker,DTO,dto/*.ts,"Worker Data Transfer Objects",2,High
+3.131,API Worker,Test,worker.spec.ts,"Worker Unit Tests",2,Medium
+4.1,Web Address,UI,features/address/components,"Address UI Components",2,Medium
+4.2,Web Address,Logic,features/address/actions.ts,"Address Server Actions",2,Medium
+4.3,Web Address,State,features/address/hooks,"Address Hooks/State",2,Medium
+4.4,Web Address,Test,features/address/tests,"Address Tests",2,Medium
+4.5,Web Admin,UI,features/admin/components,"Admin UI Components",2,Medium
+4.6,Web Admin,Logic,features/admin/actions.ts,"Admin Server Actions",2,Medium
+4.7,Web Admin,State,features/admin/hooks,"Admin Hooks/State",2,Medium
+4.8,Web Admin,Test,features/admin/tests,"Admin Tests",2,Medium
+4.9,Web Analytics,UI,features/analytics/components,"Analytics UI Components",2,Medium
+4.10,Web Analytics,Logic,features/analytics/actions.ts,"Analytics Server Actions",2,Medium
+4.11,Web Analytics,State,features/analytics/hooks,"Analytics Hooks/State",2,Medium
+4.12,Web Analytics,Test,features/analytics/tests,"Analytics Tests",2,Medium
+4.13,Web Auth,UI,features/auth/components,"Auth UI Components",2,Medium
+4.14,Web Auth,Logic,features/auth/actions.ts,"Auth Server Actions",2,Medium
+4.15,Web Auth,State,features/auth/hooks,"Auth Hooks/State",2,Medium
+4.16,Web Auth,Test,features/auth/tests,"Auth Tests",2,Medium
+4.17,Web Blog,UI,features/blog/components,"Blog UI Components",2,Medium
+4.18,Web Blog,Logic,features/blog/actions.ts,"Blog Server Actions",2,Medium
+4.19,Web Blog,State,features/blog/hooks,"Blog Hooks/State",2,Medium
+4.20,Web Blog,Test,features/blog/tests,"Blog Tests",2,Medium
+4.21,Web Brands,UI,features/brands/components,"Brands UI Components",2,Medium
+4.22,Web Brands,Logic,features/brands/actions.ts,"Brands Server Actions",2,Medium
+4.23,Web Brands,State,features/brands/hooks,"Brands Hooks/State",2,Medium
+4.24,Web Brands,Test,features/brands/tests,"Brands Tests",2,Medium
+4.25,Web Cart,UI,features/cart/components,"Cart UI Components",2,Medium
+4.26,Web Cart,Logic,features/cart/actions.ts,"Cart Server Actions",2,Medium
+4.27,Web Cart,State,features/cart/hooks,"Cart Hooks/State",2,Medium
+4.28,Web Cart,Test,features/cart/tests,"Cart Tests",2,Medium
+4.29,Web Categories,UI,features/categories/components,"Categories UI Components",2,Medium
+4.30,Web Categories,Logic,features/categories/actions.ts,"Categories Server Actions",2,Medium
+4.31,Web Categories,State,features/categories/hooks,"Categories Hooks/State",2,Medium
+4.32,Web Categories,Test,features/categories/tests,"Categories Tests",2,Medium
+4.33,Web Chat,UI,features/chat/components,"Chat UI Components",2,Medium
+4.34,Web Chat,Logic,features/chat/actions.ts,"Chat Server Actions",2,Medium
+4.35,Web Chat,State,features/chat/hooks,"Chat Hooks/State",2,Medium
+4.36,Web Chat,Test,features/chat/tests,"Chat Tests",2,Medium
+4.37,Web Checkout,UI,features/checkout/components,"Checkout UI Components",2,Medium
+4.38,Web Checkout,Logic,features/checkout/actions.ts,"Checkout Server Actions",2,Medium
+4.39,Web Checkout,State,features/checkout/hooks,"Checkout Hooks/State",2,Medium
+4.40,Web Checkout,Test,features/checkout/tests,"Checkout Tests",2,Medium
+4.41,Web Contact,UI,features/contact/components,"Contact UI Components",2,Medium
+4.42,Web Contact,Logic,features/contact/actions.ts,"Contact Server Actions",2,Medium
+4.43,Web Contact,State,features/contact/hooks,"Contact Hooks/State",2,Medium
+4.44,Web Contact,Test,features/contact/tests,"Contact Tests",2,Medium
+4.45,Web Coupons,UI,features/coupons/components,"Coupons UI Components",2,Medium
+4.46,Web Coupons,Logic,features/coupons/actions.ts,"Coupons Server Actions",2,Medium
+4.47,Web Coupons,State,features/coupons/hooks,"Coupons Hooks/State",2,Medium
+4.48,Web Coupons,Test,features/coupons/tests,"Coupons Tests",2,Medium
+4.49,Web Home,UI,features/home/components,"Home UI Components",2,Medium
+4.50,Web Home,Logic,features/home/actions.ts,"Home Server Actions",2,Medium
+4.51,Web Home,State,features/home/hooks,"Home Hooks/State",2,Medium
+4.52,Web Home,Test,features/home/tests,"Home Tests",2,Medium
+4.53,Web Layout,UI,features/layout/components,"Layout UI Components",2,Medium
+4.54,Web Layout,Logic,features/layout/actions.ts,"Layout Server Actions",2,Medium
+4.55,Web Layout,State,features/layout/hooks,"Layout Hooks/State",2,Medium
+4.56,Web Layout,Test,features/layout/tests,"Layout Tests",2,Medium
+4.57,Web Marketing,UI,features/marketing/components,"Marketing UI Components",2,Medium
+4.58,Web Marketing,Logic,features/marketing/actions.ts,"Marketing Server Actions",2,Medium
+4.59,Web Marketing,State,features/marketing/hooks,"Marketing Hooks/State",2,Medium
+4.60,Web Marketing,Test,features/marketing/tests,"Marketing Tests",2,Medium
+4.61,Web Notifications,UI,features/notifications/components,"Notifications UI Components",2,Medium
+4.62,Web Notifications,Logic,features/notifications/actions.ts,"Notifications Server Actions",2,Medium
+4.63,Web Notifications,State,features/notifications/hooks,"Notifications Hooks/State",2,Medium
+4.64,Web Notifications,Test,features/notifications/tests,"Notifications Tests",2,Medium
+4.65,Web Orders,UI,features/orders/components,"Orders UI Components",2,Medium
+4.66,Web Orders,Logic,features/orders/actions.ts,"Orders Server Actions",2,Medium
+4.67,Web Orders,State,features/orders/hooks,"Orders Hooks/State",2,Medium
+4.68,Web Orders,Test,features/orders/tests,"Orders Tests",2,Medium
+4.69,Web Products,UI,features/products/components,"Products UI Components",2,Medium
+4.70,Web Products,Logic,features/products/actions.ts,"Products Server Actions",2,Medium
+4.71,Web Products,State,features/products/hooks,"Products Hooks/State",2,Medium
+4.72,Web Products,Test,features/products/tests,"Products Tests",2,Medium
+4.73,Web Profile,UI,features/profile/components,"Profile UI Components",2,Medium
+4.74,Web Profile,Logic,features/profile/actions.ts,"Profile Server Actions",2,Medium
+4.75,Web Profile,State,features/profile/hooks,"Profile Hooks/State",2,Medium
+4.76,Web Profile,Test,features/profile/tests,"Profile Tests",2,Medium
+4.77,Web Reviews,UI,features/reviews/components,"Reviews UI Components",2,Medium
+4.78,Web Reviews,Logic,features/reviews/actions.ts,"Reviews Server Actions",2,Medium
+4.79,Web Reviews,State,features/reviews/hooks,"Reviews Hooks/State",2,Medium
+4.80,Web Reviews,Test,features/reviews/tests,"Reviews Tests",2,Medium
+4.81,Web Shipping,UI,features/shipping/components,"Shipping UI Components",2,Medium
+4.82,Web Shipping,Logic,features/shipping/actions.ts,"Shipping Server Actions",2,Medium
+4.83,Web Shipping,State,features/shipping/hooks,"Shipping Hooks/State",2,Medium
+4.84,Web Shipping,Test,features/shipping/tests,"Shipping Tests",2,Medium
+4.85,Web Wishlist,UI,features/wishlist/components,"Wishlist UI Components",2,Medium
+4.86,Web Wishlist,Logic,features/wishlist/actions.ts,"Wishlist Server Actions",2,Medium
+4.87,Web Wishlist,State,features/wishlist/hooks,"Wishlist Hooks/State",2,Medium
+4.88,Web Wishlist,Test,features/wishlist/tests,"Wishlist Tests",2,Medium
+5.1,Web Lib,Utility,lib/action-helpers.ts,"Migrate action-helpers.ts",1,Low
+5.2,Web Lib,Utility,lib/animations.ts,"Migrate animations.ts",1,Low
+5.3,Web Lib,Utility,lib/cache.ts,"Migrate cache.ts",1,Low
+5.4,Web Lib,Utility,lib/cloudinary.ts,"Migrate cloudinary.ts",1,Low
+5.5,Web Lib,Utility,lib/csrf.ts,"Migrate csrf.ts",1,Low
+5.6,Web Lib,Utility,lib/env.ts,"Migrate env.ts",1,Low
+5.7,Web Lib,Utility,lib/http-client.ts,"Migrate http-client.ts",1,Low
+5.8,Web Lib,Utility,lib/http-server.ts,"Migrate http-server.ts",1,Low
+5.9,Web Lib,Utility,lib/http.ts,"Migrate http.ts",1,Low
+5.10,Web Lib,Utility,lib/performance-monitor.ts,"Migrate performance-monitor.ts",1,Low
+5.11,Web Lib,Utility,lib/permission-utils.ts,"Migrate permission-utils.ts",1,Low
+5.12,Web Lib,Utility,lib/safe-action.ts,"Migrate safe-action.ts",1,Low
+5.13,Web Lib,Utility,lib/schemas.ts,"Migrate schemas.ts",1,Low
+5.14,Web Lib,Utility,lib/session.ts,"Migrate session.ts",1,Low
+5.15,Web Lib,Utility,lib/socket.ts,"Migrate socket.ts",1,Low
+5.16,Web Lib,Utility,lib/stock-socket.ts,"Migrate stock-socket.ts",1,Low
+5.17,Web Lib,Utility,lib/utils.ts,"Migrate utils.ts",1,Low
+5.18,Web Lib,Utility,lib/web-vitals.ts,"Migrate web-vitals.ts",1,Low
+6.1,Web UI,Component,components/ui/alert-dialog.tsx,"Migrate alert-dialog component",1,Low
+6.2,Web UI,Component,components/ui/avatar.tsx,"Migrate avatar component",1,Low
+6.3,Web UI,Component,components/ui/badge.tsx,"Migrate badge component",1,Low
+6.4,Web UI,Component,components/ui/button.tsx,"Migrate button component",1,Low
+6.5,Web UI,Component,components/ui/card.tsx,"Migrate card component",1,Low
+6.6,Web UI,Component,components/ui/carousel.tsx,"Migrate carousel component",1,Low
+6.7,Web UI,Component,components/ui/checkbox.tsx,"Migrate checkbox component",1,Low
+6.8,Web UI,Component,components/ui/combobox.tsx,"Migrate combobox component",1,Low
+6.9,Web UI,Component,components/ui/dialog.tsx,"Migrate dialog component",1,Low
+6.10,Web UI,Component,components/ui/dropdown-menu.tsx,"Migrate dropdown-menu component",1,Low
+6.11,Web UI,Component,components/ui/form.tsx,"Migrate form component",1,Low
+6.12,Web UI,Component,components/ui/input.tsx,"Migrate input component",1,Low
+6.13,Web UI,Component,components/ui/label.tsx,"Migrate label component",1,Low
+6.14,Web UI,Component,components/ui/popover.tsx,"Migrate popover component",1,Low
+6.15,Web UI,Component,components/ui/radio-group.tsx,"Migrate radio-group component",1,Low
+6.16,Web UI,Component,components/ui/scroll-area.tsx,"Migrate scroll-area component",1,Low
+6.17,Web UI,Component,components/ui/select.tsx,"Migrate select component",1,Low
+6.18,Web UI,Component,components/ui/separator.tsx,"Migrate separator component",1,Low
+6.19,Web UI,Component,components/ui/sheet.tsx,"Migrate sheet component",1,Low
+6.20,Web UI,Component,components/ui/skeleton.tsx,"Migrate skeleton component",1,Low
+6.21,Web UI,Component,components/ui/table.tsx,"Migrate table component",1,Low
+6.22,Web UI,Component,components/ui/tabs.tsx,"Migrate tabs component",1,Low
+6.23,Web UI,Component,components/ui/textarea.tsx,"Migrate textarea component",1,Low
+6.24,Web UI,Component,components/ui/toast.tsx,"Migrate toast component",1,Low
+6.25,Web UI,Component,components/ui/toaster.tsx,"Migrate toaster component",1,Low
+7.1,Final,Verification,Complete,"Xác nhận 100% tệp tin (Totals match audit)",0,High

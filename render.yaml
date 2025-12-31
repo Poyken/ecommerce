@@ -69,3 +69,23 @@ services:
       - key: NEXT_PUBLIC_API_URL
         sync: false # Set this in Render dashboard after API service is live
         placeholder: "https://api.onrender.com/api/v1"
+
+  # 4. Cron Job: Clear Cache (Optional - Run manually or periodically)
+  - type: cron
+    name: clear-cache-job
+    env: node
+    plan: free
+    schedule: "0 0 * * *" # Runs daily at midnight. Can be disabled in dashboard.
+    buildCommand: ls -R && cd api && npm install
+    startCommand: cd api && npm run cache:clear
+    envVars:
+      - key: NPM_CONFIG_PRODUCTION
+        value: false
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: redis
+          property: connectionString
+      - key: FRONTEND_URL
+        value: http://web:10000 # Use internal service URL (no manual update needed)
+
