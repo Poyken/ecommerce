@@ -19,36 +19,38 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { OrderDetailsDialog } from "@/features/admin/components/order-details-dialog";
 import { UpdateOrderStatusDialog } from "@/features/admin/components/update-order-status-dialog";
 import {
-    Check,
-    Clock,
-    Download,
-    Edit,
-    Eye,
-    Package,
-    RefreshCw,
-    Search,
-    ShoppingBag,
-    Truck,
-    Upload,
-    X,
+  Check,
+  Clock,
+  Download,
+  Edit,
+  Eye,
+  Package,
+  RefreshCw,
+  Search,
+  ShoppingBag,
+  Truck,
+  Upload,
+  X,
 } from "lucide-react";
 
 import { StatusBadge } from "@/components/shared/status-badge";
+import { toast } from "@/components/shared/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { updateOrderStatusAction } from "@/features/admin/actions";
 import {
-    AdminEmptyState,
-    AdminPageHeader,
-    AdminTableWrapper,
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useNotificationStore } from "@/features/notifications/store/notification.store";
@@ -93,6 +95,7 @@ export function OrdersClient({
   const { notifications } = useNotificationStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastProcessedNotiId = useRef<string | null>(null);
+  const [loadingOrderId, setLoadingOrderId] = useState<string | null>(null);
 
   // Track processed orderId to prevent infinite loop/re-processing
   const processedOrderIdRef = useRef<string | null>(null);
@@ -517,21 +520,79 @@ export function OrdersClient({
                                 variant="outline"
                                 size="sm"
                                 className="h-8 w-8 p-0 text-emerald-600 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300"
-                                onClick={() => {
-                                  setSelectedOrder(order);
-                                  setStatusDialogOpen(true);
+                                disabled={loadingOrderId === order.id}
+                                onClick={async () => {
+                                  setLoadingOrderId(order.id);
+                                  try {
+                                    const result =
+                                      await updateOrderStatusAction(
+                                        order.id,
+                                        "PROCESSING"
+                                      );
+                                    if (result?.error) {
+                                      toast({
+                                        variant: "destructive",
+                                        title: "Lỗi",
+                                        description: result.error,
+                                      });
+                                    } else {
+                                      toast({ title: "Đã xác nhận đơn hàng" });
+                                      router.refresh();
+                                    }
+                                  } catch (e: any) {
+                                    toast({
+                                      variant: "destructive",
+                                      title: "Có lỗi xảy ra",
+                                      description: e.message,
+                                    });
+                                  } finally {
+                                    setLoadingOrderId(null);
+                                  }
                                 }}
                                 title={t("orders.statusMapping.PROCESSING")}
                               >
-                                <Check className="h-4 w-4" />
+                                {loadingOrderId === order.id ? (
+                                  <RefreshCw className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <Check className="h-4 w-4" />
+                                )}
                               </Button>
                               <Button
                                 variant="outline"
                                 size="sm"
                                 className="h-8 w-8 p-0 text-rose-600 border-rose-200 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-300"
-                                onClick={() => {
-                                  setSelectedOrder(order);
-                                  setStatusDialogOpen(true);
+                                disabled={loadingOrderId === order.id}
+                                onClick={async () => {
+                                  const reason = prompt("Nhập lý do hủy đơn:");
+                                  if (!reason) return;
+                                  setLoadingOrderId(order.id);
+                                  try {
+                                    const result =
+                                      await updateOrderStatusAction(
+                                        order.id,
+                                        "CANCELLED",
+                                        true,
+                                        reason
+                                      );
+                                    if (result?.error) {
+                                      toast({
+                                        variant: "destructive",
+                                        title: "Lỗi",
+                                        description: result.error,
+                                      });
+                                    } else {
+                                      toast({ title: "Đã hủy đơn hàng" });
+                                      router.refresh();
+                                    }
+                                  } catch (e: any) {
+                                    toast({
+                                      variant: "destructive",
+                                      title: "Có lỗi xảy ra",
+                                      description: e.message,
+                                    });
+                                  } finally {
+                                    setLoadingOrderId(null);
+                                  }
                                 }}
                                 title={t("orders.statusMapping.CANCELLED")}
                               >

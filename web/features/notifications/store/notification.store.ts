@@ -78,7 +78,7 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
 
   markAsRead: async (id) => {
-    // Optimistic
+    // Optimistic update
     set((state) => ({
       notifications: (Array.isArray(state.notifications)
         ? state.notifications
@@ -88,15 +88,15 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     }));
 
     try {
+      // Call API but don't refresh - optimistic update is sufficient
       await markAsReadServerAction(id);
-      await get().refresh();
     } catch (error) {
       console.error("Failed to mark notification as read", error);
     }
   },
 
   markAllAsRead: async () => {
-    // Optimistic
+    // Optimistic update - mark all as read locally
     set((state) => ({
       notifications: (Array.isArray(state.notifications)
         ? state.notifications
@@ -109,10 +109,11 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
     }));
 
     try {
+      // Call API but don't refresh - optimistic update is sufficient
       await markAllAsReadAction();
-      await get().refresh();
     } catch (error) {
       console.error("Failed to mark all as read", error);
+      // Could revert here but typically server action succeeds
     }
   },
 

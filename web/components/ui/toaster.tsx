@@ -1,14 +1,14 @@
 "use client";
 
-import {
-    Toast,
-    ToastClose,
-    ToastDescription,
-    ToastProvider,
-    ToastTitle,
-    ToastViewport,
-} from "@/components/ui/toast";
 import { useToast } from "@/components/shared/use-toast";
+import {
+  Toast,
+  ToastClose,
+  ToastDescription,
+  ToastProvider,
+  ToastTitle,
+  ToastViewport,
+} from "@/components/ui/toast";
 
 /**
  * =====================================================================
@@ -81,7 +81,7 @@ export function Toaster() {
           <Toast
             key={id}
             variant={variant}
-            duration={variant === "destructive" ? 5000 : 3000}
+            duration={variant === "destructive" ? 4000 : 3000}
             {...props}
           >
             <div className="flex items-center gap-4">

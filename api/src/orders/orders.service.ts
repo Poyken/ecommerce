@@ -189,6 +189,23 @@ export class OrdersService {
             throw new BadRequestException('Mã giảm giá không tồn tại');
           }
 
+          // 🔒 SECURITY: WELCOME coupons are personal - check if user is the owner
+          if (coupon.code.startsWith('WELCOME-')) {
+            const ownerNotification = await tx.notification.findFirst({
+              where: {
+                userId,
+                type: 'SYSTEM',
+                message: { contains: coupon.code },
+              },
+            });
+
+            if (!ownerNotification) {
+              throw new BadRequestException(
+                'Mã giảm giá này chỉ dành cho tài khoản đã được tặng',
+              );
+            }
+          }
+
           const now = new Date();
           if (coupon.startDate && now < new Date(coupon.startDate)) {
             throw new BadRequestException('Mã giảm giá chưa có hiệu lực');

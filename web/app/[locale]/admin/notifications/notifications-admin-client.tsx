@@ -8,22 +8,22 @@ import { Combobox, ComboboxOption } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
-    getCouponsAction,
-    getOrdersAction,
-    getProductsAction,
+  getCouponsAction,
+  getOrdersAction,
+  getProductsAction,
 } from "@/features/admin/actions";
 import {
-    broadcastNotificationAction,
-    sendNotificationToUserAction,
+  broadcastNotificationAction,
+  sendNotificationToUserAction,
 } from "@/features/notifications/actions";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { Coupon, Order, Product } from "@/types/models";
@@ -74,7 +74,6 @@ export function NotificationsAdminClient({
 
   // Fetch products/orders/coupons when search changes
   useEffect(() => {
-     
     const fetchData = async () => {
       if (linkType === "product") {
         const res = await getProductsAction(1, 10, debouncedSearch);
@@ -161,14 +160,25 @@ export function NotificationsAdminClient({
         });
         setLinkType("custom");
       } else {
+        console.error("Notification send failed:", result);
         toast({
-          title: result.error || t("form.error"),
+          title: "Lỗi gửi thông báo (Server)",
+          description:
+            result.error ||
+            JSON.stringify(result) ||
+            "Lỗi không xác định từ server",
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Notification send error (Client catch):", error);
       toast({
-        title: t("form.error"),
+        title: "Lỗi hệ thống (Client)",
+        description:
+          error.message ||
+          error.digest ||
+          JSON.stringify(error) ||
+          "Lỗi không xác định",
         variant: "destructive",
       });
     } finally {
@@ -176,8 +186,8 @@ export function NotificationsAdminClient({
     }
   };
 
-// ... imports moved to top ...
-// ... inside NotificationsAdminClient component ...
+  // ... imports moved to top ...
+  // ... inside NotificationsAdminClient component ...
 
   return (
     <div className="space-y-8">
@@ -224,7 +234,9 @@ export function NotificationsAdminClient({
                       setFormData({ ...formData, userId: val })
                     }
                     placeholder={t("form.selectUser") || "Select user..."}
-                    searchPlaceholder={t("form.searchUser") || "Search users..."}
+                    searchPlaceholder={
+                      t("form.searchUser") || "Search users..."
+                    }
                     emptyText={t("form.noUsers") || "No users found."}
                   />
                 </div>
@@ -244,8 +256,9 @@ export function NotificationsAdminClient({
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="SYSTEM">System</SelectItem>
-                      <SelectItem value="PROMO">Promotion</SelectItem>
+                      <SelectItem value="PROMOTION">Promotion</SelectItem>
                       <SelectItem value="ORDER">Order</SelectItem>
+                      <SelectItem value="INFO">Info</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -333,7 +346,9 @@ export function NotificationsAdminClient({
                       }
                       searchValue={searchQuery}
                       onSearchChange={setSearchQuery}
-                      placeholder={t("form.selectProduct") || "Select Product..."}
+                      placeholder={
+                        t("form.selectProduct") || "Select Product..."
+                      }
                       searchPlaceholder={
                         t("form.searchProduct") || "Search product..."
                       }
@@ -354,7 +369,9 @@ export function NotificationsAdminClient({
                       searchValue={searchQuery}
                       onSearchChange={setSearchQuery}
                       placeholder={t("form.selectOrder") || "Select Order..."}
-                      searchPlaceholder={t("form.searchOrder") || "Search order..."}
+                      searchPlaceholder={
+                        t("form.searchOrder") || "Search order..."
+                      }
                       emptyText={t("form.noOrders") || "No orders found."}
                     />
                   )}
@@ -391,7 +408,8 @@ export function NotificationsAdminClient({
                   <div className="space-y-0.5">
                     <Label className="text-base">{t("form.sendEmail")}</Label>
                     <p className="text-xs text-muted-foreground">
-                      Send a copy of this message to the user&apos;s email address
+                      Send a copy of this message to the user&apos;s email
+                      address
                     </p>
                   </div>
                 </div>
