@@ -1,17 +1,29 @@
 /**
- * Advanced Caching Utilities for Next.js 15+
+ * =====================================================================
+ * ADVANCED CACHING UTILITIES - Tối ưu hóa bộ nhớ đệm
+ * =====================================================================
  *
- * Sử dụng unstable_cache API để fine-grained control caching
- * Patterns:
- * - Stale-while-revalidate
- * - Cache warming
- * - Selective invalidation
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. UNSTABLE_CACHE (Next.js 15+):
+ * - Đây là API mạnh mẽ của Next.js để cache kết quả của các hàm bất đồng bộ (ví dụ: gọi database, gọi API).
+ * - Khác với fetch cache, nó cho phép ta gắn "tags" để xóa cache một cách có chọn lọc (`revalidateTag`).
+ *
+ * 2. CÁC PATTERNS CACHE PHỔ BIẾN:
+ * - SWR (Stale-While-Revalidate): Trả về dữ liệu cũ ngay lập tức và âm thầm cập nhật dữ liệu mới ở background.
+ * - Multi-level: Kết hợp Memory cache (cực nhanh) và Next.js cache (bền vững).
+ * - Deduplication: Nếu 10 nơi cùng gọi 1 API tại 1 thời điểm, chỉ có 1 request thực sự được gửi đi.
+ *
+ * 3. TẠI SAO PHẢI DÙNG?
+ * - Giảm chi phí server (Database/API calls).
+ * - Tăng tốc độ phản hồi (TTFB) cho người dùng cuối.
+ * =====================================================================
  */
 
 import { unstable_cache } from "next/cache";
 
 /**
- * Cache wrapper with tags for selective invalidation
+ * Wrapper hỗ trợ cache hàm với các tags để xóa cache có chọn lọc.
  */
 export function createCachedFunction<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,8 +51,8 @@ export function createCachedFunction<
 }
 
 /**
- * Stale-While-Revalidate pattern
- * Returns cached data immediately, revalidates in background
+ * Pattern Stale-While-Revalidate (SWR)
+ * Trả về dữ liệu cũ ngay lập tức và revalidate (cập nhật) ở background.
  */
 export function createSWRCache<
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,7 +61,7 @@ export function createSWRCache<
   fn: T,
   {
     keyPrefix,
-    staleTime = 60, // 1 minute stale
+    staleTime = 60, // Mặc định 1 phút (stale)
   }: {
     keyPrefix: string;
     staleTime?: number;
@@ -64,7 +76,7 @@ export function createSWRCache<
         try {
           return await fn(...args);
         } catch (error) {
-          console.error(`SWR Cache error for ${cacheKey}:`, error);
+          console.error(`[SWR Cache] Lỗi cho key ${cacheKey}:`, error);
           // Return stale data on error if available
           throw error;
         }
@@ -79,8 +91,8 @@ export function createSWRCache<
 }
 
 /**
- * Cache with automatic warming
- * Pre-populate cache for frequently accessed data
+ * Cache với tính năng tự động "làm nóng" (warming)
+ * Chủ động nạp dữ liệu vào cache cho các dữ liệu thường xuyên được truy cập.
  */
 export async function warmCache<T>(
   fn: () => Promise<T>,
@@ -103,10 +115,10 @@ export async function warmCache<T>(
 }
 
 /**
- * Multi-level caching:
- * 1. Memory cache (fastest, per-request)
- * 2. Next.js cache (server-side, persistent)
- * 3. API call (slowest, when cache miss)
+ * Cơ chế Cache đa lớp (Multi-level caching):
+ * 1. Memory cache: Nhanh nhất, tồn tại theo từng request hoặc thời gian ngắn.
+ * 2. Next.js cache: Lưu trên server, bền vững hơn (File-system based).
+ * 3. API call: Chạy khi cả 2 lớp trên đều không có dữ liệu (Cache miss).
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const memoryCache = new Map<string, { data: any; expires: number }>();
@@ -132,13 +144,13 @@ export function createMultiLevelCache<
     const cacheKey = `${keyPrefix}-${JSON.stringify(args)}`;
     const now = Date.now();
 
-    // Level 1: Memory cache
+    // Lớp 1: Memory cache (Bộ nhớ RAM)
     const memCached = memoryCache.get(cacheKey);
     if (memCached && memCached.expires > now) {
       return memCached.data;
     }
 
-    // Level 2: Next.js cache
+    // Lớp 2: Next.js cache (File system/Persistent)
     const cachedFn = unstable_cache(async () => fn(...args), [cacheKey], {
       tags: [...tags, cacheKey],
       revalidate: cacheTTL,
@@ -146,13 +158,13 @@ export function createMultiLevelCache<
 
     const result = await cachedFn();
 
-    // Store in memory cache
+    // Lưu vào memory cache để dùng lại cực nhanh trong request sau
     memoryCache.set(cacheKey, {
       data: result,
       expires: now + memoryTTL * 1000,
     });
 
-    // Cleanup old memory cache entries
+    // Dọn dẹp memory cache cũ nếu vượt quá 100 entries để tránh tốn RAM
     if (memoryCache.size > 100) {
       const keysToDelete: string[] = [];
       memoryCache.forEach((value, key) => {
@@ -168,8 +180,8 @@ export function createMultiLevelCache<
 }
 
 /**
- * Deduplicate concurrent requests
- * Multiple simultaneous requests for same data = only 1 API call
+ * Khử trùng lặp (Deduplication) cho các request đồng thời.
+ * Nếu có nhiều request cùng gọi 1 dữ liệu tại 1 thời điểm -> Chỉ thực hiện 1 API call.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const pendingRequests = new Map<string, Promise<any>>();
@@ -181,12 +193,12 @@ export function createDedupedCache<
   return (async (...args: Parameters<T>) => {
     const cacheKey = `${keyPrefix}-${JSON.stringify(args)}`;
 
-    // Return existing pending request if any
+    // Trả về request đang chạy nếu có (Tránh gọi trùng)
     if (pendingRequests.has(cacheKey)) {
       return pendingRequests.get(cacheKey);
     }
 
-    // Create new request
+    // Tạo request mới nếu chưa có cái nào đang chạy
     const promise = fn(...args).finally(() => {
       pendingRequests.delete(cacheKey);
     });
@@ -197,8 +209,8 @@ export function createDedupedCache<
 }
 
 /**
- * Batch requests together
- * Combine multiple similar requests into one
+ * Gom nhóm các request (Batching)
+ * Kết hợp nhiều request lẻ tẻ vào thành một request duy nhất để tối ưu hiệu năng.
  */
 export function createBatchedCache<T>(
   fetcher: (ids: string[]) => Promise<T[]>,
@@ -229,7 +241,7 @@ export function createBatchedCache<T>(
         currentResolvers[index](resultMap.get(id) || null);
       });
     } catch (error) {
-      console.error(error); // Log error
+      console.error("[Batch Cache] Lỗi khi thực thi batch:", error);
       currentResolvers.forEach((resolve) => resolve(null));
     }
   };

@@ -20,7 +20,7 @@ import { http } from "@/lib/http";
 
 import { create } from "zustand";
 
-interface FeatureFlagState {
+export interface FeatureFlagState {
   enabledFlags: string[];
   isLoading: boolean;
   isEnabled: (key: string) => boolean;
@@ -28,11 +28,11 @@ interface FeatureFlagState {
   fetchFlags: () => Promise<void>;
 }
 
-export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
+export const useFeatureFlagStore = create<FeatureFlagState>()((set, get) => ({
   enabledFlags: [],
   isLoading: true,
   isEnabled: (key: string) => get().enabledFlags.includes(key),
-  setFlags: (flags) => set({ enabledFlags: flags, isLoading: false }),
+  setFlags: (flags: string[]) => set({ enabledFlags: flags, isLoading: false }),
   fetchFlags: async () => {
     set({ isLoading: true });
     try {

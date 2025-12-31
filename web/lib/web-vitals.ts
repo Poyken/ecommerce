@@ -1,6 +1,23 @@
 /**
- * Web Vitals Monitoring - Track Core Web Vitals
- * Sends metrics to analytics for monitoring LCP, FID, CLS, FCP, TTFB
+ * =====================================================================
+ * WEB VITALS MONITORING - Theo dõi chỉ số trải nghiệm người dùng
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. WEB VITALS LÀ GÌ?
+ * - Là tập hợp các chỉ số quan trọng mà Google dùng để đánh giá chất lượng trải nghiệm trang (UX).
+ * - Điểm Web Vitals cao giúp cải thiện thứ hạng SEO.
+ *
+ * 2. CÁC CHỈ SỐ CHÍNH:
+ * - LCP (Largest Contentful Paint): Thời gian load thành phần lớn nhất.
+ * - CLS (Cumulative Layout Shift): Sự ổn định của bố cục (không bị giật khi load).
+ * - FID (First Input Delay): Thời gian phản hồi lần tương tác đầu tiên.
+ *
+ * 3. REPORTING:
+ * - File này tự động gửi kết quả đo đạc về Server và Google Analytics.
+ * - Giúp chúng ta biết trang nào đang bị chậm trong thực tế để tối ưu.
+ * =====================================================================
  */
 
 // Extend Window interface for gtag
@@ -22,13 +39,12 @@ interface Metric {
 import { savePerformanceMetricAction } from "@/features/analytics/actions";
 
 export function reportWebVitals(metric: Metric) {
-  // Log to console in development
+  // Log ra console trong môi trường phát triển để dễ theo dõi dể tối ưu
   if (process.env.NODE_ENV === "development") {
     console.log("[Web Vitals]", metric);
   }
 
-  // [P17 OPTIMIZATION] Send to internal analytics
-  // Convert value to a rating based on standard thresholds
+  // Chuyển đổi giá trị đo được thành đánh giá (rating) dựa trên ngưỡng chuẩn của Google
   let rating = "good";
   if (metric.name === "CLS") {
     if (metric.value > 0.25) rating = "poor";
@@ -45,10 +61,11 @@ export function reportWebVitals(metric: Metric) {
     name: metric.name,
     value: metric.value,
     rating,
-    url: typeof window !== "undefined" ? window.location.href : "unknown",
+    url:
+      typeof window !== "undefined" ? window.location.href : "không xác định",
   });
 
-  // Send to Google Analytics if available
+  // Gửi dữ liệu cho Google Analytics nếu có cấu hình
   if (typeof window !== "undefined" && window.gtag) {
     window.gtag("event", metric.name, {
       value: Math.round(

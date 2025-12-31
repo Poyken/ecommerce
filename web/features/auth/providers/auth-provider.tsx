@@ -36,12 +36,12 @@ import {
 // =============================================================================
 
 /**
- * Giá trị được cung cấp bởi AuthContext.
+ * Cấu trúc dữ liệu của AuthContext.
  */
 interface AuthContextType {
-  permissions: string[];
-  isAuthenticated: boolean;
-  hasPermission: (permission: string) => boolean;
+  permissions: string[]; // Danh sách các quyền của user
+  isAuthenticated: boolean; // Trạng thái đã đăng nhập hay chưa
+  hasPermission: (permission: string) => boolean; // Hàm kiểm tra quyền nhanh
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -61,7 +61,7 @@ export function AuthProvider({
 }) {
   const [fetchedPermissions, setFetchedPermissions] = useState<string[]>([]);
 
-  // Stable permissions array: merge server-side and client-side permissions
+  // Danh sách quyền ổn định: Gộp quyền từ Server-side và Client-side lại làm một.
   const permissions = useMemo(() => {
     const combined = new Set<string>();
     if (initialPermissions) {
@@ -72,9 +72,9 @@ export function AuthProvider({
   }, [initialPermissions, fetchedPermissions]);
 
   useEffect(() => {
-    // Only fetch on client if initialPermissions was NEVER provided (undefined).
-    // If server provided empty array [], trust it (user is not logged in).
-    // This prevents duplicate API calls when switching language or navigating.
+    // Chỉ fetch thêm quyền ở Client nếu initialPermissions KHÔNG được truyền xuống (undefined).
+    // Nếu Server đã truyền xuống mảng rỗng [], ta tin tưởng dữ liệu đó (user chưa login).
+    // Điều này giúp tránh gọi API thừa khi chuyển ngôn ngữ hoặc chuyển trang.
     if (initialPermissions === undefined) {
       const fetchPermissions = async () => {
         try {
@@ -83,15 +83,15 @@ export function AuthProvider({
             setFetchedPermissions(perms);
           }
         } catch (error) {
-          console.error("Failed to fetch permissions:", error);
+          console.error("Lỗi khi lấy danh sách quyền:", error);
         }
       };
       fetchPermissions();
     }
-  }, [initialPermissions]); // Run when initialPermissions changes
+  }, [initialPermissions]); // Chạy lại nếu initialPermissions thay đổi
 
   /**
-   * Memoized permission check function.
+   * Hàm kiểm tra quyền (được memoize để không bị khởi tạo lại vô ích).
    */
   const hasPermission = useCallback(
     (permission: string) => {
@@ -100,7 +100,7 @@ export function AuthProvider({
     [permissions]
   );
 
-  // Memoize the context value to prevent unnecessary re-renders of consumers
+  // Lưu trữ giá trị context vào useMemo để tránh re-render các component con không cần thiết
   const contextValue = useMemo(
     () => ({
       permissions,
@@ -120,24 +120,24 @@ export function AuthProvider({
 // =============================================================================
 
 /**
- * Hook để truy cập auth context từ bất kỳ Client Component nào.
+ * Hook để truy cập thông tin auth từ bất kỳ Client Component nào.
  *
- * @returns AuthContextType với permissions array và hasPermission function
+ * @returns {AuthContextType} Bao gồm mảng permissions và hàm hasPermission
  *
  * @example
- * // Kiểm tra quyền cụ thể
+ * // 1. Kiểm tra một quyền cụ thể
  * const { hasPermission } = useAuth();
  * const canManageUsers = hasPermission("admin:users");
  *
  * @example
- * // Lấy tất cả permissions
+ * // 2. Lấy tất cả danh sách quyền
  * const { permissions } = useAuth();
- * console.log("User permissions:", permissions);
+ * console.log("Danh sách quyền của user:", permissions);
  *
  * @example
- * // Conditional rendering
- * {hasPermission("write:products") && (
- *   <Button onClick={handleEdit}>Sửa sản phẩm</Button>
+ * // 3. Ẩn hiện giao diện theo quyền (Conditional rendering)
+ * {hasPermission("product:edit") && (
+ *   <button onClick={handleEdit}>Chỉnh sửa sản phẩm</button>
  * )}
  */
 export function useAuth() {
