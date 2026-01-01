@@ -45,31 +45,7 @@ import { GHNService } from './ghn.service';
  */
 @Injectable()
 export class ShippingService {
-<<<<<<< HEAD
   private readonly logger = new Logger(ShippingService.name);
-=======
-  /**
-   * =====================================================================
-   * SHIPPING SERVICE - Tính phí vận chuyển
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. EXTERNAL API INTEGRATION (Tích hợp bên thứ 3):
-   * - Trong thực tế, ta sẽ gọi API của GHN/GHTK để lấy phí ship chính xác.
-   * - Ở giai đoạn MVP/Develop, ta dùng MOCK DATA (Dữ liệu giả lập) để không bị phụ thuộc vào key/mạng của bên thứ 3.
-   *
-   * 2. CACHING STRATEGY (Chiến lược Cache):
-   * - Danh sách Tỉnh/Huyện/Xã rất ít khi thay đổi -> Nên Cache lâu dài (VD: 1 tháng) để giảm tải cho hệ thống.
-   *
-   * 3. FEE CALCULATION RULES:
-   * - Logic tính phí đang được Hardcode dựa trên ID quận/huyện.
-   * - Khi lên Production, logic này sẽ được thay thế bằng việc gọi API `calculateFee` của đối tác vận chuyển.
-   * =====================================================================
-   */
-  // MOCK DATA for "Tuorial/MVP" phase
-  // In real life, fetch from https://online-gateway.ghn.vn/shiip/public-api/master-data/...
->>>>>>> 7e5e004 (feat: Implement new e-commerce features including audit, coupons, blog, wishlist, payment, shipping, and various web actions.)
 
   constructor(
     public readonly ghnService: GHNService,

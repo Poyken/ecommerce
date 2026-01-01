@@ -26,7 +26,6 @@ import { Queue } from 'bullmq';
 export class AuditService implements OnApplicationBootstrap {
   private readonly logger = new Logger(AuditService.name);
 
-<<<<<<< HEAD
   constructor(
     private readonly prisma: PrismaService,
     @InjectQueue('audit') private readonly auditQueue: Queue,
@@ -51,29 +50,6 @@ export class AuditService implements OnApplicationBootstrap {
   /**
    * Tạo audit log - [P11 OPTIMIZATION] Xử lý bất đồng bộ qua queue
    */
-=======
-  /**
-   * =====================================================================
-   * AUDIT SERVICE - Nhật ký hệ thống
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. MỤC ĐÍCH (PURPOSE):
-   * - Ghi lại mọi hành động quan trọng của người dùng (Who did What, When, Where).
-   * - Giúp Admin tra cứu lịch sử, phát hiện hành vi bất thường hoặc lỗi hệ thống.
-   *
-   * 2. FAIL-SAFE LOGGING:
-   * - Việc ghi log KHÔNG ĐƯỢC PHÉP làm chết luồng chính (Main Flow).
-   * - Nếu DB bị lỗi hoặc chưa migrate bảng AuditLog, ta chỉ `console.error` chứ không throw exception ra ngoài.
-   * - Điều này đảm bảo tính năng chính (VD: Đặt hàng) vẫn hoạt động dù hệ thống log có vấn đề.
-   *
-   * 3. SEARCHABLE (Có thể tìm kiếm):
-   * - Hỗ trợ tìm kiếm theo `action` (Hành động) hoặc `resource` (Đối tượng bị tác động) để dễ dàng trace lỗi.
-   * =====================================================================
-   */
-
->>>>>>> 7e5e004 (feat: Implement new e-commerce features including audit, coupons, blog, wishlist, payment, shipping, and various web actions.)
   async create(data: {
     userId?: string;
     action: string;

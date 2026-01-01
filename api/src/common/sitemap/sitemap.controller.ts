@@ -1,5 +1,5 @@
+import { SitemapService } from '@integrations/sitemap/sitemap.service';
 import { Controller, Get, Header } from '@nestjs/common';
-import { SitemapService } from './sitemap.service';
 
 @Controller('sitemap')
 export class SitemapController {
