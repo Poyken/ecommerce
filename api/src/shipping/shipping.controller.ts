@@ -21,6 +21,18 @@ import { ShippingService } from './shipping.service';
 @ApiTags('Shipping')
 @Controller('shipping')
 export class ShippingController {
+  /**
+   * =====================================================================
+   * SHIPPING CONTROLLER - Vận chuyển & Địa chính
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. PROXY PATTERN:
+   * - Các API này (provinces, districts...) thực chất là gọi sang Services của Giao Hàng Nhanh (GHN) hoặc GHTK.
+   * - Backend ta đóng vai trò Proxy để ẩn API Key của đối tác và cache lại dữ liệu địa chính (ít thay đổi) để giảm tải.
+   * =====================================================================
+   */
   constructor(private readonly shippingService: ShippingService) {}
 
   @Get('provinces')

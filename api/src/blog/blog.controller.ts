@@ -53,6 +53,26 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
 @ApiTags('blogs')
 @Controller('blogs')
 export class BlogController {
+  /**
+   * =====================================================================
+   * BLOG CONTROLLER - API quản lý bài viết
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. FILE UPLOAD:
+   * - Sử dụng `FileInterceptor('image')` để bắt file upload từ form-data (key là 'image').
+   * - Sau đó gọi `CloudinaryService` để upload lên cloud và lấy URL về lưu vào DB.
+   * - Swagger cần `@ApiConsumes('multipart/form-data')` để hiển thị nút upload file trên UI.
+   *
+   * 2. PUBLIC VS PRIVATE ENDPOINTS:
+   * - `findAll`, `findOne`: Không có `@UseGuards` -> Ai cũng xem được (Public).
+   * - `create`, `update`, `delete`: Có `JwtAuthGuard`, `PermissionsGuard` -> Chỉ Admin mới được dùng.
+   *
+   * 3. DTO TRANSFORMATION:
+   * - `parseInt` ở `findAll`: Query param luôn là string, cần chuyển về number thủ công hoặc dùng `ParseIntPipe` (ở đây dùng tay cho rõ ràng logic).
+   * =====================================================================
+   */
   constructor(
     private readonly blogService: BlogService,
     private readonly cloudinaryService: CloudinaryService,

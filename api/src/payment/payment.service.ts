@@ -30,6 +30,27 @@ import { VNPayStrategy } from './strategies/vnpay.strategy';
 
 @Injectable()
 export class PaymentService {
+  /**
+   * =====================================================================
+   * PAYMENT SERVICE - Dịch vụ điều phối thanh toán
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. STRATEGY PATTERN (Mẫu thiết kế Chiến lược):
+   * - Thay vì dùng `switch-case` khổng lồ để xử lý từng loại thanh toán (COD, Stripe, VNPAY, MOMO...), ta dùng Pattern này.
+   * - Mỗi phương thức thanh toán là một Class riêng (`CodStrategy`, `VnPayStrategy`...) cùng implement một interface.
+   *
+   * 2. STRATEGY REGISTRY (Map):
+   * - `strategies: Map<string, PaymentStrategy>` đóng vai trò như một cuốn danh bạ.
+   * - Khi cần thanh toán, chỉ cần tra "tên" (VD: 'VNPAY') trong danh bạ để lấy "thợ" xử lý tương ứng.
+   * - Tra cứu bằng Map cực nhanh (O(1)).
+   *
+   * 3. OPEN/CLOSED PRINCIPLE (Nguyên lý Đóng/Mở):
+   * - Code "Mở" cho việc mở rộng: Muốn thêm Momo? Chỉ cần tạo class `MomoStrategy` và đăng ký vào Map.
+   * - Code "Đóng" cho việc sửa đổi: Không cần sửa hàm `processPayment` hiện tại -> Giảm rủi ro bug.
+   * =====================================================================
+   */
   private strategies: Map<string, PaymentStrategy> = new Map();
 
   constructor(

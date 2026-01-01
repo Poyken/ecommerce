@@ -24,6 +24,21 @@ import { AuditService } from './audit.service';
 @Controller('audit')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class AuditController {
+  /**
+   * =====================================================================
+   * AUDIT CONTROLLER - Nhật ký kiểm toán
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. PURPOSE (Mục đích):
+   * - API này giúp Admin xem lại lịch sử các thay đổi dữ liệu trong hệ thống (Ai? Làm gì? Khi nào?).
+   * - Rất quan trọng để tra cứu trách nhiệm khi có sự cố.
+   *
+   * 2. SECURITY:
+   * - API này nhạy cảm nên yêu cầu quyền `auditLog:read` và bảo vệ nghiêm ngặt.
+   * =====================================================================
+   */
   constructor(private readonly auditService: AuditService) {}
 
   @Get()

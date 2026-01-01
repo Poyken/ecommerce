@@ -25,6 +25,22 @@ import { AnalyticsService } from './analytics.service';
 @ApiBearerAuth()
 @Controller('analytics')
 export class AnalyticsController {
+  /**
+   * =====================================================================
+   * ANALYTICS CONTROLLER - Điều khiển Báo cáo thống kê
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. AGGREGATION API:
+   * - Controller này không trực tiếp xử lý data mà gọi Service để thực hiện các phép tính "nặng" (Aggregation) trên Database.
+   * - Các API ở đây thường mất nhiều thời gian hơn CRUD bình thường.
+   *
+   * 2. DATE RANGES (Dải ngày):
+   * - Client có thể gửi `startDate`, `endDate` hoặc `days` (ví dụ: 7 ngày qua).
+   * - Logic `getSalesData` tự động tính toán thời gian bắt đầu nếu chỉ nhận được tham số `days`.
+   * =====================================================================
+   */
   constructor(private readonly analyticsService: AnalyticsService) {}
 
   @Get('stats')

@@ -38,6 +38,22 @@ import { WishlistService } from './wishlist.service';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class WishlistController {
+  /**
+   * =====================================================================
+   * WISHLIST CONTROLLER - Quản lý yêu thích
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. PERSONALIZED DATA:
+   * - Tất cả các route đều dùng `@Req() req` để lấy `req.user.id`.
+   * - Wishlist là dữ liệu riêng tư của từng user, user A không thể xem/sửa wishlist của user B.
+   *
+   * 2. GUEST MERGING:
+   * - `POST /merge`: Khi Guest đăng nhập, FE gửi danh sách ID sản phẩm họ đã like lúc chưa đăng nhập.
+   * - Controller gọi Service để gộp danh sách này vào Database.
+   * =====================================================================
+   */
   constructor(private readonly wishlistService: WishlistService) {}
 
   @Post('toggle')

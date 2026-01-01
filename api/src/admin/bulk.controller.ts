@@ -46,6 +46,23 @@ import { BulkUpdateDto, ImportSkusDto } from './dto/bulk.dto';
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @ApiBearerAuth()
 export class BulkController {
+  /**
+   * =====================================================================
+   * BULK OPERATIONS CONTROLLER - Xử lý hàng loạt
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. STREAMING RESPONSE (Xuất CSV):
+   * - API `export/skus` trả về một CSV file.
+   * - `Header('Content-Type', 'text/csv')`: Bảo trình duyệt đây là file tải về.
+   * - Dữ liệu được stream trực tiếp từ DB ra response để tránh tràn RAM (Memory Leak) khi dữ liệu quá lớn.
+   *
+   * 2. BULK IMPORT:
+   * - API `import/skus` nhận vào một mảng lớn dữ liệu JSON.
+   * - Service sẽ xử lý theo lô (Batch Processing) để tối ưu hiệu năng ghi vào DB.
+   * =====================================================================
+   */
   constructor(private readonly bulkService: BulkService) {}
 
   @Get('export/skus')

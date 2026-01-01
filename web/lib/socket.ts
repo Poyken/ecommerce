@@ -5,7 +5,7 @@ import { io, Socket } from "socket.io-client";
  * WEBSOCKET CLIENT - Kết nối real-time notifications
  * =====================================================================
  *
- * 📚 GIẢI THÍCH:
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. SINGLETON PATTERN:
  * - Chỉ tạo 1 WebSocket connection duy nhất cho toàn app

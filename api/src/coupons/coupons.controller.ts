@@ -39,6 +39,21 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 @ApiTags('Coupons')
 @Controller('coupons')
 export class CouponsController {
+  /**
+   * =====================================================================
+   * COUPONS CONTROLLER - Quản lý mã giảm giá
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. VALIDATION LOGIC:
+   * - API `/validate` (Public) được gọi khi user nhấn "Áp dụng" ở trang Checkout.
+   * - Nó kiểm tra: Mã tồn tại? Còn hạn? Đủ điều kiện giá trị đơn hàng tối thiểu? Còn lượt dùng?
+   *
+   * 2. ADMIN MANAGEMENT:
+   * - Các API CRUD (Create/Update/Delete) yêu cầu quyền Admin để quản lý chiến dịch khuyến mãi.
+   * =====================================================================
+   */
   constructor(private readonly couponsService: CouponsService) {}
 
   @Post()

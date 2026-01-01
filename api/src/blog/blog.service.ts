@@ -30,7 +30,34 @@ export class BlogService {
 
   constructor(private prisma: PrismaService) {}
 
+<<<<<<< HEAD
   async create(createBlogDto: CreateBlogDto, userId?: string): Promise<Blog> {
+=======
+  /**
+   * =====================================================================
+   * BLOG SERVICE - Quản lý bài viết và Nội dung
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. RELATIONSHIP HANDLING (Xử lý quan hệ):
+   * - Một bài viết (Blog) có thể liên kết với nhiều sản phẩm (Products) để user dễ dàng mua hàng khi đọc bài.
+   * - Khi Create/Update, ta không lưu trực tiếp danh sách Product, mà lưu qua bảng trung gian (Many-to-Many).
+   * - Logic xử lý: Tách `productIds` ra, tạo Blog trước, sau đó dùng `connect` hoặc tạo record trong bảng nối.
+   *
+   * 2. FLATTENING DATA (Làm phẳng dữ liệu):
+   * - Prisma trả về cấu trúc lồng nhau sâu: `blog -> products -> product -> ...`
+   * - Để Frontend dễ dùng, ta "map" lại dữ liệu (Flatten) để đưa `product` ra ngoài mảng chính: `blog.products = [...]`.
+   *
+   * 3. SOFT DELETE (Xóa mềm):
+   * - Khi admin xóa bài, ta không xóa record khỏi DB (dùng `delete`).
+   * - Thay vào đó, ta cập nhật trường `deletedAt` = thời điểm hiện tại.
+   * - Khi query (`findAll`, `findOne`), ta luôn phải kèm điều kiện `deletedAt: null`.
+   * =====================================================================
+   */
+
+  async create(createBlogDto: CreateBlogDto): Promise<Blog> {
+>>>>>>> 7e5e004 (feat: Implement new e-commerce features including audit, coupons, blog, wishlist, payment, shipping, and various web actions.)
     const { productIds, ...blogData } = createBlogDto;
 
     const data: any = { ...blogData };

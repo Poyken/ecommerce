@@ -38,6 +38,23 @@ import { VNPayUtils } from './vnpay.utils';
 @ApiTags('Payment')
 @Controller('payment')
 export class PaymentController {
+  /**
+   * =====================================================================
+   * PAYMENT CONTROLLER - Cổng thanh toán
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. HASH & CHECKSUM (Bảo mật):
+   * - Khi VNPay trả về kết quả (qua Return URL hoặc IPN), ta phải kiểm tra chữ ký (`vnp_SecureHash`).
+   * - Nguyên tắc: Sort params a-z -> Stringify -> Hash với Secret Key -> So sánh với Hash nhận được.
+   * - Nếu khớp -> Dữ liệu toàn vẹn (không bị hacker chỉnh sửa tiền/status).
+   *
+   * 2. IPN (Instant Payment Notification):
+   * - Đây là kênh "Server-to-Server" để VNPay báo kết quả cho Backend.
+   * - Độ tin cậy cao hơn Return URL (vì User có thể tắt browser trước khi redirect xong).
+   * =====================================================================
+   */
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,

@@ -25,6 +25,28 @@ export class WishlistService {
 
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * =====================================================================
+   * WISHLIST SERVICE - Danh sách yêu thích
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. TOGGLE LOGIC:
+   * - Thay vì viết 2 hàm `add` và `remove`, ta dùng 1 hàm `toggle` duy nhất.
+   * - Check tồn tại -> Nếu có thì xóa (Return false), chưa có thì thêm (Return true).
+   * - Giảm bớt logic xử lý ở Frontend (chỉ cần gọi 1 API khi bấm tim).
+   *
+   * 2. COMPOSITE KEY (Khóa tổ hợp):
+   * - Bảng Wishlist dùng khóa chính là cặp `[userId, productId]`.
+   * - Đảm bảo mỗi user chỉ thích 1 sản phẩm 1 lần duy nhất (DB Constraint).
+   *
+   * 3. EAGER LOADING (Tải sớm):
+   * - Khi lấy danh sách wishlist, ta `include` luôn Product + Image đại diện.
+   * - Tránh lỗi N+1 Query (Query wishlist xong lại phải loop query từng product).
+   * =====================================================================
+   */
+
   async toggle(userId: string, productId: string) {
     const existing = await this.prisma.wishlist.findUnique({
       where: {

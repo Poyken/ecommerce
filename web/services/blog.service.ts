@@ -23,6 +23,26 @@ import { BlogWithProducts } from "@/types/models";
 
 export const blogService = {
   /**
+   * =====================================================================
+   * BLOG SERVICE (WEB) - Client-side Service
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. NEXT.JS CACHING STRATEGY:
+   * - `next: { revalidate: 900 }`: Đây là tính năng ISR (Incremental Static Regeneration).
+   * - Dữ liệu blog sẽ được cache trong 15 phút (900s). Giúp trang load cực nhanh vì không phải gọi API liên tục.
+   * - Sau 15 phút, nếu có request mới, Next.js sẽ ngầm gọi lại API để lấy bài viết mới.
+   *
+   * 2. QUERY PARAMS BUILDER:
+   * - Sử dụng `URLSearchParams` để xây dựng chuỗi query string an toàn, tự động mã hóa các ký tự đặc biệt.
+   * - KHÔNG NÊN cộng chuỗi thủ công (VD: "?page=" + page) vì dễ lỗi và thiếu clear.
+   *
+   * 3. SKIP AUTH:
+   * - Blog là nội dung công khai, nên ta set `skipAuth: true` trong `http` client để không gửi kèm Token (giảm tải header).
+   * =====================================================================
+   */
+  /**
    * Get list of blog posts with optional filters
    */
   async getBlogs(params?: {

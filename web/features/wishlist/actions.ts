@@ -28,9 +28,31 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 /**
+<<<<<<< HEAD:web/features/wishlist/actions.ts
  * Thêm hoặc xóa sản phẩm khỏi danh sách yêu thích (Toggle).
  *
  * @param productId - ID của sản phẩm
+=======
+ * =====================================================================
+ * WISHLIST ACTIONS - Quản lý yêu thích (Server Actions)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. ERROR HANDLING & AUTH CHECK:
+ * - Trong `getWishlistAction`, ta check `token` trước khi gọi API.
+ * - Nếu không có token, trả về mảng rỗng [] ngay thay vì gọi API để rồi nhận lỗi 401.
+ * - Đây là cách tối ưu hiệu năng và tránh spam log lỗi ở backend.
+ *
+ * 2. GUEST WISHLIST MERGING:
+ * - `mergeGuestWishlistAction`: Khi user Guest đăng nhập, ta lấy danh sách ID từ localStorage gửi lên để gộp vào DB.
+ * =====================================================================
+ */
+
+/**
+ * Toggle Wishlist Action
+ * Adds or Removes item from wishlist.
+>>>>>>> 7e5e004 (feat: Implement new e-commerce features including audit, coupons, blog, wishlist, payment, shipping, and various web actions.):web/actions/wishlist.ts
  */
 export async function toggleWishlistAction(productId: string) {
   await cookies();

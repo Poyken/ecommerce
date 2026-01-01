@@ -43,6 +43,27 @@ export class CouponsService extends BaseCrudService<
     return this.prisma.coupon;
   }
 
+  /**
+   * =====================================================================
+   * COUPONS SERVICE - Quản lý Mã giảm giá
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. TIMEZONE & BUFFER (Xử lý múi giờ):
+   * - Khi so sánh thời gian (`startDate`, `endDate`), ta cần tính đến độ trễ của server hoặc sự lệch giờ giữa client-server.
+   * - `bufferMs = 2 * 60 * 1000` (2 phút) được thêm vào để "du di", tránh trường hợp user vừa bấm áp dụng đúng giây hết hạn thì bị lỗi oan.
+   *
+   * 2. DATA INTEGRITY (Toàn vẹn dữ liệu):
+   * - Hàm `remove`: Không cho phép xóa Coupon đã từng được sử dụng trong đơn hàng (`usedInOrders`).
+   * - Lý do: Nếu xóa, lịch sử đơn hàng sẽ bị lỗi reference hoặc mất thông tin giảm giá. Thay vào đó, hãy dùng Soft Delete hoặc set `isActive = false`.
+   *
+   * 3. IN-MEMORY FILTERING:
+   * - Hàm `findAvailable` lấy hết coupon active về rồi filter bằng TS thay vì DB query phức tạp.
+   * - Lý do: Logic so sánh ngày tháng trong DB query đôi khi gặp vấn đề Timezone khó debug, làm ở App Layer dễ kiểm soát hơn (với số lượng coupon ít).
+   * =====================================================================
+   */
+
   async create(createCouponDto: CreateCouponDto) {
     const existing = await this.model.findUnique({
       where: { code: createCouponDto.code },

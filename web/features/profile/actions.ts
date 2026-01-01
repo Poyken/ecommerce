@@ -38,6 +38,28 @@ import { cache } from "react";
 // =============================================================================
 
 /**
+ * =====================================================================
+ * PROFILE ACTIONS - Quản lý hồ sơ người dùng
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. REACT CACHE (Deduplication):
+ * - `cache(async () => ...)`: Giúp tránh gọi API `auth/me` nhiều lần trong cùng một lần render của React.
+ * - Ví dụ: Header cần tên user, Sidebar cần avatar -> Chỉ gọi API 1 lần.
+ *
+ * 2. REVALIDATE PATH:
+ * - Sau khi cập nhật profile (`updateProfileAction`), ta gọi `revalidatePath("/profile")`.
+ * - Lệnh này bảo Next.js: "Dữ liệu trang này cũ rồi, hãy xóa cache và fetch lại mới ngay lập tức".
+ * - Giúp UI cập nhật tên/ảnh mới ngay mà không cần F5.
+ *
+ * 3. FORM DATA HANDLING:
+ * - Upload ảnh (`avatar`) bắt buộc dùng `FormData`.
+ * - Logic: Nếu có ảnh -> Gửi FormData multipart. Nếu chỉ sửa text -> Gửi JSON cho nhẹ.
+ * =====================================================================
+ */
+
+/**
  * Lấy thông tin profile của user đang đăng nhập.
  *
  * 📝 LƯU Ý KỸ THUẬT:
