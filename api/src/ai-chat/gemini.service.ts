@@ -78,7 +78,10 @@ export class GeminiService {
       );
       const chat = this.model.startChat({
         history,
-        systemInstruction: systemPrompt,
+        systemInstruction: {
+          role: 'system',
+          parts: [{ text: systemPrompt }],
+        },
         generationConfig: {
           maxOutputTokens: 1024,
           temperature: 0.7,
@@ -134,7 +137,10 @@ export class GeminiService {
       );
       const chat = this.model.startChat({
         history,
-        systemInstruction: systemPrompt,
+        systemInstruction: {
+          role: 'system',
+          parts: [{ text: systemPrompt }],
+        },
         generationConfig: {
           maxOutputTokens: 1024,
           temperature: 0.7,

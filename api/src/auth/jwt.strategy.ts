@@ -1,4 +1,5 @@
 import { getFingerprint } from '@/common/utils/fingerprint';
+import { PrismaService } from '@/core/prisma/prisma.service';
 import { RedisService } from '@core/redis/redis.service';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -35,6 +36,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     configService: ConfigService,
     private readonly redisService: RedisService,
+    private readonly prisma: PrismaService,
   ) {
     super({
       // 1. Lấy token từ Header HOẶC Cookie
@@ -114,10 +116,22 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       }
     }
 
+    // 3. [CRITICAL FIX] Validate User Exists in Database
+    // Prevents "Foreign key constraint violated" if user was deleted but token is still valid.
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, permissions: true }, // Select minimal fields
+    });
+
+    if (!user) {
+      this.logger.warn(`[JWT] User ${userId} not found in database (Deleted?)`);
+      throw new UnauthorizedException('User no longer exists');
+    }
+
     return {
-      id: userId,
-      userId,
-      permissions,
+      id: user.id,
+      userId: user.id,
+      permissions: userId === user.id ? permissions : [], // Fallback if needed, though usually they match
       jti,
     };
   }

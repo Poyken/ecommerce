@@ -44,8 +44,10 @@ export function useAiChat({ accessToken, onResponse }: UseAiChatOptions = {}) {
   const [sessionId, setSessionId] = useState<string | null>(null);
 
   // Get or create guestId from localStorage
+  // Get or create guestId from localStorage
   const getGuestId = useCallback(() => {
-    if (accessToken) return undefined; // Logged-in user, no need for guestId
+    // ALWAYS return guestId (as a fallback in case token is invalid/expired)
+    // if (accessToken) return undefined; <-- REMOVED
 
     if (typeof window === "undefined") return undefined;
 
@@ -55,7 +57,7 @@ export function useAiChat({ accessToken, onResponse }: UseAiChatOptions = {}) {
       localStorage.setItem("ai_chat_guest_id", guestId);
     }
     return guestId;
-  }, [accessToken]);
+  }, []); // Removed accessToken dependency
 
   // Send message to AI
   const sendMessage = useCallback(
