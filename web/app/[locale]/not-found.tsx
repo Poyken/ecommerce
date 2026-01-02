@@ -7,6 +7,22 @@ import { m } from "@/lib/animations";
 import { ArrowLeft, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+/**
+ * =====================================================================
+ * NOT FOUND PAGE (404)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. FILE SYSTEM ROUTING:
+ * - Next.js tự động render file này khi user truy cập URL không tồn tại
+ *   hoặc khi ta gọi hàm `notFound()` từ server component.
+ *
+ * 2. CLIENT COMPONENT ("use client"):
+ * - Vì trang này có Animation (`framer-motion`) và tương tác (Button back),
+ *   nó phải là Client Component.
+ * =====================================================================
+ */
 export default function NotFound() {
   const t = useTranslations("not_found");
 

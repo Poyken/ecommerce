@@ -7,6 +7,27 @@ import {
   IsString,
 } from 'class-validator';
 
+/**
+ * =====================================================================
+ * BULK IMPORT/UPDATE DTO - Xử lý dữ liệu hàng loạt
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. BULK UPDATE LÀ GÌ?
+ * - Thay vì gọi API update cho từng sản phẩm (1000 requests = chết server),
+ *   ta gửi một mảng (Array) gồm 1000 items trong 1 request duy nhất.
+ *
+ * 2. NESTED VALIDATION:
+ * - `ImportSkusDto` chứa một mảng `rows`. Mỗi item trong mảng đó phải tuân thủ `ImportRowDto`.
+ * - Decorator `@Type(() => ImportRowDto)` (của class-transformer - cần thêm nếu chưa có)
+ *   thường được dùng để validate nested object. Ở đây ta đang trust array.
+ *
+ * 3. DRY RUN:
+ * - Chế độ "Chạy thử". Server sẽ validate dữ liệu, kiểm tra lỗi logic nhưng KHÔNG lưu vào DB.
+ * - Giúp User biết file Excel của họ có lỗi gì không trước khi import thật.
+ * =====================================================================
+ */
 export class ImportRowDto {
   @ApiProperty()
   @IsString()

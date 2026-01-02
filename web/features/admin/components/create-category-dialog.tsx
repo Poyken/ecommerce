@@ -1,20 +1,20 @@
 "use client";
 
-import { createCategoryAction } from "@/features/admin/actions";
 import { FormDialog } from "@/components/shared/form-dialog";
 import { ImageUpload } from "@/components/shared/image-upload";
+import { useToast } from "@/components/shared/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/shared/use-toast";
-import { Category } from "@/types/models";
+import { createCategoryAction } from "@/features/admin/actions";
 import { m } from "@/lib/animations";
+import { Category } from "@/types/models";
 import { AnimatePresence } from "framer-motion";
 import { FolderTree } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -31,6 +31,22 @@ export function CreateCategoryDialog({
   open,
   onOpenChange,
 }: CreateCategoryDialogProps) {
+/**
+ * =====================================================================
+ * CREATE CATEGORY DIALOG - Modal tạo danh mục mới
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. AUTO-GENERATED SLUG:
+ * - Khi nhập Tên (Name), Slug sẽ tự động được tạo realtime (Title -> title).
+ * - UX Pattern thông dụng trong các CMS.
+ *
+ * 2. USE TRANSITON:
+ * - `useTransition` giúp UI không bị freeze khi đang submit form lên Server Action.
+ * - Hiển thị trạng thái Loading (isPending) mượt mà.
+ * =====================================================================
+ */
   const t = useTranslations("admin");
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();

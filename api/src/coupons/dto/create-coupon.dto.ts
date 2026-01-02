@@ -10,6 +10,19 @@ import {
 } from 'class-validator';
 
 export class CreateCouponDto {
+  /**
+   * =====================================================================
+   * CREATE COUPON DTO
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * VALIDATION RULES:
+   * - `minOrderAmount`: Giá trị đơn hàng tối thiểu để áp dụng (VD: 100k).
+   * - `maxDiscountAmount`: Giảm tối đa (VD: Giảm 10% nhưng không quá 50k).
+   * - `usageLimit`: Giới hạn số lần dùng chung cho toàn hệ thống.
+   * =====================================================================
+   */
   @IsString()
   @IsNotEmpty()
   code: string;

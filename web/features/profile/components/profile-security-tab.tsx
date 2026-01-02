@@ -2,6 +2,18 @@
  * =====================================================================
  * PROFILE SECURITY TAB - Quản lý bảo mật (2FA)
  * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. TWO-FACTOR AUTHENTICATION (2FA):
+ * - Sử dụng thuật toán TOTP (Time-based One-time Password).
+ * - Quy trình:
+ *   B1: Generate Secret -> B2: Hiển thị QR -> B3: User scan & nhập OTP để Confirm -> B4: Enable.
+ *
+ * 2. ANIMATED TRANSITIONS:
+ * - `AnimatePresence` + `mode="wait"`: Đảm bảo UI cũ biến mất hẳn rồi UI mới mới hiện ra.
+ * - Tránh giật layout (Layout Shift).
+ * =====================================================================
  */
 
 "use client";
@@ -12,12 +24,12 @@ import { useToast } from "@/components/shared/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  disableTwoFactorAction,
-  enableTwoFactorAction,
-  generateTwoFactorAction,
+    disableTwoFactorAction,
+    enableTwoFactorAction,
+    generateTwoFactorAction,
 } from "@/features/profile/actions";
-import { cn } from "@/lib/utils";
 import { m } from "@/lib/animations";
+import { cn } from "@/lib/utils";
 import { AnimatePresence } from "framer-motion";
 import { Check, Copy, Shield, ShieldAlert, ShieldCheck } from "lucide-react";
 import { useTranslations } from "next-intl";

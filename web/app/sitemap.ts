@@ -3,7 +3,18 @@ import { MetadataRoute } from "next";
 
 /**
  * =====================================================================
- * SITEMAP.TS - Sơ đồ trang web (Static version for Build)
+ * SITEMAP.TS - Sơ đồ trang web (Static)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. NEXT.JS METADATA ROUTE:
+ * - File này (app/sitemap.ts) là quy ước đặc biệt của Next.js App Router.
+ * - Nó sẽ tự động generate file `public/sitemap.xml` khi build.
+ *
+ * 2. PRIORITY & FREQUENCY:
+ * - `priority`: Độ quan trọng (0.0 - 1.0). Trang chủ (1.0) quan trọng nhất.
+ * - `changeFrequency`: Gợi ý Google bot bao lâu nên quay lại crawl 1 lần.
  * =====================================================================
  */
 

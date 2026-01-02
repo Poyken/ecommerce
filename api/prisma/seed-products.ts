@@ -6,11 +6,20 @@ import { randomUUID } from 'crypto';
  * PRODUCT SEED - Optimized for Speed
  * =====================================================================
  *
- * File này tạo ra nhiều sản phẩm nội thất luxury với:
- * - Brands và Categories
- * - Đầy đủ thông tin product
- * - Options (Size, Color, Material)
- * - SKUs với giá, stock, images
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. TẠI SAO CẦN SEED?
+ * - Khi mới clone project về, database trống trơn. Seed giúp tạo nhanh dữ liệu mẫu
+ *   để dev có cái mà test (hiển thị danh sách, search, filter...).
+ *
+ * 2. CẤU TRÚC DỮ LIỆU PHỨC TẠP:
+ * - Không chỉ tạo mỗi `Product`, ta phải tạo cả các quan hệ:
+ *   Brand -> Category -> Product -> Options (Màu/Size) -> OptionValues -> SKUs.
+ * - Đây là ví dụ điển hình về việc quản lý quan hệ trong Prisma.
+ *
+ * 3. LOGIC RANDOM & OPTIMIZATION:
+ * - Để tạo 1000 sản phẩm mà không phải gõ tay, ta dùng vòng lặp kết hợp `Math.random()`.
+ * - Script này được tối ưu để chạy nhanh (Batch Insert nếu có thể), tránh nghẽn DB.
  *
  * Chạy: npm run seed:products
  * =====================================================================

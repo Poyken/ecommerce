@@ -6,11 +6,19 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 /**
  * Next.js Configuration
  *
- * ⚠️ LƯU Ý VỀ TỐI ƯU HÓA BUILD:
- * - typescript.ignoreBuildErrors: Bỏ qua TypeScript check khi build (đã check ở local/CI)
- * - output: "standalone": Tạo image nhỏ gọn cho Docker
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * Note: ESLint config đã được chuyển sang eslint.config.mjs
+ * 1. OUTPUT STANDALONE:
+ * - `output: "standalone"`: Giúp Next.js tự động trace các file cần thiết và gom vào folder `.next/standalone`.
+ * - Kết quả: Docker Image siêu nhẹ (chỉ ~100MB thay vì >1GB), vì không cần copy cả `node_modules`.
+ *
+ * 2. IMAGE OPTIMIZATION:
+ * - `remotePatterns`: Cho phép Next/Image load ảnh từ domain bên ngoài (Unsplash, Cloudinary...).
+ * - Cần khai báo để tránh lỗi 403 Forbidden.
+ *
+ * 3. EXPERIMENTAL:
+ * - `optimizePackageImports`: Tree-shaking thông minh cho các thư viện nặng (Lucide, Radix UI).
+ * - `serverActions`: Cấu hình giới hạn body size cho Server Actions (mặc định là 1MB, tăng lên 10MB để upload ảnh).
  */
 const nextConfig: NextConfig = {
   // Giảm thời gian build Docker bằng cách bỏ qua TypeScript check

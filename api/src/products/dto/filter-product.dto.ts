@@ -10,6 +10,25 @@ export enum SortOption {
 }
 
 export class FilterProductDto {
+  /**
+   * =====================================================================
+   * FILTER PRODUCT DTO - Bộ lọc sản phẩm nâng cao
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. API PROPERTY (@ApiPropertyOptional):
+   * - Dùng để generate Swagger/OpenAPI documentation tự động.
+   *
+   * 2. TYPE TRANSFORMATION (@Type):
+   * - Query Params trên URL luôn là string (?minPrice=100).
+   * - Cần `@Type(() => Number)` để convert sang số trước khi validate `@IsNumber`.
+   *
+   * 3. FILTER LOGIC:
+   * - Hỗ trợ tìm kiếm, lọc theo Category/Brand, và khoảng giá (Min/Max).
+   * - `includeSkus`: Tùy chọn để lấy luôn danh sách biến thể (Màu/Size) hay không.
+   * =====================================================================
+   */
   @ApiPropertyOptional({ description: 'Tìm theo tên hoặc mô tả' })
   @IsOptional()
   @IsString()

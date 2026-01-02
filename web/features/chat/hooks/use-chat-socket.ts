@@ -21,6 +21,26 @@ export interface ChatMessage {
 }
 
 export function useChatSocket(
+  /**
+   * =====================================================================
+   * USE CHAT SOCKET - Hook quản lý kết nối WebSocket
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. REAL-TIME COMMUNICATION:
+   * - Sử dụng `socket.io-client` để kết nối tới Admin Backend.
+   * - Namespace: `/chat` (định nghĩa luồng dữ liệu riêng biệt).
+   *
+   * 2. OPTIMISTIC UPDATES:
+   * - Khi user gửi tin nhắn, ta hiển thị ngay lập tức (Status: sending) trước khi Server phản hồi.
+   * - Giúp trải nghiệm người dùng mượt mà hơn.
+   *
+   * 3. DEDUPLICATION STRATEGY:
+   * - WebSocket có thể nhận tin nhắn trùng lặp do mạng chập chờn.
+   * - Sử dụng `processedMessageIdsRef` (Set) để đảm bảo mỗi tin nhắn chỉ được xử lý 1 lần.
+   * =====================================================================
+   */
   accessToken: string | undefined,
   user: {
     id: string;

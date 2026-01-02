@@ -3,27 +3,27 @@ import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { deleteRoleAction } from "@/features/admin/actions";
 import {
-  AdminEmptyState,
-  AdminPageHeader,
-  AdminTableWrapper,
+    AdminEmptyState,
+    AdminPageHeader,
+    AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { AssignPermissionsDialog } from "@/features/admin/components/assign-permissions-dialog";
 import { CreateRoleDialog } from "@/features/admin/components/create-role-dialog";
@@ -34,18 +34,35 @@ import { useDebounce } from "@/lib/hooks/use-debounce";
 import { PaginationMeta } from "@/types/dtos";
 import { RoleWithPermissions } from "@/types/models";
 import {
-  Edit2,
-  Key,
-  MoreHorizontal,
-  Plus,
-  Search,
-  Shield,
-  Trash2,
+    Edit2,
+    Key,
+    MoreHorizontal,
+    Plus,
+    Search,
+    Shield,
+    Trash2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
+/**
+ * =====================================================================
+ * ROLES PAGE CLIENT - Giao diện Quản lý Role & Permission
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SEARCH WITH URL SYNC:
+ * - Khi user search, URL sẽ được update (`?search=...`).
+ * - Debounce 500ms để tránh spam URL update liên tục.
+ * - `useTransition` giúp UI không bị freeze khi navigate.
+ *
+ * 2. PERMISSION CHECKING:
+ * - `canCreate`, `canUpdate`... được check qua `useAuth().hasPermission`.
+ * - Ẩn/Hiện nút bấm dựa trên quyền của Admin đang login.
+ * =====================================================================
+ */
 export function RolesPageClient({
   roles,
   meta,

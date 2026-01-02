@@ -9,6 +9,22 @@ const ProductQuickViewDialog = dynamic(() =>
   ), { ssr: false }
 );
 
+/**
+ * =====================================================================
+ * QUICK VIEW PROVIDER - Global Modal Controller
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. WHY PROVIDER?
+ * - QuickView Modal cần được gọi từ bất kỳ đâu (Product Card, Cart, Wishlist...).
+ * - Thay vì nhúng Modal vào từng Card (gây nặng DOM), ta đặt 1 Modal duy nhất ở gốc ứng dụng.
+ * - Dùng Zustand Store để trigger mở modal và truyền data.
+ *
+ * 2. DYNAMIC IMPORT:
+ * - Modal này khá nặng, nên chỉ tải code (JS chunk) khi thực sự cần dùng.
+ * =====================================================================
+ */
 export function QuickViewProvider() {
   const { isOpen, closeQuickView, productId, skuId, initialData } =
     useQuickViewStore();

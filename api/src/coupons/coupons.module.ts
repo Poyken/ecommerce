@@ -10,4 +10,19 @@ import { PrismaModule } from '@core/prisma/prisma.module';
   controllers: [CouponsController],
   exports: [CouponsService],
 })
+/**
+ * =====================================================================
+ * COUPONS MODULE
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. DEPENDENCY:
+ * - Cần `PrismaModule` để kiểm tra mã giảm giá trong Database.
+ *
+ * 2. EXPORTS:
+ * - Export `CouponsService` để module `Cart` hoặc `Checkout` có thể gọi hàm validation
+ *   mà không cần duplicate logic.
+ * =====================================================================
+ */
 export class CouponsModule {}

@@ -1,8 +1,8 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { cn } from "@/lib/utils";
 import { m } from "@/lib/animations";
+import { cn } from "@/lib/utils";
 import { AnimatePresence } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -12,17 +12,15 @@ import { useCallback, useEffect, useState } from "react";
  * FLOATING CART - Minimalist Shopping Bag with Micro-interactions
  * =====================================================================
  *
- * 📚 DESIGN CONCEPT:
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. QUIET LUXURY AESTHETIC:
- * - Glassmorphism background with subtle champagne tint
- * - Smooth bounce animation when items are added
- * - Minimal icon design with premium feel
+ * 1. GLOBAL STATE LISTENER:
+ * - Component này lắng nghe sự kiện `window.dispatchEvent(new Event("cart_updated"))`.
+ * - Đây là cách đơn giản để đồng bộ state giữa các component xa nhau mà không cần Context quá phức tạp
+ *   (Pub/Sub pattern đơn giản bằng DOM Events).
  *
- * 2. MICRO-INTERACTIONS:
- * - Gentle hover scale effect
- * - Badge with item count
- * - Expands slightly with pulse when cart updates
+ * 2. ANIMATE PRESENCE:
+ * - Badge số lượng item có hiệu ứng pop-in/pop-out khi số lượng thay đổi.
  * =====================================================================
  */
 

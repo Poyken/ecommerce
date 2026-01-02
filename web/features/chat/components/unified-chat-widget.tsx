@@ -27,6 +27,26 @@ export function UnifiedChatWidget({
   user,
   accessToken,
 }: UnifiedChatWidgetProps) {
+/**
+ * =====================================================================
+ * UNIFIED CHAT WIDGET - Widget Chat Tổng hợp (AI + Human)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. PORTAL PATTERN:
+ * - Widget được render ra `document.body` bằng `createPortal`.
+ * - Đảm bảo nó luôn nổi trên các thành phần khác (Z-Index cao) và không bị ảnh hưởng bởi
+ *   `overflow: hidden` của container cha.
+ *
+ * 2. STATE MANAGEMENT:
+ * - Quản lý 2 Tabs: AI Assistant (mặc định) và Human Support.
+ * - Tổng hợp Unread Count từ cả 2 nguồn để hiển thị Badge đỏ ngoài icon.
+ *
+ * 3. MOUNTING CHECK:
+ * - `useEffect` + `mounted` state để đảm bảo chỉ render Portal ở Client-side.
+ * =====================================================================
+ */
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("AI");

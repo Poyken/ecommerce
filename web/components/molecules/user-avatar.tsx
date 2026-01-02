@@ -16,10 +16,17 @@ interface UserAvatarProps {
  * USER AVATAR - Standardized Avatar Component
  * =====================================================================
  * 
- * Wrapper around Shadcn Avatar that implements:
- * 1. Safe handling of null/undefined src
- * 2. DiceBear fallback generation based on name
- * 3. Consistent styling
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. FALLBACK STRATEGY:
+ * - Ưu tiên hiển thị ảnh (src).
+ * - Nếu không có ảnh hoặc lỗi tải -> Hiển thị Fallback (Initials: "AB").
+ * - Wrapper `validSrc` check kỹ các trường hợp "null" string do API trả về.
+ *
+ * 2. MEMOIZATION:
+ * - `memo` giúp tránh render lại không cần thiết khi parent re-render,
+ *   vì Avatar thường nằm trong Header/List item tĩnh.
+ * =====================================================================
  */
 export const UserAvatar = memo(function UserAvatar({
   src,

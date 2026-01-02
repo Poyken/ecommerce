@@ -9,6 +9,28 @@ const BASE_URL = process.env.APP_URL || `http://localhost:${PORT}`;
 const API_URL =
   process.env.WEBHOOK_URL || `${BASE_URL}/api/v1/shipping/webhook`;
 
+/**
+ * =====================================================================
+ * SIMULATE GHN WEBHOOK - Giả lập Callbacks từ Giao Hàng Nhanh
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. WEBHOOK LÀ GÌ?
+ * - Là cách GHN thông báo ngược lại cho Server của ta mỗi khi trạng thái đơn vận chuyển thay đổi
+ *   (vd: Đang giao -> Đã giao).
+ * - Ở localhost, GHN không gọi được API của ta (do không có Public IP), nên ta dùng script này
+ *   để giả lập request đó.
+ *
+ * 2. CÁCH DÙNG:
+ * - Chạy lệnh với OrderCode và Status mong muốn.
+ * - Ví dụ: `npx ts-node scripts/simulate-ghn-webhook.ts L8CC208P delivered`
+ *
+ * 3. LOGIC:
+ * - Script gửi POST request có cấu trúc y hệt GHN (OrderCode, Status, Type...) vào API local.
+ * =====================================================================
+ */
+
 async function main() {
   const args = process.argv.slice(2);
 

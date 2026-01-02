@@ -9,6 +9,23 @@ import { useLocale } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+/**
+ * =====================================================================
+ * SOCIAL CALLBACK CLIENT - Xử lý sau khi Login GG/FB thành công
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. TOKEN HANDLING:
+ * - Lấy `accessToken` và `refreshToken` từ URL (do Server trả về sau khi OAuth).
+ * - Gọi `socialLoginAction` để tạo session cookie cho user.
+ *
+ * 2. DATA MERGING (GUEST -> USER):
+ * - User có thể đã add cart/wishlist khi chưa login (Guest).
+ * - Khi login thành công, ta phải merge data từ LocalStorage vào Database của User.
+ * - Logic merge nằm ở actions `mergeGuestCartAction` và `mergeGuestWishlistAction`.
+ * =====================================================================
+ */
 export function SocialCallbackClient() {
   const searchParams = useSearchParams();
   const router = useRouter();

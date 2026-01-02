@@ -9,8 +9,8 @@ import {
     CarouselPrevious,
     type CarouselApi,
 } from "@/components/ui/carousel";
-import { cn } from "@/lib/utils";
 import { m } from "@/lib/animations";
+import { cn } from "@/lib/utils";
 import { AnimatePresence } from "framer-motion";
 import { X, ZoomIn } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -40,6 +40,22 @@ export function ProductImageLightbox({
   skus,
   options,
 }: ProductImageLightboxProps) {
+/**
+ * =====================================================================
+ * PRODUCT IMAGE LIGHTBOX - Xem ảnh phóng to
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. TRANSFORM WRAPPER (Zoom/Pan):
+ * - Sử dụng thư viện `react-zoom-pan-pinch`.
+ * - Cho phép user dùng chuột (scroll) hoặc ngón tay (pinch) để zoom ảnh.
+ *
+ * 2. SYNC LOGIC:
+ * - Khi slide carousel thay đổi -> Cập nhật `activeImage` state ở component cha.
+ * - Khi user chọn thumbnail -> Scroll carousel tới slide tương ứng.
+ * =====================================================================
+ */
   // ... (keeping existing comments and hooks)
   const t = useTranslations("product");
   const [api, setApi] = useState<CarouselApi>();

@@ -17,6 +17,18 @@ export function EmptyState({
   actionHref,
   actionLabel,
 }: EmptyStateProps) {
+/**
+ * =====================================================================
+ * EMPTY STATE - Giao diện thông báo rỗng
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. REUSABILITY:
+ * - Dùng chung cho Cart rỗng, Wishlist rỗng, Search không kết quả...
+ * - Icon mặc định là `PackageOpen` nhưng có thể pass icon khác vào qua prop.
+ * =====================================================================
+ */
   return (
     <div className="flex flex-col items-center justify-center p-8 text-center bg-gray-50 border border-gray-200 rounded-lg dark:bg-gray-900/50 dark:border-gray-800">
       <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 mb-4">

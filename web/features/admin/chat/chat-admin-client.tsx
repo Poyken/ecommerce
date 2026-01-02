@@ -11,13 +11,13 @@ import { ProductQuickViewDialog } from "@/features/products/components/product-q
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";
 import {
-  Image as ImageIcon,
-  Loader2,
-  MessageSquare,
-  Paperclip,
-  Search,
-  Send,
-  X,
+    Image as ImageIcon,
+    Loader2,
+    MessageSquare,
+    Paperclip,
+    Search,
+    Send,
+    X,
 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -61,6 +61,27 @@ interface ChatAdminClientProps {
   user: UserType | null;
   accessToken: string;
 }
+
+/**
+ * =====================================================================
+ * CHAT ADMIN CLIENT - Giao diện Chat dành cho Admin/Support
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SOCKET.IO ADMIN NAMESPACE:
+ * - Kết nối tới `/chat` namespace.
+ * - Admin nhận được ALL tin nhắn từ user gửi tới server (broadcast hoặc room join).
+ *
+ * 2. CONVERSATION MANAGEMENT:
+ * - Danh sách bên trái: Các cuộc hội thoại (User Sessions).
+ * - Real-time update: Move cuộc hội thoại mới nhất lên đầu + Update unread count.
+ *
+ * 3. RICH MESSAGES:
+ * - Admin có thể gửi: Text, Image, Product Card, Order Quickview.
+ * - Metadata của tin nhắn chứa thông tin chi tiết (JSON stringified).
+ * =====================================================================
+ */
 
 export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
   const [conversations, setConversations] = useState<ChatConversation[]>([]);

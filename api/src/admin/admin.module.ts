@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
 import { PrismaModule } from '@core/prisma/prisma.module';
+import { Module } from '@nestjs/common';
 import { BulkController } from './bulk.controller';
 import { BulkService } from './bulk.service';
 
@@ -9,4 +9,22 @@ import { BulkService } from './bulk.service';
   providers: [BulkService],
   exports: [BulkService],
 })
+/**
+ * =====================================================================
+ * ADMIN MODULE
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MODULE DECORATOR (`@Module`):
+ * - Đây là nơi khai báo "Dependency Graph" cho tính năng Admin.
+ * - `imports`: Admin cần dùng `PrismaModule` để query database.
+ * - `controllers`: Đăng ký `BulkController` để nhận HTTP requests.
+ * - `providers`: Đăng ký `BulkService` để xử lý logic business.
+ *
+ * 2. EXPORTS:
+ * - `exports: [BulkService]` có nghĩa là nếu module khác import `AdminModule`,
+ *   họ sẽ dùng được `BulkService` (dependency injection) mà không bị lỗi.
+ * =====================================================================
+ */
 export class AdminModule {}

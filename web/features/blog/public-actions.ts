@@ -5,8 +5,17 @@ import { ApiResponse } from "@/types/dtos";
 import { BlogWithProducts } from "@/types/models";
 
 /**
- * Fetch danh sách bài viết blog (Public access).
- * Server Action này dùng cho Client Component để Load More.
+ * =====================================================================
+ * BLOG PUBLIC ACTIONS
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SERVER ACTION FOR CLIENT COMPONENTS:
+ * - Dùng để fetch data cho Client Component (VD: Load More button).
+ * - `skipAuth: true`: Cho phép gọi API mà không cần Login (Public).
+ * - `revalidate: 60`: Cache kết quả trong 60s để giảm tải Server.
+ * =====================================================================
  */
 export async function getBlogsAction(
   page: number,

@@ -1,18 +1,28 @@
 "use client";
 
-import { getBlogsAction } from "@/features/blog/public-actions";
 import { LoadingScreen } from "@/components/shared/loading-screen";
 import { BlogList } from "@/features/blog/components/blog-list";
-import { tapScale } from "@/lib/animations";
+import { getBlogsAction } from "@/features/blog/public-actions";
+import { m, tapScale } from "@/lib/animations";
 import { BlogWithProducts } from "@/types/models";
-import { m } from "@/lib/animations";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 /**
  * =====================================================================
- * BLOG PAGE CLIENT - Giao diện danh sách bài viết với Category Filter
+ * BLOG PAGE CLIENT - Giao diện danh sách bài viết
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CLIENT COMPONENT ("use client"):
+ * - Trang này cần interactivity cao (Filter theo category, Load more).
+ * - Không thể dùng Server Component thuần túy vì cần `useState` và `useEffect`.
+ *
+ * 2. HYBRID FETCHING STRATEGY:
+ * - Dữ liệu ban đầu (`initialPosts`) được fetch từ Server (SSR) để tốt cho SEO.
+ * - Khi user chọn Category, ta fetch lại từ API (`getBlogsAction`) ở phía Client.
  * =====================================================================
  */
 

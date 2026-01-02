@@ -1,6 +1,29 @@
 import axios from 'axios';
 import Redis from 'ioredis';
 
+/**
+ * =====================================================================
+ * CLEAR CACHE SCRIPT - Xóa toàn bộ Cache hệ thống
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Hệ thống E-commerce này có 3 lớp Cache chính cần xóa khi Debug hoặc Deploy mới:
+ *
+ * 1. [Layer 1] REDIS CACHE (API):
+ * - Lưu data query từ Database (như Product detail, User profile).
+ * - Xóa bằng lệnh `flushall()` của Redis.
+ *
+ * 2. [Layer 2] NEXT.JS FETCH CACHE (Web Server):
+ * - Next.js cache kết quả `fetch()` API.
+ * - Xóa bằng cách gọi API `/api/revalidate?tag=all`.
+ *
+ * 3. [Layer 3] NEXT.JS BUILD CACHE (.next folder):
+ * - Cache file tĩnh và compiled code.
+ * - Chỉ xóa khi ở môi trường Dev (`npm run dev`), không xóa ở Production.
+ * =====================================================================
+ */
+
 async function clearCache() {
   const redis = process.env.REDIS_URL
     ? new Redis(process.env.REDIS_URL)

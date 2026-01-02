@@ -14,4 +14,19 @@ import { CloudinaryService } from './cloudinary.service';
   providers: [CloudinaryProvider, CloudinaryService],
   exports: [CloudinaryProvider, CloudinaryService],
 })
+/**
+ * =====================================================================
+ * CLOUDINARY MODULE - Module tích hợp lưu trữ đám mây
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. PROVIDER PATTERN:
+ * - `CloudinaryProvider`: Là nơi cấu hình SDK (API Key, Secret).
+ * - `CloudinaryService`: Là nơi viết các hàm upload/delete ảnh.
+ *
+ * 2. SHARED MODULE:
+ * - Module này được dùng chung bởi nhiều module khác (Product, Blog, User Avatar).
+ * =====================================================================
+ */
 export class CloudinaryModule {}

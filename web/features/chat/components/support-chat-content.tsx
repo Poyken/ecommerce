@@ -12,12 +12,12 @@ import { Link } from "@/i18n/routing";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";
 import {
-  Image as ImageIcon,
-  Loader2,
-  Paperclip,
-  Send,
-  ShoppingBag,
-  X,
+    Image as ImageIcon,
+    Loader2,
+    Paperclip,
+    Send,
+    ShoppingBag,
+    X,
 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -43,6 +43,22 @@ export function SupportChatContent({
   active,
   onUnreadChange,
 }: SupportChatContentProps) {
+/**
+ * =====================================================================
+ * SUPPORT CHAT CONTENT - Giao diện Chat với Nhân viên Support
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. RICH MESSAGE RENDERING:
+ * - Tin nhắn không chỉ là Text. Có thể là: IMAGE, PRODUCT card, ORDER status.
+ * - Hàm `renderMessageContent` sẽ switch-case `msg.type` để hiển thị UI phù hợp.
+ *
+ * 2. IMAGE ZOOM:
+ * - Khi click vào ảnh, ta dùng Portal để hiển thị Lightbox phóng to full màn hình.
+ * - `e.stopPropagation()` rất quan trọng để tránh đóng modal chat khi thao tác zoom.
+ * =====================================================================
+ */
   const [input, setInput] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);

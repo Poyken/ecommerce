@@ -9,6 +9,18 @@ import {
 import { NotificationType } from './create-notification.dto';
 
 export class SendToUserDto {
+  /**
+   * =====================================================================
+   * SEND TO USER DTO
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * USE CASE:
+   * - Gửi thông báo cho 1 USER CỤ THỂ (VD: "Đơn hàng của bạn đã được giao").
+   * - `userId`: Bắt buộc phải có ID người nhận.
+   * =====================================================================
+   */
   @IsString()
   @IsNotEmpty()
   userId: string;

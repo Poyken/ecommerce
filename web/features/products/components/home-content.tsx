@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  CategoriesSkeleton,
-  ProductsSkeleton,
+    CategoriesSkeleton,
+    ProductsSkeleton,
 } from "@/components/shared/skeletons/home-skeleton";
 import { FeaturedBrands } from "@/features/brands/components/featured-brands";
 import { FeaturedCategories } from "@/features/categories/components/featured-categories";
@@ -11,11 +11,11 @@ import { NewArrivals } from "@/features/products/components/new-arrivals";
 import { TrendingProducts } from "@/features/products/components/trending-products";
 import { Link } from "@/i18n/routing";
 import {
-  fadeInLeft,
-  fadeInRight,
-  fadeInUp,
-  scaleUp,
-  zoomIn,
+    fadeInLeft,
+    fadeInRight,
+    fadeInUp,
+    scaleUp,
+    zoomIn,
 } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { Brand, Category, Product } from "@/types/models";
@@ -62,6 +62,24 @@ export function HomeContent({
   categories,
   brands,
 }: HomeContentProps) {
+/**
+ * =====================================================================
+ * HOME CONTENT - Container chính trang chủ
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. LAZY LOADING & SUSPENSE:
+ * - Các component nặng (Testimonials, FAQ) được `dynamic import` để không block
+ *   Render ban đầu.
+ * - Các component data (Products, Categories) được bọc trong `Suspense` để hiển thị
+ *   Skeleton loading trong khi chờ setup client-side hydration.
+ *
+ * 2. VIEWPORT ANIMATIONS:
+ * - `whileInView="visible"` + `viewport={{ once: true }}`: Chỉ chạy animation
+ *   khi user scroll tới vị trí đó (Scroll Trigger).
+ * =====================================================================
+ */
   const t = useTranslations("home");
 
   return (

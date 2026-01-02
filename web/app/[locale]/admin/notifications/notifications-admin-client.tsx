@@ -8,22 +8,22 @@ import { Combobox, ComboboxOption } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  getCouponsAction,
-  getOrdersAction,
-  getProductsAction,
+    getCouponsAction,
+    getOrdersAction,
+    getProductsAction,
 } from "@/features/admin/actions";
 import {
-  broadcastNotificationAction,
-  sendNotificationToUserAction,
+    broadcastNotificationAction,
+    sendNotificationToUserAction,
 } from "@/features/notifications/actions";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { Coupon, Order, Product } from "@/types/models";
@@ -45,6 +45,22 @@ interface NotificationsAdminClientProps {
 
 const ALL_USERS_VALUE = "__ALL_USERS__";
 
+/**
+ * =====================================================================
+ * NOTIFICATIONS ADMIN CLIENT - Giao diện Gửi thông báo
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. DUAL MODE SENDING (Chế độ gửi kép):
+ * - Broadcast: Gửi cho toàn bộ user (System wide).
+ * - Individual: Gửi cho 1 user cụ thể (Targeted).
+ *
+ * 2. POLYMORPHIC LINK BUILDER (Tạo link đa hình):
+ * - Admin có thể chọn loại link (Product, Order, Coupon) để attach vào notif.
+ * - Client sẽ tự động search và suggest ID tương ứng (vd: Search product -> lấy Product ID).
+ * =====================================================================
+ */
 export function NotificationsAdminClient({
   users,
 }: NotificationsAdminClientProps) {

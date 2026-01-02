@@ -14,6 +14,21 @@ import { useState } from "react";
  * =====================================================================
  * HERO SECTION - Quiet Luxury Edition (Màn hình chính)
  * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CINEMATIC LIGHTING:
+ * - Sử dụng các thẻ `div` với `blur-[150px]` và `opacity-60` để tạo hiệu ứng ánh sáng
+ *   nền (Ambient Light) thay vì dùng ảnh tĩnh. Giúp giảm dung lượng tải trang.
+ *
+ * 2. FRAMER MOTION:
+ * - `m.div` (motion.div) được dùng để tạo animation xuất hiện (Entrance Animation).
+ * - `transition={{ delay: ... }}` tạo hiệu ứng xuất hiện tuần tự (Stagger).
+ *
+ * 3. IMAGE OPTIMIZATION:
+ * - `priority` prop trên Next.js Image báo cho browser tải ảnh này ngay lập tức.
+ * - Rất quan trọng cho LCP (Largest Contentful Paint) score.
+ * =====================================================================
  */
 
 export function HeroSection() {

@@ -1,19 +1,33 @@
 "use client";
 
-import { deleteBlogAction } from "@/features/blog/actions";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { useToast } from "@/components/shared/use-toast";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { deleteBlogAction } from "@/features/blog/actions";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
+
+/**
+ * =====================================================================
+ * DELETE BLOG DIALOG - Modal xác nhận xóa bài viết
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. USE TRANSITION HOOK:
+ * - Khi gọi `deleteBlogAction` (Server Action), ta bọc trong `startTransition`.
+ * - Tác dụng: Giữ cho UI phản hồi (không bị freeze) trong khi đang chờ Server xử lý.
+ * - `isPending` sẽ tự động true/false để hiển thị loading spinner.
+ * =====================================================================
+ */
 
 interface DeleteBlogDialogProps {
   open: boolean;

@@ -5,4 +5,19 @@ import { EmailService } from './email.service';
   providers: [EmailService],
   exports: [EmailService],
 })
+/**
+ * =====================================================================
+ * EMAIL MODULE
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. WRAPPER SERVICE:
+ * - Đây là wrapper quanh thư viện gửi mail (như Nodemailer hoặc SendGrid).
+ * - Giúp decouple logic gửi mail ra khỏi business logic chính.
+ *
+ * 2. EXPORTS:
+ * - Các module khác (Auth, Order) chỉ cần import `EmailModule` và gọi `emailService.send(...)`.
+ * =====================================================================
+ */
 export class EmailModule {}

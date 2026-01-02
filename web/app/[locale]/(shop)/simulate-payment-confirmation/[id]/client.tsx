@@ -9,6 +9,22 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+/**
+ * =====================================================================
+ * SIMULATE PAYMENT CLIENT - Công cụ giả lập thanh toán (DEV ONLY)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. WHY THIS EXISTS?
+ * - Để test flow thanh toán mà không cần thẻ tín dụng thật hay API Sandbox phức tạp.
+ * - Chỉ nên bật ở môi trường Dev hoặc Staging.
+ *
+ * 2. SERVER ACTION CALL:
+ * - Gọi `simulatePaymentSuccessAction` để update trạng thái đơn hàng thành PAID trong DB.
+ * =====================================================================
+ */
+
 export function SimulatePaymentClient({ orderId }: { orderId: string }) {
   const t = useTranslations("simulatePayment");
   const [isLoading, setIsLoading] = useState(false);

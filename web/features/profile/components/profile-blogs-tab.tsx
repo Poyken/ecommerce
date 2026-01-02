@@ -6,15 +6,35 @@ import { useToast } from "@/components/shared/use-toast";
 import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
 import { deleteBlogAction, getMyBlogsAction } from "@/features/blog/actions";
 import { BlogFormDialog } from "@/features/blog/components/blog-form-dialog";
+import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { BlogWithProducts } from "@/types/models";
 import { format } from "date-fns";
-import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import { Calendar, Edit, FileText, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+/**
+ * =====================================================================
+ * PROFILE BLOGS TAB - Quản lý bài viết cá nhân
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. USER GENERATED CONTENT (UGC):
+ * - Cho phép người dùng tự tạo bài viết (Blog) để chia sẻ trên cộng đồng.
+ * - API `getMyBlogsAction` sẽ chỉ trả về các bài viết do user hiện tại tạo (`where: { authorId: user.id }`).
+ *
+ * 2. REUSABLE COMPONENTS:
+ * - Sử dụng lại `BlogFormDialog` của trang Admin.
+ *   + Prop `isUserMode={true}` giúp ẩn các trường chỉ dành cho Admin (như Featured, Tags nâng cao).
+ *
+ * 3. STATE MANAGEMENT:
+ * - `selectedBlog`: Lưu bài viết đang được chọn để Edit. Nếu null -> Mode Create.
+ * - `itemToDelete`: Lưu item đang chờ xóa để hiện Confirm Dialog.
+ * =====================================================================
+ */
 export function ProfileBlogsTab() {
   const t = useTranslations("admin.blogs");
   const { toast } = useToast();

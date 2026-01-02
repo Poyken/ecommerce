@@ -3,8 +3,19 @@
  * BLOG SEED - Seed dữ liệu blog posts cho trang Journal
  * =====================================================================
  *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MỤC ĐÍCH:
+ * - Tạo ra hàng trăm bài viết mẫu để test giao diện Blog/Journal.
+ * - Giả lập một hệ thống CMS (Content Management System) đã có nhiều nội dung.
+ *
+ * 2. KỸ THUẬT:
+ * - Sử dụng mảng `BLOG_TEMPLATES` chứa các tiêu đề và đoạn trích mẫu theo chủ đề (Interior, Living Room...).
+ * - Dùng vòng lặp để nhân bản nội dung, nhưng đổi `slug` để tránh trùng lặp URL.
+ * - Random ngày tháng (`publishedAt`) để test tính năng "Bài viết mới nhất" hoặc "Lưu trữ theo tháng".
+ *
  * Chạy: npx ts-node prisma/seed-blog.ts
- * Hoặc: npm run seed:blog (nếu đã cấu hình trong package.json)
+ * =====================================================================
  */
 
 import { PrismaClient } from '@prisma/client';

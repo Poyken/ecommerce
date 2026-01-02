@@ -1,9 +1,9 @@
 import { Badge } from "@/components/ui/badge";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -29,6 +29,22 @@ export function ChatSelector({
   accessToken,
   userId,
 }: ChatSelectorProps) {
+/**
+ * =====================================================================
+ * CHAT SELECTOR - Modal chọn Sản phẩm/Đơn hàng để gửi
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CONTEXT AWARENESS:
+ * - Trong Support Chat, user thường cần hỏi về "Đơn hàng này" hoặc "Sản phẩm kia".
+ * - Modal này giúp user chọn nhanh đối tượng cần hỗ trợ.
+ *
+ * 2. INFINITE SCROLL:
+ * - Dùng `IntersectionObserver` để load thêm Product/Order khi scroll xuống đáy.
+ * - Giảm tải ban đầu, chỉ fetch 20 items mỗi lần.
+ * =====================================================================
+ */
   const [activeTab, setActiveTab] = useState<string>("product");
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);

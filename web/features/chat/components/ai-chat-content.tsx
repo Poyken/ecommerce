@@ -71,6 +71,23 @@ export function AiChatContent({
   active,
   onUnreadChange,
 }: AiChatContentProps) {
+/**
+ * =====================================================================
+ * AI CHAT CONTENT - Giao diện Chat với Bot
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MARKDOWN RENDERING:
+ * - Bot trả về response dạng Markdown (có thể Bôi đậm, List, Link).
+ * - Sử dụng `react-markdown` để render an toàn (tránh XSS).
+ *
+ * 2. CUSTOM DEEP LINKS:
+ * - Bot có thể trả về link dạng `quickview:product-id`.
+ * - Component `MarkdownLink` sẽ intercept click này để mở QuickView Modal
+ *   thay vì chuyển trang.
+ * =====================================================================
+ */
   const { messages, isLoading, sendMessage, loadHistory } = useAiChat({
     accessToken,
     onResponse: () => {

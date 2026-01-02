@@ -11,6 +11,18 @@ import { Skeleton } from "@/components/ui/skeleton";
  * =====================================================================
  */
 
+/**
+ * =====================================================================
+ * BRANDS SKELETON - Skeleton cho trang Brands
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. VISUAL CONSISTENCY:
+ * - Quan trọng: Cấu trúc HTML của Skeleton PHẢI KHỚP với cấu trúc của Page thật.
+ * - Giúp tránh CLS (Content Layout Shift) khi data load xong.
+ * =====================================================================
+ */
 export function BrandsSkeleton() {
   return (
     <div className="min-h-screen bg-background pt-24 pb-16">

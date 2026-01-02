@@ -23,6 +23,27 @@ const URL_V2 = `${base}v2/`;
 
 const ORDER_ID = 'a77ca22a-73a4-4219-8672-dfb52fae9459';
 
+/**
+ * =====================================================================
+ * MANUAL SYNC ORDER SCRIPT - Đồng bộ đơn hàng sang GHN (Thủ công)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. KHI NÀO DÙNG?
+ * - Khi webhook tự động bị lỗi hoặc Dev muốn test logic đẩy đơn sang Giao Hàng Nhanh (GHN)
+ *   mà không cần thực hiện quy trình đặt hàng trên Web.
+ *
+ * 2. QUY TRÌNH:
+ * - Lấy Order từ DB -> Lấy thông tin Address -> Validate dữ liệu.
+ * - Mapping dữ liệu sang format của GHN (required_note, weight, dimensions...).
+ * - Gọi API `shipping-order/create` của GHN.
+ * - Nếu thành công: Cập nhật `shippingCode` (mã vận đơn) vào DB.
+ *
+ * ⚠️ LƯU Ý: Thay đổi `ORDER_ID` ở trên thành ID đơn hàng bạn muốn test.
+ * =====================================================================
+ */
+
 async function main() {
   console.log(`Finding order ${ORDER_ID}...`);
   const order = await prisma.order.findUnique({
