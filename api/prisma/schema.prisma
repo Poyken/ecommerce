@@ -35,7 +35,12 @@ model User {
   conversations ChatConversation[]
   aiChatSessions AiChatSession[]
 
+  // Multi-tenancy
+  tenantId      String? // Optional for now to support existing data migration
+  tenant        Tenant? @relation(fields: [tenantId], references: [id])
+
   @@index([email])
+  @@index([tenantId])
 }
 
 model Role {
@@ -140,6 +145,10 @@ model Product {
   reviews         Review[]
   skus            Sku[]
   wishlists       Wishlist[]
+
+  // Multi-tenancy
+  tenantId      String?
+  tenant        Tenant? @relation(fields: [tenantId], references: [id])
 
   // ============================================================
   // PERFORMANCE INDEXES (Production-ready)
@@ -260,6 +269,10 @@ model Address {
 
   orders        Order[]
 
+  // Multi-tenancy
+  tenantId      String?
+  tenant        Tenant? @relation(fields: [tenantId], references: [id])
+
   @@index([userId])
 }
 
@@ -270,6 +283,10 @@ model Cart {
   updatedAt DateTime   @updatedAt
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items     CartItem[]
+
+  // Multi-tenancy
+  tenantId  String?
+  tenant    Tenant?    @relation(fields: [tenantId], references: [id])
 }
 
 model CartItem {
@@ -332,6 +349,10 @@ model Order {
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   items           OrderItem[]
 
+  // Multi-tenancy
+  tenantId      String?
+  tenant        Tenant? @relation(fields: [tenantId], references: [id])
+
   @@index([couponId])
 
   // ============================================================
@@ -393,6 +414,10 @@ model Review {
   product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
   sku        Sku?      @relation(fields: [skuId], references: [id])
   user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Multi-tenancy
+  tenantId   String?
+  tenant     Tenant?   @relation(fields: [tenantId], references: [id])
 
   @@unique([userId, productId, skuId])
   @@index([productId, rating])
@@ -477,6 +502,10 @@ model InventoryLog {
   sku           Sku      @relation(fields: [skuId], references: [id], onDelete: Cascade)
   user          User?    @relation(fields: [userId], references: [id])
 
+  // Multi-tenancy
+  tenantId      String?
+  tenant        Tenant?  @relation(fields: [tenantId], references: [id])
+
   @@index([skuId])
   @@index([userId])
 }
@@ -488,6 +517,10 @@ model Wishlist {
   createdAt DateTime @default(now())
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Multi-tenancy
+  tenantId  String?
+  tenant    Tenant?  @relation(fields: [tenantId], references: [id])
 
   @@unique([userId, productId])
   @@index([userId])
@@ -511,6 +544,10 @@ model Blog {
   userId      String?
   user        User?         @relation(fields: [userId], references: [id])
   products    BlogProduct[]
+
+  // Multi-tenancy
+  tenantId    String?
+  tenant      Tenant?     @relation(fields: [tenantId], references: [id])
 
   @@index([slug])
   @@index([category])
@@ -540,6 +577,10 @@ model FeatureFlag {
   rules       Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Multi-tenancy
+  tenantId    String?
+  tenant      Tenant?  @relation(fields: [tenantId], references: [id])
 
   @@index([key])
 }
@@ -693,4 +734,70 @@ enum OutboxStatus {
   PROCESSING
   COMPLETED
   FAILED
+}
+
+// =====================================================================
+// MULTI-TENANCY
+// =====================================================================
+
+model Tenant {
+  id          String      @id @default(uuid())
+  name        String
+  domain      String      @unique // e.g., "shop-a.platform.com"
+  themeConfig Json?       // { primaryColor: "...", logo: "..." }
+  plan        TenantPlan  @default(BASIC)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  users       User[]
+  products    Product[]
+  orders      Order[]
+  blogs       Blog[]
+  reviews     Review[]
+  carts       Cart[]
+  wishlists   Wishlist[]
+  addresses   Address[]
+  inventoryLogs InventoryLog[]
+  featureFlags  FeatureFlag[]
+  pages         Page[]
+  translations  Translation[]
+}
+
+model Translation {
+  id        String   @id @default(uuid())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  locale    String   // 'en', 'vi'
+  key       String   // 'home.welcome'
+  value     String   // 'Welcome to My Custom Store'
+  
+  updatedAt DateTime @updatedAt
+
+  @@unique([tenantId, locale, key])
+  @@index([tenantId, locale])
+}
+
+enum TenantPlan {
+  BASIC
+  PRO
+  ENTERPRISE
+}
+
+model Page {
+  id          String   @id @default(uuid())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  slug        String   // e.g., "/" or "/about-us"
+  title       String
+  isPublished Boolean  @default(true)
+  
+  // The magic: JSON-based Block Structure
+  // [ { "type": "Hero", "props": { ... } }, { "type": "ProductGrid", "props": { ... } } ]
+  blocks      Json     @default("[]") 
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([tenantId, slug]) // Enforce unique slugs per tenant
+  @@index([tenantId])
 }

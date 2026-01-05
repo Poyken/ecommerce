@@ -41,6 +41,7 @@ interface HeaderProps {
   permissions?: string[]; // Quyền hạn (RBAC)
   initialCartCount?: number;
   initialWishlistCount?: number;
+  isInline?: boolean;
 }
 
 /**
@@ -95,12 +96,13 @@ export function Header({
   permissions,
   initialCartCount,
   initialWishlistCount,
+  isInline = false,
 }: HeaderProps) {
   const t = useTranslations("common");
 
   return (
     // StickyHeader: Wrapper xử lý sự kiện cuộn trang (ẩn hiện header)
-    <StickyHeader className="border-b bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60 z-50 transition-all duration-500">
+    <StickyHeader isInline={isInline} className="border-b bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60 z-50 transition-all duration-500">
       <div className="container flex h-20 items-center justify-between max-w-7xl mx-auto px-4 md:px-8">
         {/* 1. Logo Brand */}
         <Logo />

@@ -14,14 +14,36 @@
  * =====================================================================
  */
 
+import { set } from "lodash";
+
 import { getRequestConfig } from "next-intl/server";
+import { headers } from "next/headers";
 import { routing } from "./routing";
 
+async function getTenantMessages(locale: string) {
+  try {
+    const headersList = await headers();
+    const host = headersList.get("host") || "localhost";
+    // In server environment (Docker/Local), localhost:8080 usually works
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+
+    const res = await fetch(`${apiUrl}/pages/translations/${locale}`, {
+      headers: { "x-tenant-domain": host },
+      next: { revalidate: 60 },
+    });
+
+    if (!res.ok) return {};
+    const json = await res.json();
+    return json.data || json;
+  } catch (error) {
+    return null; // Fail silently to default
+  }
+}
+
 export default getRequestConfig(async ({ requestLocale }) => {
-  // Lấy locale từ request (được middleware xử lý và truyền vào)
   let locale = await requestLocale;
 
-  // Đảm bảo locale hợp lệ, nếu không thì dùng mặc định
   if (
     !locale ||
     !routing.locales.includes(locale as (typeof routing.locales)[number])
@@ -29,9 +51,19 @@ export default getRequestConfig(async ({ requestLocale }) => {
     locale = routing.defaultLocale;
   }
 
+  const defaultMessages = (await import(`../messages/${locale}.json`)).default;
+  const tenantMessages = await getTenantMessages(locale as string);
+
+  const mergedMessages = { ...defaultMessages, ...tenantMessages };
+
+  // Fix for "INVALID_KEY" error: Unflatten keys with dots
+  const messages = {};
+  Object.entries(mergedMessages).forEach(([key, value]) => {
+    set(messages, key, value);
+  });
+
   return {
     locale,
-    // Load file dịch tương ứng từ thư mục /messages
-    messages: (await import(`../messages/${locale}.json`)).default,
+    messages,
   };
 });

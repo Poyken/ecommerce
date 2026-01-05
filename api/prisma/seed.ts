@@ -3,29 +3,34 @@ import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-/**
- * =====================================================================
- * MASTER SEED - Khởi tạo toàn bộ dữ liệu mẫu cho hệ thống
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ONE SEED TO RULE THEM ALL:
- * - Thay vì chạy nhiều file lắt nhắt, ta gộp lại thành 1 file duy nhất.
- * - Giảm thiểu lỗi quên chạy file này file kia.
- * - Đảm bảo thứ tự chạy đúng (User -> Brand/Category -> Product -> Order...).
- *
- * 2. IDEMPOTENCY (Tính lũy đẳng):
- * - Script này có thể chạy lại nhiều lần mà không gây lỗi.
- * - Nó sẽ check dữ liệu có chưa, nếu chưa mới tạo, hoặc xóa cũ tạo mới sạch sẽ.
- *
- * 3. DATA COVERAGE:
- * - Bao gồm: RBAC (Admin), Feature Flags, Blog, Products (1000 items), Brands, Categories.
- * =====================================================================
- */
+// ===================================
+// UTILS
+// ===================================
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
+function getRandomElement<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function getRandomPrice(base: number, variance: number = 0.2): number {
+  const min = base * (1 - variance);
+  const max = base * (1 + variance);
+  return Math.round((min + Math.random() * (max - min)) * 100) / 100;
+}
+
+function getRandomPastDate(daysBack: number): Date {
+  const date = new Date();
+  date.setDate(date.getDate() - Math.floor(Math.random() * daysBack));
+  return date;
+}
 
 // ===================================
-// CONSTANTS: FEATURE FLAGS
+// DATA: FEATURE FLAGS
 // ===================================
 const FEATURE_FLAGS = [
   {
@@ -48,76 +53,9 @@ const FEATURE_FLAGS = [
 ];
 
 // ===================================
-// CONSTANTS: BLOG DATA
+// DATA: PRODUCTS
 // ===================================
-const BLOG_CATEGORIES = [
-  'Interior Design',
-  'Living Room',
-  'Bedroom',
-  'Kitchen',
-  'Office',
-  'Outdoor Living',
-  'Sustainability',
-  'Trends',
-  'Tips & Guides',
-  'News',
-];
-
-const BLOG_IMAGES: Record<string, string[]> = {
-  'Interior Design': [
-    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200&q=80',
-    'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1200&q=80',
-  ],
-  'Living Room': [
-    'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&q=80',
-    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&q=80',
-  ],
-  // Fallback for others to keep file short, in real world we add all
-};
-
-const BLOG_TEMPLATES: Record<
-  string,
-  { titles: string[]; excerpts: string[]; contentIntro: string }
-> = {
-  'Interior Design': {
-    titles: [
-      'The Art of Minimalist Interior Design',
-      'How to Create a Cohesive Color Palette',
-      'Maximizing Natural Light',
-    ],
-    excerpts: [
-      'Discover how minimalism can transform your living space.',
-      'Learn secrets to create harmonious color schemes.',
-    ],
-    contentIntro:
-      "Interior design is more than just arranging furniture—it's about creating spaces that inspire.",
-  },
-  'Living Room': {
-    titles: [
-      'Creating the Perfect Living Room Layout',
-      'Choosing the Right Sofa',
-      'Living Room Lighting Ideas',
-    ],
-    excerpts: [
-      'Transform your living room into a functional gathering space.',
-      'Find the perfect centerpiece for your area.',
-    ],
-    contentIntro:
-      'The living room is the heart of every home, where families gather and memories are made.',
-  },
-  // Add defaults for missing keys to prevent crash
-};
-
-const BLOG_AUTHORS = [
-  'Emma Thompson',
-  'James Wilson',
-  'Sarah Chen',
-  'Michael Brooks',
-];
-
-// ===================================
-// CONSTANTS: PRODUCT DATA
-// ===================================
+// ... (All Product Data Constants: BRANDS_DATA, CATEGORIES_DATA, PRODUCT_TEMPLATES, FURNITURE_IMAGES, COLORS, SIZES, MATERIALS)
 const BRANDS_DATA = [
   {
     name: 'Minotti',
@@ -144,6 +82,31 @@ const BRANDS_DATA = [
     imageUrl:
       'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=200&q=80',
   },
+  {
+    name: 'Fendi Casa',
+    imageUrl:
+      'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=200&q=80',
+  },
+  {
+    name: 'Versace Home',
+    imageUrl:
+      'https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=200&q=80',
+  },
+  {
+    name: 'Restoration Hardware',
+    imageUrl:
+      'https://images.unsplash.com/photo-1592078615290-033ee584e267?w=200&q=80',
+  },
+  {
+    name: 'Knoll',
+    imageUrl:
+      'https://images.unsplash.com/photo-1611269154421-4e27233ac5c7?w=200&q=80',
+  },
+  {
+    name: 'Herman Miller',
+    imageUrl:
+      'https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?w=200&q=80',
+  },
 ];
 
 const CATEGORIES_DATA = [
@@ -152,127 +115,293 @@ const CATEGORIES_DATA = [
     slug: 'sofas',
     imageUrl:
       'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=80',
+    metaTitle: 'Luxury Sofas | Premium Seating',
+    metaDescription: 'Discover our collection of luxury sofas and sectionals.',
   },
   {
     name: 'Chairs',
     slug: 'chairs',
     imageUrl:
       'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=400&q=80',
+    metaTitle: 'Designer Chairs | Luxury Seating',
+    metaDescription: 'Premium chairs for every room in your home.',
   },
   {
     name: 'Tables',
     slug: 'tables',
     imageUrl:
       'https://images.unsplash.com/photo-1611269154421-4e27233ac5c7?w=400&q=80',
+    metaTitle: 'Luxury Tables | Dining & Coffee Tables',
+    metaDescription: 'Elegant tables crafted from premium materials.',
+  },
+  {
+    name: 'Storage',
+    slug: 'storage',
+    imageUrl:
+      'https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=400&q=80',
+    metaTitle: 'Storage Solutions | Wardrobes & Cabinets',
+    metaDescription: 'Sophisticated storage solutions for modern homes.',
   },
   {
     name: 'Beds',
     slug: 'beds',
     imageUrl:
       'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=400&q=80',
+    metaTitle: 'Luxury Beds | Premium Bedroom Furniture',
+    metaDescription: 'Sleep in style with our luxury bed collection.',
+  },
+  {
+    name: 'Outdoor',
+    slug: 'outdoor',
+    imageUrl:
+      'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=400&q=80',
+    metaTitle: 'Outdoor Furniture | Patio & Garden',
+    metaDescription: 'Weather-resistant luxury outdoor furniture.',
+  },
+  {
+    name: 'Rugs',
+    slug: 'rugs',
+    imageUrl:
+      'https://images.unsplash.com/photo-1600166898405-da9535204843?w=400&q=80',
+    metaTitle: 'Luxury Rugs | Handcrafted Carpets',
+    metaDescription: 'Handwoven rugs from around the world.',
+  },
+  {
+    name: 'Accessories',
+    slug: 'accessories',
+    imageUrl:
+      'https://images.unsplash.com/photo-1612372606404-0ab33e7187ee?w=400&q=80',
+    metaTitle: 'Home Accessories | Decor & Art',
+    metaDescription: 'Finishing touches for your luxury interior.',
   },
   {
     name: 'Lighting',
     slug: 'lighting',
     imageUrl:
       'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400&q=80',
+    metaTitle: 'Designer Lighting | Lamps & Chandeliers',
+    metaDescription: 'Illuminate your space with designer lighting.',
+  },
+  {
+    name: 'Outlet',
+    slug: 'outlet',
+    imageUrl:
+      'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=400&q=80',
+    metaTitle: 'Outlet | Clearance & Deals',
+    metaDescription: 'Premium furniture at discounted prices.',
   },
 ];
 
-const PRODUCT_TEMPLATES: Record<
-  string,
-  { name: string; basePrice: number; desc: string }[]
-> = {
-  sofas: [
-    {
-      name: 'Milano Sectional Sofa',
-      basePrice: 4500,
-      desc: 'Luxurious Italian-design sectional.',
-    },
-    {
-      name: 'Aria Modular Sofa',
-      basePrice: 3800,
-      desc: 'Modular sofa system.',
-    },
-  ],
-  chairs: [
-    {
-      name: 'Barcelona Lounge Chair',
-      basePrice: 1800,
-      desc: 'Iconic mid-century modern design.',
-    },
-    {
-      name: 'Eames Replica Armchair',
-      basePrice: 1200,
-      desc: 'Classic shell design.',
-    },
-  ],
-  tables: [
-    {
-      name: 'Carrara Marble Dining Table',
-      basePrice: 6500,
-      desc: 'Stunning Italian marble top.',
-    },
-  ],
-  beds: [
-    {
-      name: 'Royal Platform Bed',
-      basePrice: 4200,
-      desc: 'King-size platform bed.',
-    },
-  ],
-  lighting: [
-    { name: 'Arc Floor Lamp', basePrice: 890, desc: 'Modern arc floor lamp.' },
-  ],
-};
-
-const FURNITURE_IMAGES: Record<string, string[]> = {
+const FURNITURE_IMAGES: any = {
   sofas: [
     'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80',
     'https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800&q=80',
+    'https://images.unsplash.com/photo-1550254478-ead40cc54513?w=800&q=80',
   ],
   chairs: [
     'https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=800&q=80',
+    'https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=800&q=80',
+    'https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=800&q=80',
   ],
   tables: [
     'https://images.unsplash.com/photo-1611269154421-4e27233ac5c7?w=800&q=80',
+    'https://images.unsplash.com/photo-1530018607912-eff2daa1bac4?w=800&q=80',
+    'https://images.unsplash.com/photo-1618220179428-22790b461013?w=800&q=80',
+  ],
+  storage: [
+    'https://images.unsplash.com/photo-1595428774223-ef52624120d2?w=800&q=80',
+    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
+    'https://images.unsplash.com/photo-1600585152220-90363fe7e115?w=800&q=80',
   ],
   beds: [
     'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=800&q=80',
+    'https://images.unsplash.com/photo-1588046130717-0eb0c9a3ba15?w=800&q=80',
+    'https://images.unsplash.com/photo-1617325247661-675ab4b64ae2?w=800&q=80',
+  ],
+  outdoor: [
+    'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=800&q=80',
+    'https://images.unsplash.com/photo-1558171813-4c088753af8f?w=800&q=80',
+    'https://images.unsplash.com/photo-1591825729269-caeb344f6df2?w=800&q=80',
+  ],
+  rugs: [
+    'https://images.unsplash.com/photo-1600166898405-da9535204843?w=800&q=80',
+    'https://images.unsplash.com/photo-1531835551805-16d864c8d311?w=800&q=80',
+    'https://images.unsplash.com/photo-1588543385197-a40aaf6d7b5f?w=800&q=80',
+  ],
+  accessories: [
+    'https://images.unsplash.com/photo-1612372606404-0ab33e7187ee?w=800&q=80',
+    'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800&q=80',
+    'https://images.unsplash.com/photo-1602173574767-37ac01994b2a?w=800&q=80',
   ],
   lighting: [
     'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=800&q=80',
+    'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=800&q=80',
+    'https://images.unsplash.com/photo-1524484485831-a92ffc0de03f?w=800&q=80',
+  ],
+  outlet: [
+    'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=800&q=80',
+    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80',
+    'https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=800&q=80',
   ],
 };
 
-// ===================================
-// HELPER FUNCTIONS
-// ===================================
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
-}
+const PRODUCT_TEMPLATES: any = {
+  sofas: [
+    {
+      name: 'Milano Sectional',
+      basePrice: 4500,
+      desc: 'Luxurious Italian-design sectional.',
+    },
+    { name: 'Aria Modular', basePrice: 3800, desc: 'Modular system.' },
+    { name: 'Como Curved', basePrice: 5200, desc: 'Elegant curved design.' },
+  ],
+  chairs: [
+    {
+      name: 'Barcelona Lounge',
+      basePrice: 1800,
+      desc: 'Iconic mid-century modern.',
+    },
+    { name: 'Eames Replica', basePrice: 1200, desc: 'Classic shell design.' },
+  ],
+  tables: [
+    { name: 'Carrara Dining', basePrice: 6500, desc: 'Italian marble top.' },
+    { name: 'Venezia Coffee', basePrice: 1800, desc: 'Sculptural glass top.' },
+  ],
+  storage: [
+    { name: 'Modena Wardrobe', basePrice: 7200, desc: 'Walk-in system.' },
+    {
+      name: 'Bologna Bookshelf',
+      basePrice: 2400,
+      desc: 'Floor-to-ceiling oak.',
+    },
+  ],
+  beds: [
+    { name: 'Royal Platform', basePrice: 4200, desc: 'King-size platform.' },
+    {
+      name: 'Luna Four-Poster',
+      basePrice: 6800,
+      desc: 'Solid oak poster bed.',
+    },
+  ],
+  outdoor: [
+    {
+      name: 'Riviera Sofa Set',
+      basePrice: 4800,
+      desc: 'Weather-resistant set.',
+    },
+    { name: 'Capri Lounger', basePrice: 1200, desc: 'Adjustable sun lounger.' },
+  ],
+  rugs: [
+    { name: 'Persian Silk', basePrice: 3500, desc: 'Hand-woven silk.' },
+    { name: 'Moroccan Wool', basePrice: 1800, desc: 'Traditional patterns.' },
+  ],
+  accessories: [
+    { name: 'Murano Vase', basePrice: 450, desc: 'Hand-blown glass.' },
+    { name: 'Bronze Sculpture', basePrice: 1200, desc: 'Contemporary art.' },
+  ],
+  lighting: [
+    { name: 'Arc Floor Lamp', basePrice: 890, desc: 'Modern marble base.' },
+    { name: 'Tiffany Table Lamp', basePrice: 650, desc: 'Stained glass.' },
+  ],
+  outlet: [
+    { name: 'Sample Chair', basePrice: 480, desc: 'Floor sample.' },
+    { name: 'Discontinued Sofa', basePrice: 1800, desc: 'Last piece.' },
+  ],
+};
+// Add fallback for accessories to prevent errors
+PRODUCT_TEMPLATES.accessories = PRODUCT_TEMPLATES.accessories || [
+  { name: 'Generic Accessory', basePrice: 100, desc: 'Standard accessory' },
+];
 
-function getRandomElement<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)];
-}
+const COLORS = [
+  'Charcoal',
+  'Ivory',
+  'Walnut',
+  'Terracotta',
+  'Sage Green',
+  'Navy Blue',
+];
+const SIZES: any = {
+  sofas: ['2-Seater', '3-Seater'],
+  chairs: ['Standard'],
+  tables: ['Small', 'Medium', 'Large'],
+  storage: ['Standard', 'Large'],
+  beds: ['Queen', 'King'],
+  outdoor: ['Standard'],
+  rugs: ['5x7', '8x10'],
+  accessories: ['One Size'],
+  lighting: ['Standard'],
+  outlet: ['One Size'],
+};
+const MATERIALS = [
+  'Leather',
+  'Velvet',
+  'Linen',
+  'Oak Wood',
+  'Walnut Wood',
+  'Marble',
+];
 
-function generateBlogSlug(title: string, index: number): string {
-  return `${slugify(title)}-${index}`;
-}
+// ===================================
+// DATA: BLOGS
+// ===================================
+const BLOG_CATEGORIES = [
+  'Interior Design',
+  'Living Room',
+  'Bedroom',
+  'Kitchen',
+  'Office',
+  'Sustainability',
+  'Trends',
+  'Tips & Guides',
+  'News',
+];
+const BLOG_IMAGES: any = {
+  'Interior Design': [
+    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1200&q=80',
+    'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1200&q=80',
+  ],
+  'Living Room': [
+    'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&q=80',
+    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1200&q=80',
+  ],
+  Bedroom: [
+    'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=1200&q=80',
+  ],
+  Kitchen: [
+    'https://images.unsplash.com/photo-1556909114-6d48ce5d1e2f?w=1200&q=80',
+  ],
+  Office: [
+    'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80',
+  ],
+  Sustainability: [
+    'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=1200&q=80',
+  ],
+  Trends: [
+    'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1200&q=80',
+  ],
+  'Tips & Guides': [
+    'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80',
+  ],
+  News: [
+    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&q=80',
+  ],
+};
+const AUTHORS = [
+  'Emma Thompson',
+  'James Wilson',
+  'Sarah Chen',
+  'Michael Brooks',
+];
 
 // ===================================
 // MAIN SEED FUNCTION
 // ===================================
 async function main() {
-  console.log('🌱 STARTING MASTER SEED...');
+  console.log('🌱 STARTING MASTER SEED (CONSOLIDATED)...');
 
   // 1. CLEAN DB
-  // =====================================================================
   console.log('\n🧹 Cleaning up database...');
-  // Delete in order to avoid FK constraints
   const deleteTableNames = [
     'OutboxEvent',
     'InventoryLog',
@@ -298,6 +427,8 @@ async function main() {
     'Product',
     'Brand',
     'Category',
+    'Page',
+    'Tenant',
     'Address',
     'UserRole',
     'RolePermission',
@@ -307,8 +438,6 @@ async function main() {
     'Permission',
   ];
 
-  // Note: Using deleteMany is safer than TRUNCATE for integrity usually, though slower.
-  // We just try/catch to be safe if table doesn't exist or other issues.
   for (const table of deleteTableNames) {
     try {
       // @ts-ignore
@@ -319,28 +448,187 @@ async function main() {
         ].deleteMany();
       }
     } catch (e) {
-      // Ignore error (table might not exist or other issue)
+      /* Ignore */
     }
   }
   console.log('✅ Database cleaned.');
 
-  // 2. SEED RBAC & ADMIN
-  // =====================================================================
+  // 2. SEED TENANTS
+  console.log('\n🏢 Seeding Tenants...');
+  const defaultTenant = await prisma.tenant.create({
+    data: {
+      name: 'Default Store',
+      domain: 'localhost',
+      plan: 'BASIC',
+      themeConfig: { primaryColor: '#3b82f6', borderRadius: '0.5rem' },
+    },
+  });
+  console.log('✅ Tenants created.');
+
+  // 3. SEED CMS PAGES
+  await prisma.page.create({
+    data: {
+      tenantId: defaultTenant.id,
+      slug: '/',
+      title: 'Home',
+      isPublished: true,
+      blocks: [
+        {
+          id: 'hero-1',
+          type: 'Hero',
+          props: {
+            title: 'Welcome to the Future',
+            subtitle: 'Experience our new CMS-driven architecture.',
+            ctaText: 'Shop Now',
+            ctaLink: '/products',
+          },
+        },
+        {
+          id: 'features-1',
+          type: 'Features',
+          props: {
+            title: 'Why Choose Us?',
+            items: [
+              {
+                title: 'Fast Shipping',
+                description: '2-day delivery worldwide.',
+              },
+              {
+                title: 'Secure Payment',
+                description: '100% secure transactions.',
+              },
+            ],
+          },
+        },
+      ],
+    },
+  });
+  console.log('✅ CMS Pages created.');
+
+  // 4. SEED TRANSLATIONS
+  const translations = [
+    {
+      tenantId: defaultTenant.id,
+      locale: 'en',
+      key: 'home.welcome',
+      value: 'Welcome to Our New Store!',
+    },
+    {
+      tenantId: defaultTenant.id,
+      locale: 'vi',
+      key: 'home.welcome',
+      value: 'Chào mừng đến với cửa hàng mới!',
+    },
+  ];
+  for (const t of translations) {
+    await prisma.translation.create({ data: t });
+  }
+  console.log('✅ Translations created.');
+
+  // ===================================
+  // 5. SEED RBAC & ADMIN
+  // ===================================
+  /**
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH (RBAC Seed):
+   *
+   * 1. Permission (Quyền hạn): Là đơn vị nhỏ nhất, ví dụ: 'product:create', 'user:delete'.
+   * 2. Role (Vai trò): Tập hợp nhiều Permission. Ví dụ: 'ADMIN' có tất cả quyền, 'GUEST' chỉ có quyền xem.
+   * 3. Logic Seeding:
+   *    - Tạo danh sách FULL permissions cho hệ thống.
+   *    - Tạo Role ADMIN.
+   *    - Gán TOÀN BỘ permissions cho Role ADMIN.
+   *    - Tạo user Admin và gán Role ADMIN cho user đó.
+   */
   console.log('\n🛡️ Seeding RBAC & Admin...');
   const permissions = [
+    // Users
     'user:read',
     'user:create',
     'user:update',
     'user:delete',
+    // Products
     'product:read',
     'product:create',
     'product:update',
     'product:delete',
+    // Orders
     'order:read',
     'order:create',
     'order:update',
-    'system:settings',
+    'order:delete',
+    // Categories
+    'category:read',
+    'category:create',
+    'category:update',
+    'category:delete',
+    // Brands
+    'brand:read',
+    'brand:create',
+    'brand:update',
+    'brand:delete',
+    // Blogs
+    'blog:read',
+    'blog:create',
+    'blog:update',
+    'blog:delete',
+    // Reviews
+    'review:read',
+    'review:create',
+    'review:update',
+    'review:delete',
+    'review:approve',
+    // Notifications
+    'notification:read',
+    'notification:create',
+    'notification:delete',
+    'notification:send',
+    // Chat
+    'chat:read',
+    'chat:send',
+    'chat:manage',
+    // Coupons
+    'coupon:read',
+    'coupon:create',
+    'coupon:update',
+    'coupon:delete',
+    // Inventory
+    'inventory:read',
+    'inventory:update',
+    'inventory:log',
+    // Roles & Permissions (Security)
+    'role:read',
+    'role:create',
+    'role:update',
+    'role:delete',
+    'permission:read',
+    'permission:create',
+    'permission:update',
+    'permission:delete',
+    // Dashboard
     'dashboard:view',
+    'dashboard:analytics',
+    'analytics:read',
+    // System & Feature Flags
+    'feature_flag:read',
+    'feature_flag:create',
+    'feature_flag:update',
+    'feature_flag:delete',
+    // Admin & System
+    'admin:read',
+    'admin:update',
+    'system:settings',
+    'system:logs',
+    'auditLog:read',
+    // Pages (CMS)
+    'page:read',
+    'page:create',
+    'page:update',
+    'page:delete',
+    // SKUs (Internal Product variants)
+    'sku:read',
+    'sku:create',
+    'sku:update',
+    'sku:delete',
   ];
 
   for (const perm of permissions) {
@@ -356,7 +644,6 @@ async function main() {
     update: {},
     create: { name: 'ADMIN' },
   });
-
   const allPermissions = await prisma.permission.findMany();
   await prisma.rolePermission.createMany({
     data: allPermissions.map((p) => ({
@@ -375,184 +662,106 @@ async function main() {
       password: hashPassword,
       firstName: 'Super',
       lastName: 'Admin',
+      tenantId: defaultTenant.id,
     },
   });
-
   await prisma.userRole.createMany({
     data: [{ userId: adminUser.id, roleId: adminRole.id }],
     skipDuplicates: true,
   });
-  console.log('✅ Admin created: admin@example.com / 123456');
+  console.log('✅ Admin created with FULL permissions.');
 
-  // 3. SEED FEATURE FLAGS
-  // =====================================================================
-  console.log('\n🚩 Seeding Feature Flags...');
+  // 6. SEED FEATURE FLAGS
   for (const flag of FEATURE_FLAGS) {
     await prisma.featureFlag.upsert({
       where: { key: flag.key },
       update: {},
-      create: flag,
+      create: { ...flag, tenantId: defaultTenant.id },
     });
   }
   console.log('✅ Feature flags created.');
 
-  // 4. SEED PRODUCTS
-  // =====================================================================
+  // 7. SEED PRODUCTS
   console.log('\n📦 Seeding Products...');
-  const brands: { id: string; name: string }[] = [];
-  for (const brandData of BRANDS_DATA) {
-    const brand = await prisma.brand.create({ data: brandData });
-    brands.push(brand);
+  const brands: any[] = [];
+  for (const b of BRANDS_DATA) {
+    brands.push(await prisma.brand.create({ data: b }));
+  }
+  const categories: any[] = [];
+  for (const c of CATEGORIES_DATA) {
+    categories.push(await prisma.category.create({ data: c }));
   }
 
-  const categories: { id: string; name: string; slug: string }[] = [];
-  for (const catData of CATEGORIES_DATA) {
-    const category = await prisma.category.create({ data: catData });
-    categories.push(category);
-  }
-
-  let productCount = 0;
-  // Reduce to 5 duplicates per template to run fast, total ~50 products
-  // User asked for "đầy đủ data" -> let's make it 20 duplicates like original = ~200 products
   for (const category of categories) {
     const slugKey = category.slug.toLowerCase();
-    const templates =
-      PRODUCT_TEMPLATES[slugKey] || PRODUCT_TEMPLATES['sofas'] || []; // Fallback
-    const images = FURNITURE_IMAGES[slugKey] || FURNITURE_IMAGES['sofas'];
+    const templates: any[] =
+      PRODUCT_TEMPLATES[slugKey] || PRODUCT_TEMPLATES.sofas; // Fallback
+    const images = FURNITURE_IMAGES[slugKey] || FURNITURE_IMAGES.sofas;
 
-    for (const template of templates) {
+    // Create ~50 products per category
+    for (let i = 0; i < 50; i++) {
+      const template = getRandomElement(templates);
       const brand = getRandomElement(brands);
-      for (let i = 0; i < 20; i++) {
-        // Shorten slug to avoid DB limit (also used for SKU)
-        const randomId = Math.random().toString(36).substring(2, 7);
-        const shortName = slugify(template.name).substring(0, 20); // Limit name part
-        const pSlug = `${shortName}-${brand.name.toLowerCase().substring(0, 5)}-${i}-${randomId}`;
+      const uniqueNoun = Math.random().toString(36).substring(7);
+      const product = await prisma.product.create({
+        data: {
+          name: `${template.name} ${uniqueNoun}`,
+          slug: slugify(`${template.name}-${uniqueNoun}-${i}`),
+          description: template.desc,
+          categoryId: category.id,
+          brandId: brand.id,
+          minPrice: template.basePrice,
+          maxPrice: template.basePrice,
+          tenantId: defaultTenant.id,
+        },
+      });
 
-        const product = await prisma.product.create({
+      // Images
+      for (let j = 0; j < 3; j++) {
+        await prisma.productImage.create({
           data: {
-            name: `${template.name} ${i + 1}`,
-            slug: pSlug,
-            description: template.desc,
-            categoryId: category.id,
-            brandId: brand.id,
-            minPrice: template.basePrice,
-            maxPrice: template.basePrice,
+            productId: product.id,
+            url: images[j % images.length],
+            displayOrder: j,
           },
         });
-        productCount++;
+      }
 
-        // Images
-        for (let j = 0; j < 3; j++) {
-          await prisma.productImage.create({
-            data: {
-              productId: product.id,
-              url: images[j % images.length],
-              displayOrder: j,
-            },
-          });
-        }
-
-        // CREATE OPTIONS
-        // =================================================================
-        const colorOption = await prisma.productOption.create({
-          data: { productId: product.id, name: 'Color', displayOrder: 1 },
+      // Options (Simplified for consolidation)
+      const colorOption = await prisma.productOption.create({
+        data: { productId: product.id, name: 'Color', displayOrder: 1 },
+      });
+      for (let k = 0; k < 3; k++) {
+        await prisma.optionValue.create({
+          data: { optionId: colorOption.id, value: getRandomElement(COLORS) },
         });
-
-        const sizeOption = await prisma.productOption.create({
-          data: { productId: product.id, name: 'Size', displayOrder: 2 },
-        });
-
-        const COLORS = ['Grey', 'Beige', 'Blue'];
-        const SIZES = ['Standard', 'Large'];
-
-        const colorValues = [];
-        for (const c of COLORS) {
-          colorValues.push(
-            await prisma.optionValue.create({
-              data: { optionId: colorOption.id, value: c },
-            }),
-          );
-        }
-
-        const sizeValues = [];
-        for (const s of SIZES) {
-          sizeValues.push(
-            await prisma.optionValue.create({
-              data: { optionId: sizeOption.id, value: s },
-            }),
-          );
-        }
-
-        // GENERATE SKUs (Cartesian Product)
-        // =================================================================
-        for (const cVal of colorValues) {
-          for (const sVal of sizeValues) {
-            const skuCode =
-              `${pSlug}-${cVal.value.charAt(0)}-${sVal.value.charAt(0)}`
-                .toUpperCase()
-                .substring(0, 30);
-
-            const sku = await prisma.sku.create({
-              data: {
-                productId: product.id,
-                skuCode: skuCode,
-                price: template.basePrice,
-                salePrice: template.basePrice,
-                stock: 50,
-                status: 'ACTIVE',
-              },
-            });
-
-            // Link SKU -> OptionValues (Pivot Table)
-            await prisma.skuToOptionValue.create({
-              data: { skuId: sku.id, optionValueId: cVal.id },
-            });
-            await prisma.skuToOptionValue.create({
-              data: { skuId: sku.id, optionValueId: sVal.id },
-            });
-          }
-        }
       }
     }
   }
-  console.log(`✅ Created ${productCount} products.`);
+  console.log('✅ Products created.');
 
-  // 5. SEED BLOGS
-  // =====================================================================
+  // 8. SEED BLOGS
   console.log('\n📝 Seeding Blogs...');
-  let blogCount = 0;
   for (const category of BLOG_CATEGORIES) {
-    const template =
-      BLOG_TEMPLATES[category] || BLOG_TEMPLATES['Interior Design']; // Fallback
-    const images = BLOG_IMAGES[category] || BLOG_IMAGES['Interior Design']; // Fallback
-
-    if (template) {
-      for (let i = 0; i < 5; i++) {
-        const title = template.titles[i % template.titles.length];
-        const finalTitle =
-          i >= template.titles.length ? `${title} ${i}` : title;
-
-        await prisma.blog.create({
-          data: {
-            title: finalTitle,
-            slug: generateBlogSlug(finalTitle, blogCount),
-            excerpt: template.excerpts[i % template.excerpts.length],
-            content:
-              template.contentIntro +
-              '\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit.',
-            image: images[i % images.length],
-            category: category,
-            author: getRandomElement(BLOG_AUTHORS),
-            publishedAt: new Date(),
-            language: 'en',
-            readTime: '5 min read',
-          },
-        });
-        blogCount++;
-      }
+    const images = BLOG_IMAGES[category] || BLOG_IMAGES['Interior Design'];
+    for (let i = 0; i < 5; i++) {
+      await prisma.blog.create({
+        data: {
+          title: `${category} Tips ${i + 1}`,
+          slug: slugify(`${category}-tips-${i}-${Date.now()}`),
+          excerpt: `Great advice about ${category}`,
+          content: `Full content about ${category}...`,
+          image: getRandomElement(images),
+          category: category,
+          author: getRandomElement(AUTHORS),
+          language: 'en',
+          readTime: '5 min read',
+          publishedAt: getRandomPastDate(100),
+        },
+      });
     }
   }
-  console.log(`✅ Created ${blogCount} blog posts.`);
+  console.log('✅ Blogs created.');
 
   console.log('\n🎉 ALL SEEDING COMPLETED SUCCESSFULLY!');
 }

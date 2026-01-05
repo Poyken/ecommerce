@@ -29,9 +29,13 @@ import { useEffect, useState } from "react";
 
 interface DealSectionProps {
   targetDate?: Date; // Optional: specific date to count down to
+  title?: string;
+  summerTitle?: string;
+  collectionTitle?: string;
+  description?: string;
 }
 
-export function DealSection({ targetDate }: DealSectionProps) {
+export function DealSection({ targetDate, title, summerTitle, collectionTitle, description }: DealSectionProps) {
   // Default target date: 3 days from now if not provided
   const [target] = useState<Date>(() => {
     if (targetDate) return targetDate;
@@ -76,16 +80,16 @@ export function DealSection({ targetDate }: DealSectionProps) {
           <div className="w-full md:w-1/2 p-8 md:p-16 space-y-10 z-10">
             <div className="space-y-4">
               <span className="text-accent font-bold uppercase tracking-[0.3em] text-xs">
-                {t("title")}
+                {title || t("title")}
               </span>
               <h2 className="text-5xl md:text-7xl font-sans font-extrabold leading-[1.1] tracking-tight">
-                {t("summer")} <br />
+                {summerTitle || t("summer")} <br />
                 <span className="text-primary italic font-serif">
-                  {t("collection")}
+                  {collectionTitle || t("collection")}
                 </span>
               </h2>
               <p className="text-muted-foreground text-lg max-w-sm leading-relaxed">
-                {t("description")}
+                {description || t("description")}
               </p>
             </div>
 

@@ -16,8 +16,8 @@
 
 "use client";
 
+import { usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 /**
@@ -29,9 +29,10 @@ import { useEffect, useState } from "react";
 interface StickyHeaderProps {
   children: React.ReactNode;
   className?: string;
+  isInline?: boolean;
 }
 
-export function StickyHeader({ children, className }: StickyHeaderProps) {
+export function StickyHeader({ children, className, isInline = false }: StickyHeaderProps) {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [enableAnimation, setEnableAnimation] = useState(false);
@@ -63,13 +64,15 @@ export function StickyHeader({ children, className }: StickyHeaderProps) {
       className={cn(
         "w-full z-50 transition-[background-color,border-color,transform,box-shadow,backdrop-filter] duration-300 ease-in-out",
         // Base positioning
-        isHome
-          ? isScrolled
-            ? "fixed top-0 left-0 right-0 shadow-md bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b border-white/10"
-            : "absolute top-0 left-0 right-0 border-transparent bg-transparent"
-          : "fixed top-0 left-0 right-0 border-b border-white/10 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60",
+        !isInline ? (
+          isHome
+            ? isScrolled
+              ? "fixed top-0 left-0 right-0 shadow-md bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-b border-white/10"
+              : "absolute top-0 left-0 right-0 border-transparent bg-transparent"
+            : "fixed top-0 left-0 right-0 border-b border-white/10 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60"
+        ) : "relative border-b shadow-sm bg-background",
         // Animation
-        isScrolled &&
+        !isInline && isScrolled &&
           isHome &&
           enableAnimation &&
           "animate-in slide-in-from-top-full"

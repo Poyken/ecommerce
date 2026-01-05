@@ -46,17 +46,19 @@ async function main() {
   try {
     console.log('\n🔐 Attempting Admin Login...');
     const loginRes = await axios.post<{
-      accessToken: string;
-      user?: { email: string };
+      data: {
+        accessToken: string;
+        user?: { email: string };
+      };
     }>(`${API_URL}/v1/auth/login`, {
       email: 'admin@example.com',
       password: '123456',
     });
 
-    if (loginRes.data.accessToken) {
-      token = loginRes.data.accessToken;
+    if (loginRes.data.data?.accessToken) {
+      token = loginRes.data.data.accessToken;
       console.log('✅ Admin Login Successful!');
-      console.log('Logged in user:', loginRes.data.user?.email);
+      console.log('Logged in user:', loginRes.data.data.user?.email);
     } else {
       console.log('❌ Login failed: No access token received.');
     }
@@ -103,6 +105,23 @@ async function main() {
       console.log(`❌ Fetch Products Failed: ${error.message}`);
     }
   }
+
+  // 6. Test Brands Endpoint (Fix Verification)
+  try {
+    console.log('\n🏷️ Fetching Brands...');
+    const brandsRes = await axios.get(`${API_URL}/v1/brands`);
+    console.log(`✅ Fetched brands. Status: ${brandsRes.status}`);
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(`❌ Fetch Brands Failed: ${error.message}`);
+      if (error.response) {
+        console.log(
+          'Response body:',
+          JSON.stringify(error.response.data, null, 2),
+        );
+      }
+    }
+  }
 }
 
-main();
+void main().catch(console.error);

@@ -1030,3 +1030,55 @@ export async function getInventoryAnalysisAction() {
     return { error: error instanceof Error ? error.message : "Unknown error" };
   }
 }
+// =============================================================================
+// 📄 PAGES - Quản lý trang động (CMS)
+// =============================================================================
+
+export async function getPagesAction() {
+  try {
+    const res = await http<ApiResponse<any[]>>("/pages/admin/list");
+    return safeUnwrapApiResponse<any>(res);
+  } catch (error: unknown) {
+    return { error: (error as Error).message };
+  }
+}
+
+export async function getPageByIdAction(id: string) {
+  try {
+    const res = await http<ApiResponse<any>>(`/pages/admin/${id}`);
+    return { data: res.data };
+  } catch (error: unknown) {
+    return { error: (error as Error).message };
+  }
+}
+
+export async function createPageAction(data: any): Promise<ActionResult<any>> {
+  return handleAdminAction<any>(async () => {
+    const res = await http<any>("/pages/admin", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    return res.data || res;
+  }, ["/admin/pages", "/"]);
+}
+
+export async function updatePageAction(
+  id: string,
+  data: any
+): Promise<ActionResult> {
+  return handleAdminAction<void>(
+    () =>
+      http<void>(`/pages/admin/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
+    ["/admin/pages", "/", `page-${id}`]
+  );
+}
+
+export async function deletePageAction(id: string): Promise<ActionResult> {
+  return handleAdminAction<void>(
+    () => http<void>(`/pages/admin/${id}`, { method: "DELETE" }),
+    ["/admin/pages", "/"]
+  );
+}

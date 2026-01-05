@@ -29,19 +29,23 @@ import { useCallback, useEffect } from "react";
  * =====================================================================
  */
 
-export function TestimonialsCarousel() {
+interface TestimonialsCarouselProps {
+  items?: Array<{ text: string; author: string; role: string; rating?: number; avatar?: string }>;
+}
+
+export function TestimonialsCarousel({ items }: TestimonialsCarouselProps) {
   const t = useTranslations("home.testimonials");
-  const testimonialsRaw = t.raw("items") as {
+  const testimonialsRaw = items || (t.raw("items") as {
     text: string;
     author: string;
     role: string;
-  }[];
+  }[]);
 
-  const testimonials = testimonialsRaw.map((item, index) => ({
+  const testimonials = testimonialsRaw.map((item: any, index: number) => ({
     ...item,
     id: index + 1,
-    rating: 5, // Default rating as it's not in translation for now
-    avatar: `/images/testimonials/person-${(index % 6) + 1}.webp`,
+    rating: item.rating || 5, // Default rating as it's not in translation for now
+    avatar: item.avatar || `/images/testimonials/person-${(index % 6) + 1}.webp`,
   }));
 
   const [emblaRef, emblaApi] = useEmblaCarousel({

@@ -22,21 +22,36 @@
  * =====================================================================
  */
 import { ProductCard } from "@/features/products/components/product-card";
-import { fadeInUp, itemVariant, staggerContainer } from "@/lib/animations";
+import { fadeInUp, itemVariant, m, staggerContainer } from "@/lib/animations";
+import { cn } from "@/lib/utils";
 import { Product } from "@/types/models";
-import { m } from "@/lib/animations";
 import { useTranslations } from "next-intl";
 
 interface TrendingProductsProps {
   products: Product[];
+  title?: string;
+  count?: number;
+  columns?: number;
 }
 
-export function TrendingProducts({ products }: TrendingProductsProps) {
+export function TrendingProducts({ 
+    products, 
+    title, 
+    count = 10,
+    columns = 5
+}: TrendingProductsProps) {
   const t = useTranslations("home");
   const inStockProducts = products.filter((product) =>
     product.skus?.some((sku) => sku.stock > 0)
   );
-  const trendingProducts = inStockProducts.slice(0, 10); // Show first 10 in-stock products
+  const trendingProducts = inStockProducts.slice(0, count);
+
+  const desktopCols = {
+    2: "lg:grid-cols-2",
+    3: "lg:grid-cols-3",
+    4: "lg:grid-cols-4",
+    5: "lg:grid-cols-5",
+  }[columns] || "xl:grid-cols-5";
 
   return (
     <section className="container mx-auto px-4 py-16">
@@ -53,16 +68,20 @@ export function TrendingProducts({ products }: TrendingProductsProps) {
           </span>
         </div>
         <h2 className="text-4xl md:text-6xl font-sans font-black tracking-tighter">
-          {t("trendingNowBold")}{" "}
-          <span className="font-serif italic font-normal text-gradient-gold">
-            {t("trendingNowItalic")}
-          </span>
+          {title || (
+            <>
+                {t("trendingNowBold")}{" "}
+                <span className="font-serif italic font-normal text-gradient-gold">
+                {t("trendingNowItalic")}
+                </span>
+            </>
+          )}
         </h2>
         <div className="w-24 h-1.5 bg-accent/40 rounded-full shadow-lg shadow-accent/20" />
       </m.div>
 
       <m.div
-        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-8"
+        className={cn("grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8", desktopCols)}
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"

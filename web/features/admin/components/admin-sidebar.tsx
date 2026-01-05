@@ -6,24 +6,25 @@ import { Logo } from "@/features/layout/components/logo";
 import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import {
-    ArrowLeft,
-    ArrowRight,
-    BarChart3,
-    Bell,
-    BookOpen,
-    Box,
-    History,
-    LayoutDashboard,
-    MessageSquare,
-    Package,
-    Settings,
-    Shield,
-    ShoppingBag,
-    Star,
-    Store,
-    Tag,
-    Ticket,
-    Users
+  ArrowLeft,
+  ArrowRight,
+  BarChart3,
+  Bell,
+  BookOpen,
+  Box,
+  History,
+  Layout,
+  LayoutDashboard,
+  MessageSquare,
+  Package,
+  Settings,
+  Shield,
+  ShoppingBag,
+  Star,
+  Store,
+  Tag,
+  Ticket,
+  Users
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -109,6 +110,12 @@ export function AdminSidebar() {
           href: "/admin/blogs",
           icon: BookOpen,
           permission: "blog:read",
+        },
+        {
+          title: t("pages"),
+          href: "/admin/pages",
+          icon: Layout,
+          permission: "page:read",
         },
       ],
     },
@@ -243,7 +250,9 @@ export function AdminSidebar() {
             )}
             <div className="space-y-1">
               {group.items.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive = item.href === "/admin" 
+                  ? pathname === "/admin" 
+                  : pathname.startsWith(item.href);
                 const Icon = item.icon;
 
                 return (

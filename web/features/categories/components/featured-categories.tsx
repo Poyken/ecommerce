@@ -23,6 +23,7 @@
 import { CategoryCard } from "@/features/categories/components/category-card";
 import { Link } from "@/i18n/routing";
 import { fadeInUp, itemScaleVariant, staggerContainer } from "@/lib/animations";
+import { cn } from "@/lib/utils";
 import { Category } from "@/types/models";
 import { m } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -30,10 +31,19 @@ import { useTranslations } from "next-intl";
 
 interface FeaturedCategoriesProps {
   categories: Category[];
+  columns?: number;
+  title?: string;
 }
 
-export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
+export function FeaturedCategories({ categories, columns = 4, title }: FeaturedCategoriesProps) {
   const t = useTranslations("home");
+
+  const desktopCols = {
+    2: "md:grid-cols-2",
+    3: "md:grid-cols-3",
+    4: "md:grid-cols-4",
+    5: "md:grid-cols-5",
+  }[columns] || "md:grid-cols-4";
 
   return (
     <section className="container mx-auto px-4 mt-8">
@@ -49,7 +59,7 @@ export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
             {t("featuredCollections")}
           </span>
           <h2 className="text-4xl font-black tracking-tighter uppercase italic">
-            {t("featuredCategories")}
+            {title || t("featuredCategories")}
           </h2>
         </div>
         <Link
@@ -67,7 +77,7 @@ export function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
         </Link>
       </m.div>
       <m.div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6"
+        className={cn("grid grid-cols-1 sm:grid-cols-2 gap-6", desktopCols)}
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"

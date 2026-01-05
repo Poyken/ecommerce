@@ -1,3 +1,4 @@
+import { BlockData, BlockRenderer } from "@/components/cms/block-renderer";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import {
   CategoriesSkeleton,
@@ -9,6 +10,7 @@ import { HomeContent } from "@/features/products/components/home-content";
 import { productService } from "@/services/product.service";
 import { Brand, Category, Product } from "@/types/models";
 import { Metadata } from "next";
+import { headers } from "next/headers";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
@@ -17,30 +19,62 @@ export const metadata: Metadata = {
     "Discover the latest trends in luxury home decor. Shop premium furniture, accessories, and more.",
 };
 
-/**
- * =====================================================================
- * HOME PAGE - Trang chủ
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CHIẾN LƯỢC RENDERING: Streaming SSR với Suspense
- * - `HeroSection`: Client Component được render ngay lập tức (Tối ưu LCP).
- * - `HomeDataFetcher`: Server Component lấy dữ liệu bất đồng bộ.
- * - `Suspense`: Hiển thị skeleton trong khi đang tải dữ liệu.
- *
- * 2. TỐI ƯU HIỆU NĂNG (LCP/TTFB):
- * - Cách cũ: await Promise.all() chặn việc thực thi -> TTFB cao.
- * - Cách mới: Render khung trang + Hero trước, sau đó stream dữ liệu về sau.
- * - Kết quả: Người dùng thấy Hero ngay lập tức, cải thiện cảm giác mượt mà.
- *
- * 3. FALLBACK UI:
- * - `HomeContentSkeleton` cung cấp trạng thái loading không gây giật layout (layout shift).
- * =====================================================================
- */
+async function getPageConfig(slug: string): Promise<any | null> {
+  try {
+     const headersList = await headers();
+     const host = headersList.get('host') || 'localhost';
+     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+     
+     const res = await fetch(`${apiUrl}/pages/${slug}`, {
+      headers: { 'x-tenant-domain': host },
+      next: { revalidate: 60 },
+     });
+     
+     if (!res.ok) return null;
+     const json = await res.json();
+     // API returns { statusCode, message, data: {...} } - extract the data
+     return json.data || json;
+  } catch (err) {
+    return null;
+  }
+}
+
 export const revalidate = 3600;
 
-export default function Home() {
+export default async function Home() {
+  // 1. Fetch CMS Config (Blocked)
+  const cmsPage = await getPageConfig('home');
+
+  // 2. Initiate Data Fetches (Non-blocking)
+  const productsPromise = productService.getFeaturedProducts(20);
+  const categoriesPromise = productService.getCategories();
+  const brandsPromise = productService.getBrands();
+
+  // Context to pass to blocks for hydration
+  const dataContext = {
+    products: productsPromise,
+    categories: categoriesPromise,
+    brands: brandsPromise,
+  };
+
+  // 3. CMS Mode
+  if (cmsPage && cmsPage.blocks && cmsPage.blocks.length > 0) {
+    return (
+      <HomeWrapper>
+        <div className="flex flex-col gap-0">
+          {cmsPage.blocks.map((block: BlockData) => (
+             <BlockRenderer key={block.id} block={block} data={dataContext} />
+          ))}
+        </div>
+      </HomeWrapper>
+    );
+  }
+
+  // 4. Fallback Mode (Original)
+  // We need to await data here if we fallback to the old component which expects generic props (or update it to accept promises too, but easier to await here for legacy compat)
+  // But to preserve the "Suspense" behavior of the legacy code, we should wrap it.
+  // Actually, the legacy HomeDataFetcher did the fetching.
+  
   return (
     <ErrorBoundary name="HomePage">
       <HomeWrapper>

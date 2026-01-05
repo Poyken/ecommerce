@@ -3,8 +3,9 @@ import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { getCartCountAction } from "@/features/cart/actions";
 import { CartInitializer } from "@/features/cart/components/cart-initializer";
 import { ConditionalFooter } from "@/features/layout/components/conditional-footer";
+import { ConditionalHeader } from "@/features/layout/components/conditional-header";
 import { Footer } from "@/features/layout/components/footer";
-import { Header, HeaderFallback } from "@/features/layout/components/header";
+import { HeaderFallback } from "@/features/layout/components/header";
 import { MobileBottomNav } from "@/features/layout/components/mobile-nav";
 import {
     getNotificationsAction,
@@ -96,7 +97,7 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
         accessToken={token}
       />
       <CartInitializer initialCount={initialCartCount} initialUser={user} />
-      <Header
+      <ConditionalHeader
         initialUser={user}
         permissions={permissions}
         initialCartCount={initialCartCount}
@@ -128,17 +129,21 @@ function ShopLayoutFallback() {
   );
 }
 
+import { LayoutVisibilityProvider } from "@/features/layout/providers/layout-visibility-provider";
+
 export default async function ShopLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col">
-      <Suspense fallback={<ShopLayoutFallback />}>
-        {/* Force Rebuild */}
-        <DynamicShopContent>{children}</DynamicShopContent>
-      </Suspense>
-    </div>
+    <LayoutVisibilityProvider>
+        <div className="flex min-h-screen flex-col">
+          <Suspense fallback={<ShopLayoutFallback />}>
+            {/* Force Rebuild */}
+            <DynamicShopContent>{children}</DynamicShopContent>
+          </Suspense>
+        </div>
+    </LayoutVisibilityProvider>
   );
 }

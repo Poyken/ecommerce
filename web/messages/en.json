@@ -792,6 +792,7 @@
     "refresh": "Refresh",
     "adminPanel": "Admin Panel",
     "dashboard": "Dashboard",
+    "pages": "Pages",
     "product": "Product",
     "openMenu": "Open menu",
     "overview": "Overview of your store's performance",
@@ -1327,7 +1328,8 @@
       "auditLogs": "Audit Logs",
       "backToStore": "Back to Store",
       "contentManagement": "CONTENT MANAGEMENT",
-      "blogs": "Blogs"
+      "blogs": "Blogs",
+      "pages": "Pages"
     }
   },
   "contact": {

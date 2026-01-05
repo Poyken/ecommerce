@@ -47,7 +47,7 @@ export class FeatureFlagsService {
    */
   async isEnabled(
     key: string,
-    context?: { userId?: string; environment?: string },
+    context?: { userId?: string; environment?: string; tenantId?: string },
   ): Promise<boolean> {
     try {
       const cacheKey = `${this.CACHE_PREFIX}${key}`;
@@ -87,6 +87,11 @@ export class FeatureFlagsService {
         // Environment targeting
         if (rules.environments && context?.environment) {
           if (!rules.environments.includes(context.environment)) return false;
+        }
+
+        // Tenant targeting
+        if (rules.tenantIds && context?.tenantId) {
+          if (!rules.tenantIds.includes(context.tenantId)) return false;
         }
 
         // Specific user targeting
@@ -171,6 +176,7 @@ export class FeatureFlagsService {
   async getEnabledFlagsForContext(context: {
     userId?: string;
     environment?: string;
+    tenantId?: string;
   }) {
     const allFlags = await this.findAll();
     const enabledFlags: string[] = [];

@@ -26,9 +26,13 @@ import { useState } from "react";
  * =====================================================================
  */
 
-export function FAQAccordion() {
+interface FAQAccordionProps {
+  items?: Array<{ question: string; answer: string }>;
+}
+
+export function FAQAccordion({ items }: FAQAccordionProps) {
   const t = useTranslations("home.faq");
-  const faqs = t.raw("items") as { question: string; answer: string }[];
+  const faqs = items || (t.raw("items") as { question: string; answer: string }[]);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const getColorClasses = (index: number) => {

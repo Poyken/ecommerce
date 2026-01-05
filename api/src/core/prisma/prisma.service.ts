@@ -5,6 +5,7 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import { tenancyExtension } from '../tenant/prisma-tenancy.extension';
 
 /**
  * =====================================================================
@@ -43,7 +44,9 @@ export class PrismaService
 
     // [P8 OPTIMIZATION] Use $extends for modern logging and performance monitoring
     // Returns the extended client which will be used as the actual singleton instance
-    return this.$extends({
+    const client = this.$extends(tenancyExtension);
+
+    return client.$extends({
       query: {
         $allModels: {
           async $allOperations({ operation, model, args, query }) {

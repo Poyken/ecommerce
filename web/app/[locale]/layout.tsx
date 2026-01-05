@@ -8,6 +8,7 @@ import { QuickViewProvider } from "@/features/products/providers/quick-view-prov
 import { routing } from "@/i18n/routing";
 import { MotionProvider } from "@/providers/motion-provider";
 import { SWRProvider } from "@/providers/swr-provider";
+import { TenantProvider } from "@/providers/tenant-provider";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -66,6 +67,8 @@ export const metadata: Metadata = {
 import { getPermissionsFromToken } from "@/lib/permission-utils";
 import { getSession } from "@/lib/session";
 
+import { set } from "lodash";
+
 async function RootProviders({
   locale,
   children,
@@ -73,7 +76,14 @@ async function RootProviders({
   locale: string;
   children: React.ReactNode;
 }) {
-  const messages = await getMessages({ locale });
+  const rawMessages = await getMessages({ locale });
+  // Fix for "INVALID_KEY" error when using dotted keys in translations
+  // Converts flat structure "home.welcome": "..." to nested { home: { welcome: "..." } }
+  const messages = Object.entries(rawMessages).reduce((acc, [key, value]) => {
+    set(acc, key, value);
+    return acc;
+  }, {});
+
   const accessToken = await getSession();
   const initialPermissions = getPermissionsFromToken(accessToken);
 
@@ -84,23 +94,25 @@ async function RootProviders({
           initialPermissions={initialPermissions}
           isAuthenticated={!!accessToken}
         >
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <FeatureFlagInitializer />
-            <MotionProvider>
-              <div data-quick-view-provider>
-                <QuickViewProvider />
-              </div>
-              <PerformanceTracker />
-              <SmoothScroll />
-              {children}
-              <Toaster />
-            </MotionProvider>
-          </ThemeProvider>
+          <TenantProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <FeatureFlagInitializer />
+              <MotionProvider>
+                <div data-quick-view-provider>
+                  <QuickViewProvider />
+                </div>
+                <PerformanceTracker />
+                <SmoothScroll />
+                {children}
+                <Toaster />
+              </MotionProvider>
+            </ThemeProvider>
+          </TenantProvider>
         </AuthProvider>
       </SWRProvider>
     </NextIntlClientProvider>

@@ -18,11 +18,11 @@ import { ShieldCheck } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import {
-  useActionState,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
+    useActionState,
+    useEffect,
+    useRef,
+    useState,
+    useTransition,
 } from "react";
 
 /**
@@ -209,7 +209,11 @@ export function LoginPageContent() {
           } catch {
             console.error("Failed to sync cart");
           } finally {
-            let targetUrl = callbackUrl || "/";
+            // Check if user has admin:read permission and redirect to admin
+            const permissions = state.permissions || [];
+            const isAdmin = permissions.includes("admin:read");
+            
+            let targetUrl = isAdmin ? "/admin" : (callbackUrl || "/");
             try {
               const url = new URL(targetUrl, window.location.origin);
               if (url.origin === window.location.origin) {

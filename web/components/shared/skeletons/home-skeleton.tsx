@@ -34,6 +34,16 @@ export function CategoriesSkeleton() {
   );
 }
 
+export function BrandsSkeleton() {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-8 opacity-40 grayscale">
+      {[...Array(6)].map((_, i) => (
+        <Skeleton key={i} className="h-10 w-28 rounded-lg" />
+      ))}
+    </div>
+  );
+}
+
 export function ProductsSkeleton({
   count = 4,
   columns = 4,

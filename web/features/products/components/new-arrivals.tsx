@@ -21,22 +21,37 @@
  */
 import { ProductCard } from "@/features/products/components/product-card";
 import { Link } from "@/i18n/routing";
-import { fadeInRight, itemVariant, staggerContainer } from "@/lib/animations";
+import { fadeInRight, itemVariant, m, staggerContainer } from "@/lib/animations";
+import { cn } from "@/lib/utils";
 import { Product } from "@/types/models";
-import { m } from "@/lib/animations";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 interface NewArrivalsProps {
   products: Product[];
+  title?: string;
+  count?: number;
+  columns?: number;
 }
 
-export function NewArrivals({ products }: NewArrivalsProps) {
+export function NewArrivals({ 
+    products, 
+    title, 
+    count = 8, 
+    columns = 4 
+}: NewArrivalsProps) {
   const t = useTranslations("home");
   const inStockProducts = products.filter((product) =>
     product.skus?.some((sku) => sku.stock > 0)
   );
-  const newArrivals = inStockProducts.slice(10, 18); // Show in-stock products from index 10 to 18 to avoid overlap with Trending
+  const newArrivals = inStockProducts.slice(10, 10 + count); 
+
+  const desktopCols = {
+    2: "lg:grid-cols-2",
+    3: "lg:grid-cols-3",
+    4: "lg:grid-cols-4",
+    5: "lg:grid-cols-5",
+  }[columns] || "lg:grid-cols-4";
 
   return (
     <section className="container mx-auto px-4 overflow-hidden py-16">
@@ -52,10 +67,14 @@ export function NewArrivals({ products }: NewArrivalsProps) {
             {t("justLaunched")}
           </span>
           <h2 className="text-4xl md:text-5xl font-sans font-black tracking-tighter">
-            {t("newArrivalsBold")}{" "}
-            <span className="font-serif italic font-normal text-gradient-gold">
-              {t("newArrivalsItalic")}
-            </span>
+            {title ? title : (
+                <>
+                    {t("newArrivalsBold")}{" "}
+                    <span className="font-serif italic font-normal text-gradient-gold">
+                    {t("newArrivalsItalic")}
+                    </span>
+                </>
+            )}
           </h2>
         </div>
 
@@ -72,7 +91,7 @@ export function NewArrivals({ products }: NewArrivalsProps) {
       </m.div>
 
       <m.div
-        className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8"
+        className={cn("grid grid-cols-2 gap-4 md:gap-8", desktopCols)}
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"

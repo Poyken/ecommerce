@@ -36,7 +36,7 @@ import { FeatureFlagsService } from './feature-flags.service';
 @ApiBearerAuth()
 @Controller('admin/feature-flags')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
-@Permissions('admin:write')
+@Permissions('admin:update')
 export class FeatureFlagsController {
   constructor(private readonly featureFlagsService: FeatureFlagsService) {}
 

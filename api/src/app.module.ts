@@ -37,6 +37,7 @@ import { FeatureFlagsModule } from '@/common/feature-flags/feature-flags.module'
 import { CouponsModule } from '@/coupons/coupons.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { OrdersModule } from '@/orders/orders.module';
+import { PagesModule } from '@/pages/pages.module';
 import { PaymentModule } from '@/payment/payment.module';
 import { ProductsModule } from '@/products/products.module';
 import { ReviewsModule } from '@/reviews/reviews.module';
@@ -67,6 +68,8 @@ import { RedisThrottlerStorageService } from '@core/config/throttler/redis-throt
 import { LoggingInterceptor } from '@core/interceptors/logging.interceptor';
 import { CorrelationIdMiddleware } from '@core/middlewares/correlation-id.middleware';
 import { RedisService } from '@core/redis/redis.service';
+import { TenantMiddleware } from '@core/tenant/tenant.middleware';
+import { TenantsController } from '@core/tenant/tenants.controller';
 import { CacheModule } from '@nestjs/cache-manager';
 import { AiChatModule } from './ai-chat/ai-chat.module';
 import { ChatModule } from './chat/chat.module';
@@ -162,6 +165,7 @@ import { ChatModule } from './chat/chat.module';
 
     // 10. OrdersModule - Đơn hàng
     OrdersModule,
+    PagesModule,
 
     // 11. PaymentModule - Thanh toán
     PaymentModule,
@@ -205,7 +209,7 @@ import { ChatModule } from './chat/chat.module';
     ChatModule,
     AiChatModule,
   ],
-  controllers: [HealthController],
+  controllers: [HealthController, TenantsController],
   providers: [
     // Global Guard - ThrottlerGuard áp dụng cho toàn bộ API
     // Tự động chặn request vượt quá rate limit
@@ -232,5 +236,6 @@ export class AppModule implements NestModule {
     // Apply Correlation ID middleware to all routes
     // This runs before any interceptor and adds correlationId to request
     consumer.apply(CorrelationIdMiddleware).forRoutes('*');
+    consumer.apply(TenantMiddleware).forRoutes('*');
   }
 }

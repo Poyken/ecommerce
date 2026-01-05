@@ -20,6 +20,7 @@
 import { BrandCard } from "@/features/brands/components/brand-card";
 import { Link } from "@/i18n/routing";
 import { fadeInUp, itemScaleVariant, staggerContainer } from "@/lib/animations";
+import { cn } from "@/lib/utils";
 import { Brand } from "@/types/models";
 import { m } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -27,9 +28,19 @@ import { useTranslations } from "next-intl";
 
 interface FeaturedBrandsProps {
   brands: Brand[];
+  title?: string;
+  subtitle?: string;
+  opacity?: number;
+  grayscale?: boolean;
 }
 
-export function FeaturedBrands({ brands }: FeaturedBrandsProps) {
+export function FeaturedBrands({ 
+    brands, 
+    title, 
+    subtitle,
+    opacity = 1, 
+    grayscale = false 
+}: FeaturedBrandsProps) {
   const t = useTranslations("home");
 
   return (
@@ -46,8 +57,9 @@ export function FeaturedBrands({ brands }: FeaturedBrandsProps) {
             {t("featuredBrands")}
           </span>
           <h2 className="text-4xl font-black tracking-tighter uppercase italic">
-            {t("ourPartners")}
+            {title || t("ourPartners")}
           </h2>
+          {subtitle && <p className="text-muted-foreground mt-2">{subtitle}</p>}
         </div>
         <Link
           href="/brands"
@@ -64,7 +76,11 @@ export function FeaturedBrands({ brands }: FeaturedBrandsProps) {
         </Link>
       </m.div>
       <m.div
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6"
+        className={cn(
+            "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6",
+            grayscale && "grayscale",
+        )}
+        style={{ opacity }}
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"

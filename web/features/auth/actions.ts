@@ -107,6 +107,10 @@ export async function loginAction(prevState: unknown, formData: FormData) {
 
       // Revalidate to ensure all components get the new session state
       revalidatePath("/", "layout");
+
+      // Get permissions from token for client-side redirect logic
+      const permissions = getPermissionsFromToken(accessToken);
+      return { success: true, permissions };
     } else {
       return { error: "Login failed - No tokens received" };
     }
@@ -115,8 +119,6 @@ export async function loginAction(prevState: unknown, formData: FormData) {
       error: (error as Error).message || "Failed to login",
     };
   }
-
-  return { success: true };
 }
 
 /**

@@ -70,33 +70,30 @@ export class BrandsService extends BaseCrudService<
     // Use usage of Base Service helper
     // NOTE: When using `select`, `include` is ignored by Prisma.
     // So we put _count directly inside select.
-    const result = await this.findAllBase(
-      page,
-      limit,
-      where,
-      {}, // include - ignored when select is used
-      { name: 'asc' }, // Order by Name A-Z
-      {
-        id: true,
-        name: true,
-        imageUrl: true,
-        createdAt: true,
-        updatedAt: true,
-        _count: {
-          select: { products: true },
+    // Use direct Prisma call to avoid potential BaseCrudService complexity for now
+    const [data, total] = await Promise.all([
+      this.prisma.brand.findMany({
+        where,
+        take: limit,
+        skip: (page - 1) * limit,
+        orderBy: { name: 'asc' },
+        include: {
+          _count: {
+            select: { products: true },
+          },
         },
-      },
-    );
-
-    // Map count to productCount
-    const data = result.data.map((b) => ({
-      ...b,
-      productCount: (b as any)._count?.products || 0,
-    }));
+      }),
+      this.prisma.brand.count({ where }),
+    ]);
 
     return {
-      ...result,
       data,
+      meta: {
+        total,
+        page,
+        limit,
+        lastPage: Math.ceil(total / limit),
+      },
     };
   }
 

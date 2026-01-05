@@ -240,7 +240,7 @@ export class PermissionService {
    * @example
    * const canViewAdmin = await permissionService.hasAnyPermission('user-123', [
    *   'admin:read',
-   *   'admin:write'
+   *   'admin:update'
    * ]);
    */
   async hasAnyPermission(
