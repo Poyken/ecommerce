@@ -90,7 +90,7 @@ export class OutboxProcessor {
   }
 
   private async processEvent(event: any) {
-    const payload = event.payload as any;
+    const payload = event.payload;
 
     switch (event.type) {
       case 'ORDER_CREATED_STOCK_CHECK':

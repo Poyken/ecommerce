@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "npx nest build",
-    "build:seeds": "npx tsc prisma/seed.ts prisma/seed-products.ts prisma/seed-blog.ts prisma/seed-feature-flags.ts --outDir dist/prisma --esModuleInterop --skipLibCheck --resolveJsonModule",
+    "build:seeds": "npx tsc prisma/seed.ts --outDir dist/prisma --esModuleInterop --skipLibCheck --resolveJsonModule",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -21,19 +21,11 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "seed": "ts-node prisma/seed.ts",
-    "seed:products": "ts-node prisma/seed-products.ts",
-    "seed:blog": "ts-node prisma/seed-blog.ts",
-    "seed:feature-flags": "ts-node prisma/seed-feature-flags.ts",
-    "seed:all": "npm run seed && npm run seed:products && npm run seed:blog && npm run seed:feature-flags",
     "seed:prod": "node dist/prisma/seed.js",
-    "seed:products:prod": "node dist/prisma/seed-products.js",
-    "seed:blog:prod": "node dist/prisma/seed-blog.js",
-    "seed:feature-flags:prod": "node dist/prisma/seed-feature-flags.js",
-    "seed:all:prod": "npm run seed:prod && npm run seed:products:prod && npm run seed:blog:prod && npm run seed:feature-flags:prod",
     "cache:clear": "ts-node scripts/clear-cache.ts"
   },
   "prisma": {
-    "seed": "npm run seed:all"
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

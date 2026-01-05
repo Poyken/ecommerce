@@ -183,11 +183,11 @@ export function ProductCardBase({
         {actions?.quickView && (
           <>
             {!isCompact ? (
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-500 z-20 translate-y-4 group-hover:translate-y-0 text-center">
+              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] z-20 translate-y-2 group-hover:translate-y-0 text-center transform-gpu">
                 {actions.quickView}
               </div>
             ) : (
-              <div className="absolute inset-x-3 bottom-3 z-20 opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-300 translate-y-2 group-hover:translate-y-0">
+              <div className="absolute inset-x-3 bottom-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] translate-y-2 group-hover:translate-y-0 transform-gpu">
                 {actions.quickView}
               </div>
             )}
