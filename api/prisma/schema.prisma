@@ -366,6 +366,12 @@ model OrderItem {
   priceAtPurchase Decimal @db.Decimal(20, 2)
   order           Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   sku             Sku     @relation(fields: [skuId], references: [id])
+  
+  // Denormalized Data for Historial Integrity & Performance
+  productName     String?
+  productSlug     String?
+  imageUrl        String?
+
 
   @@unique([orderId, skuId])
   @@index([skuId])
@@ -662,4 +668,29 @@ model AiChatMessage {
 enum AiChatRole {
   USER
   ASSISTANT
+}
+
+// =====================================================================
+// RELIABILITY - Transactional Outbox Pattern
+// =====================================================================
+
+model OutboxEvent {
+  id            String    @id @default(uuid())
+  aggregateType String    // e.g. "ORDER"
+  aggregateId   String    // e.g. Order ID
+  type          String    // e.g. "ORDER_CREATED"
+  payload       Json
+  createdAt     DateTime  @default(now())
+  processedAt   DateTime?
+  status        OutboxStatus @default(PENDING)
+  error         String?
+
+  @@index([status, createdAt])
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
 }

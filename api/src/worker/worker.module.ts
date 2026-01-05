@@ -5,18 +5,26 @@ import { BullModule, InjectQueue } from '@nestjs/bullmq';
 import { Logger, Module, OnApplicationBootstrap } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { CacheWarmingProcessor } from './processors/cache-warming.processor';
+import { OutboxProcessor } from './processors/outbox.processor';
 
 @Module({
   imports: [
     BullModule.registerQueue({
       name: 'cache-warming',
     }),
+    BullModule.registerQueue({
+      name: 'orders-queue',
+    }),
+    BullModule.registerQueue({
+      name: 'email-queue',
+    }),
     ProductsModule,
     CategoriesModule,
     BrandsModule,
   ],
-  providers: [CacheWarmingProcessor],
+  providers: [CacheWarmingProcessor, OutboxProcessor],
 })
+
 /**
  * =====================================================================
  * WORKER MODULE - Xử lý tác vụ nền (Background Jobs)

@@ -39,6 +39,12 @@ import { Logger } from '@nestjs/common';
  * 3. 3RD PARTY INTEGRATION:
  * - Service này tích hợp chặt chẽ với Payment (VNPAY/MoMo) và Shipping (GHN).
  * - Logic đồng bộ trạng thái đơn hàng (Sync GHN) được tự động kích hoạt khi đơn chuyển sang 'PROCESSING'.
+ *
+ * 4. RELIABILITY & PERFORMANCE (New Features):
+ * - Transactional Outbox: Thay vì đẩy job vào Queue trực tiếp, ta lưu Event vào DB trong transaction
+ *   để đảm bảo không bao giờ mất job (Zero Data Loss).
+ * - Denormalization: Thông tin Product Name, Image được lưu cứng vào `OrderItem` ngay lúc mua.
+ *   -> Giúp xem lại lịch sử siêu nhanh mà không cần JOIN 5-6 bảng.
  * =====================================================================
  */
 
@@ -115,6 +121,9 @@ export class OrdersService {
           skuId: string;
           quantity: number;
           priceAtPurchase: number;
+          productName: string;
+          productSlug: string;
+          imageUrl?: string;
         }[] = [];
 
         // [P10 OPTIMIZATION] Batch fetch SKUs to avoid n+1 inside loop
@@ -127,6 +136,18 @@ export class OrdersService {
             stock: true,
             status: true,
             price: true,
+            imageUrl: true,
+            product: {
+              select: {
+                name: true,
+                slug: true,
+                images: {
+                  select: { url: true },
+                  orderBy: { displayOrder: 'asc' },
+                  take: 1,
+                },
+              },
+            },
           },
         });
         const skuMap = new Map(skus.map((s) => [s.id, s]));
@@ -160,6 +181,9 @@ export class OrdersService {
             skuId: item.skuId,
             quantity: item.quantity,
             priceAtPurchase: price,
+            productName: sku.product.name,
+            productSlug: sku.product.slug,
+            imageUrl: sku.imageUrl || sku.product.images[0]?.url,
           });
         }
 
@@ -316,6 +340,26 @@ export class OrdersService {
           },
         });
 
+        // --- 10. [RELIABILITY] OUTBOX PATTERN ---
+        // Save events to DB inside the transaction for atomic guarantee
+        await tx.outboxEvent.create({
+          data: {
+            aggregateType: 'ORDER',
+            aggregateId: order.id,
+            type: 'ORDER_CREATED_STOCK_CHECK',
+            payload: { orderId: order.id },
+          },
+        });
+
+        await tx.outboxEvent.create({
+          data: {
+            aggregateType: 'ORDER',
+            aggregateId: order.id,
+            type: 'ORDER_CREATED_POST_PROCESS',
+            payload: { orderId: order.id, userId },
+          },
+        });
+
         return order;
       },
       {
@@ -323,23 +367,6 @@ export class OrdersService {
         timeout: 10000, // 10 second timeout
       },
     );
-
-    // --- SCHEDULE STOCK RELEASE JOB (15 Minutes) ---
-    try {
-      await this.ordersQueue.add(
-        'check-stock-release',
-        { orderId: order.id },
-        {
-          delay: 15 * 60 * 1000, // 15 mins delay
-        },
-      );
-    } catch (e) {
-      this.logger.error(
-        `Failed to schedule stock release check for order ${order.id}`,
-        e,
-      );
-    }
-    // -----------------------------------------------
 
     let paymentUrl: string | undefined;
 
@@ -373,19 +400,6 @@ export class OrdersService {
       this.logger.error(`Payment failed for order ${order.id}`, error);
     }
 
-    // --- SCHEDULE POST-PROCESS JOB (Side Effects: Email, Noti) ---
-    try {
-      await this.ordersQueue.add('order-created-post-process', {
-        orderId: order.id,
-        userId: userId,
-      });
-    } catch (e) {
-      this.logger.error(
-        `Failed to schedule post-process for order ${order.id}`,
-        e,
-      );
-    }
-
     return { ...order, paymentUrl };
   }
 
@@ -411,18 +425,13 @@ export class OrdersService {
               id: true,
               quantity: true,
               priceAtPurchase: true,
+              productName: true,
+              productSlug: true,
+              imageUrl: true,
               sku: {
                 select: {
                   id: true,
                   skuCode: true,
-                  imageUrl: true,
-                  product: {
-                    select: {
-                      id: true,
-                      name: true,
-                      slug: true,
-                    },
-                  },
                 },
               },
             },
