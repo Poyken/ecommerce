@@ -109,6 +109,19 @@ export class ProductsController {
   }
 
   /**
+   * Lấy danh sách sản phẩm liên quan.
+   * Public API - Dùng cho trang PDP để suggest sản phẩm khác.
+   */
+  @Get(':id/related')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000) // 5 minutes
+  @ApiOperation({ summary: 'Lấy danh sách sản phẩm liên quan' })
+  async getRelated(@Param('id') id: string) {
+    const data = await this.productsService.getRelatedProducts(id);
+    return { data };
+  }
+
+  /**
    * Cập nhật thông tin sản phẩm.
    * Yêu cầu quyền: product:update
    *

@@ -4,16 +4,16 @@ import { UserAvatar } from "@/components/molecules/user-avatar";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuPortal,
-  DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AdminNotificationBell } from "@/features/admin/components/admin-notification-bell";
 import { logoutAction } from "@/features/auth/actions";
@@ -29,6 +29,7 @@ interface AdminHeaderProps {
     email: string;
     avatar?: string;
   };
+  title?: string;
 }
 
 /**
@@ -56,7 +57,7 @@ interface AdminHeaderProps {
  * - `backdrop-blur-md`: Tạo hiệu ứng mờ nền (Glassmorphism).
  * =====================================================================
  */
-export function AdminHeader({ user }: AdminHeaderProps) {
+export function AdminHeader({ user, title }: AdminHeaderProps) {
   const { setTheme } = useTheme();
   const t = useTranslations("admin");
   const tCommon = useTranslations("common");
@@ -68,7 +69,7 @@ export function AdminHeader({ user }: AdminHeaderProps) {
         <div className="flex items-center gap-4">
           {/* Page Title / Breadcrumbs - Refined */}
           <h2 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/80">
-            {t("adminPanel")}
+            {title || t("adminPanel")}
           </h2>
         </div>
 

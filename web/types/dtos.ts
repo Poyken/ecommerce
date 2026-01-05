@@ -309,3 +309,21 @@ export interface TopProduct {
   sold: number;
   revenue: number;
 }
+
+// ==================== TENANT DTOs ====================
+
+export interface CreateTenantDto {
+  name: string;
+  domain: string;
+  plan: "BASIC" | "PRO" | "ENTERPRISE";
+  themeConfig?: Record<string, any>;
+  adminEmail?: string;
+  adminPassword?: string;
+}
+
+export interface UpdateTenantDto {
+  name?: string;
+  domain?: string;
+  plan?: "BASIC" | "PRO" | "ENTERPRISE";
+  themeConfig?: Record<string, any>;
+}

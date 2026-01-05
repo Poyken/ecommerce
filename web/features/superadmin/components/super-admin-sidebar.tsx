@@ -1,0 +1,226 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/features/auth/providers/auth-provider";
+import { Link, usePathname } from "@/i18n/routing";
+import { cn } from "@/lib/utils";
+import {
+  ArrowLeft,
+  ArrowRight,
+  History,
+  LayoutDashboard,
+  Settings,
+  Shield,
+  ShieldCheck,
+  Store,
+  Users
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+
+export function SuperAdminSidebar() {
+  // We might want specific translations for superadmin or reuse admin
+  const t = useTranslations("admin.sidebar");
+  const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { hasPermission } = useAuth();
+
+  // Super Admin specific items
+  // Since Super Admins have ALL permissions, we might not need to filter by permission strictly,
+  // but it is good practice to keep it consistent.
+  const sidebarItems = [
+    {
+      title: "Overview",
+      items: [
+        {
+          title: "Platform Dashboard",
+          href: "/super-admin",
+          icon: LayoutDashboard,
+          permission: "dashboard:view",
+        },
+        {
+          title: "Security Hub",
+          href: "/super-admin/security",
+          icon: ShieldCheck,
+          permission: "superAdmin:read",
+        },
+      ],
+    },
+    {
+        title: "Tenancy",
+        items: [
+            {
+                title: "Tenants",
+                href: "/super-admin/tenants",
+                icon: Store,
+                permission: "tenant:read",
+            },
+        ]
+    },
+    {
+      title: "Platform System",
+      items: [
+        {
+          title: "Roles",
+          href: "/super-admin/roles",
+          icon: Shield,
+          permission: "role:read",
+        },
+        {
+          title: "Permissions",
+          href: "/super-admin/permissions",
+          icon: Settings,
+          permission: "permission:read",
+        },
+         {
+          title: "Users (Global)",
+          href: "/super-admin/users", 
+          icon: Users,
+          permission: "user:read",
+        },
+        {
+            title: "Audit Logs",
+            href: "/super-admin/audit-logs",
+            icon: History,
+            permission: "auditLog:read",
+        }
+      ],
+    },
+  ];
+
+  // We filter items, though Super Admin has everything.
+  const filteredSidebarItems = sidebarItems
+    .map((group) => ({
+      ...group,
+      items: group.items.filter((item) =>
+        item.permission ? hasPermission(item.permission) : true
+      ),
+    }))
+    .filter((group) => group.items.length > 0);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsCollapsed(true);
+      } else {
+        setIsCollapsed(false);
+      }
+    };
+
+    // Initial check
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return (
+    <aside
+      className={cn(
+        "z-20 border-r border-border bg-slate-900 text-slate-100 flex flex-col h-screen sticky top-0 transition-all duration-300",
+        isCollapsed ? "w-20" : "w-72"
+      )}
+    >
+      <div
+        className={cn(
+          "h-16 px-4 border-b border-slate-700 flex items-center",
+          isCollapsed ? "justify-center" : "justify-between"
+        )}
+      >
+        <div className={cn("font-bold text-xl tracking-tight flex items-center gap-2", isCollapsed ? "hidden" : "")}>
+            <Shield className="h-6 w-6 text-emerald-400" />
+            <span>Super Admin</span>
+        </div>
+        
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className={cn("h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-800", !isCollapsed && "ml-auto")}
+        >
+          {isCollapsed ? (
+            <ArrowRight className="h-4 w-4" />
+          ) : (
+            <ArrowLeft className="h-4 w-4" />
+          )}
+        </Button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto py-6 px-3 space-y-6 custom-scrollbar">
+        {filteredSidebarItems.map((group) => (
+          <div key={group.title}>
+            {!isCollapsed && (
+              <h3 className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 whitespace-nowrap">
+                {group.title}
+              </h3>
+            )}
+            <div className="space-y-1">
+              {group.items.map((item) => {
+                const isActive = item.href === "/super-admin" 
+                  ? pathname === "/super-admin" 
+                  : pathname.startsWith(item.href);
+                const Icon = item.icon;
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href as any}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative overflow-hidden",
+                      isActive
+                        ? "text-white bg-indigo-600 shadow-lg shadow-indigo-900/50"
+                        : "text-slate-400 hover:text-white hover:bg-slate-800",
+                      isCollapsed && "justify-center px-2"
+                    )}
+                    title={isCollapsed ? item.title : undefined}
+                  >
+                    <Icon
+                      className={cn(
+                        "h-5 w-5 transition-colors shrink-0",
+                        isActive
+                          ? "text-white"
+                          : "text-slate-400 group-hover:text-white"
+                      )}
+                    />
+                    {!isCollapsed && (
+                      <span className="whitespace-nowrap">{item.title}</span>
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="p-4 border-t border-slate-700 bg-slate-950/30">
+        <Link
+          href="/"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 border border-transparent hover:border-slate-700 group",
+            isCollapsed && "justify-center px-2"
+          )}
+          title={isCollapsed ? t("backToStore") : undefined}
+        >
+          <Store className="h-5 w-5 group-hover:text-emerald-400 transition-colors shrink-0" />
+          {!isCollapsed && (
+            <span className="whitespace-nowrap">{t("backToStore")}</span>
+          )}
+        </Link>
+          <Link
+          href="/admin"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 border border-transparent hover:border-slate-700 group mt-2",
+            isCollapsed && "justify-center px-2"
+          )}
+          title={isCollapsed ? "Tenant Admin" : undefined}
+        >
+          <LayoutDashboard className="h-5 w-5 group-hover:text-blue-400 transition-colors shrink-0" />
+          {!isCollapsed && (
+            <span className="whitespace-nowrap">Tenant Admin</span>
+          )}
+        </Link>
+      </div>
+    </aside>
+  );
+}

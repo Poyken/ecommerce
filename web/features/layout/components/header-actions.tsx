@@ -4,27 +4,29 @@ import { UserAvatar } from "@/components/molecules/user-avatar";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { logoutAction } from "@/features/auth/actions";
 import { Link } from "@/i18n/routing";
 import {
-    Laptop,
-    Loader2,
-    LogOut,
-    Moon,
-    Palette,
-    Sun,
-    User,
+  Laptop,
+  Loader2,
+  LogOut,
+  Moon,
+  Palette,
+  ShieldAlert,
+  ShieldCheck,
+  Sun,
+  User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
@@ -57,18 +59,29 @@ import { useState } from "react";
 
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 
+import { useAuth } from "@/features/auth/providers/auth-provider";
 import { User as UserType } from "@/types/models"; // Renamed to avoid conflict with lucide-react User icon
 
+
 interface HeaderActionsProps {
-  initialUser?: UserType | null; // Use UserType here
+  initialUser?: UserType | null;
+  permissions?: string[];
 }
 
-export function HeaderActions({ initialUser }: HeaderActionsProps) {
+export function HeaderActions({ initialUser, permissions: propsPermissions }: HeaderActionsProps) {
   const t = useTranslations("common");
+  const tNav = useTranslations("nav");
   const { setTheme } = useTheme();
+  const { hasPermission: contextHasPermission } = useAuth();
+  
   // Use initialUser directly from props (already fetched by layout)
   const user = initialUser;
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const hasPermission = (perm: string) => {
+    if (propsPermissions) return propsPermissions.includes(perm);
+    return contextHasPermission(perm);
+  };
 
   if (!user) {
     return (
@@ -159,10 +172,31 @@ export function HeaderActions({ initialUser }: HeaderActionsProps) {
               </DropdownMenuSubContent>
             </DropdownMenuPortal>
           </DropdownMenuSub>
+          {hasPermission("superAdmin:read") && (
+            <>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild className="text-primary font-bold">
+                <Link href="/super-admin" className="cursor-pointer">
+                  <ShieldAlert className="h-4 w-4" />
+                  <span>{tNav("superAdmin")}</span>
+                </Link>
+              </DropdownMenuItem>
+            </>
+          )}
+
+          {hasPermission("admin:read") && (
+            <DropdownMenuItem asChild>
+              <Link href="/admin" className="cursor-pointer">
+                <ShieldCheck className="h-4 w-4" />
+                <span>{tNav("admin")}</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
+          
           <DropdownMenuSeparator />
           <DropdownMenuItem
             disabled={isLoggingOut}
-            onClick={async (e) => {
+            onClick={async (e: React.MouseEvent) => {
               e.preventDefault();
               if (isLoggingOut) return;
 

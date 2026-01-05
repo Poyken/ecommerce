@@ -4,12 +4,12 @@ import { useAuth } from "@/features/auth/providers/auth-provider";
 import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import {
-    BookOpen,
-    Home,
-    Info,
-    Phone,
-    ShieldCheck,
-    ShoppingBag,
+  BookOpen,
+  Home,
+  Info,
+  Phone,
+  ShieldCheck,
+  ShoppingBag,
 } from "lucide-react";
 
 /**
@@ -89,7 +89,23 @@ export function HeaderNav({
         </Link>
       ))}
 
-      {hasPermission("admin:read") && (
+      {hasPermission("superAdmin:read") && (
+        <Link
+          href={"/super-admin" as any}
+          className={cn(
+            "transition-colors flex items-center gap-1 font-semibold relative w-fit after:absolute after:bottom-[-2px] after:left-0 after:h-[2px] after:bg-primary after:transition-all after:duration-300",
+            pathname?.startsWith("/super-admin")
+              ? "after:w-full"
+              : "hover:text-foreground/80 after:w-0 hover:after:w-full shadow-sm shadow-primary/20 bg-primary/5 px-3 py-1 rounded-full border border-primary/10"
+          )}
+        >
+          <span className="flex items-center gap-1.5 text-primary">
+            <ShieldCheck size={16} /> {t("superAdmin")}
+          </span>
+        </Link>
+      )}
+
+      {hasPermission("admin:read") && !hasPermission("superAdmin:read") && (
         <Link
           href={"/admin" as any}
           className={cn(

@@ -139,7 +139,10 @@ export async function login2FAAction(userId: string, token: string) {
     await createSession(accessToken, refreshToken);
     await generateCsrfToken();
     revalidatePath("/", "layout");
-    return { success: true };
+
+    // Get permissions from token for client-side redirect logic
+    const permissions = getPermissionsFromToken(accessToken);
+    return { success: true, permissions };
   } catch (error: unknown) {
     return {
       success: false,

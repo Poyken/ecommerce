@@ -106,7 +106,7 @@ export function RolesPageClient({
           params.delete("search");
         }
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        router.push(`/admin/roles?${params.toString()}` as any);
+        router.push(`/super-admin/roles?${params.toString()}` as any);
       });
     }
   }, [debouncedSearchTerm, router, searchParams]);

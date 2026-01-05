@@ -208,8 +208,9 @@
     }
   },
   "loading": {
-    "message": "Loading experience...",
-    "admin": "Loading admin...",
+    "message": "Initializing Luxury Environment",
+    "admin": "Accessing Platform Control",
+    "dashboard": "Syncing Real-time Analytics",
     "wishlist": "Loading your wishlist...",
     "checkout": "Preparing checkout...",
     "cart": "Loading your cart...",
@@ -446,6 +447,7 @@
     "profile": "Profile",
     "orders": "Orders",
     "admin": "Admin",
+    "superAdmin": "SuperAdmin",
     "more": "More",
     "quickLinks": "Quick Links"
   },
@@ -916,7 +918,20 @@
       "manageProducts": "Manage Products",
       "manageOrders": "Manage Orders",
       "manageUsers": "Manage Users",
-      "manageCoupons": "Manage Coupons"
+      "manageCoupons": "Manage Coupons",
+      "customizeAppearance": "Customize Appearance"
+    },
+    "storefrontPulse": {
+      "title": "Storefront Pulse",
+      "subtitle": "Digital Presence Snapshot",
+      "engine": "Live Content Engine",
+      "preview": "VIEW LIVE STORE",
+      "pages": "Digital Pages",
+      "blogs": "Published Articles",
+      "theme": "Interface Theme",
+      "updateStorefront": "Update Storefront",
+      "writeBlog": "Write New Blog",
+      "globalStyles": "Global Styles"
     },
     "alerts": {
       "lowStock": "Low Stock Alerts",

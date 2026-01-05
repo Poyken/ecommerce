@@ -673,3 +673,17 @@ export interface ChatConversation {
   lastMessage?: ChatMessage;
   unreadCount?: number;
 }
+
+// =============================================================================
+// 🏢 TENANTS - Quản lý cửa hàng (SaaS)
+// =============================================================================
+
+export interface Tenant {
+  id: string;
+  name: string;
+  domain: string;
+  themeConfig?: Record<string, any>;
+  plan: "BASIC" | "PRO" | "ENTERPRISE";
+  createdAt: string;
+  updatedAt: string;
+}

@@ -18,11 +18,11 @@ import { ShieldCheck } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import {
-    useActionState,
-    useEffect,
-    useRef,
-    useState,
-    useTransition,
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
 } from "react";
 
 /**
@@ -90,13 +90,29 @@ export function LoginPageContent() {
 
         // SIMPLE FIX: Just redirect. The sync logic handles guest cart which is important.
         // We should ideally run sync logic.
-        const syncToCloud = async () => {
-          // ... (Copy/Paste sync logic for now or refactor)
-          // For brevity, let's trust the router.refresh() and existing session.
-          // Actually sync logic checks localStorage. It should run on any successful login.
-        };
-        // Let's just reload window to /
-        window.location.href = callbackUrl;
+        // PRIORITY REDIRECT after 2FA
+        const permissions = (res as any).permissions || [];
+        const isSuperAdmin = permissions.includes("superAdmin:read") || permissions.includes("dashboard:view");
+        const isAdmin = permissions.includes("admin:read");
+
+        let targetUrl = isSuperAdmin ? "/super-admin" : (isAdmin ? "/admin" : (callbackUrl || "/"));
+        
+        try {
+          const url = new URL(targetUrl, window.location.origin);
+          if (url.origin === window.location.origin) {
+            targetUrl = url.pathname + url.search + url.hash;
+          }
+        } catch {
+          // Ignore invalid URL
+        }
+        const localePrefix = `/${locale}`;
+        if (!targetUrl.startsWith(localePrefix)) {
+          targetUrl = `${localePrefix}${
+            targetUrl === "/" ? "" : targetUrl
+          }`;
+        }
+        router.refresh();
+        window.location.href = targetUrl;
       } else {
         toast({
           variant: "destructive",
@@ -209,11 +225,12 @@ export function LoginPageContent() {
           } catch {
             console.error("Failed to sync cart");
           } finally {
-            // Check if user has admin:read permission and redirect to admin
+            // Priority-based navigation
             const permissions = state.permissions || [];
+            const isSuperAdmin = permissions.includes("superAdmin:read") || permissions.includes("dashboard:view");
             const isAdmin = permissions.includes("admin:read");
             
-            let targetUrl = isAdmin ? "/admin" : (callbackUrl || "/");
+            let targetUrl = isSuperAdmin ? "/super-admin" : (isAdmin ? "/admin" : (callbackUrl || "/"));
             try {
               const url = new URL(targetUrl, window.location.origin);
               if (url.origin === window.location.origin) {

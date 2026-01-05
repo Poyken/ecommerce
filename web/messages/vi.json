@@ -204,8 +204,9 @@
     }
   },
   "loading": {
-    "message": "Đang tải...",
-    "admin": "Đang tải trang quản trị...",
+    "message": "Khởi tạo không gian Luxury",
+    "admin": "Đang kết nối hệ thống Quản trị",
+    "dashboard": "Đồng bộ dữ liệu thời gian thực",
     "wishlist": "Đang tải danh sách yêu thích...",
     "checkout": "Đang chuẩn bị thanh toán...",
     "cart": "Đang tải giỏ hàng...",
@@ -440,6 +441,7 @@
     "profile": "Hồ sơ",
     "orders": "Đơn hàng",
     "admin": "Quản trị",
+    "superAdmin": "Super Admin",
     "more": "Thêm",
     "quickLinks": "Liên kết nhanh"
   },
@@ -906,7 +908,20 @@
       "manageProducts": "Quản lý sản phẩm",
       "manageOrders": "Quản lý đơn hàng",
       "manageUsers": "Quản lý người dùng",
-      "manageCoupons": "Quản lý mã giảm giá"
+      "manageCoupons": "Quản lý mã giảm giá",
+      "customizeAppearance": "Tùy chỉnh giao diện"
+    },
+    "storefrontPulse": {
+      "title": "Nhịp đập Cửa hàng",
+      "subtitle": "Tổng quan hiện diện số",
+      "engine": "Hệ thống Nội dung Trực tiếp",
+      "preview": "XEM CỬA HÀNG",
+      "pages": "Trang nội dung",
+      "blogs": "Bài viết đã đăng",
+      "theme": "Giao diện hiện tại",
+      "updateStorefront": "Cập nhật Cửa hàng",
+      "writeBlog": "Viết bài mới",
+      "globalStyles": "Phong cách tổng thể"
     },
     "alerts": {
       "lowStock": "Cảnh báo sắp hết hàng",

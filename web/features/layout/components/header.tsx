@@ -152,7 +152,7 @@ export function Header({
 
           {/* Notification & User Actions */}
           <NotificationBell />
-          <HeaderActions initialUser={initialUser} />
+          <HeaderActions initialUser={initialUser} permissions={permissions} />
         </div>
       </div>
     </StickyHeader>

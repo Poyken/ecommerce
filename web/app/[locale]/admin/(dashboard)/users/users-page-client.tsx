@@ -59,6 +59,7 @@ export function UsersPageClient({
   limit,
   counts,
   currentRole = "all",
+  basePath = "/admin/users",
 }: {
   initialUsers: User[];
   total: number;
@@ -66,11 +67,12 @@ export function UsersPageClient({
   limit: number;
   counts?: { total: number; admin: number; user: number };
   currentRole?: string;
+  basePath?: string;
 }) {
   const t = useTranslations("admin");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const { searchTerm, setSearchTerm, isPending, handleFilterChange } =
-    useAdminTable("/admin/users");
+    useAdminTable(basePath);
 
   const { hasPermission } = useAuth();
   const canUpdate = hasPermission("user:update");

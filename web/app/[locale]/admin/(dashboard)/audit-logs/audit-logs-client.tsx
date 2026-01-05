@@ -17,41 +17,41 @@
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  AdminActionBadge,
-  AdminEmptyState,
-  AdminPageHeader,
-  AdminTableWrapper,
+    AdminActionBadge,
+    AdminEmptyState,
+    AdminPageHeader,
+    AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useRouter } from "@/i18n/routing";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { format } from "date-fns";
 import {
-  Activity,
-  Clock,
-  Eye,
-  FileText,
-  Filter,
-  Globe,
-  Info,
-  Search,
-  User,
+    Activity,
+    Clock,
+    Eye,
+    FileText,
+    Filter,
+    Globe,
+    Info,
+    Search,
+    User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -64,11 +64,13 @@ export function AuditLogsClient({
   total,
   page,
   limit,
+  basePath = "/admin/audit-logs",
 }: {
   logs: Record<string, any>[];
   total: number;
   page: number;
   limit: number;
+  basePath?: string;
 }) {
   const t = useTranslations("admin");
   const { hasPermission } = useAuth();
@@ -103,7 +105,7 @@ export function AuditLogsClient({
           params.delete("search");
         }
         params.set("page", "1");
-        router.push(`/admin/audit-logs?${params.toString()}`);
+        router.push(`${basePath}?${params.toString()}`);
       });
     }
   }, [debouncedSearchTerm, router, searchParams]);
@@ -182,7 +184,7 @@ export function AuditLogsClient({
     startTransition(() => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("page", newPage.toString());
-      router.push(`/admin/audit-logs?${params.toString()}`);
+      router.push(`${basePath}?${params.toString()}`);
     });
   };
 
@@ -220,7 +222,7 @@ export function AuditLogsClient({
                 params.delete("filter");
               }
               params.set("page", "1");
-              router.push(`/admin/audit-logs?${params.toString()}`);
+              router.push(`${basePath}?${params.toString()}`);
             });
           }}
         >

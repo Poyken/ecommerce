@@ -1,46 +1,49 @@
 import { UserAvatar } from "@/components/molecules/user-avatar";
 import { Badge } from "@/components/ui/badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
 import {
-  getAnalyticsStatsAction,
-  getReviewsAction,
-  getSalesDataAction,
-  getTopProductsAction,
+    getAnalyticsStatsAction,
+    getBlogStatsAction,
+    getPagesAction,
+    getReviewsAction,
+    getSalesDataAction,
+    getTopProductsAction,
 } from "@/features/admin/actions";
 import { AdminAlerts } from "@/features/admin/components/admin-alerts";
 import {
-  AdminPageHeader,
-  AdminTableWrapper,
+    AdminPageHeader,
+    AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import {
-  LazyBestSellersChart as BestSellersChart,
-  LazySalesTrendChart as SalesTrendChart,
+    LazyBestSellersChart as BestSellersChart,
+    LazySalesTrendChart as SalesTrendChart,
 } from "@/features/admin/components/lazy-admin-charts";
 import { QuickActions } from "@/features/admin/components/quick-actions";
+import { StorefrontPulse } from "@/features/admin/components/storefront-pulse";
 import { getProfileAction } from "@/features/profile/actions";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";
 import { cn, formatCurrency } from "@/lib/utils";
 import { AnalyticsStats } from "@/types/dtos";
 import {
-  AlertCircle,
-  ArrowUpRight,
-  Clock,
-  DollarSign,
-  ExternalLink,
-  LayoutDashboard,
-  Package,
-  ShoppingCart,
-  Star,
-  TrendingUp,
-  Users,
+    AlertCircle,
+    ArrowUpRight,
+    Clock,
+    DollarSign,
+    ExternalLink,
+    LayoutDashboard,
+    Package,
+    ShoppingCart,
+    Star,
+    TrendingUp,
+    Users,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
@@ -90,7 +93,7 @@ export default async function AdminDashboardPage() {
   const t = await getTranslations("admin");
 
   // Parallel data fetching for maximum performance
-  const [statsRes, salesRes, topProductsRes, ordersRes, skusRes, reviewsRes] =
+  const [statsRes, salesRes, topProductsRes, ordersRes, skusRes, reviewsRes, pagesRes, blogStatsRes] =
     await Promise.all([
       getAnalyticsStatsAction(),
       getSalesDataAction(7),
@@ -100,7 +103,12 @@ export default async function AdminDashboardPage() {
         "/skus?limit=5&stockLimit=5&includeProduct=true"
       ),
       getReviewsAction(1, 4), // 4 recent reviews
+      getPagesAction(),
+      getBlogStatsAction(),
     ]);
+
+  const pagesCount = (pagesRes as any).data?.length || 0;
+  const publishedBlogs = (blogStatsRes as any).data?.published || 0;
 
   const stats = (statsRes.data || {
     totalRevenue: 0,
@@ -166,6 +174,12 @@ export default async function AdminDashboardPage() {
 
       {/* Quick Actions */}
       <QuickActions />
+
+      {/* Storefront Customization Pulse */}
+      <StorefrontPulse 
+        pagesCount={pagesCount}
+        publishedBlogs={publishedBlogs}
+      />
 
       {/* Key Metric Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

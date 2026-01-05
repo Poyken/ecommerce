@@ -63,7 +63,7 @@ export function AdminSidebar() {
           title: t("dashboard"),
           href: "/admin",
           icon: LayoutDashboard,
-          permission: "admin:read",
+          permission: "dashboard:view",
         },
         {
           title: t("notifications"),
@@ -129,28 +129,28 @@ export function AdminSidebar() {
           permission: "user:read",
         },
         {
-          title: t("roles"),
-          href: "/admin/roles",
-          icon: Shield,
-          permission: "role:read",
-        },
-        {
-          title: t("permissions"),
-          href: "/admin/permissions",
-          icon: Settings,
-          permission: "permission:read",
-        },
-        {
           title: t("auditLogs"),
           href: "/admin/audit-logs",
           icon: History,
           permission: "auditLog:read",
         },
         {
+          title: "Roles",
+          href: "/admin/roles",
+          icon: Shield,
+          permission: "role:read",
+        },
+        {
+          title: "Permissions",
+          href: "/admin/permissions",
+          icon: Settings,
+          permission: "permission:read",
+        },
+        {
           title: "Chat Support",
           href: "/admin/chat",
           icon: MessageSquare,
-          permission: "user:read",
+          permission: "chat:read",
         },
       ],
     },
@@ -259,9 +259,6 @@ export function AdminSidebar() {
                   <Link
                     key={item.href}
                     href={item.href as any}
-                    onClick={(e) => {
-                      if (isActive) e.preventDefault();
-                    }}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative overflow-hidden",
                       isActive
@@ -304,6 +301,22 @@ export function AdminSidebar() {
             <span className="whitespace-nowrap">{t("backToStore")}</span>
           )}
         </Link>
+
+        {hasPermission("superAdmin:read") && (
+          <Link
+            href="/super-admin"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-indigo-600 bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 transition-all duration-200 group mt-2",
+              isCollapsed && "justify-center px-2"
+            )}
+            title={isCollapsed ? "Platform Control" : undefined}
+          >
+            <Shield className="h-5 w-5 group-hover:scale-110 transition-transform shrink-0" />
+            {!isCollapsed && (
+              <span className="whitespace-nowrap font-bold">Platform Control</span>
+            )}
+          </Link>
+        )}
       </div>
     </aside>
   );

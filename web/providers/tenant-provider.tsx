@@ -18,7 +18,7 @@ async function getTenantConfig(): Promise<TenantConfig | null> {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
 
     // We MUST pass the host header to the API so it can identify the tenant
-    const res = await fetch(`${apiUrl}/tenants/config`, {
+    const res = await fetch(`${apiUrl}/tenants/current/config`, {
       headers: {
         'x-tenant-domain': host,
       },

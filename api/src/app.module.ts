@@ -44,6 +44,7 @@ import { ReviewsModule } from '@/reviews/reviews.module';
 import { RolesModule } from '@/roles/roles.module';
 import { ShippingModule } from '@/shipping/shipping.module';
 import { SkusModule } from '@/skus/skus.module';
+import { TenantsModule } from '@/tenants/tenants.module';
 import { UsersModule } from '@/users/users.module';
 import { WishlistModule } from '@/wishlist/wishlist.module';
 import { AppThrottlerGuard } from '@core/guards/app.throttler.guard';
@@ -69,7 +70,7 @@ import { LoggingInterceptor } from '@core/interceptors/logging.interceptor';
 import { CorrelationIdMiddleware } from '@core/middlewares/correlation-id.middleware';
 import { RedisService } from '@core/redis/redis.service';
 import { TenantMiddleware } from '@core/tenant/tenant.middleware';
-import { TenantsController } from '@core/tenant/tenants.controller';
+// import { TenantsController } from '@core/tenant/tenants.controller'; // REMOVED
 import { CacheModule } from '@nestjs/cache-manager';
 import { AiChatModule } from './ai-chat/ai-chat.module';
 import { ChatModule } from './chat/chat.module';
@@ -147,6 +148,7 @@ import { ChatModule } from './chat/chat.module';
 
     // 6. UsersModule - Quản lý người dùng
     UsersModule,
+    TenantsModule,
 
     // AddressesModule - Quản lý địa chỉ
     AddressesModule,
@@ -209,7 +211,7 @@ import { ChatModule } from './chat/chat.module';
     ChatModule,
     AiChatModule,
   ],
-  controllers: [HealthController, TenantsController],
+  controllers: [HealthController],
   providers: [
     // Global Guard - ThrottlerGuard áp dụng cho toàn bộ API
     // Tự động chặn request vượt quá rate limit

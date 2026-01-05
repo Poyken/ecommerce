@@ -4,11 +4,12 @@ import { AdminMetadataProvider } from "@/features/admin/providers/admin-metadata
 import { AuthRedirect } from "@/features/auth/components/auth-redirect";
 import { AuthProvider } from "@/features/auth/providers/auth-provider";
 import {
-    getNotificationsAction,
-    getUnreadCountAction,
+  getNotificationsAction,
+  getUnreadCountAction,
 } from "@/features/notifications/actions";
 import { NotificationInitializer } from "@/features/notifications/components/notification-initializer";
 import { getProfileAction } from "@/features/profile/actions";
+import { redirect } from "@/i18n/routing";
 import { getPermissionsFromToken } from "@/lib/permission-utils";
 import { getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
@@ -69,6 +70,12 @@ async function DynamicAdminContent({
   if (!user) {
     console.warn("[AdminLayout] No user found, redirecting to /login");
     return <AuthRedirect />;
+  }
+
+  // Check admin permission
+  if (!permissions.includes('admin:read')) {
+    console.warn("[AdminLayout] User missing admin:read permission");
+    redirect("/" as any);
   }
 
   const initialBrands =

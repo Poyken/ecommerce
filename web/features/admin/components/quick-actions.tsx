@@ -2,7 +2,7 @@
 
 import { GlassCard } from "@/components/shared/glass-card";
 import { Link } from "@/i18n/routing";
-import { Package, ShoppingBag, Ticket, Users } from "lucide-react";
+import { Package, Palette, ShoppingBag, Ticket, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 /**
@@ -61,10 +61,18 @@ export function QuickActions() {
       bg: "bg-amber-500/10",
       border: "border-amber-500/20",
     },
+    {
+      label: "Customize Appearance",
+      icon: Palette,
+      href: "/admin/pages",
+      color: "text-indigo-600 dark:text-indigo-400",
+      bg: "bg-indigo-500/10",
+      border: "border-indigo-500/20",
+    },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
       {actions.map((action) => (
         <Link key={action.label} href={action.href}>
           <GlassCard

@@ -42,7 +42,9 @@ import {
   CreateCategoryDto,
   CreateCouponDto,
   CreateProductDto,
+  CreateTenantDto,
   CreateUserDto,
+  PaginatedData,
   SalesDataPoint,
   TopProduct,
   UpdateBrandDto,
@@ -62,6 +64,7 @@ import {
   Review,
   RoleWithPermissions,
   Sku,
+  Tenant,
   User,
 } from "@/types/models";
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -87,7 +90,15 @@ async function handleAdminAction<T>(
     // Revalidate paths (for page cache)
     revalidatePaths.forEach((path) => revalidatePath(path));
     return { success: true, data: result };
-  } catch (error: unknown) {
+  } catch (error: any) {
+    // If it's a Next.js redirect error, we must re-throw it so Next.js handles it
+    if (
+      error?.message === "NEXT_REDIRECT" ||
+      (error?.digest && error.digest.startsWith("NEXT_REDIRECT"))
+    ) {
+      throw error;
+    }
+
     const message =
       error instanceof Error ? error.message : "An unknown error occurred";
     return { error: message };
@@ -166,7 +177,13 @@ export async function getUsersAction(
     }
     const response = await http<ApiResponse<User[]>>(url);
     return safeUnwrapApiResponse<User>(response);
-  } catch (error: unknown) {
+  } catch (error: any) {
+    if (
+      error?.message === "NEXT_REDIRECT" ||
+      (error?.digest && error.digest.startsWith("NEXT_REDIRECT"))
+    ) {
+      throw error;
+    }
     console.error("getUsersAction error:", error);
     return { error: (error as Error).message };
   }
@@ -262,7 +279,13 @@ export async function getRolesAction(page = 1, limit = 100, search?: string) {
     }
     const res = await http<ApiResponse<RoleWithPermissions[]>>(url);
     return safeUnwrapApiResponse<RoleWithPermissions>(res);
-  } catch (error: unknown) {
+  } catch (error: any) {
+    if (
+      error?.message === "NEXT_REDIRECT" ||
+      (error?.digest && error.digest.startsWith("NEXT_REDIRECT"))
+    ) {
+      throw error;
+    }
     return { error: (error as Error).message };
   }
 }
@@ -318,7 +341,13 @@ export async function getPermissionsAction() {
   try {
     const res = await http<ApiResponse<Permission[]>>("/roles/permissions");
     return safeUnwrapApiResponse<Permission>(res);
-  } catch (error: unknown) {
+  } catch (error: any) {
+    if (
+      error?.message === "NEXT_REDIRECT" ||
+      (error?.digest && error.digest.startsWith("NEXT_REDIRECT"))
+    ) {
+      throw error;
+    }
     return { error: (error as Error).message };
   }
 }
@@ -864,7 +893,13 @@ export async function getAuditLogsAction(
     }
     const response = await http<ApiResponse<unknown[]>>(url);
     return response;
-  } catch (error: unknown) {
+  } catch (error: any) {
+    if (
+      error?.message === "NEXT_REDIRECT" ||
+      (error?.digest && error.digest.startsWith("NEXT_REDIRECT"))
+    ) {
+      throw error;
+    }
     console.error("getAuditLogsAction error:", error);
     return { error: error instanceof Error ? error.message : "Unknown error" };
   }
@@ -1031,6 +1066,27 @@ export async function getInventoryAnalysisAction() {
   }
 }
 // =============================================================================
+// 📝 BLOGS - Quản lý bài viết
+// =============================================================================
+
+export async function getBlogStatsAction() {
+  try {
+    const res = await http<ApiResponse<any[]>>("/blogs?limit=1000");
+    const blogs = res.data || [];
+    return {
+      success: true,
+      data: {
+        total: blogs.length,
+        published: blogs.filter((b: any) => b.publishedAt).length,
+        drafts: blogs.filter((b: any) => !b.publishedAt).length,
+      },
+    };
+  } catch (error: unknown) {
+    return { error: (error as Error).message };
+  }
+}
+
+// =============================================================================
 // 📄 PAGES - Quản lý trang động (CMS)
 // =============================================================================
 
@@ -1081,4 +1137,108 @@ export async function deletePageAction(id: string): Promise<ActionResult> {
     () => http<void>(`/pages/admin/${id}`, { method: "DELETE" }),
     ["/admin/pages", "/"]
   );
+}
+
+// =============================================================================
+// TENANTS MANAGEMENT (SUPER ADMIN)
+// =============================================================================
+
+export async function getTenantsAction(): Promise<
+  ActionResult<PaginatedData<Tenant>>
+> {
+  const session = await getSession();
+  if (!session) throw new Error("Unauthorized");
+
+  return handleAdminAction(async () => {
+    // API might return ApiResponse<Tenant[]> or direct Tenant[]
+    const res = await http<any>("/tenants", {
+      next: { tags: ["tenants"] },
+    });
+
+    // Use safe unwrapping logic
+    const tenants = Array.isArray(res)
+      ? res
+      : res?.data?.data || res?.data || [];
+    const meta = res?.meta ||
+      res?.data?.meta || {
+        total: tenants.length,
+        page: 1,
+        lastPage: 1,
+        limit: 100,
+      };
+
+    return {
+      data: tenants,
+      meta: meta,
+    };
+  });
+}
+
+export async function createTenantAction(
+  data: CreateTenantDto
+): Promise<ActionResult<Tenant>> {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  return handleAdminAction(
+    async () => {
+      // Must stringify body
+      return http<Tenant>("/tenants", {
+        method: "POST",
+        body: JSON.stringify(data),
+      });
+    },
+    ["/super-admin/tenants"],
+    ["tenants"]
+  );
+}
+
+export async function updateTenantAction(
+  id: string,
+  data: Partial<CreateTenantDto>
+): Promise<ActionResult<Tenant>> {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  return handleAdminAction(
+    async () => {
+      return http<Tenant>(`/tenants/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      });
+    },
+    ["/super-admin/tenants", `/super-admin/tenants/${id}`],
+    ["tenants"]
+  );
+}
+
+export async function deleteTenantAction(
+  id: string
+): Promise<ActionResult<void>> {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  return handleAdminAction(
+    async () => {
+      await http(`/tenants/${id}`, {
+        method: "DELETE",
+      });
+    },
+    ["/admin/tenants"],
+    ["tenants"]
+  );
+}
+
+export async function getTenantAction(
+  id: string
+): Promise<ActionResult<Tenant>> {
+  const session = await getSession();
+  if (!session) return { error: "Unauthorized" };
+
+  try {
+    const res = await http<Tenant>(`/tenants/${id}`);
+    return { data: res };
+  } catch (e) {
+    return { error: (e as Error).message };
+  }
 }

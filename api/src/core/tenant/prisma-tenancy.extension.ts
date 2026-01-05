@@ -22,7 +22,6 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
             'Notification',
             'ChatConversation',
             'ChatMessage',
-            'Cart',
             'CartItem',
             'Sku',
             'SkuImage',

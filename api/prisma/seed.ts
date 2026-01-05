@@ -398,10 +398,11 @@ const AUTHORS = [
 // MAIN SEED FUNCTION
 // ===================================
 async function main() {
-  console.log('🌱 STARTING MASTER SEED (CONSOLIDATED)...');
+  console.log('🌱 STARTING MASTER SEED (MULTI-TENANT SETUP)...');
 
   // 1. CLEAN DB
   console.log('\n🧹 Cleaning up database...');
+  // ... (Keep existing clean logic, it's fine)
   const deleteTableNames = [
     'OutboxEvent',
     'InventoryLog',
@@ -425,7 +426,7 @@ async function main() {
     'ProductImage',
     'Sku',
     'Product',
-    'Brand',
+    'Brand', // Brand/Category are shared now, but we'll reuse them
     'Category',
     'Page',
     'Tenant',
@@ -453,316 +454,357 @@ async function main() {
   }
   console.log('✅ Database cleaned.');
 
-  // 2. SEED TENANTS
-  console.log('\n🏢 Seeding Tenants...');
-  const defaultTenant = await prisma.tenant.create({
-    data: {
-      name: 'Default Store',
-      domain: 'localhost',
-      plan: 'BASIC',
-      themeConfig: { primaryColor: '#3b82f6', borderRadius: '0.5rem' },
-    },
-  });
-  console.log('✅ Tenants created.');
-
-  // 3. SEED CMS PAGES
-  await prisma.page.create({
-    data: {
-      tenantId: defaultTenant.id,
-      slug: '/',
-      title: 'Home',
-      isPublished: true,
-      blocks: [
-        {
-          id: 'hero-1',
-          type: 'Hero',
-          props: {
-            title: 'Welcome to the Future',
-            subtitle: 'Experience our new CMS-driven architecture.',
-            ctaText: 'Shop Now',
-            ctaLink: '/products',
-          },
-        },
-        {
-          id: 'features-1',
-          type: 'Features',
-          props: {
-            title: 'Why Choose Us?',
-            items: [
-              {
-                title: 'Fast Shipping',
-                description: '2-day delivery worldwide.',
-              },
-              {
-                title: 'Secure Payment',
-                description: '100% secure transactions.',
-              },
-            ],
-          },
-        },
-      ],
-    },
-  });
-  console.log('✅ CMS Pages created.');
-
-  // 4. SEED TRANSLATIONS
-  const translations = [
-    {
-      tenantId: defaultTenant.id,
-      locale: 'en',
-      key: 'home.welcome',
-      value: 'Welcome to Our New Store!',
-    },
-    {
-      tenantId: defaultTenant.id,
-      locale: 'vi',
-      key: 'home.welcome',
-      value: 'Chào mừng đến với cửa hàng mới!',
-    },
-  ];
-  for (const t of translations) {
-    await prisma.translation.create({ data: t });
-  }
-  console.log('✅ Translations created.');
-
   // ===================================
-  // 5. SEED RBAC & ADMIN
+  // 2. DEFINE PERMISSIONS
   // ===================================
-  /**
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH (RBAC Seed):
-   *
-   * 1. Permission (Quyền hạn): Là đơn vị nhỏ nhất, ví dụ: 'product:create', 'user:delete'.
-   * 2. Role (Vai trò): Tập hợp nhiều Permission. Ví dụ: 'ADMIN' có tất cả quyền, 'GUEST' chỉ có quyền xem.
-   * 3. Logic Seeding:
-   *    - Tạo danh sách FULL permissions cho hệ thống.
-   *    - Tạo Role ADMIN.
-   *    - Gán TOÀN BỘ permissions cho Role ADMIN.
-   *    - Tạo user Admin và gán Role ADMIN cho user đó.
-   */
-  console.log('\n🛡️ Seeding RBAC & Admin...');
-  const permissions = [
-    // Users
+  console.log('\n🛡️ Seeding Permissions...');
+  const PERMISSIONS_LIST = [
+    // TENANT MANAGEMENT (Super Admin Only)
+    'tenant:read',
+    'tenant:create',
+    'tenant:update',
+    'tenant:delete',
+    'tenant:switch',
+
+    // USERS
     'user:read',
     'user:create',
     'user:update',
     'user:delete',
-    // Products
+
+    // CATALOG (Product, Category, Brand)
     'product:read',
     'product:create',
     'product:update',
     'product:delete',
-    // Orders
-    'order:read',
-    'order:create',
-    'order:update',
-    'order:delete',
-    // Categories
     'category:read',
     'category:create',
     'category:update',
     'category:delete',
-    // Brands
     'brand:read',
     'brand:create',
     'brand:update',
     'brand:delete',
-    // Blogs
+    'sku:read',
+    'sku:create',
+    'sku:update',
+    'sku:delete',
+
+    // ORDERS & SALES
+    'order:read',
+    'order:create',
+    'order:update',
+    'order:delete',
+    'coupon:read',
+    'coupon:create',
+    'coupon:update',
+    'coupon:delete',
+
+    // CONTENT
     'blog:read',
     'blog:create',
     'blog:update',
     'blog:delete',
-    // Reviews
+    'page:read',
+    'page:create',
+    'page:update',
+    'page:delete',
     'review:read',
     'review:create',
     'review:update',
     'review:delete',
     'review:approve',
-    // Notifications
+
+    // PLATFORM ACCESS
+    'superAdmin:read',
+    'superAdmin:update',
+    'admin:read',
+    'admin:update',
+
+    // SYSTEM
     'notification:read',
     'notification:create',
     'notification:delete',
     'notification:send',
-    // Chat
     'chat:read',
     'chat:send',
     'chat:manage',
-    // Coupons
-    'coupon:read',
-    'coupon:create',
-    'coupon:update',
-    'coupon:delete',
-    // Inventory
     'inventory:read',
     'inventory:update',
     'inventory:log',
-    // Roles & Permissions (Security)
     'role:read',
     'role:create',
     'role:update',
     'role:delete',
     'permission:read',
-    'permission:create',
-    'permission:update',
-    'permission:delete',
-    // Dashboard
     'dashboard:view',
     'dashboard:analytics',
     'analytics:read',
-    // System & Feature Flags
     'feature_flag:read',
     'feature_flag:create',
     'feature_flag:update',
     'feature_flag:delete',
-    // Admin & System
-    'admin:read',
-    'admin:update',
     'system:settings',
     'system:logs',
     'auditLog:read',
-    // Pages (CMS)
-    'page:read',
-    'page:create',
-    'page:update',
-    'page:delete',
-    // SKUs (Internal Product variants)
-    'sku:read',
-    'sku:create',
-    'sku:update',
-    'sku:delete',
+
+    // WISHLIST
+    'wishlist:read',
+    'wishlist:create',
+    'wishlist:delete',
   ];
 
-  for (const perm of permissions) {
+  for (const perm of PERMISSIONS_LIST) {
     await prisma.permission.upsert({
       where: { name: perm },
       update: {},
       create: { name: perm },
     });
   }
-
-  const adminRole = await prisma.role.upsert({
-    where: { name: 'ADMIN' },
-    update: {},
-    create: { name: 'ADMIN' },
-  });
   const allPermissions = await prisma.permission.findMany();
+
+  // ===================================
+  // 3. DEFINE ROLES
+  // ===================================
+  console.log('🛡️ Seeding Roles...');
+
+  // 3.1 SUPER_ADMIN Role (Global)
+  const superAdminRole = await prisma.role.create({
+    data: { name: 'SUPER_ADMIN' },
+  });
+  // Super Admin gets ALL permissions
   await prisma.rolePermission.createMany({
     data: allPermissions.map((p) => ({
+      roleId: superAdminRole.id,
+      permissionId: p.id,
+    })),
+    skipDuplicates: true,
+  });
+
+  // 3.2 ADMIN Role (Tenant Level)
+  // Exclude "tenant:*", "system:*", "role:*", "permission:*" permissions
+  // This ensures they cannot manage platform-level resources.
+  const tenantAdminPermissions = allPermissions.filter(
+    (p) =>
+      !p.name.startsWith('tenant:') &&
+      !p.name.startsWith('system:') &&
+      !p.name.startsWith('role:') &&
+      !p.name.startsWith('permission:') &&
+      !p.name.startsWith('superAdmin:'),
+  );
+  const adminRole = await prisma.role.create({
+    data: { name: 'ADMIN' },
+  });
+  await prisma.rolePermission.createMany({
+    data: tenantAdminPermissions.map((p) => ({
       roleId: adminRole.id,
       permissionId: p.id,
     })),
     skipDuplicates: true,
   });
 
-  const hashPassword = await bcrypt.hash('123456', 10);
-  const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@example.com' },
-    update: {},
-    create: {
-      email: 'admin@example.com',
-      password: hashPassword,
-      firstName: 'Super',
-      lastName: 'Admin',
-      tenantId: defaultTenant.id,
-    },
+  // 3.3 USER Role (Customer Level)
+  // Limited permissions for interaction features
+  const userPermissions = allPermissions.filter((p) =>
+    [
+      'review:create',
+      'chat:send',
+      'wishlist:create',
+      'wishlist:read',
+      'wishlist:delete',
+    ].includes(p.name),
+  );
+  const userRole = await prisma.role.create({
+    data: { name: 'USER' },
   });
-  await prisma.userRole.createMany({
-    data: [{ userId: adminUser.id, roleId: adminRole.id }],
+  await prisma.rolePermission.createMany({
+    data: userPermissions.map((p) => ({
+      roleId: userRole.id,
+      permissionId: p.id,
+    })),
     skipDuplicates: true,
   });
-  console.log('✅ Admin created with FULL permissions.');
 
-  // 6. SEED FEATURE FLAGS
-  for (const flag of FEATURE_FLAGS) {
-    await prisma.featureFlag.upsert({
-      where: { key: flag.key },
-      update: {},
-      create: { ...flag, tenantId: defaultTenant.id },
+  // ===================================
+  // 4. SEED USERS & TENANTS
+  // ===================================
+  const hashPassword = await bcrypt.hash('123456', 10);
+
+  // 4.1 SUPER ADMIN USER (No Tenant ID - Global)
+  const superAdminUser = await prisma.user.create({
+    data: {
+      email: 'super@platform.com',
+      password: hashPassword,
+      firstName: 'The',
+      lastName: 'Architect',
+      tenantId: null, // Global User
+    },
+  });
+  await prisma.userRole.create({
+    data: { userId: superAdminUser.id, roleId: superAdminRole.id },
+  });
+  console.log('✅ SUPER ADMIN Created: super@platform.com / 123456');
+
+  // 4.2 TENANT 1: FURNITURE STORE
+  const furnitureTenant = await prisma.tenant.create({
+    data: {
+      name: 'Luxury Furniture',
+      domain: 'furniture.local',
+      themeConfig: {
+        primaryColor: '#8B4513',
+        fontFamily: 'Playfair Display',
+        borderRadius: '0px',
+      },
+    },
+  });
+
+  const furnitureAdmin = await prisma.user.create({
+    data: {
+      email: 'admin@furniture.local',
+      password: hashPassword,
+      firstName: 'Furniture',
+      lastName: 'Manager',
+      tenantId: furnitureTenant.id,
+    },
+  });
+  await prisma.userRole.create({
+    data: { userId: furnitureAdmin.id, roleId: adminRole.id },
+  });
+
+  // 4.3 FURNITURE CUSTOMER
+  const furnitureUser = await prisma.user.create({
+    data: {
+      email: 'user@furniture.local',
+      password: hashPassword,
+      firstName: 'John',
+      lastName: 'Doe',
+      tenantId: furnitureTenant.id,
+    },
+  });
+  await prisma.userRole.create({
+    data: { userId: furnitureUser.id, roleId: userRole.id },
+  });
+
+  // 4.4 TENANT 2: FLOWER STORE
+  const flowerTenant = await prisma.tenant.create({
+    data: {
+      name: 'Bella Flora',
+      domain: 'flowers.local',
+      plan: 'BASIC',
+      themeConfig: {
+        primaryColor: '#FF69B4',
+        fontFamily: 'Dancing Script',
+        borderRadius: '16px',
+      },
+    },
+  });
+
+  const flowerAdmin = await prisma.user.create({
+    data: {
+      email: 'admin@flowers.local',
+      password: hashPassword,
+      firstName: 'Rose',
+      lastName: 'Gardener',
+      tenantId: flowerTenant.id,
+    },
+  });
+  await prisma.userRole.create({
+    data: { userId: flowerAdmin.id, roleId: adminRole.id },
+  });
+
+  console.log('✅ Tenants & Validated Admins Created.');
+
+  // ===================================
+  // 5. SEED DATA FOR TENANTS
+  // ===================================
+
+  // 5.1 GLOBAL CATALOG (Shared Brands/Categories for now as per schema)
+  // In a stricter system, these would be tenant-specific too, but schema implies shared.
+  console.log('\n📦 Seeding Shared Catalog...');
+  const brands = await Promise.all(
+    BRANDS_DATA.map((b) => prisma.brand.create({ data: b })),
+  );
+  const categories = await Promise.all(
+    CATEGORIES_DATA.map((c) => prisma.category.create({ data: c })),
+  );
+
+  // 5.2 TENANT SPECIFIC PRODUCTS
+  // Furniture Store Products
+  // Filter categories relevant to furniture (just taking first 5 for demo)
+  for (const cat of categories.slice(0, 5)) {
+    const templates = PRODUCT_TEMPLATES.sofas; // Simplify using sofa templates for demo
+    // Create 10 products for Furniture Tenant
+    for (let i = 0; i < 10; i++) {
+      const prod = await prisma.product.create({
+        data: {
+          name: `Luxury ${cat.name} ${i}`,
+          slug: `furn-${slugify(cat.name)}-${i}`,
+          description: 'Premium furniture item.',
+          categoryId: cat.id,
+          brandId: getRandomElement(brands).id,
+          minPrice: getRandomPrice(500),
+          maxPrice: getRandomPrice(500),
+          tenantId: furnitureTenant.id, // <--- SCOPED TO FURNITURE
+          images: {
+            create: [
+              {
+                url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80',
+                displayOrder: 0,
+              },
+            ],
+          },
+        },
+      });
+      // Create SKUs
+      await prisma.sku.create({
+        data: {
+          skuCode: `${prod.slug}-STD`,
+          price: prod.minPrice,
+          stock: 100,
+          productId: prod.id,
+          status: 'ACTIVE',
+        },
+      });
+    }
+  }
+
+  // Flower Store Products (Reuse 'Accessories' category for demo)
+  // Ideally we create new "Flower" categories, but using existing shared ones.
+  const decorCategory =
+    categories.find((c) => c.slug === 'accessories') || categories[0];
+  for (let i = 0; i < 10; i++) {
+    const prod = await prisma.product.create({
+      data: {
+        name: `Fresh Bouquet ${i}`,
+        slug: `flower-${i}`,
+        description: 'Beautiful fresh flowers.',
+        categoryId: decorCategory.id,
+        brandId: getRandomElement(brands).id,
+        minPrice: getRandomPrice(50),
+        maxPrice: getRandomPrice(50),
+        tenantId: flowerTenant.id, // <--- SCOPED TO FLOWERS
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1490750967868-58cb75069ed6?w=800&q=80',
+              displayOrder: 0,
+            },
+          ],
+        },
+      },
+    });
+    await prisma.sku.create({
+      data: {
+        skuCode: `${prod.slug}-STD`,
+        price: prod.minPrice,
+        stock: 50,
+        productId: prod.id,
+        status: 'ACTIVE',
+      },
     });
   }
-  console.log('✅ Feature flags created.');
 
-  // 7. SEED PRODUCTS
-  console.log('\n📦 Seeding Products...');
-  const brands: any[] = [];
-  for (const b of BRANDS_DATA) {
-    brands.push(await prisma.brand.create({ data: b }));
-  }
-  const categories: any[] = [];
-  for (const c of CATEGORIES_DATA) {
-    categories.push(await prisma.category.create({ data: c }));
-  }
-
-  for (const category of categories) {
-    const slugKey = category.slug.toLowerCase();
-    const templates: any[] =
-      PRODUCT_TEMPLATES[slugKey] || PRODUCT_TEMPLATES.sofas; // Fallback
-    const images = FURNITURE_IMAGES[slugKey] || FURNITURE_IMAGES.sofas;
-
-    // Create ~50 products per category
-    for (let i = 0; i < 50; i++) {
-      const template = getRandomElement(templates);
-      const brand = getRandomElement(brands);
-      const uniqueNoun = Math.random().toString(36).substring(7);
-      const product = await prisma.product.create({
-        data: {
-          name: `${template.name} ${uniqueNoun}`,
-          slug: slugify(`${template.name}-${uniqueNoun}-${i}`),
-          description: template.desc,
-          categoryId: category.id,
-          brandId: brand.id,
-          minPrice: template.basePrice,
-          maxPrice: template.basePrice,
-          tenantId: defaultTenant.id,
-        },
-      });
-
-      // Images
-      for (let j = 0; j < 3; j++) {
-        await prisma.productImage.create({
-          data: {
-            productId: product.id,
-            url: images[j % images.length],
-            displayOrder: j,
-          },
-        });
-      }
-
-      // Options (Simplified for consolidation)
-      const colorOption = await prisma.productOption.create({
-        data: { productId: product.id, name: 'Color', displayOrder: 1 },
-      });
-      for (let k = 0; k < 3; k++) {
-        await prisma.optionValue.create({
-          data: { optionId: colorOption.id, value: getRandomElement(COLORS) },
-        });
-      }
-    }
-  }
-  console.log('✅ Products created.');
-
-  // 8. SEED BLOGS
-  console.log('\n📝 Seeding Blogs...');
-  for (const category of BLOG_CATEGORIES) {
-    const images = BLOG_IMAGES[category] || BLOG_IMAGES['Interior Design'];
-    for (let i = 0; i < 5; i++) {
-      await prisma.blog.create({
-        data: {
-          title: `${category} Tips ${i + 1}`,
-          slug: slugify(`${category}-tips-${i}-${Date.now()}`),
-          excerpt: `Great advice about ${category}`,
-          content: `Full content about ${category}...`,
-          image: getRandomElement(images),
-          category: category,
-          author: getRandomElement(AUTHORS),
-          language: 'en',
-          readTime: '5 min read',
-          publishedAt: getRandomPastDate(100),
-        },
-      });
-    }
-  }
-  console.log('✅ Blogs created.');
-
+  console.log('✅ Products Seeded per Tenant.');
   console.log('\n🎉 ALL SEEDING COMPLETED SUCCESSFULLY!');
 }
 

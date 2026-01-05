@@ -695,4 +695,65 @@ export class ProductsService {
       await this.redisService.del(cacheKey);
     }
   }
+
+  /**
+   * Lấy danh sách sản phẩm liên quan (Related Products)
+   * Logic: Cùng Category, loại trừ sản phẩm hiện tại.
+   * Nếu không đủ, có thể lấy thêm sản phẩm cùng Brand (Future Improvement).
+   */
+  async getRelatedProducts(productId: string, limit = 4) {
+    const cacheKey = `product:${productId}:related:${limit}`;
+
+    return this.cacheService.getOrSet(
+      cacheKey,
+      async () => {
+        // 1. Lấy thông tin cơ bản để biết Category của sản phẩm hiện tại
+        const product = await this.prisma.product.findUnique({
+          where: { id: productId },
+          select: { categoryId: true },
+        });
+
+        if (!product) return [];
+
+        // 2. Tìm các sản phẩm khác trong cùng Category
+        const related = await this.prisma.product.findMany({
+          where: {
+            categoryId: product.categoryId,
+            id: { not: productId }, // Loại trừ chính nó
+            deletedAt: null,
+          },
+          take: limit,
+          orderBy: { createdAt: 'desc' }, // Ưu tiên hàng mới
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            minPrice: true,
+            maxPrice: true,
+            images: {
+              select: { url: true, alt: true },
+              orderBy: { displayOrder: 'asc' },
+              take: 1,
+            },
+            category: {
+              select: { name: true, slug: true },
+            },
+            // Load 1 SKU để lấy giá hiển thị chính xác
+            skus: {
+              take: 1,
+              where: { status: 'ACTIVE' },
+              orderBy: { price: 'asc' },
+              select: {
+                price: true,
+                salePrice: true,
+              },
+            },
+          },
+        });
+
+        return related;
+      },
+      300, // 5 minutes cache
+    );
+  }
 }
