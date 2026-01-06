@@ -177,6 +177,17 @@ export function AdminSidebar() {
         },
       ],
     },
+    {
+      title: t("settings"),
+      items: [
+        {
+          title: t("billing"),
+          href: "/admin/billing",
+          icon: Ticket, // Using Ticket as placeholder for Bill/Invoice
+          permission: "settings:read",
+        },
+      ],
+    },
   ];
 
   // Lọc các đề mục dựa trên quyền hạn của người dùng

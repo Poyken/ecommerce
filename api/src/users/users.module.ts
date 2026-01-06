@@ -21,8 +21,10 @@ import { PrismaModule } from '@core/prisma/prisma.module';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
+import { TenantsModule } from '@/tenants/tenants.module';
+
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, TenantsModule],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

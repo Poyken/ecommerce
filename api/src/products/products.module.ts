@@ -30,8 +30,10 @@ import { StockGateway } from '@/skus/stock.gateway';
 
 import { NotificationsModule } from '@/notifications/notifications.module';
 
+import { TenantsModule } from '@/tenants/tenants.module';
+
 @Module({
-  imports: [PrismaModule, NotificationsModule],
+  imports: [PrismaModule, NotificationsModule, TenantsModule],
   controllers: [ProductsController],
   providers: [
     ProductsService,

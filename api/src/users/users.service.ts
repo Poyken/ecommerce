@@ -38,13 +38,21 @@ import { UpdateUserDto } from './dto/update-user.dto';
  * =====================================================================
  */
 
+import { PlanUsageService } from '@/tenants/plan-usage.service';
+import { getTenant } from '@core/tenant/tenant.context';
+
+// ... imports
+
 @Injectable()
 export class UsersService extends BaseCrudService<
   User,
   CreateUserDto,
   UpdateUserDto
 > {
-  constructor(private readonly prisma: PrismaService) {
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly planUsageService: PlanUsageService,
+  ) {
     super(UsersService.name);
   }
 
@@ -96,6 +104,12 @@ export class UsersService extends BaseCrudService<
   async create(createUserDto: CreateUserDto) {
     const { email, password, firstName, lastName } = createUserDto;
 
+    // [PLAN LIMIT] Check staff limit
+    const tenant = getTenant();
+    if (tenant) {
+      await this.planUsageService.checkStaffLimit(tenant.id);
+    }
+
     const existingUser = await this.model.findUnique({
       where: { email },
     });
@@ -130,8 +144,14 @@ export class UsersService extends BaseCrudService<
     limit: number = 10,
     search?: string,
     role?: string,
+    tenantId?: string,
   ) {
     const where: Prisma.UserWhereInput = {};
+
+    // [SECURITY] User Isolation
+    if (tenantId) {
+      where.tenantId = tenantId;
+    }
 
     if (role && role !== 'all') {
       where.roles = {

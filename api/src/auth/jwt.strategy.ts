@@ -126,6 +126,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         id: true,
         permissions: true,
         whitelistedIps: true,
+        tenantId: true,
         roles: {
           select: {
             role: {
@@ -152,6 +153,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     return {
       id: user.id,
       userId: user.id,
+      tenantId: user.tenantId,
       permissions: userId === user.id ? permissions : [],
       roles: roleNames,
       whitelistedIps: whitelistedIps,

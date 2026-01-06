@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 
 /**
@@ -75,12 +76,15 @@ export class UsersController {
     @Query('limit') limit = 10,
     @Query('search') search?: string,
     @Query('role') role?: string,
+    @Request() req?: any,
   ) {
+    const tenantId = req?.user?.tenantId;
     const result = await this.usersService.findAll(
       Number(page),
       Number(limit),
       search,
       role,
+      tenantId,
     );
     return result;
   }

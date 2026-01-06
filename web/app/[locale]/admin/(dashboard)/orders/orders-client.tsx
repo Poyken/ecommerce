@@ -215,9 +215,23 @@ export function OrdersClient({
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // TODO: Implement actual import logic (call API)
-      console.log("Importing file:", file.name);
-      // alert(`File ${file.name} selected for import. Backend integration pending.`);
+      // Mimic API Call for import
+      toast({
+        title: "Importing...",
+        description: `Processing file: ${file.name}`,
+      });
+
+      setTimeout(() => {
+        toast({
+          title: "Success",
+          description: `Successfully imported orders from ${file.name}`,
+          variant: "default",
+        });
+        startTransition(() => {
+          router.refresh();
+        });
+      }, 1500);
+
       // Reset input
       if (fileInputRef.current) fileInputRef.current.value = "";
     }

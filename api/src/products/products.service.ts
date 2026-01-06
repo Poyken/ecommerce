@@ -11,6 +11,9 @@ import { FilterProductDto, SortOption } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { SkuManagerService } from './sku-manager.service';
 
+import { PlanUsageService } from '@/tenants/plan-usage.service';
+import { getTenant } from '@core/tenant/tenant.context';
+
 /**
  * CACHE TTL CONFIGURATION (seconds)
  * Cấu hình thời gian cache cho các loại dữ liệu khác nhau
@@ -19,33 +22,6 @@ const CACHE_TTL = {
   PRODUCT_LIST: 60, // 1 phút - listing có thể thay đổi do stock, price
   PRODUCT_DETAIL: 300, // 5 phút - chi tiết ít thay đổi hơn
 } as const;
-
-/**
- * =====================================================================
- * PRODUCTS SERVICE - Trái tim của hệ thống quản lý hàng hóa
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PRODUCT VS SKU ARCHITECTURE:
- * - `Product`: Là thông tin chung (Tên, Mô tả, Danh mục). Ví dụ: "iPhone 15 Pro Max".
- * - `SKU` (Stock Keeping Unit): Là biến thể cụ thể có giá và tồn kho. Ví dụ: "iPhone 15 Pro Max - Màu Titan - 256GB".
- * - Hệ thống tách biệt hai thực thể này để quản lý linh hoạt các sản phẩm có nhiều thuộc tính.
- *
- * 2. SLUG GENERATION:
- * - `slugify`: Tự động tạo đường dẫn thân thiện (SEO-friendly) từ tên sản phẩm.
- * - Thêm `Date.now()` vào cuối slug để đảm bảo tính duy nhất (Unique), tránh lỗi trùng lặp khi có 2 sản phẩm cùng tên.
- *
- * 3. COMPLEX FILTERING:
- * - Hàm `findAll` xử lý logic tìm kiếm đa điều kiện: Search text, Category, Brand, và đặc biệt là khoảng giá (Price Range) dựa trên các SKU liên quan.
- *
- * 4. SMART SKU MIGRATION:
- * - Khi Admin cập nhật Options (VD: thêm màu mới), `SkuManagerService` sẽ tự động tính toán để tạo thêm SKU mới hoặc vô hiệu hóa SKU cũ mà không làm mất dữ liệu tồn kho hiện có.
- *
- * 5. SOFT DELETE:
- * - Thay vì xóa vĩnh viễn khỏi Database, ta dùng `deletedAt` để ẩn sản phẩm. Điều này giúp bảo toàn lịch sử đơn hàng và cho phép khôi phục nếu cần.
- * =====================================================================
- */
 
 @Injectable()
 export class ProductsService {
@@ -57,19 +33,22 @@ export class ProductsService {
     private readonly redisService: RedisService,
     private readonly cacheService: CacheService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly planUsageService: PlanUsageService,
   ) {}
 
   /**
    * Tạo Sản phẩm mới (Product Base).
-   *
-   * Lưu ý quan trọng:
-   * Sản phẩm ở đây đóng vai trò là "Sản phẩm gốc" (Parent Product).
-   * Ví dụ: "iPhone 15 Pro Max".
-   * Nó chứa định nghĩa các tùy chọn (Options) như "Màu sắc", "Dung lượng".
-   * Nhưng nó CHƯA phải là một mặt hàng cụ thể có giá và tồn kho (đó là SKU).
    */
   async create(createProductDto: CreateProductDto) {
     const { options, images, ...productData } = createProductDto;
+
+    // [PLAN LIMIT] Check current usage
+    const tenant = getTenant();
+    if (tenant) {
+      await this.planUsageService.checkProductLimit(tenant.id);
+    }
+
+    // 1. Tạo Slug tự động từ tên
 
     // 1. Tạo Slug tự động từ tên
     const slug =
@@ -122,6 +101,11 @@ export class ProductsService {
 
     // 4. Auto-generate SKUs (Delegated to SkuManager)
     await this.skuManager.generateSkusForNewProduct(product);
+
+    // [PLAN LIMIT] Increment cache usage
+    if (tenant) {
+      await this.planUsageService.incrementUsage(tenant.id, 'products');
+    }
 
     // Invalidate product list cache
     await this.cacheService.invalidatePattern('products:filter:*');
