@@ -16,18 +16,18 @@ import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { deleteBrandAction, getBrandsAction } from "@/features/admin/actions";
 import {
-    AdminEmptyState,
-    AdminPageHeader,
-    AdminTableWrapper,
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { CreateBrandDialog } from "@/features/admin/components/create-brand-dialog";
 import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
@@ -39,13 +39,13 @@ import { PaginationMeta } from "@/types/dtos";
 import { Brand } from "@/types/models";
 import { format } from "date-fns";
 import {
-    Award,
-    Download,
-    Edit,
-    Plus,
-    Search,
-    Trash2,
-    Upload,
+  Award,
+  Download,
+  Edit,
+  Plus,
+  Search,
+  Trash2,
+  Upload,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -82,7 +82,11 @@ export function BrandsPageClient({
   const limit = Number(searchParams.get("limit")) || 10;
 
   // Hybrid Fetching: SWR for the table list
-  const { data: brandsRes, mutate: mutateLocalBrands, isValidating } = useSWR(
+  const {
+    data: brandsRes,
+    mutate: mutateLocalBrands,
+    isValidating,
+  } = useSWR(
     ["admin-brands-list", page, limit, debouncedSearchTerm],
     () => getBrandsAction(page, limit, debouncedSearchTerm),
     {
@@ -98,12 +102,14 @@ export function BrandsPageClient({
 
   const { mutate: mutateGlobalBrands } = useAdminBrands();
 
-  const brands = brandsRes && "data" in brandsRes ? (
-    Array.isArray(brandsRes.data) 
-      ? brandsRes.data 
-      : (brandsRes.data as any).data || []
-  ) : [];
-  const currentMeta = brandsRes && "meta" in brandsRes ? (brandsRes as any).meta : meta;
+  const brands =
+    brandsRes && "data" in brandsRes
+      ? Array.isArray(brandsRes.data)
+        ? brandsRes.data
+        : (brandsRes.data as any).data || []
+      : [];
+  const currentMeta =
+    brandsRes && "meta" in brandsRes ? (brandsRes as any).meta : meta;
   const total = currentMeta?.total || 0;
   const totalPages = currentMeta
     ? Math.ceil(currentMeta.total / currentMeta.limit)
@@ -236,7 +242,7 @@ export function BrandsPageClient({
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {brand.createdAt
-                      ? format(new Date(brand.createdAt), "dd MMM yyyy")
+                      ? format(new Date(brand.createdAt), "dd/MM/yyyy")
                       : "N/A"}
                   </TableCell>
                   {(canUpdate || canDelete) && (

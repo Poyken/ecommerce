@@ -1465,7 +1465,8 @@
     },
     "subscriptions": {
       "title": "Gói cước & Thanh toán",
-      "subtitle": "Quản lý các gói dịch vụ, hóa đơn và doanh thu toàn nền tảng.",
+      "subtitle": "Quản lý {total} thuê bao trên toàn nền tảng.",
+      "searchPlaceholder": "Tìm kiếm tên cửa hàng...",
       "stats": {
         "active": "Thuê bao Hoạt động",
         "pending": "Hóa đơn Chờ xử lý",
@@ -1482,8 +1483,14 @@
       "table": {
         "tenant": "Cửa hàng",
         "plan": "Gói dịch vụ",
+        "billing": "Chu kỳ",
         "status": "Trạng thái",
-        "nextBilling": "Thanh toán: {date}"
+        "nextBilling": "Thanh toán tiếp",
+        "actions": "Thao tác"
+      },
+      "empty": {
+        "title": "Không tìm thấy thuê bao nào",
+        "description": "Không có thuê bao nào phù hợp với tiêu chí tìm kiếm."
       }
     },
     "settings": {

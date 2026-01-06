@@ -8,7 +8,7 @@ import { Request } from 'express';
 
 @Injectable()
 export class SuperAdminIpGuard implements CanActivate {
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const user = request.user as any;
 

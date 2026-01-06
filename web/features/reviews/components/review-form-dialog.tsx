@@ -375,7 +375,16 @@ function ReviewForm({
             >
               {tCommon("cancel")}
             </Button>
-            <Button type="submit" disabled={loading} className="min-w-[120px]">
+            <Button
+              type="submit"
+              disabled={
+                loading ||
+                (sku?.review
+                  ? !(form.formState.isDirty || files.length > 0)
+                  : !form.watch("content") || form.watch("content").length < 10)
+              }
+              className="min-w-[120px]"
+            >
               {loading ? (
                 <>
                   <span className="animate-spin mr-2">⏳</span>

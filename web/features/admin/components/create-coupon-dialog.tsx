@@ -132,6 +132,12 @@ export function CreateCouponDialog({
       isPending={isPending}
       submitLabel={t("coupons.createNew")}
       maxWidth="sm:max-w-xl"
+      disabled={
+        !formData.code.trim() ||
+        !formData.discountValue ||
+        !formData.startDate ||
+        !formData.endDate
+      }
     >
       <div className="grid gap-4 py-4">
         <div className="grid gap-2">

@@ -100,6 +100,12 @@ export function EditUserDialog({
       onSubmit={onSubmit}
       isPending={isPending}
       submitLabel={t("save")}
+      disabled={
+        !isDirty ||
+        !formData.email.trim() ||
+        !formData.firstName.trim() ||
+        !formData.lastName.trim()
+      }
     >
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">

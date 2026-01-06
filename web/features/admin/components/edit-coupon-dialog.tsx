@@ -6,11 +6,11 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { updateCouponAction } from "@/features/admin/actions";
 import { Coupon } from "@/types/models";
@@ -146,6 +146,7 @@ export function EditCouponDialog({
       isPending={isPending}
       submitLabel={t("save")}
       maxWidth="sm:max-w-xl"
+      disabled={!isDirty || !formData.code.trim() || !formData.discountValue}
     >
       <div className="grid gap-4 py-4">
         <div className="grid gap-2">

@@ -469,7 +469,7 @@ export function TenantDetailClient({ tenant }: { tenant: Tenant }) {
                             {t("subscription.renewalDate", {
                               date: format(
                                 new Date(tenant.createdAt),
-                                "dd MMM yyyy"
+                                "dd/MM/yyyy"
                               ),
                             })}
                           </p>
@@ -539,7 +539,7 @@ export function TenantDetailClient({ tenant }: { tenant: Tenant }) {
                   {t("technicalInfo.deploymentDate")}
                 </p>
                 <p className="text-sm font-bold px-1">
-                  {format(new Date(tenant.createdAt), "PPP")}
+                  {format(new Date(tenant.createdAt), "dd/MM/yyyy")}
                 </p>
               </div>
               <div className="space-y-1">

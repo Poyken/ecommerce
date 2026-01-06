@@ -26,20 +26,20 @@ import { useToast } from "@/components/shared/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { deleteCouponAction } from "@/features/admin/actions";
 import {
-    AdminActionBadge,
-    AdminEmptyState,
-    AdminPageHeader,
-    AdminTableWrapper,
+  AdminActionBadge,
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { CreateCouponDialog } from "@/features/admin/components/create-coupon-dialog";
 import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
@@ -51,15 +51,15 @@ import { PaginationMeta } from "@/types/dtos";
 import { Coupon } from "@/types/models";
 import { format } from "date-fns";
 import {
-    Calendar,
-    Copy,
-    Edit,
-    Percent,
-    Plus,
-    Search,
-    Tag,
-    Ticket,
-    Trash2,
+  Calendar,
+  Copy,
+  Edit,
+  Percent,
+  Plus,
+  Search,
+  Tag,
+  Ticket,
+  Trash2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -336,8 +336,8 @@ export function CouponsClient({ initialCoupons, meta }: CouponsClientProps) {
                   <TableCell>
                     <div className="text-sm">
                       <p className="text-muted-foreground">
-                        {format(new Date(coupon.startDate), "dd MMM")} -{" "}
-                        {format(new Date(coupon.endDate), "dd MMM yyyy")}
+                        {format(new Date(coupon.startDate), "dd/MM/yyyy")} -{" "}
+                        {format(new Date(coupon.endDate), "dd/MM/yyyy")}
                       </p>
                     </div>
                   </TableCell>

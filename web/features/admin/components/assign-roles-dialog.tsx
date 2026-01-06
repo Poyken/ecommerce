@@ -6,7 +6,7 @@ import { FormDialog } from "@/components/shared/form-dialog";
 import { useToast } from "@/components/shared/use-toast";
 import { Role } from "@/types/models";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 
 /**
  * =====================================================================
@@ -64,6 +64,20 @@ export function AssignRolesDialog({
     }
   }, [open, currentRoles]);
 
+  const isDirty = useMemo(() => {
+    // We compare names because that's what we store in selectedRoleNames
+    const originalRoleNames = roles
+      .filter((role: Role) => currentRoles.includes(role.id))
+      .map((role: Role) => role.name)
+      .sort();
+
+    const currentRoleNames = [...selectedRoleNames].sort();
+
+    return (
+      JSON.stringify(originalRoleNames) !== JSON.stringify(currentRoleNames)
+    );
+  }, [selectedRoleNames, roles, currentRoles]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -103,6 +117,7 @@ export function AssignRolesDialog({
       onSubmit={handleSubmit}
       isPending={isPending}
       submitLabel={t("save")}
+      disabled={isPending || !isDirty}
     >
       <div className="space-y-4 py-4">
         {roles.map((role) => (

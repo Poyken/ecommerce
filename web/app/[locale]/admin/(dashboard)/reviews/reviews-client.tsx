@@ -18,34 +18,35 @@ import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { useToast } from "@/components/shared/use-toast";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
-    deleteReviewAction,
-    replyToReviewAction,
-    toggleReviewStatusAction,
+  deleteReviewAction,
+  replyToReviewAction,
+  toggleReviewStatusAction,
+  analyzeReviewSentimentAction,
 } from "@/features/admin/actions";
 import {
-    AdminActionBadge,
-    AdminEmptyState,
-    AdminPageHeader,
-    AdminTableWrapper,
+  AdminActionBadge,
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
@@ -53,10 +54,52 @@ import { useRouter } from "@/i18n/routing";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { Eye, EyeOff, MessageSquare, Search, Star, Trash2 } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  MessageSquare,
+  Search,
+  Star,
+  Trash2,
+  BrainCircuit,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
+
+// Helper function for sentiment badge
+const getSentimentBadge = (sentiment?: string, tags: string[] = []) => {
+  if (!sentiment) return null;
+  const styles: Record<string, string> = {
+    POSITIVE: "bg-emerald-100 text-emerald-800 border-emerald-200",
+    NEGATIVE: "bg-red-100 text-red-800 border-red-200",
+    NEUTRAL: "bg-slate-100 text-slate-800 border-slate-200",
+  };
+  return (
+    <div className="flex flex-col gap-1 mt-1">
+      <span
+        className={cn(
+          "inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium border w-fit",
+          styles[sentiment] || styles.NEUTRAL
+        )}
+      >
+        {sentiment}
+      </span>
+      {tags && tags.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {tags.map((tag) => (
+            <span
+              key={tag}
+              className="text-[10px] text-muted-foreground bg-secondary px-1 rounded"
+            >
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 type FilterType = "all" | "published" | "hidden";
 
@@ -83,6 +126,7 @@ export function ReviewsClient({
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [analyzingId, setAnalyzingId] = useState<string | null>(null);
 
   // Reply State
   const [replyId, setReplyId] = useState<string | null>(null);
@@ -199,6 +243,35 @@ export function ReviewsClient({
       });
     } finally {
       setIsReplying(false);
+    }
+  };
+
+  const handleAnalyze = async (reviewId: string, content: string) => {
+    setAnalyzingId(reviewId);
+    try {
+      const res = await analyzeReviewSentimentAction(content);
+      if (res.success) {
+        toast({
+          title: "AI Analysis Complete",
+          description: `Sentiment: ${res.data?.sentiment}`,
+          variant: "success",
+        });
+        // Note: Real implementation should save to DB.
+      } else {
+        toast({
+          title: "Error",
+          description: res.error,
+          variant: "destructive",
+        });
+      }
+    } catch (e) {
+      toast({
+        title: "Error",
+        description: "Failed to analyze",
+        variant: "destructive",
+      });
+    } finally {
+      setAnalyzingId(null);
     }
   };
 
@@ -355,6 +428,7 @@ export function ReviewsClient({
                         </p>
                       </div>
                     )}
+                    {getSentimentBadge(review.sentiment, review.autoTags)}
                   </TableCell>
                   <TableCell>
                     <AdminActionBadge
@@ -367,7 +441,7 @@ export function ReviewsClient({
                     />
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {format(new Date(review.createdAt), "dd MMM yyyy")}
+                    {format(new Date(review.createdAt), "dd/MM/yyyy")}
                   </TableCell>
                   {(canUpdate || canDelete) && (
                     <TableCell className="text-right">

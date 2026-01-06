@@ -1,11 +1,12 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearchPostgres"]
+  previewFeatures = ["postgresqlExtensions", "fullTextSearchPostgres"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [vector]
 }
 
 model User {
@@ -140,6 +141,10 @@ model Product {
   minPrice        Decimal?             @db.Decimal(20, 2)
   avgRating       Float?               @default(0)
   reviewCount     Int                  @default(0)
+
+  // Vector Embedding (768 dimensions for Gemini text-embedding-004)
+  embedding       Unsupported("vector(768)")?
+
   products        BlogProduct[]
   brand           Brand                @relation(fields: [brandId], references: [id])
   category        Category             @relation(fields: [categoryId], references: [id])
@@ -435,10 +440,21 @@ model Review {
   tenantId   String?
   tenant     Tenant?   @relation(fields: [tenantId], references: [id])
 
+  // AI Analysis
+  sentiment    Sentiment?
+  autoTags     String[] // ["shipping_issue", "product_quality", "service"]
+
   @@unique([userId, productId, skuId])
   @@index([productId, rating])
   @@index([skuId])
   @@index([tenantId])
+  @@index([sentiment])
+}
+
+enum Sentiment {
+  POSITIVE
+  NEGATIVE
+  NEUTRAL
 }
 
 model AuditLog {

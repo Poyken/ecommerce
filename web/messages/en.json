@@ -1477,7 +1477,8 @@
     },
     "subscriptions": {
       "title": "Subscriptions & Billing",
-      "subtitle": "Manage platform-wide plans, invoicing, and revenue.",
+      "subtitle": "Manage {total} platform subscriptions.",
+      "searchPlaceholder": "Search tenant name...",
       "stats": {
         "active": "Active Subscriptions",
         "pending": "Pending Invoices",
@@ -1494,8 +1495,14 @@
       "table": {
         "tenant": "Tenant",
         "plan": "Plan",
+        "billing": "Billing",
         "status": "Status",
-        "nextBilling": "Billed: {date}"
+        "nextBilling": "Next Billing",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No subscriptions found",
+        "description": "There are no subscriptions matching your criteria."
       }
     },
     "settings": {

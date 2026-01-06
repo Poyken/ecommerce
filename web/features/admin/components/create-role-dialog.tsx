@@ -86,6 +86,7 @@ export function CreateRoleDialog({
       onSubmit={handleSubmit}
       isPending={isPending}
       submitLabel={t("create")}
+      disabled={!name.trim()}
     >
       <div className="space-y-4 py-4">
         <div className="space-y-2">

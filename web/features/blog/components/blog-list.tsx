@@ -3,6 +3,7 @@
 import { GlassCard } from "@/components/shared/glass-card";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import { BlogWithProducts } from "@/types/models";
+import { format } from "date-fns";
 import { m } from "@/lib/animations";
 import { ArrowRight, Calendar, Clock, User } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -90,7 +91,7 @@ export function BlogList({ posts }: BlogListProps) {
               <span className="font-bold">{firstPost.author}</span>
               <span className="w-1.5 h-1.5 rounded-full bg-white/40" />
               <span className="font-medium">
-                {new Date(firstPost.createdAt).toLocaleDateString()}
+                {format(new Date(firstPost.createdAt), "dd/MM/yyyy")}
               </span>
             </div>
           </div>
@@ -149,7 +150,7 @@ export function BlogList({ posts }: BlogListProps) {
                   <div className="flex items-center gap-3 text-[11px] text-muted-foreground/60 mb-4 font-bold uppercase tracking-widest">
                     <span className="flex items-center gap-1.5">
                       <Calendar size={12} />{" "}
-                      {new Date(post.createdAt).toLocaleDateString()}
+                      {format(new Date(post.createdAt), "dd/MM/yyyy")}
                     </span>
                     <span className="w-1 h-1 rounded-full bg-foreground/20" />
                     <span className="flex items-center gap-1.5">

@@ -5,6 +5,8 @@ import {
   Post,
   UseGuards,
   Request,
+  Query,
+  Param,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
@@ -31,6 +33,17 @@ export class SubscriptionsController {
     return this.subscriptionsService.getCurrentSubscription(tenantId);
   }
 
+  @Get()
+  @ApiOperation({ summary: 'List all subscriptions (Super Admin)' })
+  async getAllSubscriptions(@Query() query: any) {
+    return this.subscriptionsService.findAll({
+      page: query.page ? Number(query.page) : 1,
+      limit: query.limit ? Number(query.limit) : 10,
+      search: query.search,
+      status: query.status,
+    });
+  }
+
   @Post('upgrade')
   @ApiOperation({ summary: 'Upgrade tenant plan' })
   async upgradePlan(@Request() req: any, @Body() dto: UpgradePlanDto) {
@@ -40,5 +53,18 @@ export class SubscriptionsController {
       dto.plan,
       dto.frequency,
     );
+  }
+
+  @Post('cancel')
+  @ApiOperation({ summary: 'Cancel current subscription' })
+  async cancelSubscription(@Request() req: any) {
+    const tenantId = req.user.tenantId;
+    return this.subscriptionsService.cancelSubscription(tenantId);
+  }
+
+  @Post(':tenantId/cancel')
+  @ApiOperation({ summary: 'Cancel specific tenant subscription (Admin)' })
+  async cancelTenantSubscription(@Param('tenantId') tenantId: string) {
+    return this.subscriptionsService.cancelSubscription(tenantId);
   }
 }

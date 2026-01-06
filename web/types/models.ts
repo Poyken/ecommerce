@@ -326,6 +326,10 @@ export interface Review {
   skuId?: string | null;
   sku?: Sku | null;
   product?: Product;
+
+  // AI fields
+  sentiment?: "POSITIVE" | "NEGATIVE" | "NEUTRAL" | null;
+  autoTags?: string[];
 }
 
 // =============================================================================
@@ -691,4 +695,33 @@ export interface Tenant {
     products: number;
     orders: number;
   };
+}
+
+export interface Subscription {
+  id: string;
+  tenantId: string;
+  plan: "BASIC" | "PRO" | "ENTERPRISE";
+  billingFrequency: "MONTHLY" | "YEARLY";
+  startDate: string;
+  nextBillingDate: string;
+  isActive: boolean;
+  cancelAtPeriodEnd: boolean;
+  createdAt: string;
+  updatedAt: string;
+  tenant?: Tenant;
+  invoices?: Invoice[];
+}
+
+export interface Invoice {
+  id: string;
+  tenantId: string;
+  subscriptionId?: string | null;
+  amount: number | string;
+  currency: string;
+  status: "PENDING" | "PAID" | "OVERDUE" | "CANCELLED" | "VOID";
+  description?: string | null;
+  paidAt?: string | null;
+  dueDate: string;
+  createdAt: string;
+  updatedAt: string;
 }

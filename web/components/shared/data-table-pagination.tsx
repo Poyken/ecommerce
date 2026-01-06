@@ -71,7 +71,14 @@ export function DataTablePagination({
       if (page <= 3) {
         pages.push(1, 2, 3, 4, "...", totalPages);
       } else if (page >= totalPages - 2) {
-        pages.push(1, "...", totalPages - 3, totalPages - 2, totalPages - 1, totalPages);
+        pages.push(
+          1,
+          "...",
+          totalPages - 3,
+          totalPages - 2,
+          totalPages - 1,
+          totalPages
+        );
       } else {
         pages.push(1, "...", page - 1, page, page + 1, "...", totalPages);
       }
@@ -80,7 +87,10 @@ export function DataTablePagination({
     return pages.map((p, idx) => {
       if (p === "...") {
         return (
-          <span key={`ellipsis-${idx}`} className="px-2 py-2 text-muted-foreground">
+          <span
+            key={`ellipsis-${idx}`}
+            className="px-2 py-2 text-muted-foreground"
+          >
             <MoreHorizontal className="h-4 w-4" />
           </span>
         );
@@ -91,7 +101,9 @@ export function DataTablePagination({
           variant={page === p ? "default" : "outline"}
           size="sm"
           onClick={() => goToPage(p as number)}
-          className={page === p ? "" : "border-white/10 hover:bg-white/5 w-9 px-0"}
+          className={
+            page === p ? "" : "border-white/10 hover:bg-white/5 w-9 px-0"
+          }
         >
           {p}
         </Button>
@@ -102,7 +114,7 @@ export function DataTablePagination({
   return (
     <div className="flex flex-col sm:flex-row items-center justify-between mt-8 pt-6 border-t border-white/10 gap-4">
       <div className="text-sm text-muted-foreground">
-         Page {page} of {totalPages}
+        Page {page} of {totalPages}
       </div>
 
       <div className="flex flex-wrap items-center gap-2 justify-center">
@@ -116,9 +128,7 @@ export function DataTablePagination({
           <ChevronLeft className="h-4 w-4" />
         </Button>
 
-        <div className="flex items-center gap-1">
-          {renderPageNumbers()}
-        </div>
+        <div className="flex items-center gap-1">{renderPageNumbers()}</div>
 
         <Button
           variant="outline"
@@ -131,40 +141,43 @@ export function DataTablePagination({
         </Button>
       </div>
 
-       {/* Jump to page input */}
-       {totalPages > 5 && (
+      {/* Jump to page input */}
+      {totalPages > 5 && (
         <form onSubmit={handleJump} className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground whitespace-nowrap">Go to</span>
-            <div className="relative">
-              <Input
-                  type="number"
-                  value={jumpPage}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    if (val === "") {
-                        setJumpPage("");
-                        return;
-                    }
-                    const num = parseInt(val);
-                    if (!isNaN(num)) {
-                        if (num > totalPages) setJumpPage(totalPages.toString());
-                        else if (num < 1) setJumpPage("1");
-                        else setJumpPage(val);
-                    }
-                  }}
-                  className="w-20 h-9 text-center pr-8"
-                  placeholder="#"
-              />
-              <button
-                type="submit"
-                className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors"
-                title="Go"
-              >
-                  <ChevronRight size={14} />
-              </button>
-            </div>
+          <span className="text-sm text-muted-foreground whitespace-nowrap">
+            Go to
+          </span>
+          <div className="relative">
+            <Input
+              type="number"
+              value={jumpPage}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val === "") {
+                  setJumpPage("");
+                  return;
+                }
+                const num = parseInt(val);
+                if (!isNaN(num)) {
+                  if (num > totalPages) setJumpPage(totalPages.toString());
+                  else if (num < 1) setJumpPage("1");
+                  else setJumpPage(val);
+                }
+              }}
+              className="w-20 h-9 text-center pr-8"
+              placeholder="#"
+            />
+            <button
+              type="submit"
+              disabled={!jumpPage}
+              className="absolute right-1 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Go"
+            >
+              <ChevronRight size={14} />
+            </button>
+          </div>
         </form>
-       )}
+      )}
     </div>
   );
 }

@@ -178,7 +178,7 @@ export function SuperAdminSidebar() {
           )}
         >
           <Shield className="h-6 w-6 text-emerald-400" />
-          <span>{t("brand") || "Super Admin"}</span>
+          <span> SaaS Ecommerce </span>
         </div>
 
         <Button

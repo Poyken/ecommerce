@@ -129,7 +129,7 @@ export const ReviewItem = memo(function ReviewItem({
                 : "Verified User"}
             </div>
             <div className="text-xs text-muted-foreground/60 font-medium mt-0.5">
-              {format(new Date(review.createdAt), "MMM d, yyyy")}
+              {format(new Date(review.createdAt), "dd/MM/yyyy")}
             </div>
           </div>
         </div>

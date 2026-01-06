@@ -20,22 +20,25 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-    AdminEmptyState,
-    AdminPageHeader,
-    AdminTableWrapper,
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
-import { deleteBlogAction, toggleBlogPublishAction } from "@/features/blog/actions";
+import {
+  deleteBlogAction,
+  toggleBlogPublishAction,
+} from "@/features/blog/actions";
 import { BlogFormDialog } from "@/features/blog/components/blog-form-dialog";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { cn } from "@/lib/utils";
@@ -43,16 +46,16 @@ import { PaginationMeta } from "@/types/dtos";
 import { BlogWithProducts, Category } from "@/types/models";
 import { format } from "date-fns";
 import {
-    BookOpen,
-    Edit,
-    Eye,
-    EyeOff,
-    FileText,
-    Globe,
-    Plus,
-    Search,
-    Trash2,
-    User,
+  BookOpen,
+  Edit,
+  Eye,
+  EyeOff,
+  FileText,
+  Globe,
+  Plus,
+  Search,
+  Trash2,
+  User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -327,14 +330,9 @@ export function BlogsClient({
                   <TableCell className="text-sm">{blog.author}</TableCell>
                   <TableCell>
                     {blog.publishedAt ? (
-                      <div className="flex flex-col">
-                        <span className="text-sm">
-                          {format(new Date(blog.publishedAt), "dd MMM yyyy")}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {format(new Date(blog.publishedAt), "HH:mm")}
-                        </span>
-                      </div>
+                      <span className="text-sm">
+                        {format(new Date(blog.publishedAt), "dd/MM/yyyy")}
+                      </span>
                     ) : (
                       <StatusBadge status="DRAFT" label={t("draft")} />
                     )}

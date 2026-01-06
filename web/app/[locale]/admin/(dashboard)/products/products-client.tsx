@@ -19,35 +19,35 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { deleteProductAction } from "@/features/admin/actions";
 import {
-    AdminEmptyState,
-    AdminPageHeader,
-    AdminTableWrapper,
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { Product } from "@/types/models";
 import { format } from "date-fns";
 import {
-    Box,
-    Download,
-    Edit,
-    Languages,
-    Package,
-    Plus,
-    Search,
-    Tag,
-    Trash2,
-    Upload,
+  Box,
+  Download,
+  Edit,
+  Languages,
+  Package,
+  Plus,
+  Search,
+  Tag,
+  Trash2,
+  Upload,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
@@ -332,7 +332,7 @@ export function ProductsClient({
                     )}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {format(new Date(product.createdAt), "dd MMM yyyy")}
+                    {format(new Date(product.createdAt), "dd/MM/yyyy")}
                   </TableCell>
                   {(canTranslate || canUpdate || canDelete) && (
                     <TableCell className="text-right">

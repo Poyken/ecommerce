@@ -1,143 +1,46 @@
-"use client";
+import { getSubscriptionsAction } from "@/features/admin/actions";
+import { SubscriptionsClient } from "./subscriptions-client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { CreditCard, Zap, CheckCircle2, AlertTriangle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { useTranslations } from "next-intl";
+export default async function SubscriptionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  // Await searchParams in Next.js 15+ convention (though Next 14 is sync mostly, but good practice if params is a Promise in newer canary types, checking project version... next 16.1.1! Yes, searchParams IS a promise in Next 15/16).
+  // Wait, in Next 15 searchParams is a promise. In Next 14 it isn't.
+  // The package.json showed "next": "^16.1.1".
+  // So searchParams is a Promise.
 
-export default function SubscriptionsPage() {
-  const t = useTranslations("superAdmin.subscriptions");
-  const subscriptions = [
-    {
-      id: "sub_1",
-      tenant: "Organic Fruits",
-      plan: "Pro",
-      status: "Active",
-      nextBilling: "2026-02-01",
-      amount: "$49.00",
-    },
-    {
-      id: "sub_2",
-      tenant: "Tech Gadgets",
-      plan: "Enterprise",
-      status: "Active",
-      nextBilling: "2026-02-05",
-      amount: "$299.00",
-    },
-    {
-      id: "sub_3",
-      tenant: "Fashion Hub",
-      plan: "Basic",
-      status: "Past Due",
-      nextBilling: "2026-01-02",
-      amount: "$19.00",
-    },
-  ];
+  const resolvedParams = await searchParams;
+  const page = Number(resolvedParams?.page) || 1;
+  const limit = Number(resolvedParams?.limit) || 10;
+  const search = (resolvedParams?.search as string) || "";
+  const status = (resolvedParams?.status as string) || "";
+
+  const res = await getSubscriptionsAction({
+    page,
+    limit,
+    search,
+    status,
+  });
+
+  if (res.error) {
+    return (
+      <div className="p-8 text-red-600 bg-red-50 rounded-lg">
+        <h2 className="font-bold">Error loading subscriptions</h2>
+        <p>{res.error}</p>
+      </div>
+    );
+  }
+
+  const { data, meta } = res.data!;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
-      <div>
-        <h1 className="text-3xl font-black text-slate-900 dark:text-white">
-          {t("title")}
-        </h1>
-        <p className="text-muted-foreground font-medium">{t("subtitle")}</p>
-      </div>
-
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="rounded-3xl border-indigo-500/10 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-[10px] font-black uppercase tracking-widest">
-              {t("stats.active")}
-            </CardDescription>
-            <CardTitle className="text-2xl font-black flex items-center justify-between">
-              124
-              <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card className="rounded-3xl border-indigo-500/10 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-[10px] font-black uppercase tracking-widest">
-              {t("stats.pending")}
-            </CardDescription>
-            <CardTitle className="text-2xl font-black flex items-center justify-between">
-              12
-              <AlertTriangle className="h-5 w-5 text-amber-500" />
-            </CardTitle>
-          </CardHeader>
-        </Card>
-        <Card className="rounded-3xl border-indigo-500/10 shadow-sm">
-          <CardHeader className="pb-2">
-            <CardDescription className="text-[10px] font-black uppercase tracking-widest">
-              {t("stats.avgLtv")}
-            </CardDescription>
-            <CardTitle className="text-2xl font-black flex items-center justify-between">
-              $840.00
-              <Zap className="h-5 w-5 text-indigo-500" />
-            </CardTitle>
-          </CardHeader>
-        </Card>
-      </div>
-
-      <Card className="rounded-3xl border-foreground/5 shadow-sm">
-        <CardHeader>
-          <CardTitle className="text-xl font-black">
-            {t("list.title")}
-          </CardTitle>
-          <CardDescription>{t("list.subtitle")}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {subscriptions.map((sub) => (
-              <div
-                key={sub.id}
-                className="flex items-center justify-between p-4 border rounded-2xl bg-card hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center">
-                    <CreditCard className="h-5 w-5 text-slate-600" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-sm">{sub.tenant}</p>
-                    <p className="text-xs text-muted-foreground">{sub.id}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-8">
-                  <div className="text-right">
-                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground">
-                      {sub.plan}
-                    </p>
-                    <Badge
-                      variant={
-                        sub.status === "Active" ? "secondary" : "destructive"
-                      }
-                      className="text-[10px] font-bold"
-                    >
-                      {sub.status === "Active"
-                        ? t("status.active")
-                        : t("status.pastDue")}
-                    </Badge>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-black">{sub.amount}</p>
-                    <p className="text-[10px] text-muted-foreground font-medium">
-                      {t("table.nextBilling", {
-                        date: sub.nextBilling,
-                      })}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+    <SubscriptionsClient
+      subscriptions={data}
+      total={meta.total}
+      page={meta.page}
+      limit={meta.limit}
+    />
   );
 }

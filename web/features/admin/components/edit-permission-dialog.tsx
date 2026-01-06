@@ -90,6 +90,7 @@ export function EditPermissionDialog({
       isPending={isPending}
       submitLabel={t("save")}
       maxWidth="sm:max-w-md"
+      disabled={!isDirty || !name.trim()}
     >
       <div className="space-y-4 py-4">
         <div className="space-y-2">

@@ -195,7 +195,9 @@ export function ProfileBlogsTab() {
                       <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                           <Calendar size={16} />
-                          <span>{format(new Date(blog.createdAt), "PPP")}</span>
+                          <span>
+                            {format(new Date(blog.createdAt), "dd/MM/yyyy")}
+                          </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-xs uppercase tracking-wider bg-white/5 px-2 py-0.5 rounded">

@@ -9,20 +9,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { getCategoriesAction, getProductsAction } from "@/features/admin/actions";
+import {
+  getCategoriesAction,
+  getProductsAction,
+} from "@/features/admin/actions";
 import { createBlogAction, updateBlogAction } from "@/features/blog/actions";
 import { m } from "@/lib/animations";
 import { BlogWithProducts, Category, Product } from "@/types/models";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 
 /**
  * =====================================================================
@@ -103,20 +106,21 @@ export function BlogFormDialog({
     if (!open) return;
 
     const fetchData = async () => {
-       
       const productsRes = await getProductsAction(1, 100);
       if ("data" in productsRes) {
         setProducts(productsRes.data || []);
       }
 
       if (categories.length === 0) {
-         
         const catsRes = await getCategoriesAction(1, 100);
         if (catsRes && "data" in catsRes && catsRes.data) {
           setCategories(catsRes.data);
           // Set default category if creating
           if (!blog && !formData.category && catsRes.data.length > 0) {
-            setFormData((prev) => ({ ...prev, category: catsRes.data[0].name }));
+            setFormData((prev) => ({
+              ...prev,
+              category: catsRes.data[0].name,
+            }));
           }
         }
       }
@@ -126,13 +130,17 @@ export function BlogFormDialog({
     // Reset/Init local state like imageFile and errors
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setImageFile(null);
-     
+
     setErrors({});
   }, [open, blog, categories.length, formData.category]);
 
   // Update categories if initialCategories prop changes
   useEffect(() => {
-    if (initialCategories && Array.isArray(initialCategories) && initialCategories.length > 0) {
+    if (
+      initialCategories &&
+      Array.isArray(initialCategories) &&
+      initialCategories.length > 0
+    ) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setCategories(initialCategories);
     }
@@ -145,6 +153,33 @@ export function BlogFormDialog({
       setFormData((prev) => ({ ...prev, author: defaultAuthor }));
     }
   }, [defaultAuthor, isUserMode, isEditing]);
+
+  const isDirty = useMemo(() => {
+    const isBasicInfoDirty =
+      formData.title !== (blog?.title || "") ||
+      formData.slug !== (blog?.slug || "") ||
+      formData.excerpt !== (blog?.excerpt || "") ||
+      formData.content !== (blog?.content || "") ||
+      formData.category !== (blog?.category || "") ||
+      formData.author !== (blog?.author || defaultAuthor) ||
+      formData.language !== (blog?.language || "en") ||
+      formData.readTime !==
+        (blog?.readTime ? blog.readTime.replace(/[^0-9]/g, "") : "");
+
+    if (isBasicInfoDirty) return true;
+
+    if (imageFile !== null) return true;
+
+    // Check products
+    const originalProductIds = blog?.products?.map((p) => p.id).sort() || [];
+    const currentProductIds = [...formData.productIds].sort();
+    if (
+      JSON.stringify(originalProductIds) !== JSON.stringify(currentProductIds)
+    )
+      return true;
+
+    return false;
+  }, [formData, imageFile, blog, defaultAuthor]);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -249,6 +284,7 @@ export function BlogFormDialog({
       isPending={isPending}
       submitLabel={isEditing ? t("updateBlog") : t("createBlog")}
       maxWidth="max-w-4xl"
+      disabled={isPending || !isDirty}
     >
       <div className="space-y-6 pt-4">
         <div className="grid grid-cols-2 gap-4">
@@ -383,11 +419,12 @@ export function BlogFormDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                {Array.isArray(categories) && categories.map((cat) => (
-                  <SelectItem key={cat.id} value={cat.name}>
-                    {cat.name}
-                  </SelectItem>
-                ))}
+                {Array.isArray(categories) &&
+                  categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.name}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
             <AnimatePresence>

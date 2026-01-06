@@ -1,6 +1,7 @@
 import { AdminPageHeader } from "@/features/admin/components/admin-page-components";
 import { http } from "@/lib/http";
 import { formatCurrency } from "@/lib/utils";
+import { format } from "date-fns";
 import { CreditCard, Zap } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Badge } from "@/components/ui/badge";
@@ -55,7 +56,7 @@ export default async function BillingPage() {
               <span className="text-muted-foreground">Next Billing</span>
               <span className="font-medium">
                 {subscription?.nextBillingDate
-                  ? new Date(subscription.nextBillingDate).toLocaleDateString()
+                  ? format(new Date(subscription.nextBillingDate), "dd/MM/yyyy")
                   : "Forever"}
               </span>
             </div>

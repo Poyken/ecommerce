@@ -85,7 +85,7 @@ export function TenantDialog({
     reset,
     setValue,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<CreateTenantDto>({
     defaultValues: {
       plan: "BASIC",
@@ -395,7 +395,7 @@ export function TenantDialog({
                     </span>
                     <span className="text-slate-900 font-bold">
                       {tenant?.createdAt
-                        ? format(new Date(tenant.createdAt), "HH:mm dd/MM/yyyy")
+                        ? format(new Date(tenant.createdAt), "dd/MM/yyyy")
                         : "-"}
                     </span>
                   </div>
@@ -406,7 +406,7 @@ export function TenantDialog({
                     </span>
                     <span className="text-slate-900 font-bold">
                       {tenant?.updatedAt
-                        ? format(new Date(tenant.updatedAt), "HH:mm dd/MM/yyyy")
+                        ? format(new Date(tenant.updatedAt), "dd/MM/yyyy")
                         : "-"}
                     </span>
                   </div>
@@ -428,7 +428,15 @@ export function TenantDialog({
             {!isView && (
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={
+                  isPending ||
+                  (isEdit
+                    ? !isDirty
+                    : !watch("name") ||
+                      !watch("domain") ||
+                      !watch("adminEmail") ||
+                      !watch("adminPassword"))
+                }
                 className="bg-indigo-600 hover:bg-indigo-700 text-white border-none shadow-md"
               >
                 {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

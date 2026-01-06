@@ -7,6 +7,7 @@ import { FeaturedProducts } from "@/features/products/components/featured-produc
 import { Link } from "@/i18n/routing";
 import { fadeInRight, fadeInUp, m, staggerContainer } from "@/lib/animations";
 import { BlogWithProducts } from "@/types/models";
+import { format } from "date-fns";
 import DOMPurify from "isomorphic-dompurify";
 import { ArrowLeft, Calendar, Clock, Share2, User } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -113,11 +114,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
       />
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
-        <m.div
-          initial="hidden"
-          animate="visible"
-          variants={staggerContainer}
-        >
+        <m.div initial="hidden" animate="visible" variants={staggerContainer}>
           <Link
             href="/blog"
             className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8"
@@ -160,7 +157,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                 <Calendar size={16} />
                 <span>
                   {post.createdAt
-                    ? new Date(post.createdAt).toLocaleDateString()
+                    ? format(new Date(post.createdAt), "dd/MM/yyyy")
                     : "Unknown Date"}
                 </span>
               </div>
@@ -228,10 +225,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
             }}
           />
 
-          <m.aside
-            className="lg:col-span-4 space-y-8"
-            variants={fadeInRight}
-          >
+          <m.aside className="lg:col-span-4 space-y-8" variants={fadeInRight}>
             <GlassCard className="p-6 sticky top-24">
               <h3 className="text-lg font-bold mb-4">
                 {tCommon("shareArticle")}

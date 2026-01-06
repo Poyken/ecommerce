@@ -89,4 +89,60 @@ export class SubscriptionsService {
       },
     });
   }
+
+  async findAll(query: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    status?: string; // 'Active' | 'PastDue' etc.
+  }) {
+    const { page = 1, limit = 10, search, status } = query;
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+
+    if (search) {
+      where.tenant = {
+        name: { contains: search, mode: 'insensitive' },
+      };
+    }
+
+    if (status) {
+      where.isActive = status === 'Active';
+      // More complex status logic if needed (e.g. Past Due based on date)
+    }
+
+    const [subscriptions, total] = await Promise.all([
+      this.prisma.subscription.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          tenant: { select: { name: true, domain: true } },
+        },
+        orderBy: { updatedAt: 'desc' },
+      }),
+      this.prisma.subscription.count({ where }),
+    ]);
+
+    return {
+      data: subscriptions,
+      meta: {
+        total,
+        page,
+        limit,
+        lastPage: Math.ceil(total / limit),
+      },
+    };
+  }
+
+  async cancelSubscription(tenantId: string) {
+    return this.prisma.subscription.update({
+      where: { tenantId },
+      data: {
+        isActive: false,
+        cancelAtPeriodEnd: true,
+      },
+    });
+  }
 }

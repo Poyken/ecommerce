@@ -92,6 +92,24 @@ export class ProductsController {
   }
 
   /**
+   * Semantic Search - Tìm kiếm theo ngữ nghĩa.
+   * Public API - Tìm sản phẩm dựa trên ý nghĩa câu hỏi (không chỉ keyword).
+   * VD: "áo ấm cho mùa đông" sẽ tìm thấy "Áo Khoác Parka" dù không có từ khớp.
+   */
+  @Get('semantic-search')
+  @ApiOperation({ summary: 'Tìm kiếm sản phẩm bằng AI (Semantic Search)' })
+  async semanticSearch(
+    @Query('q') query: string,
+    @Query('limit') limit?: string,
+  ) {
+    const data = await this.productsService.semanticSearch(
+      query,
+      Number(limit) || 10,
+    );
+    return { data };
+  }
+
+  /**
    * Lấy chi tiết sản phẩm.
    * Public API - Dùng cho trang Chi tiết sản phẩm (PDP).
    *

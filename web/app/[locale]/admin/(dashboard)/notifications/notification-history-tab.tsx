@@ -395,7 +395,7 @@ export function NotificationHistoryTab() {
                       </span>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
-                      {format(new Date(notif.createdAt), "dd/MM/yyyy HH:mm")}
+                      {format(new Date(notif.createdAt), "dd/MM/yyyy")}
                     </TableCell>
                     <TableCell>
                       {notif.isRead ? (

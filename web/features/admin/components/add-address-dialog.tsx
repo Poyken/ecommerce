@@ -1,6 +1,9 @@
 "use client";
 
-import { createAddressAction, updateAddressAction } from "@/features/address/actions";
+import {
+  createAddressAction,
+  updateAddressAction,
+} from "@/features/address/actions";
 import {
   District,
   Province,
@@ -32,7 +35,7 @@ import { Address } from "@/types/models";
 import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 
 /**
  * =====================================================================
@@ -181,6 +184,17 @@ function AddAddressForm({
     };
     fetchData();
   }, [formData.districtId]);
+
+  const isDirty = useMemo(() => {
+    return (
+      formData.recipientName !== (address?.recipientName || "") ||
+      formData.phoneNumber !== (address?.phoneNumber || "") ||
+      formData.street !== (address?.street || "") ||
+      formData.provinceId !== address?.provinceId ||
+      formData.districtId !== address?.districtId ||
+      formData.wardCode !== address?.wardCode
+    );
+  }, [formData, address]);
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
@@ -414,7 +428,12 @@ function AddAddressForm({
       <DialogFooter className="mt-4">
         <GlassButton
           type="submit"
-          disabled={isPending}
+          disabled={
+            isPending ||
+            (address
+              ? !isDirty
+              : !formData.recipientName.trim() || !formData.provinceId)
+          }
           className="bg-primary text-primary-foreground hover:bg-primary/90 w-full"
         >
           {address ? t("admin.save") : t("admin.create")}

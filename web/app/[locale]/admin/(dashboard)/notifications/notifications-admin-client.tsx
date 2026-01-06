@@ -8,22 +8,22 @@ import { Combobox, ComboboxOption } from "@/components/ui/combobox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import {
-    getCouponsAction,
-    getOrdersAction,
-    getProductsAction,
+  getCouponsAction,
+  getOrdersAction,
+  getProductsAction,
 } from "@/features/admin/actions";
 import {
-    broadcastNotificationAction,
-    sendNotificationToUserAction,
+  broadcastNotificationAction,
+  sendNotificationToUserAction,
 } from "@/features/notifications/actions";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { Coupon, Order, Product } from "@/types/models";
@@ -440,7 +440,12 @@ export function NotificationsAdminClient({
               <Button
                 type="submit"
                 className="w-full h-12 text-lg font-bold"
-                disabled={isLoading}
+                disabled={
+                  isLoading ||
+                  !formData.title.trim() ||
+                  !formData.message.trim() ||
+                  (mode === "individual" && !formData.userId)
+                }
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">

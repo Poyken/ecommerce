@@ -17,41 +17,41 @@
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-    AdminActionBadge,
-    AdminEmptyState,
-    AdminPageHeader,
-    AdminTableWrapper,
+  AdminActionBadge,
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useRouter } from "@/i18n/routing";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { format } from "date-fns";
 import {
-    Activity,
-    Clock,
-    Eye,
-    FileText,
-    Filter,
-    Globe,
-    Info,
-    Search,
-    User,
+  Activity,
+  Clock,
+  Eye,
+  FileText,
+  Filter,
+  Globe,
+  Info,
+  Search,
+  User,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
@@ -319,10 +319,7 @@ export function AuditLogsClient({
                       </div>
                       <div>
                         <p className="text-sm font-medium">
-                          {format(new Date(log.createdAt), "dd MMM yyyy")}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {format(new Date(log.createdAt), "HH:mm:ss")}
+                          {format(new Date(log.createdAt), "dd/MM/yyyy")}
                         </p>
                       </div>
                     </div>
@@ -415,10 +412,7 @@ export function AuditLogsClient({
                     {t("audit.date")}
                   </p>
                   <p className="font-medium">
-                    {format(
-                      new Date(selectedLog.createdAt),
-                      "dd MMM yyyy HH:mm:ss"
-                    )}
+                    {format(new Date(selectedLog.createdAt), "dd/MM/yyyy")}
                   </p>
                 </div>
                 <div className="p-4 rounded-lg bg-muted/50 border">

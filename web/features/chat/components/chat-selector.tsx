@@ -1,15 +1,16 @@
 import { Badge } from "@/components/ui/badge";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { http } from "@/lib/http";
+import { format } from "date-fns";
 import { Loader2, Package, Search, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -29,22 +30,22 @@ export function ChatSelector({
   accessToken,
   userId,
 }: ChatSelectorProps) {
-/**
- * =====================================================================
- * CHAT SELECTOR - Modal chọn Sản phẩm/Đơn hàng để gửi
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CONTEXT AWARENESS:
- * - Trong Support Chat, user thường cần hỏi về "Đơn hàng này" hoặc "Sản phẩm kia".
- * - Modal này giúp user chọn nhanh đối tượng cần hỗ trợ.
- *
- * 2. INFINITE SCROLL:
- * - Dùng `IntersectionObserver` để load thêm Product/Order khi scroll xuống đáy.
- * - Giảm tải ban đầu, chỉ fetch 20 items mỗi lần.
- * =====================================================================
- */
+  /**
+   * =====================================================================
+   * CHAT SELECTOR - Modal chọn Sản phẩm/Đơn hàng để gửi
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. CONTEXT AWARENESS:
+   * - Trong Support Chat, user thường cần hỏi về "Đơn hàng này" hoặc "Sản phẩm kia".
+   * - Modal này giúp user chọn nhanh đối tượng cần hỗ trợ.
+   *
+   * 2. INFINITE SCROLL:
+   * - Dùng `IntersectionObserver` để load thêm Product/Order khi scroll xuống đáy.
+   * - Giảm tải ban đầu, chỉ fetch 20 items mỗi lần.
+   * =====================================================================
+   */
   const [activeTab, setActiveTab] = useState<string>("product");
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
@@ -316,7 +317,7 @@ export function ChatSelector({
                         </span>
                       </div>
                       <div className="text-[10px] text-muted-foreground mt-1">
-                        {new Date(o.createdAt).toLocaleDateString()}
+                        {format(new Date(o.createdAt), "dd/MM/yyyy")}
                       </div>
                     </div>
                   ))}

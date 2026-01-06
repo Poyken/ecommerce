@@ -6,17 +6,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { updateProductAction } from "@/features/admin/actions";
 import {
-    useAdminBrands,
-    useAdminCategories,
+  updateProductAction,
+  generateProductContentAction,
+} from "@/features/admin/actions";
+import { Sparkles } from "lucide-react";
+import { MagicWriteButton } from "@/components/admin/magic-write-button";
+import {
+  useAdminBrands,
+  useAdminCategories,
 } from "@/features/admin/providers/admin-metadata-provider";
 import { OptionValue, Product, ProductOption } from "@/types/models";
 import { m } from "@/lib/animations";
@@ -69,7 +74,55 @@ export function EditProductDialog({
     description: product.description || "",
     categoryId: product.categoryId,
     brandId: product.brandId,
+    metaTitle: product.metaTitle || "",
+    metaDescription: product.metaDescription || "",
+    metaKeywords: product.metaKeywords || "",
   });
+
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleAutoFill = async () => {
+    if (!formData.name.trim()) {
+      toast({
+        title: t("error"),
+        description: t("products.errorNameRequired"),
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsGenerating(true);
+    const categoryName =
+      categories.find((c) => c.id === formData.categoryId)?.name || "";
+    const brandName = brands.find((b) => b.id === formData.brandId)?.name;
+
+    const res = await generateProductContentAction({
+      productName: formData.name,
+      categoryName: categoryName || "General",
+      brandName,
+    });
+
+    if (res.success && res.data) {
+      setFormData((prev) => ({
+        ...prev,
+        description: res.data!.description,
+        metaTitle: res.data!.metaTitle,
+        metaDescription: res.data!.metaDescription,
+        metaKeywords: res.data!.metaKeywords,
+      }));
+      toast({
+        variant: "success",
+        title: "AI Optimization",
+        description: "Content generated successfully!",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: res.error || "Failed to generate content",
+        variant: "destructive",
+      });
+    }
+    setIsGenerating(false);
+  };
 
   // Init options from product props
   const [options, setOptions] = useState<UiOption[]>(() => {
@@ -187,6 +240,7 @@ export function EditProductDialog({
       isPending={isPending}
       submitLabel={t("save")}
       maxWidth="max-w-2xl"
+      disabled={!isDirty}
     >
       <div className="grid grid-cols-2 gap-4 pt-4">
         <div className="space-y-2">
@@ -226,9 +280,26 @@ export function EditProductDialog({
       </div>
 
       <div className="space-y-2 pt-4">
-        <Label htmlFor="edit-description">
-          {t("products.descriptionLabel")}
-        </Label>
+        <div className="flex justify-between items-center mb-2">
+          <Label htmlFor="edit-description">
+            {t("products.descriptionLabel")}
+          </Label>
+          <MagicWriteButton
+            productName={formData.name}
+            category={
+              categories.find((c) => c.id === formData.categoryId)?.name
+            }
+            brand={brands.find((b) => b.id === formData.brandId)?.name}
+            onApply={(result) => {
+              setFormData((prev) => ({
+                ...prev,
+                description: result.description,
+                metaTitle: result.metaTitle,
+                metaDescription: result.metaDescription,
+              }));
+            }}
+          />
+        </div>
         <Textarea
           id="edit-description"
           value={formData.description}
@@ -311,6 +382,48 @@ export function EditProductDialog({
               </m.p>
             )}
           </AnimatePresence>
+        </div>
+      </div>
+
+      <div className="space-y-4 border-t pt-4 mt-4">
+        <h3 className="font-semibold text-sm text-gray-900">
+          SEO Optimization
+        </h3>
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <Label className="text-xs">Meta Title</Label>
+            <Input
+              value={formData.metaTitle}
+              onChange={(e) =>
+                setFormData({ ...formData, metaTitle: e.target.value })
+              }
+              placeholder="SEO Title (60 chars)"
+              disabled={isPending}
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">Meta Description</Label>
+            <Textarea
+              value={formData.metaDescription}
+              onChange={(e) =>
+                setFormData({ ...formData, metaDescription: e.target.value })
+              }
+              placeholder="SEO Description (160 chars)"
+              disabled={isPending}
+              className="h-20 min-h-[80px]"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs">Meta Keywords</Label>
+            <Input
+              value={formData.metaKeywords}
+              onChange={(e) =>
+                setFormData({ ...formData, metaKeywords: e.target.value })
+              }
+              placeholder="keyword1, keyword2, keyword3"
+              disabled={isPending}
+            />
+          </div>
         </div>
       </div>
 

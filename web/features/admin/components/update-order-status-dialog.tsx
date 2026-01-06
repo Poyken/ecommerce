@@ -111,7 +111,11 @@ export function UpdateOrderStatusDialog({
       description={t("orders.changeStatusOf", { id: orderId.slice(0, 8) })}
       onSubmit={handleUpdate}
       isPending={loading}
-      disabled={loading || isUnchanged}
+      disabled={
+        loading ||
+        isUnchanged ||
+        (status === "CANCELLED" && !cancellationReason.trim())
+      }
       submitLabel={t("orders.updateStatus")}
     >
       <div className="space-y-4 py-4">

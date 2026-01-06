@@ -1,5 +1,6 @@
 import { PrismaModule } from '@/core/prisma/prisma.module';
 import { Module } from '@nestjs/common';
+import { AiAutomationController } from './ai-automation.controller';
 import { AiChatController } from './ai-chat.controller';
 import { AiChatService } from './ai-chat.service';
 import { GeminiService } from './gemini.service';
@@ -22,7 +23,7 @@ import { GeminiService } from './gemini.service';
 
 @Module({
   imports: [PrismaModule],
-  controllers: [AiChatController],
+  controllers: [AiChatController, AiAutomationController],
   providers: [AiChatService, GeminiService],
   exports: [AiChatService, GeminiService],
 })

@@ -10,7 +10,7 @@
 services:
   # 1. Database Service (PostgreSQL)
   postgres:
-    image: postgres:15-alpine
+    image: ankane/pgvector:v0.4.1 # Supports Postgres 15
     container_name: postgres
     ports:
       - "5432:5432"

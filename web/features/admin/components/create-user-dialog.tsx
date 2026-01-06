@@ -99,6 +99,12 @@ export function CreateUserDialog({
       onSubmit={handleSubmit}
       isPending={isPending}
       submitLabel={t("users.createNew")}
+      disabled={
+        !formData.email.trim() ||
+        !formData.firstName.trim() ||
+        !formData.lastName.trim() ||
+        !formData.password.trim()
+      }
     >
       <div className="space-y-4 py-4">
         <div className="space-y-2">

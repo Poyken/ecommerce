@@ -353,7 +353,7 @@ async function DynamicOrderDetail({ id }: { id: string }) {
 
               <div className="mt-4 pt-2 border-t text-xs text-gray-400">
                 {t("placedOn")}{" "}
-                {format(new Date(order.createdAt), "dd/MM/yyyy HH:mm")}
+                {format(new Date(order.createdAt), "dd/MM/yyyy")}
               </div>
             </CardContent>
           </Card>

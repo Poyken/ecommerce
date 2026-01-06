@@ -3,27 +3,27 @@ import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import { deleteRoleAction } from "@/features/admin/actions";
 import {
-    AdminEmptyState,
-    AdminPageHeader,
-    AdminTableWrapper,
+  AdminEmptyState,
+  AdminPageHeader,
+  AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import { AssignPermissionsDialog } from "@/features/admin/components/assign-permissions-dialog";
 import { CreateRoleDialog } from "@/features/admin/components/create-role-dialog";
@@ -33,14 +33,15 @@ import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { PaginationMeta } from "@/types/dtos";
 import { RoleWithPermissions } from "@/types/models";
+import { format } from "date-fns";
 import {
-    Edit2,
-    Key,
-    MoreHorizontal,
-    Plus,
-    Search,
-    Shield,
-    Trash2,
+  Edit2,
+  Key,
+  MoreHorizontal,
+  Plus,
+  Search,
+  Shield,
+  Trash2,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -76,7 +77,9 @@ export function RolesPageClient({
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<RoleWithPermissions | null>(null);
+  const [selectedRole, setSelectedRole] = useState<RoleWithPermissions | null>(
+    null
+  );
   const [isPending, startTransition] = useTransition();
 
   const canCreate = hasPermission("role:create");
@@ -225,7 +228,7 @@ export function RolesPageClient({
                     </div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {new Date(role.createdAt).toLocaleDateString()}
+                    {format(new Date(role.createdAt), "dd/MM/yyyy")}
                   </TableCell>
                   {(canAssignPermissions || canUpdate || canDelete) && (
                     <TableCell className="text-right">

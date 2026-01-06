@@ -18,6 +18,7 @@ import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-
 import { Link } from "@/i18n/routing";
 import { Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 import { useState, useTransition } from "react";
 
 interface PagesListClientProps {
@@ -118,11 +119,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground text-sm">
-                  {new Date(page.updatedAt).toLocaleDateString("en-US", {
-                    day: "numeric",
-                    month: "short",
-                    year: "numeric",
-                  })}
+                  {format(new Date(page.updatedAt), "dd/MM/yyyy")}
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="flex justify-end gap-2 transition-opacity">

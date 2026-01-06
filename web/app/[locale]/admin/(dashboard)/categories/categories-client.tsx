@@ -25,7 +25,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteCategoryAction, getCategoriesAction } from "@/features/admin/actions";
+import {
+  deleteCategoryAction,
+  getCategoriesAction,
+} from "@/features/admin/actions";
 import {
   AdminEmptyState,
   AdminPageHeader,
@@ -86,7 +89,11 @@ export function CategoriesPageClient({
   const limit = Number(searchParams.get("limit")) || 10;
 
   // Hybrid Fetching: SWR for the table list
-  const { data: categoriesRes, mutate: mutateLocalCategories, isValidating } = useSWR(
+  const {
+    data: categoriesRes,
+    mutate: mutateLocalCategories,
+    isValidating,
+  } = useSWR(
     ["admin-categories-list", page, limit, debouncedSearchTerm],
     () => getCategoriesAction(page, limit, debouncedSearchTerm),
     {
@@ -102,18 +109,23 @@ export function CategoriesPageClient({
 
   const { mutate: mutateGlobalCategories } = useAdminCategories();
 
-  const categories = categoriesRes && "data" in categoriesRes ? (
-    Array.isArray(categoriesRes.data) 
-      ? categoriesRes.data 
-      : (categoriesRes.data as any).data || []
-  ) : [];
+  const categories =
+    categoriesRes && "data" in categoriesRes
+      ? Array.isArray(categoriesRes.data)
+        ? categoriesRes.data
+        : (categoriesRes.data as any).data || []
+      : [];
   const currentMeta =
-    categoriesRes && "meta" in categoriesRes ? (categoriesRes as any).meta : meta;
+    categoriesRes && "meta" in categoriesRes
+      ? (categoriesRes as any).meta
+      : meta;
   const total = currentMeta?.total || 0;
 
   // Count stats
   const safeCategories = Array.isArray(categories) ? categories : [];
-  const parentCount = safeCategories.filter((c: Category) => !c.parentId).length;
+  const parentCount = safeCategories.filter(
+    (c: Category) => !c.parentId
+  ).length;
   const childCount = safeCategories.filter((c: Category) => c.parentId).length;
 
   const refreshData = () => {
@@ -265,7 +277,7 @@ export function CategoriesPageClient({
                     </code>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
-                    {format(new Date(category.createdAt), "dd MMM yyyy")}
+                    {format(new Date(category.createdAt), "dd/MM/yyyy")}
                   </TableCell>
                   {(canUpdate || canDelete) && (
                     <TableCell className="text-right">

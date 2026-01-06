@@ -30,10 +30,13 @@ import {
   ExternalLink,
   Eye,
   Globe,
+  Package,
   Plus,
   Search,
+  ShoppingCart,
   Store,
   Trash2,
+  Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -153,6 +156,15 @@ export function TenantsClient({
               <TableHead>{t("table.name")}</TableHead>
               <TableHead>{t("table.domain")}</TableHead>
               <TableHead>{t("table.plan")}</TableHead>
+              <TableHead className="text-center">
+                {t("dialog.metrics.customers")}
+              </TableHead>
+              <TableHead className="text-center">
+                {t("dialog.metrics.products")}
+              </TableHead>
+              <TableHead className="text-center">
+                {t("dialog.metrics.orders")}
+              </TableHead>
               <TableHead>{t("table.createdAt")}</TableHead>
               <TableHead className="text-right">{t("table.actions")}</TableHead>
             </TableRow>
@@ -160,7 +172,7 @@ export function TenantsClient({
           <TableBody>
             {tenants.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5}>
+                <TableCell colSpan={8}>
                   <AdminEmptyState
                     icon={Store}
                     title={t("empty.title")}
@@ -217,8 +229,26 @@ export function TenantsClient({
                       {tenant.plan}
                     </Badge>
                   </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center gap-1 font-bold">
+                      <Users className="h-3 w-3 text-muted-foreground" />
+                      {tenant._count?.users || 0}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center gap-1 font-bold">
+                      <Package className="h-3 w-3 text-muted-foreground" />
+                      {tenant._count?.products || 0}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center gap-1 font-bold">
+                      <ShoppingCart className="h-3 w-3 text-muted-foreground" />
+                      {tenant._count?.orders || 0}
+                    </div>
+                  </TableCell>
                   <TableCell className="text-muted-foreground">
-                    {format(new Date(tenant.createdAt), "dd MMM yyyy")}
+                    {format(new Date(tenant.createdAt), "dd/MM/yyyy")}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">

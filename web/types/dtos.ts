@@ -168,6 +168,7 @@ export interface UpdateUserDto {
 export interface CreateProductDto {
   /** Tên sản phẩm (VD: "iPhone 15 Pro Max") */
   name: string;
+  slug?: string;
   /** Mô tả sản phẩm (optional) */
   description?: string;
   /** ID danh mục (bắt buộc) */
@@ -176,6 +177,11 @@ export interface CreateProductDto {
   brandId: string;
   /** Danh sách options và values */
   options?: { name: string; values: string[] }[];
+
+  // SEO Fields
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
 }
 
 /**
@@ -184,10 +190,16 @@ export interface CreateProductDto {
  */
 export interface UpdateProductDto {
   name?: string;
+  slug?: string;
   description?: string;
   categoryId?: string;
   brandId?: string;
   options?: { name: string; values: string[] }[];
+
+  // SEO Fields
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
 }
 
 // ==================== CATEGORY DTOs ====================

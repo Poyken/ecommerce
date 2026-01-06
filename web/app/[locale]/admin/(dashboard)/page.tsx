@@ -1,49 +1,51 @@
 import { UserAvatar } from "@/components/molecules/user-avatar";
 import { Badge } from "@/components/ui/badge";
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
 } from "@/components/ui/table";
 import {
-    getAnalyticsStatsAction,
-    getBlogStatsAction,
-    getPagesAction,
-    getReviewsAction,
-    getSalesDataAction,
-    getTopProductsAction,
+  getAnalyticsStatsAction,
+  getBlogStatsAction,
+  getPagesAction,
+  getReviewsAction,
+  getSalesDataAction,
+  getTopProductsAction,
 } from "@/features/admin/actions";
 import { AdminAlerts } from "@/features/admin/components/admin-alerts";
 import {
-    AdminPageHeader,
-    AdminTableWrapper,
+  AdminPageHeader,
+  AdminTableWrapper,
 } from "@/features/admin/components/admin-page-components";
 import {
-    LazyBestSellersChart as BestSellersChart,
-    LazySalesTrendChart as SalesTrendChart,
+  LazyBestSellersChart as BestSellersChart,
+  LazySalesTrendChart as SalesTrendChart,
 } from "@/features/admin/components/lazy-admin-charts";
 import { QuickActions } from "@/features/admin/components/quick-actions";
 import { StorefrontPulse } from "@/features/admin/components/storefront-pulse";
 import { getProfileAction } from "@/features/profile/actions";
+import { AiInsightsWidget } from "@/components/admin/ai-insights-widget";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";
 import { cn, formatCurrency } from "@/lib/utils";
 import { AnalyticsStats } from "@/types/dtos";
+import { format } from "date-fns";
 import {
-    AlertCircle,
-    ArrowUpRight,
-    Clock,
-    DollarSign,
-    ExternalLink,
-    LayoutDashboard,
-    Package,
-    ShoppingCart,
-    Star,
-    TrendingUp,
-    Users,
+  AlertCircle,
+  ArrowUpRight,
+  Clock,
+  DollarSign,
+  ExternalLink,
+  LayoutDashboard,
+  Package,
+  ShoppingCart,
+  Star,
+  TrendingUp,
+  Users,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
@@ -93,19 +95,27 @@ export default async function AdminDashboardPage() {
   const t = await getTranslations("admin");
 
   // Parallel data fetching for maximum performance
-  const [statsRes, salesRes, topProductsRes, ordersRes, skusRes, reviewsRes, pagesRes, blogStatsRes] =
-    await Promise.all([
-      getAnalyticsStatsAction(),
-      getSalesDataAction(7),
-      getTopProductsAction(5),
-      http<{ data: Order[] }>("/orders?limit=5&includeItems=true"),
-      http<{ data: any[]; meta: { total: number } }>(
-        "/skus?limit=5&stockLimit=5&includeProduct=true"
-      ),
-      getReviewsAction(1, 4), // 4 recent reviews
-      getPagesAction(),
-      getBlogStatsAction(),
-    ]);
+  const [
+    statsRes,
+    salesRes,
+    topProductsRes,
+    ordersRes,
+    skusRes,
+    reviewsRes,
+    pagesRes,
+    blogStatsRes,
+  ] = await Promise.all([
+    getAnalyticsStatsAction(),
+    getSalesDataAction(7),
+    getTopProductsAction(5),
+    http<{ data: Order[] }>("/orders?limit=5&includeItems=true"),
+    http<{ data: any[]; meta: { total: number } }>(
+      "/skus?limit=5&stockLimit=5&includeProduct=true"
+    ),
+    getReviewsAction(1, 4), // 4 recent reviews
+    getPagesAction(),
+    getBlogStatsAction(),
+  ]);
 
   const pagesCount = (pagesRes as any).data?.length || 0;
   const publishedBlogs = (blogStatsRes as any).data?.published || 0;
@@ -125,10 +135,7 @@ export default async function AdminDashboardPage() {
 
   const salesData = (Array.isArray(salesRes.data) ? salesRes.data : []).map(
     (item: unknown) => ({
-      name: new Date((item as { date: string }).date).toLocaleDateString(
-        "en-US",
-        { weekday: "short" }
-      ),
+      name: format(new Date((item as { date: string }).date), "eee"),
       sales: (item as { amount: number }).amount,
     })
   );
@@ -176,7 +183,7 @@ export default async function AdminDashboardPage() {
       <QuickActions />
 
       {/* Storefront Customization Pulse */}
-      <StorefrontPulse 
+      <StorefrontPulse
         pagesCount={pagesCount}
         publishedBlogs={publishedBlogs}
       />
@@ -343,7 +350,7 @@ export default async function AdminDashboardPage() {
                           #{order.id.slice(0, 8).toUpperCase()}
                         </Link>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(order.createdAt).toLocaleDateString()}
+                          {format(new Date(order.createdAt), "dd/MM/yyyy")}
                         </span>
                       </div>
                     </TableCell>
@@ -433,7 +440,7 @@ export default async function AdminDashboardPage() {
                       </p>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <Clock className="w-3 h-3" />
-                        {new Date(review.createdAt).toLocaleDateString()}
+                        {format(new Date(review.createdAt), "dd/MM/yyyy")}
                         <span className="text-border">|</span>
                         <span className="truncate max-w-[150px]">
                           {review.product?.name}
@@ -447,8 +454,9 @@ export default async function AdminDashboardPage() {
           </AdminTableWrapper>
         </div>
 
-        {/* Sidebar Column: Alerts + Trending */}
+        {/* Sidebar Column: AI Insights + Alerts + Trending */}
         <div className="w-full xl:w-[380px] shrink-0 space-y-6">
+          <AiInsightsWidget />
           <AdminAlerts
             lowStockSkus={lowStockSkus}
             lowStockCount={lowStockCount}

@@ -126,7 +126,7 @@ export function OrdersClient({ orders, meta }: OrdersClientProps) {
                           <div className="flex items-center gap-2">
                             <Calendar size={16} />
                             <span>
-                              {format(new Date(order.createdAt), "PPP")}
+                              {format(new Date(order.createdAt), "dd/MM/yyyy")}
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
@@ -177,8 +177,10 @@ export function OrdersClient({ orders, meta }: OrdersClientProps) {
                                 </AlertDialogCancel>
                                 <AlertDialogAction
                                   onClick={async () => {
-                                    await import("@/features/orders/actions").then(
-                                      (mod) => mod.cancelOrderAction(order.id)
+                                    await import(
+                                      "@/features/orders/actions"
+                                    ).then((mod) =>
+                                      mod.cancelOrderAction(order.id)
                                     );
                                   }}
                                   className="bg-destructive hover:bg-destructive/90 text-destructive-foreground border-none"

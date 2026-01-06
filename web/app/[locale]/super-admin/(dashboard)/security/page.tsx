@@ -116,20 +116,21 @@ export default function SecurityHubPage() {
   };
 
   const handleAddIp = () => {
-    if (!newIp) return;
+    const trimmedIp = newIp.trim();
+    if (!trimmedIp) return;
     const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
-    if (!ipPattern.test(newIp)) {
+    if (!ipPattern.test(trimmedIp)) {
       toast({ title: "Invalid IP address format", variant: "destructive" });
       return;
     }
-    if (whitelist.includes(newIp)) {
+    if (whitelist.includes(trimmedIp)) {
       toast({
         title: t("whitelist.alreadyExists") || "IP already in whitelist",
         variant: "destructive",
       });
       return;
     }
-    setWhitelist([...whitelist, newIp]);
+    setWhitelist([...whitelist, trimmedIp]);
     setNewIp("");
   };
 
@@ -344,7 +345,11 @@ export default function SecurityHubPage() {
                   className="rounded-xl"
                   onKeyDown={(e) => e.key === "Enter" && handleAddIp()}
                 />
-                <Button onClick={handleAddIp} className="rounded-xl">
+                <Button
+                  onClick={handleAddIp}
+                  className="rounded-xl"
+                  disabled={!newIp.trim()}
+                >
                   <Plus className="h-4 w-4 mr-2" />
                   {t("whitelist.addButton")}
                 </Button>
@@ -394,7 +399,7 @@ export default function SecurityHubPage() {
           </Card>
 
           {/* Developer Toolkit Card */}
-          <Card className="rounded-3xl border-foreground/5 shadow-sm border-indigo-100 bg-indigo-50/10">
+          <Card className="rounded-3xl shadow-sm border-indigo-100 bg-indigo-50/10">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-indigo-900">
                 <Settings className="h-5 w-5 text-indigo-500" />

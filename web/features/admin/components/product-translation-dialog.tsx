@@ -3,7 +3,9 @@
 import {
   getProductTranslationsAction,
   updateProductTranslationAction,
+  translateTextAction,
 } from "@/features/admin/actions";
+import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -25,7 +27,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/shared/use-toast";
 import { Product } from "@/types/models";
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useTransition,
+} from "react";
 
 /**
  * =====================================================================
@@ -86,6 +94,54 @@ function ProductTranslationForm({ product }: { product: Product }) {
     name: "",
     description: "",
   });
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  const handleAutoTranslate = async () => {
+    setIsTranslating(true);
+    try {
+      // 1. Dịch tên
+      const nameRes = await translateTextAction({
+        text: product.name,
+        targetLocale: locale,
+      });
+
+      // 2. Dịch mô tả (nếu có)
+      let descRes: {
+        success?: boolean;
+        data?: { text: string };
+        error?: string;
+      } = {
+        success: true,
+        data: { text: product.description || "" },
+      };
+      if (product.description) {
+        descRes = await translateTextAction({
+          text: product.description,
+          targetLocale: locale,
+        });
+      }
+
+      if (nameRes.success && descRes.success) {
+        setForm({
+          name: nameRes.data?.text || form.name,
+          description: descRes.data?.text || form.description,
+        });
+        toast({
+          variant: "success",
+          title: "AI Translate",
+          description: "Content translated successfully!",
+        });
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Translation failed",
+      });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
 
   const loadTranslations = useCallback(async () => {
     setIsLoading(true);
@@ -129,6 +185,17 @@ function ProductTranslationForm({ product }: { product: Product }) {
     );
   }
 
+  const isDirty = useMemo(() => {
+    const existing = translations.find((tr) => tr.locale === locale);
+    const original = existing || {
+      name: locale === "en" ? product.name : "",
+      description: locale === "en" ? product.description || "" : "",
+    };
+    return (
+      form.name !== original.name || form.description !== original.description
+    );
+  }, [form, locale, translations, product.name, product.description]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     startTransition(async () => {
@@ -155,17 +222,29 @@ function ProductTranslationForm({ product }: { product: Product }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-      <div className="space-y-2">
-        <Label>{t("products.selectLocale")}</Label>
-        <Select value={locale} onValueChange={(val) => setLocale(val)}>
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="en">{t("languages.en")}</SelectItem>
-            <SelectItem value="vi">{t("languages.vi")}</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex items-end gap-3">
+        <div className="space-y-2 flex-1">
+          <Label>{t("products.selectLocale")}</Label>
+          <Select value={locale} onValueChange={(val) => setLocale(val)}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="en">{t("languages.en")}</SelectItem>
+              <SelectItem value="vi">{t("languages.vi")}</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleAutoTranslate}
+          disabled={isTranslating || locale === "en"}
+          className="mb-0.5 text-blue-600 border-blue-200 hover:bg-blue-50"
+        >
+          <Sparkles className="w-4 h-4 mr-2" />
+          {isTranslating ? "Translating..." : "Auto-Translate"}
+        </Button>
       </div>
 
       <div className="space-y-2">
@@ -187,7 +266,7 @@ function ProductTranslationForm({ product }: { product: Product }) {
       </div>
 
       <div className="flex justify-end pt-4">
-        <Button type="submit" disabled={isPending}>
+        <Button type="submit" disabled={isPending || !isDirty}>
           {isPending ? t("loading") : t("save")}
         </Button>
       </div>

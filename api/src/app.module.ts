@@ -77,6 +77,10 @@ import { ChatModule } from './chat/chat.module';
 import { LockdownGuard } from '@core/guards/lockdown.guard';
 import { SuperAdminIpGuard } from '@core/guards/super-admin-ip.guard';
 import { JwtModule } from '@nestjs/jwt';
+import { AgentModule } from './agent/agent.module';
+import { InsightsModule } from './insights/insights.module';
+import { ImageProcessorModule } from './images/image-processor.module';
+import { RagModule } from './rag/rag.module';
 
 @Module({
   imports: [
@@ -214,6 +218,10 @@ import { JwtModule } from '@nestjs/jwt';
     ScheduleModule.forRoot(),
     ChatModule,
     AiChatModule,
+    AgentModule, // AI Agent System
+    InsightsModule, // AI Business Insights
+    ImageProcessorModule, // AI Image Enhancement
+    RagModule, // RAG Chatbot
   ],
   controllers: [HealthController],
   providers: [

@@ -7,7 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getTenantsAction } from "@/features/admin/actions";
+import {
+  getAnalyticsStatsAction,
+  getSecurityStatsAction,
+  getTenantsAction,
+} from "@/features/admin/actions";
+import { format } from "date-fns";
 import { Link } from "@/i18n/routing";
 import {
   Activity,
@@ -18,10 +23,13 @@ import {
   CreditCard,
   DollarSign,
   Globe,
+  Package,
   Plus,
   Shield,
+  ShoppingCart,
   Store,
   TrendingUp,
+  Users,
   Zap,
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -54,6 +62,22 @@ export default async function SuperAdminDashboardPage() {
   const recentTenants = Array.isArray(tenantsData?.data)
     ? tenantsData.data.slice(0, 5)
     : [];
+
+  const statsRes = await getAnalyticsStatsAction();
+  const stats = statsRes?.data;
+
+  const securityRes = await getSecurityStatsAction();
+  const securityStats = securityRes?.data;
+
+  // Calculate real distribution
+  const allTenants = tenantsData?.data || [];
+  const totalTenants = allTenants.length;
+  const enterpriseCount = allTenants.filter(
+    (t: any) => t.plan === "ENTERPRISE"
+  ).length;
+  const enterprisePercent =
+    totalTenants > 0 ? Math.round((enterpriseCount / totalTenants) * 100) : 0;
+  const basicProPercent = totalTenants > 0 ? 100 - enterprisePercent : 0;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
@@ -90,10 +114,12 @@ export default async function SuperAdminDashboardPage() {
               {t("stats.mrr")}
             </CardDescription>
             <CardTitle className="text-3xl font-black flex items-center gap-2">
-              $12,450
-              <Badge className="bg-emerald-500/10 text-emerald-600 border-0 text-[10px]">
-                +12.5%
-              </Badge>
+              ${(stats?.totalRevenue || 0).toLocaleString()}
+              {stats?.growth ? (
+                <Badge className="bg-emerald-500/10 text-emerald-600 border-0 text-[10px]">
+                  +{stats.growth}%
+                </Badge>
+              ) : null}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -109,7 +135,9 @@ export default async function SuperAdminDashboardPage() {
             <CardDescription className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">
               {t("stats.transactions")}
             </CardDescription>
-            <CardTitle className="text-3xl font-black">1,280</CardTitle>
+            <CardTitle className="text-3xl font-black">
+              {(stats?.totalOrders || 0).toLocaleString()}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
@@ -124,7 +152,9 @@ export default async function SuperAdminDashboardPage() {
             <CardDescription className="text-xs font-black uppercase tracking-widest text-purple-600 dark:text-purple-400">
               {t("stats.health")}
             </CardDescription>
-            <CardTitle className="text-3xl font-black">98.2%</CardTitle>
+            <CardTitle className="text-3xl font-black">
+              {securityStats?.threatGrade || "A+"}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
@@ -139,7 +169,9 @@ export default async function SuperAdminDashboardPage() {
             <CardDescription className="text-xs font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">
               {t("stats.pending")}
             </CardDescription>
-            <CardTitle className="text-3xl font-black">4</CardTitle>
+            <CardTitle className="text-3xl font-black">
+              {stats?.pendingOrders || 0}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-xs font-medium text-amber-600">
@@ -219,6 +251,20 @@ export default async function SuperAdminDashboardPage() {
                             {tenant.domain}
                           </p>
                         </div>
+                        <div className="flex items-center gap-3 mt-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                          <span className="flex items-center gap-1">
+                            <Users className="h-3 w-3" />{" "}
+                            {tenant._count?.users || 0}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Package className="h-3 w-3" />{" "}
+                            {tenant._count?.products || 0}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <ShoppingCart className="h-3 w-3" />{" "}
+                            {tenant._count?.orders || 0}
+                          </span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1">
@@ -227,7 +273,7 @@ export default async function SuperAdminDashboardPage() {
                         {t("recentTenants.healthy")}
                       </div>
                       <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">
-                        {new Date(tenant.createdAt).toLocaleDateString()}
+                        {format(new Date(tenant.createdAt), "dd/MM/yyyy")}
                       </span>
                     </div>
                   </div>
@@ -301,19 +347,25 @@ export default async function SuperAdminDashboardPage() {
                   <span className="opacity-80">
                     {t("distribution.enterprise")}
                   </span>
-                  <span className="font-black">12%</span>
+                  <span className="font-black">{enterprisePercent}%</span>
                 </div>
                 <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-white w-[12%]" />
+                  <div
+                    className="h-full bg-white transition-all duration-1000"
+                    style={{ width: `${enterprisePercent}%` }}
+                  />
                 </div>
                 <div className="flex items-center justify-between text-sm mt-4">
                   <span className="opacity-80">
                     {t("distribution.basicPro")}
                   </span>
-                  <span className="font-black">88%</span>
+                  <span className="font-black">{basicProPercent}%</span>
                 </div>
                 <div className="h-2 bg-white/10 rounded-full overflow-hidden">
-                  <div className="h-full bg-indigo-300 w-[88%]" />
+                  <div
+                    className="h-full bg-indigo-300 transition-all duration-1000"
+                    style={{ width: `${basicProPercent}%` }}
+                  />
                 </div>
               </div>
             </CardContent>

@@ -125,6 +125,7 @@ export function EditSkuDialog({ sku, open, onOpenChange }: EditSkuDialogProps) {
       isPending={isPending}
       submitLabel={t("save")}
       maxWidth="sm:max-w-lg"
+      disabled={!isDirty}
     >
       <div className="space-y-4 py-4">
         <div className="space-y-2">

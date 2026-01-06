@@ -5,10 +5,13 @@ import { useToast } from "@/components/shared/use-toast";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { assignPermissionsAction, getPermissionsAction } from "@/features/admin/actions";
+import {
+  assignPermissionsAction,
+  getPermissionsAction,
+} from "@/features/admin/actions";
 import { Permission } from "@/types/models";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 
 /**
  * =====================================================================
@@ -58,7 +61,7 @@ export function AssignPermissionsDialog({
     if (open) {
       startTransition(async () => {
         const result = await getPermissionsAction();
-        if ('error' in result || !result.data) return;
+        if ("error" in result || !result.data) return;
         const data = result.data;
         setPermissions(data);
         // Đặt các quyền hiện được gán
@@ -70,9 +73,23 @@ export function AssignPermissionsDialog({
     }
   }, [open, currentPermissions]);
 
+  const isDirty = useMemo(() => {
+    // If we haven't loaded permissions yet, we can't accurately check dirty status
+    if (permissions.length === 0) return false;
+
+    const originalIds = permissions
+      .filter((p: Permission) => currentPermissions.includes(p.name))
+      .map((p: Permission) => p.id)
+      .sort();
+
+    const currentIds = [...selectedPermissionIds].sort();
+
+    return JSON.stringify(originalIds) !== JSON.stringify(currentIds);
+  }, [selectedPermissionIds, permissions, currentPermissions]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     startTransition(async () => {
       const result = await assignPermissionsAction(
         roleId,
@@ -125,6 +142,7 @@ export function AssignPermissionsDialog({
       isPending={isPending}
       submitLabel={t("save")}
       maxWidth="!max-w-6xl"
+      disabled={isPending || !isDirty}
     >
       <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-2">
         {isPending && permissions.length === 0 ? (

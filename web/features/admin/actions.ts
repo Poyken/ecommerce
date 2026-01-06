@@ -66,6 +66,7 @@ import {
   RoleWithPermissions,
   Sku,
   Tenant,
+  Subscription,
   User,
 } from "@/types/models";
 import { revalidatePath, revalidateTag } from "next/cache";
@@ -1315,5 +1316,116 @@ export async function toggleLockdownAction(
         body: JSON.stringify({ isEnabled }),
       }),
     ["/super-admin/security"]
+  );
+}
+
+// ============= AI AUTOMATION =============
+export async function generateProductContentAction(data: {
+  productName: string;
+  categoryName: string;
+  brandName?: string;
+  features?: string[];
+}): Promise<
+  ActionResult<{
+    description: string;
+    metaTitle: string;
+    metaDescription: string;
+    metaKeywords: string;
+  }>
+> {
+  try {
+    const res = await http<
+      ApiResponse<{
+        description: string;
+        metaTitle: string;
+        metaDescription: string;
+        metaKeywords: string;
+      }>
+    >("/ai-automation/generate-product-content", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    return { success: true, data: res.data };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function translateTextAction(data: {
+  text: string;
+  targetLocale: string;
+}): Promise<ActionResult<{ text: string; locale: string }>> {
+  try {
+    const res = await http<
+      ApiResponse<{
+        text: string;
+        locale: string;
+      }>
+    >("/ai-automation/translate", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    return { success: true, data: res.data };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function analyzeReviewSentimentAction(
+  text: string
+): Promise<ActionResult<{ sentiment: string; tags: string[] }>> {
+  try {
+    const res = await http<
+      ApiResponse<{
+        sentiment: string;
+        tags: string[];
+      }>
+    >("/ai-automation/analyze-review-sentiment", {
+      method: "POST",
+      body: JSON.stringify({ text }),
+    });
+    return { success: true, data: res.data };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+// =============================================================================
+// 📅 SUBSCRIPTIONS ACTIONS (SUPER ADMIN)
+// =============================================================================
+
+export async function getSubscriptionsAction(params: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+}): Promise<ActionResult<PaginatedData<Subscription>>> {
+  const query = new URLSearchParams();
+  if (params.page) query.set("page", params.page.toString());
+  if (params.limit) query.set("limit", params.limit.toString());
+  if (params.search) query.set("search", params.search);
+  if (params.status) query.set("status", params.status);
+
+  try {
+    const res = await http<PaginatedData<Subscription>>(
+      `/subscriptions?${query.toString()}`,
+      { next: { tags: ["subscriptions"] } }
+    );
+    return { success: true, data: res };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function cancelSubscriptionAction(
+  tenantId: string
+): Promise<ActionResult<any>> {
+  return handleAdminAction(
+    () =>
+      http(`/subscriptions/${tenantId}/cancel`, {
+        method: "POST",
+      }),
+    ["/super-admin/subscriptions"],
+    ["subscriptions"]
   );
 }

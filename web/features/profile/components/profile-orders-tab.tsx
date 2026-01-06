@@ -117,7 +117,9 @@ export function ProfileOrdersTab() {
                     <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <Calendar size={16} />
-                        <span>{format(new Date(order.createdAt), "PPP")}</span>
+                        <span>
+                          {format(new Date(order.createdAt), "dd/MM/yyyy")}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <CreditCard size={16} />
