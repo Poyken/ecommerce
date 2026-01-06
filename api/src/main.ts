@@ -1,3 +1,6 @@
+// IMPORTANT: Sentry instrumentation must be imported first!
+import './core/sentry/instrument';
+
 /**
  * =====================================================================
  * MAIN BOOTSTRAP - ĐIỂM KHỞI CHẠY ỨNG DỤNG
@@ -17,6 +20,7 @@
  *    - TransformInterceptor: Chuẩn hóa format trả về { data, message, statusCode }.
  *    - AllExceptionsFilter: Bắt lỗi tập trung và trả về lỗi đẹp.
  * 4. Tạo tài liệu API (Swagger) tự động tại `/docs`.
+ * 5. [NEW] Sentry error tracking và performance monitoring.
  * =====================================================================
  */
 

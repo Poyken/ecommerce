@@ -1,9 +1,11 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { RedisService } from '@core/redis/redis.service';
+import { MetricsService } from '@core/metrics/metrics.service';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Header, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Queue } from 'bullmq';
+import type { Response } from 'express';
 
 /**
  * =====================================================================
@@ -27,6 +29,7 @@ export class HealthController {
   constructor(
     private readonly prisma: PrismaService,
     private readonly redis: RedisService,
+    private readonly metrics: MetricsService,
     @InjectQueue('email-queue') private readonly emailQueue: Queue,
     @InjectQueue('orders-queue') private readonly ordersQueue: Queue,
   ) {}
@@ -102,22 +105,68 @@ export class HealthController {
   @ApiOperation({ summary: 'Thông tin hệ thống chi tiết' })
   info() {
     const mem = process.memoryUsage();
+    const cpuUsage = process.cpuUsage();
+
     return {
       status: 'ok',
       timestamp: new Date().toISOString(),
-      version: process.env.npm_package_version || '1.0.0',
+      version: process.env.APP_VERSION || '1.0.0',
+      environment: process.env.NODE_ENV || 'development',
       node: process.version,
       platform: process.platform,
+      arch: process.arch,
       memory: {
         heapUsed: Math.round(mem.heapUsed / 1024 / 1024) + 'MB',
         heapTotal: Math.round(mem.heapTotal / 1024 / 1024) + 'MB',
         rss: Math.round(mem.rss / 1024 / 1024) + 'MB',
         external: Math.round(mem.external / 1024 / 1024) + 'MB',
+        heapUsedPercent: Math.round((mem.heapUsed / mem.heapTotal) * 100) + '%',
       },
-      cpuUsage: process.cpuUsage(),
-      uptime: Math.round(process.uptime()) + 's',
+      cpu: {
+        user: Math.round(cpuUsage.user / 1000) + 'ms',
+        system: Math.round(cpuUsage.system / 1000) + 'ms',
+      },
+      uptime: {
+        seconds: Math.round(process.uptime()),
+        formatted: this.formatUptime(process.uptime()),
+      },
+      monitoring: {
+        sentry: !!process.env.SENTRY_DSN,
+        sentryEnvironment: process.env.SENTRY_DSN
+          ? process.env.NODE_ENV
+          : 'disabled',
+      },
     };
   }
+
+  private formatUptime(seconds: number): string {
+    const days = Math.floor(seconds / 86400);
+    const hours = Math.floor((seconds % 86400) / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+
+    const parts: string[] = [];
+    if (days > 0) parts.push(`${days}d`);
+    if (hours > 0) parts.push(`${hours}h`);
+    if (minutes > 0) parts.push(`${minutes}m`);
+    parts.push(`${secs}s`);
+
+    return parts.join(' ');
+  }
+
+  @Get('metrics')
+  @ApiOperation({ summary: 'Prometheus-compatible metrics endpoint' })
+  @Header('Content-Type', 'text/plain; charset=utf-8')
+  async getMetrics(): Promise<string> {
+    return this.metrics.getPrometheusMetrics();
+  }
+
+  @Get('metrics/json')
+  @ApiOperation({ summary: 'Metrics in JSON format' })
+  async getMetricsJson() {
+    return this.metrics.getMetricsJson();
+  }
+
   @Get('debug-db')
   async debugDb() {
     try {

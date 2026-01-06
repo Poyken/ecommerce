@@ -81,6 +81,9 @@ import { AgentModule } from './agent/agent.module';
 import { InsightsModule } from './insights/insights.module';
 import { ImageProcessorModule } from './images/image-processor.module';
 import { RagModule } from './rag/rag.module';
+import { SentryModule } from '@core/sentry/sentry.module';
+import { DataLoaderModule } from '@core/dataloader/dataloader.module';
+import { MetricsModule } from '@core/metrics/metrics.module';
 
 @Module({
   imports: [
@@ -222,6 +225,9 @@ import { RagModule } from './rag/rag.module';
     InsightsModule, // AI Business Insights
     ImageProcessorModule, // AI Image Enhancement
     RagModule, // RAG Chatbot
+    SentryModule, // Error Tracking & Performance Monitoring
+    DataLoaderModule, // N+1 Query Prevention
+    MetricsModule, // Prometheus Metrics
   ],
   controllers: [HealthController],
   providers: [
