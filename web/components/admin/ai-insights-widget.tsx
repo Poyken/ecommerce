@@ -1,5 +1,38 @@
 "use client";
 
+/**
+ * =====================================================================
+ * AI INSIGHTS WIDGET - WIDGET PHÂN TÍCH KINH DOANH BẰNG AI
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Widget này hiển thị các insights (gợi ý kinh doanh) được tạo bởi AI
+ * trên Admin Dashboard.
+ *
+ * 1. CHỨC NĂNG:
+ *    - Fetch insights từ API /api/v1/insights
+ *    - Hiển thị 3 loại: warning (cảnh báo), success (tốt), info (thông tin)
+ *    - Có nút Refresh để yêu cầu AI tạo insights mới
+ *
+ * 2. KIẾN TRÚC:
+ *    - fetchInsights(): Lấy insights đã có (cached)
+ *    - refreshInsights(): Gọi AI tạo insights mới (POST request)
+ *    - Insights được lưu cache ở backend để tiết kiệm API calls
+ *
+ * 3. UI/UX:
+ *    - Header gradient tím (violet-purple) với icon Brain
+ *    - Mỗi insight có màu riêng: amber (warning), emerald (success), blue (info)
+ *    - Loading spinner khi đang fetch
+ *    - Hiển thị thời gian cập nhật cuối
+ *
+ * 4. VÍ DỤ INSIGHTS:
+ *    - "Doanh thu tuần này tăng 15% so với tuần trước" (success)
+ *    - "5 sản phẩm sắp hết hàng" (warning)
+ *    - "Khách hàng mới tháng này: 120 người" (info)
+ * =====================================================================
+ */
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

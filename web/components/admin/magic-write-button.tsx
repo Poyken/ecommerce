@@ -1,5 +1,40 @@
 "use client";
 
+/**
+ * =====================================================================
+ * MAGIC WRITE BUTTON - NÚT TẠO NỘI DUNG SẢN PHẨM BẰNG AI
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Component này giúp Admin tạo mô tả sản phẩm chuẩn SEO bằng AI.
+ * Chỉ cần nhập tên sản phẩm + tính năng -> AI tự viết toàn bộ.
+ *
+ * 1. INPUT (Đầu vào):
+ *    - productName: Tên sản phẩm (bắt buộc)
+ *    - category: Danh mục sản phẩm
+ *    - brand: Thương hiệu
+ *    - features: Danh sách tính năng (VD: "Cotton 100%", "Size M-XXL")
+ *
+ * 2. OUTPUT (AI tạo ra):
+ *    - description: Mô tả chi tiết (HTML formatted)
+ *    - shortDescription: Mô tả ngắn (2-3 câu)
+ *    - metaTitle: Tiêu đề SEO (≤60 ký tự)
+ *    - metaDescription: Mô tả SEO (≤155 ký tự)
+ *    - hashtags: Danh sách hashtag cho social media
+ *
+ * 3. TÍNH NĂNG UI:
+ *    - Copy từng field riêng lẻ
+ *    - "Áp dụng tất cả" - điền hết vào form sản phẩm
+ *    - Hiển thị character count cho SEO fields
+ *    - Dialog modal với gradient design
+ *
+ * 4. API ENDPOINT:
+ *    - POST /api/v1/ai-automation/magic-write
+ *    - Sử dụng Gemini AI để generate content
+ * =====================================================================
+ */
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {

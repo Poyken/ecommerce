@@ -1,3 +1,42 @@
+/**
+ * =====================================================================
+ * PRODUCTS SERVICE - QUẢN LÝ SẢN PHẨM CHO E-COMMERCE
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Đây là SERVICE QUAN TRỌNG NHẤT của hệ thống E-commerce, quản lý toàn bộ
+ * logic liên quan đến sản phẩm.
+ *
+ * 1. KIẾN TRÚC PRODUCT - SKU:
+ *    - Product: Thông tin chung (Tên, Mô tả, Category, Brand)
+ *    - SKU (Stock Keeping Unit): Biến thể cụ thể (Màu đỏ - Size M) có giá, tồn kho riêng
+ *    - Options: Các tùy chọn (Color, Size) -> Values: Giá trị cụ thể (Red, Blue, S, M, L)
+ *
+ * 2. CACHING STRATEGY (Multi-layer):
+ *    - L1: In-memory cache (cache-manager) - 1 phút cho listing
+ *    - L2: Redis - 5 phút cho product detail
+ *    - Invalidation: Khi update -> xóa cache + pre-warm (không chờ request mới)
+ *
+ * 3. PERFORMANCE OPTIMIZATIONS:
+ *    - Cached columns: minPrice, maxPrice, avgRating được tính sẵn ở Product
+ *      -> Tránh aggregate query expensive khi load listing
+ *    - Smart selects: Chỉ load fields cần thiết, tránh over-fetching
+ *    - Query canonicalization: Sort query params để tăng cache hit rate
+ *
+ * 4. MULTI-TENANCY:
+ *    - getTenant() lấy context tenant hiện tại
+ *    - PlanUsageService kiểm tra giới hạn số sản phẩm theo gói (BASIC/PRO/ENTERPRISE)
+ *
+ * 5. CÁC PHƯƠNG THỨC CHÍNH:
+ *    - create(): Tạo product + auto-generate SKUs từ options
+ *    - findAll(): Listing với filter, search, sort, pagination
+ *    - findOne(): Chi tiết product + tất cả SKUs
+ *    - update(): Smart migration SKUs khi đổi options
+ *    - getRelatedProducts(): Sản phẩm liên quan cùng category
+ * =====================================================================
+ */
+
 import { CacheService } from '@core/cache/cache.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { RedisService } from '@core/redis/redis.service';

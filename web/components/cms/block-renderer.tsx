@@ -1,5 +1,43 @@
 "use client";
 
+/**
+ * =====================================================================
+ * BLOCK RENDERER - RENDER ĐỘNG CÁC BLOCK CMS
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Đây là CORE của hệ thống Page Builder. Component này nhận mô tả block
+ * dạng JSON và render ra React component tương ứng.
+ *
+ * 1. KIẾN TRÚC:
+ *    - PARAM_MAP: Object mapping "type" (string) -> React Component
+ *    - BlockData: { id, type, props } - Mô tả 1 block
+ *    - BlockRenderer: Nhận BlockData -> Tìm Component trong PARAM_MAP -> Render
+ *
+ * 2. DYNAMIC IMPORT (Code Splitting):
+ *    - Mỗi block type được load động (dynamic import)
+ *    - Chỉ tải code khi block thực sự được sử dụng
+ *    - Giảm bundle size ban đầu của trang
+ *
+ * 3. CÁC BLOCK TYPES HỖ TRỢ:
+ *    - Hero: Banner chính trang chủ
+ *    - Features: Danh sách tính năng
+ *    - Categories/Brands/Products: Hiển thị data từ API
+ *    - CTASection: Call-to-action
+ *    - FAQ/Testimonials/Newsletter: Các section thông dụng
+ *    - Header/Footer: Ẩn global header/footer khi có custom
+ *
+ * 4. LAYOUT VISIBILITY:
+ *    - Nếu page có block Header/Footer custom
+ *    - Tự động ẩn global Header/Footer qua LayoutVisibilityProvider
+ *
+ * 5. SUSPENSE + SKELETON:
+ *    - Mỗi block có Skeleton riêng hiển thị khi đang load
+ *    - UX mượt mà, không bị layout shift
+ * =====================================================================
+ */
+
 import { BrandsSkeleton, CategoriesSkeleton, ProductsSkeleton } from "@/components/shared/skeletons/home-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLayoutVisibility } from "@/features/layout/providers/layout-visibility-provider";

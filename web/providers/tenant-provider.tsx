@@ -1,3 +1,35 @@
+/**
+ * =====================================================================
+ * TENANT PROVIDER - QUẢN LÝ CẤU HÌNH MULTI-TENANT
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Hệ thống hỗ trợ Multi-tenancy: Nhiều cửa hàng chạy trên cùng 1 codebase
+ * nhưng có giao diện (theme) khác nhau.
+ *
+ * 1. CÁCH HOẠT ĐỘNG:
+ *    - Mỗi tenant có domain riêng (store1.com, store2.com)
+ *    - Khi user truy cập, lấy domain từ request header
+ *    - Gọi API /tenants/current/config với domain đó
+ *    - Backend trả về themeConfig của tenant tương ứng
+ *
+ * 2. THEME CONFIG:
+ *    - primaryColor: Màu chủ đạo (VD: "hsl(220, 90%, 50%)")
+ *    - borderRadius: Bo góc (VD: "0.5rem", "1rem")
+ *    - Inject vào CSS :root variables -> Toàn app tự động đổi màu
+ *
+ * 3. KỸ THUẬT:
+ *    - Server Component: Fetch config trên server, không leak API
+ *    - dangerouslySetInnerHTML: Inject <style> vào HTML
+ *    - Revalidate 60s: Cache config để không gọi API mỗi request
+ *
+ * 4. FALLBACK:
+ *    - Nếu không có themeConfig -> Dùng theme mặc định
+ *    - Nếu API lỗi -> Tiếp tục render bình thường
+ * =====================================================================
+ */
+
 import { headers } from 'next/headers';
 
 type TenantConfig = {
