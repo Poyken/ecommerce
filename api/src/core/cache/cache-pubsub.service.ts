@@ -53,6 +53,7 @@ export interface CacheInvalidationMessage {
 export class CachePubSubService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(CachePubSubService.name);
   private subscriber: Redis | null = null;
+  private publisher: Redis | null = null;
   private readonly instanceId: string;
   private readonly channels = Object.values(CacheChannel);
 
@@ -66,8 +67,21 @@ export class CachePubSubService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleInit() {
     try {
+      // Get the Redis URL to create separate connections
+      const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+
       // Create a separate connection for subscribing (Redis requirement)
-      this.subscriber = this.redis.duplicate();
+      // We need separate connections because a subscribed client can't run other commands
+      this.subscriber = new Redis(redisUrl, {
+        maxRetriesPerRequest: 3,
+        lazyConnect: false,
+      });
+
+      // Create a separate connection for publishing
+      this.publisher = new Redis(redisUrl, {
+        maxRetriesPerRequest: 3,
+        lazyConnect: false,
+      });
 
       // Subscribe to all cache invalidation channels
       await this.subscriber.subscribe(...this.channels);
@@ -89,10 +103,17 @@ export class CachePubSubService implements OnModuleInit, OnModuleDestroy {
   }
 
   async onModuleDestroy() {
-    if (this.subscriber) {
-      await this.subscriber.unsubscribe(...this.channels);
-      await this.subscriber.quit();
+    try {
+      if (this.subscriber) {
+        await this.subscriber.unsubscribe(...this.channels);
+        await this.subscriber.quit();
+      }
+      if (this.publisher) {
+        await this.publisher.quit();
+      }
       this.logger.log('🔌 Cache PubSub disconnected');
+    } catch (error) {
+      this.logger.error('Error during Cache PubSub shutdown', error);
     }
   }
 
@@ -103,6 +124,11 @@ export class CachePubSubService implements OnModuleInit, OnModuleDestroy {
     channel: CacheChannel,
     options: { pattern?: string; keys?: string[] } = {},
   ): Promise<void> {
+    if (!this.publisher) {
+      this.logger.warn('Publisher not initialized');
+      return;
+    }
+
     const message: CacheInvalidationMessage = {
       channel,
       pattern: options.pattern,
@@ -112,7 +138,7 @@ export class CachePubSubService implements OnModuleInit, OnModuleDestroy {
     };
 
     try {
-      await this.redis.publish(channel, JSON.stringify(message));
+      await this.publisher.publish(channel, JSON.stringify(message));
       this.logger.debug(
         `📤 Published to ${channel}: ${JSON.stringify(options)}`,
       );
