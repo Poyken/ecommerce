@@ -258,7 +258,7 @@ export function AdminSidebar() {
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-6 px-3 space-y-6 custom-scrollbar">
+      <div className="flex-1 overflow-y-auto py-6 px-3 space-y-6 no-scrollbar">
         {filteredSidebarItems.map((group) => (
           <div key={group.title}>
             {!isCollapsed && (
