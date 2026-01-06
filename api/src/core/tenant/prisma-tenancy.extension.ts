@@ -38,6 +38,13 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
       $allModels: {
         async $allOperations({ model, operation, args, query }) {
           const tenant = getTenant();
+          if (model === 'FeatureFlag') {
+            console.log(
+              `[Tenancy] Intercepting ${model}.${operation}, Tenant: ${
+                tenant?.domain || 'Global'
+              }, IsShared: true`,
+            );
+          }
 
           // List of models that should NOT be filtered by tenant (Shared data or 1:1 User data)
           const sharedModels = [
@@ -68,6 +75,10 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
             'PerformanceMetric',
             'AiChatSession',
             'AiChatMessage',
+            'FeatureFlag',
+            'Coupon',
+            'ProductTranslation',
+            'BlogProduct',
           ];
 
           // Define which models have a deletedAt field for soft-delete

@@ -174,17 +174,6 @@ function ProductTranslationForm({ product }: { product: Product }) {
     }
   }, [locale, translations, product.name, product.description]);
 
-  if (isLoading) {
-    return (
-      <div className="space-y-4 pt-4">
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-32 w-full" />
-        <Skeleton className="h-10 w-24 ml-auto" />
-      </div>
-    );
-  }
-
   const isDirty = useMemo(() => {
     const existing = translations.find((tr) => tr.locale === locale);
     const original = existing || {
@@ -195,6 +184,17 @@ function ProductTranslationForm({ product }: { product: Product }) {
       form.name !== original.name || form.description !== original.description
     );
   }, [form, locale, translations, product.name, product.description]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 pt-4">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-10 w-24 ml-auto" />
+      </div>
+    );
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

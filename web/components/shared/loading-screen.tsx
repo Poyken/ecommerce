@@ -33,7 +33,13 @@ export function LoadingScreen({
   fullScreen = true,
   className,
 }: LoadingScreenProps) {
-  const t = useTranslations("loading");
+  let t;
+  try {
+    t = useTranslations("loading");
+  } catch (e) {
+    // Fallback if context is missing
+    t = (key: string) => (key === "message" ? "Loading..." : key);
+  }
   const displayMessage = message || t("message");
 
   return (
