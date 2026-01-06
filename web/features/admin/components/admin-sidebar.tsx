@@ -24,7 +24,7 @@ import {
   Store,
   Tag,
   Ticket,
-  Users
+  Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
@@ -135,19 +135,19 @@ export function AdminSidebar() {
           permission: "auditLog:read",
         },
         {
-          title: "Roles",
+          title: t("roles"),
           href: "/admin/roles",
           icon: Shield,
           permission: "role:read",
         },
         {
-          title: "Permissions",
+          title: t("permissions"),
           href: "/admin/permissions",
           icon: Settings,
           permission: "permission:read",
         },
         {
-          title: "Chat Support",
+          title: t("chatSupport"),
           href: "/admin/chat",
           icon: MessageSquare,
           permission: "chat:read",
@@ -250,9 +250,10 @@ export function AdminSidebar() {
             )}
             <div className="space-y-1">
               {group.items.map((item) => {
-                const isActive = item.href === "/admin" 
-                  ? pathname === "/admin" 
-                  : pathname.startsWith(item.href);
+                const isActive =
+                  item.href === "/admin"
+                    ? pathname === "/admin"
+                    : pathname.startsWith(item.href);
                 const Icon = item.icon;
 
                 return (
@@ -313,7 +314,9 @@ export function AdminSidebar() {
           >
             <Shield className="h-5 w-5 group-hover:scale-110 transition-transform shrink-0" />
             {!isCollapsed && (
-              <span className="whitespace-nowrap font-bold">Platform Control</span>
+              <span className="whitespace-nowrap font-bold">
+                {t("platformControl")}
+              </span>
             )}
           </Link>
         )}

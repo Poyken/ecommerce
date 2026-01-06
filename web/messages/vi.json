@@ -1268,10 +1268,16 @@
       "blogs": "Bài viết",
       "pages": "TrANG",
       "tenancy": "QUẢN TRỊ MULTI-TENANT",
+      "tenants": "Cơ sở khách hàng (Tenants)",
       "platformSystem": "HỆ THỐNG NỀN TẢNG",
-      "subscriptions": "Đăng ký & Thanh toán",
-      "settings": "Cấu hình Toàn cục",
-      "analytics": "Phân tích Kinh doanh"
+      "subscriptions": "Gói dịch vụ & Thanh toán",
+      "securityHub": "Trung tâm Bảo mật",
+      "analytics": "Phân tích hệ thống",
+      "settings": "Cấu hình hệ thống",
+      "brand": "Quản trị Hệ thống",
+      "tenantAdmin": "Quản trị Cửa hàng",
+      "chatSupport": "Hỗ trợ Trực tuyến",
+      "platformControl": "Quản trị Nền tảng"
     },
     "blogs": {
       "title": "Blog",
@@ -1402,7 +1408,7 @@
     "dashboard": {
       "title": "Bảng Điều khiển Hệ thống.",
       "subtitle": "Chào mừng trở lại, Quản trị viên. Tổng quan về toàn bộ hệ sinh thái đa cửa hàng.",
-      "actions": {
+    "actions": {
         "securityHub": "Trung tâm Bảo mật",
         "launchTenant": "Khởi tạo Cửa hàng mới"
       },
@@ -1669,58 +1675,58 @@
           "enterPortal": "Vào trang quản trị"
         }
       },
-      "security": {
-        "title": "Security Hub",
-        "subtitle": "Giám sát rủi ro và cấu hình bảo mật toàn hệ thống.",
-        "backToDashboard": "Bảng điều khiển",
-        "status": {
-          "label": "Trạng thái Hệ thống",
-          "secured": "AN TOÀN & ĐÃ MÃ HÓA"
-        },
-        "accessReport": "Báo cáo truy cập",
-        "loading": "Đang phân tích bảo mật hệ thống...",
-        "lockdown": {
-          "title": "Giao thức Lockdown",
-          "description": "Kích hoạt chế độ khẩn cấp để chặn toàn bộ truy cập từ phía người dùng, chỉ Admin mới có quyền truy cập.",
-          "active": "HỆ THỐNG ĐANG KHÓA",
-          "inactive": "Hệ thống hoạt động bình thường",
-          "emergency": "Kích hoạt chế độ Khẩn cấp",
-          "confirmTitle": "Bạn có chắc chắn?",
-          "confirmDescription": "Hành động này sẽ chặn mọi truy cập trái phép ngay lập tức.",
-          "cancel": "Hủy",
-          "action": "Tiến hành"
-        },
-        "whitelist": {
-          "title": "Danh sách IP Super Admin",
-          "description": "Giới hạn quyền truy cập Super Admin cho các địa chỉ IP cụ thể. Nếu để trống, mọi IP đều được phép (không khuyến nghị).",
-          "placeholder": "Thêm địa chỉ IP (VD: 1.2.3.4)",
-          "addButton": "Thêm",
-          "saveButton": "Lưu cấu hình",
-          "noItems": "Chưa có địa chỉ IP nào được cấp quyền.",
-          "success": "Cập nhật danh sách IP thành công"
-        },
-        "stats": {
-          "title": "Thống kê an ninh",
-          "description": "Các chỉ số an toàn trong 24h qua.",
-          "authAttempts": "Lượt xác thực",
-          "mfaEnforced": "Tỷ lệ MFA",
-          "blockedIps": "IP bị chặn",
-          "threatGrade": "Mức độ an toàn",
-          "ddosStatus": "Trạng thái DDoS"
-        },
-        "manualConfig": {
-          "title": "Hướng dẫn cấu hình Local (hosts)",
-          "description": "Để giả lập Multi-tenancy trên máy cục bộ, hãy thêm các dòng sau vào file hosts của bạn:",
-          "pathWin": "C:\\Windows\\System32\\drivers\\etc\\hosts",
-          "pathUnix": "/etc/hosts"
-        }
+      "messages": {
+        "createSuccess": "Khởi tạo cửa hàng và Admin thành công",
+        "updateSuccess": "Cập nhật cửa hàng thành công",
+        "deleteSuccess": "Xóa cửa hàng thành công",
+        "error": "Thao tác thất bại"
       }
     },
-    "messages": {
-      "createSuccess": "Khởi tạo cửa hàng và Admin thành công",
-      "updateSuccess": "Cập nhật cửa hàng thành công",
-      "deleteSuccess": "Xóa cửa hàng thành công",
-      "error": "Thao tác thất bại"
+    "security": {
+      "title": "Security Hub",
+      "subtitle": "Giám sát rủi ro và cấu hình bảo mật toàn hệ thống.",
+      "backToDashboard": "Bảng điều khiển",
+      "status": {
+        "label": "Trạng thái Hệ thống",
+        "secured": "AN TOÀN & ĐÃ MÃ HÓA"
+      },
+      "accessReport": "Báo cáo truy cập",
+      "loading": "Đang phân tích bảo mật hệ thống...",
+      "lockdown": {
+        "title": "Giao thức Lockdown",
+        "description": "Kích hoạt chế độ khẩn cấp để chặn toàn bộ truy cập từ phía người dùng, chỉ Admin mới có quyền truy cập.",
+        "active": "HỆ THỐNG ĐANG KHÓA",
+        "inactive": "Hệ thống hoạt động bình thường",
+        "emergency": "Kích hoạt chế độ Khẩn cấp",
+        "confirmTitle": "Bạn có chắc chắn?",
+        "confirmDescription": "Hành động này sẽ chặn mọi truy cập trái phép ngay lập tức.",
+        "cancel": "Hủy",
+        "action": "Tiến hành"
+      },
+      "whitelist": {
+        "title": "Danh sách IP Super Admin",
+        "description": "Giới hạn quyền truy cập Super Admin cho các địa chỉ IP cụ thể. Nếu để trống, mọi IP đều được phép (không khuyến nghị).",
+        "placeholder": "Thêm địa chỉ IP (VD: 1.2.3.4)",
+        "addButton": "Thêm",
+        "saveButton": "Lưu cấu hình",
+        "noItems": "Chưa có địa chỉ IP nào được cấp quyền.",
+        "success": "Cập nhật danh sách IP thành công"
+      },
+      "stats": {
+        "title": "Thống kê an ninh",
+        "description": "Các chỉ số an toàn trong 24h qua.",
+        "authAttempts": "Lượt xác thực",
+        "mfaEnforced": "Tỷ lệ MFA",
+        "blockedIps": "IP bị chặn",
+        "threatGrade": "Mức độ an toàn",
+        "ddosStatus": "Trạng thái DDoS"
+      },
+      "manualConfig": {
+        "title": "Hướng dẫn cấu hình Local (hosts)",
+        "description": "Để giả lập Multi-tenancy trên máy cục bộ, hãy thêm các dòng sau vào file hosts của bạn:",
+        "pathWin": "C:\\Windows\\System32\\drivers\\etc\\hosts",
+        "pathUnix": "/etc/hosts"
+      }
     }
   }
 }

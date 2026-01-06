@@ -46,7 +46,7 @@ import { getTranslations } from "next-intl/server";
  * =================================================================================================
  */
 export default async function SuperAdminDashboardPage() {
-  const t = await getTranslations();
+  const t = await getTranslations("superAdmin.dashboard");
 
   const tenantsRes = await getTenantsAction();
   const tenantsData =
@@ -60,23 +60,23 @@ export default async function SuperAdminDashboardPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">
-            {t("superAdmin.dashboard.title")}
+            {t("title")}
           </h1>
           <p className="text-muted-foreground mt-1 font-medium">
-            {t("superAdmin.dashboard.subtitle")}
+            {t("subtitle")}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Link href="/super-admin/security">
             <Button variant="outline" className="rounded-xl font-bold">
               <Shield className="mr-2 h-4 w-4" />
-              {t("superAdmin.dashboard.actions.securityHub")}
+              {t("actions.securityHub")}
             </Button>
           </Link>
           <Link href="/super-admin/tenants">
             <Button className="rounded-xl bg-indigo-600 hover:bg-indigo-700 font-bold shadow-lg shadow-indigo-500/20">
               <Plus className="mr-2 h-4 w-4" />
-              {t("superAdmin.dashboard.actions.launchTenant")}
+              {t("actions.launchTenant")}
             </Button>
           </Link>
         </div>
@@ -87,7 +87,7 @@ export default async function SuperAdminDashboardPage() {
         <Card className="rounded-3xl border-emerald-500/20 bg-emerald-500/5 shadow-sm hover:shadow-md transition-all">
           <CardHeader className="pb-2">
             <CardDescription className="text-xs font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
-              {t("superAdmin.dashboard.stats.mrr")}
+              {t("stats.mrr")}
             </CardDescription>
             <CardTitle className="text-3xl font-black flex items-center gap-2">
               $12,450
@@ -99,7 +99,7 @@ export default async function SuperAdminDashboardPage() {
           <CardContent>
             <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
               <DollarSign className="h-3 w-3" />
-              {t("superAdmin.dashboard.stats.mrrDesc")}
+              {t("stats.mrrDesc")}
             </div>
           </CardContent>
         </Card>
@@ -107,14 +107,14 @@ export default async function SuperAdminDashboardPage() {
         <Card className="rounded-3xl border-blue-500/20 bg-blue-500/5 shadow-sm hover:shadow-md transition-all">
           <CardHeader className="pb-2">
             <CardDescription className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">
-              {t("superAdmin.dashboard.stats.transactions")}
+              {t("stats.transactions")}
             </CardDescription>
             <CardTitle className="text-3xl font-black">1,280</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
               <TrendingUp className="h-3 w-3" />
-              {t("superAdmin.dashboard.stats.transactionsDesc")}
+              {t("stats.transactionsDesc")}
             </div>
           </CardContent>
         </Card>
@@ -122,14 +122,14 @@ export default async function SuperAdminDashboardPage() {
         <Card className="rounded-3xl border-purple-500/20 bg-purple-500/5 shadow-sm hover:shadow-md transition-all">
           <CardHeader className="pb-2">
             <CardDescription className="text-xs font-black uppercase tracking-widest text-purple-600 dark:text-purple-400">
-              {t("superAdmin.dashboard.stats.health")}
+              {t("stats.health")}
             </CardDescription>
             <CardTitle className="text-3xl font-black">98.2%</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
               <CheckCircle2 className="h-3 w-3" />
-              {t("superAdmin.dashboard.stats.healthDesc")}
+              {t("stats.healthDesc")}
             </div>
           </CardContent>
         </Card>
@@ -137,14 +137,14 @@ export default async function SuperAdminDashboardPage() {
         <Card className="rounded-3xl border-amber-500/20 bg-amber-500/5 shadow-sm hover:shadow-md transition-all">
           <CardHeader className="pb-2">
             <CardDescription className="text-xs font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">
-              {t("superAdmin.dashboard.stats.pending")}
+              {t("stats.pending")}
             </CardDescription>
             <CardTitle className="text-3xl font-black">4</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2 text-xs font-medium text-amber-600">
               <AlertCircle className="h-3 w-3" />
-              {t("superAdmin.dashboard.stats.pendingDesc")}
+              {t("stats.pendingDesc")}
             </div>
           </CardContent>
         </Card>
@@ -156,11 +156,9 @@ export default async function SuperAdminDashboardPage() {
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
               <CardTitle className="text-xl font-black">
-                {t("superAdmin.dashboard.recentTenants.title")}
+                {t("recentTenants.title")}
               </CardTitle>
-              <CardDescription>
-                {t("superAdmin.dashboard.recentTenants.subtitle")}
-              </CardDescription>
+              <CardDescription>{t("recentTenants.subtitle")}</CardDescription>
             </div>
             <Link href="/super-admin/tenants">
               <Button
@@ -168,7 +166,7 @@ export default async function SuperAdminDashboardPage() {
                 size="sm"
                 className="font-bold text-indigo-600"
               >
-                {t("superAdmin.dashboard.recentTenants.viewAll")}
+                {t("recentTenants.viewAll")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -179,7 +177,7 @@ export default async function SuperAdminDashboardPage() {
                 <div className="flex flex-col items-center justify-center h-48 border border-dashed rounded-2xl bg-muted/30">
                   <Store className="h-10 w-10 text-muted-foreground/30 mb-2" />
                   <span className="text-muted-foreground font-medium">
-                    {t("superAdmin.dashboard.recentTenants.empty")}
+                    {t("recentTenants.empty")}
                   </span>
                 </div>
               ) : (
@@ -226,7 +224,7 @@ export default async function SuperAdminDashboardPage() {
                     <div className="flex flex-col items-end gap-1">
                       <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full">
                         <CheckCircle2 className="h-3 w-3" />
-                        {t("superAdmin.dashboard.recentTenants.healthy")}
+                        {t("recentTenants.healthy")}
                       </div>
                       <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">
                         {new Date(tenant.createdAt).toLocaleDateString()}
@@ -247,11 +245,11 @@ export default async function SuperAdminDashboardPage() {
               <div className="flex items-center gap-2 mb-1">
                 <Zap className="h-4 w-4 text-amber-400 fill-amber-400" />
                 <CardTitle className="text-lg font-bold">
-                  {t("superAdmin.dashboard.systemStatus.title")}
+                  {t("systemStatus.title")}
                 </CardTitle>
               </div>
               <CardDescription className="text-slate-400">
-                {t("superAdmin.dashboard.systemStatus.subtitle")}
+                {t("systemStatus.subtitle")}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -259,33 +257,33 @@ export default async function SuperAdminDashboardPage() {
                 <div className="flex items-center gap-3">
                   <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="text-sm font-medium">
-                    {t("superAdmin.dashboard.systemStatus.apiGateway")}
+                    {t("systemStatus.apiGateway")}
                   </span>
                 </div>
                 <span className="text-xs font-bold text-emerald-400">
-                  {t("superAdmin.dashboard.systemStatus.operational")}
+                  {t("systemStatus.operational")}
                 </span>
               </div>
               <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="text-sm font-medium">
-                    {t("superAdmin.dashboard.systemStatus.dbCluster")}
+                    {t("systemStatus.dbCluster")}
                   </span>
                 </div>
                 <span className="text-xs font-bold text-emerald-400">
-                  {t("superAdmin.dashboard.systemStatus.optimal", { ms: 12 })}
+                  {t("systemStatus.optimal", { ms: 12 })}
                 </span>
               </div>
               <div className="p-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="h-2 w-2 rounded-full bg-amber-500" />
                   <span className="text-sm font-medium">
-                    {t("superAdmin.dashboard.systemStatus.workerNodes")}
+                    {t("systemStatus.workerNodes")}
                   </span>
                 </div>
                 <span className="text-xs font-bold text-amber-400">
-                  {t("superAdmin.dashboard.systemStatus.scaling")}
+                  {t("systemStatus.scaling")}
                 </span>
               </div>
             </CardContent>
@@ -294,14 +292,14 @@ export default async function SuperAdminDashboardPage() {
           <Card className="rounded-3xl border-foreground/5 shadow-sm bg-linear-to-br from-indigo-600 to-indigo-800 text-white">
             <CardHeader>
               <CardTitle className="text-lg font-bold">
-                {t("superAdmin.dashboard.distribution.title")}
+                {t("distribution.title")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="flex items-center justify-between text-sm">
                   <span className="opacity-80">
-                    {t("superAdmin.dashboard.distribution.enterprise")}
+                    {t("distribution.enterprise")}
                   </span>
                   <span className="font-black">12%</span>
                 </div>
@@ -310,7 +308,7 @@ export default async function SuperAdminDashboardPage() {
                 </div>
                 <div className="flex items-center justify-between text-sm mt-4">
                   <span className="opacity-80">
-                    {t("superAdmin.dashboard.distribution.basicPro")}
+                    {t("distribution.basicPro")}
                   </span>
                   <span className="font-black">88%</span>
                 </div>
@@ -325,10 +323,10 @@ export default async function SuperAdminDashboardPage() {
             <AlertCircle className="h-6 w-6 text-rose-500 shrink-0 mt-0.5" />
             <div>
               <h4 className="font-black text-rose-900 dark:text-rose-400 text-sm">
-                {t("superAdmin.dashboard.warning.title")}
+                {t("warning.title")}
               </h4>
               <div className="text-xs text-rose-700 dark:text-rose-500/80 mt-1 font-medium leading-relaxed">
-                {t.rich("superAdmin.dashboard.warning.sslExpire", {
+                {t.rich("warning.sslExpire", {
                   strong: (chunks) => <strong>{chunks}</strong>,
                 })}
               </div>

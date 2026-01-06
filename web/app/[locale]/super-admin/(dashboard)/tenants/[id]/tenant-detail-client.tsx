@@ -56,7 +56,7 @@ import { useTranslations } from "next-intl";
  */
 export function TenantDetailClient({ tenant }: { tenant: Tenant }) {
   const router = useRouter();
-  const t = useTranslations("superAdmin.tenantDetail");
+  const t = useTranslations("superAdmin.tenants.tenantDetail");
 
   // Mocked plan limits based on plan type
   const planLimits = {

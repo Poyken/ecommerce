@@ -1346,74 +1346,80 @@
       "blogs": "Blogs",
       "pages": "Pages",
       "tenancy": "TENANCY",
+      "tenants": "Tenants",
       "platformSystem": "PLATFORM SYSTEM",
       "subscriptions": "Subscriptions",
-      "settings": "Global Settings",
-      "analytics": "Business Analytics"
-    }
-  },
-  "contact": {
-    "badge": "Get in Touch",
-    "title": "Get In Touch",
-    "subtitle": "Have a question or feedback? We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
-    "email": "Email",
-    "phone": "Phone",
-    "address": "Address",
-    "form": {
-      "title": "Send us a Message",
-      "name": "Your Name",
-      "email": "Email Address",
-      "subject": "Subject",
-      "message": "Message",
-      "placeholders": {
-        "name": "John Doe",
-        "email": "john@example.com",
-        "subject": "How can we help you?",
-        "message": "Tell us more about your inquiry..."
+      "securityHub": "Security Hub",
+      "analytics": "Analytics",
+      "settings": "Settings",
+      "brand": "Super Admin",
+      "tenantAdmin": "Tenant Admin",
+      "chatSupport": "Chat Support",
+      "platformControl": "Platform Control"
+    },
+    "contact": {
+      "badge": "Get in Touch",
+      "title": "Get In Touch",
+      "subtitle": "Have a question or feedback? We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "form": {
+        "title": "Send us a Message",
+        "name": "Your Name",
+        "email": "Email Address",
+        "subject": "Subject",
+        "message": "Message",
+        "placeholders": {
+          "name": "John Doe",
+          "email": "john@example.com",
+          "subject": "How can we help you?",
+          "message": "Tell us more about your inquiry..."
+        },
+        "submit": "Send Message",
+        "sending": "Sending...",
+        "successTitle": "Message Sent Successfully!",
+        "successDesc": "We'll get back to you within 24 hours.",
+        "errors": {
+          "name": "Please enter your name",
+          "email": "Please enter your email",
+          "emailInvalid": "Please enter a valid email address",
+          "subject": "Please enter a subject",
+          "message": "Please enter your message"
+        }
       },
-      "submit": "Send Message",
-      "sending": "Sending...",
-      "successTitle": "Message Sent Successfully!",
-      "successDesc": "We'll get back to you within 24 hours.",
-      "errors": {
-        "name": "Please enter your name",
-        "email": "Please enter your email",
-        "emailInvalid": "Please enter a valid email address",
-        "subject": "Please enter a subject",
-        "message": "Please enter your message"
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "subtitle": "Find answers to common questions about our services, shipping, and policies.",
+        "q1": "What are your shipping times?",
+        "a1": "We offer global shipping. Standard delivery takes 5-7 business days, while express shipping arrives within 2-3 business days.",
+        "q2": "Do you offer international shipping?",
+        "a2": "Yes, we ship to over 100 countries worldwide. Shipping costs are calculated at checkout based on your location.",
+        "q3": "What is your return policy?",
+        "a3": "We accept returns within 30 days of purchase. Items must be unworn, unwashed, and with original tags attached.",
+        "q4": "How can I track my order?",
+        "a4": "Once your order ships, you will receive a confirmation email with a tracking number to monitor your package's journey."
+      },
+      "info": {
+        "email": "support@luxury.com",
+        "salesEmail": "sales@luxury.com",
+        "phone": "+1 (555) 123-4567",
+        "hours": "Mon-Fri, 9AM-6PM EST",
+        "address": "123 Luxury Avenue, New York, NY 10001"
+      },
+      "map": {
+        "storeName": "Luxury Store",
+        "addressLine1": "123 Luxury Ave",
+        "addressLine2": "New York, NY 10001",
+        "openNow": "Open Now: 9:00 - 18:00"
       }
-    },
-    "faq": {
-      "title": "Frequently Asked Questions",
-      "subtitle": "Find answers to common questions about our services, shipping, and policies.",
-      "q1": "What are your shipping times?",
-      "a1": "We offer global shipping. Standard delivery takes 5-7 business days, while express shipping arrives within 2-3 business days.",
-      "q2": "Do you offer international shipping?",
-      "a2": "Yes, we ship to over 100 countries worldwide. Shipping costs are calculated at checkout based on your location.",
-      "q3": "What is your return policy?",
-      "a3": "We accept returns within 30 days of purchase. Items must be unworn, unwashed, and with original tags attached.",
-      "q4": "How can I track my order?",
-      "a4": "Once your order ships, you will receive a confirmation email with a tracking number to monitor your package's journey."
-    },
-    "info": {
-      "email": "support@luxury.com",
-      "salesEmail": "sales@luxury.com",
-      "phone": "+1 (555) 123-4567",
-      "hours": "Mon-Fri, 9AM-6PM EST",
-      "address": "123 Luxury Avenue, New York, NY 10001"
-    },
-    "map": {
-      "storeName": "Luxury Store",
-      "addressLine1": "123 Luxury Ave",
-      "addressLine2": "New York, NY 10001",
-      "openNow": "Open Now: 9:00 - 18:00"
     }
   },
   "superAdmin": {
     "brand": "Super Admin",
     "dashboard": {
-      "title": "Platform Control.",
-      "subtitle": "Welcome back, Administrator. Overview of the entire multi-tenant ecosystem.",
+      "title": "Platform Dashboard",
+      "subtitle": "Welcome back, Admin. Overview of the entire multi-tenant ecosystem.",
       "actions": {
         "securityHub": "Security Hub",
         "launchTenant": "Launch New Tenant"
@@ -1688,51 +1694,51 @@
         "error": "Operation failed"
       }
     },
-      "security": {
-        "title": "Security Hub",
-        "subtitle": "System-wide threat monitoring and security stance.",
-        "backToDashboard": "Dashboard",
-        "status": {
-          "label": "Platform Status",
-          "secured": "SECURED & ENCRYPTED"
-        },
-        "accessReport": "Access Report",
-        "loading": "Analyzing platform security...",
-        "lockdown": {
-          "title": "Lockdown Protocols",
-          "description": "Activate emergency mode to block all non-admin access to the platform.",
-          "active": "SYSTEM UNDER LOCKDOWN",
-          "inactive": "System operating normally",
-          "emergency": "Activate Emergency Lockdown",
-          "confirmTitle": "Are you sure?",
-          "confirmDescription": "This action will immediately block all unauthorized access.",
-          "cancel": "Cancel",
-          "action": "Proceed"
-        },
-        "whitelist": {
-          "title": "Super Admin IP Whitelist",
-          "description": "Restrict Super Admin access to specific IP addresses. If empty, all IPs are allowed (not recommended).",
-          "placeholder": "Add IP address (e.g. 1.2.3.4)",
-          "addButton": "Add",
-          "saveButton": "Save Configuration",
-          "noItems": "No IP addresses whitelisted.",
-          "success": "IP Whitelist updated successfully"
-        },
-        "stats": {
-          "title": "Security Indicators",
-          "description": "Real-time safety metrics from the last 24h.",
-          "authAttempts": "Auth Attempts",
-          "mfaEnforced": "MFA Enforce Rate",
-          "blockedIps": "Blocked IPs",
-          "threatGrade": "Safety Grade",
-          "ddosStatus": "DDoS Status"
-        },
-        "manualConfig": {
-          "title": "Manual Localhost Configuration (hosts)",
-          "description": "To simulate multi-tenancy on your local machine, add the following entries to your hosts file:",
-          "pathWin": "C:\\Windows\\System32\\drivers\\etc\\hosts",
-          "pathUnix": "/etc/hosts"
-        }
+    "security": {
+      "title": "Security Hub",
+      "subtitle": "System-wide threat monitoring and security stance.",
+      "backToDashboard": "Dashboard",
+      "status": {
+        "label": "Platform Status",
+        "secured": "SECURED & ENCRYPTED"
+      },
+      "accessReport": "Access Report",
+      "loading": "Analyzing platform security...",
+      "lockdown": {
+        "title": "Lockdown Protocols",
+        "description": "Activate emergency mode to block all non-admin access to the platform.",
+        "active": "SYSTEM UNDER LOCKDOWN",
+        "inactive": "System operating normally",
+        "emergency": "Activate Emergency Lockdown",
+        "confirmTitle": "Are you sure?",
+        "confirmDescription": "This action will immediately block all unauthorized access.",
+        "cancel": "Cancel",
+        "action": "Proceed"
+      },
+      "whitelist": {
+        "title": "Super Admin IP Whitelist",
+        "description": "Restrict Super Admin access to specific IP addresses. If empty, all IPs are allowed (not recommended).",
+        "placeholder": "Add IP address (e.g. 1.2.3.4)",
+        "addButton": "Add",
+        "saveButton": "Save Configuration",
+        "noItems": "No IP addresses whitelisted.",
+        "success": "IP Whitelist updated successfully"
+      },
+      "stats": {
+        "title": "Security Indicators",
+        "description": "Real-time safety metrics from the last 24h.",
+        "authAttempts": "Auth Attempts",
+        "mfaEnforced": "MFA Enforce Rate",
+        "blockedIps": "Blocked IPs",
+        "threatGrade": "Safety Grade",
+        "ddosStatus": "DDoS Status"
+      },
+      "manualConfig": {
+        "title": "Manual Localhost Configuration (hosts)",
+        "description": "To simulate multi-tenancy on your local machine, add the following entries to your hosts file:",
+        "pathWin": "C:\\Windows\\System32\\drivers\\etc\\hosts",
+        "pathUnix": "/etc/hosts"
       }
     }
   }
+}

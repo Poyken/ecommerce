@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { useTranslations } from "next-intl";
 
 export default function SubscriptionsPage() {
-  const t = useTranslations();
+  const t = useTranslations("superAdmin.subscriptions");
   const subscriptions = [
     {
       id: "sub_1",
@@ -44,18 +44,16 @@ export default function SubscriptionsPage() {
     <div className="space-y-6 animate-in fade-in duration-500">
       <div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">
-          {t("superAdmin.subscriptions.title")}
+          {t("title")}
         </h1>
-        <p className="text-muted-foreground font-medium">
-          {t("superAdmin.subscriptions.subtitle")}
-        </p>
+        <p className="text-muted-foreground font-medium">{t("subtitle")}</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
         <Card className="rounded-3xl border-indigo-500/10 shadow-sm">
           <CardHeader className="pb-2">
             <CardDescription className="text-[10px] font-black uppercase tracking-widest">
-              {t("superAdmin.subscriptions.stats.active")}
+              {t("stats.active")}
             </CardDescription>
             <CardTitle className="text-2xl font-black flex items-center justify-between">
               124
@@ -66,7 +64,7 @@ export default function SubscriptionsPage() {
         <Card className="rounded-3xl border-indigo-500/10 shadow-sm">
           <CardHeader className="pb-2">
             <CardDescription className="text-[10px] font-black uppercase tracking-widest">
-              {t("superAdmin.subscriptions.stats.pending")}
+              {t("stats.pending")}
             </CardDescription>
             <CardTitle className="text-2xl font-black flex items-center justify-between">
               12
@@ -77,7 +75,7 @@ export default function SubscriptionsPage() {
         <Card className="rounded-3xl border-indigo-500/10 shadow-sm">
           <CardHeader className="pb-2">
             <CardDescription className="text-[10px] font-black uppercase tracking-widest">
-              {t("superAdmin.subscriptions.stats.avgLtv")}
+              {t("stats.avgLtv")}
             </CardDescription>
             <CardTitle className="text-2xl font-black flex items-center justify-between">
               $840.00
@@ -90,11 +88,9 @@ export default function SubscriptionsPage() {
       <Card className="rounded-3xl border-foreground/5 shadow-sm">
         <CardHeader>
           <CardTitle className="text-xl font-black">
-            {t("superAdmin.subscriptions.list.title")}
+            {t("list.title")}
           </CardTitle>
-          <CardDescription>
-            {t("superAdmin.subscriptions.list.subtitle")}
-          </CardDescription>
+          <CardDescription>{t("list.subtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -124,14 +120,14 @@ export default function SubscriptionsPage() {
                       className="text-[10px] font-bold"
                     >
                       {sub.status === "Active"
-                        ? t("superAdmin.subscriptions.status.active")
-                        : t("superAdmin.subscriptions.status.pastDue")}
+                        ? t("status.active")
+                        : t("status.pastDue")}
                     </Badge>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-black">{sub.amount}</p>
                     <p className="text-[10px] text-muted-foreground font-medium">
-                      {t("superAdmin.subscriptions.table.nextBilling", {
+                      {t("table.nextBilling", {
                         date: sub.nextBilling,
                       })}
                     </p>

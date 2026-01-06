@@ -178,7 +178,7 @@ export function SuperAdminSidebar() {
           )}
         >
           <Shield className="h-6 w-6 text-emerald-400" />
-          <span>E-commerce SaaS</span>
+          <span>{t("brand") || "Super Admin"}</span>
         </div>
 
         <Button
@@ -270,7 +270,9 @@ export function SuperAdminSidebar() {
         >
           <LayoutDashboard className="h-5 w-5 group-hover:text-blue-400 transition-colors shrink-0" />
           {!isCollapsed && (
-            <span className="whitespace-nowrap">Tenant Admin</span>
+            <span className="whitespace-nowrap">
+              {t("tenantAdmin") || "Tenant Admin"}
+            </span>
           )}
         </Link>
       </div>

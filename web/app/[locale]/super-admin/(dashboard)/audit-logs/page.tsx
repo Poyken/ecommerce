@@ -35,12 +35,12 @@ export default async function SuperAdminAuditLogsPage({
   const response = await getAuditLogsAction(page, 20, search, filter);
 
   if ("error" in response) {
-    const t = await getTranslations();
+    const t = await getTranslations("superAdmin.auditLogs");
     return (
       <div className="flex items-center justify-center h-[50vh]">
         <div className="max-w-md w-full p-6 bg-destructive/10 border border-destructive/20 rounded-lg text-center space-y-2">
           <h3 className="font-semibold text-destructive text-lg">
-            {t("superAdmin.auditLogs.accessDenied")}
+            {t("accessDenied")}
           </h3>
           <p className="text-sm text-muted-foreground">{response.error}</p>
         </div>

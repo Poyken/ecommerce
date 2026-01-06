@@ -15,17 +15,15 @@ import { Save, Shield, Globe, Lock } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export default function PlatformSettingsPage() {
-  const t = useTranslations();
+  const t = useTranslations("superAdmin.settings");
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">
-          {t("superAdmin.settings.title")}
+          {t("title")}
         </h1>
-        <p className="text-muted-foreground font-medium">
-          {t("superAdmin.settings.subtitle")}
-        </p>
+        <p className="text-muted-foreground font-medium">{t("subtitle")}</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
@@ -34,25 +32,21 @@ export default function PlatformSettingsPage() {
             <div className="flex items-center gap-2">
               <Globe className="h-5 w-5 text-indigo-500" />
               <CardTitle className="text-xl font-black">
-                {t("superAdmin.settings.sections.registrations.title")}
+                {t("sections.registrations.title")}
               </CardTitle>
             </div>
             <CardDescription>
-              {t("superAdmin.settings.sections.registrations.description")}
+              {t("sections.registrations.description")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label className="text-sm font-bold">
-                  {t(
-                    "superAdmin.settings.sections.registrations.publicSignups"
-                  )}
+                  {t("sections.registrations.publicSignups")}
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  {t(
-                    "superAdmin.settings.sections.registrations.publicSignupsDesc"
-                  )}
+                  {t("sections.registrations.publicSignupsDesc")}
                 </p>
               </div>
               <Switch defaultChecked />
@@ -60,14 +54,10 @@ export default function PlatformSettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label className="text-sm font-bold">
-                  {t(
-                    "superAdmin.settings.sections.registrations.emailVerification"
-                  )}
+                  {t("sections.registrations.emailVerification")}
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  {t(
-                    "superAdmin.settings.sections.registrations.emailVerificationDesc"
-                  )}
+                  {t("sections.registrations.emailVerificationDesc")}
                 </p>
               </div>
               <Switch defaultChecked />
@@ -75,14 +65,10 @@ export default function PlatformSettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label className="text-sm font-bold">
-                  {t(
-                    "superAdmin.settings.sections.registrations.manualApproval"
-                  )}
+                  {t("sections.registrations.manualApproval")}
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  {t(
-                    "superAdmin.settings.sections.registrations.manualApprovalDesc"
-                  )}
+                  {t("sections.registrations.manualApprovalDesc")}
                 </p>
               </div>
               <Switch />
@@ -95,23 +81,21 @@ export default function PlatformSettingsPage() {
             <div className="flex items-center gap-2">
               <Shield className="h-5 w-5 text-emerald-500" />
               <CardTitle className="text-xl font-black">
-                {t("superAdmin.settings.sections.infrastructure.title")}
+                {t("sections.infrastructure.title")}
               </CardTitle>
             </div>
             <CardDescription>
-              {t("superAdmin.settings.sections.infrastructure.description")}
+              {t("sections.infrastructure.description")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label className="text-sm font-bold">
-                  {t("superAdmin.settings.sections.infrastructure.maintenance")}
+                  {t("sections.infrastructure.maintenance")}
                 </Label>
                 <p className="text-xs text-rose-500 font-bold">
-                  {t(
-                    "superAdmin.settings.sections.infrastructure.maintenanceDesc"
-                  )}
+                  {t("sections.infrastructure.maintenanceDesc")}
                 </p>
               </div>
               <Switch />
@@ -119,10 +103,10 @@ export default function PlatformSettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label className="text-sm font-bold">
-                  {t("superAdmin.settings.sections.infrastructure.hsts")}
+                  {t("sections.infrastructure.hsts")}
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  {t("superAdmin.settings.sections.infrastructure.hstsDesc")}
+                  {t("sections.infrastructure.hstsDesc")}
                 </p>
               </div>
               <Switch defaultChecked />
@@ -130,10 +114,10 @@ export default function PlatformSettingsPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
                 <Label className="text-sm font-bold">
-                  {t("superAdmin.settings.sections.infrastructure.backups")}
+                  {t("sections.infrastructure.backups")}
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  {t("superAdmin.settings.sections.infrastructure.backupsDesc")}
+                  {t("sections.infrastructure.backupsDesc")}
                 </p>
               </div>
               <Switch defaultChecked />
@@ -145,7 +129,7 @@ export default function PlatformSettingsPage() {
       <div className="flex justify-end">
         <Button className="rounded-xl font-bold bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/20">
           <Save className="mr-2 h-4 w-4" />
-          {t("superAdmin.settings.save")}
+          {t("save")}
         </Button>
       </div>
     </div>
