@@ -42,6 +42,7 @@ interface BankTransferQRProps {
   accountNo?: string;
   accountName?: string;
   createdAt?: string;
+  qrUrl?: string;
 }
 
 export function BankTransferQR({
@@ -52,6 +53,7 @@ export function BankTransferQR({
   accountNo = "0352224640",
   accountName = "NGUYEN VAN DUC",
   createdAt,
+  qrUrl,
 }: BankTransferQRProps) {
   const t = useTranslations("orders");
   const router = useRouter();
@@ -108,7 +110,9 @@ export function BankTransferQR({
   // AddInfo và AccountName phải được URL Encode để tránh lỗi ký tự đặc biệt
   const info = encodeURIComponent(orderCode);
   const name = encodeURIComponent(accountName);
-  const qrSrc = `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${amount}&addInfo=${info}&accountName=${name}`;
+  const qrSrc =
+    qrUrl ||
+    `https://img.vietqr.io/image/${bankId}-${accountNo}-compact2.png?amount=${amount}&addInfo=${info}&accountName=${name}`;
 
   const copyToClipboard = (text: string, label: string) => {
     navigator.clipboard.writeText(text);

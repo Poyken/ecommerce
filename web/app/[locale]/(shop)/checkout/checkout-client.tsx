@@ -121,6 +121,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
     id: string;
     totalAmount: number;
     createdAt: string;
+    qrUrl?: string;
   } | null>(null);
 
   // Derived State
@@ -349,11 +350,12 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
         }
         window.dispatchEvent(new Event("cart_updated"));
 
-        if (paymentMethod === "BANKING") {
+        if (paymentMethod === "BANKING" || paymentMethod === "VIETQR") {
           setTempOrderData({
             id: res.orderId,
             totalAmount: total,
             createdAt: new Date().toISOString(),
+            qrUrl: paymentMethod === "VIETQR" ? res.paymentUrl : undefined,
           });
           setIsPaymentModalOpen(true);
           return;
@@ -559,6 +561,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
                   orderCode={tempOrderData.id.slice(0, 8).toUpperCase()}
                   orderId={tempOrderData.id}
                   createdAt={tempOrderData.createdAt}
+                  qrUrl={tempOrderData.qrUrl}
                 />
               </div>
 

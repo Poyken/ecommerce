@@ -75,7 +75,7 @@ export const CheckoutSchema = z.object({
   recipientName: z.string().min(1, "Recipient name is required"),
   phoneNumber: z.string().min(3, "Phone number is invalid"),
   shippingAddress: z.string().min(5, "Address is too short"),
-  paymentMethod: z.enum(["COD", "CARD", "BANKING", "VNPAY", "MOMO"]),
+  paymentMethod: z.enum(["COD", "CARD", "BANKING", "VNPAY", "MOMO", "VIETQR"]),
   itemIds: z.array(z.string()).optional(),
   couponCode: z.string().optional(),
   returnUrl: z.string().url().optional(),

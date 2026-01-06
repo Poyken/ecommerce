@@ -44,7 +44,7 @@ interface PlaceOrderData {
   phoneNumber: string;
   shippingAddress: string;
   addressId?: string;
-  paymentMethod: "COD" | "CARD" | "BANKING" | "VNPAY" | "MOMO";
+  paymentMethod: "COD" | "CARD" | "BANKING" | "VNPAY" | "MOMO" | "VIETQR";
   itemIds?: string[];
   couponCode?: string;
   returnUrl?: string;

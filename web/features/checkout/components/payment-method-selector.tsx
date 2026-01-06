@@ -25,7 +25,7 @@ import { Label } from "@radix-ui/react-label";
 import { Check, CreditCard, Landmark, Truck } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-export type PaymentMethodType = "COD" | "CARD" | "BANKING" | "VNPAY";
+export type PaymentMethodType = "COD" | "CARD" | "BANKING" | "VNPAY" | "VIETQR";
 
 interface PaymentMethodSelectorProps {
   method: PaymentMethodType;
@@ -91,6 +91,25 @@ export function PaymentMethodSelector({
             />
           }
           checked={method === "VNPAY"}
+        />
+
+        {/* VietQR Option */}
+        <PaymentMethodOption
+          value="VIETQR"
+          label="VietQR"
+          description="Quét mã QR để thanh toán"
+          icon={
+            <div
+              className={`w-7 h-7 flex items-center justify-center font-bold text-[10px] border rounded ${
+                method === "VIETQR"
+                  ? "border-primary text-primary"
+                  : "border-muted-foreground text-muted-foreground"
+              }`}
+            >
+              QR
+            </div>
+          }
+          checked={method === "VIETQR"}
         />
 
         {/* Credit Card Option (Disabled) */}

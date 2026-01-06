@@ -25,16 +25,19 @@ import { MoMoStrategy } from './strategies/momo.strategy';
 import { VNPayStrategy } from './strategies/vnpay.strategy';
 
 import { PaymentController } from './payment.controller';
+import { PaymentWebhookController } from './payment.webhook.controller';
+import { VietQrStrategy } from './strategies/vietqr.strategy';
 
 @Module({
-  controllers: [PaymentController],
+  controllers: [PaymentController, PaymentWebhookController],
   providers: [
     PaymentService,
     CodPaymentStrategy,
     MockStripeStrategy,
     VNPayStrategy,
     MoMoStrategy,
+    VietQrStrategy,
   ],
-  exports: [PaymentService, MoMoStrategy],
+  exports: [PaymentService, MoMoStrategy, VietQrStrategy],
 })
 export class PaymentModule {}

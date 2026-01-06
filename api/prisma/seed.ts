@@ -699,6 +699,25 @@ async function main() {
     },
   });
 
+  // 4.5 DEFAULT TENANT (Localhost)
+  // Ensures API works without custom headers in dev
+  const defaultTenant = await prisma.tenant.upsert({
+    where: { domain: 'localhost' },
+    update: {},
+    create: {
+      name: 'Default Store',
+      domain: 'localhost',
+      plan: 'ENTERPRISE',
+      themeConfig: {
+        primaryColor: '#000000',
+        fontFamily: 'Inter',
+        borderRadius: '8px',
+      },
+      id: 'default-tenant-id', // Optional: fix ID for predictability
+    },
+  });
+  console.log('✅ Default Tenant (localhost) ensured.');
+
   const flowerAdmin = await prisma.user.create({
     data: {
       email: 'admin@flowers.local',
