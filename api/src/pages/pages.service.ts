@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { getTenant } from '@core/tenant/tenant.context';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -5,6 +6,24 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import type { Cache } from 'cache-manager';
 
 @Injectable()
+/**
+ * =================================================================================================
+ * PAGES SERVICE - XỬ LÝ DỮ LIỆU CMS
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CACHING (BỘ NHỚ ĐỆM):
+ *    - Các trang tĩnh (About Us, Policy) RẤT ÍT KHI thay đổi, nhưng lại được đọc RẤT NHIỀU.
+ *    - Giải pháp: Dùng `CacheManager`.
+ *    - Logic: Kiểm tra Cache -> Có thì trả về (Hit) -> Không có thì query DB và lưu vào Cache (Miss).
+ *    - Cache Invalidation: Khi Admin cập nhật trang (`update`), ta phải XÓA Cache cũ đi để User thấy nội dung mới.
+ *
+ * 2. MULTI-TENANCY CONTEXT:
+ *    - Hàm `getTenant()` lấy ID cửa hàng hiện tại.
+ *    - Mọi query DB đều phải có `where: { tenantId }` (Dù Prisma Extension đã hỗ trợ, nhưng viết rõ ở đây giúp dễ hiểu hơn).
+ * =================================================================================================
+ */
 export class PagesService {
   constructor(
     private readonly prisma: PrismaService,
@@ -25,6 +44,7 @@ export class PagesService {
 
     const page = await this.prisma.page.findFirst({
       where: {
+        tenantId: tenant.id,
         slug,
         isPublished: true,
       },
@@ -70,14 +90,31 @@ export class PagesService {
   }
 
   async findAll() {
+    const tenant = getTenant();
+    if (!tenant) throw new NotFoundException('Tenant context missing');
+
     return this.prisma.page.findMany({
+      where: {
+        tenantId: tenant.id,
+      },
       orderBy: { updatedAt: 'desc' },
     });
   }
 
   async findById(id: string) {
-    const page = await this.prisma.page.findUnique({
-      where: { id },
+    const tenant = getTenant();
+    const where: Prisma.PageWhereInput = { id };
+
+    // If tenant context exists, enforce it.
+    // If Super Admin accesses via specific tenant domain, it enforces that tenant.
+    // If accessing globally (tenant=null + superadmin), maybe allow?
+    // But usually admin panel works under a tenant context.
+    if (tenant) {
+      where.tenantId = tenant.id;
+    }
+
+    const page = await this.prisma.page.findFirst({
+      where,
     });
     if (!page) throw new NotFoundException('Page not found');
     return page;
@@ -121,8 +158,14 @@ export class PagesService {
     });
 
     // Clear cache for both old and new slug to be safe
+    console.log(
+      `[PagesService] Invalidate Cache: page:${tenant?.id}:${existing.slug}`,
+    );
     await this.cacheManager.del(`page:${tenant?.id}:${existing.slug}`);
     if (data.slug) {
+      console.log(
+        `[PagesService] Invalidate Cache: page:${tenant?.id}:${data.slug}`,
+      );
       await this.cacheManager.del(`page:${tenant?.id}:${data.slug}`);
     }
 
@@ -133,10 +176,14 @@ export class PagesService {
     const tenant = getTenant();
     const existing = await this.findById(id);
 
-    await this.prisma.page.delete({
+    await this.prisma.page.update({
       where: { id },
+      data: { deletedAt: new Date() },
     });
 
+    console.log(
+      `[PagesService] Invalidate Cache: page:${tenant?.id}:${existing.slug}`,
+    );
     await this.cacheManager.del(`page:${tenant?.id}:${existing.slug}`);
     return { success: true };
   }

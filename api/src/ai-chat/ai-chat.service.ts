@@ -8,7 +8,9 @@ import { GeminiService } from './gemini.service';
  * AI CHAT SERVICE - TRUNG TÂM XỬ LÝ LOGIC CHATBOT
  * =================================================================================================
  *
- * 📚 TÀI LIỆU HƯỚNG DẪN CHO THỰC TẬP SINH (INTERN TRAINING):
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. QUY TRÌNH HOẠT ĐỘNG (WORKFLOW):
  *    - Bước 1: Nhận tin nhắn từ User.

@@ -74,6 +74,7 @@ const nextConfig: NextConfig = {
       "@radix-ui/react-select",
       "recharts",
       "date-fns",
+      "lodash",
     ],
     serverActions: {
       bodySizeLimit: "10mb",

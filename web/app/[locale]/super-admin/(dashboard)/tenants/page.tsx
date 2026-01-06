@@ -1,6 +1,25 @@
 import { getTenantsAction } from "@/features/admin/actions";
 import { TenantsClient } from "./tenants-client";
 
+/**
+ * =================================================================================================
+ * SUPER ADMIN TENANTS PAGE - QUẢN LÝ DANH SÁCH CÁC CỬA HÀNG
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. TENANT AGGREGATION:
+ *    - Fetch toàn bộ danh sách Tenants (Storefronts) hiện có trên Platform.
+ *    - `getTenantsAction` trả về dữ liệu phân trang (`PaginatedData`).
+ *
+ * 2. DATA UNWRAPPING:
+ *    - Chuyển tiếp các props `tenants`, `total`, `page`, `limit` vào `TenantsClient`.
+ *    - Việc tách nhỏ giúp Logic Client-side (search, filter) không làm nặng Server component.
+ *
+ * 3. ERROR RESILIENCE:
+ *    - Có cơ chế hiển thị lỗi ngay tại trang nếu API fetch danh sách tenants thất bại.
+ * =================================================================================================
+ */
 export default async function TenantsPage() {
   // Fetch tenants
   const tenantsRes = await getTenantsAction();
@@ -32,10 +51,10 @@ export default async function TenantsPage() {
   // PaginatedData has .data (Tenant[]) and .meta.
 
   const paginatedData = tenantsRes.data;
-  
+
   // Safety check
   if (!paginatedData || !Array.isArray(paginatedData.data)) {
-      return <div>Invalid data format</div>
+    return <div>Invalid data format</div>;
   }
 
   return (

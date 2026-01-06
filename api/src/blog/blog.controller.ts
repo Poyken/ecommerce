@@ -17,6 +17,7 @@ import {
   UploadedFile,
   UseGuards,
   UseInterceptors,
+  NotFoundException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -157,7 +158,7 @@ export class BlogController {
   async findOne(@Param('id') id: string) {
     const data = await this.blogService.findOne(id);
     if (!data) {
-      throw new Error('Blog not found');
+      throw new NotFoundException('Blog not found');
     }
     return { data };
   }

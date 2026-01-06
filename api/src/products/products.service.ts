@@ -177,7 +177,6 @@ export class ProductsService {
 
     // Xây dựng mệnh đề Where
     const where: Prisma.ProductWhereInput = {
-      deletedAt: null, // Chỉ lấy sản phẩm chưa bị xóa
       AND: [
         // 1. Search text (Tên hoặc Mô tả)
         // 1. Search text (Full Text Search)
@@ -453,8 +452,7 @@ export class ProductsService {
           },
         });
 
-        if (!product || product.deletedAt)
-          throw new NotFoundException('Không tìm thấy sản phẩm');
+        if (!product) throw new NotFoundException('Không tìm thấy sản phẩm');
 
         return product;
       },
@@ -720,7 +718,6 @@ export class ProductsService {
           where: {
             categoryId: product.categoryId,
             id: { not: productId }, // Loại trừ chính nó
-            deletedAt: null,
           },
           take: limit,
           orderBy: { createdAt: 'desc' }, // Ưu tiên hàng mới

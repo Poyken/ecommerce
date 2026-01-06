@@ -1262,10 +1262,16 @@
       "orders": "Đơn hàng",
       "coupons": "Mã giảm giá",
       "reviews": "Đánh giá",
-      "auditLogs": "Nhật ký hoạt động",
-      "backToStore": "Quay lại cửa hàng",
+      "auditLogs": "Audit Logs",
+      "backToStore": "Về Storefront",
       "contentManagement": "QUẢN LÝ NỘI DUNG",
-      "blogs": "Blog"
+      "blogs": "Bài viết",
+      "pages": "TrANG",
+      "tenancy": "QUẢN TRỊ MULTI-TENANT",
+      "platformSystem": "HỆ THỐNG NỀN TẢNG",
+      "subscriptions": "Đăng ký & Thanh toán",
+      "settings": "Cấu hình Toàn cục",
+      "analytics": "Phân tích Kinh doanh"
     },
     "blogs": {
       "title": "Blog",
@@ -1389,6 +1395,332 @@
       "addressLine1": "123 Đại lộ Luxury",
       "addressLine2": "New York, NY 10001",
       "openNow": "Đang mở cửa: 9:00 - 18:00"
+    }
+  },
+  "superAdmin": {
+    "brand": "Quản trị Hệ thống",
+    "dashboard": {
+      "title": "Bảng Điều khiển Hệ thống.",
+      "subtitle": "Chào mừng trở lại, Quản trị viên. Tổng quan về toàn bộ hệ sinh thái đa cửa hàng.",
+      "actions": {
+        "securityHub": "Trung tâm Bảo mật",
+        "launchTenant": "Khởi tạo Cửa hàng mới"
+      },
+      "stats": {
+        "mrr": "Doanh thu Định kỳ (MRR)",
+        "mrrDesc": "MRR ước tính cho tất cả cửa hàng",
+        "transactions": "Tổng Giao dịch",
+        "transactionsDesc": "Hiệu suất trong 30 ngày qua",
+        "health": "Sức khỏe Thuê bao",
+        "healthDesc": "Trạng thái thanh toán hoạt động",
+        "pending": "Hành động Cần xử lý",
+        "pendingDesc": "Yêu cầu chú ý ngay lập tức"
+      },
+      "recentTenants": {
+        "title": "Cửa hàng Mới",
+        "subtitle": "Các cửa hàng mới nhất được triển khai trên nền tảng.",
+        "viewAll": "Xem Tất cả",
+        "empty": "Chưa có cửa hàng nào hoạt động",
+        "healthy": "Hoạt động Tốt"
+      },
+      "systemStatus": {
+        "title": "Trạng thái Hệ thống",
+        "subtitle": "Sức khỏe hạ tầng nền tảng theo thời gian thực.",
+        "apiGateway": "API Gateway",
+        "operational": "Đang hoạt động",
+        "dbCluster": "Cụm Cơ sở dữ liệu",
+        "optimal": "Tối ưu ({ms}ms)",
+        "workerNodes": "Worker Nodes",
+        "scaling": "Đang mở rộng"
+      },
+      "distribution": {
+        "title": "Phân bổ Cửa hàng",
+        "enterprise": "Cửa hàng Doanh nghiệp",
+        "basicPro": "Cửa hàng Basic/Pro"
+      },
+      "warning": {
+        "title": "Cảnh báo Quan trọng",
+        "sslExpire": "Chứng chỉ SSL cho <strong>master-domain.com</strong> hết hạn trong 3 ngày. Cần xử lý."
+      }
+    },
+    "analytics": {
+      "title": "Phân tích Kinh doanh",
+      "subtitle": "Phân tích tăng trưởng, giữ chân và nhóm khách hàng trên toàn nền tảng.",
+      "stats": {
+        "activeTenants": "Khách hàng Hoạt động (Tenants)",
+        "newStores": "Cửa hàng Mới (7 ngày qua)",
+        "churnRate": "Tỷ lệ Rời bỏ",
+        "avgLtv": "LTV Trung bình"
+      },
+      "comingSoon": {
+        "title": "Tính năng Phân tích Nâng cao sắp ra mắt",
+        "description": "Chúng tôi đang tích hợp với MetaBase và PostHog để theo dõi hành vi thời gian thực."
+      }
+    },
+    "subscriptions": {
+      "title": "Gói cước & Thanh toán",
+      "subtitle": "Quản lý các gói dịch vụ, hóa đơn và doanh thu toàn nền tảng.",
+      "stats": {
+        "active": "Thuê bao Hoạt động",
+        "pending": "Hóa đơn Chờ xử lý",
+        "avgLtv": "LTV Trung bình"
+      },
+      "list": {
+        "title": "Tất cả Thuê bao",
+        "subtitle": "Danh sách chi tiết tất cả các nguồn doanh thu định kỳ."
+      },
+      "status": {
+        "active": "Hoạt động",
+        "pastDue": "Quá hạn"
+      },
+      "table": {
+        "tenant": "Cửa hàng",
+        "plan": "Gói dịch vụ",
+        "status": "Trạng thái",
+        "nextBilling": "Thanh toán: {date}"
+      }
+    },
+    "settings": {
+      "title": "Cài đặt Nền tảng",
+      "subtitle": "Cấu hình hành vi toàn cầu và các giới hạn môi trường.",
+      "save": "Lưu Cấu hình Toàn cầu",
+      "sections": {
+        "registrations": {
+          "title": "Đăng ký",
+          "description": "Kiểm soát cách các cửa hàng mới gia nhập nền tảng.",
+          "publicSignups": "Đăng ký Công khai",
+          "publicSignupsDesc": "Cho phép bất kỳ ai cũng có thể tạo cửa hàng mới.",
+          "emailVerification": "Xác thực Email",
+          "emailVerificationDesc": "Yêu cầu xác thực email trước khi kích hoạt cửa hàng.",
+          "manualApproval": "Phê duyệt Thủ công",
+          "manualApprovalDesc": "Giữ các yêu cầu tạo cửa hàng để quản trị viên xem xét."
+        },
+        "infrastructure": {
+          "title": "Hạ tầng",
+          "description": "Các ghi đè bảo mật nâng cao trên toàn nền tảng.",
+          "maintenance": "Chế độ Bảo trì",
+          "maintenanceDesc": "Vô hiệu hóa toàn bộ các cửa hàng trên nền tảng.",
+          "hsts": "Chính sách HSTS Nghiêm ngặt",
+          "hstsDesc": "Bắt buộc HTTPS trên tất cả các tên miền kết nối.",
+          "backups": "Sao lưu Tự động",
+          "backupsDesc": "Thực hiện sao lưu cơ sở dữ liệu hàng ngày cho tất cả cửa hàng."
+        }
+      }
+    },
+    "auditLogs": {
+      "accessDenied": "Truy cập bị Từ chối"
+    },
+    "tenants": {
+      "title": "Quản lý Cửa hàng",
+      "subtitle": "Quản lý {total} cửa hàng trên toàn hệ thống",
+      "totalStores": "Tổng số cửa hàng",
+      "active": "Đang hoạt động",
+      "launchNew": "Khởi tạo Cửa hàng mới",
+      "searchPlaceholder": "Tìm kiếm cửa hàng...",
+      "table": {
+        "name": "Tên cửa hàng",
+        "domain": "Tên miền",
+        "plan": "Gói",
+        "createdAt": "Ngày tạo",
+        "actions": "Thao tác"
+      },
+      "empty": {
+        "title": "Không tìm thấy cửa hàng nào",
+        "description": "Bắt đầu bằng cách triển khai một cửa hàng chuyên biệt mới.",
+        "action": "Khởi tạo Cửa hàng"
+      },
+      "dialog": {
+        "titleView": "Chi tiết Cửa hàng",
+        "titleEdit": "Chỉnh sửa Cửa hàng",
+        "titleCreate": "Khởi tạo Cửa hàng mới",
+        "descriptionView": "Xem thông tin cấu hình chi tiết của cửa hàng.",
+        "descriptionEdit": "Cập nhật thông tin cấu hình cho cửa hàng hiện tại.",
+        "descriptionCreate": "Triển khai một cửa hàng chuyên biệt (niche store) mới trên hệ thống.",
+        "sections": {
+          "basic": "Cấu hình cơ bản",
+          "system": "Thông tin hệ thống",
+          "metrics": "Thống kê cửa hàng",
+          "adminAccount": "Tài khoản Admin khởi tạo"
+        },
+        "fields": {
+          "id": "Mã định danh (ID)",
+          "name": "Tên cửa hàng",
+          "domain": "Tên miền (Domain)",
+          "plan": "Gói dịch vụ",
+          "color": "Màu sắc chủ đạo",
+          "createdAt": "Thời gian khởi tạo",
+          "updatedAt": "Cập nhật lần cuối",
+          "adminEmail": "Email quản trị",
+          "adminPassword": "Mật khẩu quản trị"
+        },
+        "validation": {
+          "required": "Trường này là bắt buộc"
+        },
+        "hints": {
+          "domain": "* Lưu ý: Trong môi trường dev, hãy thêm domain này vào file hosts của bạn.",
+          "color": "Màu sắc nhận diện thương hiệu trên Storefront."
+        },
+        "metrics": {
+          "customers": "KHÁCH HÀNG",
+          "products": "SẢN PHẨM",
+          "orders": "ĐƠN HÀNG"
+        },
+        "buttons": {
+          "cancel": "Hủy",
+          "close": "Đóng",
+          "create": "Khởi tạo ngay",
+          "update": "Cập nhật",
+          "goToAdmin": "Vào trang quản trị",
+          "selectPlan": "Chọn gói dịch vụ"
+        },
+        "plans": {
+          "basic": "Cơ bản",
+          "pro": "Chuyên nghiệp",
+          "enterprise": "Doanh nghiệp"
+        },
+        "messages": {
+          "success": "Thành công",
+          "error": "Lỗi",
+          "createSuccess": "Khởi tạo cửa hàng và Admin thành công",
+          "updateSuccess": "Cập nhật cửa hàng thành công",
+          "operationFailed": "Thao tác thất bại"
+        }
+      },
+      "deleteDialog": {
+        "title": "Xóa cửa hàng",
+        "description": "Bạn có chắc chắn muốn xóa cửa hàng \"{name}\"? Hành động này không thể hoàn tác."
+      },
+      "tenantDetail": {
+        "tabs": {
+          "overview": "Tổng quan",
+          "subscription": "Gói & Thanh toán",
+          "usage": "Mức độ sử dụng",
+          "logs": "Nhật ký hệ thống"
+        },
+        "stats": {
+          "revenue": "Doanh thu Store",
+          "orders": "Tổng số đơn hàng",
+          "customers": "Khách hàng",
+          "vsLastMonth": "{value} so với tháng trước"
+        },
+        "performance": {
+          "title": "Hiệu năng Nền tảng",
+          "description": "Các chỉ số máy chủ cho riêng Store này.",
+          "responseTime": "Thời gian phản hồi TB",
+          "dbLoad": "Tải kết nối Database",
+          "assetsDelivery": "Phân phối Tài nguyên"
+        },
+        "recentActivities": {
+          "title": "Hoạt động gần đây",
+          "adminLogin": "Admin Đăng nhập",
+          "bulkUpdate": "Cập nhật sản phẩm hàng loạt",
+          "minsAgo": "{mins} phút trước"
+        },
+        "usage": {
+          "title": "Tài nguyên sử dụng",
+          "description": "Mức tiêu thụ so với giới hạn của gói <strong>{plan}</strong>.",
+          "products": "Sản phẩm đang hoạt động",
+          "storage": "Lưu trữ (Ảnh & Media)",
+          "bandwidth": "Băng thông hàng tháng",
+          "itemsOf": "{usage} trên {limit} sản phẩm",
+          "gbOf": "{usage}GB trên {limit}GB",
+          "approachingLimit": "Sắp chạm giới hạn",
+          "approachingLimitDesc": "Store này đã sử dụng {percent}% giới hạn sản phẩm. Hãy cân nhắc gợi ý nâng cấp lên gói PRO."
+        },
+        "subscription": {
+          "title": "Trạng thái Gói dịch vụ",
+          "renewalDate": "Ngày gia hạn: {date}",
+          "perMonth": "mỗi tháng",
+          "updatePlan": "Cập nhật Gói thanh toán",
+          "cancelSubscription": "Hủy đăng ký"
+        },
+        "technicalInfo": {
+          "title": "Thông tin kỹ thuật",
+          "id": "Tenant ID",
+          "domain": "Tên miền công khai",
+          "deploymentDate": "Ngày triển khai",
+          "locale": "Ngôn ngữ mặc định"
+        },
+        "dnsSecurity": {
+          "title": "DNS & Bảo mật",
+          "ssl": "Chứng chỉ SSL",
+          "dns": "Bản ghi DNS",
+          "ddos": "Bảo vệ DDoS",
+          "active": "Đang hoạt động",
+          "propagated": "Đã nhận diện",
+          "enabled": "Đã bật"
+        },
+        "localSetup": {
+          "title": "Hướng dẫn Setup Local",
+          "description": "Cách truy cập Store này trên máy tính của bạn.",
+          "guide": "Để truy cập được vào domain <strong>{domain}</strong> cục bộ:",
+          "step1": "Mở file <code>hosts</code> (Windows: <code>C:\\Windows\\System32\\drivers\\etc\\hosts</code>)",
+          "step2": "Thêm dòng: <code>127.0.0.1 {domain}</code>",
+          "step3": "Lưu lại và nhấn nút <strong>Vào trang quản trị</strong> phía trên."
+        },
+        "notes": {
+          "title": "Ghi chú Nền tảng",
+          "highValue": "Đây là khách hàng quan trọng. Hỗ trợ ưu tiên đang được kích hoạt.",
+          "addNote": "Thêm ghi chú mới"
+        },
+        "buttons": {
+          "settings": "Cài đặt",
+          "suspend": "Tạm dừng",
+          "enterPortal": "Vào trang quản trị"
+        }
+      },
+      "security": {
+        "title": "Security Hub",
+        "subtitle": "Giám sát rủi ro và cấu hình bảo mật toàn hệ thống.",
+        "backToDashboard": "Bảng điều khiển",
+        "status": {
+          "label": "Trạng thái Hệ thống",
+          "secured": "AN TOÀN & ĐÃ MÃ HÓA"
+        },
+        "accessReport": "Báo cáo truy cập",
+        "loading": "Đang phân tích bảo mật hệ thống...",
+        "lockdown": {
+          "title": "Giao thức Lockdown",
+          "description": "Kích hoạt chế độ khẩn cấp để chặn toàn bộ truy cập từ phía người dùng, chỉ Admin mới có quyền truy cập.",
+          "active": "HỆ THỐNG ĐANG KHÓA",
+          "inactive": "Hệ thống hoạt động bình thường",
+          "emergency": "Kích hoạt chế độ Khẩn cấp",
+          "confirmTitle": "Bạn có chắc chắn?",
+          "confirmDescription": "Hành động này sẽ chặn mọi truy cập trái phép ngay lập tức.",
+          "cancel": "Hủy",
+          "action": "Tiến hành"
+        },
+        "whitelist": {
+          "title": "Danh sách IP Super Admin",
+          "description": "Giới hạn quyền truy cập Super Admin cho các địa chỉ IP cụ thể. Nếu để trống, mọi IP đều được phép (không khuyến nghị).",
+          "placeholder": "Thêm địa chỉ IP (VD: 1.2.3.4)",
+          "addButton": "Thêm",
+          "saveButton": "Lưu cấu hình",
+          "noItems": "Chưa có địa chỉ IP nào được cấp quyền.",
+          "success": "Cập nhật danh sách IP thành công"
+        },
+        "stats": {
+          "title": "Thống kê an ninh",
+          "description": "Các chỉ số an toàn trong 24h qua.",
+          "authAttempts": "Lượt xác thực",
+          "mfaEnforced": "Tỷ lệ MFA",
+          "blockedIps": "IP bị chặn",
+          "threatGrade": "Mức độ an toàn",
+          "ddosStatus": "Trạng thái DDoS"
+        },
+        "manualConfig": {
+          "title": "Hướng dẫn cấu hình Local (hosts)",
+          "description": "Để giả lập Multi-tenancy trên máy cục bộ, hãy thêm các dòng sau vào file hosts của bạn:",
+          "pathWin": "C:\\Windows\\System32\\drivers\\etc\\hosts",
+          "pathUnix": "/etc/hosts"
+        }
+      }
+    },
+    "messages": {
+      "createSuccess": "Khởi tạo cửa hàng và Admin thành công",
+      "updateSuccess": "Cập nhật cửa hàng thành công",
+      "deleteSuccess": "Xóa cửa hàng thành công",
+      "error": "Thao tác thất bại"
     }
   }
 }

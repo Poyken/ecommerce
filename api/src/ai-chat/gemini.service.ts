@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
  * GEMINI SERVICE - SERVICE KẾT NỐI VỚI GOOGLE GEMINI API
  * =================================================================================================
  *
- * 📚 TÀI LIỆU HƯỚNG DẪN CHO THỰC TẬP SINH (INTERN TRAINING):
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. MỤC ĐÍCH CỦA SERVICE NÀY:
  *    - Service này đóng vai trò là "Cầu nối" (Wrapper/Adapter) giữa Backend của chúng ta và Google Gemini API.

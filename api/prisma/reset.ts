@@ -198,6 +198,26 @@ async function main() {
     },
   });
 
+  // ===================================
+  // 4. CREATE DEFAULT TENANT (Localhost)
+  // ===================================
+  await prisma.tenant.upsert({
+    where: { domain: 'localhost' },
+    update: {},
+    create: {
+      name: 'Default Store',
+      domain: 'localhost',
+      plan: 'ENTERPRISE',
+      themeConfig: {
+        primaryColor: '#000000',
+        fontFamily: 'Inter',
+        borderRadius: '8px',
+      },
+      id: 'default-tenant-id',
+    },
+  });
+  console.log('✅ Default Tenant (localhost) ensured.');
+
   console.log('\n✨ DATABASE RESET COMPLETE ✨');
   console.log('--------------------------------------------------');
   console.log('Email: super@platform.com');

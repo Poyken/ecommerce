@@ -16,28 +16,47 @@ interface CTASectionProps {
   };
 }
 
+/**
+ * =================================================================================================
+ * CTA SECTION - KHỐI KÊU GỌI HÀNH ĐỘNG (CALL TO ACTION)
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. VISUAL HIERARCHY (PHÂN CẤP THỊ GIÁC):
+ *    - Nút CTA (`GlassButton`) được thiết kế nổi bật nhất để thu hút click.
+ *    - Background có hiệu ứng Gradient mờ (`bg-gradient-to-b`) để tạo chiều sâu.
+ *
+ * 2. ANIMATION (`framer-motion`):
+ *    - `<m.div>`: Phiên bản tối ưu của `motion.div` (giảm bundle size).
+ *    - `whileInView`: Chỉ chạy animation khi User cuộn tới khối này.
+ * =================================================================================================
+ */
 export function CTASection({
   title,
   subtitle,
   buttonText,
   buttonLink,
-  styles
+  styles,
 }: CTASectionProps) {
   return (
-    <section 
-        className="py-24 px-4 relative w-full overflow-hidden"
-        style={{ 
-            backgroundColor: styles?.backgroundColor,
-            color: styles?.textColor
-        }}
+    <section
+      className="py-24 px-4 relative w-full overflow-hidden"
+      style={{
+        backgroundColor: styles?.backgroundColor,
+        color: styles?.textColor,
+      }}
     >
-        {/* Subtle Background */}
-        <div className="absolute inset-0 bg-secondary/30 -z-10" />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background -z-10" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl opacity-[0.03] pointer-events-none" style={{
-            backgroundImage: `radial-gradient(circle at center, var(--foreground) 1px, transparent 1px)`,
-            backgroundSize: `40px 40px`
-        }} />
+      {/* Subtle Background */}
+      <div className="absolute inset-0 bg-secondary/30 -z-10" />
+      <div className="absolute inset-0 bg-linear-to-b from-transparent via-background/50 to-background -z-10" />
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full max-w-7xl opacity-[0.03] pointer-events-none"
+        style={{
+          backgroundImage: `radial-gradient(circle at center, var(--foreground) 1px, transparent 1px)`,
+          backgroundSize: `40px 40px`,
+        }}
+      />
 
       <m.div
         initial={{ opacity: 0, y: 30 }}

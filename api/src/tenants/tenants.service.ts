@@ -6,6 +6,25 @@ import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
 
 @Injectable()
+/**
+ * =================================================================================================
+ * TENANTS SERVICE - LOGIC NGHIỆP VỤ QUẢN LÝ CỬA HÀNG
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. TRANSACTION (GIAO DỊCH NGUYÊN TỐ):
+ *    - Khi tạo mới một Tenant (`create`), ta phải làm 2 việc:
+ *      A. Tạo dòng dữ liệu trong bảng `Tenant`.
+ *      B. Tạo tài khoản `User` (Admin) cho Tenant đó.
+ *    - Vấn đề: Nếu A thành công mà B thất bại -> Dữ liệu rác (Cửa hàng không có chủ).
+ *    - Giải pháp: Dùng `prisma.$transaction`. Nếu B lỗi, A sẽ tự động bị hủy (Rollback).
+ *
+ * 2. MẬT KHẨU (HASHING):
+ *    - Mật khẩu admin KHÔNG ĐƯỢC lưu dưới dạng text (plain-text).
+ *    - Bắt buộc phải mã hóa bằng `bcrypt` trước khi lưu vào DB.
+ * =================================================================================================
+ */
 export class TenantsService {
   constructor(private readonly prisma: PrismaService) {}
 
@@ -63,6 +82,15 @@ export class TenantsService {
 
   async findAll() {
     return this.prisma.tenant.findMany({
+      include: {
+        _count: {
+          select: {
+            users: true,
+            products: true,
+            orders: true,
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
   }
@@ -70,6 +98,15 @@ export class TenantsService {
   async findOne(id: string) {
     const tenant = await this.prisma.tenant.findUnique({
       where: { id },
+      include: {
+        _count: {
+          select: {
+            users: true,
+            products: true,
+            orders: true,
+          },
+        },
+      },
     });
     if (!tenant) throw new NotFoundException('Tenant not found');
     return tenant;

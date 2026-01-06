@@ -204,9 +204,7 @@ export class UsersService extends BaseCrudService<
     // Check existence
     await this.findOneBase(id);
 
-    await this.model.delete({
-      where: { id },
-    });
+    await this.softDeleteBase(id);
 
     return { message: 'Xóa user thành công' };
   }

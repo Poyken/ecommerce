@@ -228,7 +228,7 @@ export class CategoriesService extends BaseCrudService<
       );
     }
 
-    const deleted = await this.model.delete({ where: { id } });
+    const deleted = await this.softDeleteBase(id);
     await this.cacheService.invalidatePattern('categories:all:*');
     return deleted;
   }

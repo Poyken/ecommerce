@@ -41,6 +41,26 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * =================================================================================================
+ * BRAND DETAIL PAGE - DANH SÁCH SẢN PHẨM THEO THƯƠNG HIỆU
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. DYNAMIC ROUTING & PARAMS:
+ *    - Trang này sử dụng `[id]` để xác định thương hiệu nào đang được xem.
+ *    - `generateStaticParams`: Giúp Next.js build trước (pre-render) các trang thương hiệu
+ *      phổ biến để tăng tốc độ tải trang cho người dùng.
+ *
+ * 2. SHARED UI COMPONENTS:
+ *    - Tái sử dụng `ProductGridView` để hiển thị sản phẩm và phân trang.
+ *    - `t("productsFound", { count: ... })`: Sử dụng biến truyền vào i18n để hiển thị đúng số lượng.
+ *
+ * 3. FALLBACK UI:
+ *    - Hiển thị màn hình "No Products Found" chuyên nghiệp khi một thương hiệu mới chưa có sản phẩm.
+ * =================================================================================================
+ */
 export default async function BrandProductsPage({
   params,
   searchParams,
@@ -64,10 +84,10 @@ export default async function BrandProductsPage({
 
   const productsData = productsResponse?.data || [];
   const productsMeta = productsResponse?.meta || {
-      total: productsData.length,
-      page: 1,
-      limit,
-      lastPage: 1,
+    total: productsData.length,
+    page: 1,
+    limit,
+    lastPage: 1,
   };
 
   const brandName = productsData?.[0]?.brand?.name || "Brand";

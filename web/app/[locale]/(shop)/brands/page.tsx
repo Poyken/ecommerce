@@ -29,6 +29,26 @@ function getBrandImage(brandName: string, imageUrl?: string | null): string {
   return BRAND_IMAGES[key] || "/images/categories/default.jpg";
 }
 
+/**
+ * =================================================================================================
+ * BRANDS LISTING PAGE - DANH SÁCH THƯƠNG HIỆU ĐỐI TÁC
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. IMAGE MAPPING STRATEGY:
+ *    - `BRAND_IMAGES` là giải pháp tạm thời để map các brand nổi tiếng với ảnh chất lượng cao
+ *      trong thư mục `/public`. Nếu Brand nào có `imageUrl` từ CMS thì sẽ ưu tiên dùng cái đó.
+ *
+ * 2. PERFORMANCE:
+ *    - Sử dụng `Promise.all` để fetch song song cả danh sách Brand và bản dịch (Translations).
+ *    - Giảm tổng thời gian chờ đợi tại Server (Server Side Rendering).
+ *
+ * 3. RESPONSIVE GRID:
+ *    - Grid tự thay đổi số cột từ 2 (mobile) lên tới 5 (màn hình cực lớn).
+ *    - Hiệu ứng `translate-y-1` và `shadow-xl` khi hover tạo trải nghiệm tương tác mượt mà.
+ * =================================================================================================
+ */
 export default async function BrandsPage() {
   const [brands, t] = await Promise.all([
     productService.getBrands(),

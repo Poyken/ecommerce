@@ -15,11 +15,30 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateTenantDto } from './dto/create-tenant.dto';
 import { UpdateTenantDto } from './dto/update-tenant.dto';
 import { TenantsService } from './tenants.service';
+import { getTenant } from '@core/tenant/tenant.context';
 
 @ApiTags('Tenants (Super Admin)')
 @Controller('tenants')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @ApiBearerAuth()
+@ApiBearerAuth()
+/**
+ * =================================================================================================
+ * TENANTS CONTROLLER - QUẢN LÝ CỬA HÀNG (DÀNH CHO SUPER ADMIN)
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. PHÂN QUYỀN (RBAC):
+ *    - Các API này rất nhạy cảm (Tạo/Xóa cửa hàng), nên được bảo vệ bởi `@Permissions`.
+ *    - Chỉ User có Role là `SUPER_ADMIN` mới có thể gọi được quyền `tenant:create`, `tenant:delete`...
+ *
+ * 2. KIẾN TRÚC SAAS (SOFTWARE AS A SERVICE):
+ *    - Đây là nơi quản lý "Khách hàng" của hệ thống Platform.
+ *    - Một "Tenant" tương ứng với một "Cửa hàng" độc lập.
+ *    - Controller này không xử lý logic bán hàng, mà chỉ xử lý việc Cấp phép (Provisioning) cửa hàng mới.
+ * =================================================================================================
+ */
 export class TenantsController {
   constructor(private readonly tenantsService: TenantsService) {}
 
@@ -66,7 +85,7 @@ export class TenantsController {
     // We need to dinamically import/use the context helper, or just move logic to service
     // But getTenant() is from ALS (AsyncLocalStorage)
     // We can use a custom decorator or just import the helper
-    const { getTenant } = require('@core/tenant/tenant.context');
+    // We can use a custom decorator or just import the helper
     const tenant = getTenant();
 
     if (!tenant) {

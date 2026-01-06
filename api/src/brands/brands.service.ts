@@ -136,6 +136,6 @@ export class BrandsService extends BaseCrudService<
       );
     }
 
-    return this.model.delete({ where: { id } });
+    return this.softDeleteBase(id);
   }
 }

@@ -645,61 +645,7 @@ async function main() {
   });
   console.log('✅ SUPER ADMIN Created: super@platform.com / 123456');
 
-  // 4.2 TENANT 1: FURNITURE STORE
-  const furnitureTenant = await prisma.tenant.create({
-    data: {
-      name: 'Luxury Furniture',
-      domain: 'furniture.local',
-      themeConfig: {
-        primaryColor: '#8B4513',
-        fontFamily: 'Playfair Display',
-        borderRadius: '0px',
-      },
-    },
-  });
-
-  const furnitureAdmin = await prisma.user.create({
-    data: {
-      email: 'admin@furniture.local',
-      password: hashPassword,
-      firstName: 'Furniture',
-      lastName: 'Manager',
-      tenantId: furnitureTenant.id,
-    },
-  });
-  await prisma.userRole.create({
-    data: { userId: furnitureAdmin.id, roleId: adminRole.id },
-  });
-
-  // 4.3 FURNITURE CUSTOMER
-  const furnitureUser = await prisma.user.create({
-    data: {
-      email: 'user@furniture.local',
-      password: hashPassword,
-      firstName: 'John',
-      lastName: 'Doe',
-      tenantId: furnitureTenant.id,
-    },
-  });
-  await prisma.userRole.create({
-    data: { userId: furnitureUser.id, roleId: userRole.id },
-  });
-
-  // 4.4 TENANT 2: FLOWER STORE
-  const flowerTenant = await prisma.tenant.create({
-    data: {
-      name: 'Bella Flora',
-      domain: 'flowers.local',
-      plan: 'BASIC',
-      themeConfig: {
-        primaryColor: '#FF69B4',
-        fontFamily: 'Dancing Script',
-        borderRadius: '16px',
-      },
-    },
-  });
-
-  // 4.5 DEFAULT TENANT (Localhost)
+  // 4.2 DEFAULT TENANT (Localhost)
   // Ensures API works without custom headers in dev
   const defaultTenant = await prisma.tenant.upsert({
     where: { domain: 'localhost' },
@@ -718,19 +664,6 @@ async function main() {
   });
   console.log('✅ Default Tenant (localhost) ensured.');
 
-  const flowerAdmin = await prisma.user.create({
-    data: {
-      email: 'admin@flowers.local',
-      password: hashPassword,
-      firstName: 'Rose',
-      lastName: 'Gardener',
-      tenantId: flowerTenant.id,
-    },
-  });
-  await prisma.userRole.create({
-    data: { userId: flowerAdmin.id, roleId: adminRole.id },
-  });
-
   console.log('✅ Tenants & Validated Admins Created.');
 
   // ===================================
@@ -747,84 +680,10 @@ async function main() {
     CATEGORIES_DATA.map((c) => prisma.category.create({ data: c })),
   );
 
-  // 5.2 TENANT SPECIFIC PRODUCTS
-  // Furniture Store Products
-  // Filter categories relevant to furniture (just taking first 5 for demo)
-  for (const cat of categories.slice(0, 5)) {
-    const templates = PRODUCT_TEMPLATES.sofas; // Simplify using sofa templates for demo
-    // Create 10 products for Furniture Tenant
-    for (let i = 0; i < 10; i++) {
-      const prod = await prisma.product.create({
-        data: {
-          name: `Luxury ${cat.name} ${i}`,
-          slug: `furn-${slugify(cat.name)}-${i}`,
-          description: 'Premium furniture item.',
-          categoryId: cat.id,
-          brandId: getRandomElement(brands).id,
-          minPrice: getRandomPrice(500),
-          maxPrice: getRandomPrice(500),
-          tenantId: furnitureTenant.id, // <--- SCOPED TO FURNITURE
-          images: {
-            create: [
-              {
-                url: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80',
-                displayOrder: 0,
-              },
-            ],
-          },
-        },
-      });
-      // Create SKUs
-      await prisma.sku.create({
-        data: {
-          skuCode: `${prod.slug}-STD`,
-          price: prod.minPrice,
-          stock: 100,
-          productId: prod.id,
-          status: 'ACTIVE',
-        },
-      });
-    }
-  }
+  // NO demo products for now to keep it clean as requested.
+  // Super Admin can create them manually.
 
-  // Flower Store Products (Reuse 'Accessories' category for demo)
-  // Ideally we create new "Flower" categories, but using existing shared ones.
-  const decorCategory =
-    categories.find((c) => c.slug === 'accessories') || categories[0];
-  for (let i = 0; i < 10; i++) {
-    const prod = await prisma.product.create({
-      data: {
-        name: `Fresh Bouquet ${i}`,
-        slug: `flower-${i}`,
-        description: 'Beautiful fresh flowers.',
-        categoryId: decorCategory.id,
-        brandId: getRandomElement(brands).id,
-        minPrice: getRandomPrice(50),
-        maxPrice: getRandomPrice(50),
-        tenantId: flowerTenant.id, // <--- SCOPED TO FLOWERS
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1490750967868-58cb75069ed6?w=800&q=80',
-              displayOrder: 0,
-            },
-          ],
-        },
-      },
-    });
-    await prisma.sku.create({
-      data: {
-        skuCode: `${prod.slug}-STD`,
-        price: prod.minPrice,
-        stock: 50,
-        productId: prod.id,
-        status: 'ACTIVE',
-      },
-    });
-  }
-
-  console.log('✅ Products Seeded per Tenant.');
-  console.log('\n🎉 ALL SEEDING COMPLETED SUCCESSFULLY!');
+  console.log('🎉 ALL SEEDING COMPLETED SUCCESSFULLY!');
 }
 
 main()

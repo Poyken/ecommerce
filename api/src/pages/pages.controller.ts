@@ -17,6 +17,25 @@ import { PagesService } from './pages.service';
 
 @ApiTags('Pages')
 @Controller('pages')
+@ApiTags('Pages')
+@Controller('pages')
+/**
+ * =================================================================================================
+ * PAGES CONTROLLER - QUẢN LÝ CÁC TRANG TĨNH (CMS)
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. HYBRID API (PUBLIC & PRIVATE):
+ *    - Controller này phục vụ 2 đối tượng:
+ *      A. Khách vãng lai (Public): Xem nội dung trang (`getPage`, `getTranslations`). KHÔNG cần đăng nhập.
+ *      B. Admin (Private): Tạo/Sửa/Xóa trang (`admin/*`). CẦN đăng nhập + Permission.
+ *
+ * 2. ROUTING ĐỘNG (DYNAMIC SLUG):
+ *    - `@Get(':slug')` cho phép bắt mọi đường dẫn như `/about`, `/contact`, `/shipping-policy`.
+ *    - Lưu ý: Endpoint này nên đặt cuối cùng hoặc cẩn thận để không "ăn" mất các route khác.
+ * =================================================================================================
+ */
 export class PagesController {
   constructor(private readonly pagesService: PagesService) {}
 

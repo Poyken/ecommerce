@@ -4,10 +4,10 @@ import { DollarSign, Package, ShoppingCart, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { AdminAlerts } from "./admin-alerts";
 import {
-    BestSellersChart,
-    OrderStatusChart,
-    SalesTrendChart
-} from "./admin-charts";
+  LazyBestSellersChart as BestSellersChart,
+  LazyOrderStatusChart as OrderStatusChart,
+  LazySalesTrendChart as SalesTrendChart,
+} from "./lazy-admin-charts";
 
 export interface AdminStatsProps {
   stats: {
@@ -26,9 +26,27 @@ export interface AdminStatsProps {
     orderStatus?: any[];
     lowStockProducts?: any[];
     recentOrders?: any[];
-  }
+  };
 }
 
+/**
+ * =================================================================================================
+ * ADMIN STATS - BẢNG THỐNG KÊ (DASHBOARD)
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. LAZY LOADING CHARTS:
+ *    - Các biểu đồ (Recharts) rất nặng (>300KB JS).
+ *    - Nếu import trực tiếp, trang Dashboard sẽ load rất chậm.
+ *    - Giải pháp: Dùng `LazyBestSellersChart`, `LazyOrderStatusChart`... (đã wrap bằng `next/dynamic`).
+ *    - Chỉ khi User cuộn tới hoặc mở tab đó, code JS của biểu đồ mới được tải về.
+ *
+ * 2. DATA FLOW:
+ *    - Component này nhận `stats` từ `page.tsx` (Server Component).
+ *    - Nó chỉ có nhiệm vụ hiển thị (Presentational), không gọi API.
+ * =================================================================================================
+ */
 export function AdminStats({ stats }: AdminStatsProps) {
   const t = useTranslations("admin");
 
@@ -63,7 +81,7 @@ export function AdminStats({ stats }: AdminStatsProps) {
     },
   ];
 
-  const salesTrendData = stats.salesTrend || []; 
+  const salesTrendData = stats.salesTrend || [];
   const bestSellersData = stats.bestSellers || [];
   const orderStatusData = stats.orderStatus || [];
 
@@ -76,7 +94,10 @@ export function AdminStats({ stats }: AdminStatsProps) {
           const isPositive = stat.growth >= 0;
 
           return (
-            <Card key={i} className="rounded-3xl border-foreground/5 shadow-sm hover:shadow-md transition-shadow">
+            <Card
+              key={i}
+              className="rounded-3xl border-foreground/5 shadow-sm hover:shadow-md transition-shadow"
+            >
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {stat.title}
@@ -86,16 +107,21 @@ export function AdminStats({ stats }: AdminStatsProps) {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-black tracking-tight">{stat.value}</div>
+                <div className="text-2xl font-black tracking-tight">
+                  {stat.value}
+                </div>
                 <div className="flex items-center text-xs mt-1 font-medium">
-                    <span 
-                        className={isPositive ? "text-emerald-500" : "text-rose-500"}
-                    >
-                        {isPositive ? "+" : ""}{stat.growth}%
-                    </span>
-                    <span className="text-muted-foreground ml-1">
-                        {stat.description}
-                    </span>
+                  <span
+                    className={
+                      isPositive ? "text-emerald-500" : "text-rose-500"
+                    }
+                  >
+                    {isPositive ? "+" : ""}
+                    {stat.growth}%
+                  </span>
+                  <span className="text-muted-foreground ml-1">
+                    {stat.description}
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -112,18 +138,18 @@ export function AdminStats({ stats }: AdminStatsProps) {
           <BestSellersChart data={bestSellersData} />
         </div>
       </div>
-      
-       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-         <div className="col-span-3">
-            <OrderStatusChart data={orderStatusData} />
-         </div>
-         <div className="col-span-4">
-            <AdminAlerts 
-              lowStockSkus={stats.lowStockProducts || []} 
-              lowStockCount={stats.lowStockProducts?.length || 0}
-              trendingProducts={stats.bestSellers || []}
-            />
-         </div>
+
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="col-span-3">
+          <OrderStatusChart data={orderStatusData} />
+        </div>
+        <div className="col-span-4">
+          <AdminAlerts
+            lowStockSkus={stats.lowStockProducts || []}
+            lowStockCount={stats.lowStockProducts?.length || 0}
+            trendingProducts={stats.bestSellers || []}
+          />
+        </div>
       </div>
     </div>
   );

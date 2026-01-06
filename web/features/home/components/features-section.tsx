@@ -18,7 +18,28 @@ interface FeaturesSectionProps {
   };
 }
 
-export function FeaturesSection({ title, subtitle, items, styles }: FeaturesSectionProps) {
+/**
+ * =================================================================================================
+ * FEATURES SECTION - KHỐI TÍNH NĂNG NỔI BẬT
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. DYNAMIC ICON MAPPING:
+ *    - Dữ liệu từ DB chỉ lưu text ("Free Shipping"), không lưu component Icon.
+ *    - Hàm `getIcon` có nhiệm vụ "phiên dịch" từ text sang Icon component tương ứng (Lucide React).
+ *
+ * 2. UI/UX DESIGN:
+ *    - Sử dụng `backdrop-blur` và `border` mỏng để tạo cảm giác hiện đại (Glassmorphism).
+ *    - Hover effect: Thay đổi màu background và shadow để tăng tính tương tác.
+ * =================================================================================================
+ */
+export function FeaturesSection({
+  title,
+  subtitle,
+  items,
+  styles,
+}: FeaturesSectionProps) {
   // Map titles to icons roughly or just use default
   const getIcon = (text: string) => {
     const lower = text.toLowerCase();
@@ -29,33 +50,33 @@ export function FeaturesSection({ title, subtitle, items, styles }: FeaturesSect
   };
 
   return (
-    <section 
-        className="py-24 px-4 bg-background relative z-10 w-full overflow-hidden"
-        style={{ 
-            backgroundColor: styles?.backgroundColor,
-            color: styles?.textColor
-        }}
+    <section
+      className="py-24 px-4 bg-background relative z-10 w-full overflow-hidden"
+      style={{
+        backgroundColor: styles?.backgroundColor,
+        color: styles?.textColor,
+      }}
     >
-        {/* Background Gradients */}
-        <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-0 right-0 w-1/3 h-full bg-accent/5 blur-[100px]" />
-            <div className="absolute bottom-0 left-0 w-1/3 h-full bg-secondary/10 blur-[100px]" />
-        </div>
+      {/* Background Gradients */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-accent/5 blur-[100px]" />
+        <div className="absolute bottom-0 left-0 w-1/3 h-full bg-secondary/10 blur-[100px]" />
+      </div>
 
       <div className="max-w-7xl mx-auto space-y-16 relative z-10">
-        <m.div 
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center space-y-4"
         >
-            <span className="text-[10px] uppercase tracking-[0.2em] text-accent font-medium">
-              {subtitle || "Why Choose Us"}
-            </span>
-            <h2 className="text-4xl md:text-5xl font-serif font-medium tracking-tight text-foreground">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-accent font-medium">
+            {subtitle || "Why Choose Us"}
+          </span>
+          <h2 className="text-4xl md:text-5xl font-serif font-medium tracking-tight text-foreground">
             {title}
-            </h2>
+          </h2>
         </m.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -74,7 +95,9 @@ export function FeaturesSection({ title, subtitle, items, styles }: FeaturesSect
                   <Icon className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-medium mb-3 font-serif">{item.title}</h3>
+                  <h3 className="text-xl font-medium mb-3 font-serif">
+                    {item.title}
+                  </h3>
                   <p className="text-muted-foreground leading-relaxed font-light">
                     {item.description}
                   </p>

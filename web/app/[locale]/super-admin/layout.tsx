@@ -18,6 +18,26 @@ import { Suspense } from "react";
 // For now, relies on standard AuthProvider and we will check role in sub-layout or middleware
 // But we can add a quick check here.
 
+/**
+ * =================================================================================================
+ * SUPER ADMIN ROOT LAYOUT - TẦNG KHỞI TẠO DỮ LIỆU SUPER ADMIN
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. PERMISSION-BASED PROTECT:
+ *    - Ngoài việc check Login, trang này check quyền `superAdmin:read` ngay từ đầu qua Token.
+ *    - Nếu không đủ quyền, `redirect("/admin")` ngay lập tức để bảo đảm an toàn hệ thống.
+ *
+ * 2. GLOBAL PROVIDERS:
+ *    - `AuthProvider`: Cung cấp thông tin quyền hạn xuống cho các component con.
+ *    - `AdminMetadataProvider`: Quản lý Meta data dùng chung (danh sách Brands, Categories) để các
+ *      form trong Super Admin không phải fetch đi fetch lại nhiều lần.
+ *
+ * 3. INITIALIZATION LOOP:
+ *    - `NotificationInitializer`: Khởi tạo hệ thống Socket/Thông báo ngay khi vào khu vực quản trị.
+ * =================================================================================================
+ */
 export default async function SuperAdminLayout({
   children,
 }: {
@@ -28,10 +48,10 @@ export default async function SuperAdminLayout({
   const permissions = getPermissionsFromToken(token);
 
   // Quick initial check for SSR
-  const hasSuperAdminAccess = permissions.includes('superAdmin:read');
-  
+  const hasSuperAdminAccess = permissions.includes("superAdmin:read");
+
   if (!hasSuperAdminAccess) {
-      redirect("/admin"); 
+    redirect("/admin");
   }
 
   return (
@@ -48,7 +68,7 @@ export default async function SuperAdminLayout({
 async function DynamicSuperAdminContent({
   children,
   token,
-  permissions
+  permissions,
 }: {
   children: React.ReactNode;
   token?: string;

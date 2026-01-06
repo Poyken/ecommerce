@@ -25,6 +25,26 @@ interface Order {
   items: OrderItem[];
 }
 
+/**
+ * =================================================================================================
+ * ORDER FAILED PAGE - TRANG THÔNG BÁO THANH TOÁN THẤT BẠI
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. ERROR CONTEXT:
+ *    - Hiển thị thông báo lỗi cụ thể dựa trên việc có truy vấn được `order` hay không.
+ *    - Nhấn mạnh rằng "No money has been charged" để giảm bớt sự lo lắng của khách hàng.
+ *
+ * 2. RECOVERABILITY (RETRY):
+ *    - `RetryOrderButton`: Một component cực kỳ quan trọng giúp User mua lại nhanh chóng
+ *      bằng cách đẩy lại các item từ đơn hàng cũ vào giỏ hàng và mở lại checkout.
+ *
+ * 3. DATA TYPES:
+ *    - Định nghĩa `OrderItem` và `Order` interface ngay tại file để quản lý cấu trúc dữ liệu
+ *      trả về từ Server Action (Type Casting).
+ * =================================================================================================
+ */
 export default async function OrderFailedPage({
   params,
 }: {
@@ -68,7 +88,8 @@ export default async function OrderFailedPage({
         <div className="flex items-center justify-center gap-3 py-4 px-6 bg-destructive/5 border border-destructive/20 rounded-xl">
           <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
           <p className="text-sm text-destructive">
-            The transaction was cancelled or declined by your bank. No money has been charged.
+            The transaction was cancelled or declined by your bank. No money has
+            been charged.
           </p>
         </div>
 
@@ -146,9 +167,7 @@ export default async function OrderFailedPage({
 
         <div className="pt-8 text-zinc-400 text-sm flex items-center justify-center gap-2">
           <AlertCircle className="w-4 h-4" />
-          <span>
-            Need help? Contact our support team for assistance.
-          </span>
+          <span>Need help? Contact our support team for assistance.</span>
         </div>
       </div>
     </div>

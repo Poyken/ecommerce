@@ -1,17 +1,20 @@
 import { z } from 'zod';
 
 /**
- * =====================================================================
+ * =================================================================================================
  * JSON SCHEMAS - KẾT GIAO GIỮA PRISMA VÀ STRICT TYPING
- * =====================================================================
+ * =================================================================================================
  *
- * Mặc dù Prisma hỗ trợ field `Json`, nhưng nó trả về `any`.
- * File này định nghĩa cấu trúc chặt chẽ (Schema) cho các trường JSON quan trọng
- * bằng thư viện Zod.
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * LỢI ÍCH:
- * 1. Runtime Validation: Đảm bảo dữ liệu trong DB không bị rác.
- * 2. Type Inference: Tự động suy diễn kiểu TS từ Schema.
+ * 1. MỤC ĐÍCH:
+ *    - Mặc dù Prisma hỗ trợ field `Json`, nhưng nó trả về `any` (không có gợi ý code).
+ *    - File này định nghĩa cấu trúc chặt chẽ (Schema) cho các trường JSON quan trọng bằng thư viện `Zod`.
+ *
+ * 2. LỢI ÍCH:
+ *    - Runtime Validation: Đảm bảo dữ liệu trong DB không bị rác (VD: màu phải là hex code).
+ *    - Type Inference: Tự động suy diễn kiểu TypeScript từ Schema (`z.infer<typeof Schema>`).
+ * =================================================================================================
  */
 
 // 1. Tenant Theme Config

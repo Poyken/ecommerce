@@ -5,13 +5,34 @@ import { m } from "framer-motion";
 import { useTranslations } from "next-intl";
 
 interface StatsBlockProps {
-  stats?: Array<{ label: string; value: string; color: "primary" | "secondary" }>;
+  stats?: Array<{
+    label: string;
+    value: string;
+    color: "primary" | "secondary";
+  }>;
   styles?: {
     backgroundColor?: string;
     textColor?: string;
   };
 }
 
+/**
+ * =================================================================================================
+ * STATS BLOCK - KHỐI THỐNG KÊ ẤN TƯỢNG
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. STAGGER ANIMATION:
+ *    - `staggerChildren: 0.1`: Các con số thống kê sẽ hiện lên lần lượt cách nhau 0.1s.
+ *    - Rất hữu hiệu để tạo sự chuyên nghiệp cho UI.
+ *
+ * 2. DATA TRANSLATION LOGIC:
+ *    - {stat.label.includes(" ") ? stat.label : t(stat.label)}:
+ *    - Nếu nhãn là text tự do (từ Admin) -> Hiện trực tiếp.
+ *    - Nếu nhãn là key (VD: "happyCustomers") -> Dùng `next-intl` để dịch đa ngôn ngữ.
+ * =================================================================================================
+ */
 export function StatsBlock({ stats, styles }: StatsBlockProps) {
   const t = useTranslations("home");
 
@@ -25,12 +46,12 @@ export function StatsBlock({ stats, styles }: StatsBlockProps) {
   const items = stats || defaultStats;
 
   return (
-    <section 
-        className="container mx-auto px-4 py-12"
-        style={{ 
-            backgroundColor: styles?.backgroundColor,
-            color: styles?.textColor
-        }}
+    <section
+      className="container mx-auto px-4 py-12"
+      style={{
+        backgroundColor: styles?.backgroundColor,
+        color: styles?.textColor,
+      }}
     >
       <m.div
         className="grid grid-cols-2 md:grid-cols-4 gap-8"

@@ -7,6 +7,25 @@ import { useRouter } from "@/i18n/routing";
 import { ChevronLeft } from "lucide-react";
 import { useTranslations } from "next-intl";
 
+/**
+ * =================================================================================================
+ * AUTH LAYOUT - LAYOUT CHUNG CHO ĐĂNG NHẬP / ĐĂNG KÝ
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SPLIT VIEW DESIGN:
+ *    - Left Side: Một màn hình Hero sang trọng (chỉ hiện trên Desktop) sử dụng `OptimizedImage`.
+ *    - Right Side: Khu vực chứa Form (Login/Register) với các đốm sáng màu sắc (`BackgroundBlob`).
+ *
+ * 2. NAVIGATION:
+ *    - `useRouter`: Hook dùng để điều hướng. Nút "Back" cho phép User thoát khỏi luồng Auth
+ *      để quay lại trang chủ một cách dễ dàng.
+ *
+ * 3. I18N (INTERNATIONALIZATION):
+ *    - `useTranslations("auth.login")`: Load bản dịch cho các nhãn chữ trong trang.
+ * =================================================================================================
+ */
 export default function AuthLayout({
   children,
 }: {

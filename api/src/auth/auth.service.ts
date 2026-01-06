@@ -1,5 +1,6 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { RedisService } from '@core/redis/redis.service';
+import { getTenant } from '@core/tenant/tenant.context'; // Import getTenant
 import { EmailService } from '@integrations/email/email.service';
 import { InjectQueue } from '@nestjs/bullmq';
 import {
@@ -75,6 +76,7 @@ export class AuthService {
     avatarUrl: true,
     socialId: true,
     password: true,
+    tenantId: true, // Needed for security check
     twoFactorEnabled: true,
     twoFactorSecret: true,
     permissions: {
@@ -226,6 +228,14 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
+    // [SECURITY] TENANT CHECK FOR SOCIAL LOGIN
+    const currentTenant = getTenant();
+    if (currentTenant && user.tenantId && user.tenantId !== currentTenant.id) {
+      throw new UnauthorizedException(
+        'Tài khoản xã hội này đã được liên kết với cửa hàng khác',
+      );
+    }
+
     // Use PermissionService for consistent permission aggregation
     const allPermissions = this.permissionService.aggregatePermissions(
       user as any,
@@ -285,6 +295,23 @@ export class AuthService {
         mfaRequired: true,
         userId: user.id,
       };
+    }
+
+    // [SECURITY] TENANT CHECK
+    // If request has a tenant context, user MUST belong to that tenant
+    // Exception: Super Admin (no tenantId) can login anywhere (or restrict as needed)
+    const currentTenant = getTenant();
+    if (currentTenant) {
+      // If user has a tenantId and it doesn't match currentTenant.id -> DENY
+      // If user is Super Admin (tenantId=null) -> ALLOW (or enforce platform domain check if needed)
+      if (user.tenantId && user.tenantId !== currentTenant.id) {
+        throw new UnauthorizedException(
+          'Tài khoản không thuộc về cửa hàng này',
+        );
+      }
+
+      // OPTIONAL: If user has NO tenantId (Super Admin) but trying to login to a specific store?
+      // For now, assume Super Admin can access tenant dashboards.
     }
 
     // Use PermissionService for consistent permission aggregation

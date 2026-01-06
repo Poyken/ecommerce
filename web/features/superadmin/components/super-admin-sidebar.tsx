@@ -5,19 +5,45 @@ import { useAuth } from "@/features/auth/providers/auth-provider";
 import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import {
+  Activity,
   ArrowLeft,
   ArrowRight,
+  BarChart3,
+  CreditCard,
   History,
   LayoutDashboard,
   Settings,
   Shield,
   ShieldCheck,
   Store,
-  Users
+  Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+/**
+ * =================================================================================================
+ * SUPER ADMIN SIDEBAR - THANH ĐIỀU HƯỚNG QUẢN TRỊ VIÊN CẤP CAO
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. PHÂN QUYỀN (PERMISSION BASED ENGINE):
+ *    - Sidebar này không fix cứng (hardcode) tất cả các mục.
+ *    - Nó kiểm tra quyền của User thông qua `useAuth().hasPermission()`.
+ *    - Dù là Super Admin (có full quyền), ta vẫn viết code check quyền để tái sử dụng logic này
+ *      cho các vai trò thấp hơn sau này (VD: Support, Moderator).
+ *
+ * 2. CẤU TRÚC 2 LỚP (GROUP -> ITEMS):
+ *    - `sidebarItems` là mảng các nhóm (Overview, Tenancy, Platform System).
+ *    - Mỗi nhóm chứa nhiều items con.
+ *    - Logic render: Map Group -> Map Items.
+ *
+ * 3. RESPONSIVE (COLLAPSIBLE):
+ *    - Sidebar có thể thu gọn (`isCollapsed`) để tiết kiệm diện tích trên màn hình nhỏ.
+ *    - Khi thu gọn, chỉ hiện Icon, ẩn Text.
+ * =================================================================================================
+ */
 export function SuperAdminSidebar() {
   // We might want specific translations for superadmin or reuse admin
   const t = useTranslations("admin.sidebar");
@@ -30,60 +56,78 @@ export function SuperAdminSidebar() {
   // but it is good practice to keep it consistent.
   const sidebarItems = [
     {
-      title: "Overview",
+      title: t("overview"),
       items: [
         {
-          title: "Platform Dashboard",
+          title: t("dashboard"),
           href: "/super-admin",
           icon: LayoutDashboard,
           permission: "dashboard:view",
         },
         {
-          title: "Security Hub",
+          title: t("securityHub"),
           href: "/super-admin/security",
           icon: ShieldCheck,
           permission: "superAdmin:read",
         },
+        {
+          title: t("analytics"),
+          href: "/super-admin/analytics",
+          icon: BarChart3,
+          permission: "dashboard:view",
+        },
       ],
     },
     {
-        title: "Tenancy",
-        items: [
-            {
-                title: "Tenants",
-                href: "/super-admin/tenants",
-                icon: Store,
-                permission: "tenant:read",
-            },
-        ]
-    },
-    {
-      title: "Platform System",
+      title: t("tenancy"),
       items: [
         {
-          title: "Roles",
+          title: t("tenants"),
+          href: "/super-admin/tenants",
+          icon: Store,
+          permission: "tenant:read",
+        },
+        {
+          title: t("subscriptions"),
+          href: "/super-admin/subscriptions",
+          icon: CreditCard,
+          permission: "tenant:read",
+        },
+      ],
+    },
+    {
+      title: t("platformSystem"),
+      items: [
+        {
+          title: t("roles"),
           href: "/super-admin/roles",
           icon: Shield,
           permission: "role:read",
         },
         {
-          title: "Permissions",
+          title: t("permissions"),
           href: "/super-admin/permissions",
           icon: Settings,
           permission: "permission:read",
         },
-         {
-          title: "Users (Global)",
-          href: "/super-admin/users", 
+        {
+          title: t("users"),
+          href: "/super-admin/users",
           icon: Users,
           permission: "user:read",
         },
         {
-            title: "Audit Logs",
-            href: "/super-admin/audit-logs",
-            icon: History,
-            permission: "auditLog:read",
-        }
+          title: t("auditLogs"),
+          href: "/super-admin/audit-logs",
+          icon: History,
+          permission: "auditLog:read",
+        },
+        {
+          title: t("settings"),
+          href: "/super-admin/settings",
+          icon: Settings,
+          permission: "permission:read",
+        },
       ],
     },
   ];
@@ -127,16 +171,24 @@ export function SuperAdminSidebar() {
           isCollapsed ? "justify-center" : "justify-between"
         )}
       >
-        <div className={cn("font-bold text-xl tracking-tight flex items-center gap-2", isCollapsed ? "hidden" : "")}>
-            <Shield className="h-6 w-6 text-emerald-400" />
-            <span>Super Admin</span>
+        <div
+          className={cn(
+            "font-bold text-xl tracking-tight flex items-center gap-2",
+            isCollapsed ? "hidden" : ""
+          )}
+        >
+          <Shield className="h-6 w-6 text-emerald-400" />
+          <span>E-commerce SaaS</span>
         </div>
-        
+
         <Button
           variant="ghost"
           size="icon"
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className={cn("h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-800", !isCollapsed && "ml-auto")}
+          className={cn(
+            "h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-800",
+            !isCollapsed && "ml-auto"
+          )}
         >
           {isCollapsed ? (
             <ArrowRight className="h-4 w-4" />
@@ -156,9 +208,10 @@ export function SuperAdminSidebar() {
             )}
             <div className="space-y-1">
               {group.items.map((item) => {
-                const isActive = item.href === "/super-admin" 
-                  ? pathname === "/super-admin" 
-                  : pathname.startsWith(item.href);
+                const isActive =
+                  item.href === "/super-admin"
+                    ? pathname === "/super-admin"
+                    : pathname.startsWith(item.href);
                 const Icon = item.icon;
 
                 return (
@@ -207,7 +260,7 @@ export function SuperAdminSidebar() {
             <span className="whitespace-nowrap">{t("backToStore")}</span>
           )}
         </Link>
-          <Link
+        <Link
           href="/admin"
           className={cn(
             "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 border border-transparent hover:border-slate-700 group mt-2",

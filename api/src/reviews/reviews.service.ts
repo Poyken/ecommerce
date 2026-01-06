@@ -363,7 +363,10 @@ export class ReviewsService extends BaseCrudService<
     const review = await this.findOneBase(id);
 
     await this.prisma.$transaction(async (tx) => {
-      await tx.review.delete({ where: { id } });
+      await tx.review.update({
+        where: { id },
+        data: { deletedAt: new Date() },
+      });
       await this.updateProductRatingCache(review.productId, tx);
     });
 
@@ -378,7 +381,10 @@ export class ReviewsService extends BaseCrudService<
     }
 
     await this.prisma.$transaction(async (tx) => {
-      await tx.review.delete({ where: { id } });
+      await tx.review.update({
+        where: { id },
+        data: { deletedAt: new Date() },
+      });
       await this.updateProductRatingCache(review.productId, tx);
     });
 

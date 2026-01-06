@@ -32,6 +32,25 @@ function getCategoryImage(
   return CATEGORY_IMAGES[key] || "/images/categories/default.jpg";
 }
 
+/**
+ * =================================================================================================
+ * CATEGORIES PAGE - DANH SÁCH DANH MỤC SẢN PHẨM
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. DYNAMIC CATEGORY ASSETS:
+ *    - `getCategoryImage`: Hàm helper dùng để map giữa tên danh mục và ảnh minh họa.
+ *    - Giúp giao diện sinh động hơn thay vì chỉ dùng text, đồng thời hỗ trợ fallback về ảnh mặc định.
+ *
+ * 2. AGGREGATE COUNTING:
+ *    - `category._count.products`: Sử dụng tính năng `include` của Prisma để lấy số lượng sản phẩm.
+ *    - Việc này giúp User biết mỗi danh mục có bao nhiêu item trước khi click vào.
+ *
+ * 3. SEO & UX:
+ *    - Sử dụng `pt-24` để dành chỗ cho Header (Sticky Header) không đè lên nội dung.
+ * =================================================================================================
+ */
 export default async function CategoriesPage() {
   const [categories, t] = await Promise.all([
     productService.getCategories(),

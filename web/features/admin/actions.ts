@@ -46,6 +46,7 @@ import {
   CreateUserDto,
   PaginatedData,
   SalesDataPoint,
+  SecurityStats,
   TopProduct,
   UpdateBrandDto,
   UpdateCategoryDto,
@@ -146,6 +147,31 @@ function safeUnwrapApiResponse<T>(res: unknown): ApiResponse<T[]> {
   }
 
   return response;
+}
+
+// ============= SECURITY =============
+export async function getSuperAdminWhitelistAction(): Promise<
+  ActionResult<string[]>
+> {
+  try {
+    const res = await http<string[]>("/admin/security/whitelist");
+    return { success: true, data: res };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+export async function updateSuperAdminWhitelistAction(
+  ips: string[]
+): Promise<ActionResult> {
+  return handleAdminAction<void>(
+    () =>
+      http<void>("/admin/security/whitelist", {
+        method: "POST",
+        body: JSON.stringify({ ips }),
+      }),
+    ["/super-admin/security"]
+  );
 }
 
 // =============================================================================
@@ -1241,4 +1267,53 @@ export async function getTenantAction(
   } catch (e) {
     return { error: (e as Error).message };
   }
+}
+// =============================================================================
+// 🔒 SECURITY HUB ACTIONS (SUPER ADMIN)
+// =============================================================================
+
+/**
+ * Lấy các chỉ số an ninh hệ thống.
+ */
+export async function getSecurityStatsAction(): Promise<
+  ActionResult<SecurityStats>
+> {
+  try {
+    const res = await http<ApiResponse<SecurityStats>>("/admin/security/stats");
+    return { success: true, data: res.data };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+/**
+ * Lấy trạng thái khóa hệ thống hiện tại.
+ */
+export async function getLockdownStatusAction(): Promise<
+  ActionResult<{ isEnabled: boolean }>
+> {
+  try {
+    const res = await http<ApiResponse<{ isEnabled: boolean }>>(
+      "/admin/security/lockdown-status"
+    );
+    return { success: true, data: res.data };
+  } catch (error: any) {
+    return { error: error.message };
+  }
+}
+
+/**
+ * Bật/Tắt chế độ khóa hệ thống khẩn cấp.
+ */
+export async function toggleLockdownAction(
+  isEnabled: boolean
+): Promise<ActionResult> {
+  return handleAdminAction(
+    () =>
+      http("/admin/security/lockdown", {
+        method: "POST",
+        body: JSON.stringify({ isEnabled }),
+      }),
+    ["/super-admin/security"]
+  );
 }

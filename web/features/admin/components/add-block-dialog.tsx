@@ -26,6 +26,12 @@ export interface BlockType {
 }
 
 export const AVAILABLE_BLOCKS: BlockType[] = [
+  // 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+  // Đây là nơi định nghĩa "Menu" các khối (Block) mà User có thể thêm vào trang.
+  // Mỗi Block có:
+  // - type: Định danh duy nhất (dùng để switch-case trong BlockRenderer).
+  // - defaultProps: Dữ liệu mẫu ban đầu (để khi vừa thêm vào không bị trống trơn).
+  // - icon: Biểu tượng minh họa.
   {
     type: "Hero",
     label: "Hero Section",
@@ -33,7 +39,8 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
     icon: <Sparkles className="h-6 w-6" />,
     defaultProps: {
       title: "Redefining Luxury Living",
-      subtitle: "Experience the epitome of elegance with our curated selection of bespoke furniture.",
+      subtitle:
+        "Experience the epitome of elegance with our curated selection of bespoke furniture.",
       ctaText: "Shop Collection",
       ctaLink: "/shop",
       alignment: "left",
@@ -47,50 +54,50 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
     description: "Featured categories list/grid",
     icon: <LayoutGrid className="h-6 w-6" />,
     defaultProps: {
-        title: "Featured Categories",
-        columns: 4,
+      title: "Featured Categories",
+      columns: 4,
     },
   },
   {
-      type: "Brands",
-      label: "Brands Cloud",
-      description: "Carousel of featured partner brands",
-      icon: <LayoutGrid className="h-6 w-6" />, // Or another icon
-      defaultProps: {
-          title: "Our Trusted Partners",
-          subtitle: "Collaborating with the world's finest artisans",
-          opacity: 0.5,
-          grayscale: true,
-      },
+    type: "Brands",
+    label: "Brands Cloud",
+    description: "Carousel of featured partner brands",
+    icon: <LayoutGrid className="h-6 w-6" />, // Or another icon
+    defaultProps: {
+      title: "Our Trusted Partners",
+      subtitle: "Collaborating with the world's finest artisans",
+      opacity: 0.5,
+      grayscale: true,
+    },
   },
   {
-      type: "Products",
-      label: "Products Grid",
-      description: "Grid of products (Trending or New Arrivals)",
-      icon: <LayoutGrid className="h-6 w-6" />,
-      defaultProps: {
-          title: "Curated Selection",
-          type: "trending", // or "new_arrivals"
-          count: 4,
-          columns: 4,
-      },
+    type: "Products",
+    label: "Products Grid",
+    description: "Grid of products (Trending or New Arrivals)",
+    icon: <LayoutGrid className="h-6 w-6" />,
+    defaultProps: {
+      title: "Curated Selection",
+      type: "trending", // or "new_arrivals"
+      count: 4,
+      columns: 4,
+    },
   },
   {
-      type: "Deal",
-      label: "Deal Section",
-      description: "Special deal highlight section",
-      icon: <Sparkles className="h-6 w-6" />,
-      defaultProps: {
-          title: "Limited Time Offer",
-          subtitle: "Exclusive savings on seasonal favorites"
-      },
+    type: "Deal",
+    label: "Deal Section",
+    description: "Special deal highlight section",
+    icon: <Sparkles className="h-6 w-6" />,
+    defaultProps: {
+      title: "Limited Time Offer",
+      subtitle: "Exclusive savings on seasonal favorites",
+    },
   },
   {
-      type: "PromoGrid",
-      label: "Promo Grid",
-      description: "Two-column promo banner grid",
-      icon: <ImageIcon className="h-6 w-6" />,
-      defaultProps: {},
+    type: "PromoGrid",
+    label: "Promo Grid",
+    description: "Two-column promo banner grid",
+    icon: <ImageIcon className="h-6 w-6" />,
+    defaultProps: {},
   },
   {
     type: "Features",
@@ -100,63 +107,91 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
     defaultProps: {
       title: "Why Choose Luxe",
       items: [
-        { title: "Global Shipping", description: "Complimentary delivery worldwide" },
-        { title: "Premium Quality", description: "Handcrafted by master artisans" },
-        { title: "White Glove Service", description: "Personalized concierge support" },
+        {
+          title: "Global Shipping",
+          description: "Complimentary delivery worldwide",
+        },
+        {
+          title: "Premium Quality",
+          description: "Handcrafted by master artisans",
+        },
+        {
+          title: "White Glove Service",
+          description: "Personalized concierge support",
+        },
       ],
     },
   },
   {
-      type: "Stats",
-      label: "Stats Grid",
-      description: "Display key metrics and numbers",
-      icon: <LayoutGrid className="h-6 w-6" />,
-      defaultProps: {
-          items: [
-              { label: "Happy Customers", value: "10k+", color: "primary" },
-              { label: "Premium Products", value: "500+", color: "secondary" },
-              { label: "Global Brands", value: "50+", color: "primary" },
-              { label: "Customer Support", value: "24/7", color: "secondary" },
-          ]
-      },
+    type: "Stats",
+    label: "Stats Grid",
+    description: "Display key metrics and numbers",
+    icon: <LayoutGrid className="h-6 w-6" />,
+    defaultProps: {
+      items: [
+        { label: "Happy Customers", value: "10k+", color: "primary" },
+        { label: "Premium Products", value: "500+", color: "secondary" },
+        { label: "Global Brands", value: "50+", color: "primary" },
+        { label: "Customer Support", value: "24/7", color: "secondary" },
+      ],
+    },
   },
   {
-      type: "Testimonials",
-      label: "Testimonials",
-      description: "Customer reviews carousel",
-      icon: <Type className="h-6 w-6" />, // Chat icon ideally
-      defaultProps: {
-          title: "Client Experiences",
-          subtitle: "What our community is saying about Luxe",
-          items: [
-              { text: "The attention to detail in their pieces is unmatched.", author: "Alexander Thorne", role: "Interior Designer", rating: 5 },
-              { text: "Fast shipping and the quality exceeded my expectations.", author: "Sophia Laurent", role: "Art Director", rating: 5 },
-          ]
-      },
+    type: "Testimonials",
+    label: "Testimonials",
+    description: "Customer reviews carousel",
+    icon: <Type className="h-6 w-6" />, // Chat icon ideally
+    defaultProps: {
+      title: "Client Experiences",
+      subtitle: "What our community is saying about Luxe",
+      items: [
+        {
+          text: "The attention to detail in their pieces is unmatched.",
+          author: "Alexander Thorne",
+          role: "Interior Designer",
+          rating: 5,
+        },
+        {
+          text: "Fast shipping and the quality exceeded my expectations.",
+          author: "Sophia Laurent",
+          role: "Art Director",
+          rating: 5,
+        },
+      ],
+    },
   },
   {
-      type: "FAQ",
-      label: "FAQ Section",
-      description: "Frequently Asked Questions accordion",
-      icon: <Type className="h-6 w-6" />,
-      defaultProps: {
-          title: "Frequently Asked Questions",
-          subtitle: "Everything you need to know",
-          items: [
-              { question: "How do I care for my furniture?", answer: "We recommend using a soft, damp cloth for routine cleaning and avoiding direct sunlight for natural woods." },
-              { question: "What is your return policy?", answer: "We offer a 30-day trial period. If you're not completely satisfied, we'll arrange a return or exchange." },
-          ]
-      },
+    type: "FAQ",
+    label: "FAQ Section",
+    description: "Frequently Asked Questions accordion",
+    icon: <Type className="h-6 w-6" />,
+    defaultProps: {
+      title: "Frequently Asked Questions",
+      subtitle: "Everything you need to know",
+      items: [
+        {
+          question: "How do I care for my furniture?",
+          answer:
+            "We recommend using a soft, damp cloth for routine cleaning and avoiding direct sunlight for natural woods.",
+        },
+        {
+          question: "What is your return policy?",
+          answer:
+            "We offer a 30-day trial period. If you're not completely satisfied, we'll arrange a return or exchange.",
+        },
+      ],
+    },
   },
   {
-      type: "Newsletter",
-      label: "Newsletter",
-      description: "Newsletter subscription form",
-      icon: <MousePointerClick className="h-6 w-6" />, // Mail icon ideally
-      defaultProps: {
-          title: "Join the Inner Circle",
-          description: "Be the first to know about new collections and exclusive events."
-      },
+    type: "Newsletter",
+    label: "Newsletter",
+    description: "Newsletter subscription form",
+    icon: <MousePointerClick className="h-6 w-6" />, // Mail icon ideally
+    defaultProps: {
+      title: "Join the Inner Circle",
+      description:
+        "Be the first to know about new collections and exclusive events.",
+    },
   },
   {
     type: "Banner",
@@ -178,7 +213,8 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
     icon: <Type className="h-6 w-6" />,
     defaultProps: {
       title: "Our Philosophy",
-      content: "At Luxe, we believe that your home should be a reflection of your unique style and aspirations. Our collections are designed to bring harmony, sophistication, and timeless beauty to your living spaces.",
+      content:
+        "At Luxe, we believe that your home should be a reflection of your unique style and aspirations. Our collections are designed to bring harmony, sophistication, and timeless beauty to your living spaces.",
     },
   },
   {
@@ -188,7 +224,8 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
     icon: <MousePointerClick className="h-6 w-6" />,
     defaultProps: {
       title: "Elevate Your Living Space",
-      subtitle: "Transform your home with our exclusive interior design services",
+      subtitle:
+        "Transform your home with our exclusive interior design services",
       buttonText: "Book Consultation",
       buttonLink: "/contact",
     },
@@ -212,7 +249,7 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
         { icon: "Search", label: "Search", href: "/search" },
         { icon: "ShoppingCart", label: "Cart", href: "/cart" },
         { icon: "User", label: "Account", href: "/admin" },
-      ]
+      ],
     },
   },
   {
@@ -222,7 +259,8 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
     icon: <LayoutGrid className="h-6 w-6" />,
     defaultProps: {
       companyName: "Luxe Premium",
-      description: "Defining the future of luxury living with curated furniture and decor.",
+      description:
+        "Defining the future of luxury living with curated furniture and decor.",
       socialLinks: [
         { platform: "Instagram", url: "#" },
         { platform: "Facebook", url: "#" },
@@ -250,39 +288,41 @@ export function AddBlockDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="!max-w-7xl max-h-[90vh] flex flex-col p-8">
+      <DialogContent className="max-w-7xl! max-h-[90vh] flex flex-col p-8">
         <DialogHeader className="flex-none pb-6">
-          <DialogTitle className="text-2xl font-serif">Add New Block</DialogTitle>
+          <DialogTitle className="text-2xl font-serif">
+            Add New Block
+          </DialogTitle>
           <DialogDescription className="text-base">
             Choose a premium block type to enhance your page design
           </DialogDescription>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto pr-2 mt-2 custom-scrollbar">
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 pb-8">
-          {AVAILABLE_BLOCKS.map((block) => (
-            <Button
-              key={block.type}
-              variant="outline"
-              className={cn(
-                "h-auto p-4 flex flex-col items-center gap-3 text-center",
-                "hover:border-primary hover:bg-primary/5 transition-all"
-              )}
-              onClick={() => handleSelect(block)}
-            >
-              <div className="p-3 rounded-xl bg-primary/10 text-primary">
-                {block.icon}
-              </div>
-              <div>
-                <p className="font-semibold text-sm">{block.label}</p>
-                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                  {block.description}
-                </p>
-              </div>
-            </Button>
-          ))}
+            {AVAILABLE_BLOCKS.map((block) => (
+              <Button
+                key={block.type}
+                variant="outline"
+                className={cn(
+                  "h-auto p-4 flex flex-col items-center gap-3 text-center",
+                  "hover:border-primary hover:bg-primary/5 transition-all"
+                )}
+                onClick={() => handleSelect(block)}
+              >
+                <div className="p-3 rounded-xl bg-primary/10 text-primary">
+                  {block.icon}
+                </div>
+                <div>
+                  <p className="font-semibold text-sm">{block.label}</p>
+                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                    {block.description}
+                  </p>
+                </div>
+              </Button>
+            ))}
+          </div>
         </div>
-      </div>
-    </DialogContent>
-  </Dialog>
+      </DialogContent>
+    </Dialog>
   );
 }

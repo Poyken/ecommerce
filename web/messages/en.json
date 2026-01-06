@@ -1344,7 +1344,12 @@
       "backToStore": "Back to Store",
       "contentManagement": "CONTENT MANAGEMENT",
       "blogs": "Blogs",
-      "pages": "Pages"
+      "pages": "Pages",
+      "tenancy": "TENANCY",
+      "platformSystem": "PLATFORM SYSTEM",
+      "subscriptions": "Subscriptions",
+      "settings": "Global Settings",
+      "analytics": "Business Analytics"
     }
   },
   "contact": {
@@ -1399,9 +1404,335 @@
     },
     "map": {
       "storeName": "Luxury Store",
-      "addressLine1": "123 Luxury Avenue",
+      "addressLine1": "123 Luxury Ave",
       "addressLine2": "New York, NY 10001",
-      "openNow": "Open now: 9AM - 6PM"
+      "openNow": "Open Now: 9:00 - 18:00"
+    }
+  },
+  "superAdmin": {
+    "brand": "Super Admin",
+    "dashboard": {
+      "title": "Platform Control.",
+      "subtitle": "Welcome back, Administrator. Overview of the entire multi-tenant ecosystem.",
+      "actions": {
+        "securityHub": "Security Hub",
+        "launchTenant": "Launch New Tenant"
+      },
+      "stats": {
+        "mrr": "Monthly Recurring Revenue",
+        "mrrDesc": "Estimated MRR for all stores",
+        "transactions": "Total Transactions",
+        "transactionsDesc": "Last 30 days performance",
+        "health": "Subscription Health",
+        "healthDesc": "Active payment status",
+        "pending": "Pending Actions",
+        "pendingDesc": "Requires immediate attention"
+      },
+      "recentTenants": {
+        "title": "Recent Tenants",
+        "subtitle": "Latest storefronts deployed to the platform.",
+        "viewAll": "View All",
+        "empty": "No tenants active yet",
+        "healthy": "Healthy"
+      },
+      "systemStatus": {
+        "title": "System Status",
+        "subtitle": "Real-time platform infrastructure health.",
+        "apiGateway": "API Gateway",
+        "operational": "Operational",
+        "dbCluster": "Database Cluster",
+        "optimal": "Optimal ({ms}ms)",
+        "workerNodes": "Worker Nodes",
+        "scaling": "Scaling"
+      },
+      "distribution": {
+        "title": "Tenant Distribution",
+        "enterprise": "Enterprise Tenants",
+        "basicPro": "Basic/Pro Storefronts"
+      },
+      "warning": {
+        "title": "Critical Warning",
+        "sslExpire": "SSL certificate for <strong>master-domain.com</strong> expires in 3 days. Action required."
+      }
+    },
+    "analytics": {
+      "title": "Business Analytics",
+      "subtitle": "Platform-wide growth, retention, and cohort analysis.",
+      "stats": {
+        "activeTenants": "Active Customers (Tenants)",
+        "newStores": "New Stores (Last 7d)",
+        "churnRate": "Churn Rate",
+        "avgLtv": "Avg. LTV"
+      },
+      "comingSoon": {
+        "title": "Advanced Analytics Coming Soon",
+        "description": "We are integrating with MetaBase and PostHog for real-time behavioral tracking."
+      }
+    },
+    "subscriptions": {
+      "title": "Subscriptions & Billing",
+      "subtitle": "Manage platform-wide plans, invoicing, and revenue.",
+      "stats": {
+        "active": "Active Subscriptions",
+        "pending": "Pending Invoices",
+        "avgLtv": "Avg. LTV"
+      },
+      "list": {
+        "title": "All Subscriptions",
+        "subtitle": "Comprehensive list of all recurring revenue sources."
+      },
+      "status": {
+        "active": "Active",
+        "pastDue": "Past Due"
+      },
+      "table": {
+        "tenant": "Tenant",
+        "plan": "Plan",
+        "status": "Status",
+        "nextBilling": "Billed: {date}"
+      }
+    },
+    "settings": {
+      "title": "Platform Settings",
+      "subtitle": "Configure global behaviors and environment constraints.",
+      "save": "Save Global Config",
+      "sections": {
+        "registrations": {
+          "title": "Registrations",
+          "description": "Control how new tenants can join your platform.",
+          "publicSignups": "Public Signups",
+          "publicSignupsDesc": "Allow anyone to create a new store.",
+          "emailVerification": "Email Verification",
+          "emailVerificationDesc": "Require email validation before storefront activation.",
+          "manualApproval": "Manual Approval",
+          "manualApprovalDesc": "Hold new store creations for moderator review."
+        },
+        "infrastructure": {
+          "title": "Infrastructure",
+          "description": "Advanced platform-wide security overrides.",
+          "maintenance": "Maintenance Mode",
+          "maintenanceDesc": "Globally disable all tenant storefronts.",
+          "hsts": "HSTS Strict Policy",
+          "hstsDesc": "Enforce HTTPS on all connected domains.",
+          "backups": "Automatic Backups",
+          "backupsDesc": "Perform daily database snapshots for all tenants."
+        }
+      }
+    },
+    "auditLogs": {
+      "accessDenied": "Access Denied"
+    },
+    "tenants": {
+      "title": "Tenants Management",
+      "subtitle": "Manage {total} stores on the platform",
+      "totalStores": "Total Stores",
+      "active": "Active",
+      "launchNew": "Launch New Store",
+      "searchPlaceholder": "Search stores...",
+      "table": {
+        "name": "Store Name",
+        "domain": "Domain",
+        "plan": "Plan",
+        "createdAt": "Created At",
+        "actions": "Actions"
+      },
+      "empty": {
+        "title": "No stores found",
+        "description": "Get started by launching a new niche store on the platform.",
+        "action": "Launch Store"
+      },
+      "dialog": {
+        "titleView": "Store Details",
+        "titleEdit": "Edit Store",
+        "titleCreate": "Launch New Store",
+        "descriptionView": "View detailed configuration of the store.",
+        "descriptionEdit": "Update configuration for the current store.",
+        "descriptionCreate": "Deploy a new niche store storefront on the platform.",
+        "sections": {
+          "basic": "Basic Configuration",
+          "system": "System Information",
+          "metrics": "Store Metrics",
+          "adminAccount": "Initial Admin Account"
+        },
+        "fields": {
+          "id": "Identifier (ID)",
+          "name": "Store Name",
+          "domain": "Domain",
+          "plan": "Plan",
+          "color": "Brand Primary Color",
+          "createdAt": "Created At",
+          "updatedAt": "Last Updated",
+          "adminEmail": "Admin Email",
+          "adminPassword": "Admin Password"
+        },
+        "validation": {
+          "required": "This field is required"
+        },
+        "hints": {
+          "domain": "* Note: In dev environment, add this domain to your hosts file.",
+          "color": "Primary brand color used throughout the Storefront."
+        },
+        "metrics": {
+          "customers": "CUSTOMERS",
+          "products": "PRODUCTS",
+          "orders": "ORDERS"
+        },
+        "buttons": {
+          "cancel": "Cancel",
+          "close": "Close",
+          "create": "Launch Now",
+          "update": "Update",
+          "goToAdmin": "Go to Admin Panel",
+          "selectPlan": "Select Plan"
+        },
+        "plans": {
+          "basic": "Basic",
+          "pro": "Pro",
+          "enterprise": "Enterprise"
+        },
+        "messages": {
+          "success": "Success",
+          "error": "Error",
+          "createSuccess": "Store and Admin account created successfully",
+          "updateSuccess": "Store updated successfully",
+          "operationFailed": "Operation failed"
+        }
+      },
+      "deleteDialog": {
+        "title": "Delete Store",
+        "description": "Are you sure you want to delete store \"{name}\"? This action cannot be undone."
+      },
+      "tenantDetail": {
+        "tabs": {
+          "overview": "Overview",
+          "subscription": "Plan & Billing",
+          "usage": "Usage Metrics",
+          "logs": "Audit Logs"
+        },
+        "stats": {
+          "revenue": "Store Revenue",
+          "orders": "Total Orders",
+          "customers": "Customers",
+          "vsLastMonth": "{value} vs last month"
+        },
+        "performance": {
+          "title": "Platform Performance",
+          "description": "Server-side metrics for this specific tenant instance.",
+          "responseTime": "Avg. Response Time",
+          "dbLoad": "DB Connection Load",
+          "assetsDelivery": "Assets Delivery"
+        },
+        "recentActivities": {
+          "title": "Recent Activities",
+          "adminLogin": "Admin User Login",
+          "bulkUpdate": "Bulk Product Update",
+          "minsAgo": "{mins} mins ago"
+        },
+        "usage": {
+          "title": "Resource Usage",
+          "description": "Consumption relative to the <strong>{plan}</strong> tier limits.",
+          "products": "Active Products",
+          "storage": "Storage (Images & Media)",
+          "bandwidth": "Monthly Bandwidth",
+          "itemsOf": "{usage} of {limit} items",
+          "gbOf": "{usage}GB of {limit}GB",
+          "approachingLimit": "Approaching Limits",
+          "approachingLimitDesc": "This tenant is using {percent}% of their product limit. Consider suggesting an upgrade to the PRO plan."
+        },
+        "subscription": {
+          "title": "Subscription Status",
+          "renewalDate": "Renewal Date: {date}",
+          "perMonth": "per month",
+          "updatePlan": "Update Billing Plan",
+          "cancelSubscription": "Cancel Subscription"
+        },
+        "technicalInfo": {
+          "title": "Technical Info",
+          "id": "Tenant ID",
+          "domain": "Public Domain",
+          "deploymentDate": "Deployment Date",
+          "locale": "Default Locale"
+        },
+        "dnsSecurity": {
+          "title": "DNS & Security",
+          "ssl": "SSL Certificate",
+          "dns": "DNS Records",
+          "ddos": "DDoS Protection",
+          "active": "Active",
+          "propagated": "Propagated",
+          "enabled": "Enabled"
+        },
+        "localSetup": {
+          "title": "Local Setup Guide",
+          "description": "How to access this store on your machine.",
+          "guide": "To simulate multiple projects on your machine, map tenant domains in your <strong>hosts</strong> file:",
+          "step1": "Open <code>hosts</code> file (Windows: <code>C:\\Windows\\System32\\drivers\\etc\\hosts</code>)",
+          "step2": "Add entry: <code>127.0.0.1 {domain}</code>",
+          "step3": "Save and click the <strong>Enter Portal</strong> button above."
+        },
+        "notes": {
+          "title": "Platform Note",
+          "highValue": "This tenant is a high-value customer. Escalated support is active. Priority 1 for any reported outages.",
+          "addNote": "Add New Note"
+        },
+        "buttons": {
+          "settings": "Settings",
+          "suspend": "Suspend",
+          "enterPortal": "Enter Portal"
+        }
+      },
+      "messages": {
+        "createSuccess": "Store and Admin account created successfully",
+        "updateSuccess": "Store updated successfully",
+        "deleteSuccess": "Store deleted successfully",
+        "error": "Operation failed"
+      }
+    },
+      "security": {
+        "title": "Security Hub",
+        "subtitle": "System-wide threat monitoring and security stance.",
+        "backToDashboard": "Dashboard",
+        "status": {
+          "label": "Platform Status",
+          "secured": "SECURED & ENCRYPTED"
+        },
+        "accessReport": "Access Report",
+        "loading": "Analyzing platform security...",
+        "lockdown": {
+          "title": "Lockdown Protocols",
+          "description": "Activate emergency mode to block all non-admin access to the platform.",
+          "active": "SYSTEM UNDER LOCKDOWN",
+          "inactive": "System operating normally",
+          "emergency": "Activate Emergency Lockdown",
+          "confirmTitle": "Are you sure?",
+          "confirmDescription": "This action will immediately block all unauthorized access.",
+          "cancel": "Cancel",
+          "action": "Proceed"
+        },
+        "whitelist": {
+          "title": "Super Admin IP Whitelist",
+          "description": "Restrict Super Admin access to specific IP addresses. If empty, all IPs are allowed (not recommended).",
+          "placeholder": "Add IP address (e.g. 1.2.3.4)",
+          "addButton": "Add",
+          "saveButton": "Save Configuration",
+          "noItems": "No IP addresses whitelisted.",
+          "success": "IP Whitelist updated successfully"
+        },
+        "stats": {
+          "title": "Security Indicators",
+          "description": "Real-time safety metrics from the last 24h.",
+          "authAttempts": "Auth Attempts",
+          "mfaEnforced": "MFA Enforce Rate",
+          "blockedIps": "Blocked IPs",
+          "threatGrade": "Safety Grade",
+          "ddosStatus": "DDoS Status"
+        },
+        "manualConfig": {
+          "title": "Manual Localhost Configuration (hosts)",
+          "description": "To simulate multi-tenancy on your local machine, add the following entries to your hosts file:",
+          "pathWin": "C:\\Windows\\System32\\drivers\\etc\\hosts",
+          "pathUnix": "/etc/hosts"
+        }
+      }
     }
   }
-}

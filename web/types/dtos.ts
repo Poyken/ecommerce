@@ -327,3 +327,12 @@ export interface UpdateTenantDto {
   plan?: "BASIC" | "PRO" | "ENTERPRISE";
   themeConfig?: Record<string, any>;
 }
+// ==================== SECURITY DTOs ====================
+
+export interface SecurityStats {
+  authAttempts: number;
+  mfaPercentage: number;
+  blockedIps: number;
+  ddosStatus: string;
+  threatGrade: string;
+}

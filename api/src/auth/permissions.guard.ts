@@ -50,6 +50,11 @@ export class PermissionsGuard implements CanActivate {
     // 2. Lấy User từ Request (Đã được JwtStrategy decode và gán vào)
     const { user } = context.switchToHttp().getRequest();
 
+    // [SUPER ADMIN BYPASS] Super admins have all permissions implicitly
+    if (user?.roles?.includes('SUPER_ADMIN')) {
+      return true;
+    }
+
     // Lấy quyền của user từ trong Payload của Token (Stateless - Không cần query DB)
     const userPermissions = user?.permissions || [];
 

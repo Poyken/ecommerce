@@ -41,6 +41,25 @@ export async function generateMetadata({
   };
 }
 
+/**
+ * =================================================================================================
+ * CATEGORY PRODUCTS PAGE - DANH SÁCH SẢN PHẨM THEO DANH MỤC
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SERVER-SIDE DATA FETCHING:
+ *    - `productService.getProducts`: Fetch dữ liệu trực tiếp tại Server.
+ *    - `limit: 100`: Tạm thời lấy tối đa 100 sản phẩm để hiện thị nhanh (có thể nâng cấp lên phân trang).
+ *
+ * 2. IMAGE RESOLUTION LOGIC:
+ *    - Giải quyết sự khác biệt giữa kiểu dữ liệu `string` và `object` (có `url`) của mảng ảnh.
+ *    - Fallback về ảnh SKU nếu ảnh sản phẩm chính bị thiếu.
+ *
+ * 3. DYNAMIC METADATA:
+ *    - `generateMetadata` lấy tên danh mục từ sản phẩm đầu tiên của mảng để gán vào thẻ `<title>`.
+ * =================================================================================================
+ */
 export default async function CategoryProductsPage({
   params,
 }: {

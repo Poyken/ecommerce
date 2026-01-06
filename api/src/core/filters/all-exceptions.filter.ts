@@ -61,10 +61,19 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const { httpAdapter } = this.httpAdapterHost;
     const ctx = host.switchToHttp();
 
-    const httpStatus =
+    let httpStatus =
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
+
+    // Prisma Error Handling
+    if ((exception as any).code === 'P2025') {
+      httpStatus = HttpStatus.NOT_FOUND;
+    } else if ((exception as any).code === 'P2002') {
+      httpStatus = HttpStatus.CONFLICT;
+    } else if ((exception as any).code === 'P2003') {
+      httpStatus = HttpStatus.BAD_REQUEST; // Constraint violation
+    }
 
     const exceptionResponse =
       exception instanceof HttpException ? exception.getResponse() : null;

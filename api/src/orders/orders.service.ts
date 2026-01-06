@@ -1,5 +1,6 @@
 import { PaymentService } from '@/payment/payment.service';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import { InjectQueue } from '@nestjs/bullmq';
 import {
   BadRequestException,
@@ -90,8 +91,16 @@ export class OrdersService {
         }
 
         // 2. Get cart with items (inside transaction)
+        const tenant = getTenant();
+        if (!tenant) throw new BadRequestException('Tenant context missing');
+
         const cart = await tx.cart.findUnique({
-          where: { userId },
+          where: {
+            userId_tenantId: {
+              userId,
+              tenantId: tenant.id,
+            },
+          },
           include: {
             items: {
               include: { sku: true },
@@ -1019,5 +1028,17 @@ export class OrdersService {
         error.response?.data || error,
       );
     }
+  }
+
+  async remove(id: string) {
+    const order = await this.prisma.order.findUnique({ where: { id } });
+    if (!order) throw new NotFoundException('Order not found');
+
+    await this.prisma.order.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+
+    return { success: true };
   }
 }

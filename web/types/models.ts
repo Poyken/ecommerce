@@ -686,4 +686,9 @@ export interface Tenant {
   plan: "BASIC" | "PRO" | "ENTERPRISE";
   createdAt: string;
   updatedAt: string;
+  _count?: {
+    users: number;
+    products: number;
+    orders: number;
+  };
 }

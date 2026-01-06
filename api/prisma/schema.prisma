@@ -16,14 +16,16 @@ model User {
   password      String?          @db.VarChar(255)
   createdAt     DateTime         @default(now())
   updatedAt     DateTime         @updatedAt
+  deletedAt     DateTime?
   avatarUrl     String?
   provider      String?
   socialId      String?
   twoFactorEnabled Boolean @default(false)
   twoFactorSecret  String?
+  whitelistedIps   Json?           @default("[]")
   addresses     Address[]
   auditLogs     AuditLog[]
-  cart          Cart?
+  carts         Cart[]
   inventoryLogs InventoryLog[]
   notifications Notification[]
   orders        Order[]
@@ -98,6 +100,7 @@ model Category {
   parentId        String?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
+  deletedAt       DateTime?
   imageUrl        String?
   metaDescription String?
   metaKeywords    String?
@@ -114,6 +117,7 @@ model Brand {
   name      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
   imageUrl  String?
   products  Product[]
 }
@@ -189,7 +193,11 @@ model Product {
   // Legacy indexes (keep for backward compatibility, will remove in next version)
   @@index([categoryId, name])
   @@index([slug])
+
   @@index([deletedAt])
+  @@index([tenantId])
+  @@index([tenantId, slug])
+  @@index([tenantId, deletedAt, createdAt]) // For Storefront listings
 }
 
 model ProductOption {
@@ -274,11 +282,12 @@ model Address {
   tenant        Tenant? @relation(fields: [tenantId], references: [id])
 
   @@index([userId])
+  @@index([tenantId])
 }
 
 model Cart {
   id        String     @id @default(uuid())
-  userId    String     @unique
+  userId    String
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -287,6 +296,8 @@ model Cart {
   // Multi-tenancy
   tenantId  String?
   tenant    Tenant?    @relation(fields: [tenantId], references: [id])
+
+  @@unique([userId, tenantId])
 }
 
 model CartItem {
@@ -338,6 +349,7 @@ model Order {
   orderDate       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   createdAt       DateTime      @default(now())
+  deletedAt       DateTime?
   couponId        String?
   addressId       String?
   shippingCode    String?
@@ -377,6 +389,9 @@ model Order {
   
   // 5. Shipping Code Lookup
   @@index([shippingCode], name: "idx_order_shipping_code")
+
+  @@index([tenantId])
+  @@index([tenantId, status, createdAt]) // For Tenant Admin Dashboard
 }
 
 model OrderItem {
@@ -407,6 +422,7 @@ model Review {
   isApproved Boolean   @default(false)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
   skuId      String?
   images     String[]
   reply      String?
@@ -422,6 +438,7 @@ model Review {
   @@unique([userId, productId, skuId])
   @@index([productId, rating])
   @@index([skuId])
+  @@index([tenantId])
 }
 
 model AuditLog {
@@ -508,6 +525,7 @@ model InventoryLog {
 
   @@index([skuId])
   @@index([userId])
+  @@index([tenantId])
 }
 
 model Wishlist {
@@ -524,6 +542,7 @@ model Wishlist {
 
   @@unique([userId, productId])
   @@index([userId])
+  @@index([tenantId])
 }
 
 model Blog {
@@ -555,6 +574,7 @@ model Blog {
   @@index([publishedAt])
   @@index([userId])
   @@index([deletedAt])
+  @@index([tenantId])
 }
 
 model BlogProduct {
@@ -583,6 +603,7 @@ model FeatureFlag {
   tenant      Tenant?  @relation(fields: [tenantId], references: [id])
 
   @@index([key])
+  @@index([tenantId])
 }
 
 enum OrderStatus {
@@ -797,6 +818,7 @@ model Page {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
 
   @@unique([tenantId, slug]) // Enforce unique slugs per tenant
   @@index([tenantId])

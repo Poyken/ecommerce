@@ -4,6 +4,7 @@ import { RedisModule } from '@core/redis/redis.module';
 import { EmailService } from '@integrations/email/email.service';
 import { Global, Module } from '@nestjs/common';
 import { CacheL1Service } from './cache-l1.service';
+import { EncryptionService } from '@core/security/encryption.service';
 
 /**
  * =====================================================================
@@ -26,7 +27,19 @@ import { CacheL1Service } from './cache-l1.service';
 @Global()
 @Module({
   imports: [RedisModule],
-  providers: [LoggerService, CacheService, EmailService, CacheL1Service],
-  exports: [LoggerService, CacheService, EmailService, CacheL1Service],
+  providers: [
+    LoggerService,
+    CacheService,
+    EmailService,
+    CacheL1Service,
+    EncryptionService,
+  ],
+  exports: [
+    LoggerService,
+    CacheService,
+    EmailService,
+    CacheL1Service,
+    EncryptionService,
+  ],
 })
 export class CommonModule {}

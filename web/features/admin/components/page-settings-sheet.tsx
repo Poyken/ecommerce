@@ -33,6 +33,24 @@ interface PageSettingsSheetProps {
   isSaving?: boolean;
 }
 
+/**
+ * =================================================================================================
+ * PAGE SETTINGS SHEET - CẤU HÌNH TRANG (SEO & PUBLISH)
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. META DESCRIPTION (SEO):
+ *    - Thẻ này cực quan trọng cho Google Search.
+ *    - Nên giới hạn < 160 ký tự để không bị cắt bớt trên trang kết quả tìm kiếm.
+ *
+ * 2. PUBLISHING WORKFLOW:
+ *    - `isPublished`: Cờ (Flag) quyết định trang có được hiển thị cho khách hay không.
+ *    - Draft (Nháp): Chỉ Admin thấy.
+ *    - Published (Công khai): Mọi người đều thấy.
+ *    - Khi sửa xong -> Save -> DB cập nhật -> Next.js revalidate cache (ISR).
+ * =================================================================================================
+ */
 export function PageSettingsSheet({
   open,
   onOpenChange,
@@ -44,7 +62,9 @@ export function PageSettingsSheet({
   const [title, setTitle] = useState(page.title);
   const [slug, setSlug] = useState(page.slug);
   const [isPublished, setIsPublished] = useState(page.isPublished);
-  const [metaDescription, setMetaDescription] = useState(page.metaDescription || "");
+  const [metaDescription, setMetaDescription] = useState(
+    page.metaDescription || ""
+  );
 
   const handleSave = () => {
     onSave({
@@ -58,7 +78,12 @@ export function PageSettingsSheet({
   const handleTitleChange = (value: string) => {
     setTitle(value);
     // Auto-generate slug from title if slug matches old title pattern
-    const autoSlug = "/" + value.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+    const autoSlug =
+      "/" +
+      value
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
     if (slug === page.slug || slug === "") {
       setSlug(autoSlug);
     }
@@ -143,10 +168,12 @@ export function PageSettingsSheet({
             </h3>
             <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
               <div className="space-y-0.5">
-                <Label htmlFor="published" className="text-base">Publish Page</Label>
+                <Label htmlFor="published" className="text-base">
+                  Publish Page
+                </Label>
                 <p className="text-sm text-muted-foreground">
-                  {isPublished 
-                    ? "Page is visible to the public" 
+                  {isPublished
+                    ? "Page is visible to the public"
                     : "Page is in draft mode"}
                 </p>
               </div>
@@ -162,14 +189,10 @@ export function PageSettingsSheet({
 
           {/* Actions */}
           <div className="space-y-3 pt-4">
-            <Button 
-              className="w-full" 
-              onClick={handleSave}
-              disabled={isSaving}
-            >
+            <Button className="w-full" onClick={handleSave} disabled={isSaving}>
               {isSaving ? "Saving..." : "Save Settings"}
             </Button>
-            
+
             {onDelete && (
               <Button
                 variant="outline"

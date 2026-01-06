@@ -1,4 +1,5 @@
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import {
   BadRequestException,
   Injectable,
@@ -74,12 +75,23 @@ export class CartService {
    * ✅ No redundant user check (FK constraint handles it)
    */
   async getCart(userId: string) {
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
     try {
       // Single atomic operation: create cart if not exists + load items
       const cart = await this.prisma.cart.upsert({
-        where: { userId },
+        where: {
+          userId_tenantId: {
+            userId,
+            tenantId: tenant.id,
+          },
+        },
         update: {}, // No update needed, just fetch
-        create: { userId },
+        create: {
+          userId,
+          tenantId: tenant.id,
+        },
         include: {
           items: {
             select: {
@@ -195,10 +207,21 @@ export class CartService {
         }
 
         // 2. Get or create cart (atomic upsert)
+        const tenant = getTenant();
+        if (!tenant) throw new BadRequestException('Tenant context missing');
+
         const cart = await tx.cart.upsert({
-          where: { userId },
+          where: {
+            userId_tenantId: {
+              userId,
+              tenantId: tenant.id,
+            },
+          },
           update: {},
-          create: { userId },
+          create: {
+            userId,
+            tenantId: tenant.id,
+          },
         });
 
         // 3. Upsert cart item (atomic)
@@ -296,7 +319,17 @@ export class CartService {
    * Xóa toàn bộ giỏ hàng (Clear Cart).
    */
   async clearCart(userId: string) {
-    const cart = await this.prisma.cart.findUnique({ where: { userId } });
+    const tenant = getTenant();
+    if (!tenant) return;
+
+    const cart = await this.prisma.cart.findUnique({
+      where: {
+        userId_tenantId: {
+          userId,
+          tenantId: tenant.id,
+        },
+      },
+    });
     if (!cart) return;
 
     return this.prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
@@ -328,10 +361,21 @@ export class CartService {
         }[] = [];
 
         // 1. Get or create cart once
+        const tenant = getTenant();
+        if (!tenant) throw new Error('Tenant context missing');
+
         const cart = await tx.cart.upsert({
-          where: { userId },
+          where: {
+            userId_tenantId: {
+              userId,
+              tenantId: tenant.id,
+            },
+          },
           update: {},
-          create: { userId },
+          create: {
+            userId,
+            tenantId: tenant.id,
+          },
         });
 
         // 2. Fetch all SKUs in one go for validation

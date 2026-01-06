@@ -2,6 +2,7 @@ import { getFingerprint } from '@/common/utils/fingerprint';
 import { PrismaService } from '@/core/prisma/prisma.service';
 import { RedisService } from '@core/redis/redis.service';
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { EncryptionService } from '@core/security/encryption.service';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
@@ -37,6 +38,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     configService: ConfigService,
     private readonly redisService: RedisService,
     private readonly prisma: PrismaService,
+    private readonly encryptionService: EncryptionService,
   ) {
     super({
       // 1. Lấy token từ Header HOẶC Cookie
@@ -120,7 +122,18 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     // Prevents "Foreign key constraint violated" if user was deleted but token is still valid.
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, permissions: true }, // Select minimal fields
+      select: {
+        id: true,
+        permissions: true,
+        whitelistedIps: true,
+        roles: {
+          select: {
+            role: {
+              select: { name: true },
+            },
+          },
+        },
+      },
     });
 
     if (!user) {
@@ -128,10 +141,20 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new UnauthorizedException('User no longer exists');
     }
 
+    const roleNames = user.roles.map((ur) => ur.role.name);
+
+    // Decrypt whitelistedIps if encrypted
+    let whitelistedIps = user.whitelistedIps;
+    if (typeof whitelistedIps === 'string' && whitelistedIps.includes(':')) {
+      whitelistedIps = this.encryptionService.decryptObject(whitelistedIps);
+    }
+
     return {
       id: user.id,
       userId: user.id,
-      permissions: userId === user.id ? permissions : [], // Fallback if needed, though usually they match
+      permissions: userId === user.id ? permissions : [],
+      roles: roleNames,
+      whitelistedIps: whitelistedIps,
       jti,
     };
   }

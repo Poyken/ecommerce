@@ -74,9 +74,13 @@ import { TenantMiddleware } from '@core/tenant/tenant.middleware';
 import { CacheModule } from '@nestjs/cache-manager';
 import { AiChatModule } from './ai-chat/ai-chat.module';
 import { ChatModule } from './chat/chat.module';
+import { LockdownGuard } from '@core/guards/lockdown.guard';
+import { SuperAdminIpGuard } from '@core/guards/super-admin-ip.guard';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
+    JwtModule.register({}),
     CacheModule.register({
       isGlobal: true,
       ttl: CACHE_CONFIG.DEFAULT_TTL * 1000, // Convert seconds to milliseconds
@@ -218,6 +222,14 @@ import { ChatModule } from './chat/chat.module';
     {
       provide: APP_GUARD,
       useClass: AppThrottlerGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: LockdownGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: SuperAdminIpGuard,
     },
     {
       provide: APP_GUARD,

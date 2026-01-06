@@ -3,12 +3,12 @@
 import { useToast } from "@/components/shared/use-toast";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,7 +21,26 @@ interface CreatePageDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-export function CreatePageDialog({ open, onOpenChange }: CreatePageDialogProps) {
+/**
+ * =================================================================================================
+ * CREATE PAGE DIALOG - HỘP THOẠI TẠO TRANG MỚI
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SLUG GENERATION (AUTO-SLUG):
+ *    - Khi User nhập Title ("Summer Collection 2024"), ta tự động tạo URL thân thiện ("summer-collection-2024").
+ *    - Logic: `toLowerCase()`, `trim()`, thay khoảng trắng bằng gạch ngang `-`, bỏ ký tự đặc biệt.
+ *
+ * 2. SERVER ACTIONS (`createPageAction`):
+ *    - Thay vì gọi API `/api/pages`, ta dùng Server Action của Next.js (chạy trực tiếp trên Server).
+ *    - `useTransition`: Giúp UI không bị đơ (freezing) khi đang chờ Server xử lý.
+ * =================================================================================================
+ */
+export function CreatePageDialog({
+  open,
+  onOpenChange,
+}: CreatePageDialogProps) {
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -31,16 +50,19 @@ export function CreatePageDialog({ open, onOpenChange }: CreatePageDialogProps) 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setTitle(val);
-    
+
     // Auto-generate slug
     if (val.toLowerCase() === "home" || val === "/") {
-        setSlug("/");
+      setSlug("/");
     } else {
-        const autoSlug = "/" + val.toLowerCase()
+      const autoSlug =
+        "/" +
+        val
+          .toLowerCase()
           .trim()
           .replace(/\s+/g, "-")
           .replace(/[^a-z0-9-]/g, "");
-        setSlug(autoSlug);
+      setSlug(autoSlug);
     }
   };
 
@@ -84,9 +106,12 @@ export function CreatePageDialog({ open, onOpenChange }: CreatePageDialogProps) 
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle className="text-xl font-serif">Create New Page</DialogTitle>
+            <DialogTitle className="text-xl font-serif">
+              Create New Page
+            </DialogTitle>
             <DialogDescription>
-              Enter the title and URL for your new page. You can add content blocks later.
+              Enter the title and URL for your new page. You can add content
+              blocks later.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-6">
@@ -105,9 +130,9 @@ export function CreatePageDialog({ open, onOpenChange }: CreatePageDialogProps) 
               <div className="flex items-center justify-between">
                 <Label htmlFor="slug">URL Slug (Path)</Label>
                 {slug === "/" && (
-                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 uppercase tracking-tighter">
-                        Homepage
-                    </span>
+                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 uppercase tracking-tighter">
+                    Homepage
+                  </span>
                 )}
               </div>
               <Input

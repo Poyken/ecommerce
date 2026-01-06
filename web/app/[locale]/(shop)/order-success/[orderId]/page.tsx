@@ -5,6 +5,25 @@ import { ArrowRight, CheckCircle, Package, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+/**
+ * =================================================================================================
+ * ORDER SUCCESS PAGE (SHARED) - TRANG HIỂN THỊ CHI TIẾT SAU KHI ĐẶT HÀNG
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. ASYNC ACTION DATA FETCHING:
+ *    - `getOrderDetailsAction`: Gọi trực tiếp Server Action để lấy dữ liệu đơn hàng từ DB.
+ *    - Sử dụng `notFound()` nếu không có dữ liệu để hiện trang 404 tiêu chuẩn.
+ *
+ * 2. ANIMATIONS (Framer Motion):
+ *    - Lớp `animate-in fade-in slide-in-from-bottom-8`: Sử dụng tiện ích của Tailwind CSS
+ *      (kết hợp plugin tailwind-animate) để tạo hiệu ứng xuất hiện mềm mại.
+ *
+ * 3. DYNAMIC UI ELEMENTS:
+ *    - `#order.id.slice(-8).toUpperCase()`: Rút gọn ID cho thân thiện với người dùng.
+ * =================================================================================================
+ */
 export default async function OrderSuccessPage({
   params,
 }: {
@@ -18,8 +37,6 @@ export default async function OrderSuccessPage({
   }
 
   const order = result.data;
-
-
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 mt-12">
@@ -100,7 +117,8 @@ export default async function OrderSuccessPage({
         <div className="pt-8 text-zinc-400 text-sm flex items-center justify-center gap-2">
           <Package className="w-4 h-4" />
           <span>
-            We&apos;ll send you an email with tracking details as soon as it ships.
+            We&apos;ll send you an email with tracking details as soon as it
+            ships.
           </span>
         </div>
       </div>

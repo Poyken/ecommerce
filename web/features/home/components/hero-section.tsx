@@ -11,6 +11,27 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useState } from "react";
 
+/**
+ * =================================================================================================
+ * HERO SECTION - PHẦN MỞ ĐẦU HOÀNH TRÁNG CỦA TRANG CHỦ
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MỤC ĐÍCH:
+ *    - Đây là "bộ mặt" của Website. Nó cần gây ấn tượng ngay lập tức (First Impression).
+ *    - Sử dụng ảnh chất lượng cao, font chữ to (Typography), và hiệu ứng chuyển động.
+ *
+ * 2. HIỆU ỨNG (ANIMATION):
+ *    - Chúng ta dùng thư viện `framer-motion` (được import là `m` từ `@/lib/animations`).
+ *    - `initial={{ opacity: 0 }}`: Trạng thái ban đầu (ẩn).
+ *    - `animate={{ opacity: 1 }}`: Trạng thái đích (hiện).
+ *    - `transition={{ delay: 0.5 }}`: Chờ 0.5s mới bắt đầu chạy -> Tạo hiệu ứng xuất hiện lần lượt (Stagger).
+ *
+ * 3. TỐI ƯU (OPTIMIZATION):
+ *    - Component `Image` của Next.js được dùng với `priority` -> Báo cho trình duyệt tải ảnh này NGAY LẬP TỨC vì nó ở trên cùng (LCP - Largest Contentful Paint).
+ * =================================================================================================
+ */
 interface HeroSectionProps {
   title?: string;
   subtitle?: string;
@@ -29,25 +50,25 @@ interface HeroSectionProps {
   };
 }
 
-export function HeroSection({ 
-    title, 
-    subtitle, 
-    ctaText, 
-    ctaLink,
-    alignment = "left",
-    bgImage = "/images/home/hero-luxury.jpg",
-    bgColor = "bg-background",
-    overlayOpacity = 0.4,
-    featuredTitle,
-    featuredPrice,
-    featuredImage,
-    styles
+export function HeroSection({
+  title,
+  subtitle,
+  ctaText,
+  ctaLink,
+  alignment = "left",
+  bgImage = "/images/home/hero-luxury.jpg",
+  bgColor = "bg-background",
+  overlayOpacity = 0.4,
+  featuredTitle,
+  featuredPrice,
+  featuredImage,
+  styles,
 }: HeroSectionProps) {
   const t = useTranslations("hero");
   const [isImageReady, setIsImageReady] = useState(false);
 
   // Use props if provided, otherwise fallback to translations/defaults
-  const displayTitle = title || t("redefining"); 
+  const displayTitle = title || t("redefining");
   const displaySubtitle = subtitle || t("description");
   const displayCtaText = ctaText || t("shopCollection");
   const displayCtaLink = ctaLink || "/shop";
@@ -56,12 +77,15 @@ export function HeroSection({
   const displayFeaturedImage = featuredImage || bgImage;
 
   return (
-    <section 
-        className={cn("relative min-h-screen flex items-center justify-center overflow-hidden pt-28", bgColor)}
-        style={{ 
-            backgroundColor: styles?.backgroundColor,
-            color: styles?.textColor
-        }}
+    <section
+      className={cn(
+        "relative min-h-screen flex items-center justify-center overflow-hidden pt-28",
+        bgColor
+      )}
+      style={{
+        backgroundColor: styles?.backgroundColor,
+        color: styles?.textColor,
+      }}
     >
       {/* Cinematic Background Lighting */}
       <div className="absolute inset-0 z-0 text-foreground">
@@ -69,18 +93,22 @@ export function HeroSection({
         <div className="absolute bottom-0 inset-x-0 h-[40vh] bg-linear-to-t from-background via-background/50 to-transparent" />
       </div>
 
-      <div className={cn(
+      <div
+        className={cn(
           "container relative z-10 grid grid-cols-1 gap-12 lg:gap-20 items-center md:px-12 max-w-8xl mx-auto lg:py-0",
           alignment === "center" ? "grid-cols-1 text-center" : "lg:grid-cols-2"
-      )}>
+        )}
+      >
         {/* Text Content */}
         <m.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           className={cn(
-              "space-y-10 order-2 lg:order-1",
-              alignment === "center" ? "max-w-3xl mx-auto" : "text-center lg:text-left"
+            "space-y-10 order-2 lg:order-1",
+            alignment === "center"
+              ? "max-w-3xl mx-auto"
+              : "text-center lg:text-left"
           )}
         >
           <m.div
@@ -96,10 +124,12 @@ export function HeroSection({
           </m.div>
 
           <div className="space-y-4">
-            <h1 className={cn(
+            <h1
+              className={cn(
                 "text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-normal tracking-[-0.03em] leading-[0.9]",
                 alignment === "center" ? "px-4" : ""
-            )}>
+              )}
+            >
               <span className="block text-foreground">{displayTitle}</span>
               <span className="relative inline-block mt-2 w-full">
                 <span className="text-gradient-champagne italic w-full block pb-4">
@@ -109,17 +139,23 @@ export function HeroSection({
             </h1>
           </div>
 
-          <p className={cn(
+          <p
+            className={cn(
               "text-lg text-muted-foreground leading-relaxed font-light",
               alignment === "center" ? "mx-auto" : "max-w-md mx-auto lg:mx-0"
-          )}>
+            )}
+          >
             {displaySubtitle}
           </p>
 
-          <div className={cn(
+          <div
+            className={cn(
               "flex flex-col sm:flex-row gap-4 pt-4",
-              alignment === "center" ? "justify-center" : "justify-center lg:justify-start"
-          )}>
+              alignment === "center"
+                ? "justify-center"
+                : "justify-center lg:justify-start"
+            )}
+          >
             <Link href={displayCtaLink as any}>
               <m.button
                 whileHover={{ scale: 1.02 }}
@@ -146,8 +182,10 @@ export function HeroSection({
 
           <m.div
             className={cn(
-                "flex items-center gap-8 pt-8 border-t border-border/50",
-                alignment === "center" ? "justify-center" : "justify-center lg:justify-start"
+              "flex items-center gap-8 pt-8 border-t border-border/50",
+              alignment === "center"
+                ? "justify-center"
+                : "justify-center lg:justify-start"
             )}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -168,26 +206,26 @@ export function HeroSection({
 
         {/* Visual Content - Hidden or Centered depending on alignment */}
         {alignment === "left" && (
-            <m.div
+          <m.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="relative h-[60vh] lg:h-[80vh] min-h-[500px] order-1 lg:order-2 group"
-            >
+          >
             <m.div className="relative h-full w-full rounded-3xl lg:rounded-[2.5rem] overflow-hidden shadow-2xl shadow-accent/10">
-                <AnimatePresence mode="wait">
+              <AnimatePresence mode="wait">
                 {!isImageReady && (
-                    <m.div
+                  <m.div
                     key="skeleton"
                     exit={{ opacity: 0 }}
                     className="absolute inset-0 z-20"
-                    >
+                  >
                     <Skeleton className="w-full h-full rounded-none" />
-                    </m.div>
+                  </m.div>
                 )}
-                </AnimatePresence>
+              </AnimatePresence>
 
-                <Image
+              <Image
                 src={bgImage}
                 alt="Luxury Collection"
                 fill
@@ -195,44 +233,44 @@ export function HeroSection({
                 className="object-cover object-center transition-transform duration-700 ease-[0.16,1,0.3,1] group-hover:scale-105"
                 priority
                 onLoad={() => setIsImageReady(true)}
-                />
+              />
 
-                <div 
-                    className="absolute inset-0 bg-black" 
-                    style={{ opacity: overlayOpacity }}
-                />
+              <div
+                className="absolute inset-0 bg-black"
+                style={{ opacity: overlayOpacity }}
+              />
 
-                <m.div
+              <m.div
                 initial={{ y: 30, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{
-                    delay: 1.2,
-                    duration: 0.8,
-                    ease: [0.16, 1, 0.3, 1],
+                  delay: 1.2,
+                  duration: 0.8,
+                  ease: [0.16, 1, 0.3, 1],
                 }}
                 className="absolute bottom-6 left-6 right-6 md:left-8 md:right-8 md:bottom-8"
-                >
+              >
                 <div className="glass-luxury p-5 md:p-6 rounded-2xl flex items-center justify-between">
-                    <div className="space-y-1">
+                  <div className="space-y-1">
                     <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-[0.2em]">
-                        {t("featuredLook")}
+                      {t("featuredLook")}
                     </p>
                     <p className="text-lg md:text-xl font-serif text-foreground">
-                        {displayFeaturedTitle}
+                      {displayFeaturedTitle}
                     </p>
-                    </div>
-                    <div className="text-right">
+                  </div>
+                  <div className="text-right">
                     <span className="text-xl md:text-2xl font-medium text-foreground">
-                        {displayFeaturedPrice}
+                      {displayFeaturedPrice}
                     </span>
-                    </div>
+                  </div>
                 </div>
-                </m.div>
+              </m.div>
             </m.div>
 
             <div className="absolute -z-10 -top-8 -right-8 w-32 h-32 border border-accent/20 rounded-full" />
             <div className="absolute -z-10 -bottom-4 -left-4 w-24 h-24 border border-accent/10 rounded-full" />
-            </m.div>
+          </m.div>
         )}
       </div>
 

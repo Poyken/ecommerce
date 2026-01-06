@@ -19,6 +19,25 @@ async function getUserCounts() {
   }
 }
 
+/**
+ * =================================================================================================
+ * SUPER ADMIN USERS PAGE - QUẢN LÝ NGƯỜI DÙNG TOÀN HỆ THỐNG
+ * =================================================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MULTI-ROLE MONITORING:
+ *    - `getUserCounts`: Hàm helper để đếm nhanh số lượng ADMIN và USER đang có.
+ *    - Giúp Super Admin có cái nhìn tổng quan về quy mô cộng đồng người dùng.
+ *
+ * 2. CROSS-TENANT USER MANAGEMENT:
+ *    - Hiển thị danh sách User từ mọi Tenant. Cho phép quản trị viên cấp cao nhất can thiệp
+ *      nếu có vấn đề về tài khoản.
+ *
+ * 3. SHARED CLIENT LOGIC:
+ *    - Sử dụng `UsersPageClient` chung với Admin thường nhưng cung cấp `basePath` khác nhau.
+ * =================================================================================================
+ */
 export default async function SuperAdminUsersPage({
   searchParams,
 }: {
