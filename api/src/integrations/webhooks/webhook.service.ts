@@ -97,7 +97,7 @@ export class WebhookService {
     };
 
     // Find all endpoints subscribed to this event
-    const endpoints = await this.getSubscribedEndpoints(event, tenantId);
+    const endpoints = this.getSubscribedEndpoints(event, tenantId);
 
     if (endpoints.length === 0) {
       this.logger.debug(`No endpoints subscribed to ${event}`);
@@ -157,13 +157,13 @@ export class WebhookService {
         this.logger.log(
           `✅ Webhook delivered: ${payload.event} -> ${endpoint.url}`,
         );
-        await this.logDelivery(payload, endpoint, 'success', response.status);
+        this.logDelivery(payload, endpoint, 'success', response.status);
         return { success: true, statusCode: response.status };
       } else {
         this.logger.warn(
           `⚠️ Webhook failed: ${payload.event} -> ${endpoint.url} (${response.status})`,
         );
-        await this.logDelivery(payload, endpoint, 'failed', response.status);
+        this.logDelivery(payload, endpoint, 'failed', response.status);
         return { success: false, statusCode: response.status };
       }
     } catch (error) {
@@ -171,7 +171,7 @@ export class WebhookService {
         `❌ Webhook error: ${payload.event} -> ${endpoint.url}`,
         error,
       );
-      await this.logDelivery(payload, endpoint, 'error', null, error.message);
+      this.logDelivery(payload, endpoint, 'error', null, error.message);
       return { success: false, error: error.message };
     }
   }
@@ -199,10 +199,10 @@ export class WebhookService {
   /**
    * Get endpoints subscribed to an event
    */
-  private async getSubscribedEndpoints(
+  private getSubscribedEndpoints(
     event: WebhookEvent,
     tenantId?: string,
-  ): Promise<WebhookEndpoint[]> {
+  ): WebhookEndpoint[] {
     // In production, fetch from database
     // For now, return empty array (endpoints need to be configured)
     // TODO: Implement WebhookEndpoint model in Prisma
@@ -212,13 +212,13 @@ export class WebhookService {
   /**
    * Log webhook delivery for audit
    */
-  private async logDelivery(
+  private logDelivery(
     payload: WebhookPayload,
     endpoint: WebhookEndpoint,
     status: 'success' | 'failed' | 'error',
     statusCode?: number | null,
     errorMessage?: string,
-  ): Promise<void> {
+  ): void {
     // TODO: Store in database for audit trail
     this.logger.debug({
       webhookId: payload.id,

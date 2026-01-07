@@ -39,7 +39,7 @@ export class MetricsService implements OnModuleInit {
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async onModuleInit() {
+  onModuleInit() {
     this.startTime = Date.now();
     this.logger.log('📊 Metrics service initialized');
   }
@@ -79,7 +79,7 @@ export class MetricsService implements OnModuleInit {
   // BUILT-IN METRICS
   // =====================================================================
 
-  private async getSystemMetrics(): Promise<Metric[]> {
+  private getSystemMetrics(): Metric[] {
     const mem = process.memoryUsage();
     const uptime = (Date.now() - this.startTime) / 1000;
 
@@ -194,7 +194,7 @@ export class MetricsService implements OnModuleInit {
   // =====================================================================
 
   async getPrometheusMetrics(): Promise<string> {
-    const systemMetrics = await this.getSystemMetrics();
+    const systemMetrics = this.getSystemMetrics();
     const businessMetrics = await this.getBusinessMetrics();
 
     // Add custom counters
@@ -252,7 +252,7 @@ export class MetricsService implements OnModuleInit {
   // =====================================================================
 
   async getMetricsJson(): Promise<Record<string, any>> {
-    const systemMetrics = await this.getSystemMetrics();
+    const systemMetrics = this.getSystemMetrics();
     const businessMetrics = await this.getBusinessMetrics();
 
     return {

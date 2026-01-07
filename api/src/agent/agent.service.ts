@@ -103,7 +103,7 @@ export class AgentService {
     }
 
     // 3. Tạo tóm tắt
-    const summary = await this.generateSummary(command, results);
+    const summary = this.generateSummary(command, results);
 
     return {
       command,
@@ -179,7 +179,7 @@ If you cannot understand the command, return:
           return await this.executeGenerateContent(task);
 
         case 'SEND_EMAIL':
-          return await this.executeSendEmail(task);
+          return this.executeSendEmail(task);
 
         case 'UNKNOWN':
         default:
@@ -350,7 +350,7 @@ Keep it SEO-friendly, under 100 words.
   /**
    * Task: Send Email (Simulated - in production would use real email service)
    */
-  private async executeSendEmail(task: AgentTask): Promise<TaskResult> {
+  private executeSendEmail(task: AgentTask): TaskResult {
     const { subject, content, customerIds, segment } = task.params;
 
     // In production, this would:
@@ -381,10 +381,7 @@ Keep it SEO-friendly, under 100 words.
   /**
    * Tạo tóm tắt kết quả thực thi
    */
-  private async generateSummary(
-    command: string,
-    results: TaskResult[],
-  ): Promise<string> {
+  private generateSummary(command: string, results: TaskResult[]): string {
     const successfulTasks = results.filter((r) => r.success);
     const failedTasks = results.filter((r) => !r.success);
 
@@ -416,7 +413,7 @@ ${failedTasks.map((r) => `❌ ${r.task.description}: ${r.error}`).join('\n')}
     const data = await this.fetchDataForUI(uiType, query);
 
     // 3. Tạo UI Schema
-    const schema = await this.buildUISchema(uiType, data, query);
+    const schema = this.buildUISchema(uiType, data, query);
 
     return schema;
   }
@@ -553,11 +550,11 @@ Return ONLY one of: stat_card, table, bar_chart, line_chart, pie_chart, alert, l
     return { value: 0, label: 'Không có dữ liệu' };
   }
 
-  private async buildUISchema(
+  private buildUISchema(
     type: UISchemaType,
     data: any,
     query: string,
-  ): Promise<UISchema> {
+  ): UISchema {
     switch (type) {
       case 'stat_card':
         return {

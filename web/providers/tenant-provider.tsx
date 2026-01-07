@@ -42,9 +42,10 @@ type TenantConfig = {
 };
 
 async function getTenantConfig(): Promise<TenantConfig | null> {
+  let host = "localhost";
   try {
     const headersList = await headers();
-    const host = headersList.get("host") || "localhost";
+    host = headersList.get("host") || "localhost";
 
     // In server environment (Docker/Local), 127.0.0.1 is more reliable than localhost
     // We prioritize process.env.API_URL for server-side fetches if available

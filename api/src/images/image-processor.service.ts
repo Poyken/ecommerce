@@ -130,7 +130,7 @@ export class ImageProcessorService {
   private async removeBackground(inputBuffer: Buffer): Promise<Buffer> {
     try {
       // Dynamic import để tránh lỗi nếu package chưa cài
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
+
       const bgRemoval = await import('@imgly/background-removal-node' as any);
       const { removeBackground: removeBg } = bgRemoval;
 
@@ -167,8 +167,8 @@ export class ImageProcessorService {
     // Create background layer
     const background = await sharp({
       create: {
-        width: metadata.width!,
-        height: metadata.height!,
+        width: metadata.width,
+        height: metadata.height,
         channels: 3,
         background: { r, g, b },
       },

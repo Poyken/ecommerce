@@ -75,7 +75,7 @@ export class SecurityController {
 
   @Get('my-ip')
   @Permissions('superAdmin:read')
-  async getMyIp(@Req() req: any) {
+  getMyIp(@Req() req: any) {
     // In a production environment with a proxy, you might need to check x-forwarded-for
     const forwarded = req.headers['x-forwarded-for'];
     const ip = Array.isArray(forwarded)
