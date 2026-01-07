@@ -3,7 +3,7 @@
 ## Tài liệu Hướng dẫn Toàn bộ Dự án API
 
 **Phiên bản:** 2.2  
-**Cập nhật lần cuối:** 30/12/2025  
+**Cập nhật lần cuối:** 07/01/2026  
 **Trạng thái:** ✅ SẴN SÀNG TRIỂN KHAI
 
 ---
@@ -45,6 +45,9 @@
   - [4.23. 🤖 AI Chat Module](#423-ai-chat-module-srcai-chat)
   - [4.24. 💬 Chat Module](#424-chat-module-srcchat)
   - [4.25. 🚩 Feature Flags Module](#425-feature-flags-module)
+  - [4.26. 🏢 Tenants Module](#426-tenants-module)
+  - [4.27. 🤖 AI Agent Module](#427-ai-agent-module)
+  - [4.28. 📄 Pages Module (CMS)](#428-pages-module-cms)
 - [V. LƯỢC ĐỒ CƠ SỞ DỮ LIỆU](#v-database-schema)
 - [VI. XÁC THỰC VÀ PHÂN QUYỀN](#vi-authentication--authorization)
 - [VII. DANH SÁCH API ENDPOINTS](#vii-api-endpoints)
@@ -1359,6 +1362,38 @@ Hệ thống cho phép bật tính năng theo nhiều tiêu chí linh hoạt:
 - **Environment**: Chỉ bật ở môi trường nội bộ (Development/Staging).
 - **User List**: Chỉ bật cho một số tài khoản Tester cụ thể.
 - **Percentage Rollout**: Bật cho X% người dùng bất kỳ (sử dụng **Deterministic Hashing** để đảm bảo 1 user luôn thấy kết quả nhất quán).
+
+---
+
+## 4.26. 🏢 Tenants Module (`src/tenants/`)
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+Hệ thống hỗ trợ **Multi-tenancy**, nghĩa là một bộ source code có thể phục vụ nhiều "khách thuê" (stores/tenants) khác nhau.
+
+- **Isolation**: Dữ liệu của các tenant được cô lập hoàn toàn.
+- **Dynamic Configuration**: Mỗi tenant có thể có cấu hình riêng về giao diện, ngôn ngữ, và tính năng.
+- **Tenant Middleware**: Tự động bóc tách `tenantId` từ request (qua subdomain hoặc header) để lọc dữ liệu trong Prisma.
+
+## 4.27. 🤖 AI Agent Module (`src/agent/`)
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+Module này xử lý các yêu cầu từ AI Agent Dashboard ở Frontend.
+
+- **Action Mapping**: Chuyển đổi ý định (intent) của người dùng thành các service call trong NestJS.
+- **Dynamic UI Schema**: Sinh ra cấu trúc JSON để Frontend tự động vẽ các biểu đồ hoặc form tương ứng với kết quả xử lý.
+- **Safety Checks**: Đảm bảo các lệnh thực thi qua AI vẫn phải tuân thủ đúng phân quyền (RBAC).
+
+## 4.28. 📄 Pages Module (CMS) (`src/pages/`)
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+Quản lý nội dung động cho Landing Page.
+
+- **Block System**: Lưu trữ cấu trúc trang dưới dạng mảng các Blocks (JSON).
+- **Versioning**: (Tùy chọn) Lưu lịch sử các phiên bản chỉnh sửa trang.
+- **SEO Meta**: Quản lý tiêu đề, mô tả và ảnh đại diện cho từng trang riêng biệt.
 
 ---
 
@@ -2852,7 +2887,7 @@ docker-compose down      # Stop services
 
 ## High Priority
 
-1. ⚠️ Fix linting errors (unused variables, async/await)
+1. ✅ Fix linting errors (all async/await and unused errors resolved)
 2. ✅ Add unit tests for critical services
 3. ✅ Add integration tests for API endpoints
 4. ✅ Implement request logging middleware
@@ -2915,5 +2950,5 @@ Dự án đã sẵn sàng để:
 
 **Status:** ✅ **COMPLETED**  
 **Quality:** ⭐⭐⭐⭐⭐ **EXCELLENT**  
-**Date:** 30/12/2025  
+**Date:** 07/01/2026  
 **Version:** 2.2

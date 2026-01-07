@@ -3,7 +3,7 @@
 ## Dành cho Thực tập sinh và Lập trình viên mới
 
 **Phiên bản:** 2.2  
-**Cập nhật lần cuối:** 30/12/2025  
+**Cập nhật lần cuối:** 07/01/2026  
 **Trạng thái:** ✅ SẴN SÀNG TRIỂN KHAI
 
 ---
@@ -19,8 +19,11 @@
   - [4.3. Safe Actions & Middleware](#43-safe-actions--middleware)
   - [4.4. Bảo mật (CSRF & Session)](#44-bảo-mật-csrf--session)
   - [4.5. Theo dõi hiệu năng (RUM)](#45-theo-dõi-hiệu-năng-rum)
+- [4.6. Multi-tenancy & Isolation](#46-multi-tenancy--isolation)
 - [V. LUỒNG DỮ LIỆU (DATA FLOW)](#v-luồng-dữ-liệu-data-flow)
 - [VI. TÍNH NĂNG CHI TIẾT (DETAILED FEATURES)](#vi-tính-năng-chi-tiết-detailed-features)
+  - [6.10. 🤖 AI Agent Dashboard (Quản trị bằng AI)](#610-ai-agent-dashboard)
+  - [6.11. 🧱 Page Builder & Dynamic CMS](#611-page-builder--dynamic-cms)
 - [VII. CÁC THÀNH PHẦN CỐT LÕI](#vii-các-thành-phần-cốt-lõi)
 - [VIII. SERVER ACTIONS CHI TIẾT](#viii-server-actions-chi-tiết)
 - [IX. HOOKS & PROVIDERS](#ix-hooks--providers)
@@ -329,6 +332,21 @@ Chúng ta không chỉ dựa vào chỉ số Lighthouse (môi trường giả l�
 
 ---
 
+## 4.6. Multi-tenancy & Isolation
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+Dự án này là một nền tảng **SaaS (Software as a Service)**, cho phép nhiều cửa hàng (Tenants) cùng chạy trên một hệ thống.
+
+- **Tenant Identification**: Hệ thống nhận diện cửa hàng dựa trên `Hostname`. Ví dụ: `shop1.luxe.com` và `shop2.luxe.com`.
+- **TenantProvider (`web/providers/tenant-provider.tsx`)**:
+  - Đọc hostname từ request headers.
+  - Fetch cấu hình riêng của cửa hàng (tên, logo, giao diện).
+  - Lưu vào context để toàn bộ ứng dụng sử dụng.
+- **Data Isolation**: Tất cả các yêu cầu gửi đến API đều tự động đính kèm `Tenant-ID` (thông qua hostname) để đảm bảo dữ liệu cửa hàng này không bị lộ sang cửa hàng khác.
+
+---
+
 # VI. TÍNH NĂNG CHI TIẾT (DETAILED FEATURES)
 
 Hệ thống cung cấp một bộ tính năng toàn diện cho cả Khách hàng (Storefront) và Quản trị viên (Admin Panel).
@@ -493,6 +511,26 @@ Next.js sẽ tự động chuyển trang thành "Dynamic Rendering" nếu code c
 
 - Tự động lấy `User-Agent` và `IP` của trình duyệt để forward sang API.
 - Giúp hệ thống Analytics và Security của API có đủ thông tin để phân tích rủi ro.
+
+## 6.10. 🤖 AI Agent Dashboard (Quản trị bằng AI)
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+Đây là tính năng đột phá nhất, cho phép người dùng điều khiển hệ thống quản trị bằng ngôn ngữ tự nhiên.
+
+- **NLP Commands**: Người dùng nhập "Giảm giá 10% cho tất cả sofa", Agent sẽ phân tích và thực thi.
+- **GenUI (Generated UI)**: AI không chỉ trả lời bằng chữ, mà có thể tự động sinh ra các UI Widget (Biểu đồ, Bảng dữ liệu) phù hợp với bối cảnh câu hỏi.
+- **Action Verification**: Trước khi chạy các lệnh thay đổi dữ liệu lớn, Agent luôn yêu cầu xác nhận.
+
+## 6.11. 🧱 Page Builder & Dynamic CMS
+
+### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+
+Hệ thống cho phép Admin tự thiết kế trang Landing Page mà không cần biết code.
+
+- **Drag & Drop**: Kéo thả các "Blocks" (Hero, Gallery, ProductGrid...).
+- **BlockRenderer**: Component thông minh nhận dữ liệu JSON từ API và render ra các React Component tương ứng.
+- **Real-time Preview**: Xem thay đổi ngay lập tức trong quá trình thiết kế.
 
 ---
 
@@ -950,6 +988,14 @@ Sử dụng hướng dẫn ở Section X, tự trace và ghi chú lại:
 
 1. Xem file `store/feature-flag.store.ts`.
 2. Thử thêm một action mới vào store này và sử dụng nó trong một component.
+
+## 12.6. Quy tắc Comment "Thực tập sinh"
+
+Dự án yêu cầu 100% file code phải có comment giải thích cho thực tập sinh.
+
+- **Cấu trúc**: Phải bắt đầu bằng `📚 GIẢI THÍCH CHO THỰC TẬP SINH:`.
+- **Nội dung**: Giải thích ngắn gọn vai trò của file, logic chính hoặc các điểm lưu ý kỹ thuật.
+- **Kiểm tra**: Chạy lệnh `node scripts/check-intern-comments.js` để kiểm tra tỷ lệ bao phủ.
 
 ---
 
