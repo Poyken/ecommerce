@@ -26,7 +26,7 @@
     "seed:reset": "ts-node --transpile-only prisma/reset.ts"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node prisma/reset.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",

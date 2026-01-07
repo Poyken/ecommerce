@@ -1727,6 +1727,7 @@
         "description": "Restrict Super Admin access to specific IP addresses. If empty, all IPs are allowed (not recommended).",
         "placeholder": "Add IP address (e.g. 1.2.3.4)",
         "addButton": "Add",
+        "addYourIp": "Add Your IP",
         "saveButton": "Save Configuration",
         "noItems": "No IP addresses whitelisted.",
         "success": "IP Whitelist updated successfully"

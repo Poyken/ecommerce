@@ -72,4 +72,18 @@ export class SecurityController {
   async updateWhitelist(@Req() req: any, @Body() body: { ips: string[] }) {
     return this.securityService.updateWhitelistedIps(req.user.id, body.ips);
   }
+
+  @Get('my-ip')
+  @Permissions('superAdmin:read')
+  async getMyIp(@Req() req: any) {
+    // In a production environment with a proxy, you might need to check x-forwarded-for
+    const forwarded = req.headers['x-forwarded-for'];
+    const ip = Array.isArray(forwarded)
+      ? forwarded[0]
+      : typeof forwarded === 'string'
+        ? forwarded.split(',')[0]
+        : req.ip || req.connection.remoteAddress;
+
+    return { ip: typeof ip === 'string' ? ip.trim() : String(ip || '') };
+  }
 }

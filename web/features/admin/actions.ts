@@ -155,8 +155,8 @@ export async function getSuperAdminWhitelistAction(): Promise<
   ActionResult<string[]>
 > {
   try {
-    const res = await http<string[]>("/admin/security/whitelist");
-    return { success: true, data: res };
+    const res = await http<ApiResponse<string[]>>("/admin/security/whitelist");
+    return { success: true, data: res.data };
   } catch (error: any) {
     return { error: error.message };
   }
@@ -173,6 +173,17 @@ export async function updateSuperAdminWhitelistAction(
       }),
     ["/super-admin/security"]
   );
+}
+
+export async function getMyIpAction(): Promise<ActionResult<{ ip: string }>> {
+  try {
+    const res = await http<ApiResponse<{ ip: string }>>(
+      "/admin/security/my-ip"
+    );
+    return { success: true, data: res.data };
+  } catch (error: any) {
+    return { error: error.message };
+  }
 }
 
 // =============================================================================
@@ -1407,11 +1418,17 @@ export async function getSubscriptionsAction(params: {
   if (params.status) query.set("status", params.status);
 
   try {
-    const res = await http<PaginatedData<Subscription>>(
+    const res = await http<ApiResponse<Subscription[]>>(
       `/subscriptions?${query.toString()}`,
       { next: { tags: ["subscriptions"] } }
     );
-    return { success: true, data: res };
+    return {
+      success: true,
+      data: {
+        data: res.data,
+        meta: res.meta || { total: 0, page: 1, limit: 10, lastPage: 0 },
+      },
+    };
   } catch (error: any) {
     return { error: error.message };
   }
