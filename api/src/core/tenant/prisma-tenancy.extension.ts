@@ -59,6 +59,8 @@ const SHARED_MODELS = new Set([
   'FeatureFlag',
   'ProductTranslation',
   'BlogProduct',
+  'User',
+  'OrderItem',
 ]);
 
 const MODELS_WITH_SOFT_DELETE = new Set([
@@ -78,13 +80,6 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
       $allModels: {
         async $allOperations({ model, operation, args, query }) {
           const tenant = getTenant();
-          if (model === 'FeatureFlag') {
-            console.log(
-              `[Tenancy] Intercepting ${model}.${operation}, Tenant: ${
-                tenant?.domain || 'Global'
-              }, IsShared: true`,
-            );
-          }
 
           // 1. Multi-tenancy Filter
           if (tenant && !SHARED_MODELS.has(model as string)) {

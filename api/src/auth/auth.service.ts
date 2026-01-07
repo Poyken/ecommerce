@@ -132,6 +132,7 @@ export class AuthService {
         password: hashedPassword,
         firstName,
         lastName,
+        tenantId: tenant?.id,
       },
     });
 
@@ -283,7 +284,7 @@ export class AuthService {
     const user = await this.prisma.user.findFirst({
       where: {
         email,
-        tenantId: tenant?.id,
+        OR: [{ tenantId: tenant?.id }, { tenantId: null }],
       },
       select: this.USER_PERMISSION_SELECT,
     });

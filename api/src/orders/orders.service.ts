@@ -805,7 +805,10 @@ export class OrdersService {
         ];
 
         if ((emailStatuses as any[]).includes(newStatus)) {
-          await this.emailService.sendOrderStatusUpdate(updatedOrder);
+          // 🚀 OPTIMIZATION: Fire and forget email (non-blocking)
+          this.emailService.sendOrderStatusUpdate(updatedOrder).catch((e) => {
+            this.logger.error('Failed to send status update email', e);
+          });
         }
 
         try {
@@ -873,12 +876,17 @@ export class OrdersService {
                   ? 'ADMIN_ORDER_ACCEPTED'
                   : `ADMIN_ORDER_${newStatus}`;
 
-              await this.notificationsService.broadcastToUserIds(adminIds, {
-                type: adminNotiType,
-                title: `[Admin] ${title}`,
-                message: `Admin notification: ${message}`,
-                link: `/admin/orders/${id}`,
-              });
+              // 🚀 OPTIMIZATION: Non-blocking broadcast
+              this.notificationsService
+                .broadcastToUserIds(adminIds, {
+                  type: adminNotiType,
+                  title: `[Admin] ${title}`,
+                  message: `Admin notification: ${message}`,
+                  link: `/admin/orders/${id}`,
+                })
+                .catch((e) =>
+                  this.logger.error('Failed to broadcast to admins', e),
+                );
 
               // Broadcast to all connected admins via socket
               adminIds.forEach((adminId) => {
@@ -909,19 +917,17 @@ export class OrdersService {
     });
 
     // 🚀 OPTIMIZATION: Move External API Call (GHN) OUT of Transaction
-    // This prevents DB locks if GHN service is slow
+    // AND: Make it non-blocking
     if (newStatus === OrderStatus.PROCESSING) {
       // Automatically sync with GHN if addressId exists
       if (transactionResult.addressId) {
-        try {
-          await this.syncWithGHN(transactionResult);
-        } catch (e) {
+        // Fire and forget GHN sync
+        this.syncWithGHN(transactionResult).catch((e) => {
           this.logger.error(
-            `Post-transaction GHN sync failed for order ${id}`,
+            `Background GHN sync failed for order ${transactionResult.id}`,
             e,
           );
-          // Non-blocking: Order status is already updated, just log errors
-        }
+        });
       }
     }
 

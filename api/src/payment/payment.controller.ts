@@ -194,6 +194,10 @@ export class PaymentController {
     const secretKey = this.configService.get('MOMO_SECRET_KEY');
     const accessKey = this.configService.get('MOMO_ACCESS_KEY');
 
+    if (!secretKey) {
+      return { message: 'MOMO_SECRET_KEY not configured' };
+    }
+
     // MoMo IPN signature raw string format
     const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData || ''}&message=${message}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&requestId=${requestId}&responseTime=${responseTime}&resultCode=${resultCode}&transId=${transId}`;
 

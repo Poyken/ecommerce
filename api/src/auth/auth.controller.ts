@@ -1,5 +1,6 @@
 import { getFingerprint } from '@/common/utils/fingerprint';
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -298,6 +299,9 @@ export class AuthController {
     @Request() req: RequestWithUser,
     @Body() body: { token: string; secret: string },
   ) {
+    if (!body.token || !body.secret) {
+      throw new BadRequestException('Mã xác thực và mã bí mật là bắt buộc');
+    }
     const isValid = this.twoFactorService.verifyToken(body.token, body.secret);
     if (!isValid) {
       throw new UnauthorizedException('Mã xác thực không hợp lệ');
@@ -315,9 +319,12 @@ export class AuthController {
     @Body() body: { token: string },
   ) {
     const user = await this.authService.getMe(req.user.userId);
+    if (!user.twoFactorSecret) {
+      throw new UnauthorizedException('2FA chưa được kích hoạt');
+    }
     const isValid = this.twoFactorService.verifyToken(
       body.token,
-      user.twoFactorSecret as string,
+      user.twoFactorSecret,
     );
     if (!isValid) {
       throw new UnauthorizedException('Mã xác thực không hợp lệ');

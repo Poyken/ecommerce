@@ -3,6 +3,7 @@ import {
   IsArray,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   IsUUID,
   Min,
@@ -58,6 +59,13 @@ export class CreateSkuDto {
   @IsUUID('4', { each: true })
   optionValueIds: string[];
 
+  @ApiProperty({ example: 'ACTIVE', required: false })
+  @IsOptional()
+  @IsString()
+  status?: string;
+
   @ApiProperty({ required: false, type: 'string', format: 'binary' })
+  @IsOptional()
+  @IsString()
   imageUrl?: string;
 }

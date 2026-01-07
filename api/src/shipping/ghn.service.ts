@@ -29,6 +29,11 @@ export class GHNService {
   private readonly token: string;
   private readonly shopId: string;
 
+  // In-memory cache for provinces (rarely changes)
+  private provincesCache: any[] | null = null;
+  private provincesCacheTime: number = 0;
+  private readonly PROVINCES_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+
   constructor(private readonly configService: ConfigService) {
     const rawBaseUrl = this.configService.get('GHN_API_BASE_URL');
 
@@ -66,16 +71,33 @@ export class GHNService {
   }
 
   async getProvinces() {
+    // Check cache first
+    const now = Date.now();
+    if (
+      this.provincesCache &&
+      now - this.provincesCacheTime < this.PROVINCES_CACHE_TTL
+    ) {
+      return this.provincesCache;
+    }
+
     try {
       const response = await axios.get(`${this.masterDataUrl}province`, {
         headers: this.baseHeaders,
+        timeout: 5000,
       });
+      this.provincesCache = response.data.data;
+      this.provincesCacheTime = now;
       return response.data.data;
     } catch (error) {
       this.logger.error(
         'Failed to fetch provinces from GHN',
         error.response?.data || error.message,
       );
+      // Return cached data if available, even if stale
+      if (this.provincesCache) {
+        this.logger.warn('Returning stale provinces cache');
+        return this.provincesCache;
+      }
       return [];
     }
   }

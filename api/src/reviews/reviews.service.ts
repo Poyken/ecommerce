@@ -146,6 +146,9 @@ export class ReviewsService extends BaseCrudService<
 
   /* ... checkEligibility Logic (Complex, Keep as is) ... */
   async checkEligibility(userId: string, productId: string) {
+    if (!productId) {
+      throw new BadRequestException('productId is required');
+    }
     const orderItems = await this.prisma.orderItem.findMany({
       where: {
         order: {

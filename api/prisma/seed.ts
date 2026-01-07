@@ -664,6 +664,21 @@ async function main() {
   });
   console.log('✅ Default Tenant (localhost) ensured.');
 
+  // 4.3 TENANT ADMIN (admin@localhost.com)
+  const tenantAdminUser = await prisma.user.create({
+    data: {
+      email: 'admin@localhost.com',
+      password: hashPassword,
+      firstName: 'Local',
+      lastName: 'Admin',
+      tenantId: defaultTenant.id,
+    },
+  });
+  await prisma.userRole.create({
+    data: { userId: tenantAdminUser.id, roleId: adminRole.id },
+  });
+  console.log('✅ TENANT ADMIN Created: admin@localhost / 123456');
+
   console.log('✅ Tenants & Validated Admins Created.');
 
   // ===================================
@@ -693,8 +708,40 @@ async function main() {
     ),
   );
 
-  // NO demo products for now to keep it clean as requested.
-  // Super Admin can create them manually.
+  // 5.2 DEMO PRODUCT & BLOG (For testing)
+  console.log('📦 Seeding Demo Product & Blog...');
+  const product = await prisma.product.create({
+    data: {
+      name: 'Modern Ergonomic Chair',
+      description: 'A very comfortable chair for long working hours.',
+      categoryId: categories[0].id,
+      brandId: brands[0].id,
+      tenantId: defaultTenant.id,
+      slug: 'modern-ergonomic-chair',
+      skus: {
+        create: {
+          skuCode: 'CHAIR-001',
+          price: 299,
+          stock: 50,
+          tenantId: defaultTenant.id,
+          status: 'ACTIVE',
+        },
+      },
+    },
+  });
+
+  await prisma.blog.create({
+    data: {
+      title: 'How to Choose the Right Office Chair',
+      content: 'Choosing the right chair is crucial for your health...',
+      excerpt: 'Learn about ergonomics.',
+      userId: superAdminUser.id,
+      author: 'Super Admin',
+      category: 'Furniture Guide',
+      tenantId: defaultTenant.id,
+      slug: 'choose-right-chair',
+    },
+  });
 
   console.log('🎉 ALL SEEDING COMPLETED SUCCESSFULLY!');
 }

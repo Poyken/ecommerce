@@ -66,10 +66,6 @@ export class UsersService extends BaseCrudService<
     firstName: true,
     lastName: true,
     avatarUrl: true,
-    phone: true,
-    gender: true,
-    birthday: true,
-    isActive: true,
     createdAt: true,
     permissions: {
       select: {

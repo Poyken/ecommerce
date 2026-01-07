@@ -39,6 +39,7 @@ export class VNPayUtils {
    * Tạo Secure Hash cho VNPay (HMAC-SHA512)
    */
   static generateSignature(secretKey: string, signData: string): string {
+    if (!secretKey) return '';
     const hmac = crypto.createHmac('sha512', secretKey);
     return hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
   }

@@ -135,6 +135,9 @@ export class WishlistService {
   }
 
   async mergeWishlist(userId: string, productIds: string[]) {
+    if (!productIds || !Array.isArray(productIds)) {
+      return [];
+    }
     const results: Array<{
       productId: string;
       success: boolean;

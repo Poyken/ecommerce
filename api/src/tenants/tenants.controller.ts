@@ -9,6 +9,8 @@ import {
   Param,
   Patch,
   Post,
+  Request,
+  NotFoundException,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -55,6 +57,20 @@ export class TenantsController {
   @ApiOperation({ summary: 'List all Tenants' })
   findAll() {
     return this.tenantsService.findAll();
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @Permissions('tenant:read')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Lấy thông tin store của tôi (Tenant Admin)' })
+  async getMyTenant(@Request() req: any) {
+    const tenantId = req.user.tenantId;
+    if (!tenantId)
+      throw new NotFoundException(
+        'Your user is not associated with any tenant',
+      );
+    return this.tenantsService.findOne(tenantId);
   }
 
   @Get(':id')

@@ -95,8 +95,16 @@ export class ReviewsController {
     @GetUser('id') userId: string,
     @Query('productId') productId: string,
   ) {
-    const data = await this.reviewsService.checkEligibility(userId, productId);
-    return { data };
+    try {
+      const data = await this.reviewsService.checkEligibility(
+        userId,
+        productId,
+      );
+      return { data };
+    } catch (e) {
+      console.error('[CheckEligibility Error]', e);
+      throw e;
+    }
   }
 
   @Get('product/:productId')

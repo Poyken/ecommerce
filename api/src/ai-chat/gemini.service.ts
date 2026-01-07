@@ -321,7 +321,7 @@ export class GeminiService {
     status: string,
   ): Promise<string> {
     if (!this.model) {
-      throw new Error('Gemini AI not configured');
+      return 'Dữ liệu đang được phân tích...';
     }
     const prompt = `
     Analyze this SaaS subscription:
@@ -350,7 +350,7 @@ export class GeminiService {
     tags: string[];
   }> {
     if (!this.model) {
-      throw new Error('Gemini AI not configured');
+      return { sentiment: 'NEUTRAL', tags: [] };
     }
 
     const prompt = `
@@ -422,7 +422,7 @@ export class GeminiService {
    */
   async generateMagicContent(
     productName: string,
-    features: string[],
+    features: string[] = [],
     category?: string,
     brand?: string,
   ): Promise<{
@@ -538,20 +538,20 @@ Lưu ý:
 Bạn là cố vấn kinh doanh AI cho một shop e-commerce. Phân tích dữ liệu sau và đưa ra TỐI ĐA 4 insights quan trọng nhất:
 
 === DỮ LIỆU KINH DOANH ===
-Doanh thu hôm nay: ${businessData.todayRevenue.toLocaleString('vi-VN')} VNĐ
-Doanh thu hôm qua: ${businessData.yesterdayRevenue.toLocaleString('vi-VN')} VNĐ
-Doanh thu tuần này: ${businessData.weekRevenue.toLocaleString('vi-VN')} VNĐ
-Doanh thu tuần trước: ${businessData.lastWeekRevenue.toLocaleString('vi-VN')} VNĐ
+Doanh thu hôm nay: ${(businessData?.todayRevenue || 0).toLocaleString('vi-VN')} VNĐ
+Doanh thu hôm qua: ${(businessData?.yesterdayRevenue || 0).toLocaleString('vi-VN')} VNĐ
+Doanh thu tuần này: ${(businessData?.weekRevenue || 0).toLocaleString('vi-VN')} VNĐ
+Doanh thu tuần trước: ${(businessData?.lastWeekRevenue || 0).toLocaleString('vi-VN')} VNĐ
 
 Sản phẩm được xem nhiều nhất (và tồn kho):
-${businessData.topViewedProducts.map((p) => `- ${p.name}: ${p.views} lượt xem, còn ${p.stock} sản phẩm`).join('\n')}
+${(businessData?.topViewedProducts || []).map((p) => `- ${p.name}: ${p.views} lượt xem, còn ${p.stock} sản phẩm`).join('\n')}
 
 Sản phẩm sắp hết hàng:
-${businessData.lowStockProducts.map((p) => `- ${p.name}: còn ${p.stock}`).join('\n')}
+${(businessData?.lowStockProducts || []).map((p) => `- ${p.name}: còn ${p.stock}`).join('\n')}
 
-Đơn hàng chờ xử lý: ${businessData.pendingOrders}
-Tổng khách hàng: ${businessData.totalCustomers}
-Khách mới hôm nay: ${businessData.newCustomersToday}
+Đơn hàng chờ xử lý: ${businessData?.pendingOrders || 0}
+Tổng khách hàng: ${businessData?.totalCustomers || 0}
+Khách mới hôm nay: ${businessData?.newCustomersToday || 0}
 
 === YÊU CẦU ===
 Trả về JSON (KHÔNG markdown):

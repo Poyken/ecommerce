@@ -69,7 +69,7 @@ export class CsrfGuard implements CanActivate {
 
     // 3. Chế độ phát triển (Optional: disable nếu cần debug dễ dàng)
     // UNCOMMENT line below to disable CSRF in development
-    // if (process.env.NODE_ENV !== 'production') return true;
+    if (process.env.NODE_ENV !== 'production') return true;
 
     // 4. Trích xuất token từ Header và Cookie
     const csrfHeader = request.headers['x-csrf-token'];
