@@ -670,14 +670,27 @@ async function main() {
   // 5. SEED DATA FOR TENANTS
   // ===================================
 
-  // 5.1 GLOBAL CATALOG (Shared Brands/Categories for now as per schema)
-  // In a stricter system, these would be tenant-specific too, but schema implies shared.
-  console.log('\n📦 Seeding Shared Catalog...');
+  // 5.1 GLOBAL CATALOG (Assign to Default Tenant for visibility)
+  console.log('\n📦 Seeding Catalog for Default Tenant...');
   const brands = await Promise.all(
-    BRANDS_DATA.map((b) => prisma.brand.create({ data: b })),
+    BRANDS_DATA.map((b) =>
+      prisma.brand.create({
+        data: {
+          ...b,
+          tenantId: defaultTenant.id,
+        },
+      }),
+    ),
   );
   const categories = await Promise.all(
-    CATEGORIES_DATA.map((c) => prisma.category.create({ data: c })),
+    CATEGORIES_DATA.map((c) =>
+      prisma.category.create({
+        data: {
+          ...c,
+          tenantId: defaultTenant.id,
+        },
+      }),
+    ),
   );
 
   // NO demo products for now to keep it clean as requested.

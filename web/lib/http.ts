@@ -73,6 +73,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   let accessToken: string | undefined;
   let forwardedUserAgent: string | undefined;
   let forwardedIp: string | undefined;
+  let forwardedHost: string | undefined;
 
   const isStateChanging = ["POST", "PUT", "PATCH", "DELETE"].includes(
     rest.method?.toUpperCase() || "GET"
@@ -110,6 +111,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
         // Fingerprinting headers (User-Agent, IP) để bảo mật
         forwardedUserAgent = headersList.get("user-agent") || undefined;
         forwardedIp = headersList.get("x-forwarded-for") || undefined;
+        forwardedHost = headersList.get("host") || undefined;
       } catch {
         // "use cache" context hoặc static generation thì không có cookies
       }
@@ -155,6 +157,14 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     // Forward headers for Fingerprinting
     ...(forwardedUserAgent ? { "User-Agent": forwardedUserAgent } : {}),
     ...(forwardedIp ? { "X-Forwarded-For": forwardedIp } : {}),
+
+    // [TENANCY OPTIMIZATION] Forward tenant domain to API
+    "X-Tenant-Domain":
+      typeof window !== "undefined"
+        ? window.location.hostname
+        : forwardedHost
+        ? forwardedHost.split(":")[0]
+        : "",
   };
 
   // Đính kèm Bearer token nếu có (Ưu tiên token từ server-side session)
