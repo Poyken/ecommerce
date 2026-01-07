@@ -1355,7 +1355,8 @@
       "brand": "Super Admin",
       "tenantAdmin": "Tenant Admin",
       "chatSupport": "Chat Support",
-      "platformControl": "Platform Control"
+      "platformControl": "Platform Control",
+      "billing": "Billing"
     },
     "contact": {
       "badge": "Get in Touch",

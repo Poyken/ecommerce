@@ -33,63 +33,109 @@ interface FeaturedCategoriesProps {
   categories: Category[];
   columns?: number;
   title?: string;
+  subtitle?: string;
+  layout?: "grid" | "carousel" | "masonry";
+  cardStyle?: "default" | "luxury" | "minimal";
+  alignment?: "left" | "center" | "right";
+  animationType?: "fade" | "slide" | "zoom";
 }
 
-export function FeaturedCategories({ categories, columns = 4, title }: FeaturedCategoriesProps) {
+export function FeaturedCategories({
+  categories,
+  columns = 4,
+  title,
+  subtitle,
+  layout = "grid",
+  cardStyle = "default",
+  alignment = "left",
+  animationType = "fade",
+}: FeaturedCategoriesProps) {
   const t = useTranslations("home");
 
-  const desktopCols = {
-    2: "md:grid-cols-2",
-    3: "md:grid-cols-3",
-    4: "md:grid-cols-4",
-    5: "md:grid-cols-5",
-  }[columns] || "md:grid-cols-4";
+  const desktopCols =
+    {
+      2: "md:grid-cols-2",
+      3: "md:grid-cols-3",
+      4: "md:grid-cols-4",
+      5: "md:grid-cols-5",
+      6: "md:grid-cols-6",
+    }[columns] || "md:grid-cols-4";
 
   return (
-    <section className="container mx-auto px-4 mt-8">
+    <section className="w-full">
       <m.div
-        className="flex justify-between items-end mb-10"
+        className={cn(
+          "flex flex-col mb-12",
+          alignment === "center" && "items-center text-center",
+          alignment === "right" && "items-end text-right",
+          alignment === "left" && "items-start text-left"
+        )}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeInUp}
       >
-        <div>
-          <span className="text-primary font-black uppercase tracking-[0.2em] text-[10px] mb-3 block">
+        <div className="flex flex-col space-y-3">
+          <m.span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block">
             {t("featuredCollections")}
-          </span>
-          <h2 className="text-4xl font-black tracking-tighter uppercase italic">
+          </m.span>
+          <h2 className="text-4xl md:text-5xl font-serif tracking-tight text-foreground">
             {title || t("featuredCategories")}
           </h2>
+          {subtitle && (
+            <p className="text-muted-foreground text-sm max-w-lg font-light leading-relaxed">
+              {subtitle}
+            </p>
+          )}
         </div>
-        <Link
-          href="/categories"
-          className="group text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors flex items-center gap-3"
-        >
-          <span className="relative">
-            {t("viewAllCategories")}
-            <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-primary transition-all duration-300 group-hover:w-full" />
-          </span>
-          <ArrowRight
-            size={14}
-            className="group-hover:translate-x-1 transition-transform"
-          />
-        </Link>
+
+        <div className="mt-8">
+          <Link
+            href="/categories"
+            className="group text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-all flex items-center gap-3"
+          >
+            <span className="relative">
+              {t("viewAllCategories")}
+              <span className="absolute -bottom-1 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
+            </span>
+            <ArrowRight
+              size={12}
+              className="group-hover:translate-x-1.5 transition-transform"
+            />
+          </Link>
+        </div>
       </m.div>
+
       <m.div
-        className={cn("grid grid-cols-1 sm:grid-cols-2 gap-6", desktopCols)}
+        className={cn(
+          "grid grid-cols-1 sm:grid-cols-2 gap-6 md:gap-8",
+          desktopCols
+        )}
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
+        viewport={{ once: true, margin: "-100px" }}
       >
-        {categories.slice(0, 8).map((category) => (
-          <m.div key={category.id} variants={itemScaleVariant}>
+        {categories.slice(0, 12).map((category, idx) => (
+          <m.div
+            key={category.id}
+            variants={
+              animationType === "zoom"
+                ? itemScaleVariant
+                : animationType === "slide"
+                ? fadeInUp
+                : { visible: { opacity: 1 }, hidden: { opacity: 0 } }
+            }
+          >
             <CategoryCard
               id={category.id}
               name={category.name}
               count={category.productCount || 0}
               imageUrl={category.imageUrl || undefined}
+              className={cn(
+                cardStyle === "luxury" && "luxury-card-class", // We can add specific classes here
+                cardStyle === "minimal" && "border-none bg-transparent p-0"
+              )}
             />
           </m.div>
         ))}

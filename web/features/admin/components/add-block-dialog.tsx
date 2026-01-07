@@ -16,6 +16,7 @@ import {
   Sparkles,
   Type,
 } from "lucide-react";
+import * as LucideIcons from "lucide-react";
 
 export interface BlockType {
   type: string;
@@ -41,11 +42,29 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
       title: "Redefining Luxury Living",
       subtitle:
         "Experience the epitome of elegance with our curated selection of bespoke furniture.",
+      badge: "New Collection",
       ctaText: "Shop Collection",
       ctaLink: "/shop",
-      alignment: "left",
+      secondaryCtaText: "Our Story",
+      secondaryCtaLink: "/about",
+      layout: "split",
+      height: "screen",
+      contentWidth: "medium",
+      titleSize: "xlarge",
+      titleFont: "serif",
+      subtitleSize: "medium",
+      bgImage: "/images/home/hero-luxury.jpg",
       bgColor: "bg-background",
-      overlayOpacity: 0.1,
+      overlayType: "dark",
+      overlayOpacity: 0.4,
+      animationType: "fade",
+      animationDelay: 0,
+      ctaStyle: "solid",
+      ctaRounded: "full",
+      showFeaturedCard: true,
+      featuredTitle: "Signature Collection",
+      featuredPrice: "$1,299",
+      showBottomFeatures: true,
     },
   },
   {
@@ -55,7 +74,12 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
     icon: <LayoutGrid className="h-6 w-6" />,
     defaultProps: {
       title: "Featured Categories",
+      subtitle: "Curated collections for every lifestyle",
       columns: 4,
+      layout: "grid",
+      cardStyle: "default",
+      alignment: "left",
+      animationType: "fade",
     },
   },
   {
@@ -66,8 +90,12 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
     defaultProps: {
       title: "Our Trusted Partners",
       subtitle: "Collaborating with the world's finest artisans",
-      opacity: 0.5,
+      opacity: 0.8,
       grayscale: true,
+      layout: "grid",
+      logoSize: "md",
+      hoverEffect: "lift",
+      alignment: "left",
     },
   },
   {
@@ -77,9 +105,13 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
     icon: <LayoutGrid className="h-6 w-6" />,
     defaultProps: {
       title: "Curated Selection",
+      subtitle: "Discover our latest high-end arrivals",
       type: "trending", // or "new_arrivals"
-      count: 4,
+      count: 8,
       columns: 4,
+      layout: "grid",
+      alignment: "center",
+      cardStyle: "default",
     },
   },
   {
@@ -194,6 +226,115 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
     },
   },
   {
+    type: "Pricing",
+    label: "Pricing Table",
+    description: "Compare plans and pricing with feature lists",
+    icon: <LucideIcons.CreditCard className="h-6 w-6" />,
+    defaultProps: {
+      title: "Flexible Luxury Plans",
+      subtitle: "Choose the perfect membership for your lifestyle",
+      items: [
+        {
+          name: "Standard",
+          price: "$49",
+          period: "/mo",
+          description: "Essential luxury for individuals",
+          features: [
+            "Exclusive Support",
+            "Standard Delivery",
+            "Monthly Consultation",
+          ],
+          ctaText: "Select Plan",
+          ctaLink: "#",
+        },
+        {
+          name: "Premium",
+          price: "$129",
+          period: "/mo",
+          description: "Our most popular choice",
+          features: [
+            "24/7 Priority Support",
+            "White Glove Delivery",
+            "Weekly Consultation",
+            "Early Access",
+          ],
+          isPopular: true,
+          ctaText: "Join Premium",
+          ctaLink: "#",
+        },
+      ],
+    },
+  },
+  {
+    type: "Gallery",
+    label: "Image Gallery",
+    description: "Elegant masonry-style image grid with lightbox",
+    icon: <LucideIcons.Images className="h-6 w-6" />,
+    defaultProps: {
+      title: "Our Finest Creations",
+      subtitle: "Explore the artistry behind our curated collections",
+      images: [
+        {
+          src: "/images/home/hero-luxury.jpg",
+          alt: "Gallery 1",
+          title: "Velvet Elegance",
+          category: "Interior",
+          span: "large",
+        },
+        {
+          src: "/images/home/promo-furniture.jpg",
+          alt: "Gallery 2",
+          title: "Modernist Form",
+          category: "Furniture",
+          span: "tall",
+        },
+        {
+          src: "/images/home/promo-living.jpg",
+          alt: "Gallery 3",
+          title: "Soft Serenity",
+          category: "Bedroom",
+          span: "normal",
+        },
+        {
+          src: "/images/home/hero-luxury.jpg",
+          alt: "Gallery 4",
+          title: "Craftsmanship",
+          category: "Detail",
+          span: "normal",
+        },
+      ],
+    },
+  },
+  {
+    type: "Marquee",
+    label: "Magic Marquee",
+    description: "Infinite scrolling text banner for announcements",
+    icon: <LucideIcons.Zap className="h-6 w-6" />,
+    defaultProps: {
+      items: [
+        "PREMIUM QUALITY",
+        "GLOBAL SHIPPING",
+        "CONCIERGE SERVICE",
+        "EXPERT CRAFTSMANSHIP",
+      ],
+      speed: 30,
+      direction: "left",
+    },
+  },
+  {
+    type: "Countdown",
+    label: "Sales Countdown",
+    description: "Urgency-driving timer for sales and events",
+    icon: <LucideIcons.Timer className="h-6 w-6" />,
+    defaultProps: {
+      title: "Flash Sale Ending Soon",
+      subtitle: "Last chance to save up to 40% on the Winter Collection.",
+      targetDate: new Date(Date.now() + 86400000 * 3).toISOString(),
+      ctaText: "Shop the Sale",
+      ctaLink: "/shop",
+    },
+  },
+  {
     type: "Banner",
     label: "Banner",
     description: "Image banner with optional text overlay",
@@ -250,6 +391,54 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
         { icon: "ShoppingCart", label: "Cart", href: "/cart" },
         { icon: "User", label: "Account", href: "/admin" },
       ],
+    },
+  },
+  {
+    type: "FlexLayout",
+    label: "Flex Layout",
+    description:
+      "Multi-column layout with customizable content, icons and images",
+    icon: <LucideIcons.LayoutPanelTop className="h-6 w-6" />,
+    defaultProps: {
+      title: "Elevate Your Perspective",
+      subtitle: "Custom content arrangements for a bespoke digital experience",
+      layout: "1-1",
+      gap: "medium",
+      items: [
+        {
+          title: "Modern Craftsmanship",
+          description:
+            "Details that define excellence in every corner of your home.",
+          image: "/images/home/promo-furniture.jpg",
+          theme: "dark",
+          alignment: "left",
+        },
+        {
+          title: "Our Philosophy",
+          description: "Beauty and functionality working in perfect harmony.",
+          icon: "Sparkles",
+          theme: "glass",
+          alignment: "center",
+          link: "/about",
+          linkText: "Read More",
+        },
+      ],
+    },
+  },
+  {
+    type: "VideoHero",
+    label: "Cinematic Video Hero",
+    description: "High-impact video banner with luxury aesthetic",
+    icon: <LucideIcons.Tv className="h-6 w-6" />,
+    defaultProps: {
+      title: "Pure Elegance in Motion",
+      subtitle: "Experience luxury redefined through cinematic storytelling.",
+      videoUrl:
+        "https://cdn.pixabay.com/video/2021/04/12/70860-537446549_tiny.mp4",
+      overlayOpacity: 0.5,
+      height: "large",
+      alignment: "center",
+      theme: "luxury",
     },
   },
   {

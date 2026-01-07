@@ -45,102 +45,81 @@ interface BrandsBlockProps {
   subtitle?: string;
   opacity?: number;
   grayscale?: boolean;
+  layout?: "grid" | "carousel";
+  logoSize?: "sm" | "md" | "lg";
+  hoverEffect?: "scale" | "lift" | "glow";
+  alignment?: "left" | "center";
   styles?: {
     backgroundColor?: string;
     textColor?: string;
+    paddingTop?: string;
+    paddingBottom?: string;
   };
 }
 
 function BrandsContent({
   promise,
-  title,
-  subtitle,
-  opacity,
-  grayscale,
+  ...props
 }: {
   promise: Promise<Brand[]>;
-  title?: string;
-  subtitle?: string;
-  opacity?: number;
-  grayscale?: boolean;
-}) {
+} & Omit<BrandsBlockProps, "data">) {
   const brands = use(promise);
-  return (
-    <FeaturedBrands
-      brands={brands}
-      title={title}
-      subtitle={subtitle}
-      opacity={opacity}
-      grayscale={grayscale}
-    />
-  );
+  return <FeaturedBrands brands={brands} {...props} />;
 }
 
-/**
- * =================================================================================================
- * BRANDS BLOCK - KHỐI THƯƠNG HIỆU ĐỐI TÁC
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ASYNC DATA LOADING & SUSPENSE:
- *    - Component này nhận `promise` (Promise<Brand[]>) thay vì dữ liệu mảng thô.
- *    - `use(promise)`: Hook mới của React để "unwrap" promise ngay trong component.
- *    - `<Suspense>`: Trong lúc chờ `promise` giải quyết (resolve), React sẽ hiển thị `fallback` (Skeleton).
- *
- * 2. ADMIN PREVIEW MODE:
- *    - Khi Admin đang thiết kế trang (trong Page Builder), `data` sẽ bị undefined.
- *    - Ta phải hiển thị Mock Data (`MOCK_BRANDS`) để Admin hình dung được giao diện.
- * =================================================================================================
- */
 export function BrandsBlock({
   data,
   title,
   subtitle,
   opacity,
   grayscale,
+  layout,
+  logoSize,
+  hoverEffect,
+  alignment,
   styles,
 }: BrandsBlockProps) {
+  const containerStyle = {
+    backgroundColor: styles?.backgroundColor,
+    color: styles?.textColor,
+    paddingTop: styles?.paddingTop,
+    paddingBottom: styles?.paddingBottom,
+  };
+
   // Admin Preview Mode: If no data context, show Mock Data instead of Skeleton
   if (!data?.brands) {
     return (
-      <div
-        className="w-full"
-        style={{
-          backgroundColor: styles?.backgroundColor,
-          color: styles?.textColor,
-        }}
-      >
-        <div className="pointer-events-none">
-          <FeaturedBrands
-            brands={MOCK_BRANDS}
-            title={title}
-            subtitle={subtitle}
-            opacity={opacity}
-            grayscale={grayscale}
-          />
-        </div>
-        <div className="container mx-auto px-4 pb-4 text-center">
-          <span className="inline-block px-3 py-1 text-[10px] uppercase font-bold bg-yellow-100 text-yellow-800 rounded-full border border-yellow-200">
-            Preview Mode (Mock Data)
-          </span>
+      <div className="w-full" style={containerStyle}>
+        <div className="container mx-auto px-4 py-12">
+          <div className="pointer-events-none">
+            <FeaturedBrands
+              brands={MOCK_BRANDS}
+              title={title}
+              subtitle={subtitle}
+              opacity={opacity}
+              grayscale={grayscale}
+              layout={layout}
+              logoSize={logoSize}
+              hoverEffect={hoverEffect}
+              alignment={alignment}
+            />
+          </div>
+          <div className="mt-8 text-center">
+            <span className="inline-block px-3 py-1 text-[10px] uppercase font-bold bg-secondary/50 text-muted-foreground rounded-full border border-border">
+              Preview Mode (Mock Data)
+            </span>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className="w-full"
-      style={{
-        backgroundColor: styles?.backgroundColor,
-        color: styles?.textColor,
-      }}
-    >
-      <div className="container mx-auto px-4 mt-8">
+    <div className="w-full" style={containerStyle}>
+      <div className="container mx-auto px-4 py-12 md:py-20 lg:py-28">
         <Suspense
           fallback={
-            <div className="container mx-auto px-4 py-12">
+            <div className="container mx-auto">
               <BrandsSkeleton />
             </div>
           }
@@ -151,6 +130,10 @@ export function BrandsBlock({
             subtitle={subtitle}
             opacity={opacity}
             grayscale={grayscale}
+            layout={layout}
+            logoSize={logoSize}
+            hoverEffect={hoverEffect}
+            alignment={alignment}
           />
         </Suspense>
       </div>

@@ -56,116 +56,88 @@ interface ProductsBlockProps {
     products: Promise<Product[]>;
   };
   title?: string;
+  subtitle?: string;
   type?: "trending" | "new_arrivals";
   count?: number;
   columns?: number;
+  layout?: "grid" | "carousel";
+  alignment?: "left" | "center";
+  cardStyle?: "default" | "luxury" | "minimal";
   styles?: {
     backgroundColor?: string;
     textColor?: string;
+    paddingTop?: string;
+    paddingBottom?: string;
   };
 }
 
 function ProductsContent({
   promise,
   type,
-  title,
-  count,
-  columns,
+  ...props
 }: {
   promise: Promise<Product[]>;
-  type: string;
-  title?: string;
-  count?: number;
-  columns?: number;
-}) {
+} & Omit<ProductsBlockProps, "data">) {
   const products = use(promise);
   if (type === "trending")
-    return (
-      <TrendingProducts
-        products={products}
-        title={title}
-        count={count}
-        columns={columns}
-      />
-    );
-  return (
-    <NewArrivals
-      products={products}
-      title={title}
-      count={count}
-      columns={columns}
-    />
-  );
+    return <TrendingProducts products={products} {...props} />;
+  return <NewArrivals products={products} {...props} />;
 }
 
-/**
- * =================================================================================================
- * PRODUCTS BLOCK - KHỐI HIỂN THỊ SẢN PHẨM (TRENDING/NEW)
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPONENT STRATEGY:
- *    - Một Component (`ProductsBlock`) nhưng có thể hiển thị nhiều kiểu (Trending hoặc New Arrivals).
- *    - Giảm sự lặp lại code cho các phần chung như (Background, Title, Container).
- *
- * 2. DATA UNWRAPPING:
- *    - `ProductsContent` sử dụng hook `use()` để đợi dữ liệu từ Promise truyền từ Server.
- *    - Trong khi chờ, `Suspense` ở Level cha sẽ hiện `ProductsSkeleton`.
- *
- * 3. PREVIEW SYSTEM:
- *    - Tương tự các block khác, nếu không có `data` (đang ở Page Builder), ta hiện `MOCK_PRODUCTS`.
- * =================================================================================================
- */
 export function ProductsBlock({
   data,
   title,
+  subtitle,
   type = "trending",
   count,
   columns,
+  layout,
+  alignment,
+  cardStyle,
   styles,
 }: ProductsBlockProps) {
+  const containerStyle = {
+    backgroundColor: styles?.backgroundColor,
+    color: styles?.textColor,
+    paddingTop: styles?.paddingTop,
+    paddingBottom: styles?.paddingBottom,
+  };
+
   // Admin Preview Mode: If no data context, show Mock Data instead of Skeleton
   if (!data?.products) {
     const MockComponent = type === "trending" ? TrendingProducts : NewArrivals;
     return (
-      <div
-        className="w-full"
-        style={{
-          backgroundColor: styles?.backgroundColor,
-          color: styles?.textColor,
-        }}
-      >
-        <div className="pointer-events-none">
-          <MockComponent
-            products={MOCK_PRODUCTS}
-            title={title}
-            count={count}
-            columns={columns}
-          />
-        </div>
-        <div className="container mx-auto px-4 pb-4 text-center">
-          <span className="inline-block px-3 py-1 text-[10px] uppercase font-bold bg-yellow-100 text-yellow-800 rounded-full border border-yellow-200">
-            Preview Mode (Mock Data)
-          </span>
+      <div className="w-full" style={containerStyle}>
+        <div className="container mx-auto px-4 py-12 md:py-20">
+          <div className="pointer-events-none">
+            <MockComponent
+              products={MOCK_PRODUCTS}
+              title={title}
+              subtitle={subtitle}
+              count={count}
+              columns={columns}
+              layout={layout}
+              alignment={alignment}
+              cardStyle={cardStyle}
+            />
+          </div>
+          <div className="mt-8 text-center">
+            <span className="inline-block px-3 py-1 text-[10px] uppercase font-bold bg-secondary/50 text-muted-foreground rounded-full border border-border">
+              Preview Mode (Mock Data)
+            </span>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className="w-full"
-      style={{
-        backgroundColor: styles?.backgroundColor,
-        color: styles?.textColor,
-      }}
-    >
-      <div className="container mx-auto px-4 mt-8">
+    <div className="w-full" style={containerStyle}>
+      <div className="container mx-auto px-4 py-12 md:py-20 lg:py-28">
         <Suspense
           fallback={
-            <div className="container mx-auto px-4 py-12">
-              <ProductsSkeleton count={4} />
+            <div className="container mx-auto">
+              <ProductsSkeleton count={count || 4} />
             </div>
           }
         >
@@ -173,8 +145,12 @@ export function ProductsBlock({
             promise={data.products}
             type={type}
             title={title}
+            subtitle={subtitle}
             count={count}
             columns={columns}
+            layout={layout}
+            alignment={alignment}
+            cardStyle={cardStyle}
           />
         </Suspense>
       </div>

@@ -1277,7 +1277,8 @@
       "brand": "Quản trị Hệ thống",
       "tenantAdmin": "Quản trị Cửa hàng",
       "chatSupport": "Hỗ trợ Trực tuyến",
-      "platformControl": "Quản trị Nền tảng"
+      "platformControl": "Quản trị Nền tảng",
+      "billing": "Thanh toán"
     },
     "blogs": {
       "title": "Blog",

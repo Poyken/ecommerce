@@ -32,53 +32,64 @@ interface FeaturedBrandsProps {
   subtitle?: string;
   opacity?: number;
   grayscale?: boolean;
+  layout?: "grid" | "carousel";
+  logoSize?: "sm" | "md" | "lg";
+  hoverEffect?: "scale" | "lift" | "glow";
+  alignment?: "left" | "center";
 }
 
-export function FeaturedBrands({ 
-    brands, 
-    title, 
-    subtitle,
-    opacity = 1, 
-    grayscale = false 
+export function FeaturedBrands({
+  brands,
+  title,
+  subtitle,
+  opacity = 1,
+  grayscale = false,
+  layout = "grid",
+  logoSize = "md",
+  hoverEffect = "lift",
+  alignment = "left",
 }: FeaturedBrandsProps) {
   const t = useTranslations("home");
 
+  const logoSizeClasses = {
+    sm: "h-12 md:h-16",
+    md: "h-16 md:h-24",
+    lg: "h-20 md:h-32",
+  };
+
   return (
-    <section className="container mx-auto px-4 mt-16">
+    <section className="w-full">
       <m.div
-        className="flex justify-between items-end mb-10"
+        className={cn(
+          "flex flex-col mb-12",
+          alignment === "center" && "items-center text-center"
+        )}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeInUp}
       >
-        <div>
-          <span className="text-accent font-black uppercase tracking-[0.2em] text-[10px] mb-3 block">
+        <div className="space-y-3">
+          <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block">
             {t("featuredBrands")}
           </span>
-          <h2 className="text-4xl font-black tracking-tighter uppercase italic">
+          <h2 className="text-4xl md:text-5xl font-serif tracking-tight text-foreground">
             {title || t("ourPartners")}
           </h2>
-          {subtitle && <p className="text-muted-foreground mt-2">{subtitle}</p>}
+          {subtitle && (
+            <p className="text-muted-foreground text-sm max-w-lg font-light leading-relaxed">
+              {subtitle}
+            </p>
+          )}
         </div>
-        <Link
-          href="/brands"
-          className="group text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-accent transition-colors flex items-center gap-3"
-        >
-          <span className="relative">
-            {t("viewAllBrands")}
-            <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-accent transition-all duration-300 group-hover:w-full" />
-          </span>
-          <ArrowRight
-            size={14}
-            className="group-hover:translate-x-1 transition-transform"
-          />
-        </Link>
       </m.div>
+
       <m.div
         className={cn(
-            "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6",
-            grayscale && "grayscale",
+          "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 items-center justify-items-center",
+          grayscale &&
+            "grayscale hover:grayscale-0 transition-all duration-700",
+          layout === "grid" ? "grid" : "flex flex-wrap"
         )}
         style={{ opacity }}
         variants={staggerContainer}
@@ -86,17 +97,56 @@ export function FeaturedBrands({
         whileInView="visible"
         viewport={{ once: true, margin: "-50px" }}
       >
-        {brands.slice(0, 8).map((brand) => (
-          <m.div key={brand.id} variants={itemScaleVariant}>
+        {brands.slice(0, 10).map((brand) => (
+          <m.div
+            key={brand.id}
+            variants={itemScaleVariant}
+            whileHover={
+              hoverEffect === "lift"
+                ? { y: -10, scale: 1.05 }
+                : hoverEffect === "glow"
+                ? {
+                    filter:
+                      "brightness(1.2) drop-shadow(0 0 15px rgba(var(--accent), 0.3))",
+                  }
+                : { scale: 1.1 }
+            }
+            className={cn(
+              "relative w-full flex items-center justify-center p-6 grayscale-0 contrast-125 transition-all duration-500",
+              logoSizeClasses[logoSize]
+            )}
+          >
             <BrandCard
               id={brand.id}
               name={brand.name}
               count={brand._count?.products || 0}
               imageUrl={brand.imageUrl || undefined}
+              className="border-none bg-transparent shadow-none p-0 group"
             />
           </m.div>
         ))}
       </m.div>
+
+      <div
+        className={cn(
+          "mt-12 flex",
+          alignment === "center" ? "justify-center" : "justify-start"
+        )}
+      >
+        <Link
+          href="/brands"
+          className="group text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground hover:text-accent transition-all flex items-center gap-3"
+        >
+          <span className="relative">
+            {t("viewAllBrands")}
+            <span className="absolute -bottom-1 left-0 w-0 h-px bg-accent transition-all duration-300 group-hover:w-full" />
+          </span>
+          <ArrowRight
+            size={12}
+            className="group-hover:translate-x-1.5 transition-transform"
+          />
+        </Link>
+      </div>
     </section>
   );
 }

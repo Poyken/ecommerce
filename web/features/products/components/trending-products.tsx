@@ -30,65 +30,92 @@ import { useTranslations } from "next-intl";
 interface TrendingProductsProps {
   products: Product[];
   title?: string;
+  subtitle?: string;
   count?: number;
   columns?: number;
+  layout?: "grid" | "carousel";
+  alignment?: "left" | "center";
+  cardStyle?: "default" | "luxury" | "minimal";
 }
 
-export function TrendingProducts({ 
-    products, 
-    title, 
-    count = 10,
-    columns = 5
+export function TrendingProducts({
+  products,
+  title,
+  subtitle,
+  count = 10,
+  columns = 5,
+  layout = "grid",
+  alignment = "center",
+  cardStyle = "default",
 }: TrendingProductsProps) {
   const t = useTranslations("home");
   const inStockProducts = products.filter((product) =>
     product.skus?.some((sku) => sku.stock > 0)
   );
-  const trendingProducts = inStockProducts.slice(0, count);
+  const displayProducts =
+    inStockProducts.length > 0
+      ? inStockProducts.slice(0, count)
+      : products.slice(0, count);
 
-  const desktopCols = {
-    2: "lg:grid-cols-2",
-    3: "lg:grid-cols-3",
-    4: "lg:grid-cols-4",
-    5: "lg:grid-cols-5",
-  }[columns] || "xl:grid-cols-5";
+  const desktopCols =
+    {
+      2: "lg:grid-cols-2",
+      3: "lg:grid-cols-3",
+      4: "lg:grid-cols-4",
+      5: "lg:grid-cols-5",
+      6: "lg:grid-cols-6",
+    }[columns] || "xl:grid-cols-5";
 
   return (
-    <section className="container mx-auto px-4 py-16">
+    <section className="w-full">
       <m.div
-        className="flex flex-col items-center text-center space-y-4 mb-16"
+        className={cn(
+          "flex flex-col mb-16 space-y-4",
+          alignment === "center"
+            ? "items-center text-center"
+            : "items-start text-left"
+        )}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeInUp}
       >
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20 shadow-lg shadow-accent/5">
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-accent">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/5 border border-accent/10">
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent">
             {t("popularItems")}
           </span>
         </div>
-        <h2 className="text-4xl md:text-6xl font-sans font-black tracking-tighter">
-          {title || (
-            <>
-                {t("trendingNowBold")}{" "}
-                <span className="font-serif italic font-normal text-gradient-gold">
-                {t("trendingNowItalic")}
-                </span>
-            </>
-          )}
+        <h2 className="text-4xl md:text-5xl font-serif tracking-tight text-foreground">
+          {title || t("trendingNowBold")}
         </h2>
-        <div className="w-24 h-1.5 bg-accent/40 rounded-full shadow-lg shadow-accent/20" />
+        {subtitle && (
+          <p className="text-muted-foreground text-sm max-w-xl font-light leading-relaxed">
+            {subtitle}
+          </p>
+        )}
+        {alignment === "center" && (
+          <div className="w-20 h-px bg-accent/40 rounded-full mt-4" />
+        )}
       </m.div>
 
       <m.div
-        className={cn("grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8", desktopCols)}
+        className={cn(
+          "grid grid-cols-2 lg:gap-8 gap-4",
+          layout === "grid"
+            ? desktopCols
+            : "flex overflow-x-auto pb-8 scrollbar-hide"
+        )}
         variants={staggerContainer}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
       >
-        {trendingProducts.map((product) => (
-          <m.div key={product.id} variants={itemVariant}>
+        {displayProducts.map((product) => (
+          <m.div
+            key={product.id}
+            variants={itemVariant}
+            className={layout === "carousel" ? "min-w-[280px]" : ""}
+          >
             <ProductCard
               id={product.id}
               name={product.name}

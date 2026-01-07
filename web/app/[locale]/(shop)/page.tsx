@@ -24,7 +24,9 @@ async function getPageConfig(slug: string): Promise<any | null> {
     const headersList = await headers();
     const host = headersList.get("host") || "localhost";
     const apiUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+      process.env.API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      "http://127.0.0.1:8080/api/v1";
 
     const res = await fetch(`${apiUrl}/pages/${slug}`, {
       headers: { "x-tenant-domain": host },

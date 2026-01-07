@@ -96,6 +96,7 @@ export class PagesService {
     return this.prisma.page.findMany({
       where: {
         tenantId: tenant.id,
+        deletedAt: null, // Exclude soft-deleted pages
       },
       orderBy: { updatedAt: 'desc' },
     });
@@ -103,7 +104,10 @@ export class PagesService {
 
   async findById(id: string) {
     const tenant = getTenant();
-    const where: Prisma.PageWhereInput = { id };
+    const where: Prisma.PageWhereInput = {
+      id,
+      deletedAt: null, // Exclude soft-deleted pages
+    };
 
     // If tenant context exists, enforce it.
     // If Super Admin accesses via specific tenant domain, it enforces that tenant.
@@ -129,10 +133,24 @@ export class PagesService {
     const tenant = getTenant();
     if (!tenant) throw new NotFoundException('Tenant context missing');
 
-    const page = await this.prisma.page.create({
-      data: {
+    // Use upsert to handle duplicate slug gracefully (update if exists)
+    const page = await this.prisma.page.upsert({
+      where: {
+        tenantId_slug: {
+          tenantId: tenant.id,
+          slug: data.slug,
+        },
+      },
+      create: {
         ...data,
         tenantId: tenant.id,
+      },
+      update: {
+        title: data.title,
+        blocks: data.blocks,
+        isPublished: data.isPublished,
+        deletedAt: null, // Reset soft-delete if it was previously deleted
+        updatedAt: new Date(),
       },
     });
 
