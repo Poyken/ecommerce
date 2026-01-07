@@ -1,4 +1,5 @@
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import {
   BadRequestException,
   ConflictException,
@@ -65,8 +66,12 @@ export class CouponsService extends BaseCrudService<
    */
 
   async create(createCouponDto: CreateCouponDto) {
-    const existing = await this.model.findUnique({
-      where: { code: createCouponDto.code },
+    const tenant = getTenant();
+    const existing = await this.model.findFirst({
+      where: {
+        code: createCouponDto.code,
+        tenantId: tenant?.id,
+      },
     });
 
     if (existing) {
@@ -132,7 +137,13 @@ export class CouponsService extends BaseCrudService<
   }
 
   async findByCode(code: string) {
-    const coupon = await this.model.findUnique({ where: { code } });
+    const tenant = getTenant();
+    const coupon = await this.model.findFirst({
+      where: {
+        code,
+        tenantId: tenant?.id,
+      },
+    });
     if (!coupon) throw new NotFoundException('Mã giảm giá không hợp lệ');
     return coupon;
   }
@@ -142,8 +153,12 @@ export class CouponsService extends BaseCrudService<
     await this.findOneBase(id);
 
     if (updateCouponDto.code) {
-      const existing = await this.model.findUnique({
-        where: { code: updateCouponDto.code },
+      const tenant = getTenant();
+      const existing = await this.model.findFirst({
+        where: {
+          code: updateCouponDto.code,
+          tenantId: tenant?.id,
+        },
       });
       if (existing && existing.id !== id) {
         throw new ConflictException('Mã giảm giá đã tồn tại');
@@ -174,7 +189,13 @@ export class CouponsService extends BaseCrudService<
   }
 
   async validateCoupon(code: string, orderAmount: number) {
-    const coupon = await this.model.findUnique({ where: { code } });
+    const tenant = getTenant();
+    const coupon = await this.model.findFirst({
+      where: {
+        code,
+        tenantId: tenant?.id,
+      },
+    });
 
     if (!coupon || !coupon.isActive) {
       throw new BadRequestException(

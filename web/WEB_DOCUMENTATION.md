@@ -336,14 +336,30 @@ Chúng ta không chỉ dựa vào chỉ số Lighthouse (môi trường giả l�
 
 ### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
 
-Dự án này là một nền tảng **SaaS (Software as a Service)**, cho phép nhiều cửa hàng (Tenants) cùng chạy trên một hệ thống.
+Dự án này là một nền tảng **SaaS (Software as a Service)**, cho phép nhiều cửa hàng (Tenants) cùng chạy trên một hệ thống duy nhất.
 
-- **Tenant Identification**: Hệ thống nhận diện cửa hàng dựa trên `Hostname`. Ví dụ: `shop1.luxe.com` và `shop2.luxe.com`.
-- **TenantProvider (`web/providers/tenant-provider.tsx`)**:
-  - Đọc hostname từ request headers.
-  - Fetch cấu hình riêng của cửa hàng (tên, logo, giao diện).
-  - Lưu vào context để toàn bộ ứng dụng sử dụng.
-- **Data Isolation**: Tất cả các yêu cầu gửi đến API đều tự động đính kèm `Tenant-ID` (thông qua hostname) để đảm bảo dữ liệu cửa hàng này không bị lộ sang cửa hàng khác.
+#### 1. Nhận diện Tenant (Hostname Resolution)
+
+Hệ thống sử dụng Domain/Subdomain để phân biệt các cửa hàng:
+
+- **Subdomain**: `apple.luxe.com`, `nike.luxe.com`.
+- **Custom Domain**: `apple-store.vn`, `nike-official.com`.
+
+#### 2. Luồng xử lý tại Frontend
+
+- **Middleware / Server Props**: Khi có request, hệ thống đọc `x-forwarded-host` hoặc `host`.
+- **Tenant Context**: Dữ liệu Tenant (Name, Logo, Theme, Status) được fetch từ API `/tenants/resolve?domain=...` và lưu vào `TenantProvider`.
+- **API Communication**: Mọi request từ Frontend sang Backend (qua `lib/http.ts`) sẽ tự động đính kèm header `x-tenant-domain` lấy từ hostname hiện tại. Backend sẽ dựa vào header này để cô lập dữ liệu.
+
+#### 3. Trạng thái cửa hàng (Suspension Handling)
+
+- **Active**: Cửa hàng hoạt động bình thường.
+- **Suspended**: Nếu `isActive: false`, bất kỳ truy cập nào vào cửa hàng này sẽ bị hệ thống tự động chuyển hướng (hoặc hiển thị trang thông báo) lỗi **403 Forbidden - Store Suspended**.
+- **Reason**: Người dùng sẽ thấy lý do cửa hàng bị khóa (VD: Hết hạn gói cước, vi phạm chính sách).
+
+#### 4. Dynamic Theming
+
+Giao diện (màu sắc, font chữ) có thể thay đổi động dựa trên `themeConfig` trả về từ API Tenant, giúp mỗi cửa hàng có bản sắc riêng dù dùng chung code.
 
 ---
 

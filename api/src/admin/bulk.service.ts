@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 
 /**
  * =====================================================================
@@ -168,8 +169,12 @@ export class BulkService {
           throw new Error('SKU code is required');
         }
 
-        const existing = await this.prisma.sku.findUnique({
-          where: { skuCode: row.skuCode },
+        const tenant = getTenant();
+        const existing = await this.prisma.sku.findFirst({
+          where: {
+            skuCode: row.skuCode,
+            tenantId: tenant?.id,
+          },
         });
 
         if (!existing) {
@@ -227,7 +232,7 @@ export class BulkService {
 
         if (!dryRun) {
           await this.prisma.sku.update({
-            where: { skuCode: row.skuCode },
+            where: { id: existing.id },
             data: updateData,
           });
           result.changes?.push({
@@ -336,8 +341,14 @@ export class BulkService {
 
     let updated = 0;
 
+    const tenant = getTenant();
     for (const skuId of skuIds) {
-      const sku = await this.prisma.sku.findUnique({ where: { id: skuId } });
+      const sku = await this.prisma.sku.findFirst({
+        where: {
+          id: skuId,
+          tenantId: tenant?.id,
+        },
+      });
       if (!sku) continue;
 
       const updateData: any = {};
@@ -364,7 +375,10 @@ export class BulkService {
 
       if (Object.keys(updateData).length > 0) {
         await this.prisma.sku.update({
-          where: { id: skuId },
+          where: {
+            id: skuId,
+            tenantId: tenant?.id,
+          } as any, // Using any as Prisma helper might not allow multi-where on update if unique is compound
           data: updateData,
         });
         updated++;

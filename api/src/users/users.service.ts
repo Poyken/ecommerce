@@ -110,8 +110,11 @@ export class UsersService extends BaseCrudService<
       await this.planUsageService.checkStaffLimit(tenant.id);
     }
 
-    const existingUser = await this.model.findUnique({
-      where: { email },
+    const existingUser = await this.model.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
     });
 
     if (existingUser) {
@@ -236,7 +239,7 @@ export class UsersService extends BaseCrudService<
    */
   async assignRoles(userId: string, roleNames: string[]) {
     // 1. Validate User
-    const user = await this.model.findUnique({ where: { id: userId } });
+    const user = await this.model.findFirst({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('User không tồn tại');
     }
@@ -264,7 +267,7 @@ export class UsersService extends BaseCrudService<
       });
 
       // Trả về User đã update
-      const updatedUser = await tx.user.findUnique({
+      const updatedUser = await tx.user.findFirst({
         where: { id: userId },
         select: {
           ...this.USER_FULL_SELECT,

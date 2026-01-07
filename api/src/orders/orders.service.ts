@@ -203,7 +203,12 @@ export class OrdersService {
         if (createOrderDto.couponCode) {
           // Validate coupon INSIDE transaction
           const coupon = await tx.coupon.findUnique({
-            where: { code: createOrderDto.couponCode },
+            where: {
+              tenantId_code: {
+                code: createOrderDto.couponCode,
+                tenantId: tenant.id,
+              },
+            } as any,
             select: {
               id: true,
               code: true,

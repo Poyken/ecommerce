@@ -114,7 +114,7 @@ export abstract class BaseCrudService<T, CreateDto, UpdateDto> {
       queryOptions.include = options.include;
     }
 
-    const item = await this.model.findUnique(queryOptions);
+    const item = await this.model.findFirst(queryOptions);
 
     if (!item) {
       throw new NotFoundException(`Record with ID ${id} not found`);

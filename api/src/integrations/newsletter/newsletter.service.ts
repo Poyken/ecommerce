@@ -3,6 +3,7 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { resolveMx } from 'dns/promises';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 
 /**
  * =====================================================================
@@ -53,8 +54,12 @@ export class NewsletterService {
       );
     }
 
-    const existing = await this.prisma.newsletterSubscriber.findUnique({
-      where: { email },
+    const tenant = getTenant();
+    const existing = await this.prisma.newsletterSubscriber.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
     });
 
     if (existing) {
@@ -70,7 +75,10 @@ export class NewsletterService {
     } else {
       // Create new
       await this.prisma.newsletterSubscriber.create({
-        data: { email },
+        data: {
+          email,
+          tenantId: tenant?.id,
+        },
       });
     }
 
@@ -88,8 +96,12 @@ export class NewsletterService {
   }
 
   async checkSubscriber(email: string) {
-    const subscriber = await this.prisma.newsletterSubscriber.findUnique({
-      where: { email },
+    const tenant = getTenant();
+    const subscriber = await this.prisma.newsletterSubscriber.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
     });
     return {
       exists: !!subscriber,

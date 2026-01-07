@@ -10,7 +10,7 @@ datasource db {
 
 model User {
   id            String           @id @default(uuid())
-  email         String           @unique
+  email         String
   firstName     String?
   lastName      String?
   password      String?          @db.VarChar(255)
@@ -43,6 +43,8 @@ model User {
 
   @@index([email])
   @@index([tenantId])
+  @@unique([tenantId, email])
+  @@unique([id, tenantId])
 }
 
 model Role {
@@ -95,8 +97,8 @@ model UserPermission {
 
 model Category {
   id              String     @id @default(uuid())
-  name            String     @unique
-  slug            String     @unique
+  name            String
+  slug            String
   parentId        String?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
@@ -109,23 +111,39 @@ model Category {
   children        Category[] @relation("CategoryToCategory")
   products        Product[]
 
+  // Multi-tenancy
+  tenantId      String?
+  tenant        Tenant? @relation(fields: [tenantId], references: [id])
+
   @@index([parentId])
+  @@index([tenantId])
+  @@unique([tenantId, slug])
+  @@unique([tenantId, name])
+  @@unique([id, tenantId])
 }
 
 model Brand {
   id        String    @id @default(uuid())
-  name      String    @unique
+  name      String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
   imageUrl  String?
   products  Product[]
+
+  // Multi-tenancy
+  tenantId  String?
+  tenant    Tenant? @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@unique([tenantId, name])
+  @@unique([id, tenantId])
 }
 
 model Product {
   id              String               @id @default(uuid())
   name            String               @db.VarChar(255)
-  slug            String               @unique @db.VarChar(255)
+  slug            String               @db.VarChar(255)
   description     String?
   categoryId      String
   brandId         String
@@ -200,8 +218,9 @@ model Product {
 
   @@index([deletedAt])
   @@index([tenantId])
-  @@index([tenantId, slug])
+  @@unique([tenantId, slug])
   @@index([tenantId, deletedAt, createdAt]) // For Storefront listings
+  @@unique([id, tenantId])
 }
 
 model ProductOption {
@@ -228,7 +247,7 @@ model OptionValue {
 
 model Sku {
   id            String             @id @default(uuid())
-  skuCode       String             @unique @db.VarChar(50)
+  skuCode       String             @db.VarChar(50)
   productId     String
   price         Decimal?           @db.Decimal(20, 2)
   salePrice     Decimal?           @db.Decimal(20, 2)
@@ -243,12 +262,19 @@ model Sku {
   inventoryLogs InventoryLog[]
   orderItems    OrderItem[]
   reviews       Review[]
-  product       Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
-  images        SkuImage[]
   optionValues  SkuToOptionValue[]
+  images        SkuImage[]
+  product       Product            @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  // Multi-tenancy
+  tenantId      String?
+  tenant        Tenant? @relation(fields: [tenantId], references: [id])
 
   @@index([productId])
   @@index([skuCode])
+  @@index([tenantId])
+  @@unique([tenantId, skuCode])
+  @@unique([id, tenantId])
 }
 
 model SkuToOptionValue {
@@ -320,7 +346,7 @@ model CartItem {
 
 model Coupon {
   id                String       @id @default(uuid())
-  code              String       @unique
+  code              String
   discountType      DiscountType
   discountValue     Decimal      @db.Decimal(20, 2)
   minOrderAmount    Decimal?     @db.Decimal(20, 2)
@@ -335,7 +361,14 @@ model Coupon {
   description       String?
   orders            Order[]
 
+  // Multi-tenancy
+  tenantId    String?
+  tenant      Tenant?  @relation(fields: [tenantId], references: [id])
+
   @@index([code])
+  @@index([tenantId])
+  @@unique([tenantId, code])
+  @@unique([id, tenantId])
 }
 
 model Order {
@@ -396,6 +429,7 @@ model Order {
 
   @@index([tenantId])
   @@index([tenantId, status, createdAt]) // For Tenant Admin Dashboard
+  @@unique([id, tenantId])
 }
 
 model OrderItem {
@@ -563,7 +597,7 @@ model Wishlist {
 model Blog {
   id          String        @id @default(uuid())
   title       String        @db.VarChar(255)
-  slug        String        @unique @db.VarChar(255)
+  slug        String        @db.VarChar(255)
   excerpt     String
   content     String
   image       String?       @db.VarChar(500)
@@ -584,12 +618,13 @@ model Blog {
   tenant      Tenant?     @relation(fields: [tenantId], references: [id])
 
   @@index([slug])
+  @@index([tenantId])
+  @@unique([tenantId, slug])
   @@index([category])
   @@index([language])
   @@index([publishedAt])
   @@index([userId])
   @@index([deletedAt])
-  @@index([tenantId])
 }
 
 model BlogProduct {
@@ -645,12 +680,18 @@ enum DiscountType {
 
 model NewsletterSubscriber {
   id        String   @id @default(uuid())
-  email     String   @unique
+  email     String
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Multi-tenancy
+  tenantId  String?
+  tenant    Tenant? @relation(fields: [tenantId], references: [id])
+
   @@index([email])
+  @@index([tenantId])
+  @@unique([tenantId, email])
 }
 
 model ChatConversation {
@@ -777,13 +818,37 @@ enum OutboxStatus {
 // =====================================================================
 
 model Tenant {
-  id          String      @id @default(uuid())
-  name        String
-  domain      String      @unique // e.g., "shop-a.platform.com"
-  themeConfig Json?       // { primaryColor: "...", logo: "..." }
-  plan        TenantPlan  @default(BASIC)
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id            String      @id @default(uuid())
+  name          String
+  
+  // Domain Management
+  subdomain     String?     @unique // e.g., "shop-a" -> shop-a.platform.com
+  customDomain  String?     @unique // e.g., "mycustomstore.com"
+  domain        String      @unique // Main domain used for resolution (legacy support)
+  
+  // Settings & Localization
+  currency      String      @default("VND")
+  timezone      String      @default("Asia/Ho_Chi_Minh")
+  locale        String      @default("vi-VN")
+  
+  // Branding & Assets
+  themeConfig   Json?       // { primaryColor: "...", secondaryColor: "...", borderRadius: "..." }
+  logoUrl       String?
+  faviconUrl    String?
+  
+  // Business Information
+  contactEmail  String?
+  contactPhone  String?
+  address       String?
+  
+  // Lifecycle & Status
+  plan          TenantPlan  @default(BASIC)
+  isActive      Boolean     @default(true)
+  suspendedAt   DateTime?
+  suspensionReason String?
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   users       User[]
   products    Product[]
@@ -797,10 +862,33 @@ model Tenant {
   featureFlags  FeatureFlag[]
   pages         Page[]
   translations  Translation[]
+  categories    Category[]
+  brands        Brand[]
+  coupons       Coupon[]
+  skus          Sku[]
+  newsletterSubscribers NewsletterSubscriber[]
+  
+  // Analytics
+  metrics       StoreMetrics[]
   
   // Billing
   subscription  Subscription?
   invoices      Invoice[]
+}
+
+model StoreMetrics {
+  id            String    @id @default(uuid())
+  tenantId      String
+  tenant        Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  
+  date          DateTime  @default(now())
+  totalOrders   Int       @default(0)
+  totalRevenue  Decimal   @db.Decimal(20, 2) @default(0)
+  totalVisits   Int       @default(0)
+  conversionRate Float     @default(0)
+  
+  @@unique([tenantId, date])
+  @@index([tenantId])
 }
 
 model Translation {

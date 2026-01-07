@@ -1,5 +1,6 @@
 import { CacheService } from '@core/cache/cache.service';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import {
   BadRequestException,
   ConflictException,
@@ -66,8 +67,12 @@ export class CategoriesService extends BaseCrudService<
       slugify(createCategoryDto.name, { lower: true, strict: true });
 
     // 2. Kiểm tra xem danh mục đã tồn tại chưa (check cả tên và slug)
+    const tenant = getTenant();
     const existing = await this.model.findFirst({
-      where: { OR: [{ name: createCategoryDto.name }, { slug }] },
+      where: {
+        OR: [{ name: createCategoryDto.name }, { slug }],
+        tenantId: tenant?.id,
+      },
     });
 
     if (existing) {
@@ -76,7 +81,7 @@ export class CategoriesService extends BaseCrudService<
 
     // 3. Validate danh mục cha (nếu người dùng truyền lên)
     if (createCategoryDto.parentId) {
-      const parent = await this.model.findUnique({
+      const parent = await this.model.findFirst({
         where: { id: createCategoryDto.parentId },
       });
       if (!parent) {
@@ -173,8 +178,12 @@ export class CategoriesService extends BaseCrudService<
 
     // Nếu có đổi slug, kiểm tra xem slug mới có bị trùng với danh mục KHÁC không
     if (updateCategoryDto.slug) {
-      const existingSlug = await this.model.findUnique({
-        where: { slug: updateCategoryDto.slug },
+      const tenant = getTenant();
+      const existingSlug = await this.model.findFirst({
+        where: {
+          slug: updateCategoryDto.slug,
+          tenantId: tenant?.id,
+        },
       });
       if (existingSlug && existingSlug.id !== id) {
         throw new ConflictException(

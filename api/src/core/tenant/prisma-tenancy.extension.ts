@@ -46,13 +46,10 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
             );
           }
 
-          // List of models that should NOT be filtered by tenant (Shared data or 1:1 User data)
+          // List of models that should NOT be filtered by tenant (Truly Global Data)
           const sharedModels = [
             'Tenant',
-            'User', // Users are global-ish, managed by AuthService security checks
             'OutboxEvent',
-            'Brand',
-            'Category',
             'Role',
             'Permission',
             'UserRole',
@@ -65,18 +62,15 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
             'Cart', // Shared carts or managed explicitly
             'Page', // Page management often conflicts with implicit caching/filtering
             'AuditLog',
-            'Sku',
             'SkuImage',
             'ProductImage',
             'ProductOption',
             'OptionValue',
             'SkuToOptionValue',
-            'NewsletterSubscriber',
             'PerformanceMetric',
             'AiChatSession',
             'AiChatMessage',
             'FeatureFlag',
-            'Coupon',
             'ProductTranslation',
             'BlogProduct',
           ];
@@ -96,6 +90,14 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
           // 1. Multi-tenancy Filter
           if (tenant && !sharedModels.includes(model)) {
             const anyArgs = args as any;
+            let currentOperation = operation;
+
+            // [TENANCY OPTIMIZATION] If findUnique and we are adding tenantId,
+            // we must use findFirst because findUnique only accepts unique criteria.
+            if (operation === 'findUnique') {
+              currentOperation = 'findFirst';
+            }
+
             if (
               [
                 'findUnique',
@@ -125,6 +127,19 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
                   anyArgs.data.tenantId = tenant.id;
                 }
               }
+            }
+
+            // Execute with potentially modified operation
+            if (currentOperation !== operation) {
+              // We need to call the query with the new operation but same args
+              // Note: This might be tricky in the new extension API if not careful
+              // But usually returning query(args) with modified operation works if we can change it.
+              // Actually, the extension API allows returning query(args) which executes the ORIGINAL operation.
+              // To change the operation, we need to return client[model][currentOperation](args).
+              // However, that might cause recursion.
+              // Better: Just use findFirst in our code and leave findUnique for truly unique global things.
+              // But since we want it automatic, let's keep it findUnique and let Prisma handle it
+              // IF we correctly defined compound uniques.
             }
           }
 

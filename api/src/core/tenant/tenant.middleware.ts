@@ -40,8 +40,7 @@ export class TenantMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    // 1. Get Host header (e.g. "tenant-a.com" or "localhost:3000")
-    // Clean host (remove port)
+    // 1. Get Host header (e.g. "tenant-a.com" or "shop-a.platform.com")
     const rawHost = (req.headers['x-tenant-domain'] ||
       req.headers.host ||
       '') as string;
@@ -53,11 +52,31 @@ export class TenantMiddleware implements NestMiddleware {
       await this.cacheManager.get<Tenant>(cacheKey);
 
     if (!tenant) {
-      tenant = await this.prisma.tenant.findUnique({
-        where: { domain },
+      // Advanced Resolution: Check customDomain, subdomain, or legacy domain field
+      tenant = await this.prisma.tenant.findFirst({
+        where: {
+          OR: [
+            { customDomain: domain },
+            { subdomain: domain.split('.')[0] }, // Fallback for subdomains
+            { domain: domain },
+          ],
+        },
       });
 
       if (tenant) {
+        // [SECURITY] Check if tenant is active/suspended
+        if (!tenant.isActive) {
+          console.warn(
+            `[TenantMiddleware] Attempt to access inactive tenant: ${tenant.name} (${domain})`,
+          );
+          return res.status(403).json({
+            error: 'Store suspended',
+            message:
+              'This store is currently not active. Please contact support.',
+            reason: tenant.suspensionReason,
+          });
+        }
+
         // Cache for 1 minute (60 * 1000 ms)
         await this.cacheManager.set(cacheKey, tenant, 60 * 1000);
       }

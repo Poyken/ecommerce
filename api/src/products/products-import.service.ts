@@ -114,9 +114,9 @@ export class ProductsImportService {
 
         // 2. Upsert Product
         const product = await this.prisma.product.upsert({
-          where: productRow.productId
+          where: (productRow.productId
             ? { id: productRow.productId }
-            : { slug: productRow.productSlug },
+            : { slug: productRow.productSlug }) as any,
           update: {
             name: productRow.productName,
             categoryId,
@@ -135,9 +135,14 @@ export class ProductsImportService {
         // 3. Upsert SKUs
         for (const skuRow of item.skus) {
           await this.prisma.sku.upsert({
-            where: skuRow.skuId
+            where: (skuRow.skuId
               ? { id: skuRow.skuId }
-              : { skuCode: skuRow.skuCode },
+              : {
+                  tenantId_skuCode: {
+                    skuCode: skuRow.skuCode as string,
+                    tenantId: product.tenantId || '',
+                  },
+                }) as any,
             update: {
               price: skuRow.price,
               salePrice: skuRow.salePrice,
@@ -150,6 +155,7 @@ export class ProductsImportService {
               salePrice: skuRow.salePrice,
               stock: skuRow.stock,
               productId: product.id,
+              tenantId: product.tenantId,
               status: skuRow.status,
             },
           });

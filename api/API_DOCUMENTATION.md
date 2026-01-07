@@ -45,7 +45,7 @@
   - [4.23. 🤖 AI Chat Module](#423-ai-chat-module-srcai-chat)
   - [4.24. 💬 Chat Module](#424-chat-module-srcchat)
   - [4.25. 🚩 Feature Flags Module](#425-feature-flags-module)
-  - [4.26. 🏢 Tenants Module](#426-tenants-module)
+  - [4.26. 🏢 Tenants Module & Multi-Tenancy](#426-tenants-module--multi-tenancy)
   - [4.27. 🤖 AI Agent Module](#427-ai-agent-module)
   - [4.28. 📄 Pages Module (CMS)](#428-pages-module-cms)
 - [V. LƯỢC ĐỒ CƠ SỞ DỮ LIỆU](#v-database-schema)
@@ -183,7 +183,14 @@ Trạng thái Build:   ✅ THÀNH CÔNG
        │                   │
        └────[Decimal]──────┘
        (Money Protection)
-```
+
+### 🏬 Multi-Tenancy Isolation
+Hệ thống sử dụng cơ chế **Logical Isolation** (Cô lập logic) để cho phép nhiều cửa hàng chạy trên cùng 1 database nhưng không bao giờ thấy dữ liệu của nhau.
+
+- **Domain Resolution**: Middleware nhận diện Tenant qua `Host` header hoặc `x-tenant-domain`.
+- **Context Storage**: Sử dụng `AsyncLocalStorage` để lưu thông tin Tenant hiện tại xuyên suốt vòng đời Request.
+- **Prisma Extension**: Tự động chèn `where: { tenantId }` vào 100% câu truy vấn trên các bảng Private (Product, Order, etc.).
+- **Security Check**: Chặn truy cập nếu Tenant bị khóa (`isActive: false`).
 
 ## 2.2. Các mẫu thiết kế (Design Patterns)
 
@@ -199,24 +206,26 @@ Trạng thái Build:   ✅ THÀNH CÔNG
 ### Luồng Request
 
 ```
+
 HTTP Request
-    ↓
+↓
 Middleware (Helmet, Compression, CORS)
-    ↓
+↓
 Guards (Authentication, Authorization)
-    ↓
+↓
 Pipes (Validation, Transformation)
-    ↓
+↓
 Controller
-    ↓
+↓
 Service (Business Logic)
-    ↓
+↓
 Prisma (Database)
-    ↓
+↓
 Interceptors (Transform Response)
-    ↓
+↓
 HTTP Response
-```
+
+````
 
 ### Quy trình Giỏ hàng Khách & Gộp Giỏ hàng (Guest Cart & Merge Flow)
 
@@ -249,7 +258,7 @@ sequenceDiagram
     API->>Browser: Gộp thành công
     Browser->>Browser: Xóa giỏ hàng Guest LocalStorage
     Browser->>Guest: Chuyển hướng về Dashboard/Home
-```
+````
 
 ---
 
@@ -1365,15 +1374,32 @@ Hệ thống cho phép bật tính năng theo nhiều tiêu chí linh hoạt:
 
 ---
 
-## 4.26. 🏢 Tenants Module (`src/tenants/`)
+## 4.26. 🏢 Tenants Module & Multi-Tenancy (`src/tenants/`)
 
 ### 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
 
-Hệ thống hỗ trợ **Multi-tenancy**, nghĩa là một bộ source code có thể phục vụ nhiều "khách thuê" (stores/tenants) khác nhau.
+Hệ thống hỗ trợ **Multi-tenancy**, nghĩa là một bộ source code có thể phục vụ nhiều "khách thuê" (stores/tenants) khác nhau trên cùng một hạ tầng cơ sở dữ liệu duy nhất (Shared Database).
 
-- **Isolation**: Dữ liệu của các tenant được cô lập hoàn toàn.
-- **Dynamic Configuration**: Mỗi tenant có thể có cấu hình riêng về giao diện, ngôn ngữ, và tính năng.
-- **Tenant Middleware**: Tự động bóc tách `tenantId` từ request (qua subdomain hoặc header) để lọc dữ liệu trong Prisma.
+#### 1. Cơ chế nhận diện (Domain Resolution)
+Middleware (`TenantMiddleware`) sẽ xác định Tenant dựa trên thứ tự ưu tiên:
+1. Header `x-tenant-domain` (Dành cho Mobile App hoặc Custom Proxy).
+2. `Host` header (Dành cho trình duyệt).
+3. Tìm kiếm trong DB theo `customDomain`, `subdomain` hoặc `domain`.
+
+#### 2. Cô lập dữ liệu (Prisma Tenancy Extension)
+Sử dụng Prisma Extension (`tenancyExtension`) để can thiệp vào mọi câu lệnh database:
+- **Shared Models**: Những bảng dùng chung cho cả hệ thống (Role, Permission, Tenant) sẽ KHÔNG bị lọc.
+- **Private Models**: Những bảng chứa dữ liệu nhạy cảm (Product, Order, User, Sku...) sẽ tự động bị chèn `tenantId` vào `where` clause (đối với lệnh READ) và `data` (đối với lệnh WRITE).
+- **Concurrency & Soft Delete**: Extension tích hợp sẵn bộ lọc `deletedAt: null` để tự động hóa Soft Delete.
+
+#### 3. Ràng buộc cơ sở dữ liệu (Unique Constraints)
+Để đảm bảo hiệu năng và tính duy nhất trong môi trường Multi-tenant, các bảng đã được cập nhật ràng buộc:
+- `@@unique([id, tenantId])`: Cho phép tìm kiếm `findUnique` và `update` nhanh chóng khi có filter tenant.
+- `@@unique([tenantId, email])`: Đảm bảo 1 email chỉ được đăng ký 1 lần trên 1 cửa hàng (nhưng có thể đăng ký ở các cửa hàng khác nhau).
+- `@@unique([tenantId, slug/code])`: Đảm bảo slug sản phẩm hoặc mã SKU là duy nhất trong phạm vi cửa hàng.
+
+#### 4. Quản lý trạng thái (Suspension)
+Tenant có thuộc tính `isActive`. Nếu `false`, Middleware sẽ trả về lỗi `403 Forbidden` kèm theo `suspensionReason`, ngăn chặn mọi tương tác với cửa hàng đó.
 
 ## 4.27. 🤖 AI Agent Module (`src/agent/`)
 

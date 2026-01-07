@@ -1,4 +1,5 @@
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import { Injectable } from '@nestjs/common';
 import { OptionValue, Product, ProductOption } from '@prisma/client';
 import slugify from 'slugify';
@@ -170,6 +171,7 @@ export class SkuManagerService {
             data: {
               skuCode,
               productId: product.id,
+              tenantId: product.tenantId,
               price: 0,
               stock: 0,
               status: 'ACTIVE',
@@ -187,6 +189,7 @@ export class SkuManagerService {
         data: {
           skuCode: `${product.slug}-DEFAULT`.toUpperCase(),
           productId: product.id,
+          tenantId: product.tenantId,
           price: 0,
           stock: 0,
           status: 'ACTIVE',
@@ -253,6 +256,7 @@ export class SkuManagerService {
             data: {
               skuCode,
               productId,
+              tenantId: freshProduct.tenantId,
               price: migratedPrice,
               stock: migratedStock,
               status: 'ACTIVE',
@@ -289,8 +293,11 @@ export class SkuManagerService {
       });
     } else if (freshProduct) {
       const defaultSkuCode = `${freshProduct.slug}-DEFAULT`.toUpperCase();
-      const existingDefault = await this.prisma.sku.findUnique({
-        where: { skuCode: defaultSkuCode },
+      const existingDefault = await this.prisma.sku.findFirst({
+        where: {
+          skuCode: defaultSkuCode,
+          tenantId: freshProduct.tenantId,
+        },
       });
 
       if (!existingDefault) {
@@ -298,6 +305,7 @@ export class SkuManagerService {
           data: {
             skuCode: defaultSkuCode,
             productId,
+            tenantId: freshProduct.tenantId,
             price: 0,
             stock: 0,
             status: 'ACTIVE',

@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import { CreateSkuDto } from './dto/create-sku.dto';
 import { UpdateSkuDto } from './dto/update-sku.dto';
 
@@ -42,8 +43,12 @@ export class SkusService {
   async create(createSkuDto: CreateSkuDto) {
     const { optionValueIds, imageUrl, ...skuData } = createSkuDto;
 
-    const existing = await this.prisma.sku.findUnique({
-      where: { skuCode: skuData.skuCode },
+    const tenant = getTenant();
+    const existing = await this.prisma.sku.findFirst({
+      where: {
+        skuCode: skuData.skuCode,
+        tenantId: tenant?.id,
+      },
     });
     if (existing) {
       throw new ConflictException('Mã SKU này đã tồn tại');
@@ -128,8 +133,12 @@ export class SkusService {
   }
 
   async findOne(id: string) {
-    const sku = await this.prisma.sku.findUnique({
-      where: { id },
+    const tenant = getTenant();
+    const sku = await this.prisma.sku.findFirst({
+      where: {
+        id,
+        tenantId: tenant?.id,
+      },
       include: {
         product: true,
         optionValues: {

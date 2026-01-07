@@ -1,4 +1,5 @@
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import {
   BadRequestException,
   ConflictException,
@@ -45,8 +46,12 @@ export class BrandsService extends BaseCrudService<
    */
   async create(createBrandDto: CreateBrandDto) {
     // Kiểm tra trùng tên thương hiệu
-    const existing = await this.model.findUnique({
-      where: { name: createBrandDto.name },
+    const tenant = getTenant();
+    const existing = await this.model.findFirst({
+      where: {
+        name: createBrandDto.name,
+        tenantId: tenant?.id,
+      },
     });
 
     if (existing) {
@@ -108,8 +113,12 @@ export class BrandsService extends BaseCrudService<
 
     // Nếu đổi tên, phải check trùng
     if (updateBrandDto.name) {
-      const existingName = await this.model.findUnique({
-        where: { name: updateBrandDto.name },
+      const tenant = getTenant();
+      const existingName = await this.model.findFirst({
+        where: {
+          name: updateBrandDto.name,
+          tenantId: tenant?.id,
+        },
       });
       if (existingName && existingName.id !== id) {
         throw new ConflictException('Tên thương hiệu đã được sử dụng');

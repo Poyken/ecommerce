@@ -110,8 +110,12 @@ export class AuthService {
     // 1. Validate real email domain (MX Check)
     await this.verifyEmailDomain(email);
 
-    const existsUser = await this.prisma.user.findUnique({
-      where: { email },
+    const tenant = getTenant();
+    const existsUser = await this.prisma.user.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
     });
     if (existsUser) {
       throw new ConflictException('User already exists');
@@ -177,8 +181,12 @@ export class AuthService {
       throw new BadRequestException('Email is required from social provider');
     }
 
-    let user = await this.prisma.user.findUnique({
-      where: { email },
+    const tenant = getTenant();
+    let user = await this.prisma.user.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
       select: this.USER_PERMISSION_SELECT,
     });
 
@@ -209,7 +217,7 @@ export class AuthService {
       if (!user) throw new UnauthorizedException('Failed to create user');
       await this.ensureGuestRoleAndAssign(user.id);
 
-      const reloaded = await this.prisma.user.findUnique({
+      const reloaded = await this.prisma.user.findFirst({
         where: { id: user.id },
         select: this.USER_PERMISSION_SELECT,
       });
@@ -271,8 +279,12 @@ export class AuthService {
   async login(dto: LoginDto, fingerprint?: string) {
     const { email, password } = dto;
 
-    const user = await this.prisma.user.findUnique({
-      where: { email },
+    const tenant = getTenant();
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
       select: this.USER_PERMISSION_SELECT,
     });
 
@@ -340,7 +352,7 @@ export class AuthService {
   }
 
   async verify2FALogin(userId: string, token: string, fingerprint?: string) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: { id: userId },
       select: this.USER_PERMISSION_SELECT,
     });
@@ -421,7 +433,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: { id: userId },
       select: this.USER_PERMISSION_SELECT,
     });
@@ -459,7 +471,7 @@ export class AuthService {
     const { roles, email, password, newPassword, ...updateData } = dto;
 
     if (password && newPassword) {
-      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+      const user = await this.prisma.user.findFirst({ where: { id: userId } });
       if (!user) throw new UnauthorizedException('User not found');
 
       if (!user.password) {
@@ -497,7 +509,7 @@ export class AuthService {
   }
 
   async getMe(userId: string) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: { id: userId },
       select: {
         ...this.USER_PERMISSION_SELECT,
@@ -561,7 +573,13 @@ export class AuthService {
   }
 
   async forgotPassword(email: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const tenant = getTenant();
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -580,7 +598,7 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired token');
     }
 
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const user = await this.prisma.user.findFirst({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('User not found');
     }

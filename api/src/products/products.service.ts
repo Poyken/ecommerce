@@ -92,16 +92,14 @@ export class ProductsService {
     // 1. Tạo Slug tự động từ tên
     const slug =
       productData.slug ||
-      slugify(productData.name, { lower: true, strict: true }) +
-        '-' +
-        Date.now();
+      slugify(productData.name, { lower: true, strict: true });
 
     // 2. Validate khóa ngoại: Category và Brand phải tồn tại
     const [category, brand] = await Promise.all([
-      this.prisma.category.findUnique({
+      this.prisma.category.findFirst({
         where: { id: productData.categoryId },
       }),
-      this.prisma.brand.findUnique({ where: { id: productData.brandId } }),
+      this.prisma.brand.findFirst({ where: { id: productData.brandId } }),
     ]);
 
     if (!category) throw new NotFoundException('Danh mục không tồn tại');
@@ -390,7 +388,7 @@ export class ProductsService {
     return this.cacheService.getOrSet(
       cacheKey,
       async () => {
-        const product = await this.prisma.product.findUnique({
+        const product = await this.prisma.product.findFirst({
           where: { id },
           select: {
             id: true,
@@ -487,7 +485,7 @@ export class ProductsService {
     const { options, images, ...data } = updateProductDto;
 
     // 0. [SMART MIGRATION SNAPSHOT] Capture old state before changes
-    const oldProductState = await this.prisma.product.findUnique({
+    const oldProductState = await this.prisma.product.findFirst({
       where: { id },
       include: {
         skus: {
@@ -567,7 +565,7 @@ export class ProductsService {
     });
 
     // 2. Fetch fresh product state with new options
-    const freshProduct = await this.prisma.product.findUnique({
+    const freshProduct = await this.prisma.product.findFirst({
       where: { id },
       include: { options: { include: { values: true } } },
     });
@@ -729,7 +727,7 @@ export class ProductsService {
       cacheKey,
       async () => {
         // 1. Lấy thông tin cơ bản để biết Category của sản phẩm hiện tại
-        const product = await this.prisma.product.findUnique({
+        const product = await this.prisma.product.findFirst({
           where: { id: productId },
           select: { categoryId: true },
         });
