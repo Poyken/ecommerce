@@ -1,3 +1,16 @@
+/**
+ * =====================================================================
+ * CATEGORIES BLOCK - HIỂN THỊ DANH MỤC SẢN PHẨM NỔI BẬT
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Block này giúp khách hàng dễ dàng điều hướng đến các nhóm sản phẩm.
+ * - CardStyle: Cho phép chọn giao diện Minimal, Luxury hoặc Default.
+ * - Layout: Hỗ trợ Grid, Carousel hoặc Masonry.
+ * =====================================================================
+ */
+
 "use client";
 
 import { CategoriesSkeleton } from "@/components/shared/skeletons/home-skeleton";

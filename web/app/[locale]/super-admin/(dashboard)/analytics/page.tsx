@@ -1,3 +1,18 @@
+/**
+ * =====================================================================
+ * SUPER ADMIN ANALYTICS - THỐNG KÊ TOÀN NỀN TẢNG (SAAS)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Trang này chỉ dành cho chủ sở hữu nền tảng (Super Admin).
+ * Khác với Business Analytics của riêng từng Shop, đây là chỉ số tổng quát:
+ * - Tổng số Tenant (Cửa hàng) đang hoạt động.
+ * - Tỷ lệ rời bỏ (Churn Rate).
+ * - Doanh thu từ phí thuê nền tảng.
+ * =====================================================================
+ */
+
 "use client";
 
 import {

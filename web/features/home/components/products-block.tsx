@@ -1,3 +1,17 @@
+/**
+ * =====================================================================
+ * PRODUCTS BLOCK - HIỂN THỊ DANH SÁCH SẢN PHẨM CMS
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Block quan trọng nhất để bán hàng trên Landing Page.
+ * - Type "trending": Lấy các sản phẩm bán chạy.
+ * - Type "new_arrivals": Lấy sản phẩm mới nhất.
+ * - CardStyle: Hỗ trợ nhiều phong cách hiển thị sản phẩm khác nhau.
+ * =====================================================================
+ */
+
 "use client";
 
 import { ProductsSkeleton } from "@/components/shared/skeletons/home-skeleton";

@@ -1,3 +1,15 @@
+/**
+ * =====================================================================
+ * PAGE BUILDER - TRÌNH THIẾT KẾ TRANG TRỰC QUAN
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Trang này khởi tạo PageBuilderClient để Admin có thể kéo thả,
+ * chỉnh sửa giao diện trang CMS theo thời gian thực.
+ * =====================================================================
+ */
+
 import { getPageByIdAction } from "@/features/admin/actions";
 import { PageBuilderClient } from "@/features/admin/components/page-builder-client";
 import { notFound, redirect } from "next/navigation";

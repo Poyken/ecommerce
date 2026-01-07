@@ -1,3 +1,17 @@
+/**
+ * =====================================================================
+ * PLATFORM SETTINGS - CẤU HÌNH TỔNG THỂ HỆ THỐNG
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Nơi điều chỉnh các quy tắc chung của toàn nền tảng:
+ * - Cho phép/Tắt đăng ký cửa hàng mới.
+ * - Yêu cầu xác thực Email.
+ * - Chế độ bảo trì hệ thống.
+ * =====================================================================
+ */
+
 "use client";
 
 import {

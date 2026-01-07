@@ -1,3 +1,15 @@
+/**
+ * =====================================================================
+ * BLOCK STYLE CONTROLS - BỘ ĐIỀU KHIỂN STYLE CHO CMS BLOCKS
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Component này xuất hiện trong Sidebar của Page Builder khi chọn một Block.
+ * Cho phép tùy chỉnh: Màu nền, Màu chữ, Padding, Margin, Bo góc, Hiệu ứng.
+ * =====================================================================
+ */
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

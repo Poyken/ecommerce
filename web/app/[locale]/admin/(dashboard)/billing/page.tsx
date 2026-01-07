@@ -1,3 +1,16 @@
+/**
+ * =====================================================================
+ * BILLING PAGE - QUẢN LÝ GÓI CƯỚC VÀ THANH TOÁN
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Trang này cho phép Tenant (chủ cửa hàng) xem gói đăng ký hiện tại.
+ * 1. SUBSCRIPTION DATA: Fetch thông tin gói từ backend API /subscriptions/current.
+ * 2. PLAN STATUS: Hiển thị các giới hạn (Usage limits) dựa trên gói (Basic/Pro/Enterprise).
+ * =====================================================================
+ */
+
 import { AdminPageHeader } from "@/features/admin/components/admin-page-components";
 import { http } from "@/lib/http";
 import { formatCurrency } from "@/lib/utils";

@@ -1,3 +1,17 @@
+/**
+ * =====================================================================
+ * SUBSCRIPTIONS CLIENT - GIAO DIỆN QUẢN LÝ GÓI ĐĂNG KÝ
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Chức năng chính:
+ * 1. Hiển thị danh sách đăng ký của các cửa hàng.
+ * 2. Hỗ trợ tìm kiếm, phân trang và lọc theo trạng thái.
+ * 3. Cho phép hủy bỏ (Cancel) các gói cước vi phạm hoặc hết hạn.
+ * =====================================================================
+ */
+
 "use client";
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";

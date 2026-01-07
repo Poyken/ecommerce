@@ -1,3 +1,20 @@
+/**
+ * =====================================================================
+ * DYNAMIC CMS PAGE - HIỂN THỊ TRANG TÙY CHỈNH TỪ DATABASE
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Trang này cho phép Admin tạo các trang mới (VD: Giới thiệu, Chính sách)
+ * từ Page Builder mà không cần code lại.
+ *
+ * 1. DYNAMIC ROUTING: Sử dụng [slug] để bắt mọi đường dẫn tùy chỉnh.
+ * 2. DATA FECHING: Fetch cấu hình các "Blocks" của trang từ API.
+ * 3. COMPONENT MAPPING: Dùng BlockRenderer để biến JSON data thành React Components.
+ * 4. PERFORMANCE: Sử dụng Next.js revalidate (ISR) để cache trang 60s.
+ * =====================================================================
+ */
+
 import { BlockData, BlockRenderer } from "@/components/cms/block-renderer";
 import { HomeWrapper } from "@/features/home/components/home-wrapper";
 import { productService } from "@/services/product.service";

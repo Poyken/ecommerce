@@ -1,3 +1,15 @@
+/**
+ * =====================================================================
+ * COUNTDOWN BLOCK - ĐỒNG HỒ ĐẾM NGƯỢC KHUYẾN MÃI
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Dùng để tạo sự cấp bách (Urgency) cho các chương trình Sale.
+ * Logic đếm ngược được tính toán mỗi giây trong useEffect.
+ * =====================================================================
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";

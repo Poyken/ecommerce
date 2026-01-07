@@ -1,3 +1,17 @@
+/**
+ * =====================================================================
+ * SECURITY HUB - TRUNG TÂM PHÒNG CHỐNG TẤN CÔNG
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Đây là "nút bấm khẩn cấp" của hệ thống SaaS:
+ * 1. EMERGENCY LOCKDOWN: Khóa toàn bộ nền tảng nếu phát hiện tấn công.
+ * 2. IP WHITELIST: Chỉ cho phép các IP tin tưởng được truy cập Super Admin.
+ * 3. THREAT DETECTION: Theo dõi số lần login sai toàn hệ thống.
+ * =====================================================================
+ */
+
 "use client";
 
 import { Badge } from "@/components/ui/badge";

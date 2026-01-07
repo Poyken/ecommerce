@@ -1,3 +1,16 @@
+/**
+ * =====================================================================
+ * BRANDS BLOCK - HIỂN THỊ THƯƠNG HIỆU ĐỐI TÁC
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Một Block trên trang chủ dùng để list danh sách logo các thương hiệu.
+ * - Hỗ trợ Mock Data khi ở chế độ Preview trong Admin.
+ * - Sử dụng Suspense để loading data từ API mượt mà.
+ * =====================================================================
+ */
+
 "use client";
 
 import { BrandsSkeleton } from "@/components/shared/skeletons/home-skeleton";

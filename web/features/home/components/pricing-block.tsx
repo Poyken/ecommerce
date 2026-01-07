@@ -1,3 +1,15 @@
+/**
+ * =====================================================================
+ * PRICING BLOCK - BẢNG GIÁ DỊCH VỤ/SẢN PHẨM
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Hiển thị các gói sản phẩm hoặc dịch vụ theo dạng Card so sánh.
+ * Hỗ trợ đánh dấu gói "Popular" để thu hút người dùng.
+ * =====================================================================
+ */
+
 "use client";
 
 import { cn } from "@/lib/utils";
