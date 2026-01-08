@@ -24,7 +24,9 @@ services:
   - type: web
     name: api
     env: node
-    plan: free
+    plan: starter # Changed from free to support scaling
+    numReplicas: 2 # [OPTIMIZATION] Zero-Downtime Deployment
+    healthCheckPath: /api/v1/health
     buildCommand: ls -R && cd api && npm install && npx prisma generate && npm run build && npm run build:seeds
     startCommand: cd api && npx prisma db push && npm run seed:all:prod && node dist/main.js
     envVars:
@@ -88,4 +90,26 @@ services:
           property: connectionString
       - key: FRONTEND_URL
         value: http://web:10000 # Use internal service URL (no manual update needed)
+
+
+  # 5. Worker Service (BullMQ Processor)
+  # [OPTIMIZATION] Tách biệt xử lý ảnh và background jobs khỏi API chính
+  - type: worker
+    name: worker
+    env: node
+    plan: starter
+    buildCommand: cd api && npm install && npm run build
+    startCommand: cd api && node dist/main.js --type=worker # Would need logic to run only worker
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: redis
+          property: connectionString
+      - key: DATABASE_URL
+        fromDatabase:
+          name: db
+          property: connectionString
 

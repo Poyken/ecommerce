@@ -47,6 +47,9 @@ export class CacheWarmingProcessor extends WorkerHost {
       case 'warm-brands':
         await this.warmBrands();
         break;
+      case 'warm-hot-products':
+        await this.warmHotProducts();
+        break;
       default:
         this.logger.warn(`Unknown job name: ${job.name}`);
     }
@@ -92,6 +95,21 @@ export class CacheWarmingProcessor extends WorkerHost {
       this.logger.log('Brands List Warmed Successfully');
     } catch (error) {
       this.logger.error('Failed to warm brands', error);
+    }
+  }
+
+  private async warmHotProducts() {
+    this.logger.log('Warming Hot Products (High Rating & Reviews)...');
+    try {
+      // Warm products with high rating (Proxy for "Hot")
+      await this.productsService.findAll({
+        limit: 24,
+        page: 1,
+        sort: SortOption.RATING_DESC,
+      });
+      this.logger.log('Hot Products Warmed Successfully');
+    } catch (error) {
+      this.logger.error('Failed to warm hot products', error);
     }
   }
 }

@@ -36,6 +36,8 @@ interface OptimizedImageProps extends ImageProps {
   aspectRatio?: "square" | "video" | "4/5" | "3/4" | "auto";
   /** ClassName cho thẻ div bao ngoài */
   containerClassName?: string;
+  /** Base64 blur data URL for smooth loading */
+  blurDataURL?: string;
 }
 
 // Map các tỉ lệ aspect ratio sang class của Tailwind
@@ -59,6 +61,7 @@ export const OptimizedImage = memo(function OptimizedImage({
   aspectRatio = "auto",
   containerClassName,
   className,
+  blurDataURL,
   ...props
 }: OptimizedImageProps) {
   // State 1: Đang tải hay xong?
@@ -134,6 +137,8 @@ export const OptimizedImage = memo(function OptimizedImage({
             : "scale-100 blur-0 opacity-100", // Load xong: Rõ nét, hiện ra
           className
         )}
+        placeholder={blurDataURL ? "blur" : "empty"}
+        blurDataURL={blurDataURL}
         // Sự kiện: Khi load xong -> Tắt trạng thái loading
         onLoad={(e) => {
           setIsLoading(false);
@@ -183,5 +188,3 @@ export const ProductImage = memo(function ProductImage({
     />
   );
 });
-
-

@@ -29,6 +29,7 @@ import { QuickActions } from "@/features/admin/components/quick-actions";
 import { StorefrontPulse } from "@/features/admin/components/storefront-pulse";
 import { getProfileAction } from "@/features/profile/actions";
 import { AiInsightsWidget } from "@/components/admin/ai-insights-widget";
+import { RecentChatsWidget } from "@/features/admin/components/recent-chats-widget";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -457,6 +458,7 @@ export default async function AdminDashboardPage() {
         {/* Sidebar Column: AI Insights + Alerts + Trending */}
         <div className="w-full xl:w-[380px] shrink-0 space-y-6">
           <AiInsightsWidget />
+          <RecentChatsWidget />
           <AdminAlerts
             lowStockSkus={lowStockSkus}
             lowStockCount={lowStockCount}

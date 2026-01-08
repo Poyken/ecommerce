@@ -171,7 +171,7 @@ model Product {
   reviewCount     Int                  @default(0)
 
   // Vector Embedding (768 dimensions for Gemini text-embedding-004)
-  // embedding       Unsupported("vector(768)")?
+  embedding       Unsupported("vector(768)")?
 
   products        BlogProduct[]
   brand           Brand                @relation(fields: [brandId], references: [id])
@@ -910,6 +910,9 @@ model Tenant {
   suspendedAt   DateTime?
   suspensionReason String?
   
+  // Infrastructure
+  dbUrl         String?     // If set, this tenant uses a dedicated database (Silo Mode)
+
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 

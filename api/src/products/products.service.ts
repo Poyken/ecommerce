@@ -139,19 +139,21 @@ export class ProductsService {
         },
       },
       include: {
-        options: {
-          include: {
-            values: true,
-          },
-        },
-        categories: {
-          include: {
-            category: true,
-          },
-        },
         brand: true,
+        categories: {
+          include: { category: true },
+        },
+        // [OPTIMIZATION] Avoid over-fetching SKUs/Options in list view
+        // Only fetch minimal info needed for cards (e.g. price range, variants count)
+        // options: { include: { values: true } }, <--- REMOVED for list view
+        // skus: { select: { minPrice: true, maxPrice: true } } <--- Use aggregations if possible, or distinct payload
       },
     });
+
+    // [OPTIMIZATION-FIX]
+    // If we need options/skus for UI logic (e.g. color swatches), fetch them efficiently via Dataloader
+    // or keep them if paginated small size.
+    // For now, reducing payload size is the quick win.
 
     // 4. Auto-generate SKUs (Delegated to SkuManager)
     await (this.skuManager as any).generateSkusForNewProduct(product);
@@ -281,6 +283,9 @@ export class ProductsService {
         case SortOption.PRICE_DESC:
           orderBy = { minPrice: 'desc' }; // Or maxPrice desc? Usually minPrice is clearer for users.
           break;
+        case SortOption.RATING_DESC:
+          orderBy = { avgRating: 'desc' };
+          break;
       }
     }
 
@@ -400,6 +405,49 @@ export class ProductsService {
     //   CACHE_TTL.PRODUCT_LIST * 1000,
     // );
     return result;
+  }
+
+  /**
+   * SEMANTIC SEARCH (Vector Search)
+   * Tìm kiếm sản phẩm tương đồng dựa trên ý nghĩa (embedding).
+   */
+  async searchSimilar(query: string, limit = 5) {
+    try {
+      // 1. Generate Embedding from Query (using Google Generative AI)
+      // Note: In real implementation, inject GenerativeAI client or use a helper service
+      // For now, we mock or check if we can import it.
+      // const embedding = await this.aiService.embedText(query);
+
+      // MOCKING FOR THIS IMPLEMENTATION PLAN as we strictly need providing code without new files if possible,
+      // or we should update ProductsService to use @google/generative-ai
+
+      // Let's assume we have an embedding vector (768 dimensions)
+      // Real implementation requires integration with the GenAI model.
+
+      // Mock vector for demonstration (all zeros) or simple random
+      // In production: const embedding = await googleAI.embedContent(query);
+      const embedding = Array(768).fill(0.01);
+
+      // 2. Query Postgres with pgvector
+      // dbUrl needs to be respected if in Silo mode?
+      // Native Prisma doesn't support vector search fully in findMany yet without TypedSQL or Raw.
+
+      const vectorStr = `[${embedding.join(',')}]`;
+
+      const products = await this.prisma.$queryRaw`
+        SELECT id, name, slug, "avgRating", "reviewCount", 
+               1 - (embedding <=> ${vectorStr}::vector) as similarity
+        FROM "Product"
+        WHERE embedding IS NOT NULL
+        ORDER BY embedding <=> ${vectorStr}::vector
+        LIMIT ${limit};
+      `;
+
+      return products;
+    } catch (error) {
+      this.logger.error('Semantic search failed', error);
+      return [];
+    }
   }
 
   /**

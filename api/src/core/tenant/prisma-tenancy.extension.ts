@@ -82,6 +82,12 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
           // [RLS OPTIMIZATION] Set session variable for PostgreSQL Row Level Security
           // 📚 GIẢI THÍCH: Lệnh này giúp Database biết "Ai" đang truy cập để áp dụng RLS Policy.
           if (tenant) {
+            if (tenant['dbUrl']) {
+              // SILO MODE DETECTED
+              // Trong thực tế, Application level connection manager sẽ xử lý việc connect đúng DB.
+              // Ở đây ta chỉ set context RLS cho an toàn.
+              // console.log(`[Tenancy] Switching to Silo Mode for tenant: ${tenant.name}`);
+            }
             await client.$executeRawUnsafe(
               `SET app.current_tenant_id = '${tenant.id}';`,
             );

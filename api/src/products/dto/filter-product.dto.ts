@@ -7,6 +7,7 @@ export enum SortOption {
   PRICE_DESC = 'price_desc',
   NEWEST = 'newest',
   OLDEST = 'oldest',
+  RATING_DESC = 'rating_desc',
 }
 
 export class FilterProductDto {

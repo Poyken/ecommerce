@@ -106,7 +106,9 @@ export class AuthController {
     @Request() req: RequestWithUser,
   ) {
     const fp = getFingerprint(req);
-    const data = await this.authService.login(dto, fp);
+    const ip =
+      req.ip || (req.headers['x-forwarded-for'] as string) || '0.0.0.0';
+    const data = await this.authService.login(dto, fp, ip);
 
     // Set refreshToken in HttpOnly cookie for security
     res.cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);

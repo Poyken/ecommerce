@@ -284,7 +284,7 @@ export class AuthService {
     };
   }
 
-  async login(dto: LoginDto, fingerprint?: string) {
+  async login(dto: LoginDto, fingerprint?: string, ip?: string) {
     const { email, password } = dto;
 
     const tenant = getTenant();
@@ -298,6 +298,24 @@ export class AuthService {
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // [SECURITY] IP WHITELISTING
+    // Check if user has specific IP restrictions (usually for ADMIN/STAFF)
+    const whitelistedIps = (user as any).whitelistedIps as string[];
+    if (
+      whitelistedIps &&
+      Array.isArray(whitelistedIps) &&
+      whitelistedIps.length > 0
+    ) {
+      if (ip && !whitelistedIps.includes(ip)) {
+        this.logger.warn(
+          `Blocked login attempt for ${email} from unauthorized IP: ${ip}`,
+        );
+        throw new UnauthorizedException(
+          'Truy cập bị từ chối từ địa chỉ IP này',
+        );
+      }
     }
 
     if (!user.password) {
