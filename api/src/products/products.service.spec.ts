@@ -9,7 +9,7 @@ import { PlanUsageService } from '@/tenants/plan-usage.service';
 import { NotFoundException } from '@nestjs/common';
 
 jest.mock('@core/tenant/tenant.context', () => ({
-  getTenant: jest.fn().mockReturnValue(null),
+  getTenant: jest.fn().mockReturnValue({ id: 'tenant-1' }),
 }));
 
 describe('ProductsService', () => {
@@ -28,6 +28,7 @@ describe('ProductsService', () => {
     },
     category: {
       findFirst: jest.fn(),
+      findMany: jest.fn(),
     },
     brand: {
       findFirst: jest.fn(),
@@ -96,13 +97,14 @@ describe('ProductsService', () => {
     it('should create a new product', async () => {
       const dto = {
         name: 'Test Product',
-        categoryId: 'cat1',
+        categoryIds: ['cat1'],
         brandId: 'brand1',
         price: 100,
         options: [],
         images: [],
       };
 
+      mockPrismaService.category.findMany.mockResolvedValue([{ id: 'cat1' }]);
       mockPrismaService.category.findFirst.mockResolvedValue({ id: 'cat1' });
       mockPrismaService.brand.findFirst.mockResolvedValue({ id: 'brand1' });
       mockPrismaService.product.create.mockResolvedValue({
@@ -119,10 +121,11 @@ describe('ProductsService', () => {
     });
 
     it('should throw NotFoundException if category missing', async () => {
+      mockPrismaService.category.findMany.mockResolvedValue([]);
       mockPrismaService.category.findFirst.mockResolvedValue(null);
       mockPrismaService.brand.findFirst.mockResolvedValue({ id: 'b' });
       await expect(
-        service.create({ name: 'Test', categoryId: 'c' } as any),
+        service.create({ name: 'Test', categoryIds: ['c'] } as any),
       ).rejects.toThrow(NotFoundException);
     });
   });

@@ -2,6 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AddressesService } from './addresses.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 
+jest.mock('@core/tenant/tenant.context', () => ({
+  getTenant: jest.fn().mockReturnValue({ id: 'tenant-1' }),
+}));
+
 describe('AddressesService', () => {
   let service: AddressesService;
 

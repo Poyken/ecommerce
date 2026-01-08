@@ -19,7 +19,7 @@ jest.mock('bcrypt', () => ({
 }));
 
 jest.mock('@core/tenant/tenant.context', () => ({
-  getTenant: jest.fn().mockReturnValue(null),
+  getTenant: jest.fn().mockReturnValue({ id: 'tenant-123' }),
 }));
 
 describe('AuthService', () => {
@@ -38,6 +38,7 @@ describe('AuthService', () => {
     },
     role: {
       findUnique: jest.fn(),
+      findFirst: jest.fn(),
       create: jest.fn(),
     },
     userRole: {
@@ -134,7 +135,7 @@ describe('AuthService', () => {
       const createdUser = { id: 'user-123', ...dto };
       mockPrismaService.user.create.mockResolvedValue(createdUser);
 
-      mockPrismaService.role.findUnique.mockResolvedValue({
+      mockPrismaService.role.findFirst.mockResolvedValue({
         id: 'role-guest',
         name: 'GUEST',
       });
@@ -173,7 +174,9 @@ describe('AuthService', () => {
       };
 
       jest.spyOn(service, 'verifyEmailDomain').mockResolvedValue(true);
-      mockPrismaService.user.findFirst.mockResolvedValue({ id: 'existing-id' });
+      mockPrismaService.user.findFirst.mockResolvedValue({
+        id: 'existing-id',
+      });
 
       await expect(service.register(dto)).rejects.toThrow(ConflictException);
     });
@@ -254,7 +257,7 @@ describe('AuthService', () => {
         accessToken: 'access-token',
         refreshToken: 'refresh-token',
       });
-      mockPrismaService.role.findUnique.mockResolvedValue({
+      mockPrismaService.role.findFirst.mockResolvedValue({
         id: 'role-guest',
         name: 'GUEST',
       });

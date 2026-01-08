@@ -2,6 +2,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { WishlistService } from './wishlist.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 
+jest.mock('@core/tenant/tenant.context', () => ({
+  getTenant: jest.fn().mockReturnValue({ id: 'tenant-123' }),
+}));
+
 describe('WishlistService', () => {
   let service: WishlistService;
 

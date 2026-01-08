@@ -6,6 +6,10 @@ import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadRequestException } from '@nestjs/common';
 
+jest.mock('@core/tenant/tenant.context', () => ({
+  getTenant: jest.fn().mockReturnValue({ id: 'tenant-123' }),
+}));
+
 describe('ReviewsService', () => {
   let service: ReviewsService;
 

@@ -34,13 +34,11 @@ describe('OrdersService', () => {
   };
 
   const mockPaymentService = {
-    processPayment: jest
-      .fn()
-      .mockResolvedValue({
-        success: true,
-        transactionId: 'trans-1',
-        paymentUrl: 'http://test.com',
-      }),
+    processPayment: jest.fn().mockResolvedValue({
+      success: true,
+      transactionId: 'trans-1',
+      paymentUrl: 'http://test.com',
+    }),
   };
 
   const mockShippingService = {
@@ -115,6 +113,7 @@ describe('OrdersService', () => {
           stock: 10,
           status: 'ACTIVE',
           price: 100,
+          optionValues: [],
           product: { name: 'Prod', slug: 'prod', images: [] },
         },
       ]);
