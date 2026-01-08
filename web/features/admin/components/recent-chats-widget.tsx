@@ -51,7 +51,7 @@ export async function RecentChatsWidget() {
                 No active conversations.
               </p>
             ) : (
-              conversations.map((chat) => (
+              conversations.map((chat: any) => (
                 <div
                   key={chat.id}
                   className="flex items-start gap-4 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"

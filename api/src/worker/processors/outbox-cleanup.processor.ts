@@ -1,3 +1,22 @@
+/**
+ * =====================================================================
+ * OUTBOX-CLEANUP PROCESSOR - DỌN DẸP DỮ LIỆU TỰ ĐỘNG (BULLMQ)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * File này xử lý các công việc dọn dẹp hệ thống chạy ngầm định kỳ.
+ *
+ * 1. CHỨC NĂNG:
+ *    - cleanup-outbox: Tìm và xóa các bản ghi OutboxEvent đã xử lý thành công (COMPLETED)
+ *      và đã tồn tại hơn 7 ngày. Điều này giúp bảng OutboxEvent không bị phình to gây chậm DB.
+ *
+ * 2. CÁC KHÁI NIỆM LIÊN QUAN:
+ *    - BullMQ Processor: Một hàm lắng nghe Job từ hàng đợi (Queue).
+ *    - Cron Job: Tác vụ chạy định kỳ (VD: 12h đêm hàng ngày).
+ * =====================================================================
+ */
+
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { Logger } from '@nestjs/common';

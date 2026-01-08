@@ -76,24 +76,28 @@ export class IdempotencyInterceptor implements NestInterceptor {
 
     // 3. Nếu chưa xử lý, tiến hành xử lý và lưu lại kết quả
     return next.handle().pipe(
-      tap(async (body) => {
+      tap((body) => {
         const statusCode = response.statusCode;
-
-        // Chỉ lưu cache cho các response thành công (2xx)
-        if (statusCode >= 200 && statusCode < 300) {
-          const cacheData = JSON.stringify({
-            status: statusCode,
-            body: body,
-          });
-
-          await this.redis.client.set(
-            cacheKey,
-            cacheData,
-            'EX',
-            this.CACHE_TTL,
-          );
-        }
+        // Fire-and-forget cache setting (don't block response)
+        void this.cacheResponse(statusCode, cacheKey, body);
       }),
     );
+  }
+
+  private async cacheResponse(statusCode: number, key: string, body: any) {
+    try {
+      // Chỉ lưu cache cho các response thành công (2xx)
+      if (statusCode >= 200 && statusCode < 300) {
+        const cacheData = JSON.stringify({
+          status: statusCode,
+          body: body,
+        });
+
+        await this.redis.client.set(key, cacheData, 'EX', this.CACHE_TTL);
+      }
+    } catch (error) {
+      // Silently fail for cache errors to not disrupt main flow
+      // console.error('Idempotency cache failed', error);
+    }
   }
 }

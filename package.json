@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

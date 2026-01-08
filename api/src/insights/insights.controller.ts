@@ -1,3 +1,23 @@
+/**
+ * =====================================================================
+ * INSIGHTS.CONTROLLER CONTROLLER
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Controller này xử lý các HTTP request từ client.
+ *
+ * 1. NHIỆM VỤ CHÍNH:
+ *    - Nhận request từ client
+ *    - Validate dữ liệu đầu vào
+ *    - Gọi service xử lý logic
+ *    - Trả về response cho client
+ *
+ * 2. CÁC ENDPOINT:
+ *    - [Liệt kê các endpoint]
+ * =====================================================================
+ */
+
 import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { InsightsService } from './insights.service';

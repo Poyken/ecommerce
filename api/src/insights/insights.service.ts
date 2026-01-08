@@ -1,9 +1,23 @@
+/**
+ * =====================================================================
+ * OUTBOX-CLEANUP PROCESSOR - DỌN DẸP DỮ LIỆU TỰ ĐỘNG (BULLMQ)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ *      dùng Redis (CACHE_MANAGER).
+ *
+ * 3. LƯU Ý KHI SỬ DỤNG:
+ *    - Khi có thay đổi lớn (VD: Đơn hàng mới, Nhập hàng), có thể gọi refreshInsights().
+ * =====================================================================
+ */
+
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { CacheService } from '@core/cache/cache.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject } from '@nestjs/common';
-import { Cache } from 'cache-manager';
+import type { Cache } from 'cache-manager';
 
 export interface Insight {
   type: 'warning' | 'success' | 'info';

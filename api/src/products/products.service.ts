@@ -414,19 +414,19 @@ export class ProductsService {
   async searchSimilar(query: string, limit = 5) {
     try {
       // 1. Generate Embedding from Query (using Google Generative AI)
-      // Note: In real implementation, inject GenerativeAI client or use a helper service
-      // For now, we mock or check if we can import it.
-      // const embedding = await this.aiService.embedText(query);
+      const { GoogleGenerativeAI } = await import('@google/generative-ai');
 
-      // MOCKING FOR THIS IMPLEMENTATION PLAN as we strictly need providing code without new files if possible,
-      // or we should update ProductsService to use @google/generative-ai
+      const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY || '');
+      const model = genAI.getGenerativeModel({ model: 'embedding-001' });
 
-      // Let's assume we have an embedding vector (768 dimensions)
-      // Real implementation requires integration with the GenAI model.
+      // Generate embedding for the user query
+      const result = await model.embedContent(query);
+      const embedding = result.embedding.values;
 
-      // Mock vector for demonstration (all zeros) or simple random
-      // In production: const embedding = await googleAI.embedContent(query);
-      const embedding = Array(768).fill(0.01);
+      if (!embedding || embedding.length === 0) {
+        this.logger.warn('Failed to generate embedding for query');
+        return [];
+      }
 
       // 2. Query Postgres with pgvector
       // dbUrl needs to be respected if in Silo mode?

@@ -171,7 +171,8 @@ model Product {
   reviewCount     Int                  @default(0)
 
   // Vector Embedding (768 dimensions for Gemini text-embedding-004)
-  embedding       Unsupported("vector(768)")?
+  // Requires pgvector extension. Enable if available.
+  // embedding       Unsupported("vector(768)")?
 
   products        BlogProduct[]
   brand           Brand                @relation(fields: [brandId], references: [id])
@@ -526,7 +527,7 @@ enum Sentiment {
 }
 
 model AuditLog {
-  id        String   @id @default(uuid())
+  id        String   @default(uuid())
   userId    String?
   action    String
   resource  String
@@ -536,6 +537,7 @@ model AuditLog {
   createdAt DateTime @default(now())
   user      User?    @relation(fields: [userId], references: [id])
 
+  @@id([id, createdAt])
   @@index([userId])
   @@index([resource])
   @@index([action])
@@ -800,7 +802,7 @@ enum MessageType {
 }
 
 model PerformanceMetric {
-  id             String   @id @default(uuid())
+  id             String   @default(uuid())
   name           String   // LCP, FID, CLS, FCP, TTFB, INP
   value          Float
   rating         String   // good, needs-improvement, poor
@@ -809,6 +811,7 @@ model PerformanceMetric {
   navigationType String?
   createdAt      DateTime @default(now())
 
+  @@id([id, createdAt])
   @@index([name])
   @@index([createdAt])
 }
