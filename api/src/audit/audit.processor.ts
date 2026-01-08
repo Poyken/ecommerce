@@ -52,22 +52,46 @@ export class AuditProcessor extends WorkerHost {
     }
   }
 
+  /**
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   * Tại sao phải dọn dẹp nhiều bảng cùng lúc?
+   * 1. AuditLog: Ghi lại hành động, tích tụ rất nhanh -> Xóa sau 90 ngày.
+   * 2. PerformanceMetric: Các chỉ số hiệu năng chỉ cần thiết trong ngắn hạn để debug -> Xóa sau 90 ngày.
+   * 3. OutboxEvent: Đây là các sự kiện tạm để đồng bộ dữ liệu, sau khi xử lý xong chỉ nên giữ lại 7 ngày để đối soát.
+   */
   private async handleCleanup(data: { days: number }) {
     const { days = 90 } = data;
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
+    // Short-lived data cutoff
+    const outboxCutoff = new Date();
+    outboxCutoff.setDate(outboxCutoff.getDate() - 7); // Keep only 7 days of processed outbox events
+
     try {
-      const result = await this.prisma.auditLog.deleteMany({
-        where: {
-          createdAt: {
-            lt: cutoffDate,
+      const [auditResult, metricsResult, outboxResult] = await Promise.all([
+        // 1. Cleanup Audit Logs
+        this.prisma.auditLog.deleteMany({
+          where: { createdAt: { lt: cutoffDate } },
+        }),
+        // 2. Cleanup Performance Metrics
+        this.prisma.performanceMetric.deleteMany({
+          where: { createdAt: { lt: cutoffDate } },
+        }),
+        // 3. Cleanup Processed Outbox Events
+        this.prisma.outboxEvent.deleteMany({
+          where: {
+            createdAt: { lt: outboxCutoff },
+            status: { not: 'PENDING' },
           },
-        },
-      });
-      this.logger.log(`[Cleanup] Deleted ${result.count} old audit logs`);
+        }),
+      ]);
+
+      this.logger.log(
+        `[Cleanup] Deleted ${auditResult.count} audit logs, ${metricsResult.count} performance metrics, ${outboxResult.count} outbox events`,
+      );
     } catch (error) {
-      this.logger.error('Failed to cleanup audit logs in background:', error);
+      this.logger.error('Failed to cleanup logs in background:', error);
       throw error;
     }
   }

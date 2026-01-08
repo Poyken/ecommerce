@@ -27,7 +27,9 @@ import { getTenant } from './tenant.context';
  *      - Với lệnh ĐỌC (Read): Tự động thêm `where: { tenantId: tenant.id }`.
  *      - Với lệnh GHI (Write): Tự động gán `data: { tenantId: tenant.id }`.
  *
- * 4. LƯU Ý QUAN TRỌNG:
+ * 4. LƯU Ý QUAN TRỌNG (BẢO MẬT):
+ *    - Các model như User, Page, Cart BẮT BUỘC phải được lọc theo tenantId (không để trong SHARED_MODELS).
+ *    - Điều này đảm bảo User của Tenant A không bao giờ có thể thấy dữ liệu của Tenant B.
  *    - Nếu bạn đang viết API cho Super Admin (người quản lý toàn sàn), tenantId sẽ là null/undefined -> Extension sẽ bỏ qua bộ lọc này (đúng mong muốn).
  * =================================================================================================
  */
@@ -45,8 +47,6 @@ const SHARED_MODELS = new Set([
   'ChatConversation',
   'ChatMessage',
   'CartItem',
-  'Cart', // Shared carts or managed explicitly
-  'Page', // Page management often conflicts with implicit caching/filtering
   'AuditLog',
   'SkuImage',
   'ProductImage',
@@ -56,10 +56,8 @@ const SHARED_MODELS = new Set([
   'PerformanceMetric',
   'AiChatSession',
   'AiChatMessage',
-  'FeatureFlag',
   'ProductTranslation',
   'BlogProduct',
-  'User',
   'OrderItem',
 ]);
 

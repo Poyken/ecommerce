@@ -43,6 +43,7 @@ import { RedisService } from '@core/redis/redis.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import type { Cache } from 'cache-manager';
 import slugify from 'slugify';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -773,6 +774,84 @@ export class ProductsService {
       },
       300, // 5 minutes cache
     );
+  }
+
+  /**
+   * [P13 RECONCILIATION] - HỆ THỐNG TỰ PHỤC HỒI DỮ LIỆU
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   * Do chúng ta sử dụng kỹ thuật "Denormalization" (lưu giá trị min/max và rating trực tiếp ở bảng Product
+   * để tăng tốc độ load), đôi khi dữ liệu này có thể bị sai lệch so với thực tế (do lỗi logic hoặc race condition).
+   *
+   * Hàm này sẽ "quét" lại dữ liệu thực tế từ SKUs và Reviews để ghi đè lại các giá trị này,
+   * giúp hệ thống luôn đạt độ chính xác cao nhất (Data Integrity).
+   */
+  async reconcileProduct(productId: string) {
+    this.logger.log(`Reconciling data for product ${productId}...`);
+
+    await Promise.all([
+      // 1. Fix Price Range (Delegated to SkuManager)
+      this.skuManager.updateProductPriceRange(productId),
+
+      // 2. Fix Rating & Review Count
+      this.recalculateProductRating(productId),
+    ]);
+
+    await this.invalidateProductCache(productId);
+  }
+
+  /**
+   * Internal helper to recalculate ratings for reconciliation
+   */
+  private async recalculateProductRating(productId: string) {
+    const aggregate = await this.prisma.review.aggregate({
+      where: { productId, isApproved: true, deletedAt: null },
+      _avg: { rating: true },
+      _count: true,
+    });
+
+    await this.prisma.product.update({
+      where: { id: productId },
+      data: {
+        avgRating: aggregate._avg.rating || 0,
+        reviewCount: aggregate._count,
+      },
+    });
+  }
+
+  /**
+   * [P13 RECONCILIATION] Periodic job to heal data across the entire catalog.
+   * Runs weekly to ensure high data integrity.
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   * Tại sao phải chạy lúc 2h sáng Chủ Nhật? -> Vì đây là thao tác quét toàn bộ DB (Heavy Job),
+   * ta chọn giờ ít người dùng nhất để không làm ảnh hưởng đến hiệu năng hệ thống.
+   */
+  @Cron('0 2 * * 0') // Sunday at 2 AM
+  async reconcileAllProducts() {
+    this.logger.log('Starting global product data reconciliation...');
+
+    // Process in batches of 50 to avoid memory pressure or long DB locks
+    const batchSize = 50;
+    let offset = 0;
+
+    while (true) {
+      const products = await this.prisma.product.findMany({
+        select: { id: true },
+        skip: offset,
+        take: batchSize,
+        where: { deletedAt: null },
+      });
+
+      if (products.length === 0) break;
+
+      await Promise.all(products.map((p) => this.reconcileProduct(p.id)));
+
+      this.logger.log(`Reconciled batch ${offset / batchSize + 1}`);
+      offset += batchSize;
+    }
+
+    this.logger.log('Global product data reconciliation complete.');
   }
 
   /**
