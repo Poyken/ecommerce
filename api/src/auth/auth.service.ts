@@ -132,7 +132,7 @@ export class AuthService {
         password: hashedPassword,
         firstName,
         lastName,
-        tenantId: tenant?.id,
+        tenantId: tenant!.id, // Tenant is guaranteed by middleware since tenantId is required
       },
     });
 
@@ -211,6 +211,7 @@ export class AuthService {
           provider,
           socialId,
           avatarUrl: picture,
+          tenantId: tenant!.id,
         },
         select: this.USER_PERMISSION_SELECT,
       })) as any;
@@ -284,7 +285,7 @@ export class AuthService {
     const user = await this.prisma.user.findFirst({
       where: {
         email,
-        OR: [{ tenantId: tenant?.id }, { tenantId: null }],
+        tenantId: tenant?.id, // Super admin is now also assigned to a tenant
       },
       select: this.USER_PERMISSION_SELECT,
     });
@@ -655,6 +656,7 @@ export class AuthService {
     const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
     const couponCode = `WELCOME-${randomSuffix}`;
 
+    const tenant = getTenant();
     const coupon = await this.prisma.coupon.create({
       data: {
         code: couponCode,
@@ -665,6 +667,7 @@ export class AuthService {
         endDate: endDate,
         usageLimit: 1,
         isActive: true,
+        tenantId: tenant!.id,
       },
     });
 

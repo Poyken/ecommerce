@@ -109,14 +109,17 @@ export class ProductsService {
     // 3. Tạo Product và Options
     const product = await this.prisma.product.create({
       data: {
-        ...productData,
+        ...createProductDto,
         slug,
+        tenantId: tenant!.id,
         options: {
           create: options?.map((opt, index) => ({
             name: opt.name,
             displayOrder: index,
             values: {
-              create: opt.values.map((val) => ({ value: val })),
+              create: opt.values.map((val) => ({
+                value: val,
+              })),
             },
           })),
         },
@@ -130,7 +133,9 @@ export class ProductsService {
       },
       include: {
         options: {
-          include: { values: true },
+          include: {
+            values: true,
+          },
         },
         category: true,
         brand: true,
@@ -138,7 +143,7 @@ export class ProductsService {
     });
 
     // 4. Auto-generate SKUs (Delegated to SkuManager)
-    await this.skuManager.generateSkusForNewProduct(product);
+    await (this.skuManager as any).generateSkusForNewProduct(product);
 
     // [PLAN LIMIT] Increment cache usage
     if (tenant) {

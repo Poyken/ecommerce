@@ -178,30 +178,9 @@ async function main() {
   });
 
   // ===================================
-  // 3. CREATE SUPERADMIN USER
+  // 3. CREATE DEFAULT TENANT (Localhost)
   // ===================================
-  const hashPassword = await bcrypt.hash('123456', 10);
-  const superAdminUser = await prisma.user.create({
-    data: {
-      email: 'super@platform.com',
-      password: hashPassword,
-      firstName: 'Super',
-      lastName: 'Admin',
-      tenantId: null,
-    },
-  });
-
-  await prisma.userRole.create({
-    data: {
-      userId: superAdminUser.id,
-      roleId: superAdminRole.id,
-    },
-  });
-
-  // ===================================
-  // 4. CREATE DEFAULT TENANT (Localhost)
-  // ===================================
-  await prisma.tenant.upsert({
+  const defaultTenant = await prisma.tenant.upsert({
     where: { domain: 'localhost' },
     update: {},
     create: {
@@ -217,6 +196,27 @@ async function main() {
     },
   });
   console.log('✅ Default Tenant (localhost) ensured.');
+
+  // ===================================
+  // 4. CREATE SUPERADMIN USER
+  // ===================================
+  const hashPassword = await bcrypt.hash('123456', 10);
+  const superAdminUser = await prisma.user.create({
+    data: {
+      email: 'super@platform.com',
+      password: hashPassword,
+      firstName: 'Super',
+      lastName: 'Admin',
+      tenantId: defaultTenant.id,
+    },
+  });
+
+  await prisma.userRole.create({
+    data: {
+      userId: superAdminUser.id,
+      roleId: superAdminRole.id,
+    },
+  });
 
   console.log('\n✨ DATABASE RESET COMPLETE ✨');
   console.log('--------------------------------------------------');

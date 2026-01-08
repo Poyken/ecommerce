@@ -1,6 +1,7 @@
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Review } from '@prisma/client';
@@ -133,6 +134,7 @@ export class ReviewsService extends BaseCrudService<
           content: dto.content,
           images: dto.images || [],
           isApproved: true,
+          tenantId: getTenant()!.id,
         },
       });
 

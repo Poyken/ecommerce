@@ -1,5 +1,6 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable, Logger } from '@nestjs/common';
+import { getTenant } from '@core/tenant/tenant.context';
 
 /**
  * =====================================================================
@@ -68,6 +69,7 @@ export class WishlistService {
           data: {
             userId,
             productId,
+            tenantId: getTenant()!.id,
           },
         });
         return { isWishlisted: true };
@@ -159,7 +161,11 @@ export class WishlistService {
 
         if (!existing) {
           await this.prisma.wishlist.create({
-            data: { userId: userId, productId: productId },
+            data: {
+              userId: userId,
+              productId: productId,
+              tenantId: getTenant()!.id,
+            },
           });
           results.push({ productId: productId, success: true });
         } else {

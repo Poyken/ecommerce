@@ -65,6 +65,7 @@ export class SkusService {
       data: {
         ...skuData,
         imageUrl,
+        tenantId: tenant!.id,
         optionValues: {
           create: optionValueIds.map((valId) => ({
             optionValueId: valId,

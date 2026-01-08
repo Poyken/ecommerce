@@ -94,6 +94,7 @@ export class CategoriesService extends BaseCrudService<
       data: {
         ...createCategoryDto,
         slug,
+        tenantId: tenant!.id,
       },
     });
 

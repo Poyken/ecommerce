@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 
@@ -40,11 +41,13 @@ export class AddressesService {
     const count = await this.prisma.address.count({ where: { userId } });
     const isDefault = count === 0 ? true : dto.isDefault;
 
+    const tenant = getTenant();
     return this.prisma.address.create({
       data: {
         ...dto,
         userId,
         isDefault,
+        tenantId: tenant!.id,
       },
     });
   }

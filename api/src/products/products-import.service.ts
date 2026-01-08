@@ -1,4 +1,5 @@
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
 import { SkuManagerService } from './sku-manager.service';
@@ -129,6 +130,7 @@ export class ProductsImportService {
               `${productRow.productName.toLowerCase().replace(/ /g, '-')}-${Date.now()}`,
             categoryId,
             brandId,
+            tenantId: getTenant()!.id,
           },
         });
 
