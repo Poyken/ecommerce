@@ -53,7 +53,11 @@ export class KnowledgeService {
           where: { status: 'ACTIVE' },
           select: { price: true, salePrice: true, stock: true, skuCode: true },
         },
-        category: { select: { name: true } },
+        categories: {
+          include: {
+            category: { select: { name: true } },
+          },
+        },
       },
     });
 
@@ -65,7 +69,7 @@ export class KnowledgeService {
 
       const content = `
 Sản phẩm: ${product.name}
-Danh mục: ${product.category?.name || 'Chưa phân loại'}
+Danh mục: ${product.categories[0]?.category.name || 'Chưa phân loại'}
 Giá: ${price ? `${Number(price).toLocaleString('vi-VN')} VNĐ` : 'Liên hệ'}
 Còn hàng: ${stock > 0 ? `Còn ${stock} sản phẩm` : 'Hết hàng'}
 Mô tả: ${product.description?.substring(0, 200) || 'Không có mô tả'}

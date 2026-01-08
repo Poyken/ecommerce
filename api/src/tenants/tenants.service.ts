@@ -50,8 +50,8 @@ export class TenantsService {
         );
 
         // Ensure ADMIN role exists
-        let adminRole = await tx.role.findUnique({
-          where: { name: 'ADMIN' },
+        let adminRole = await tx.role.findFirst({
+          where: { name: 'ADMIN', tenantId: null },
         });
 
         if (!adminRole) {

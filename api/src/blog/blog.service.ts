@@ -68,7 +68,9 @@ export class BlogService {
             include: {
               product: {
                 include: {
-                  category: true,
+                  categories: {
+                    include: { category: true },
+                  },
                   brand: true,
                   skus: true,
                   images: true,
@@ -150,7 +152,9 @@ export class BlogService {
             include: {
               product: {
                 include: {
-                  category: true,
+                  categories: {
+                    include: { category: true },
+                  },
                   brand: true,
                   skus: true,
                   images: true,
@@ -206,7 +210,9 @@ export class BlogService {
           include: {
             product: {
               include: {
-                category: true,
+                categories: {
+                  include: { category: true },
+                },
                 brand: true,
                 skus: true,
                 images: true,

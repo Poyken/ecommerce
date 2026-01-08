@@ -95,23 +95,30 @@ export class ProductsService {
       productData.slug ||
       slugify(productData.name, { lower: true, strict: true });
 
-    // 2. Validate khóa ngoại: Category và Brand phải tồn tại
-    const [category, brand] = await Promise.all([
-      this.prisma.category.findFirst({
-        where: { id: productData.categoryId },
+    // 2. Validate khóa ngoại: Categories và Brand phải tồn tại
+    const [categories, brand] = await Promise.all([
+      this.prisma.category.findMany({
+        where: { id: { in: createProductDto.categoryIds } },
       }),
       this.prisma.brand.findFirst({ where: { id: productData.brandId } }),
     ]);
 
-    if (!category) throw new NotFoundException('Danh mục không tồn tại');
+    if (categories.length !== createProductDto.categoryIds.length)
+      throw new NotFoundException('Một hoặc nhiều danh mục không tồn tại');
     if (!brand) throw new NotFoundException('Thương hiệu không tồn tại');
 
     // 3. Tạo Product và Options
+    const { categoryIds, ...dataForCreate } = productData;
     const product = await this.prisma.product.create({
       data: {
-        ...createProductDto,
+        ...dataForCreate,
         slug,
         tenantId: tenant!.id,
+        categories: {
+          create: categoryIds.map((id) => ({
+            categoryId: id,
+          })),
+        },
         options: {
           create: options?.map((opt, index) => ({
             name: opt.name,
@@ -137,7 +144,11 @@ export class ProductsService {
             values: true,
           },
         },
-        category: true,
+        categories: {
+          include: {
+            category: true,
+          },
+        },
         brand: true,
       },
     });
@@ -229,8 +240,16 @@ export class ProductsService {
               id: { in: ids.split(',').map((id) => id.trim()) },
             }
           : {},
-        // 2. Filter theo Category
-        categoryId ? { categoryId } : {},
+        // 2. Filter theo Category (Many-to-Many)
+        categoryId
+          ? {
+              categories: {
+                some: {
+                  categoryId,
+                },
+              },
+            }
+          : {},
         // 3. Filter theo Brand
         brandId ? { brandId } : {},
         // 4. Filter theo khoảng giá (Optimized with cached columns)
@@ -277,7 +296,7 @@ export class ProductsService {
           slug: true,
           description: true,
           createdAt: true,
-          categoryId: true,
+
           brandId: true,
           // Cached price columns - no need to compute from SKUs
           minPrice: true,
@@ -286,8 +305,12 @@ export class ProductsService {
           avgRating: true,
           reviewCount: true,
 
-          category: {
-            select: { id: true, name: true, slug: true },
+          categories: {
+            select: {
+              category: {
+                select: { id: true, name: true, slug: true },
+              },
+            },
           },
           brand: {
             select: { id: true, name: true },
@@ -402,7 +425,7 @@ export class ProductsService {
             slug: true,
             description: true,
             metadata: true,
-            categoryId: true,
+
             brandId: true,
             createdAt: true,
             updatedAt: true,
@@ -413,8 +436,12 @@ export class ProductsService {
             avgRating: true,
             reviewCount: true,
 
-            category: {
-              select: { id: true, name: true, slug: true },
+            categories: {
+              select: {
+                category: {
+                  select: { id: true, name: true, slug: true },
+                },
+              },
             },
             brand: {
               select: { id: true, name: true, imageUrl: true },
@@ -488,7 +515,7 @@ export class ProductsService {
   }
 
   async update(id: string, updateProductDto: UpdateProductDto) {
-    const { options, images, ...data } = updateProductDto;
+    const { options, images, categoryIds, ...data } = updateProductDto;
 
     // 0. [SMART MIGRATION SNAPSHOT] Capture old state before changes
     const oldProductState = await this.prisma.product.findFirst({
@@ -522,6 +549,21 @@ export class ProductsService {
         where: { id },
         data: data,
       });
+
+      // Update categories if provided
+      if (updateProductDto.categoryIds) {
+        await tx.productToCategory.deleteMany({ where: { productId: id } });
+        await tx.product.update({
+          where: { id },
+          data: {
+            categories: {
+              create: updateProductDto.categoryIds.map((cid) => ({
+                categoryId: cid,
+              })),
+            },
+          },
+        });
+      }
 
       // Update options if provided
       if (options) {
@@ -638,10 +680,13 @@ export class ProductsService {
             id: true,
             name: true,
             slug: true,
-            categoryId: true,
             brandId: true,
-            category: {
-              select: { id: true, name: true, slug: true },
+            categories: {
+              select: {
+                category: {
+                  select: { id: true, name: true, slug: true },
+                },
+              },
             },
             brand: {
               select: { id: true, name: true },
@@ -735,15 +780,25 @@ export class ProductsService {
         // 1. Lấy thông tin cơ bản để biết Category của sản phẩm hiện tại
         const product = await this.prisma.product.findFirst({
           where: { id: productId },
-          select: { categoryId: true },
+          select: {
+            categories: {
+              take: 1,
+              select: { categoryId: true },
+            },
+          },
         });
 
-        if (!product) return [];
+        if (!product || product.categories.length === 0) return [];
+        const mainCategoryId = product.categories[0].categoryId;
 
         // 2. Tìm các sản phẩm khác trong cùng Category
         const related = await this.prisma.product.findMany({
           where: {
-            categoryId: product.categoryId,
+            categories: {
+              some: {
+                categoryId: mainCategoryId,
+              },
+            },
             id: { not: productId }, // Loại trừ chính nó
           },
           take: limit,
@@ -759,8 +814,12 @@ export class ProductsService {
               orderBy: { displayOrder: 'asc' },
               take: 1,
             },
-            category: {
-              select: { name: true, slug: true },
+            categories: {
+              select: {
+                category: {
+                  select: { name: true, slug: true },
+                },
+              },
             },
             // Load 1 SKU để lấy giá hiển thị chính xác
             skus: {

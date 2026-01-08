@@ -98,6 +98,12 @@ export class AuthService {
                 },
               },
             },
+            categories: {
+              include: {
+                category: true,
+              },
+            },
+            brand: true,
           },
         },
       },
@@ -685,8 +691,8 @@ export class AuthService {
   }
 
   private async ensureGuestRoleAndAssign(userId: string) {
-    let guestRole = await this.prisma.role.findUnique({
-      where: { name: 'GUEST' },
+    let guestRole = await this.prisma.role.findFirst({
+      where: { name: 'GUEST', tenantId: null },
     });
 
     if (!guestRole) {

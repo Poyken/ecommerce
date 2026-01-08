@@ -102,7 +102,11 @@ export class WishlistService {
                 take: 1,
                 orderBy: { price: 'asc' },
               },
-              category: true,
+              categories: {
+                include: {
+                  category: true,
+                },
+              },
             },
           },
         },

@@ -153,7 +153,9 @@ export class AiChatService {
       orConditions.push({ name: { contains: kw, mode: 'insensitive' } });
       orConditions.push({ description: { contains: kw, mode: 'insensitive' } });
       orConditions.push({
-        category: { name: { contains: kw, mode: 'insensitive' } },
+        categories: {
+          some: { category: { name: { contains: kw, mode: 'insensitive' } } },
+        },
       });
     });
 
@@ -164,7 +166,11 @@ export class AiChatService {
         deletedAt: null, // Chỉ lấy sản phẩm chưa bị xóa
       },
       include: {
-        category: { select: { name: true } },
+        categories: {
+          include: {
+            category: { select: { name: true } },
+          },
+        },
         brand: { select: { name: true } },
         skus: {
           where: { status: 'ACTIVE' },
@@ -193,8 +199,8 @@ export class AiChatService {
       return {
         id: p.id,
         name: p.name,
-        category: p.category?.name || 'Uncategorized',
-        brand: p.brand?.name || 'No Brand',
+        category: p.categories[0]?.category.name || 'Uncategorized',
+        brand: (p as any).brand?.name || 'No Brand',
         price: mainSku ? Number(mainSku.price) : 0,
         inStock: mainSku ? (mainSku.stock || 0) > 0 : false,
         description: p.description?.substring(0, 200) || '', // Cắt ngắn mô tả

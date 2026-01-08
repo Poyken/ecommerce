@@ -78,9 +78,12 @@ export class OrdersService {
    * ✅ PRODUCTION-SAFE: ALL validation happens INSIDE transaction
    * ✅ No TOCTOU bugs (stock validated atomically)
    * ✅ No overselling possible
-   * ✅ Atomic coupon usage increment
    */
   async create(userId: string, createOrderDto: CreateOrderDto) {
+    // 0. Get tenant context early
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
     // Return entire order creation in one big transaction
     const order = await this.prisma.$transaction(
       async (tx) => {
@@ -91,8 +94,6 @@ export class OrdersService {
         }
 
         // 2. Get cart with items (inside transaction)
-        const tenant = getTenant();
-        if (!tenant) throw new BadRequestException('Tenant context missing');
 
         const cart = await tx.cart.findUnique({
           where: {
@@ -131,6 +132,7 @@ export class OrdersService {
           quantity: number;
           priceAtPurchase: number;
           productName: string;
+          skuNameSnapshot: string;
           productSlug: string;
           imageUrl?: string;
         }[] = [];
@@ -146,6 +148,13 @@ export class OrdersService {
             status: true,
             price: true,
             imageUrl: true,
+            optionValues: {
+              select: {
+                optionValue: {
+                  select: { value: true },
+                },
+              },
+            },
             product: {
               select: {
                 name: true,
@@ -186,11 +195,19 @@ export class OrdersService {
           const price = Number(sku.price);
           totalAmount += price * item.quantity;
 
+          const optionsString = sku.optionValues
+            .map((ov) => ov.optionValue.value)
+            .join(' - ');
+          const skuNameSnapshot = optionsString
+            ? `${sku.product.name} (${optionsString})`
+            : sku.product.name;
+
           orderItemsData.push({
             skuId: item.skuId,
             quantity: item.quantity,
             priceAtPurchase: price,
             productName: sku.product.name,
+            skuNameSnapshot,
             productSlug: sku.product.slug,
             imageUrl: sku.imageUrl || sku.product.images[0]?.url,
           });
@@ -296,21 +313,39 @@ export class OrdersService {
         // 6. Calculate shipping fee
         // Note: External API call - consider moving to async job if too slow
         let shippingFee = 0;
+        let recipientName = createOrderDto.recipientName;
+        let phoneNumber = createOrderDto.phoneNumber;
+        let shippingAddressSnapshot: any = null;
+        let shippingCity = createOrderDto.shippingCity || null;
+        let shippingDistrict = createOrderDto.shippingDistrict || null;
+        let shippingWard = createOrderDto.shippingWard || null;
+        let shippingPhone =
+          createOrderDto.shippingPhone || createOrderDto.phoneNumber;
+
         if (createOrderDto.addressId) {
           const address = await tx.address.findUnique({
             where: { id: createOrderDto.addressId },
           });
-          if (address && address.districtId && address.wardCode) {
-            try {
-              shippingFee = await this.shippingService.calculateFee(
-                address.districtId,
-                address.wardCode,
-              );
-            } catch (error) {
-              this.logger.warn(
-                'Shipping fee calculation failed, using default',
-              );
-              shippingFee = 30000; // ✅ Fallback fee
+          if (address) {
+            shippingAddressSnapshot = address;
+            recipientName = address.recipientName;
+            phoneNumber = address.phoneNumber;
+            shippingCity = address.city;
+            shippingDistrict = address.district;
+            shippingWard = address.ward;
+            shippingPhone = address.phoneNumber;
+            if (address.districtId && address.wardCode) {
+              try {
+                shippingFee = await this.shippingService.calculateFee(
+                  address.districtId,
+                  address.wardCode,
+                );
+              } catch (error) {
+                this.logger.warn(
+                  'Shipping fee calculation failed, using default',
+                );
+                shippingFee = 30000; // ✅ Fallback fee
+              }
             }
           }
         }
@@ -321,14 +356,20 @@ export class OrdersService {
           data: {
             userId,
             totalAmount,
-            recipientName: createOrderDto.recipientName,
-            phoneNumber: createOrderDto.phoneNumber,
+            recipientName,
+            phoneNumber,
             shippingAddress: createOrderDto.shippingAddress,
+            shippingCity,
+            shippingDistrict,
+            shippingWard,
+            shippingPhone,
+            shippingAddressSnapshot,
             shippingFee,
             paymentMethod: createOrderDto.paymentMethod || 'COD',
             status: OrderStatus.PENDING,
             couponId,
             addressId: createOrderDto.addressId,
+            tenantId: tenant.id,
             items: {
               create: orderItemsData,
             },
@@ -398,6 +439,18 @@ export class OrdersService {
         if (paymentResult.success) {
           paymentUrl = paymentResult.paymentUrl;
 
+          // Create payment record
+          await this.prisma.payment.create({
+            data: {
+              orderId: order.id,
+              amount: order.totalAmount,
+              paymentMethod: createOrderDto.paymentMethod,
+              status: paymentUrl ? 'PENDING' : 'PAID',
+              providerTransactionId: paymentResult.transactionId,
+              tenantId: tenant.id,
+            },
+          });
+
           if (!paymentUrl) {
             await this.prisma.order.update({
               where: { id: order.id },
@@ -440,6 +493,7 @@ export class OrdersService {
               quantity: true,
               priceAtPurchase: true,
               productName: true,
+              skuNameSnapshot: true,
               productSlug: true,
               imageUrl: true,
               sku: {
@@ -479,17 +533,23 @@ export class OrdersService {
         recipientName: true,
         phoneNumber: true,
         shippingAddress: true,
+        shippingAddressSnapshot: true,
         shippingFee: true,
         shippingCode: true,
         transactionId: true,
         createdAt: true,
         updatedAt: true,
         cancellationReason: true,
+        payments: {
+          orderBy: { createdAt: 'desc' },
+        },
         items: {
           select: {
             id: true,
             quantity: true,
             priceAtPurchase: true,
+            productName: true,
+            skuNameSnapshot: true,
             sku: {
               select: {
                 id: true,
@@ -617,6 +677,10 @@ export class OrdersService {
         createdAt: true,
         updatedAt: true,
         cancellationReason: true,
+        shippingAddressSnapshot: true,
+        payments: {
+          orderBy: { createdAt: 'desc' },
+        },
         user: {
           select: {
             id: true,
@@ -631,6 +695,8 @@ export class OrdersService {
             id: true,
             quantity: true,
             priceAtPurchase: true,
+            productName: true,
+            skuNameSnapshot: true,
             sku: {
               select: {
                 id: true,

@@ -72,10 +72,11 @@ export class CreateProductDto {
   @IsOptional()
   description?: string;
 
-  @ApiProperty({ example: 'uuid-category-id' })
-  @IsUUID()
+  @ApiProperty({ example: ['uuid-category-id'] })
+  @IsArray()
+  @IsUUID('all', { each: true })
   @IsNotEmpty()
-  categoryId: string;
+  categoryIds: string[];
 
   @ApiProperty({ example: 'uuid-brand-id' })
   @IsUUID()

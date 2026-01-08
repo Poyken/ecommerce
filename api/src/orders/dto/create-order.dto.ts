@@ -42,6 +42,26 @@ export class CreateOrderDto {
   @IsOptional()
   paymentMethod?: string;
 
+  @ApiProperty({ example: 'Hanoi', required: false })
+  @IsString()
+  @IsOptional()
+  shippingCity?: string;
+
+  @ApiProperty({ example: 'Hoan Kiem', required: false })
+  @IsString()
+  @IsOptional()
+  shippingDistrict?: string;
+
+  @ApiProperty({ example: 'Hang Bac', required: false })
+  @IsString()
+  @IsOptional()
+  shippingWard?: string;
+
+  @ApiProperty({ example: '0987654321', required: false })
+  @IsString()
+  @IsOptional()
+  shippingPhone?: string;
+
   @ApiProperty({ example: ['item-uuid-1', 'item-uuid-2'], required: false })
   @IsOptional()
   itemIds?: string[];

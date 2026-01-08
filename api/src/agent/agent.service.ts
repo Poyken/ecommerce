@@ -5,16 +5,20 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * Service này chịu trách nhiệm xử lý logic nghiệp vụ.
+ * Service này chịu trách nhiệm xử lý logic nghiệp vụ cho AI Agent.
  *
  * 1. NHIỆM VỤ CHÍNH:
- *    - [Mô tả chức năng chính của service]
+ *    - Đóng vai trò là "Bộ não" trung tâm, nhận lệnh từ người dùng (Natural Language) và chuyển thành hành động cụ thể.
+ *    - Điều phối các service khác (Products, Orders, Email...) để thực hiện tác vụ.
  *
  * 2. CÁC PHƯƠNG THỨC QUAN TRỌNG:
- *    - [Liệt kê các method chính]
+ *    - `processUserRequest(userId, message)`: Nhận tin nhắn chat, phân tích ý định (Intent Analysis) và lập kế hoạch thực hiện (Task Planning).
+ *    - `executeTask(task)`: Thực thi từng bước trong kế hoạch (VD: Query DB, gửi mail, update giá).
  *
  * 3. LƯU Ý KHI SỬ DỤNG:
- *    - [Các lưu ý quan trọng]
+ *    - Luôn kiểm tra quyền (Permission) trước khi thực hiện các task nhạy cảm như Update/Delete.
+ *    - Kết quả của bước trước có thể là input của bước sau (Chaining).
+ *    - Xử lý lỗi (Error Handling) phải chặt chẽ để Agent không "chết" giữa chừng khi đang chạy chuỗi task.
  * =====================================================================
  */
 
@@ -213,7 +217,11 @@ If you cannot understand the command, return:
             { description: { contains: search, mode: 'insensitive' } },
           ],
         }),
-        ...(categoryId && { categoryId }),
+        ...(categoryId && {
+          categories: {
+            some: { categoryId },
+          },
+        }),
       },
       take: limit,
       include: {
@@ -225,7 +233,11 @@ If you cannot understand the command, return:
           },
           take: 1,
         },
-        category: { select: { name: true } },
+        categories: {
+          include: {
+            category: { select: { name: true } },
+          },
+        },
         images: { take: 1, select: { url: true } },
       },
     });
@@ -238,7 +250,7 @@ If you cannot understand the command, return:
         products: products.map((p) => ({
           id: p.id,
           name: p.name,
-          category: p.category?.name,
+          category: p.categories[0]?.category.name,
           price: p.skus[0]?.price,
           stock: p.skus[0]?.stock,
           image: p.images[0]?.url,

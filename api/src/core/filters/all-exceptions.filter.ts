@@ -7,6 +7,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { HttpAdapterHost } from '@nestjs/core';
+import * as Sentry from '@sentry/nestjs';
 
 /**
  * =====================================================================
@@ -102,6 +103,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     // Log critical errors with full stack trace
     if (httpStatus >= 500) {
+      // Capture Exception to Sentry
+      Sentry.captureException(exception, {
+        extra: {
+          path: httpAdapter.getRequestUrl(ctx.getRequest()),
+          method: httpAdapter.getRequestMethod(ctx.getRequest()),
+          body: ctx.getRequest().body,
+          user: ctx.getRequest().user,
+        },
+      });
+
       this.logger.error(
         `[StandardError] ${httpAdapter.getRequestMethod(ctx.getRequest())} ${responseBody.error.path} - ${responseBody.error.message}`,
         exception instanceof Error ? exception.stack : '',

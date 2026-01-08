@@ -63,7 +63,11 @@ export class ProductsExportService {
         cursor: cursor ? { id: cursor } : undefined,
         orderBy: { id: 'asc' }, // Reliable order for cursor
         include: {
-          category: true,
+          categories: {
+            include: {
+              category: true,
+            },
+          },
           brand: true,
           skus: {
             include: {
@@ -97,7 +101,8 @@ export class ProductsExportService {
             productId: product.id,
             productName: product.name,
             productSlug: product.slug,
-            category: product.category?.name || '',
+            category:
+              product.categories.map((c) => c.category.name).join(', ') || '',
             brand: product.brand?.name || '',
             skuId: sku.id,
             skuCode: sku.skuCode,

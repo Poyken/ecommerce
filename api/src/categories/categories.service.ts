@@ -220,7 +220,11 @@ export class CategoriesService extends BaseCrudService<
   async remove(id: string) {
     // 1. Check sản phẩm con
     const hasProducts = await this.prisma.product.findFirst({
-      where: { categoryId: id },
+      where: {
+        categories: {
+          some: { categoryId: id },
+        },
+      },
     });
     if (hasProducts) {
       throw new BadRequestException(

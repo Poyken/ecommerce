@@ -50,11 +50,18 @@ model User {
 
 model Role {
   id          String           @id @default(uuid())
-  name        String           @unique
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  name        String
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
   permissions RolePermission[]
   users       UserRole[]
+
+  // Multi-tenancy
+  tenantId      String?
+  tenant        Tenant? @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, name])
+  @@index([tenantId])
 }
 
 model Permission {
@@ -110,7 +117,7 @@ model Category {
   metaTitle       String?
   parent          Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
   children        Category[] @relation("CategoryToCategory")
-  products        Product[]
+  products        ProductToCategory[]
 
   // Multi-tenancy
   tenantId      String
@@ -149,8 +156,8 @@ model Product {
   name            String               @db.VarChar(255)
   slug            String               @db.VarChar(255)
   description     String?
-  categoryId      String
   brandId         String
+  categories      ProductToCategory[]
   metadata        Json?
   createdAt       DateTime             @default(now())
   updatedAt       DateTime             @updatedAt
@@ -168,7 +175,6 @@ model Product {
 
   products        BlogProduct[]
   brand           Brand                @relation(fields: [brandId], references: [id])
-  category        Category             @relation(fields: [categoryId], references: [id])
   images          ProductImage[]
   options         ProductOption[]
   translations    ProductTranslation[]
@@ -184,13 +190,13 @@ model Product {
   // PERFORMANCE INDEXES (Production-ready)
   // ============================================================
   
-  // 1. Category + Brand + Price Range Filter (40% of queries)
-  // Covers: WHERE categoryId = X AND brandId = Y AND minPrice >= A AND maxPrice <= B
-  @@index([categoryId, brandId, minPrice, maxPrice, createdAt(sort: Desc)], name: "idx_product_category_brand_price")
+  // 1. Brand + Price Range Filter
+  // Covers: WHERE brandId = Y AND minPrice >= A AND maxPrice <= B
+  @@index([brandId, minPrice, maxPrice, createdAt(sort: Desc)], name: "idx_product_brand_price")
   
-  // 2. Category + Price Range (25% of queries)
-  // Covers: WHERE categoryId = X AND minPrice >= A ORDER BY createdAt DESC
-  @@index([categoryId, minPrice, maxPrice, createdAt(sort: Desc)], name: "idx_product_category_price")
+  // 2. Price Range (25% of queries)
+  // Covers: WHERE minPrice >= A ORDER BY createdAt DESC
+  @@index([minPrice, maxPrice, createdAt(sort: Desc)], name: "idx_product_price_range")
   
   // 3. Brand Filter (15% of queries)
   // Covers: WHERE brandId = X ORDER BY createdAt DESC
@@ -206,7 +212,7 @@ model Product {
   
   // 6. Active Products Filter (80% of queries need this)
   // Partial index: WHERE deletedAt IS NULL
-  @@index([deletedAt, categoryId, createdAt(sort: Desc)], name: "idx_product_active_category")
+  @@index([deletedAt, createdAt(sort: Desc)], name: "idx_product_active")
   
   // 7. Rating Filter (for "top rated" queries)
   // Covers: WHERE avgRating >= 4 ORDER BY avgRating DESC
@@ -218,17 +224,28 @@ model Product {
   @@index([metadata], type: Gin)
   
   // Legacy indexes (keep for backward compatibility, will remove in next version)
-  @@index([categoryId, name])
+  // No duplicate name index here
   @@index([slug])
 
   @@index([deletedAt])
   @@index([tenantId])
-  @@index([tenantId, categoryId, deletedAt])
+  @@index([tenantId, deletedAt])
   @@index([tenantId, brandId, deletedAt])
   @@index([tenantId, minPrice, maxPrice, deletedAt])
   @@unique([tenantId, slug])
   @@index([tenantId, deletedAt, createdAt]) // For Storefront listings
   @@unique([id, tenantId])
+}
+
+model ProductToCategory {
+  productId  String
+  categoryId String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([productId, categoryId])
+  @@index([categoryId])
+  @@index([productId])
 }
 
 model ProductOption {
@@ -389,10 +406,16 @@ model Order {
   shippingFee     Decimal       @default(0.00) @db.Decimal(20, 2)
   recipientName   String
   phoneNumber     String
-  shippingAddress String
+  shippingAddress String? // Street address or full address
+  shippingCity    String?
+  shippingDistrict String?
+  shippingWard    String?
+  shippingPhone   String?
+  shippingAddressSnapshot Json? // Full snapshot { street: "", city: "", district: "", ... }
   paymentMethod   String?
   paymentStatus   PaymentStatus @default(UNPAID)
-  transactionId   String?
+  transactionId   String? // Legacy, will move to Payment model
+  payments        Payment[]
   orderDate       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   createdAt       DateTime      @default(now())
@@ -453,6 +476,7 @@ model OrderItem {
   
   // Denormalized Data for Historial Integrity & Performance
   productName     String?
+  skuNameSnapshot String?
   productSlug     String?
   imageUrl        String?
 
@@ -693,6 +717,30 @@ enum DiscountType {
   FIXED_AMOUNT
 }
 
+model Payment {
+  id              String        @id @default(uuid())
+  orderId         String
+  amount          Decimal       @db.Decimal(20, 2)
+  currency        String        @default("VND")
+  status          PaymentStatus @default(PENDING)
+  paymentMethod   String        // MOMO, VNPAY, STRIPE, COD
+  providerTransactionId String? // ID từ phía cổng thanh toán
+  metadata        Json?         // Lưu log response từ Gateway
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  order           Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  // Multi-tenancy
+  tenantId        String
+  tenant          Tenant? @relation(fields: [tenantId], references: [id])
+
+  @@index([orderId])
+  @@index([status])
+  @@index([tenantId])
+}
+
 model NewsletterSubscriber {
   id        String   @id @default(uuid())
   email     String
@@ -881,7 +929,9 @@ model Tenant {
   brands        Brand[]
   coupons       Coupon[]
   skus          Sku[]
+  roles         Role[]
   newsletterSubscribers NewsletterSubscriber[]
+  payments              Payment[]
   
   // Analytics
   metrics       StoreMetrics[]

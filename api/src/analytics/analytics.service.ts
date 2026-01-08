@@ -333,7 +333,8 @@ export class AnalyticsService {
             c."name" as name,
             SUM(CAST(oi."priceAtPurchase" AS DECIMAL) * oi."quantity") as revenue
           FROM "Category" c
-          JOIN "Product" p ON p."categoryId" = c."id"
+          JOIN "ProductToCategory" ptc ON ptc."categoryId" = c."id"
+          JOIN "Product" p ON p."id" = ptc."productId"
           JOIN "Sku" s ON s."productId" = p."id"
           JOIN "OrderItem" oi ON oi."skuId" = s."id"
           JOIN "Order" o ON o."id" = oi."orderId"

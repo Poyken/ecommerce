@@ -130,7 +130,7 @@ export class InvoiceService {
         name: order.recipientName,
         email: order.user?.email || '',
         phone: order.phoneNumber,
-        address: order.shippingAddress,
+        address: order.shippingAddress || undefined,
       },
       items,
       subtotal,

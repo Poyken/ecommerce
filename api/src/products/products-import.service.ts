@@ -120,17 +120,22 @@ export class ProductsImportService {
             : { slug: productRow.productSlug }) as any,
           update: {
             name: productRow.productName,
-            categoryId,
             brandId,
+            categories: {
+              deleteMany: {},
+              create: [{ categoryId }],
+            },
           },
           create: {
             name: productRow.productName,
             slug:
               productRow.productSlug ||
               `${productRow.productName.toLowerCase().replace(/ /g, '-')}-${Date.now()}`,
-            categoryId,
             brandId,
             tenantId: getTenant()!.id,
+            categories: {
+              create: [{ categoryId }],
+            },
           },
         });
 

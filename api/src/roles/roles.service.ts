@@ -10,6 +10,7 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { getTenant } from '@core/tenant/tenant.context';
 
 /**
  * =====================================================================
@@ -45,19 +46,33 @@ export class RolesService {
    * Ví dụ: "MANAGER", "SHIPPER".
    */
   async create(createRoleDto: CreateRoleDto) {
-    const existing = await this.prisma.role.findUnique({
-      where: { name: createRoleDto.name },
+    const tenant = getTenant();
+    const existing = await this.prisma.role.findFirst({
+      where: {
+        name: createRoleDto.name,
+        tenantId: tenant?.id || null,
+      },
     });
     if (existing) {
       throw new ConflictException('Role này đã tồn tại');
     }
-    return this.prisma.role.create({ data: createRoleDto });
+    return this.prisma.role.create({
+      data: {
+        ...createRoleDto,
+        tenantId: tenant?.id,
+      },
+    });
   }
 
   async findAll(search?: string, page = 1, limit = 10) {
-    const where = search
-      ? { name: { contains: search, mode: 'insensitive' as const } }
-      : {};
+    const tenant = getTenant();
+    const where: any = {
+      OR: [{ tenantId: tenant?.id }, { tenantId: null }],
+    };
+
+    if (search) {
+      where.name = { contains: search, mode: 'insensitive' as const };
+    }
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
