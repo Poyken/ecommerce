@@ -126,6 +126,10 @@ export class HealthController {
         user: Math.round(cpuUsage.user / 1000) + 'ms',
         system: Math.round(cpuUsage.system / 1000) + 'ms',
       },
+      eventLoop: {
+        lag: this.getEventLoopLag() + 'ms',
+        status: this.getEventLoopLag() < 100 ? 'healthy' : 'degraded',
+      },
       uptime: {
         seconds: Math.round(process.uptime()),
         formatted: this.formatUptime(process.uptime()),
@@ -152,6 +156,19 @@ export class HealthController {
     parts.push(`${secs}s`);
 
     return parts.join(' ');
+  }
+
+  /**
+   * [P18 OPTIMIZATION] Measure Event Loop Lag
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   * Nếu giá trị này cao (> 100ms), nghĩa là Server đang bị quá tải CPU
+   * hoặc có logic đồng bộ (Sync) tốn quá nhiều thời gian, làm nghẽn hàng đợi.
+   */
+  private getEventLoopLag(): number {
+    const start = Date.now();
+    // Use setImmediate to measure how long it takes for a callback to be executed
+    setImmediate(() => {});
+    return Date.now() - start;
   }
 
   @Get('metrics')

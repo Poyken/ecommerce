@@ -79,6 +79,16 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
         async $allOperations({ model, operation, args, query }) {
           const tenant = getTenant();
 
+          // [RLS OPTIMIZATION] Set session variable for PostgreSQL Row Level Security
+          // 📚 GIẢI THÍCH: Lệnh này giúp Database biết "Ai" đang truy cập để áp dụng RLS Policy.
+          if (tenant) {
+            await client.$executeRawUnsafe(
+              `SET app.current_tenant_id = '${tenant.id}';`,
+            );
+          } else {
+            await client.$executeRawUnsafe(`SET app.current_tenant_id = '';`);
+          }
+
           // 1. Multi-tenancy Filter
           if (tenant && !SHARED_MODELS.has(model as string)) {
             const anyArgs = args as any;
