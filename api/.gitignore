@@ -34,3 +34,8 @@ docker-compose*.yml
 # Misc
 .DS_Store
 *.pem
+
+# Generated Reports
+coverage_output*.md
+test_output.txt
+intern-comments-report.json
