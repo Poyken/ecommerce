@@ -7,6 +7,7 @@ import {
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AuditService } from './audit.service';
+import { maskSensitiveData } from '@/common/utils/masking.helper';
 
 /**
  * =====================================================================
@@ -71,10 +72,10 @@ export class AuditInterceptor implements NestInterceptor {
               action,
               resource,
               payload: {
-                body: request.body,
+                body: maskSensitiveData(request.body),
                 params: request.params,
                 query: request.query,
-                response: data, // Có thể log cả response nếu cần
+                response: maskSensitiveData(data), // Masking response too
               },
               ipAddress: ip,
               userAgent,

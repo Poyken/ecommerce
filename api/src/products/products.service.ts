@@ -834,29 +834,59 @@ export class ProductsService {
    */
   @Cron('0 2 * * 0') // Sunday at 2 AM
   async reconcileAllProducts() {
-    this.logger.log('Starting global product data reconciliation...');
+    this.logger.log(
+      'Starting global product data reconciliation (Batch Raw SQL)...',
+    );
 
-    // Process in batches of 50 to avoid memory pressure or long DB locks
-    const batchSize = 50;
-    let offset = 0;
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        // 1. Update Price Ranges for all active products based on their SKUs
+        await tx.$executeRaw`
+          UPDATE "Product" p
+          SET 
+            "minPrice" = sub.min_p,
+            "maxPrice" = sub.max_p
+          FROM (
+            SELECT 
+              "productId",
+              MIN(LEAST("price", COALESCE("salePrice", "price"))) as min_p,
+              MAX(GREATEST("price", COALESCE("salePrice", "price"))) as max_p
+            FROM "Sku"
+            WHERE "status" = 'ACTIVE' AND "deletedAt" IS NULL
+            GROUP BY "productId"
+          ) sub
+          WHERE p.id = sub."productId" AND p."deletedAt" IS NULL
+        `;
 
-    while (true) {
-      const products = await this.prisma.product.findMany({
-        select: { id: true },
-        skip: offset,
-        take: batchSize,
-        where: { deletedAt: null },
+        // 2. Update Ratings for all products based on their approved reviews
+        await tx.$executeRaw`
+          UPDATE "Product" p
+          SET 
+            "avgRating" = COALESCE(sub.avg_r, 0),
+            "reviewCount" = COALESCE(sub.cnt, 0)
+          FROM (
+            SELECT 
+              "productId",
+              AVG("rating") as avg_r,
+              COUNT(*) as cnt
+            FROM "Review"
+            WHERE "isApproved" = true AND "deletedAt" IS NULL
+            GROUP BY "productId"
+          ) sub
+          WHERE p.id = sub."productId" AND p."deletedAt" IS NULL
+        `;
       });
 
-      if (products.length === 0) break;
+      // 3. Clear all product-related caches
+      await this.cacheService.invalidatePattern('products:*');
+      await this.cacheService.invalidatePattern('analytics:*');
 
-      await Promise.all(products.map((p) => this.reconcileProduct(p.id)));
-
-      this.logger.log(`Reconciled batch ${offset / batchSize + 1}`);
-      offset += batchSize;
+      this.logger.log(
+        'Global product data reconciliation complete using Raw SQL.',
+      );
+    } catch (error) {
+      this.logger.error('Global reconciliation failed:', error);
     }
-
-    this.logger.log('Global product data reconciliation complete.');
   }
 
   /**

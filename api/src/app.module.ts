@@ -69,6 +69,7 @@ import { RedisThrottlerStorageService } from '@core/config/throttler/redis-throt
 import { LoggingInterceptor } from '@core/interceptors/logging.interceptor';
 import { CorrelationIdMiddleware } from '@core/middlewares/correlation-id.middleware';
 import { RedisService } from '@core/redis/redis.service';
+import { IdempotencyInterceptor } from '@core/interceptors/idempotency.interceptor';
 import { TenantMiddleware } from '@core/tenant/tenant.middleware';
 // import { TenantsController } from '@core/tenant/tenants.controller'; // REMOVED
 import { CacheModule } from '@nestjs/cache-manager';
@@ -131,8 +132,14 @@ import { MetricsModule } from '@core/metrics/metrics.module';
       useFactory: (redisService: RedisService) => ({
         throttlers: [
           {
-            ttl: 60000, // 60 giây
-            limit: 100, // 100 requests
+            name: 'short',
+            ttl: 1000, // 1 giây
+            limit: 10, // Max 10 request/giây -> Chống burst/bot
+          },
+          {
+            name: 'long',
+            ttl: 60000, // 1 phút
+            limit: 100, // Max 100 request/phút -> Chống spam diện rộng
           },
         ],
         storage: new RedisThrottlerStorageService(redisService),
@@ -256,6 +263,10 @@ import { MetricsModule } from '@core/metrics/metrics.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: AuditInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: IdempotencyInterceptor,
     },
   ],
 })

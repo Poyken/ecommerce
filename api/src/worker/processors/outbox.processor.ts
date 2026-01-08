@@ -57,10 +57,22 @@ export class OutboxProcessor {
         return;
       }
 
-      this.logger.debug(`Processing ${events.length} outbox events...`);
+      this.logger.log(`Processing ${events.length} outbox events...`);
 
       for (const event of events) {
         try {
+          /**
+           * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+           * Lưu vết log chi tiết giúp ta biết:
+           * 1. Sự kiện nào đang được xử lý? (Type)
+           * 2. Dữ liệu đầu vào là gì? (Payload)
+           * 3. Kết quả thành công hay thất bại?
+           * Điều này cực kỳ quan trọng khi hệ thống có hàng ngàn sự kiện chạy ngầm.
+           */
+          this.logger.log(
+            `[Outbox] Dispatching: ${event.type} (ID: ${event.id})`,
+          );
+
           await this.processEvent(event);
 
           await this.prisma.outboxEvent.update({
@@ -70,8 +82,14 @@ export class OutboxProcessor {
               processedAt: new Date(),
             },
           });
+
+          this.logger.log(
+            `[Outbox] ✅ Success: ${event.type} (ID: ${event.id})`,
+          );
         } catch (error) {
-          this.logger.error(`Failed to process event ${event.id}`, error);
+          this.logger.error(
+            `[Outbox] ❌ Failed: ${event.type} (ID: ${event.id}). Error: ${error.message}`,
+          );
           await this.prisma.outboxEvent.update({
             where: { id: event.id },
             data: {

@@ -43,6 +43,7 @@ model User {
 
   @@index([email])
   @@index([tenantId])
+  @@index([tenantId, createdAt(sort: Desc)]) // For tenant user listing
   @@unique([tenantId, email])
   @@unique([id, tenantId])
 }
@@ -117,6 +118,8 @@ model Category {
 
   @@index([parentId])
   @@index([tenantId])
+  @@index([tenantId, parentId])
+  @@index([tenantId, createdAt(sort: Desc)])
   @@unique([tenantId, slug])
   @@unique([tenantId, name])
   @@unique([id, tenantId])
@@ -136,6 +139,7 @@ model Brand {
   tenant    Tenant? @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId])
+  @@index([tenantId, createdAt(sort: Desc)])
   @@unique([tenantId, name])
   @@unique([id, tenantId])
 }
@@ -218,6 +222,9 @@ model Product {
 
   @@index([deletedAt])
   @@index([tenantId])
+  @@index([tenantId, categoryId, deletedAt])
+  @@index([tenantId, brandId, deletedAt])
+  @@index([tenantId, minPrice, maxPrice, deletedAt])
   @@unique([tenantId, slug])
   @@index([tenantId, deletedAt, createdAt]) // For Storefront listings
   @@unique([id, tenantId])
@@ -273,6 +280,7 @@ model Sku {
   @@index([productId])
   @@index([skuCode])
   @@index([tenantId])
+  @@index([tenantId, productId, status])
   @@unique([tenantId, skuCode])
   @@unique([id, tenantId])
 }
@@ -481,6 +489,7 @@ model Review {
   @@index([productId, rating])
   @@index([skuId])
   @@index([tenantId])
+  @@index([tenantId, productId, isApproved, createdAt(sort: Desc)])
   @@index([sentiment])
 }
 
@@ -592,6 +601,7 @@ model Wishlist {
   @@unique([userId, productId])
   @@index([userId])
   @@index([tenantId])
+  @@index([tenantId, userId, createdAt(sort: Desc)])
 }
 
 model Blog {
@@ -619,6 +629,8 @@ model Blog {
 
   @@index([slug])
   @@index([tenantId])
+  @@index([tenantId, category])
+  @@index([tenantId, publishedAt(sort: Desc)])
   @@unique([tenantId, slug])
   @@index([category])
   @@index([language])

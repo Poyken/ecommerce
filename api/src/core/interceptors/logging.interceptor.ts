@@ -1,4 +1,5 @@
 import { LoggerService } from '@core/logger/logger.service';
+import { maskSensitiveData } from '@/common/utils/masking.helper';
 import {
   CallHandler,
   ExecutionContext,
@@ -7,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { MetricsService } from '@core/metrics/metrics.service';
 
 /**
  * =====================================================================
@@ -29,7 +31,10 @@ import { tap } from 'rxjs/operators';
  */
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  constructor(private readonly logger: LoggerService) {}
+  constructor(
+    private readonly logger: LoggerService,
+    private readonly metrics: MetricsService,
+  ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const request = context.switchToHttp().getRequest();
@@ -44,6 +49,12 @@ export class LoggingInterceptor implements NestInterceptor {
           const response = context.switchToHttp().getResponse();
           const statusCode = response.statusCode;
           const duration = Date.now() - startTime;
+
+          // [METRICS OPTIMIZATION] Track business performance
+          this.metrics.incrementCounter(`api_requests_total`);
+          this.metrics.incrementCounter(`api_requests_status_${statusCode}`);
+          this.metrics.recordHistogram(`api_request_duration_ms`, duration);
+
           const correlationId = request.correlationId || 'unknown';
 
           // Production Grade Structured Log with Correlation ID
@@ -59,6 +70,7 @@ export class LoggingInterceptor implements NestInterceptor {
               userId,
               ip,
               userAgent: userAgent.substring(0, 100),
+              body: maskSensitiveData(request.body),
             }),
           );
 
