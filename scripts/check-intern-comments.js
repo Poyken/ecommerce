@@ -13,7 +13,7 @@ const CONFIG = {
     { dir: 'web/services', ext: /\.(ts|tsx)$/ },
   ],
   keyword: 'thực tập sinh',
-  ignore: [/node_modules/, /\.next/, /dist/],
+  ignore: [/node_modules/, /\.next/, /dist/, /\.spec\.ts$/, /\.test\.ts$/, /\.test\.tsx$/, /\.d\.ts$/, /generated/],
 };
 
 function getAllFiles(dirPath, extRegex, arrayOfFiles) {
@@ -29,7 +29,9 @@ function getAllFiles(dirPath, extRegex, arrayOfFiles) {
       }
     } else {
       if (extRegex.test(file)) {
-        arrayOfFiles.push(fullPath);
+        if (!CONFIG.ignore.some(re => re.test(fullPath))) {
+          arrayOfFiles.push(fullPath);
+        }
       }
     }
   });

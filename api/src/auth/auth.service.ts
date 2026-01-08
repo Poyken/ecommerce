@@ -98,12 +98,6 @@ export class AuthService {
                 },
               },
             },
-            categories: {
-              include: {
-                category: true,
-              },
-            },
-            brand: true,
           },
         },
       },

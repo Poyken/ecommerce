@@ -201,6 +201,8 @@ async function main() {
   // 4. CREATE SUPERADMIN USER
   // ===================================
   const hashPassword = await bcrypt.hash('123456', 10);
+
+  // Super Admin (belongs to default tenant but has global permissions)
   const superAdminUser = await prisma.user.create({
     data: {
       email: 'super@platform.com',
@@ -218,11 +220,77 @@ async function main() {
     },
   });
 
+  // Tenant Admin (normal admin for the default tenant)
+  const tenantAdminUser = await prisma.user.create({
+    data: {
+      email: 'admin@localhost.com',
+      password: hashPassword,
+      firstName: 'Tenant',
+      lastName: 'Admin',
+      tenantId: defaultTenant.id,
+    },
+  });
+
+  await prisma.userRole.create({
+    data: {
+      userId: tenantAdminUser.id,
+      roleId: adminRole.id,
+    },
+  });
+
+  // ===================================
+  // 5. SEED CATALOG (Category, Brand, Product, SKU)
+  // ===================================
+  console.log('📦 Seeding Catalog...');
+
+  const category = await prisma.category.create({
+    data: {
+      name: 'Furniture',
+      slug: 'furniture',
+      tenantId: defaultTenant.id,
+    },
+  });
+
+  const brand = await prisma.brand.create({
+    data: {
+      name: 'TestBrand',
+      tenantId: defaultTenant.id,
+    },
+  });
+
+  const product = await prisma.product.create({
+    data: {
+      name: 'Test Ergonomic Chair',
+      slug: 'test-ergonomic-chair',
+      description: 'A comfortable chair for testing purposes.',
+      categories: {
+        create: {
+          categoryId: category.id,
+        },
+      },
+      brandId: brand.id,
+      tenantId: defaultTenant.id,
+    },
+  });
+
+  const sku = await prisma.sku.create({
+    data: {
+      skuCode: 'SKU-TEST-001',
+      price: 199000,
+      stock: 100,
+      status: 'ACTIVE',
+      productId: product.id,
+      tenantId: defaultTenant.id,
+    },
+  });
+
+  console.log(`✅ Created Product: ${product.name} (SKU: ${sku.skuCode})`);
+
   console.log('\n✨ DATABASE RESET COMPLETE ✨');
   console.log('--------------------------------------------------');
-  console.log('Email: super@platform.com');
-  console.log('Password: 123456');
-  console.log('Role: SUPER_ADMIN (Full Permissions)');
+  console.log('Super Admin: super@platform.com / 123456');
+  console.log('Tenant Admin: admin@localhost.com / 123456');
+  console.log(`Test Product: ${product.name} (SKU: ${sku.skuCode})`);
   console.log('--------------------------------------------------');
 }
 

@@ -146,7 +146,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     // Decrypt whitelistedIps if encrypted
     let whitelistedIps = user.whitelistedIps;
-    if (typeof whitelistedIps === 'string' && whitelistedIps.includes(':')) {
+    if (
+      whitelistedIps &&
+      typeof whitelistedIps === 'string' &&
+      whitelistedIps.includes(':')
+    ) {
       whitelistedIps = this.encryptionService.decryptObject(whitelistedIps);
     }
 

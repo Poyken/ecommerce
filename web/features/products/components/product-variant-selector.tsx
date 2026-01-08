@@ -137,22 +137,24 @@ export function ProductVariantSelector({
     }
 
     // Case B: URL không có -> Chọn SKU đầu tiên còn hàng (Available Stock)
-    if (options.length > 0) {
-      const availableSku = skus.find((s) => s.stock > 0) || skus[0];
-      if (availableSku && availableSku.optionValues) {
+    const availableSku = skus.find((s) => s.stock > 0) || skus[0];
+    if (availableSku) {
+      if (options.length > 0 && availableSku.optionValues) {
         availableSku.optionValues.forEach((ov) => {
           if (ov?.optionValue)
             newSelectedOptions[ov.optionValue.optionId] = ov.optionValue.id;
         });
+      }
 
-        isInitialized.current = true;
+      isInitialized.current = true;
+      if (Object.keys(newSelectedOptions).length > 0) {
         setSelectedOptions(newSelectedOptions);
+      }
 
-        // Notify auto-selection
-        if (availableSku.id !== lastNotifiedSkuId.current) {
-          lastNotifiedSkuId.current = availableSku.id;
-          onSkuChange?.(availableSku);
-        }
+      // Notify auto-selection (Case for both options > 0 and options === 0)
+      if (availableSku.id !== lastNotifiedSkuId.current) {
+        lastNotifiedSkuId.current = availableSku.id;
+        onSkuChange?.(availableSku);
       }
     }
   }, [

@@ -88,6 +88,15 @@ export class TenantMiddleware implements NestMiddleware {
         next();
       });
     } else {
+      // [SECURITY] If a specific tenant domain was requested but not found,
+      // do NOT allow bypass to global context unless it's a system-whitelisted domain.
+      if (req.headers['x-tenant-domain']) {
+        return res.status(403).json({
+          error: 'Unauthorized Tenant',
+          message:
+            'The requested store domain does not exist or is not registered.',
+        });
+      }
       next();
     }
   }

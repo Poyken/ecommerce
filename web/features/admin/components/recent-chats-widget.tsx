@@ -23,6 +23,24 @@ interface Conversation {
   updatedAt: string;
 }
 
+/**
+ * =====================================================================
+ * RECENT CHATS WIDGET - Widget hiển thị tin nhắn mới nhất
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SERVER COMPONENT FETCHING:
+ * - Component này là `async` (Server Component).
+ * - Nó gọi API trực tiếp (`http`) trên server trước khi trả về HTML cho client.
+ * - Lợi ích: SEO tốt, bảo mật (không lộ API key), giảm JS gửi xuống client.
+ *
+ * 2. GRACEFUL DEGRADATION (Lỗi mềm):
+ * - Dòng `.catch(() => ({ data: [] }))` rất quan trọng.
+ * - Nếu API chat bị lỗi (ví dụ: Chat Service sập), Widget này sẽ hiển thị "No active conversations" thay vì làm crashed toàn bộ trang Admin Dashboard.
+ * - Đây là tư duy "Fail Safe" trong thiết kế hệ thống.
+ * =====================================================================
+ */
 export async function RecentChatsWidget() {
   // Fetch recent conversations
   // Assuming API endpoint exists. If not, this serves as the frontend implementation requirement.

@@ -49,8 +49,8 @@ export class TokenService {
     };
 
     const accessToken = this.jwtService.sign(accessPayload, {
-      secret: this.configService.get('JWT_ACCESS_SECRET'),
-      expiresIn: this.configService.get('JWT_ACCESS_EXPIRED'),
+      secret: this.configService.get('JWT_ACCESS_SECRET') || 'access-secret',
+      expiresIn: this.configService.get('JWT_ACCESS_EXPIRED') || '15m',
     });
 
     // Refresh Token Payload
