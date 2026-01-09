@@ -68,7 +68,7 @@ export function useProducts(params?: GetProductsParams) {
     });
   }
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const url = `${apiUrl}/products?${searchParams.toString()}`;
 
   const { data, error, isLoading, isValidating, mutate } =
@@ -95,7 +95,7 @@ export function useProducts(params?: GetProductsParams) {
  * @returns { product, error, isLoading }
  */
 export function useProduct(id: string | null) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const url = id ? `${apiUrl}/products/${id}` : null;
 
   const { data, error, isLoading } = useSWR<{ data: Product }>(url);
@@ -115,7 +115,7 @@ export function useProduct(id: string | null) {
  * Hook để fetch danh sách categories với client-side caching.
  */
 export function useCategories() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const url = `${apiUrl}/categories`;
 
   const { data, error, isLoading } = useSWR<{
@@ -137,7 +137,7 @@ export function useCategories() {
  * Hook để fetch danh sách brands với client-side caching.
  */
 export function useBrands() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
   const url = `${apiUrl}/brands`;
 
   const { data, error, isLoading } = useSWR<{
