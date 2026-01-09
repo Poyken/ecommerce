@@ -664,6 +664,23 @@ async function main() {
   });
   console.log('✅ Default Tenant (localhost) ensured.');
 
+  // 4.2b VERCEL TENANT (Production)
+  const vercelTenant = await prisma.tenant.upsert({
+    where: { domain: 'web-five-gilt-79.vercel.app' },
+    update: {},
+    create: {
+      name: 'Luxe Furniture (Prod)',
+      domain: 'web-five-gilt-79.vercel.app',
+      plan: 'ENTERPRISE',
+      themeConfig: {
+        primaryColor: '#000000',
+        fontFamily: 'Inter',
+        borderRadius: '8px',
+      },
+    },
+  });
+  console.log('✅ Vercel Tenant ensured.');
+
   // 4.3 TENANT ADMIN (admin@localhost.com)
   const tenantAdminUser = await prisma.user.create({
     data: {
