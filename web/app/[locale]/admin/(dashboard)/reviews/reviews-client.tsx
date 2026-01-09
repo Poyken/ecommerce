@@ -39,7 +39,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   deleteReviewAction,
   replyToReviewAction,
-  toggleReviewStatusAction,
+  updateReviewStatusAction,
   analyzeReviewSentimentAction,
 } from "@/features/admin/actions";
 import {
@@ -187,7 +187,7 @@ export function ReviewsClient({
 
   const togglePublish = (reviewId: string, currentStatus: boolean) => {
     startTransition(async () => {
-      const result = await toggleReviewStatusAction(reviewId, !currentStatus);
+      const result = await updateReviewStatusAction(reviewId, !currentStatus);
       if (result.success) {
         toast({
           title: t("success"),

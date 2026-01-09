@@ -91,10 +91,9 @@ export function BrandsPageClient({
     () => getBrandsAction(page, limit, debouncedSearchTerm),
     {
       fallbackData: {
+        success: true,
         data: initialBrands,
         meta: meta!,
-        statusCode: 200,
-        message: "Success",
       },
       revalidateOnFocus: false,
     }

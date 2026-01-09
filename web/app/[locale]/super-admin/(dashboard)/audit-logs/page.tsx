@@ -1,24 +1,11 @@
 import { AuditLogsClient } from "@/app/[locale]/admin/(dashboard)/audit-logs/audit-logs-client";
-import { getAuditLogsAction } from "@/features/admin/actions";
+import { getAuditLogsAction } from "@/features/admin/domain-actions/security-actions";
 import { getTranslations } from "next-intl/server";
+import { AuditLog } from "@/types/models";
 
 /**
  * =================================================================================================
  * SUPER ADMIN AUDIT LOGS - NHẬT KÝ HOẠT ĐỘNG TOÀN NỀN TẢNG
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SHARED CLIENT COMPONENT:
- *    - Tái sử dụng `AuditLogsClient` từ module Admin để đồng bộ về UI/UX.
- *    - Truyền `basePath="/super-admin/audit-logs"` để đảm bảo phân trang và search hoạt động đúng URL.
- *
- * 2. GLOBAL VISIBILITY:
- *    - Khác với Admin thường (chỉ xem log của 1 tenant), Super Admin xem được log của tất cả
- *      các hoạt động hệ thống (Cross-tenant logs).
- *
- * 3. ERROR HANDLING:
- *    - Hiển thị thông báo "Access Denied" trang nhã nếu backend trả về lỗi phân quyền.
  * =================================================================================================
  */
 export default async function SuperAdminAuditLogsPage({
@@ -32,9 +19,14 @@ export default async function SuperAdminAuditLogsPage({
   const filter = (params?.filter as string) || "all";
 
   // In a real multi-tenant app, getAuditLogsAction for Super Admin might return logs across all tenants
-  const response = await getAuditLogsAction(page, 20, search, filter);
+  const response = await getAuditLogsAction({
+    page,
+    limit: 20,
+    search,
+    filter,
+  });
 
-  if ("error" in response) {
+  if (response.error) {
     const t = await getTranslations("superAdmin.auditLogs");
     return (
       <div className="flex items-center justify-center h-[50vh]">
@@ -53,7 +45,7 @@ export default async function SuperAdminAuditLogsPage({
 
   return (
     <AuditLogsClient
-      logs={logs as any[]}
+      logs={logs as AuditLog[]}
       total={total}
       page={page}
       limit={20}

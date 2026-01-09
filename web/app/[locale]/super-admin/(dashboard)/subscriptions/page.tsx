@@ -44,14 +44,17 @@ export default async function SubscriptionsPage({
     );
   }
 
-  const { data, meta } = res.data!;
+  const data = res.data || [];
+  const total = res.meta?.total || 0;
+  const currentPage = res.meta?.page || 1;
+  const currentLimit = res.meta?.limit || 10;
 
   return (
     <SubscriptionsClient
       subscriptions={data}
-      total={meta.total}
-      page={meta.page}
-      limit={meta.limit}
+      total={total}
+      page={currentPage}
+      limit={currentLimit}
     />
   );
 }

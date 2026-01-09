@@ -4,7 +4,7 @@ import { FormDialog } from "@/components/shared/form-dialog";
 import { useToast } from "@/components/shared/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { updateUserAction } from "@/features/admin/actions";
+import { updateUserAction } from "@/features/admin/domain-actions/user-actions";
 import { User } from "@/types/models";
 import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";

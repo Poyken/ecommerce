@@ -107,13 +107,13 @@ export default async function AdminDashboardPage() {
     blogStatsRes,
   ] = await Promise.all([
     getAnalyticsStatsAction(),
-    getSalesDataAction(7),
-    getTopProductsAction(5),
+    getSalesDataAction("7"),
+    getTopProductsAction(),
     http<{ data: Order[] }>("/orders?limit=5&includeItems=true"),
     http<{ data: any[]; meta: { total: number } }>(
       "/skus?limit=5&stockLimit=5&includeProduct=true"
     ),
-    getReviewsAction(1, 4), // 4 recent reviews
+    getReviewsAction({ page: 1, limit: 4 }), // 4 recent reviews
     getPagesAction(),
     getBlogStatsAction(),
   ]);

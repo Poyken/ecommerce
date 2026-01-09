@@ -53,7 +53,7 @@ export function RolesPageClient({ initialRoles }: RolesPageClientProps) {
       params.delete("search");
     }
     startTransition(() => {
-      router.replace(`${pathname}?${params.toString()}`);
+      router.replace(`${pathname}?${params.toString()}` as any);
     });
   }, 300);
 

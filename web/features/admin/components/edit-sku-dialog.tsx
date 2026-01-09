@@ -5,7 +5,7 @@ import { ImageUpload } from "@/components/shared/image-upload";
 import { useToast } from "@/components/shared/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { updateSkuAction } from "@/features/admin/actions";
+import { updateSkuAction } from "@/features/admin/domain-actions/product-actions";
 import { Sku } from "@/types/models";
 import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
@@ -97,7 +97,7 @@ export function EditSkuDialog({ sku, open, onOpenChange }: EditSkuDialogProps) {
         };
       }
 
-      const result = await updateSkuAction(sku.id, data);
+      const result = await updateSkuAction(sku.id, data as any);
 
       if (result.success) {
         toast({

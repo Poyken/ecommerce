@@ -26,9 +26,9 @@ async function getUserCounts() {
   try {
     // Fetch counts for common roles
     const [all, admins, users] = await Promise.all([
-      getUsersAction(1, 1),
-      getUsersAction(1, 1, "", "ADMIN"),
-      getUsersAction(1, 1, "", "USER"),
+      getUsersAction({ page: 1, limit: 1 }),
+      getUsersAction({ page: 1, limit: 1, search: "", role: "ADMIN" }),
+      getUsersAction({ page: 1, limit: 1, search: "", role: "USER" }),
     ]);
 
     return {
@@ -54,7 +54,7 @@ export default async function UsersPage({
   const role = (params?.role as string) || "all";
 
   const [response, counts] = await Promise.all([
-    getUsersAction(page, limit, search, role),
+    getUsersAction({ page, limit, search, role }),
     getUserCounts(),
   ]);
 

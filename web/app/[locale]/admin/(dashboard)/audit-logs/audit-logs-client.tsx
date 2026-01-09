@@ -57,6 +57,8 @@ import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
+import { AuditLog } from "@/types/models";
+
 type FilterType = "all" | "create" | "update" | "delete";
 
 export function AuditLogsClient({
@@ -66,7 +68,7 @@ export function AuditLogsClient({
   limit,
   basePath = "/admin/audit-logs",
 }: {
-  logs: Record<string, any>[];
+  logs: AuditLog[];
   total: number;
   page: number;
   limit: number;
@@ -88,7 +90,7 @@ export function AuditLogsClient({
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [isPending, startTransition] = useTransition();
 
-  const [selectedLog, setSelectedLog] = useState<Record<string, any> | null>(
+  const [selectedLog, setSelectedLog] = useState<AuditLog | null>(
     null
   );
 
@@ -124,10 +126,10 @@ export function AuditLogsClient({
   };
 
   // Generate human-readable description from log data
-  const getLogDescription = (log: Record<string, any>): string => {
+  const getLogDescription = (log: AuditLog): string => {
     const action = log.action?.toLowerCase() || "";
     const resource = log.resource || "item";
-    const payload = log.payload || {};
+    const payload = (log.payload || {}) as any;
 
     // Try to extract meaningful info from payload
     const name =

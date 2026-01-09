@@ -92,10 +92,10 @@ export function NotificationsAdminClient({
   useEffect(() => {
     const fetchData = async () => {
       if (linkType === "product") {
-        const res = await getProductsAction(1, 10, debouncedSearch);
+        const res = await getProductsAction({ page: 1, limit: 10, search: debouncedSearch });
         if ("data" in res && res.data) setProducts(res.data);
       } else if (linkType === "order") {
-        const res = await getOrdersAction(1, 10, debouncedSearch);
+        const res = await getOrdersAction({ page: 1, limit: 10, search: debouncedSearch });
         if ("data" in res && res.data)
           setOrders(res.data as unknown as Order[]);
       } else if (linkType === "coupon") {

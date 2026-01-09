@@ -98,10 +98,9 @@ export function CategoriesPageClient({
     () => getCategoriesAction(page, limit, debouncedSearchTerm),
     {
       fallbackData: {
+        success: true,
         data: initialCategories,
         meta: meta!,
-        statusCode: 200,
-        message: "Success",
       },
       revalidateOnFocus: false,
     }

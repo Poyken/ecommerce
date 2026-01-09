@@ -57,11 +57,8 @@ export default async function SuperAdminDashboardPage() {
   const t = await getTranslations("superAdmin.dashboard");
 
   const tenantsRes = await getTenantsAction();
-  const tenantsData =
-    tenantsRes && "data" in tenantsRes ? tenantsRes.data : null;
-  const recentTenants = Array.isArray(tenantsData?.data)
-    ? tenantsData.data.slice(0, 5)
-    : [];
+  const tenantsData = tenantsRes?.data || [];
+  const recentTenants = tenantsData.slice(0, 5);
 
   const statsRes = await getAnalyticsStatsAction();
   const stats = statsRes?.data;
@@ -70,7 +67,7 @@ export default async function SuperAdminDashboardPage() {
   const securityStats = securityRes?.data;
 
   // Calculate real distribution
-  const allTenants = tenantsData?.data || [];
+  const allTenants = tenantsData;
   const totalTenants = allTenants.length;
   const enterpriseCount = allTenants.filter(
     (t: any) => t.plan === "ENTERPRISE"

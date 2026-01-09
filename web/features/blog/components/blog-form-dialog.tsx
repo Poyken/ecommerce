@@ -106,7 +106,7 @@ export function BlogFormDialog({
     if (!open) return;
 
     const fetchData = async () => {
-      const productsRes = await getProductsAction(1, 100);
+      const productsRes = await getProductsAction({ page: 1, limit: 100 });
       if ("data" in productsRes) {
         setProducts(productsRes.data || []);
       }

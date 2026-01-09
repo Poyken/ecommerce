@@ -58,7 +58,7 @@ export function CreateRoleDialog({
     const submitName = name.trim();
 
     startTransition(async () => {
-      const result = await createRoleAction(submitName);
+      const result = await createRoleAction({ name: submitName });
       if (result.success) {
         toast({
           variant: "success",

@@ -25,9 +25,9 @@ import { ReviewsClient } from "./reviews-client";
 async function getReviewCounts() {
   try {
     const [all, published, hidden] = await Promise.all([
-      getReviewsAction(1, 1),
-      getReviewsAction(1, 1, undefined, "published"),
-      getReviewsAction(1, 1, undefined, "hidden"),
+      getReviewsAction({ page: 1, limit: 1 }),
+      getReviewsAction({ page: 1, limit: 1, status: "published" }),
+      getReviewsAction({ page: 1, limit: 1, status: "hidden" }),
     ]);
 
     return {
@@ -56,7 +56,7 @@ export default async function ReviewsPage({
   const status = (params?.status as string) || "all";
 
   const [response, counts] = await Promise.all([
-    getReviewsAction(page, 10, search, status),
+    getReviewsAction({ page, limit: 10, search, status }),
     getReviewCounts(),
   ]);
 

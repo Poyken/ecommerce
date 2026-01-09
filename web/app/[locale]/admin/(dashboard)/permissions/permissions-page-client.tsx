@@ -46,6 +46,7 @@ export function PermissionsPageClient({
 
   const [selectedPermission, setSelectedPermission] =
     useState<Permission | null>(null);
+   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -57,7 +58,7 @@ export function PermissionsPageClient({
       params.delete("search");
     }
     startTransition(() => {
-      router.replace(`${pathname}?${params.toString()}`);
+      router.replace(`${pathname}?${params.toString()}` as any);
     });
   }, 300);
 
@@ -88,16 +89,18 @@ export function PermissionsPageClient({
 
   return (
     <div className="space-y-6">
+      <CreatePermissionDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
       <AdminPageHeader
         title="Permissions"
         subtitle="Manage system permissions."
         actions={
-          <CreatePermissionDialog>
-            <GlassButton className="bg-primary text-primary-foreground">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Permission
-            </GlassButton>
-          </CreatePermissionDialog>
+          <GlassButton 
+            className="bg-primary text-primary-foreground"
+            onClick={() => setIsCreateOpen(true)}
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Permission
+          </GlassButton>
         }
       />
 
@@ -194,7 +197,10 @@ export function PermissionsPageClient({
       <DeleteConfirmDialog
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
-        onConfirm={handleDelete}
+        action={async () => {
+          if (!selectedPermission) return { success: false, error: "No permission selected" };
+          return await deletePermissionAction(selectedPermission.id);
+        }}
         title="Delete Permission"
         description={`Are you sure you want to delete permission "${selectedPermission?.name}"?`}
       />

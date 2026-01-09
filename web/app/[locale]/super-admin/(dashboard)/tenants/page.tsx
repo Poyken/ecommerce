@@ -30,39 +30,20 @@ export default async function TenantsPage() {
         <div className="text-red-600 bg-red-50 border border-red-200 rounded p-4">
           <h2 className="font-bold mb-2">Error Loading Tenants</h2>
           <p>{tenantsRes.error}</p>
-        </div>
+          </div>
       </div>
     );
   }
 
-  // Handle PaginatedData response
-  // Assuming getTenantsAction returns { data: PaginatedData<Tenant> } or similar based on my implementation
-  // create-tenant-dialog.tsx implementation of getTenantsAction return:
-  /*
-    return {
-        data: res, // Tenant[]
-        meta: { ... }
-    };
-  */
-  // So tenantsRes.data is { data: Tenant[], meta: ... } ?
-  // No, ActionResult<T> has .data: T.
-  // getTenantsAction returns ActionResult<PaginatedData<Tenant>>.
-  // So tenantsRes.data IS PaginatedData<Tenant>.
-  // PaginatedData has .data (Tenant[]) and .meta.
-
-  const paginatedData = tenantsRes.data;
-
-  // Safety check
-  if (!paginatedData || !Array.isArray(paginatedData.data)) {
-    return <div>Invalid data format</div>;
-  }
+  const tenants = tenantsRes.data || [];
+  const meta = tenantsRes.meta;
 
   return (
     <TenantsClient
-      tenants={paginatedData.data}
-      total={paginatedData.meta.total}
-      page={paginatedData.meta.page}
-      limit={paginatedData.meta.limit}
+      tenants={tenants}
+      total={meta?.total || 0}
+      page={meta?.page || 1}
+      limit={meta?.limit || 10}
     />
   );
 }

@@ -24,20 +24,19 @@ import { SkusClient } from "./skus-client";
 async function getSkuCounts() {
   try {
     const [all, active, inactive, lowStock] = await Promise.all([
-      getSkusAction(1, 1),
-      getSkusAction(1, 1, "ACTIVE"),
-      getSkusAction(1, 1, "INACTIVE"),
-      getSkusAction(1, 1, undefined, undefined, 10),
+      getSkusAction({ page: 1, limit: 1 }),
+      getSkusAction({ page: 1, limit: 1, status: "ACTIVE" }),
+      getSkusAction({ page: 1, limit: 1, status: "INACTIVE" }),
+      getSkusAction({ page: 1, limit: 1, stockLimit: 10 }),
     ]);
 
     return {
-      total: "data" in all ? all.meta?.total || 0 : 0,
-      active: "data" in active ? active.meta?.total || 0 : 0,
-      inactive: "data" in inactive ? inactive.meta?.total || 0 : 0,
-      lowStock: "data" in lowStock ? lowStock.meta?.total || 0 : 0,
+      total: all.meta?.total || 0,
+      active: active.meta?.total || 0,
+      inactive: inactive.meta?.total || 0,
+      lowStock: lowStock.meta?.total || 0,
     };
   } catch (error) {
-    // this.logger.error("Error fetching SKU counts:", error);
     return { total: 0, active: 0, inactive: 0, lowStock: 0 };
   }
 }
@@ -62,7 +61,7 @@ export default async function SKUsPage({
     : undefined;
 
   const [result, counts] = await Promise.all([
-    getSkusAction(page, limit, status, search, stockLimit),
+    getSkusAction({ page, limit, status, search, stockLimit }),
     getSkuCounts(),
   ]);
 

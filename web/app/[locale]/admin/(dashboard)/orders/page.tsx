@@ -33,13 +33,13 @@ async function getOrderCounts() {
   try {
     // Fetch counts in parallel
     const results = await Promise.all(
-      statuses.map((status) => getOrdersAction(1, 1, "", status))
+      statuses.map((status) => getOrdersAction({ page: 1, limit: 1, search: "", status }))
     );
 
     const counts: Record<string, number> = {};
 
     // Total count (fetch all)
-    const allResult = await getOrdersAction(1, 1);
+    const allResult = await getOrdersAction({ page: 1, limit: 1 });
     if ("data" in allResult) {
       counts.total = allResult.meta?.total || 0;
     }
@@ -71,7 +71,7 @@ export default async function AdminOrdersPage({
   const status = params.status || "all";
 
   const [ordersResult, counts] = await Promise.all([
-    getOrdersAction(page, limit, search, status),
+    getOrdersAction({ page, limit, search, status }),
     getOrderCounts(),
   ]);
 

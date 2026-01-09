@@ -118,6 +118,8 @@ export interface ActionResult<T = void> {
   data?: T;
   /** Error message nếu thất bại */
   error?: string;
+  /** Metadata cho phân trang (optional) */
+  meta?: PaginationMeta;
 }
 
 // ==================== USER DTOs ====================

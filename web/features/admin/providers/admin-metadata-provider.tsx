@@ -56,10 +56,9 @@ export function AdminMetadataProvider({
     mutate: mutateBrands,
   } = useSWR("admin-brands", () => getBrandsAction(), {
     fallbackData: {
+      success: true,
       data: initialBrands,
-      statusCode: 200,
-      message: "Success",
-    },
+    } as any,
     revalidateOnFocus: false,
   });
 
@@ -70,10 +69,9 @@ export function AdminMetadataProvider({
     mutate: mutateCategories,
   } = useSWR("admin-categories", () => getCategoriesAction(), {
     fallbackData: {
+      success: true,
       data: initialCategories,
-      statusCode: 200,
-      message: "Success",
-    },
+    } as any,
     revalidateOnFocus: false,
   });
 

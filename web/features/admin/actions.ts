@@ -1,1200 +1,490 @@
 "use server";
 
-import { http } from "@/lib/http";
+/**
+ * =====================================================================
+ * ADMIN SERVER ACTIONS - Entry Point
+ * =====================================================================
+ * This file re-exports all admin actions from domain-specific modules.
+ * Each action is wrapped as an async function to satisfy "use server" requirements.
+ * =====================================================================
+ */
+
+// Re-export from role-actions
 import {
-  AnalyticsStats,
-  ApiResponse,
-  CreateBrandDto,
-  CreateCategoryDto,
-  CreateCouponDto,
-  CreateProductDto,
-  CreateTenantDto,
-  CreateUserDto,
-  SalesDataPoint,
-  SecurityStats,
-  TopProduct,
-  UpdateBrandDto,
-  UpdateCategoryDto,
-  UpdateCouponDto,
-  UpdateProductDto,
-  UpdateSkuDto,
-  UpdateTenantDto,
-  UpdateUserDto,
-} from "@/types/dtos";
+  createPermissionAction as _createPermissionAction,
+  updatePermissionAction as _updatePermissionAction,
+  deletePermissionAction as _deletePermissionAction,
+  getPermissionsAction as _getPermissionsAction,
+  assignPermissionsAction as _assignPermissionsAction,
+  getRolesAction as _getRolesAction,
+  createRoleAction as _createRoleAction,
+  updateRoleAction as _updateRoleAction,
+  deleteRoleAction as _deleteRoleAction,
+} from "./domain-actions/role-actions";
+
+// Re-export from user-actions
 import {
-  AuditLog,
-  Brand,
-  Category,
-  Coupon,
-  Order,
-  Permission,
-  Product,
-  ProductTranslation,
-  Review,
-  Role,
-  Subscription,
-  Sku,
-  Tenant,
-  User,
-} from "@/types/models";
-import { revalidatePath } from "next/cache";
+  getUsersAction as _getUsersAction,
+  createUserAction as _createUserAction,
+  updateUserAction as _updateUserAction,
+  deleteUserAction as _deleteUserAction,
+  assignRolesAction as _assignRolesAction,
+} from "./domain-actions/user-actions";
 
-// ==================== PERMISSIONS ====================
+// Re-export from review-actions
+import {
+  getReviewsAction as _getReviewsAction,
+  deleteReviewAction as _deleteReviewAction,
+  replyToReviewAction as _replyToReviewAction,
+  updateReviewStatusAction as _updateReviewStatusAction,
+  analyzeReviewSentimentAction as _analyzeReviewSentimentAction,
+} from "./domain-actions/review-actions";
 
-export async function createPermissionAction(name: string) {
-  try {
-    const res = await http<ApiResponse<Permission>>("/permissions", {
-      method: "POST",
-      body: JSON.stringify({ name }),
-    });
+// Re-export from metadata-actions
+import {
+  getBrandsAction as _getBrandsAction,
+  createBrandAction as _createBrandAction,
+  updateBrandAction as _updateBrandAction,
+  deleteBrandAction as _deleteBrandAction,
+  getCategoriesAction as _getCategoriesAction,
+  createCategoryAction as _createCategoryAction,
+  updateCategoryAction as _updateCategoryAction,
+  deleteCategoryAction as _deleteCategoryAction,
+  getCouponsAction as _getCouponsAction,
+  createCouponAction as _createCouponAction,
+  updateCouponAction as _updateCouponAction,
+  deleteCouponAction as _deleteCouponAction,
+} from "./domain-actions/metadata-actions";
 
-    revalidatePath("/admin/permissions");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to create permission",
-    };
-  }
+// Re-export from product-actions
+import {
+  getProductsAction as _getProductsAction,
+  createProductAction as _createProductAction,
+  updateProductAction as _updateProductAction,
+  deleteProductAction as _deleteProductAction,
+  getSkusAction as _getSkusAction,
+  updateSkuAction as _updateSkuAction,
+  getProductTranslationsAction as _getProductTranslationsAction,
+  updateProductTranslationAction as _updateProductTranslationAction,
+  generateProductContentAction as _generateProductContentAction,
+  translateTextAction as _translateTextAction,
+} from "./domain-actions/product-actions";
+
+// Re-export from tenant-actions
+import {
+  getTenantsAction as _getTenantsAction,
+  getTenantAction as _getTenantAction,
+  createTenantAction as _createTenantAction,
+  updateTenantAction as _updateTenantAction,
+  deleteTenantAction as _deleteTenantAction,
+  getSubscriptionsAction as _getSubscriptionsAction,
+  cancelSubscriptionAction as _cancelSubscriptionAction,
+} from "./domain-actions/tenant-actions";
+
+// Re-export from analytics-actions
+import {
+  getAnalyticsStatsAction as _getAnalyticsStatsAction,
+  getSalesDataAction as _getSalesDataAction,
+  getTopProductsAction as _getTopProductsAction,
+  getBlogStatsAction as _getBlogStatsAction,
+} from "./domain-actions/analytics-actions";
+
+// Re-export from order-actions
+import {
+  getOrdersAction as _getOrdersAction,
+  getOrderDetailsAction as _getOrderDetailsAction,
+  updateOrderStatusAction as _updateOrderStatusAction,
+} from "./domain-actions/order-actions";
+
+// Re-export from security-actions
+import {
+  getSecurityStatsAction as _getSecurityStatsAction,
+  getLockdownStatusAction as _getLockdownStatusAction,
+  toggleLockdownAction as _toggleLockdownAction,
+  getSuperAdminWhitelistAction as _getSuperAdminWhitelistAction,
+  updateSuperAdminWhitelistAction as _updateSuperAdminWhitelistAction,
+  getMyIpAction as _getMyIpAction,
+  getAuditLogsAction as _getAuditLogsAction,
+} from "./domain-actions/security-actions";
+
+// Re-export from notification-actions
+import {
+  broadcastNotificationAction as _broadcastNotificationAction,
+  sendNotificationToUserAction as _sendNotificationToUserAction,
+} from "./domain-actions/notification-actions";
+
+// Re-export from page-actions
+import {
+  getPagesAction as _getPagesAction,
+  getPageByIdAction as _getPageByIdAction,
+  createPageAction as _createPageAction,
+  updatePageAction as _updatePageAction,
+  deletePageAction as _deletePageAction,
+} from "./domain-actions/page-actions";
+
+// --- ROLE & PERMISSION ACTIONS ---
+export async function createPermissionAction(
+  ...args: Parameters<typeof _createPermissionAction>
+) {
+  return _createPermissionAction(...args);
 }
-
-export async function updatePermissionAction(id: string, name: string) {
-  try {
-    const res = await http<ApiResponse<Permission>>(`/permissions/${id}`, {
-      method: "PUT",
-      body: JSON.stringify({ name }),
-    });
-
-    revalidatePath("/admin/permissions");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to update permission",
-    };
-  }
+export async function updatePermissionAction(
+  ...args: Parameters<typeof _updatePermissionAction>
+) {
+  return _updatePermissionAction(...args);
 }
-
-export async function deletePermissionAction(id: string) {
-  try {
-    await http<ApiResponse<void>>(`/permissions/${id}`, {
-      method: "DELETE",
-    });
-
-    revalidatePath("/admin/permissions");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to delete permission",
-    };
-  }
+export async function deletePermissionAction(
+  ...args: Parameters<typeof _deletePermissionAction>
+) {
+  return _deletePermissionAction(...args);
 }
-
-export async function getPermissionsAction() {
-  try {
-    const res = await http<ApiResponse<Permission[]>>("/permissions");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to fetch permissions",
-    };
-  }
+export async function getPermissionsAction(
+  ...args: Parameters<typeof _getPermissionsAction>
+) {
+  return _getPermissionsAction(...args);
 }
-
 export async function assignPermissionsAction(
-  roleId: string,
-  permissionIds: string[]
+  ...args: Parameters<typeof _assignPermissionsAction>
 ) {
-  try {
-    await http<ApiResponse<void>>(`/roles/${roleId}/permissions`, {
-      method: "POST",
-      body: JSON.stringify({ permissionIds }),
-    });
-    revalidatePath("/admin/roles");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to assign permissions",
-    };
-  }
+  return _assignPermissionsAction(...args);
 }
-
-// ==================== ROLES ====================
-
-export async function getRolesAction() {
-  try {
-    const res = await http<ApiResponse<Role[]>>("/roles");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch roles",
-    };
-  }
+export async function getRolesAction(
+  ...args: Parameters<typeof _getRolesAction>
+) {
+  return _getRolesAction(...args);
 }
-
-export async function createRoleAction(data: {
-  name: string;
-  permissions?: string[];
-}) {
-  try {
-    const res = await http<ApiResponse<Role>>("/roles", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/roles");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to create role",
-    };
-  }
+export async function createRoleAction(
+  ...args: Parameters<typeof _createRoleAction>
+) {
+  return _createRoleAction(...args);
 }
-
 export async function updateRoleAction(
-  id: string,
-  data: { name: string; permissions?: string[] }
+  ...args: Parameters<typeof _updateRoleAction>
 ) {
-  try {
-    const res = await http<ApiResponse<Role>>(`/roles/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/roles");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to update role",
-    };
-  }
+  return _updateRoleAction(...args);
+}
+export async function deleteRoleAction(
+  ...args: Parameters<typeof _deleteRoleAction>
+) {
+  return _deleteRoleAction(...args);
 }
 
-export async function deleteRoleAction(id: string) {
-  try {
-    await http<ApiResponse<void>>(`/roles/${id}`, {
-      method: "DELETE",
-    });
-    revalidatePath("/admin/roles");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to delete role",
-    };
-  }
+// --- USER ACTIONS ---
+export async function getUsersAction(
+  ...args: Parameters<typeof _getUsersAction>
+) {
+  return _getUsersAction(...args);
+}
+export async function createUserAction(
+  ...args: Parameters<typeof _createUserAction>
+) {
+  return _createUserAction(...args);
+}
+export async function updateUserAction(
+  ...args: Parameters<typeof _updateUserAction>
+) {
+  return _updateUserAction(...args);
+}
+export async function deleteUserAction(
+  ...args: Parameters<typeof _deleteUserAction>
+) {
+  return _deleteUserAction(...args);
+}
+export async function assignRolesAction(
+  ...args: Parameters<typeof _assignRolesAction>
+) {
+  return _assignRolesAction(...args);
 }
 
-// ==================== USERS & ROLES ASSIGNMENT ====================
-
-export async function getUsersAction(params?: any) {
-  try {
-    const query = new URLSearchParams(params).toString();
-    const res = await http<ApiResponse<User[]>>(`/users?${query}`);
-    return { success: true, data: res.data, meta: res.meta };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch users",
-    };
-  }
+// --- REVIEW ACTIONS ---
+export async function getReviewsAction(
+  ...args: Parameters<typeof _getReviewsAction>
+) {
+  return _getReviewsAction(...args);
+}
+export async function deleteReviewAction(
+  ...args: Parameters<typeof _deleteReviewAction>
+) {
+  return _deleteReviewAction(...args);
+}
+export async function replyToReviewAction(
+  ...args: Parameters<typeof _replyToReviewAction>
+) {
+  return _replyToReviewAction(...args);
+}
+export async function updateReviewStatusAction(
+  ...args: Parameters<typeof _updateReviewStatusAction>
+) {
+  return _updateReviewStatusAction(...args);
+}
+export async function analyzeReviewSentimentAction(
+  ...args: Parameters<typeof _analyzeReviewSentimentAction>
+) {
+  return _analyzeReviewSentimentAction(...args);
 }
 
-export async function assignRolesAction(userId: string, roleIds: string[]) {
-  try {
-    await http<ApiResponse<void>>(`/users/${userId}/roles`, {
-      method: "POST",
-      body: JSON.stringify({ roleIds }),
-    });
-    revalidatePath("/admin/users");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to assign roles",
-    };
-  }
-}
-
-export async function createUserAction(data: CreateUserDto) {
-  try {
-    const res = await http<ApiResponse<User>>("/users", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/users");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to create user",
-    };
-  }
-}
-
-export async function updateUserAction(id: string, data: UpdateUserDto) {
-  try {
-    const res = await http<ApiResponse<User>>(`/users/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/users");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to update user",
-    };
-  }
-}
-
-export async function deleteUserAction(id: string) {
-  try {
-    await http<ApiResponse<void>>(`/users/${id}`, {
-      method: "DELETE",
-    });
-    revalidatePath("/admin/users");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to delete user",
-    };
-  }
-}
-
-// ==================== REVIEWS ====================
-
-export async function getReviewsAction(params?: any) {
-  try {
-    const query = new URLSearchParams(params).toString();
-    const res = await http<ApiResponse<Review[]>>(`/reviews?${query}`);
-    return { success: true, data: res.data, meta: res.meta };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch reviews",
-    };
-  }
-}
-
-export async function deleteReviewAction(id: string) {
-  try {
-    await http<ApiResponse<void>>(`/reviews/${id}`, {
-      method: "DELETE",
-    });
-    revalidatePath("/admin/reviews");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to delete review",
-    };
-  }
-}
-
-export async function replyToReviewAction(id: string, reply: string) {
-  try {
-    const res = await http<ApiResponse<Review>>(`/reviews/${id}/reply`, {
-      method: "POST",
-      body: JSON.stringify({ reply }),
-    });
-    revalidatePath("/admin/reviews");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to reply to review",
-    };
-  }
-}
-
-export async function toggleReviewStatusAction(id: string) {
-  try {
-    const res = await http<ApiResponse<Review>>(
-      `/reviews/${id}/toggle-status`,
-      {
-        method: "PATCH",
-      }
-    );
-    revalidatePath("/admin/reviews");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to toggle review status",
-    };
-  }
-}
-
-export async function analyzeReviewSentimentAction(id: string) {
-  try {
-    const res = await http<ApiResponse<any>>(
-      `/reviews/${id}/analyze-sentiment`,
-      {
-        method: "POST",
-      }
-    );
-    revalidatePath("/admin/reviews");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to analyze sentiment",
-    };
-  }
-}
-
-// ==================== BRANDS ====================
-
+// --- METADATA ACTIONS (Brands, Categories, Coupons) ---
 export async function getBrandsAction(
-  page?: number,
-  limit?: number,
-  search?: string
+  ...args: Parameters<typeof _getBrandsAction>
 ) {
-  try {
-    const params = new URLSearchParams();
-    if (page) params.append("page", page.toString());
-    if (limit) params.append("limit", limit.toString());
-    if (search) params.append("search", search);
-
-    const res = await http<ApiResponse<Brand[]>>(
-      `/brands?${params.toString()}`
-    );
-    return { success: true, data: res.data, meta: res.meta };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch brands",
-    };
-  }
+  return _getBrandsAction(...args);
 }
-
-export async function createBrandAction(data: CreateBrandDto) {
-  try {
-    const res = await http<ApiResponse<Brand>>("/brands", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/brands");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to create brand",
-    };
-  }
+export async function createBrandAction(
+  ...args: Parameters<typeof _createBrandAction>
+) {
+  return _createBrandAction(...args);
 }
-
-export async function updateBrandAction(id: string, data: UpdateBrandDto) {
-  try {
-    const res = await http<ApiResponse<Brand>>(`/brands/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/brands");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to update brand",
-    };
-  }
+export async function updateBrandAction(
+  ...args: Parameters<typeof _updateBrandAction>
+) {
+  return _updateBrandAction(...args);
 }
-
-export async function deleteBrandAction(id: string) {
-  try {
-    await http<ApiResponse<void>>(`/brands/${id}`, {
-      method: "DELETE",
-    });
-    revalidatePath("/admin/brands");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to delete brand",
-    };
-  }
+export async function deleteBrandAction(
+  ...args: Parameters<typeof _deleteBrandAction>
+) {
+  return _deleteBrandAction(...args);
 }
-
-// ==================== CATEGORIES ====================
-
 export async function getCategoriesAction(
-  page?: number,
-  limit?: number,
-  search?: string
+  ...args: Parameters<typeof _getCategoriesAction>
 ) {
-  try {
-    const params = new URLSearchParams();
-    if (page) params.append("page", page.toString());
-    if (limit) params.append("limit", limit.toString());
-    if (search) params.append("search", search);
-
-    const res = await http<ApiResponse<Category[]>>(
-      `/categories?${params.toString()}`
-    );
-    return { success: true, data: res.data, meta: res.meta };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to fetch categories",
-    };
-  }
+  return _getCategoriesAction(...args);
 }
-
-export async function createCategoryAction(data: CreateCategoryDto) {
-  try {
-    const res = await http<ApiResponse<Category>>("/categories", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/categories");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to create category",
-    };
-  }
+export async function createCategoryAction(
+  ...args: Parameters<typeof _createCategoryAction>
+) {
+  return _createCategoryAction(...args);
 }
-
 export async function updateCategoryAction(
-  id: string,
-  data: UpdateCategoryDto
+  ...args: Parameters<typeof _updateCategoryAction>
 ) {
-  try {
-    const res = await http<ApiResponse<Category>>(`/categories/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/categories");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to update category",
-    };
-  }
+  return _updateCategoryAction(...args);
 }
-
-export async function deleteCategoryAction(id: string) {
-  try {
-    await http<ApiResponse<void>>(`/categories/${id}`, {
-      method: "DELETE",
-    });
-    revalidatePath("/admin/categories");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to delete category",
-    };
-  }
+export async function deleteCategoryAction(
+  ...args: Parameters<typeof _deleteCategoryAction>
+) {
+  return _deleteCategoryAction(...args);
 }
-
-// ==================== COUPONS ====================
-
 export async function getCouponsAction(
-  page?: number,
-  limit?: number,
-  search?: string
+  ...args: Parameters<typeof _getCouponsAction>
 ) {
-  try {
-    const params = new URLSearchParams();
-    if (page) params.append("page", page.toString());
-    if (limit) params.append("limit", limit.toString());
-    if (search) params.append("search", search);
-
-    const res = await http<ApiResponse<Coupon[]>>(
-      `/coupons?${params.toString()}`
-    );
-    return { success: true, data: res.data, meta: res.meta };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch coupons",
-    };
-  }
+  return _getCouponsAction(...args);
+}
+export async function createCouponAction(
+  ...args: Parameters<typeof _createCouponAction>
+) {
+  return _createCouponAction(...args);
+}
+export async function updateCouponAction(
+  ...args: Parameters<typeof _updateCouponAction>
+) {
+  return _updateCouponAction(...args);
+}
+export async function deleteCouponAction(
+  ...args: Parameters<typeof _deleteCouponAction>
+) {
+  return _deleteCouponAction(...args);
 }
 
-export async function createCouponAction(data: CreateCouponDto) {
-  try {
-    const res = await http<ApiResponse<Coupon>>("/coupons", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/coupons");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to create coupon",
-    };
-  }
+// --- PRODUCT & SKU ACTIONS ---
+export async function getProductsAction(
+  ...args: Parameters<typeof _getProductsAction>
+) {
+  return _getProductsAction(...args);
 }
-
-export async function updateCouponAction(id: string, data: UpdateCouponDto) {
-  try {
-    const res = await http<ApiResponse<Coupon>>(`/coupons/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/coupons");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to update coupon",
-    };
-  }
+export async function createProductAction(
+  ...args: Parameters<typeof _createProductAction>
+) {
+  return _createProductAction(...args);
 }
-
-export async function deleteCouponAction(id: string) {
-  try {
-    await http<ApiResponse<void>>(`/coupons/${id}`, {
-      method: "DELETE",
-    });
-    revalidatePath("/admin/coupons");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to delete coupon",
-    };
-  }
+export async function updateProductAction(
+  ...args: Parameters<typeof _updateProductAction>
+) {
+  return _updateProductAction(...args);
 }
-
-// ==================== PAGES ====================
-
-export async function getPagesAction(params?: any) {
-  try {
-    const query = new URLSearchParams(params).toString();
-    const res = await http<ApiResponse<any[]>>(`/pages?${query}`);
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch pages",
-    };
-  }
+export async function deleteProductAction(
+  ...args: Parameters<typeof _deleteProductAction>
+) {
+  return _deleteProductAction(...args);
 }
-
-export async function getPageByIdAction(id: string) {
-  try {
-    const res = await http<ApiResponse<any>>(`/pages/${id}`);
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch page",
-    };
-  }
-}
-
-export async function createPageAction(data: any) {
-  try {
-    const res = await http<ApiResponse<any>>("/pages", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/pages");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to create page",
-    };
-  }
-}
-
-export async function updatePageAction(id: string, data: any) {
-  try {
-    const res = await http<ApiResponse<any>>(`/pages/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/pages");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to update page",
-    };
-  }
-}
-
-export async function deletePageAction(id: string) {
-  try {
-    await http<ApiResponse<void>>(`/pages/${id}`, {
-      method: "DELETE",
-    });
-    revalidatePath("/admin/pages");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to delete page",
-    };
-  }
-}
-
-// ==================== PRODUCTS ====================
-
-export async function getProductsAction(params?: any) {
-  try {
-    const query = new URLSearchParams(params).toString();
-    const res = await http<ApiResponse<Product[]>>(`/products?${query}`);
-    return { success: true, data: res.data, meta: res.meta };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to fetch products",
-    };
-  }
-}
-
-export async function createProductAction(data: CreateProductDto) {
-  try {
-    const res = await http<ApiResponse<Product>>("/products", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/products");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to create product",
-    };
-  }
-}
-
-export async function updateProductAction(id: string, data: UpdateProductDto) {
-  try {
-    const res = await http<ApiResponse<Product>>(`/products/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/products");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to update product",
-    };
-  }
-}
-
-export async function deleteProductAction(id: string) {
-  try {
-    await http<ApiResponse<void>>(`/products/${id}`, {
-      method: "DELETE",
-    });
-    revalidatePath("/admin/products");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to delete product",
-    };
-  }
-}
-
-export async function generateProductContentAction(data: { name: string }) {
-  try {
-    const res = await http<ApiResponse<any>>("/products/generate-content", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to generate content",
-    };
-  }
-}
-
 export async function getSkusAction(
-  page: number = 1,
-  limit: number = 10,
-  status?: string,
-  search?: string,
-  stockLimit?: number
+  ...args: Parameters<typeof _getSkusAction>
 ) {
-  try {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-    });
-
-    if (status) params.append("status", status);
-    if (search) params.append("search", search);
-    if (stockLimit) params.append("stockLimit", stockLimit.toString());
-
-    const res = await http<ApiResponse<Sku[]>>(`/skus?${params.toString()}`);
-    return { success: true, data: res.data, meta: res.meta };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch SKUs",
-    };
-  }
+  return _getSkusAction(...args);
+}
+export async function updateSkuAction(
+  ...args: Parameters<typeof _updateSkuAction>
+) {
+  return _updateSkuAction(...args);
+}
+export async function getProductTranslationsAction(
+  ...args: Parameters<typeof _getProductTranslationsAction>
+) {
+  return _getProductTranslationsAction(...args);
+}
+export async function updateProductTranslationAction(
+  ...args: Parameters<typeof _updateProductTranslationAction>
+) {
+  return _updateProductTranslationAction(...args);
+}
+export async function generateProductContentAction(
+  ...args: Parameters<typeof _generateProductContentAction>
+) {
+  return _generateProductContentAction(...args);
+}
+export async function translateTextAction(
+  ...args: Parameters<typeof _translateTextAction>
+) {
+  return _translateTextAction(...args);
 }
 
-export async function updateSkuAction(id: string, data: UpdateSkuDto) {
-  try {
-    const res = await http<ApiResponse<any>>(`/skus/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/admin/products");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to update stock",
-    };
-  }
+// --- TENANT & SUBSCRIPTION ACTIONS ---
+export async function getTenantsAction(
+  ...args: Parameters<typeof _getTenantsAction>
+) {
+  return _getTenantsAction(...args);
+}
+export async function getTenantAction(
+  ...args: Parameters<typeof _getTenantAction>
+) {
+  return _getTenantAction(...args);
+}
+export async function createTenantAction(
+  ...args: Parameters<typeof _createTenantAction>
+) {
+  return _createTenantAction(...args);
+}
+export async function updateTenantAction(
+  ...args: Parameters<typeof _updateTenantAction>
+) {
+  return _updateTenantAction(...args);
+}
+export async function deleteTenantAction(
+  ...args: Parameters<typeof _deleteTenantAction>
+) {
+  return _deleteTenantAction(...args);
+}
+export async function getSubscriptionsAction(
+  ...args: Parameters<typeof _getSubscriptionsAction>
+) {
+  return _getSubscriptionsAction(...args);
+}
+export async function cancelSubscriptionAction(
+  ...args: Parameters<typeof _cancelSubscriptionAction>
+) {
+  return _cancelSubscriptionAction(...args);
 }
 
-// ==================== TENANTS ====================
-
-export async function getTenantsAction() {
-  try {
-    const res = await http<ApiResponse<Tenant[]>>("/tenants");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch tenants",
-    };
-  }
+// --- ANALYTICS ACTIONS ---
+export async function getAnalyticsStatsAction(
+  ...args: Parameters<typeof _getAnalyticsStatsAction>
+) {
+  return _getAnalyticsStatsAction(...args);
+}
+export async function getSalesDataAction(
+  ...args: Parameters<typeof _getSalesDataAction>
+) {
+  return _getSalesDataAction(...args);
+}
+export async function getTopProductsAction(
+  ...args: Parameters<typeof _getTopProductsAction>
+) {
+  return _getTopProductsAction(...args);
+}
+export async function getBlogStatsAction(
+  ...args: Parameters<typeof _getBlogStatsAction>
+) {
+  return _getBlogStatsAction(...args);
 }
 
-export async function getTenantAction(id: string) {
-  try {
-    const res = await http<ApiResponse<Tenant>>(`/tenants/${id}`);
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch tenant",
-    };
-  }
+// --- ORDER ACTIONS ---
+export async function getOrdersAction(
+  ...args: Parameters<typeof _getOrdersAction>
+) {
+  return _getOrdersAction(...args);
+}
+export async function getOrderDetailsAction(
+  ...args: Parameters<typeof _getOrderDetailsAction>
+) {
+  return _getOrderDetailsAction(...args);
+}
+export async function updateOrderStatusAction(
+  ...args: Parameters<typeof _updateOrderStatusAction>
+) {
+  return _updateOrderStatusAction(...args);
 }
 
-export async function createTenantAction(data: CreateTenantDto) {
-  try {
-    const res = await http<ApiResponse<Tenant>>("/tenants", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/super-admin/tenants");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to create tenant",
-    };
-  }
+// --- SECURITY ACTIONS ---
+export async function getSecurityStatsAction(
+  ...args: Parameters<typeof _getSecurityStatsAction>
+) {
+  return _getSecurityStatsAction(...args);
+}
+export async function getLockdownStatusAction(
+  ...args: Parameters<typeof _getLockdownStatusAction>
+) {
+  return _getLockdownStatusAction(...args);
+}
+export async function toggleLockdownAction(
+  ...args: Parameters<typeof _toggleLockdownAction>
+) {
+  return _toggleLockdownAction(...args);
+}
+export async function getSuperAdminWhitelistAction(
+  ...args: Parameters<typeof _getSuperAdminWhitelistAction>
+) {
+  return _getSuperAdminWhitelistAction(...args);
+}
+export async function updateSuperAdminWhitelistAction(
+  ...args: Parameters<typeof _updateSuperAdminWhitelistAction>
+) {
+  return _updateSuperAdminWhitelistAction(...args);
+}
+export async function getMyIpAction(
+  ...args: Parameters<typeof _getMyIpAction>
+) {
+  return _getMyIpAction(...args);
+}
+export async function getAuditLogsAction(
+  ...args: Parameters<typeof _getAuditLogsAction>
+) {
+  return _getAuditLogsAction(...args);
 }
 
-export async function updateTenantAction(id: string, data: UpdateTenantDto) {
-  try {
-    const res = await http<ApiResponse<Tenant>>(`/tenants/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(data),
-    });
-    revalidatePath("/super-admin/tenants");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to update tenant",
-    };
-  }
+// --- NOTIFICATION ACTIONS ---
+export async function broadcastNotificationAction(
+  ...args: Parameters<typeof _broadcastNotificationAction>
+) {
+  return _broadcastNotificationAction(...args);
+}
+export async function sendNotificationToUserAction(
+  ...args: Parameters<typeof _sendNotificationToUserAction>
+) {
+  return _sendNotificationToUserAction(...args);
 }
 
-export async function deleteTenantAction(id: string) {
-  try {
-    await http<ApiResponse<void>>(`/tenants/${id}`, {
-      method: "DELETE",
-    });
-    revalidatePath("/super-admin/tenants");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to delete tenant",
-    };
-  }
+// --- PAGE ACTIONS ---
+export async function getPagesAction(
+  ...args: Parameters<typeof _getPagesAction>
+) {
+  return _getPagesAction(...args);
 }
-
-// ==================== SUBSCRIPTIONS ====================
-
-export async function getSubscriptionsAction() {
-  try {
-    const res = await http<ApiResponse<Subscription[]>>("/subscriptions");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch subscriptions",
-    };
-  }
+export async function getPageByIdAction(
+  ...args: Parameters<typeof _getPageByIdAction>
+) {
+  return _getPageByIdAction(...args);
 }
-
-export async function cancelSubscriptionAction(id: string) {
-  try {
-    await http<ApiResponse<void>>(`/subscriptions/${id}/cancel`, {
-      method: "POST",
-    });
-    revalidatePath("/super-admin/subscriptions");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to cancel subscription",
-    };
-  }
+export async function createPageAction(
+  ...args: Parameters<typeof _createPageAction>
+) {
+  return _createPageAction(...args);
 }
-
-// ==================== DASHBOARD & ANALYTICS ====================
-
-export async function getAnalyticsStatsAction() {
-  try {
-    const res = await http<ApiResponse<AnalyticsStats>>("/analytics/stats");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch analytics stats",
-    };
-  }
+export async function updatePageAction(
+  ...args: Parameters<typeof _updatePageAction>
+) {
+  return _updatePageAction(...args);
 }
-
-export async function getSalesDataAction(range: string) {
-  try {
-    const res = await http<ApiResponse<SalesDataPoint[]>>(
-      `/analytics/sales?range=${range}`
-    );
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to fetch sales data",
-    };
-  }
-}
-
-export async function getTopProductsAction() {
-  try {
-    const res = await http<ApiResponse<TopProduct[]>>(
-      "/analytics/top-products"
-    );
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to fetch top products",
-    };
-  }
-}
-
-export async function getBlogStatsAction() {
-  try {
-    const res = await http<ApiResponse<any>>("/blog/stats"); // Adjust return type if needed
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to fetch blog stats",
-    };
-  }
-}
-
-// ==================== ORDERS ====================
-
-export async function getOrdersAction(params?: any) {
-  try {
-    const query = new URLSearchParams(params).toString();
-    const res = await http<ApiResponse<Order[]>>(`/orders?${query}`);
-    return { success: true, data: res.data, meta: res.meta };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch orders",
-    };
-  }
-}
-
-export async function getOrderDetailsAction(id: string) {
-  try {
-    const res = await http<ApiResponse<Order>>(`/orders/${id}`);
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch order details",
-    };
-  }
-}
-
-export async function updateOrderStatusAction(id: string, status: string) {
-  try {
-    const res = await http<ApiResponse<Order>>(`/orders/${id}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    });
-    revalidatePath("/admin/orders");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to update order status",
-    };
-  }
-}
-
-// ==================== SECURITY ====================
-
-export async function getSecurityStatsAction() {
-  try {
-    const res = await http<ApiResponse<SecurityStats>>("/security/stats");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch security stats",
-    };
-  }
-}
-
-export async function getLockdownStatusAction() {
-  try {
-    const res = await http<ApiResponse<{ isLockdown: boolean }>>(
-      "/security/lockdown"
-    );
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to fetch lockdown status",
-    };
-  }
-}
-
-export async function toggleLockdownAction(enabled: boolean) {
-  try {
-    const res = await http<ApiResponse<any>>("/security/lockdown", {
-      method: "POST",
-      body: JSON.stringify({ enabled }),
-    });
-    revalidatePath("/super-admin/security");
-    revalidatePath("/");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to toggle lockdown",
-    };
-  }
-}
-
-export async function getSuperAdminWhitelistAction() {
-  try {
-    const res = await http<ApiResponse<string[]>>("/security/whitelist");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to fetch whitelist",
-    };
-  }
-}
-
-export async function updateSuperAdminWhitelistAction(ips: string[]) {
-  try {
-    // eslint-disable-next-line
-    const res = await http<ApiResponse<any>>("/security/whitelist", {
-      method: "PUT",
-      body: JSON.stringify({ ips }),
-    });
-    revalidatePath("/super-admin/security");
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to update whitelist",
-    };
-  }
-}
-
-export async function getMyIpAction() {
-  try {
-    const res = await http<ApiResponse<{ ip: string }>>("/security/my-ip");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch IP",
-    };
-  }
-}
-
-export async function getAuditLogsAction(params?: any) {
-  try {
-    const query = new URLSearchParams(params).toString();
-    const res = await http<ApiResponse<AuditLog[]>>(`/audit-logs?${query}`);
-    return { success: true, data: res.data, meta: res.meta };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to fetch audit logs",
-    };
-  }
-}
-
-// ==================== TRANSLATIONS ====================
-
-export async function getProductTranslationsAction(productId: string) {
-  try {
-    const res = await http<ApiResponse<ProductTranslation[]>>(
-      `/products/${productId}/translations`
-    );
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to fetch translations",
-    };
-  }
-}
-
-export async function updateProductTranslationAction(id: string, data: any) {
-  try {
-    const res = await http<ApiResponse<ProductTranslation>>(
-      `/product-translations/${id}`,
-      {
-        method: "PUT",
-        body: JSON.stringify(data),
-      }
-    );
-    revalidatePath("/admin/products");
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to update translation",
-    };
-  }
-}
-
-export async function translateTextAction(text: string, targetLang: string) {
-  try {
-    const res = await http<ApiResponse<{ translatedText: string }>>(
-      "/ai/translate",
-      {
-        method: "POST",
-        body: JSON.stringify({ text, targetLang }),
-      }
-    );
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to translate text",
-    };
-  }
-}
-
-// ==================== NOTIFICATIONS ====================
-
-export async function broadcastNotificationAction(data: any) {
-  try {
-    await http<ApiResponse<void>>("/notifications/broadcast", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error
-          ? error.message
-          : "Failed to broadcast notification",
-    };
-  }
-}
-
-export async function sendNotificationToUserAction(userId: string, data: any) {
-  try {
-    await http<ApiResponse<void>>(`/notifications/user/${userId}`, {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
-    return { success: true };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Failed to send notification",
-    };
-  }
+export async function deletePageAction(
+  ...args: Parameters<typeof _deletePageAction>
+) {
+  return _deletePageAction(...args);
 }

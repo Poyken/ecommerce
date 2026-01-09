@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AdminNotificationsPage() {
-  const usersResult = await getUsersAction(1, 100).catch((err) => {
+  const usersResult = await getUsersAction({ page: 1, limit: 100 }).catch((err) => {
     // console.error("[AdminNotificationsPage] Failed to fetch users:", err);
     return { data: [] };
   });

@@ -35,7 +35,7 @@ export default async function ProductsPage({
 
   // Fetch products only - Brands and Categories are handled by AdminMetadataProvider in Layout
   const [productsRes] = await Promise.all([
-    getProductsAction(page, limit, search),
+    getProductsAction({ page, limit, search }),
   ]);
 
   if (!("data" in productsRes)) {

@@ -30,7 +30,7 @@ export default async function RolesPage({
   const search = params.search || "";
   const page = Number(params.page) || 1;
   const limit = Number(params.limit) || 10;
-  const result = await getRolesAction(page, limit, search);
+  const result = await getRolesAction({ page, limit, search });
 
   if ("error" in result) {
     return (
@@ -38,5 +38,5 @@ export default async function RolesPage({
     );
   }
 
-  return <RolesPageClient roles={result.data || []} meta={result.meta} />;
+  return <RolesPageClient roles={(result.data || []) as any} meta={result.meta} />;
 }

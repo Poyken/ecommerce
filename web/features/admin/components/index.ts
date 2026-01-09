@@ -41,6 +41,6 @@ export * from "./product-translation-dialog";
 export * from "./quick-actions";
 export * from "./recent-chats-widget";
 export * from "./seo-settings";
-export * from "./storefront-pulse.tsx";
+export * from "./storefront-pulse";
 export * from "./tenant-dialog";
 export * from "./update-order-status-dialog";

@@ -62,7 +62,7 @@ export function EditRoleDialog({
     if (!validate()) return;
 
     startTransition(async () => {
-      const result = await updateRoleAction(roleId, name.trim());
+      const result = await updateRoleAction(roleId, { name: name.trim() });
       if (result.success) {
         toast({
           variant: "success",
