@@ -1,5 +1,4 @@
 "use client";
-
 import { useToast } from "@/components/shared/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,51 +11,67 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { deletePageAction } from "@/features/admin/actions";
-import { AdminTableWrapper } from "@/features/admin/components/admin-page-components";
-import { CreatePageDialog } from "@/features/admin/components/create-page-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+import {
+  AdminPageHeader,
+  AdminTableWrapper,
+} from "@/features/admin/components/admin-page-components";
 import { Link } from "@/i18n/routing";
+import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { format } from "date-fns";
-import { useState, useTransition } from "react";
+import dynamic from "next/dynamic";
+import { useState } from "react";
+
+// Use dynamic imports with ssr: false to prevent flicking issues common in Next.js hydration
+const CreatePageDialog = dynamic(
+  () =>
+    import("@/features/admin/components/create-page-dialog").then(
+      (mod) => mod.CreatePageDialog
+    ),
+  { ssr: false }
+);
+
+const DeleteConfirmDialog = dynamic(
+  () =>
+    import("@/features/admin/components/delete-confirm-dialog").then(
+      (mod) => mod.DeleteConfirmDialog
+    ),
+  { ssr: false }
+);
 
 interface PagesListClientProps {
   initialPages: any[];
 }
 
-/**
- * =================================================================================================
- * PAGES LIST CLIENT - DANH SÁCH TRANG (CLIENT COMPONENT)
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HYDRATION:
- *    - Dữ liệu `initialPages` được lấy từ Server (Prisma) và truyền vào Client Component này.
- *    - Đây là kĩ thuật phổ biến trong Next.js App Router (Server -> Client).
- *
- * 2. OPTIMISTIC UPDATES VS REFRESH:
- *    - Khi xóa trang (`handleDelete`), ta gọi Server Action.
- *    - Sau đó gọi `router.refresh()` để Next.js tải lại dữ liệu mới nhất từ Server mà không cần F5 trình duyệt.
- * =================================================================================================
- */
 export function PagesListClient({ initialPages }: PagesListClientProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [isPending, startTransition] = useTransition();
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [selectedPage, setSelectedPage] = useState<any>(null);
   const { toast } = useToast();
-  const router = useRouter();
+
+  const { searchTerm, setSearchTerm, isPending } =
+    useAdminTable("/admin/pages");
+
+  // Local filter for search term if needed, or rely on server-side
+  const pages = initialPages;
 
   const handleDelete = async () => {
-    if (!deleteId) return { success: false, error: "No ID selected" };
+    if (!selectedPage) return { success: false, error: "No page selected" };
 
-    const res = await deletePageAction(deleteId);
+    const res = await deletePageAction(selectedPage.id);
     if (res.success) {
-      setDeleteId(null);
-      router.refresh();
+      toast({
+        title: "Success",
+        description: "Page deleted successfully",
+      });
+      setIsDeleteOpen(false);
     }
     return res;
+  };
+
+  const openDelete = (page: any) => {
+    setSelectedPage(page);
+    setIsDeleteOpen(true);
   };
 
   return (
@@ -71,7 +86,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
         </Button>
       </div>
 
-      <AdminTableWrapper title="All Pages">
+      <AdminTableWrapper title="All Pages" isLoading={isPending}>
         <Table>
           <TableHeader>
             <TableRow>
@@ -83,7 +98,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {initialPages.map((page: any) => (
+            {pages.map((page: any) => (
               <TableRow
                 key={page.id}
                 className="group hover:bg-muted/30 transition-colors"
@@ -122,7 +137,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
                   {format(new Date(page.updatedAt), "dd/MM/yyyy")}
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end gap-2 transition-opacity">
+                  <div className="flex justify-end gap-2">
                     <Button variant="outline" size="sm" asChild className="h-9">
                       <Link href={`/admin/pages/${page.id}`}>
                         <Edit className="mr-2 h-4 w-4" />
@@ -135,19 +150,19 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
                       asChild
                       className="h-9 w-9"
                     >
-                      <a
+                      <Link
                         href={page.slug}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
                         <ExternalLink className="h-4 w-4" />
-                      </a>
+                      </Link>
                     </Button>
                     <Button
                       variant="ghost"
                       size="icon"
                       className="h-9 w-9 text-destructive hover:bg-destructive/10"
-                      onClick={() => setDeleteId(page.id)}
+                      onClick={() => openDelete(page)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -155,7 +170,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
                 </TableCell>
               </TableRow>
             ))}
-            {initialPages.length === 0 && (
+            {pages.length === 0 && (
               <TableRow>
                 <TableCell
                   colSpan={5}
@@ -174,14 +189,16 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
 
       <CreatePageDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
 
-      <DeleteConfirmDialog
-        open={!!deleteId}
-        onOpenChange={(open) => !open && setDeleteId(null)}
-        title="Delete Page"
-        description="Are you sure you want to delete this page? This action cannot be undone."
-        action={handleDelete}
-        confirmLabel="Delete Page"
-      />
+      {selectedPage && (
+        <DeleteConfirmDialog
+          open={isDeleteOpen}
+          onOpenChange={setIsDeleteOpen}
+          title="Delete Page"
+          description={`Are you sure you want to delete the page "${selectedPage.title}"? This action cannot be undone.`}
+          action={handleDelete}
+          confirmLabel="Delete Page"
+        />
+      )}
     </div>
   );
 }

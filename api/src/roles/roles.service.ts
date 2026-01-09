@@ -47,10 +47,13 @@ export class RolesService {
    */
   async create(createRoleDto: CreateRoleDto) {
     const tenant = getTenant();
+    if (!tenant) {
+      throw new BadRequestException('Bối cảnh tenant bị thiếu');
+    }
     const existing = await this.prisma.role.findFirst({
       where: {
         name: createRoleDto.name,
-        tenantId: tenant?.id || null,
+        tenantId: tenant.id,
       },
     });
     if (existing) {
@@ -58,17 +61,18 @@ export class RolesService {
     }
     return this.prisma.role.create({
       data: {
-        ...createRoleDto,
-        tenantId: tenant?.id,
+        name: createRoleDto.name,
+        tenant: { connect: { id: tenant.id } },
       },
     });
   }
 
   async findAll(search?: string, page = 1, limit = 10) {
     const tenant = getTenant();
-    const where: any = {
-      OR: [{ tenantId: tenant?.id }, { tenantId: null }],
-    };
+    const where: any = {};
+    if (tenant) {
+      where.tenantId = tenant.id;
+    }
 
     if (search) {
       where.name = { contains: search, mode: 'insensitive' as const };

@@ -49,14 +49,17 @@ export class TenantsService {
           AUTH_CONFIG.BCRYPT_ROUNDS,
         );
 
-        // Ensure ADMIN role exists
+        // Ensure ADMIN role exists for this specific tenant
         let adminRole = await tx.role.findFirst({
-          where: { name: 'ADMIN', tenantId: null },
+          where: { name: 'ADMIN', tenantId: tenant.id },
         });
 
         if (!adminRole) {
           adminRole = await tx.role.create({
-            data: { name: 'ADMIN' },
+            data: {
+              name: 'ADMIN',
+              tenant: { connect: { id: tenant.id } },
+            },
           });
         }
 

@@ -75,43 +75,49 @@ export function NewArrivals({
     <section className="w-full">
       <m.div
         className={cn(
-          "flex flex-col md:flex-row justify-between items-center md:items-end gap-8 mb-16",
-          alignment === "center" && "md:flex-col md:items-center text-center"
+          "flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12",
+          alignment === "center" && "items-center text-center flex-col",
+          alignment === "left" && "items-start text-left"
         )}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeInRight}
       >
-        <div
-          className={cn(
-            "space-y-4",
-            alignment === "center" ? "text-center" : "text-left"
-          )}
-        >
+        <div className="space-y-3">
           <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block">
             {t("justLaunched")}
           </span>
-          <h2 className="text-4xl md:text-5xl font-serif tracking-tight text-foreground">
+          <h2 className="text-4xl md:text-6xl font-serif tracking-tight text-foreground leading-tight">
             {title || t("newArrivalsBold")}
           </h2>
           {subtitle && (
-            <p className="text-muted-foreground text-sm max-w-xl font-light leading-relaxed">
+            <p className="text-muted-foreground text-sm max-w-lg font-light leading-relaxed">
               {subtitle}
             </p>
           )}
         </div>
 
-        <Link
-          href="/shop?sort=newest"
-          className="group flex items-center gap-3 px-10 py-4 rounded-full border border-border bg-secondary/50 backdrop-blur-md hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-500 font-bold text-[10px] uppercase tracking-[0.2em]"
+        <div
+          className={cn(
+            "flex",
+            alignment === "center" ? "justify-center" : "justify-end"
+          )}
         >
-          {t("allProducts")}
-          <ArrowRight
-            size={14}
-            className="transition-transform group-hover:translate-x-2"
-          />
-        </Link>
+          <Link
+            href="/shop?sort=newest"
+            className="group text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground hover:text-accent transition-all flex items-center gap-3"
+          >
+            <span className="relative">
+              {t("viewAll") || "View All"}
+              <span className="absolute -bottom-1 left-0 w-0 h-px bg-accent transition-all duration-300 group-hover:w-full" />
+            </span>
+            <ArrowRight
+              size={12}
+              className="group-hover:translate-x-1.5 transition-transform"
+            />
+          </Link>
+        </div>
       </m.div>
 
       <m.div

@@ -312,6 +312,7 @@
     "checkOrderId": "Vui lòng kiểm tra lại mã đơn hàng và thử lại."
   },
   "home": {
+    "viewAll": "Xem tất cả",
     "heroTitle": "Cửa hàng nội thất cao cấp",
     "heroSubtitle": "Khám phá những xu hướng nội thất sang trọng mới nhất.",
     "featuredCollections": "Bộ sưu tập nổi bật",

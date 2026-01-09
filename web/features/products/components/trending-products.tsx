@@ -22,9 +22,11 @@
  * =====================================================================
  */
 import { ProductCard } from "@/features/products/components/product-card";
+import { Link } from "@/i18n/routing";
 import { fadeInUp, itemVariant, m, staggerContainer } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { Product } from "@/types/models";
+import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 interface TrendingProductsProps {
@@ -70,32 +72,49 @@ export function TrendingProducts({
     <section className="w-full">
       <m.div
         className={cn(
-          "flex flex-col mb-16 space-y-4",
-          alignment === "center"
-            ? "items-center text-center"
-            : "items-start text-left"
+          "flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12",
+          alignment === "center" && "items-center text-center flex-col",
+          alignment === "left" && "items-start text-left"
         )}
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeInUp}
       >
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/5 border border-accent/10">
-          <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-accent">
+        <div className="space-y-3">
+          <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block">
             {t("popularItems")}
           </span>
+          <h2 className="text-4xl md:text-6xl font-serif tracking-tight text-foreground leading-tight">
+            {title || t("trendingNowBold")}
+          </h2>
+          {subtitle && (
+            <p className="text-muted-foreground text-sm max-w-lg font-light leading-relaxed">
+              {subtitle}
+            </p>
+          )}
         </div>
-        <h2 className="text-4xl md:text-5xl font-serif tracking-tight text-foreground">
-          {title || t("trendingNowBold")}
-        </h2>
-        {subtitle && (
-          <p className="text-muted-foreground text-sm max-w-xl font-light leading-relaxed">
-            {subtitle}
-          </p>
-        )}
-        {alignment === "center" && (
-          <div className="w-20 h-px bg-accent/40 rounded-full mt-4" />
-        )}
+
+        <div
+          className={cn(
+            "flex",
+            alignment === "center" ? "justify-center" : "justify-end"
+          )}
+        >
+          <Link
+            href="/shop"
+            className="group text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground hover:text-accent transition-all flex items-center gap-3"
+          >
+            <span className="relative">
+              {t("viewAll") || "View All"}
+              <span className="absolute -bottom-1 left-0 w-0 h-px bg-accent transition-all duration-300 group-hover:w-full" />
+            </span>
+            <ArrowRight
+              size={12}
+              className="group-hover:translate-x-1.5 transition-transform"
+            />
+          </Link>
+        </div>
       </m.div>
 
       <m.div

@@ -318,6 +318,7 @@
     "checkOrderId": "Please check the order ID and try again."
   },
   "home": {
+    "viewAll": "View All",
     "heroTitle": "Premium Furniture Store",
     "heroSubtitle": "Discover the latest trends in luxury interior design.",
     "featuredCollections": "Featured Collections",

@@ -65,9 +65,9 @@ export function FeaturedCategories({
     <section className="w-full">
       <m.div
         className={cn(
-          "flex flex-col mb-12",
-          alignment === "center" && "items-center text-center",
-          alignment === "right" && "items-end text-right",
+          "flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12",
+          alignment === "center" && "items-center text-center flex-col",
+          alignment === "right" && "items-end text-right flex-col",
           alignment === "left" && "items-start text-left"
         )}
         initial="hidden"
@@ -79,7 +79,7 @@ export function FeaturedCategories({
           <m.span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block">
             {t("featuredCollections")}
           </m.span>
-          <h2 className="text-4xl md:text-5xl font-serif tracking-tight text-foreground">
+          <h2 className="text-4xl md:text-6xl font-serif tracking-tight text-foreground leading-tight">
             {title || t("featuredCategories")}
           </h2>
           {subtitle && (
@@ -89,7 +89,12 @@ export function FeaturedCategories({
           )}
         </div>
 
-        <div className="mt-8">
+        <div
+          className={cn(
+            "flex",
+            alignment === "center" ? "justify-center" : "justify-end"
+          )}
+        >
           <Link
             href="/categories"
             className="group text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-all flex items-center gap-3"
