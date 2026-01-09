@@ -665,7 +665,7 @@ async function main() {
   console.log('✅ Default Tenant (localhost) ensured.');
 
   // 4.2b VERCEL TENANT (Production)
-  const vercelTenant = await prisma.tenant.upsert({
+  await prisma.tenant.upsert({
     where: { domain: 'web-five-gilt-79.vercel.app' },
     update: {},
     create: {
