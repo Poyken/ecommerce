@@ -209,7 +209,7 @@ async function main() {
         firstName: 'Super',
         lastName: 'Admin',
         password: passwordHash,
-        tenantId: null,
+        tenantId: localhostTenant.id,
         roles: { create: { roleId: superAdminRole.id } },
       },
     });

@@ -63,11 +63,15 @@ export const initPerformanceMonitor = () => {
     });
 
     if (navigator.sendBeacon) {
-      navigator.sendBeacon(VITALS_URL, body);
+      const blob = new Blob([body], { type: "application/json" });
+      navigator.sendBeacon(VITALS_URL, blob);
     } else {
       fetch(VITALS_URL, {
         body,
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         keepalive: true,
       }).catch(() => {});
     }

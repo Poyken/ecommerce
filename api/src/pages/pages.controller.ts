@@ -44,6 +44,15 @@ export class PagesController {
   @Get(':slug')
   @ApiOperation({ summary: 'Get public page by slug' })
   async getPage(@Param('slug') slug: string) {
+    // SECURITY: Prevent catch-all from matching static files or technical paths
+    if (
+      slug.includes('.') ||
+      slug.includes('_next') ||
+      slug === 'favicon.ico'
+    ) {
+      throw new NotFoundException('Static asset requested via CMS route');
+    }
+
     const lookupSlug = slug === 'home' ? '/' : `/${slug}`;
     const page = await this.pagesService.findBySlug(lookupSlug);
     if (!page) throw new NotFoundException('Page not found');

@@ -287,58 +287,66 @@ export class AuthService {
       `[AUTH-DEBUG] Login attempt for email: "${email}" (normalized), Tenant Domain: ${tenant?.domain || 'Global'}`,
     );
 
-    // [GLOBAL LOGIN FIX]
-    // Run outside of Tenant Context to bypass Prisma Extension's auto-filter.
-    const user = await tenantStorage.run(undefined as any, () =>
-      this.prisma.user.findFirst({
-        where: {
-          email: { equals: email, mode: 'insensitive' },
-          OR: [
-            { tenantId: tenant?.id },
-            { roles: { some: { role: { name: 'SUPER_ADMIN' } } } },
-          ],
-        },
-        select: this.USER_PERMISSION_SELECT,
-      }),
-    );
+    // [GLOBAL LOGIN FIX - ULTIMATE]
+    // Step 1: Find user by email ONLY, bypassing all tenant filters
+    const user = await tenantStorage
+      .run(undefined as any, () =>
+        this.prisma.user.findFirst({
+          where: {
+            email: { equals: email, mode: 'insensitive' },
+            deletedAt: null,
+          },
+          select: this.USER_PERMISSION_SELECT,
+        }),
+      )
+      .catch((err) => {
+        this.logger.error(`[AUTH-DEBUG] Database error: ${err.message}`);
+        return null;
+      });
 
     if (!user) {
-      this.logger.warn(
-        `[AUTH-DEBUG] User NOT found for email: ${email} with tenant matching or SUPER_ADMIN role`,
-      );
+      this.logger.warn(`[AUTH-DEBUG] User NOT found for email: ${email}`);
       throw new UnauthorizedException('Invalid credentials');
     }
 
     this.logger.log(`[AUTH-DEBUG] User found: ${user.email}, ID: ${user.id}`);
     const roles = user.roles.map((r) => r.role.name);
-    this.logger.log(`[AUTH-DEBUG] User Roles: ${roles.join(', ')}`);
+    const isSuperAdmin = roles.includes('SUPER_ADMIN');
+    this.logger.log(
+      `[AUTH-DEBUG] User Roles: ${roles.join(', ')} | Is Super Admin: ${isSuperAdmin}`,
+    );
+
+    // Step 2: Validate Password
+    if (!user.password) {
+      this.logger.warn(`[AUTH-DEBUG] User has no password set: ${email}`);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      this.logger.warn(`[AUTH-DEBUG] Password mismatch for: ${email}`);
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Step 3: Check Tenant Access
+    // Super Admin can access any tenant. Others must match tenantId.
+    if (!isSuperAdmin && user.tenantId && user.tenantId !== tenant?.id) {
+      this.logger.warn(
+        `[AUTH-DEBUG] Tenant mismatch. User tenant: ${user.tenantId}, Context: ${tenant?.id}`,
+      );
+      throw new UnauthorizedException('Bạn không có quyền truy cập tenant này');
+    }
 
     // [SECURITY] IP WHITELISTING
     // Check if user has specific IP restrictions (usually for ADMIN/STAFF)
     const whitelistedIps = (user as any).whitelistedIps as string[];
-    if (
-      whitelistedIps &&
-      Array.isArray(whitelistedIps) &&
-      whitelistedIps.length > 0
-    ) {
-      if (ip && !whitelistedIps.includes(ip)) {
-        this.logger.warn(
-          `Blocked login attempt for ${email} from unauthorized IP: ${ip}`,
-        );
-        throw new UnauthorizedException(
-          'Truy cập bị từ chối từ địa chỉ IP này',
-        );
-      }
+    if (whitelistedIps?.length > 0 && ip && !whitelistedIps.includes(ip)) {
+      this.logger.warn(
+        `Blocked login attempt for ${email} from unauthorized IP: ${ip}`,
+      );
+      throw new UnauthorizedException('Truy cập bị từ chối từ địa chỉ IP này');
     }
 
-    if (!user.password) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
+    this.logger.log(`[AUTH-DEBUG] Login successful for: ${email}`);
 
     // 2FA CHECK
     if ((user as any).twoFactorEnabled) {

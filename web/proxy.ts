@@ -36,8 +36,15 @@ const CSRF_COOKIE_NAME = "csrf-token";
 export default async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Bypass i18n routing for static assets (images, fonts, etc.)
-  if (pathname.startsWith("/images/") || pathname.startsWith("/fonts/")) {
+  // Bypass i18n routing for static assets (images, fonts, pwa icons, etc.)
+  if (
+    pathname.startsWith("/images/") ||
+    pathname.startsWith("/fonts/") ||
+    pathname.includes("icon-") ||
+    pathname.endsWith(".png") ||
+    pathname.endsWith(".ico") ||
+    pathname.endsWith(".json")
+  ) {
     return NextResponse.next();
   }
 
