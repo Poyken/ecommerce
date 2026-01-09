@@ -37,7 +37,7 @@ services:
     image: redis:7-alpine
     container_name: redis
     ports:
-      - '6379:6379'
+      - '6380:6379'
     volumes:
       - redis_data:/data
     networks:
@@ -53,8 +53,8 @@ services:
     ports:
       - '8080:8080'
     environment:
-      DATABASE_URL: postgres://postgres:123456@postgres:5432/ecommerce?schema=public
-      REDIS_URL: redis://redis:6379
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
       PORT: 8080
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-your-super-secret-jwt-key-change-this-in-production}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-refresh-key-change-this-in-production}
@@ -64,7 +64,7 @@ services:
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-ddpbahxp6}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-463557752242447}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-HhNkzENWTFX2mLkFwHCcMvfHJNA}
-    command: /bin/sh -c "until pg_isready -h postgres -p 5432 -U postgres; do echo 'Waiting for postgres...'; sleep 2; done; npx prisma db push && node dist/seeds/seed.js && node dist/seeds/seed-products.js && node dist/seeds/seed-blog.js && node dist/src/main"
+    command: /bin/sh -c "node dist/main"
     depends_on:
       postgres:
         condition: service_healthy
