@@ -70,51 +70,86 @@ Bấm **Deploy Web Service**. Chờ báo thành công.
 
 ---
 
-## 4. Triển khai Web (Render - Docker)
+## 4. Triển khai Web (Vercel - Khuyên dùng)
 
-Thay vì Vercel, chúng ta sẽ dùng Render để chạy Docker cho Web (Next.js Standalone).
+Để hỗ trợ tính năng **Multi-tenant (Subdomain)** tốt nhất, chúng ta sẽ sử dụng Vercel.
 
-### 4.1. Tạo Web Service
+### 4.1. Tạo Project
 
-1. Dashboard -> **New +** -> **Web Service**.
-2. Kết nối repository **`web`**.
+1. Truy cập [vercel.com](https://vercel.com) -> **Add New...** -> **Project**.
+2. Import Repository **`web`**.
 
-### 4.2. Cấu hình Runtime
+### 4.2. Cấu hình Environment Variables
 
-- **Runtime**: **Docker**.
-- **Region**: Singapore.
-- **Docker Context Directory**: `.` (hoặc `web`).
-- **Dockerfile Path**: `Dockerfile` (hoặc `web/Dockerfile`).
+Thêm các biến sau vào mục **Environment Variables**:
+| Key | Value |
+| :--- | :--- |
+| `NEXT_PUBLIC_API_URL` | `https://api-name.onrender.com/api/v1` (URL API ở Bước 3) |
+| `API_URL` | `https://api-name.onrender.com/api/v1` |
 
-### 4.3. Cấu hình Environment Variables
+> **Lưu ý**: Không cần biến `PORT` trên Vercel.
 
-| Key        | Value                                                           |
-| :--------- | :-------------------------------------------------------------- |
-| `NODE_ENV` | `production`                                                    |
-| `PORT`     | `3000`                                                          |
-| `API_URL`  | `https://api-name.onrender.com/api/v1` (URL của API vừa deploy) |
+### 4.3. Deploy
 
-> **Giải thích**:
+Bấm **Deploy**. Chờ đến khi có domain `https://project.vercel.app`.
+
+---
+
+## 5. Cấu hình Tự động Deploy Tenant (Multi-tenant)
+
+Đây là bước quan trọng nhất để tính năng **New Tenant** hoạt động "tự động" mà không cần deploy lại.
+
+### 5.1. Mua tên miền (Domain)
+
+Bạn cần một tên miền thực (VD: `myshop.com`). Bạn không thể test tính năng này với domain miễn phí của Vercel (`.vercel.app`).
+
+### 5.2. Cấu hình Wildcard Domain trên Vercel
+
+1. Vào Project Web trên Vercel -> **Settings** -> **Domains**.
+2. Thêm tên miền gốc: `myshop.com`.
+3. Thêm tên miền Wildcard: `*.myshop.com`.
+   - Vercel sẽ yêu cầu bạn cấu hình DNS (CNAME hoặc A Record) tại nhà cung cấp tên miền.
+   - **Quan trọng**: Bản ghi Wildcard `*` cho phép mọi subdomain (vd: `store1.myshop.com`, `fashion.myshop.com`) đều trỏ về cùng một ứng dụng Web này.
+
+### 5.3. Quy trình "Tự động" (Dành cho Phương án 1 - Có Domain riêng)
+
+Sau khi cấu hình xong bước 5.2:
+
+1. Bạn vào trang Admin, tạo Tenant mới (VD: `techstore`).
+2. Hệ thống lưu tenant vào Database.
+3. Người dùng truy cập ngay lập tức được vào `techstore.myshop.com`.
+4. **KHÔNG** cần deploy lại code hay server. Code Next.js sẽ tự động đọc subdomain `techstore` và tải dữ liệu tương ứng.
+
+### 5.4. Phương án 2: Dùng Miễn phí (Thủ công - Không cần mua Domain)
+
+Nếu bạn không muốn mua domain, bạn có thể dùng domain `vercel.app` mặc định, nhưng quy trình sẽ hơi thủ công một chút:
+
+1. **Bước 1**: Vào trang Admin của Web App, tạo Tenant mới (Ví dụ slug là `store-1`).
+2. **Bước 2**: Truy cập Dashboard **Vercel** -> Project Web -> **Settings** -> **Domains**.
+3. **Bước 3**: Nhập và Add domain thủ công theo cú pháp: `store-1.project-name.vercel.app`.
+   - _(Thay `project-name` bằng tên project Vercel của bạn)_.
+4. **Bước 4**: Chờ vài giây Vercel cập nhật. Sau đó bạn có thể vào `https://store-1.project-name.vercel.app` để xem shop.
+
+> **Tổng kết**:
 >
-> - `API_URL`: Biến này được Next.js Server dùng để proxy request từ `/api/v1` sang Backend thật.
-> - Web App dùng `output: standalone` nên cực nhẹ và nhanh.
-
-Bấm **Deploy Web Service**.
+> - Mua Domain: Tự động hoàn toàn (Chuyên nghiệp).
+> - Dùng Free: Phải Add domain bằng tay mỗi khi tạo Shop mới.
 
 ---
 
-## 5. Hoàn tất kết nối
+## 6. Hoàn tất kết nối
 
-1. Copy URL của Web Service vừa tạo (VD: `https://web-name.onrender.com`).
-2. Quay lại **API Service** -> Environment.
-3. Update `FRONTEND_URL` = `https://web-name.onrender.com`.
-4. API sẽ tự Redeploy. Hệ thống hoàn tất!
+1. Copy tên miền chính của Web (VD: `https://myshop.com` hoặc `https://web-app.vercel.app` nếu chưa mua domain).
+2. Quay lại **Render (API Service)** -> Environment.
+3. Update `FRONTEND_URL` = Domain đó.
+   - _Nếu dùng Wildcard, bạn có thể cần cấu hình CORS trên API để chấp nhận `_.myshop.com`(Sẽ cấu hình trong code NestJS sau nếu cần thiết, tạm thời`FRONTEND_URL` dùng cho callback).\*
+4. API tự Redeploy. Hệ thống sẵn sàng!
 
 ---
 
-## 6. Kiểm tra & Debug
+## 7. Kiểm tra & Debug
 
-### 6.1. Kiểm tra kết nối Database
+### 7.1. Kiểm tra kết nối Database
 
 Nếu API deploy thất bại với lỗi liên quan đến Database:
 
