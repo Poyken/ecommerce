@@ -18,6 +18,8 @@ import {
   LineChart,
   PieChart,
 } from "lucide-react";
+import { memo, useMemo, Suspense, lazy } from "react";
+import { formatVND, formatNumber } from "@/lib/format";
 
 /**
  * =============================================================================
@@ -75,46 +77,59 @@ interface SmartWidgetProps {
   schema: UISchema;
 }
 
-export function SmartWidget({ schema }: SmartWidgetProps) {
-  switch (schema.type) {
-    case "stat_card":
-      return <StatCardWidget schema={schema} />;
-    case "table":
-      return <TableWidget schema={schema} />;
-    case "bar_chart":
-      return <BarChartWidget schema={schema} />;
-    case "line_chart":
-      return <LineChartWidget schema={schema} />;
-    case "pie_chart":
-      return <PieChartWidget schema={schema} />;
-    case "alert":
-      return <AlertWidget schema={schema} />;
-    case "list":
-      return <ListWidget schema={schema} />;
-    default:
-      return (
-        <Card>
-          <CardContent className="p-6">
-            <p className="text-muted-foreground">Unknown widget type</p>
-          </CardContent>
-        </Card>
-      );
-  }
-}
+/**
+ * SmartWidget - Component chính render UI theo schema.
+ * Sử dụng memo để tránh re-render khi parent component thay đổi.
+ */
+export const SmartWidget = memo(function SmartWidget({ schema }: SmartWidgetProps) {
+  // Memoize việc chọn widget component
+  const WidgetComponent = useMemo(() => {
+    switch (schema.type) {
+      case "stat_card":
+        return StatCardWidget;
+      case "table":
+        return TableWidget;
+      case "bar_chart":
+        return BarChartWidget;
+      case "line_chart":
+        return LineChartWidget;
+      case "pie_chart":
+        return PieChartWidget;
+      case "alert":
+        return AlertWidget;
+      case "list":
+        return ListWidget;
+      default:
+        return UnknownWidget;
+    }
+  }, [schema.type]);
+
+  return <WidgetComponent schema={schema} />;
+});
+
+// Fallback component cho unknown widget types
+const UnknownWidget = memo(function UnknownWidget() {
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <p className="text-muted-foreground">Unknown widget type</p>
+      </CardContent>
+    </Card>
+  );
+});
 
 // =============================================================================
 // WIDGET COMPONENTS
 // =============================================================================
 
-function StatCardWidget({ schema }: { schema: UISchema }) {
+const StatCardWidget = memo(function StatCardWidget({ schema }: { schema: UISchema }) {
   const { value, trend, trendUp } = schema.data;
-  const formattedValue =
-    typeof value === "number"
-      ? new Intl.NumberFormat("vi-VN", {
-          style: "currency",
-          currency: "VND",
-        }).format(value)
-      : value;
+  
+  // Memoize formatted value để tránh recalculate
+  const formattedValue = useMemo(
+    () => (typeof value === "number" ? formatVND(value) : value),
+    [value]
+  );
 
   return (
     <Card className="overflow-hidden">
@@ -147,9 +162,9 @@ function StatCardWidget({ schema }: { schema: UISchema }) {
       </CardContent>
     </Card>
   );
-}
+});
 
-function TableWidget({ schema }: { schema: UISchema }) {
+const TableWidget = memo(function TableWidget({ schema }: { schema: UISchema }) {
   const { columns, rows } = schema.data;
 
   return (
@@ -178,10 +193,7 @@ function TableWidget({ schema }: { schema: UISchema }) {
                         className="h-10 w-10 rounded object-cover"
                       />
                     ) : col.key === "price" ? (
-                      new Intl.NumberFormat("vi-VN", {
-                        style: "currency",
-                        currency: "VND",
-                      }).format(row[col.key])
+                      formatVND(row[col.key])
                     ) : (
                       row[col.key]
                     )}
@@ -194,9 +206,9 @@ function TableWidget({ schema }: { schema: UISchema }) {
       </CardContent>
     </Card>
   );
-}
+});
 
-function BarChartWidget({ schema }: { schema: UISchema }) {
+const BarChartWidget = memo(function BarChartWidget({ schema }: { schema: UISchema }) {
   const { labels, values } = schema.data;
   const maxValue = Math.max(...(values || [1]));
 
@@ -215,7 +227,7 @@ function BarChartWidget({ schema }: { schema: UISchema }) {
               <div className="flex justify-between text-sm">
                 <span>{label}</span>
                 <span className="font-medium">
-                  {new Intl.NumberFormat("vi-VN").format(values[i])}
+                  {formatNumber(values[i])}
                 </span>
               </div>
               <div className="h-2 bg-muted rounded-full overflow-hidden">
@@ -230,9 +242,9 @@ function BarChartWidget({ schema }: { schema: UISchema }) {
       </CardContent>
     </Card>
   );
-}
+});
 
-function LineChartWidget({ schema }: { schema: UISchema }) {
+const LineChartWidget = memo(function LineChartWidget({ schema }: { schema: UISchema }) {
   const { labels, values } = schema.data;
   const maxValue = Math.max(...(values || [1]));
   const minValue = Math.min(...(values || [0]));
@@ -294,9 +306,9 @@ function LineChartWidget({ schema }: { schema: UISchema }) {
       </CardContent>
     </Card>
   );
-}
+});
 
-function PieChartWidget({ schema }: { schema: UISchema }) {
+const PieChartWidget = memo(function PieChartWidget({ schema }: { schema: UISchema }) {
   const { labels, values } = schema.data;
   const total = values?.reduce((a: number, b: number) => a + b, 0) || 1;
   const colors = [
@@ -342,9 +354,9 @@ function PieChartWidget({ schema }: { schema: UISchema }) {
       </CardContent>
     </Card>
   );
-}
+});
 
-function AlertWidget({ schema }: { schema: UISchema }) {
+const AlertWidget = memo(function AlertWidget({ schema }: { schema: UISchema }) {
   const { level, message, items } = schema.data;
 
   const levelStyles = {
@@ -380,9 +392,9 @@ function AlertWidget({ schema }: { schema: UISchema }) {
       </CardContent>
     </Card>
   );
-}
+});
 
-function ListWidget({ schema }: { schema: UISchema }) {
+const ListWidget = memo(function ListWidget({ schema }: { schema: UISchema }) {
   const { items } = schema.data;
 
   return (
@@ -402,4 +414,4 @@ function ListWidget({ schema }: { schema: UISchema }) {
       </CardContent>
     </Card>
   );
-}
+});

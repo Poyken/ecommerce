@@ -11,9 +11,9 @@
  *   và `tailwind-merge` (để xử lý conflict: `cn("p-4", "p-2")` -> `p-2`).
  * - Không có nó, việc override style từ props sẽ rất lỗi.
  *
- * 2. HELPERS KHÁC:
- * - `toSlug`: Biến tên sản phẩm "Áo Thun Đẹp" thành URL "ao-thun-dep" (Chuẩn SEO).
- * - `formatCurrency`: Format tiền tệ chuyên nghiệp (100.000 ₫) dùng Intl API của trình duyệt.
+ * 2. RE-EXPORTS:
+ * - Các hàm format (formatCurrency, formatDate, toSlug) đã được chuyển sang format.ts
+ * - Giữ re-export ở đây để backward compatibility
  * =====================================================================
  */
 
@@ -41,59 +41,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/**
- * Chuyển đổi chuỗi thành slug URL-friendly.
- * Hỗ trợ tiếng Việt và các ký tự đặc biệt.
- *
- * @param str - Chuỗi cần chuyển đổi
- * @returns Slug string (vd: "San Pham Moi" -> "san-pham-moi")
- */
-export function toSlug(str: string): string {
-  return str
-    .normalize("NFD") // Tách các ký tự có dấu (vd: é -> e + sắc)
-    .replace(/[\u0300-\u036f]/g, "") // Xóa các dấu
-    .replace(/đ/g, "d")
-    .replace(/Đ/g, "D")
-    .toLowerCase() // Chuyển về chữ thường
-    .replace(/[^a-z0-9 ]/g, "") // Xóa ký tự đặc biệt (chỉ giữ chữ, số, dấu cách)
-    .replace(/\s+/g, "-") // Thay dấu cách bằng dấu gạch ngang
-    .replace(/^-+|-+$/g, ""); // Xóa gạch ngang ở đầu/cuối
-}
+// =============================================================================
+// RE-EXPORTS (Backward Compatibility)
+// =============================================================================
+// Các hàm này đã được chuyển sang format.ts
+// Giữ re-export ở đây để code cũ vẫn hoạt động
+// Khuyến khích import trực tiếp từ @/lib/format
 
-/**
- * Định dạng số thành tiền tệ Việt Nam (VND).
- *
- * @param amount - Số tiền cần định dạng
- * @returns Chuỗi đã định dạng (vd: 100.000 ₫)
- */
-export function formatCurrency(
-  amount: number,
-  options?: Intl.NumberFormatOptions
-): string {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-    ...options,
-  }).format(amount);
-}
-
-/**
- * Định dạng ngày tháng theo chuẩn Việt Nam.
- *
- * @param date - Date object hoặc chuỗi ngày
- * @param options - Tùy chọn định dạng
- * @returns Chuỗi ngày đã định dạng (vd: 01/01/2024)
- */
-export function formatDate(
-  date: Date | string | number,
-  options?: Intl.DateTimeFormatOptions
-): string {
-  if (!date) return "";
-  const d = new Date(date);
-  return new Intl.DateTimeFormat("vi-VN", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    ...options,
-  }).format(d);
-}
+export { formatVND as formatCurrency, formatDate, toSlug } from "./format";
