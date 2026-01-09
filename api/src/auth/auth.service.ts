@@ -304,58 +304,60 @@ export class AuthService {
         return null;
       });
 
-    // FALLBACK: If user not found via Prisma (maybe extension interception issue), try direct Query
+    // FALLBACK: If user not found via Prisma (due to extension filtering), use an UNFILTERED internal method
     if (!user) {
       this.logger.warn(
-        `[AUTH-DEBUG] User NOT found via Prisma lookup, trying direct raw query for ${email}`,
+        `[AUTH-DEBUG] User NOT found via Prisma lookup, trying unfiltered fetch for ${email}`,
       );
-      const rawUsers = await this.prisma.$queryRawUnsafe<any[]>(
-        `SELECT id, email, "tenantId" FROM "User" WHERE LOWER(email) = LOWER($1) AND "deletedAt" IS NULL LIMIT 1`,
+
+      const idResult = await this.prisma.$queryRawUnsafe<{ id: string }[]>(
+        'SELECT id FROM "User" WHERE LOWER(email) = LOWER($1) AND "deletedAt" IS NULL LIMIT 1',
         email,
       );
 
-      if (rawUsers && rawUsers.length > 0) {
-        const rawUser = rawUsers[0];
+      if (idResult.length > 0) {
+        const userId = idResult[0].id;
         this.logger.log(
-          `[AUTH-DEBUG] User FOUND via RAW query: ${rawUser.email}, Tenant: ${rawUser.tenantId}. Attempting full reload...`,
+          `[AUTH-DEBUG] Found User ID via Raw SQL: ${userId}. Fetching full data...`,
         );
-        // If found via raw, try to load via ID explicitly
-        user = await tenantStorage.run(undefined as any, () =>
+
+        // Use findUnique with NULL store to bypass extension
+        user = (await tenantStorage.run(undefined as any, () =>
           this.prisma.user.findUnique({
-            where: { id: rawUser.id },
+            where: { id: userId },
             select: this.USER_PERMISSION_SELECT,
           }),
-        );
+        )) as any;
       }
     }
 
     if (!user) {
       this.logger.warn(
-        `[AUTH-DEBUG] User NOT found even after fallback for email: ${email}`,
+        `[AUTH-DEBUG] User NOT found even after all fallback attempts for email: ${email}`,
       );
       throw new UnauthorizedException('Invalid credentials');
     }
 
     // Step 2: Validate Password
-    if (!user.password) {
+    const userData = user as any;
+    if (!userData.password) {
       this.logger.warn(`[AUTH-DEBUG] User has no password set: ${email}`);
       throw new UnauthorizedException('Invalid credentials');
     }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, userData.password);
     if (!isPasswordValid) {
       this.logger.warn(`[AUTH-DEBUG] Password mismatch for: ${email}`);
       throw new UnauthorizedException('Invalid credentials');
     }
 
     // Step 3: Determine Roles & Permissions
-    const roles = user.roles.map((r) => r.role.name);
+    const roles = userData.roles.map((r: any) => r.role.name);
     const isSuperAdmin = roles.includes('SUPER_ADMIN');
-    const allPermissions = this.permissionService.aggregatePermissions(
-      user as any,
-    );
+    const allPermissions =
+      this.permissionService.aggregatePermissions(userData);
 
     this.logger.log(
-      `[AUTH-FLOW] User Authorized: ${email} | ID: ${user.id} | SuperAdmin: ${isSuperAdmin}`,
+      `[AUTH-FLOW] User Authorized: ${email} | ID: ${userData.id} | SuperAdmin: ${isSuperAdmin}`,
     );
 
     // Step 4: Multi-tenancy Access Control
@@ -763,8 +765,11 @@ export class AuthService {
   }
 
   private async ensureGuestRoleAndAssign(userId: string) {
+    const tenant = getTenant();
+    if (!tenant) return;
+
     let guestRole = await this.prisma.role.findFirst({
-      where: { name: 'GUEST', tenantId: null },
+      where: { name: 'GUEST', tenantId: tenant.id },
     });
 
     if (!guestRole) {
@@ -794,6 +799,7 @@ export class AuthService {
       guestRole = await this.prisma.role.create({
         data: {
           name: 'GUEST',
+          tenantId: tenant.id,
           permissions: {
             create: permissionRecords.map((p) => ({
               permissionId: p.id,
