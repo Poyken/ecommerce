@@ -336,13 +336,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    this.logger.log(`[AUTH-DEBUG] User found: ${user.email}, ID: ${user.id}`);
-    const roles = user.roles.map((r) => r.role.name);
-    const isSuperAdmin = roles.includes('SUPER_ADMIN');
-    this.logger.log(
-      `[AUTH-DEBUG] User Roles: ${roles.join(', ')} | Is Super Admin: ${isSuperAdmin}`,
-    );
-
     // Step 2: Validate Password
     if (!user.password) {
       this.logger.warn(`[AUTH-DEBUG] User has no password set: ${email}`);
@@ -354,70 +347,72 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Step 3: Check Tenant Access
-    // Super Admin can access any tenant. Others must match tenantId.
-    if (!isSuperAdmin && user.tenantId && user.tenantId !== tenant?.id) {
-      this.logger.warn(
-        `[AUTH-DEBUG] Tenant mismatch. User tenant: ${user.tenantId}, Context: ${tenant?.id}`,
+    // Step 3: Determine Roles & Permissions
+    const roles = user.roles.map((r) => r.role.name);
+    const isSuperAdmin = roles.includes('SUPER_ADMIN');
+    const allPermissions = this.permissionService.aggregatePermissions(
+      user as any,
+    );
+
+    this.logger.log(
+      `[AUTH-FLOW] User Authorized: ${email} | ID: ${user.id} | SuperAdmin: ${isSuperAdmin}`,
+    );
+
+    // Step 4: Multi-tenancy Access Control
+    /**
+     * LOGIC CHẶT CHẼ THEO YÊU CẦU:
+     * 1. Nếu là SUPER_ADMIN -> Cho qua mọi domain (Bypass Tenant Check).
+     * 2. Nếu là USER thường:
+     *    - Nếu domain hiện tại có Tenant: Phải khớp tenantId.
+     *    - Nếu domain hiện tại KHÔNG có Tenant (Portal chung): CHỈ Super Admin được vào.
+     */
+    if (!isSuperAdmin) {
+      if (!tenant) {
+        // Đang truy cập vào portal tổng mà không phải Super Admin -> Chặn
+        this.logger.warn(
+          `[AUTH-TENANCY] Access Denied: Normal user ${email} attempted global portal login`,
+        );
+        throw new UnauthorizedException(
+          'Chỉ quản trị viên cấp cao mới có quyền truy cập trang này',
+        );
+      }
+
+      if (user.tenantId !== tenant.id) {
+        // Sai cửa hàng -> Chặn
+        this.logger.warn(
+          `[AUTH-TENANCY] Access Denied: User ${email} (Tenant: ${user.tenantId}) belongs to another store (Current: ${tenant.id})`,
+        );
+        throw new UnauthorizedException(
+          'Tài khoản không thuộc về cửa hàng này',
+        );
+      }
+    } else {
+      this.logger.log(
+        `[AUTH-TENANCY] Super Admin bypass: Global access granted for ${email}`,
       );
-      throw new UnauthorizedException('Bạn không có quyền truy cập tenant này');
     }
 
     // [SECURITY] IP WHITELISTING
-    // Check if user has specific IP restrictions (usually for ADMIN/STAFF)
     const whitelistedIps = (user as any).whitelistedIps as string[];
     if (whitelistedIps?.length > 0 && ip && !whitelistedIps.includes(ip)) {
-      this.logger.warn(
-        `Blocked login attempt for ${email} from unauthorized IP: ${ip}`,
-      );
+      this.logger.warn(`[AUTH-SECURITY] IP Blocked: ${email} from ${ip}`);
       throw new UnauthorizedException('Truy cập bị từ chối từ địa chỉ IP này');
     }
 
-    this.logger.log(`[AUTH-DEBUG] Login successful for: ${email}`);
-
     // 2FA CHECK
     if ((user as any).twoFactorEnabled) {
+      this.logger.log(`[AUTH-MFA] 2FA Required for ${email}`);
       return {
         mfaRequired: true,
         userId: user.id,
       };
     }
 
-    // [SECURITY] TENANT CHECK
-    // If request has a tenant context, user MUST belong to that tenant
-    // Exception: Super Admin (no tenantId) can login anywhere (or restrict as needed)
-    const currentTenant = getTenant();
-    if (currentTenant) {
-      // Allow SUPER_ADMIN to bypass tenant specific checks
-      // Since we modified the query to allow finding SUPER_ADMIN from other tenants
-      const isSuperAdmin = user.roles.some(
-        (r) => r.role.name === 'SUPER_ADMIN',
-      );
-
-      // If user has a tenantId and it doesn't match currentTenant.id AND NOT Super Admin -> DENY
-      if (
-        !isSuperAdmin &&
-        user.tenantId &&
-        user.tenantId !== currentTenant.id
-      ) {
-        throw new UnauthorizedException(
-          'Tài khoản không thuộc về cửa hàng này',
-        );
-      }
-
-      // OPTIONAL: If user has NO tenantId (Super Admin) but trying to login to a specific store?
-      // For now, assume Super Admin can access tenant dashboards.
-    }
-
-    // Use PermissionService for consistent permission aggregation
-    const allPermissions = this.permissionService.aggregatePermissions(
-      user as any,
-    );
-
+    // Step 5: Generate Tokens
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
       allPermissions,
-      user.roles.map((r) => r.role.name),
+      roles,
       fingerprint,
     );
 
@@ -427,6 +422,8 @@ export class AuthService {
       'EX',
       this.tokenService.getRefreshTokenExpirationTime(),
     );
+
+    this.logger.log(`[AUTH-SUCCESS] Session created for ${email}`);
 
     return {
       accessToken,
