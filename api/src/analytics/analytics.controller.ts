@@ -4,6 +4,7 @@ import { PermissionsGuard } from '@/auth/permissions.guard';
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AnalyticsService } from './analytics.service';
+import { CreateVitalDto } from './dto/create-vital.dto';
 
 /**
  * =====================================================================
@@ -116,17 +117,15 @@ export class AnalyticsController {
 
   @Post('vitals')
   @ApiOperation({ summary: 'Receive Web Vitals telemetry' })
-  async postVitals(
-    @Body()
-    data: {
-      name: string;
-      value: number;
-      rating: string;
-      url: string;
-      userAgent?: string;
-      navigationType?: string;
-    },
-  ) {
-    return this.analyticsService.savePerformanceMetric(data);
+  async postVitals(@Body() data: CreateVitalDto) {
+    // Map DTO to Service interface explicitly to avoid any type mismatch issues
+    return this.analyticsService.savePerformanceMetric({
+      name: data.name,
+      value: data.value,
+      rating: data.rating,
+      url: data.url || '', // Default usually provided but safe fallback
+      userAgent: data.userAgent,
+      navigationType: data.navigationType,
+    });
   }
 }
