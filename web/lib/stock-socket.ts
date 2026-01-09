@@ -38,10 +38,10 @@ class StockSocketClient {
     if (this.socket?.connected) return;
 
     // Lấy URL của API từ biến môi trường
-    const serverUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8088";
+    const serverUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
-    // Xử lý URL: Socket.io cần base URL (vd: http://localhost:8088) chứ không phải full API path
-    // Nếu URL là http://localhost:8088/api/v1 -> cắt bỏ phần /api trở đi
+    // Xử lý URL: Socket.io cần base URL (vd: http://localhost:8080) chứ không phải full API path
+    // Nếu URL là http://localhost:8080/api/v1 -> cắt bỏ phần /api trở đi
     let wsBaseUrl = serverUrl;
     if (serverUrl.includes("/api/")) {
       wsBaseUrl = serverUrl.split("/api/")[0];

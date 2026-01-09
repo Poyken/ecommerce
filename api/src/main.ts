@@ -220,7 +220,7 @@ async function bootstrap() {
   // ============================================================================
   // 9. START SERVER - Khởi động server
   // ============================================================================
-  const port = process.env.PORT ?? 8088;
+  const port = process.env.PORT ?? 8080;
   await app.listen(port);
 
   logger.log(`🚀 Server is running on: http://localhost:${port}`);
