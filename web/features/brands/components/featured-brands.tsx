@@ -108,7 +108,7 @@ export function FeaturedBrands({
 
       <m.div
         className={cn(
-          "grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 items-center justify-items-center",
+          "grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center",
           grayscale &&
             "grayscale hover:grayscale-0 transition-all duration-700",
           layout === "grid" ? "grid" : "flex flex-wrap"
@@ -119,7 +119,7 @@ export function FeaturedBrands({
         whileInView="visible"
         viewport={{ once: true, margin: "-50px" }}
       >
-        {brands.slice(0, 10).map((brand) => (
+        {brands.slice(0, 8).map((brand) => (
           <m.div
             key={brand.id}
             variants={itemScaleVariant}

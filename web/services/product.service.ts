@@ -191,18 +191,24 @@ export const productService = {
    */
   async getCategories(options?: {
     next?: NextFetchRequestConfig;
+    limit?: number;
+    page?: number;
   }): Promise<Category[]> {
+    const { limit, page, next } = options || {};
+    const params = { limit, page };
+
     const fetcher = unstable_cache(
       async () => {
         try {
           const response = await http<
             ApiResponse<Category[]> | ApiResponse<PaginatedData<Category>>
           >("/categories", {
+            params: params as Record<string, string | number | boolean>,
             skipAuth: true,
             next: {
               revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - categories change very rarely
               tags: ["categories"],
-              ...options?.next,
+              ...next,
             },
           });
 
@@ -224,7 +230,7 @@ export const productService = {
           return [];
         }
       },
-      ["categories-all"],
+      ["categories-all", JSON.stringify(params)],
       {
         revalidate: 86400,
         tags: ["categories"],
@@ -241,7 +247,12 @@ export const productService = {
    */
   async getBrands(options?: {
     next?: NextFetchRequestConfig;
+    limit?: number;
+    page?: number;
   }): Promise<import("@/types/models").Brand[]> {
+    const { limit, page, next } = options || {};
+    const params = { limit, page };
+
     const fetcher = unstable_cache(
       async () => {
         try {
@@ -249,11 +260,12 @@ export const productService = {
             | ApiResponse<import("@/types/models").Brand[]>
             | ApiResponse<PaginatedData<import("@/types/models").Brand>>
           >("/brands", {
+            params: params as Record<string, string | number | boolean>,
             skipAuth: true,
             next: {
               revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - brands change very rarely
               tags: ["brands"],
-              ...options?.next,
+              ...next,
             },
           });
 
@@ -275,7 +287,7 @@ export const productService = {
           return [];
         }
       },
-      ["brands-all"],
+      ["brands-all", JSON.stringify(params)],
       {
         revalidate: 86400,
         tags: ["brands"],

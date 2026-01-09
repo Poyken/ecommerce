@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Role, Brand, Category } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -101,7 +101,7 @@ async function main() {
 
   // 3. Roles
   const roles = ['SUPER_ADMIN', 'ADMIN', 'USER'];
-  const roleMap: any = {};
+  const roleMap: Record<string, Role> = {};
   for (const rName of roles) {
     let role = await prisma.role.findFirst({
       where: { name: rName, tenantId: localhostTenant.id },
@@ -176,7 +176,7 @@ async function main() {
     {
       name: 'Knoll',
       image:
-        'https://images.unsplash.com/photo-1592078658136-1033282f9cd7?w=800&q=80',
+        'https://images.unsplash.com/photo-1519961655809-34fa156820ff?w=800&q=80',
     },
     {
       name: 'Cassina',
@@ -186,7 +186,7 @@ async function main() {
     {
       name: 'B&B Italia',
       image:
-        'https://images.unsplash.com/photo-1544457070-4cd9c0dd4471?w=800&q=80',
+        'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?w=800&q=80',
     },
     {
       name: 'Vitra',
@@ -196,7 +196,7 @@ async function main() {
     {
       name: 'Poltrona Frau',
       image:
-        'https://images.unsplash.com/photo-1534349762230-e0cadf78f5db?w=800&q=80',
+        'https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=800&q=80',
     },
     {
       name: 'Minotti',
@@ -209,7 +209,7 @@ async function main() {
         'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800&q=80',
     },
   ];
-  const brands: any[] = [];
+  const brands: Brand[] = [];
   for (const bInfo of brandNames) {
     const brand = await prisma.brand.upsert({
       where: {
@@ -235,7 +235,7 @@ async function main() {
     {
       name: 'Bedroom',
       image:
-        'https://images.unsplash.com/photo-1505691938895-1758d7eaa511?w=800&q=80',
+        'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=800&q=80',
     },
     {
       name: 'Dining Room',
@@ -250,7 +250,7 @@ async function main() {
     {
       name: 'Outdoor',
       image:
-        'https://images.unsplash.com/photo-1533157577358-af787a51d435?w=800&q=80',
+        'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80',
     },
     {
       name: 'Lighting',
@@ -275,10 +275,10 @@ async function main() {
     {
       name: 'Storage',
       image:
-        'https://images.unsplash.com/photo-1595428774223-ef52624120ec?w=800&q=80',
+        'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80',
     },
   ];
-  const categories: any[] = [];
+  const categories: Category[] = [];
   for (const cat of categoryData) {
     const category = await prisma.category.upsert({
       where: {
@@ -326,7 +326,7 @@ async function main() {
     'https://images.unsplash.com/photo-1555041469-a586c61ea9bc',
     'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92',
     'https://images.unsplash.com/photo-1533090161767-e6ffed986c88',
-    'https://images.unsplash.com/photo-1505691938895-1758d7eaa511',
+    'https://images.unsplash.com/photo-1540518614846-7eded433c457',
     'https://images.unsplash.com/photo-1586023492125-27b2c045efd7',
     'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15',
     'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85',
@@ -339,10 +339,10 @@ async function main() {
     'https://images.unsplash.com/photo-1484101403633-562f891dc89a',
     'https://images.unsplash.com/photo-1567016432779-094069958ea5',
     'https://images.unsplash.com/photo-1581539250439-c96689b516dd',
-    'https://images.unsplash.com/photo-1592078658136-1033282f9cd7',
-    'https://images.unsplash.com/photo-1544457070-4cd9c0dd4471',
+    'https://images.unsplash.com/photo-1519961655809-34fa156820ff',
+    'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6',
     'https://images.unsplash.com/photo-1519710164239-da123dc03ef4',
-    'https://images.unsplash.com/photo-1534349762230-e0cadf78f5db',
+    'https://images.unsplash.com/photo-1565793298595-6a879b1d9492',
   ];
 
   for (let i = 1; i <= 100; i++) {
@@ -462,7 +462,7 @@ async function main() {
         tenantId_slug: { tenantId: localhostTenant.id, slug: `${slug}-vi` },
       },
       create: {
-        title: `${blogTitles[k]} (Tiếng Việt)`,
+        title: blogTitles[k],
         slug: `${slug}-vi`,
         excerpt: `Khám phá các khía cạnh của ${blogTitles[k].toLowerCase()} thông qua sự tuyển chọn chuyên gia.`,
         content: `<p>Nội thất cao cấp không chỉ là công năng; nó là sự biểu hiện của tâm hồn...</p><img src="${image}" alt="${blogTitles[k]}" style="width:100%; border-radius:12px; margin: 20px 0;"/>`,

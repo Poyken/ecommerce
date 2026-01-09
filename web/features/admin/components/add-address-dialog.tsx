@@ -430,9 +430,12 @@ function AddAddressForm({
           type="submit"
           disabled={
             isPending ||
-            (address
-              ? !isDirty
-              : !formData.recipientName.trim() || !formData.provinceId)
+            !formData.recipientName.trim() ||
+            !formData.phoneNumber.trim() ||
+            !formData.street.trim() ||
+            !formData.provinceId ||
+            !formData.districtId ||
+            !formData.wardCode
           }
           className="bg-primary text-primary-foreground hover:bg-primary/90 w-full"
         >

@@ -121,7 +121,7 @@ export function FeaturedCategories({
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
       >
-        {categories.slice(0, 12).map((category, idx) => (
+        {categories.slice(0, 8).map((category, idx) => (
           <m.div
             key={category.id}
             variants={

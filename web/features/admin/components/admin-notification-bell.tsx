@@ -44,6 +44,7 @@ import { AdminNotificationItem } from "./admin-notification-item";
 export function AdminNotificationBell() {
   const {
     notifications: globalNotifications,
+    unreadCount, // Use global unread count directly
     markAsRead,
     markAllAsRead,
   } = useNotificationStore();
@@ -55,12 +56,6 @@ export function AdminNotificationBell() {
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-
-  // Local state for Admin Notifications (independent of user store, but synced)
-  const [adminNotifications, setAdminNotifications] = useState<Notification[]>(
-    []
-  );
-  const [isLoading, setIsLoading] = useState(false);
 
   // Admin relevant types defined for both count and filtering
   const ADMIN_RELEVANT_TYPES = [
@@ -77,28 +72,12 @@ export function AdminNotificationBell() {
     "ORDER_RETURNED",
   ];
 
-  // REAL-TIME: Combine local fetched notifications with global real-time notifications
-  // to ensure the latest ones are always visible and count is accurate.
-  const displayNotifications = (() => {
-    const combined = [...adminNotifications];
-    // Add real-time notifications from store that aren't already in local state
-    globalNotifications.forEach((gn) => {
-      if (
-        ADMIN_RELEVANT_TYPES.includes(gn.type?.toUpperCase() || "") &&
-        !combined.some((cn) => cn.id === gn.id)
-      ) {
-        combined.unshift(gn);
-      }
-    });
-    return combined
-      .filter((n) => ADMIN_RELEVANT_TYPES.includes(n.type?.toUpperCase() || ""))
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      )
-      .slice(0, 50); // limit to reasonable amount
-  })();
+  // Derive ADMIN SPECIFIC notifications from the global store
+  const displayNotifications = globalNotifications
+    .filter((n) => ADMIN_RELEVANT_TYPES.includes(n.type?.toUpperCase() || ""))
+    .slice(0, 50);
 
+  // Calculate Admin specific unread count from the filtered list
   const adminUnreadCount = displayNotifications.filter((n) => !n.isRead).length;
 
   // Helper to extract Order ID from link
@@ -108,37 +87,12 @@ export function AdminNotificationBell() {
     return match ? match[1] : null;
   };
 
-  // Fetch admin notifications when popover opens
-  const fetchAdminNotifications = async () => {
-    setIsLoading(true);
-    try {
-      const { getAdminNotificationsAction } = await import(
-        "@/features/notifications/actions"
-      );
-      const res = await getAdminNotificationsAction(1, 30); // Get top 30
-      if (res && "data" in res && Array.isArray(res.data)) {
-        setAdminNotifications(res.data);
-      }
-    } catch (error) {
-      console.error("Failed to fetch admin notifications", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleOpenChange = (newOpen: boolean) => {
     setOpen(newOpen);
-    if (newOpen) {
-      fetchAdminNotifications();
-    }
   };
 
   const handleNotificationClick = (notification: Notification) => {
-    markAsRead(notification.id);
-    // Update local state if it's there
-    setAdminNotifications((prev) =>
-      prev.map((n) => (n.id === notification.id ? { ...n, isRead: true } : n))
-    );
+    markAsRead(notification.id); // Validates optimistic update in store implicitly
 
     if (
       (notification.type?.includes("ORDER") ||
@@ -159,7 +113,10 @@ export function AdminNotificationBell() {
   };
 
   const handleActionComplete = () => {
-    fetchAdminNotifications();
+    // No need to fetch, socket or optimistic update handles it?
+    // Ideally actions in AdminNotificationItem should update the store via an event or we just rely on socket push/revalidation
+    // For now, we assume the action itself might trigger a socket event OR we might need to manually refresh the store if socket isn't sending updates for own actions
+    // But since the request is to "not wait for click to load", relying on store is correct.
   };
 
   // Parse order info from notification for Dialog details (fallback)
@@ -225,8 +182,6 @@ export function AdminNotificationBell() {
                 onClick={async () => {
                   // Mark all as read in the store/server
                   await markAllAsRead();
-                  // For the admin bell specifically, re-fetch immediately since it uses local state
-                  await fetchAdminNotifications();
                 }}
               >
                 {t("markAllRead")}
@@ -236,44 +191,34 @@ export function AdminNotificationBell() {
 
           {/* Notification List */}
           <ScrollArea className="h-[360px]">
-            {isLoading ? (
-              <div className="flex h-[200px] items-center justify-center">
-                <span className="loading loading-spinner loading-md opacity-50">
-                  Loading...
-                </span>
-              </div>
-            ) : (
-              <div className="flex flex-col">
-                {(() => {
-                  if (displayNotifications.length === 0) {
-                    return (
-                      <div className="flex h-[200px] flex-col items-center justify-center gap-3 text-center text-muted-foreground">
-                        <div className="p-4 rounded-full bg-muted/50">
-                          <Bell className="h-8 w-8 opacity-30" />
-                        </div>
-                        <p className="text-sm">{t("noNotifications")}</p>
+            <div className="flex flex-col">
+              {(() => {
+                if (displayNotifications.length === 0) {
+                  return (
+                    <div className="flex h-[200px] flex-col items-center justify-center gap-3 text-center text-muted-foreground">
+                      <div className="p-4 rounded-full bg-muted/50">
+                        <Bell className="h-8 w-8 opacity-30" />
                       </div>
-                    );
-                  }
+                      <p className="text-sm">{t("noNotifications")}</p>
+                    </div>
+                  );
+                }
 
-                  return displayNotifications.map((notification) => {
-                    const oid = getOrderIdFromLink(notification.link);
-                    const isProcessed = oid
-                      ? processedOrderIds.has(oid)
-                      : false;
-                    return (
-                      <AdminNotificationItem
-                        key={notification.id}
-                        notification={notification}
-                        onClick={handleNotificationClick}
-                        onActionComplete={handleActionComplete}
-                        isAlreadyProcessed={isProcessed}
-                      />
-                    );
-                  });
-                })()}
-              </div>
-            )}
+                return displayNotifications.map((notification) => {
+                  const oid = getOrderIdFromLink(notification.link);
+                  const isProcessed = oid ? processedOrderIds.has(oid) : false;
+                  return (
+                    <AdminNotificationItem
+                      key={notification.id}
+                      notification={notification}
+                      onClick={handleNotificationClick}
+                      onActionComplete={handleActionComplete}
+                      isAlreadyProcessed={isProcessed}
+                    />
+                  );
+                });
+              })()}
+            </div>
           </ScrollArea>
 
           {/* Footer - View All */}

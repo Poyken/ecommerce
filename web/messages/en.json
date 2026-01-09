@@ -332,7 +332,7 @@
     "trendingNowBold": "Trending",
     "trendingNowItalic": "Now",
     "justLaunched": "Just Launched",
-    "newArrivalsBold": "New",
+    "newArrivalsBold": "Fresh Collection",
     "newArrivalsItalic": "Arrivals",
     "deal": {
       "title": "Deal of the Month",
@@ -1358,8 +1358,9 @@
       "chatSupport": "Chat Support",
       "platformControl": "Platform Control",
       "billing": "Billing"
-    },
-    "contact": {
+    }
+  },
+  "contact": {
       "badge": "Get in Touch",
       "title": "Get In Touch",
       "subtitle": "Have a question or feedback? We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
@@ -1415,8 +1416,7 @@
         "addressLine2": "New York, NY 10001",
         "openNow": "Open Now: 9:00 - 18:00"
       }
-    }
-  },
+    },
   "superAdmin": {
     "brand": "Super Admin",
     "dashboard": {
