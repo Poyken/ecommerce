@@ -630,23 +630,7 @@ async function main() {
   // ===================================
   const hashPassword = await bcrypt.hash('123456', 10);
 
-  // 4.1 SUPER ADMIN USER (No Tenant ID - Global)
-  const superAdminUser = await prisma.user.create({
-    data: {
-      email: 'super@platform.com',
-      password: hashPassword,
-      firstName: 'The',
-      lastName: 'Architect',
-      tenantId: undefined, // Global User
-    },
-  });
-  await prisma.userRole.create({
-    data: { userId: superAdminUser.id, roleId: superAdminRole.id },
-  });
-  console.log('✅ SUPER ADMIN Created: super@platform.com / 123456');
-
-  // 4.2 DEFAULT TENANT (Localhost)
-  // Ensures API works without custom headers in dev
+  // 4.1 DEFAULT TENANT (Localhost)
   const defaultTenant = await prisma.tenant.upsert({
     where: { domain: 'localhost' },
     update: {},
@@ -659,13 +643,13 @@ async function main() {
         fontFamily: 'Inter',
         borderRadius: '8px',
       },
-      id: 'default-tenant-id', // Optional: fix ID for predictability (for testing)
+      id: 'default-tenant-id',
     },
   });
   console.log('✅ Default Tenant (localhost) ensured.');
 
-  // 4.2b VERCEL TENANT (Production)
-  await prisma.tenant.upsert({
+  // 4.2 VERCEL TENANT (Production)
+  const vercelTenant = await prisma.tenant.upsert({
     where: { domain: 'web-five-gilt-79.vercel.app' },
     update: {},
     create: {
@@ -680,6 +664,36 @@ async function main() {
     },
   });
   console.log('✅ Vercel Tenant ensured.');
+
+  // 4.3 SUPER ADMIN USER (Linked to Default Tenant to satisfy constraints)
+  const superAdminUser = await prisma.user.create({
+    data: {
+      email: 'super@platform.com',
+      password: hashPassword,
+      firstName: 'The',
+      lastName: 'Architect',
+      tenantId: defaultTenant.id, // Fixed: Linked to existing tenant
+    },
+  });
+  await prisma.userRole.create({
+    data: { userId: superAdminUser.id, roleId: superAdminRole.id },
+  });
+  console.log('✅ SUPER ADMIN Created: super@platform.com / 123456');
+
+  // 4.4 VERCEL ADMIN
+  const vercelAdmin = await prisma.user.create({
+    data: {
+      email: 'admin@luxe.com',
+      password: hashPassword,
+      firstName: 'Luxe',
+      lastName: 'Manager',
+      tenantId: vercelTenant.id,
+    },
+  });
+  await prisma.userRole.create({
+    data: { userId: vercelAdmin.id, roleId: adminRole.id },
+  });
+  console.log('✅ Vercel Admin Created: admin@luxe.com / 123456');
 
   // 4.3 TENANT ADMIN (admin@localhost.com)
   const tenantAdminUser = await prisma.user.create({

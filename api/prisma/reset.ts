@@ -197,6 +197,23 @@ async function main() {
   });
   console.log('✅ Default Tenant (localhost) ensured.');
 
+  // VERCEL TENANT
+  await prisma.tenant.upsert({
+    where: { domain: 'web-five-gilt-79.vercel.app' },
+    update: {},
+    create: {
+      name: 'Luxe Furniture (Prod)',
+      domain: 'web-five-gilt-79.vercel.app',
+      plan: 'ENTERPRISE',
+      themeConfig: {
+        primaryColor: '#000000',
+        fontFamily: 'Inter',
+        borderRadius: '8px',
+      },
+    },
+  });
+  console.log('✅ Vercel Tenant ensured.');
+
   // ===================================
   // 4. CREATE SUPERADMIN USER
   // ===================================

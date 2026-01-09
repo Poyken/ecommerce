@@ -285,7 +285,10 @@ export class AuthService {
     const user = await this.prisma.user.findFirst({
       where: {
         email,
-        tenantId: tenant?.id, // Super admin is now also assigned to a tenant
+        OR: [
+          { tenantId: tenant?.id },
+          { roles: { some: { role: { name: 'SUPER_ADMIN' } } } },
+        ],
       },
       select: this.USER_PERMISSION_SELECT,
     });
@@ -334,9 +337,18 @@ export class AuthService {
     // Exception: Super Admin (no tenantId) can login anywhere (or restrict as needed)
     const currentTenant = getTenant();
     if (currentTenant) {
-      // If user has a tenantId and it doesn't match currentTenant.id -> DENY
-      // If user is Super Admin (tenantId=null) -> ALLOW (or enforce platform domain check if needed)
-      if (user.tenantId && user.tenantId !== currentTenant.id) {
+      // Allow SUPER_ADMIN to bypass tenant specific checks
+      // Since we modified the query to allow finding SUPER_ADMIN from other tenants
+      const isSuperAdmin = user.roles.some(
+        (r) => r.role.name === 'SUPER_ADMIN',
+      );
+
+      // If user has a tenantId and it doesn't match currentTenant.id AND NOT Super Admin -> DENY
+      if (
+        !isSuperAdmin &&
+        user.tenantId &&
+        user.tenantId !== currentTenant.id
+      ) {
         throw new UnauthorizedException(
           'Tài khoản không thuộc về cửa hàng này',
         );
