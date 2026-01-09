@@ -1,6 +1,6 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { RedisService } from '@core/redis/redis.service';
-import { getTenant } from '@core/tenant/tenant.context'; // Import getTenant
+import { getTenant, tenantStorage } from '@core/tenant/tenant.context'; // Import getTenant, tenantStorage
 import { EmailService } from '@integrations/email/email.service';
 import { InjectQueue } from '@nestjs/bullmq';
 import {
@@ -282,16 +282,21 @@ export class AuthService {
     const { email, password } = dto;
 
     const tenant = getTenant();
-    const user = await this.prisma.user.findFirst({
-      where: {
-        email,
-        OR: [
-          { tenantId: tenant?.id },
-          { roles: { some: { role: { name: 'SUPER_ADMIN' } } } },
-        ],
-      },
-      select: this.USER_PERMISSION_SELECT,
-    });
+    // [GLOBAL LOGIN FIX]
+    // Run outside of Tenant Context to bypass Prisma Extension's auto-filter.
+    // We manually handle the logic in the WHERE clause using the closure's 'tenant' variable.
+    const user = await tenantStorage.run(undefined as any, () =>
+      this.prisma.user.findFirst({
+        where: {
+          email,
+          OR: [
+            { tenantId: tenant?.id },
+            { roles: { some: { role: { name: 'SUPER_ADMIN' } } } },
+          ],
+        },
+        select: this.USER_PERMISSION_SELECT,
+      }),
+    );
 
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
