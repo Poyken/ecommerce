@@ -137,7 +137,7 @@ async function main() {
     superAdminRole = await prisma.role.create({
       data: {
         name: 'SUPER_ADMIN',
-        tenantId: null,
+        tenantId: localhostTenant.id,
         permissions: {
           create: allPermissions.map((p) => ({ permissionId: p.id })),
         },
