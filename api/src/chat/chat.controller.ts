@@ -31,7 +31,7 @@ export class ChatController {
    */
   @Get('conversations')
   @UseGuards(PermissionsGuard)
-  @Permissions('user:read')
+  @Permissions('chat:read')
   async getConversations(@Query('page') page = 1, @Query('limit') limit = 20) {
     return this.chatService.getAdminConversations(Number(page), Number(limit));
   }
@@ -41,7 +41,7 @@ export class ChatController {
    */
   @Get('history/:userId')
   @UseGuards(PermissionsGuard)
-  @Permissions('user:read')
+  @Permissions('chat:read')
   async getUserHistory(@Param('userId') userId: string) {
     return this.chatService.getConversation(userId);
   }

@@ -1,122 +1,73 @@
-/**
- * SEED - Tạo dữ liệu thiết yếu (idempotent - an toàn chạy nhiều lần)
- *
- * Tự động tạo nếu chưa tồn tại:
- * - Tất cả Permissions từ source code
- * - Roles (Super Admin, Admin, User)
- * - Tenants (localhost, vercel)
- * - Users (super@platform.com, admin@test.com, user@test.com)
- */
-
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-// Tất cả Permissions từ source code (grep -rohE "@Permissions\('[^']+'\)" src/)
+// Tất cả Permissions
 const ALL_PERMISSIONS = [
-  // Dashboard & System
   'dashboard:view',
   'settings:read',
   'settings:update',
-
-  // Admin Module
   'admin:read',
   'admin:update',
-
-  // Analytics
   'analytics:read',
-
-  // Audit Log
   'auditLog:read',
-
-  // Blog
   'blog:create',
   'blog:read',
   'blog:update',
   'blog:delete',
-
-  // Brand
   'brand:create',
   'brand:read',
   'brand:update',
   'brand:delete',
-
-  // Category
   'category:create',
   'category:read',
   'category:update',
   'category:delete',
-
-  // Coupon
   'coupon:create',
   'coupon:read',
   'coupon:update',
   'coupon:delete',
-
-  // Chat Support
   'chat:read',
   'chat:write',
-
-  // Notification
   'notification:create',
   'notification:read',
   'notification:update',
   'notification:delete',
-
-  // Order
   'order:create',
   'order:read',
   'order:update',
   'order:delete',
-
-  // Page
   'page:create',
   'page:read',
   'page:update',
   'page:delete',
-
-  // Permission
   'permission:create',
   'permission:read',
   'permission:update',
   'permission:delete',
-
-  // Product
   'product:create',
   'product:read',
   'product:update',
   'product:delete',
-
-  // Review
   'review:create',
   'review:read',
   'review:update',
   'review:delete',
-
-  // Role
   'role:create',
   'role:read',
   'role:update',
   'role:delete',
-
-  // SKU
   'sku:create',
   'sku:read',
   'sku:update',
   'sku:delete',
-
-  // Super Admin
   'superAdmin:read',
   'superAdmin:write',
-
-  // Tenant
   'tenant:create',
   'tenant:read',
   'tenant:update',
   'tenant:delete',
-
-  // User
   'user:create',
   'user:read',
   'user:update',
@@ -124,10 +75,9 @@ const ALL_PERMISSIONS = [
 ];
 
 async function main() {
-  console.log('🌱 SEED - Ensuring essential data exists...\n');
+  console.log('🌱 SEED - Starting Luxury Furniture Seeding...\n');
 
-  // 1. Upsert Permissions
-  console.log('🛡️ Syncing Permissions...');
+  // 1. Permissions
   for (const name of ALL_PERMISSIONS) {
     await prisma.permission.upsert({
       where: { name },
@@ -136,266 +86,275 @@ async function main() {
     });
   }
   const allPermissions = await prisma.permission.findMany();
-  console.log(`   ✅ ${allPermissions.length} permissions ready.\n`);
 
-  // 2. Upsert Tenants
-  console.log('🏢 Syncing Tenants...');
+  // 2. Tenants
   const localhostTenant = await prisma.tenant.upsert({
     where: { domain: 'localhost' },
     create: {
-      name: 'Local Development',
+      name: 'Luxe Home',
       domain: 'localhost',
       plan: 'ENTERPRISE',
-      themeConfig: { primaryColor: '#000000' },
+      themeConfig: { primaryColor: '#1a1a1a' },
     },
     update: {},
   });
 
-  const vercelTenant = await prisma.tenant.upsert({
-    where: { domain: 'web-five-gilt-79.vercel.app' },
-    create: {
-      name: 'Vercel Production',
-      domain: 'web-five-gilt-79.vercel.app',
-      plan: 'ENTERPRISE',
-      themeConfig: { primaryColor: '#000000' },
-    },
-    update: {},
-  });
-  console.log(
-    `   ✅ Tenants: ${localhostTenant.domain}, ${vercelTenant.domain}\n`,
-  );
-
-  // 3. Sync Roles & Permissions
-  console.log('👔 Syncing Roles...');
-
-  // SUPER_ADMIN Role (Global-ish but associated with primary tenant)
-  let superAdminRole = await prisma.role.findFirst({
-    where: { name: 'SUPER_ADMIN', tenantId: localhostTenant.id },
-  });
-
-  if (!superAdminRole) {
-    superAdminRole = await prisma.role.create({
-      data: {
-        name: 'SUPER_ADMIN',
-        tenantId: localhostTenant.id,
-      },
+  // 3. Roles
+  const roles = ['SUPER_ADMIN', 'ADMIN', 'USER'];
+  const roleMap: any = {};
+  for (const rName of roles) {
+    let role = await prisma.role.findFirst({
+      where: { name: rName, tenantId: localhostTenant.id },
     });
-    console.log('   ✅ SUPER_ADMIN Role created.');
+    if (!role) {
+      role = await prisma.role.create({
+        data: { name: rName, tenantId: localhostTenant.id },
+      });
+    }
+    roleMap[rName] = role;
+
+    await prisma.rolePermission.deleteMany({ where: { roleId: role.id } });
+    let perms = allPermissions;
+    if (rName === 'ADMIN')
+      perms = allPermissions.filter((p) => !p.name.startsWith('superAdmin:'));
+    if (rName === 'USER')
+      perms = allPermissions.filter(
+        (p) => p.name.endsWith(':read') || p.name.endsWith(':view'),
+      );
+
+    await prisma.rolePermission.createMany({
+      data: perms.map((p) => ({ roleId: role!.id, permissionId: p.id })),
+    });
   }
 
-  // Update SUPER_ADMIN permissions (always sync)
-  await prisma.rolePermission.deleteMany({
-    where: { roleId: superAdminRole.id },
-  });
-  await prisma.rolePermission.createMany({
-    data: allPermissions.map((p) => ({
-      roleId: superAdminRole.id,
-      permissionId: p.id,
-    })),
-  });
-  console.log('   ✅ SUPER_ADMIN permissions synced.');
-
-  // ADMIN Role (Tenant-specific)
-  let adminRole = await prisma.role.findFirst({
-    where: { name: 'ADMIN', tenantId: localhostTenant.id },
-  });
-
-  if (!adminRole) {
-    adminRole = await prisma.role.create({
-      data: {
-        name: 'ADMIN',
-        tenantId: localhostTenant.id,
-      },
-    });
-    console.log('   ✅ ADMIN Role created.');
-  }
-
-  // Update ADMIN permissions (always sync, exclude superAdmin specific)
-  await prisma.rolePermission.deleteMany({
-    where: { roleId: adminRole.id },
-  });
-  await prisma.rolePermission.createMany({
-    data: allPermissions
-      .filter((p) => !p.name.startsWith('superAdmin:'))
-      .map((p) => ({
-        roleId: adminRole.id,
-        permissionId: p.id,
-      })),
-  });
-  console.log('   ✅ ADMIN permissions synced.');
-
-  // USER Role (Read-only)
-  let userRole = await prisma.role.findFirst({
-    where: { name: 'USER', tenantId: localhostTenant.id },
-  });
-
-  if (!userRole) {
-    userRole = await prisma.role.create({
-      data: {
-        name: 'USER',
-        tenantId: localhostTenant.id,
-      },
-    });
-    console.log('   ✅ USER Role created.');
-  }
-
-  // Update USER permissions (always sync, only read/view)
-  await prisma.rolePermission.deleteMany({
-    where: { roleId: userRole.id },
-  });
-  await prisma.rolePermission.createMany({
-    data: allPermissions
-      .filter((p) => p.name.endsWith(':read') || p.name.endsWith(':view'))
-      .map((p) => ({
-        roleId: userRole.id,
-        permissionId: p.id,
-      })),
-  });
-  console.log('   ✅ USER permissions synced.');
-  console.log('');
-
-  // 4. Upsert Users
-  console.log('👤 Syncing Users...');
+  // 4. Users
   const passwordHash = await bcrypt.hash('123456', 10);
-
-  // Super Admin (Global)
-  const existingSuperAdmin = await prisma.user.findFirst({
-    where: { email: 'super@platform.com' },
-  });
-
-  if (!existingSuperAdmin) {
-    await prisma.user.create({
-      data: {
-        email: 'super@platform.com',
-        firstName: 'Super',
-        lastName: 'Admin',
-        password: passwordHash,
-        tenantId: localhostTenant.id,
-        roles: { create: { roleId: superAdminRole.id } },
-      },
-    });
-    console.log('   ✅ Super Admin created: super@platform.com');
-  } else {
-    console.log('   ✅ Super Admin exists: super@platform.com');
-  }
-
-  // Tenant Admin
-  const existingAdmin = await prisma.user.findFirst({
-    where: { email: 'admin@test.com', tenantId: localhostTenant.id },
-  });
-
-  if (!existingAdmin) {
-    await prisma.user.create({
-      data: {
-        email: 'admin@test.com',
-        firstName: 'Tenant',
-        lastName: 'Admin',
-        password: passwordHash,
-        tenantId: localhostTenant.id,
-        roles: { create: { roleId: adminRole.id } },
-      },
-    });
-    console.log('   ✅ Admin created: admin@test.com');
-  } else {
-    console.log('   ✅ Admin exists: admin@test.com');
-  }
-
-  // Regular User
-  const existingUser = await prisma.user.findFirst({
-    where: { email: 'user@test.com', tenantId: localhostTenant.id },
-  });
-
-  if (!existingUser) {
-    await prisma.user.create({
-      data: {
-        email: 'user@test.com',
-        firstName: 'Test',
-        lastName: 'User',
-        password: passwordHash,
-        tenantId: localhostTenant.id,
-        roles: { create: { roleId: userRole.id } },
-      },
-    });
-    console.log('   ✅ User created: user@test.com');
-  } else {
-    console.log('   ✅ User exists: user@test.com');
-  }
-
-  // 5. Upsert Brand
-  console.log('\n🏷️ Syncing Brands...');
-  const nike = await prisma.brand.upsert({
-    where: {
-      tenantId_name: { tenantId: localhostTenant.id, name: 'Nike' },
+  const users = [
+    {
+      email: 'super@platform.com',
+      first: 'Super',
+      last: 'Admin',
+      role: 'SUPER_ADMIN',
     },
-    create: { name: 'Nike', tenantId: localhostTenant.id },
-    update: {},
-  });
+    { email: 'admin@test.com', first: 'Tenant', last: 'Admin', role: 'ADMIN' },
+    { email: 'user@test.com', first: 'Test', last: 'User', role: 'USER' },
+  ];
 
-  // 6. Upsert Categories
-  console.log('\n📂 Syncing Categories...');
+  for (const u of users) {
+    const existing = await prisma.user.findFirst({ where: { email: u.email } });
+    if (!existing) {
+      await prisma.user.create({
+        data: {
+          email: u.email,
+          firstName: u.first,
+          lastName: u.last,
+          password: passwordHash,
+          tenantId: localhostTenant.id,
+          roles: { create: { roleId: roleMap[u.role].id } },
+        },
+      });
+    }
+  }
+
+  // 5. Brands (10)
+  const brandNames = [
+    {
+      name: 'Herman Miller',
+      image:
+        'https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=800&q=80',
+    },
+    {
+      name: 'Roche Bobois',
+      image:
+        'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80',
+    },
+    {
+      name: 'Restoration Hardware',
+      image:
+        'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800&q=80',
+    },
+    {
+      name: 'Knoll',
+      image:
+        'https://images.unsplash.com/photo-1592078658136-1033282f9cd7?w=800&q=80',
+    },
+    {
+      name: 'Cassina',
+      image:
+        'https://images.unsplash.com/photo-1567016432779-094069958ea5?w=800&q=80',
+    },
+    {
+      name: 'B&B Italia',
+      image:
+        'https://images.unsplash.com/photo-1544457070-4cd9c0dd4471?w=800&q=80',
+    },
+    {
+      name: 'Vitra',
+      image:
+        'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=800&q=80',
+    },
+    {
+      name: 'Poltrona Frau',
+      image:
+        'https://images.unsplash.com/photo-1534349762230-e0cadf78f5db?w=800&q=80',
+    },
+    {
+      name: 'Minotti',
+      image:
+        'https://images.unsplash.com/photo-1503602642458-232111445657?w=800&q=80',
+    },
+    {
+      name: 'Kartell',
+      image:
+        'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800&q=80',
+    },
+  ];
+  const brands: any[] = [];
+  for (const bInfo of brandNames) {
+    const brand = await prisma.brand.upsert({
+      where: {
+        tenantId_name: { tenantId: localhostTenant.id, name: bInfo.name },
+      },
+      create: {
+        name: bInfo.name,
+        imageUrl: bInfo.image,
+        tenantId: localhostTenant.id,
+      },
+      update: { imageUrl: bInfo.image },
+    });
+    brands.push(brand);
+  }
+
+  // 6. Categories (10)
   const categoryData = [
-    {
-      name: 'Shoes',
-      image:
-        'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&q=80&w=800',
-    },
-    {
-      name: 'Clothing',
-      image:
-        'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&q=80&w=800',
-    },
-    {
-      name: 'Accessories',
-      image:
-        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800',
-    },
     {
       name: 'Living Room',
       image:
-        'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=800',
+        'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80',
     },
     {
-      name: 'Dining',
+      name: 'Bedroom',
       image:
-        'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&q=80&w=800',
+        'https://images.unsplash.com/photo-1505691938895-1758d7eaa511?w=800&q=80',
+    },
+    {
+      name: 'Dining Room',
+      image:
+        'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=800&q=80',
+    },
+    {
+      name: 'Office',
+      image:
+        'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=800&q=80',
+    },
+    {
+      name: 'Outdoor',
+      image:
+        'https://images.unsplash.com/photo-1533157577358-af787a51d435?w=800&q=80',
+    },
+    {
+      name: 'Lighting',
+      image:
+        'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=800&q=80',
+    },
+    {
+      name: 'Decor',
+      image:
+        'https://images.unsplash.com/photo-1513161455079-7dc1de15ef3e?w=800&q=80',
+    },
+    {
+      name: 'Kitchen',
+      image:
+        'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=800&q=80',
+    },
+    {
+      name: 'Bathroom',
+      image:
+        'https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?w=800&q=80',
+    },
+    {
+      name: 'Storage',
+      image:
+        'https://images.unsplash.com/photo-1595428774223-ef52624120ec?w=800&q=80',
     },
   ];
   const categories: any[] = [];
-  for (const catInfo of categoryData) {
-    const cat = await prisma.category.upsert({
+  for (const cat of categoryData) {
+    const category = await prisma.category.upsert({
       where: {
-        tenantId_name: { tenantId: localhostTenant.id, name: catInfo.name },
+        tenantId_name: { tenantId: localhostTenant.id, name: cat.name },
       },
       create: {
-        name: catInfo.name,
-        slug: catInfo.name.toLowerCase().replace(/\s+/g, '-'),
+        name: cat.name,
+        slug: cat.name.toLowerCase().replace(/\s+/g, '-'),
+        imageUrl: cat.image,
         tenantId: localhostTenant.id,
-        imageUrl: catInfo.image,
       },
-      update: { imageUrl: catInfo.image },
+      update: { imageUrl: cat.image },
     });
-    categories.push(cat);
+    categories.push(category);
   }
 
-  // 7. Upsert Products & SKUs
-  console.log('\n📦 Syncing Products (10) & SKUs (10 each)...');
-  const productImages = [
-    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc', // Sofa
-    'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92', // Modern Chair
-    'https://images.unsplash.com/photo-1533090161767-e6ffed986c88', // Dining Table
-    'https://images.unsplash.com/photo-1505691938895-1758d7eaa511', // Bed
-    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7', // Office Chair
-    'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15', // Lamp
-    'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85', // Minimalist
-    'https://images.unsplash.com/photo-1513161455079-7dc1de15ef3e', // Decor
-    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6', // Luxury Sofa
-    'https://images.unsplash.com/photo-1556911220-e15b29be8c8f', // Kitchen Item
+  // 7. Products (100) & SKUs (1000)
+  console.log('\n📦 Seeding 100 Products and 1000 SKUs...');
+
+  const furniturePrefixes = [
+    'Luxury',
+    'Modern',
+    'Minimalist',
+    'Classic',
+    'Elegant',
+    'Elite',
+    'Premium',
+    'Artisan',
+    'Contemporary',
+    'Royal',
+  ];
+  const furnitureSuffixes = [
+    'Sofa',
+    'Chair',
+    'Table',
+    'Bed',
+    'Cabinet',
+    'Lamp',
+    'Desk',
+    'Shelf',
+    'Vase',
+    'Couch',
+  ];
+  const furnitureImages = [
+    'https://images.unsplash.com/photo-1555041469-a586c61ea9bc',
+    'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92',
+    'https://images.unsplash.com/photo-1533090161767-e6ffed986c88',
+    'https://images.unsplash.com/photo-1505691938895-1758d7eaa511',
+    'https://images.unsplash.com/photo-1586023492125-27b2c045efd7',
+    'https://images.unsplash.com/photo-1513506003901-1e6a229e2d15',
+    'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85',
+    'https://images.unsplash.com/photo-1513161455079-7dc1de15ef3e',
+    'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6',
+    'https://images.unsplash.com/photo-1556911220-e15b29be8c8f',
+    'https://images.unsplash.com/photo-1524758631624-e2822e304c36',
+    'https://images.unsplash.com/photo-1540518614846-7eded433c457',
+    'https://images.unsplash.com/photo-1503602642458-232111445657',
+    'https://images.unsplash.com/photo-1484101403633-562f891dc89a',
+    'https://images.unsplash.com/photo-1567016432779-094069958ea5',
+    'https://images.unsplash.com/photo-1581539250439-c96689b516dd',
+    'https://images.unsplash.com/photo-1592078658136-1033282f9cd7',
+    'https://images.unsplash.com/photo-1544457070-4cd9c0dd4471',
+    'https://images.unsplash.com/photo-1519710164239-da123dc03ef4',
+    'https://images.unsplash.com/photo-1534349762230-e0cadf78f5db',
   ];
 
-  for (let i = 1; i <= 10; i++) {
-    const productName = `Premium Item ${i}`;
-    const productSlug = `premium-item-${i}`;
-    const mainImage = `${productImages[(i - 1) % productImages.length]}?auto=format&fit=crop&q=80&w=800`;
+  for (let i = 1; i <= 100; i++) {
+    const prefix = furniturePrefixes[i % 10];
+    const suffix = furnitureSuffixes[i % 10];
+    const brand = brands[i % 10];
+    const category = categories[i % 10];
+    const baseImage = furnitureImages[i % furnitureImages.length];
+
+    const productName = `${prefix} ${brand.name} ${suffix} ${i}`;
+    const productSlug = `${productName.toLowerCase().replace(/\s+/g, '-')}-${i}`;
+    const mainImageUrl = `${baseImage}?w=800&q=80`;
 
     const product = await prisma.product.upsert({
       where: {
@@ -404,305 +363,126 @@ async function main() {
       create: {
         name: productName,
         slug: productSlug,
-        description: `Experience the luxury and quality of our ${productName}. Crafted with care and precision for elite homes.`,
-        brandId: nike.id,
+        description: `Experience ultimate comfort with the ${productName}. This exquisite piece from ${brand.name} represents the pinnacle of luxurious ${category.name.toLowerCase()} design.`,
+        brandId: brand.id,
         tenantId: localhostTenant.id,
-        minPrice: 100000,
-        maxPrice: 3000000,
-        images: {
-          create: { url: mainImage },
-        },
-        categories: {
-          create: { categoryId: categories[i % categories.length].id },
-        },
+        minPrice: 5000,
+        maxPrice: 50000,
+        images: { create: { url: mainImageUrl } },
+        categories: { create: { categoryId: category.id } },
         translations: {
           create: [
             {
-              locale: 'vi',
-              name: `Sản phẩm Cao cấp ${i}`,
-              description: `Trải nghiệm sự sang trọng và chất lượng của ${productName}. Thiết kế cho gia đình thượng lưu.`,
-            },
-            {
               locale: 'en',
               name: productName,
-              description: `Experience the luxury and quality of our ${productName}. Crafted with care for elite homes.`,
+              description: `The ${productName} by ${brand.name} is a masterpiece of modern furniture.`,
+            },
+            {
+              locale: 'vi',
+              name: `${productName} Cao cấp`,
+              description: `Sản phẩm ${productName} từ ${brand.name} là một kiệt tác của nội thất hiện đại.`,
             },
           ],
         },
       },
       update: {
-        images: {
-          deleteMany: {},
-          create: { url: mainImage },
-        },
+        images: { deleteMany: {}, create: { url: mainImageUrl } },
       },
     });
 
-    // Create 10 SKUs for each product
+    // 10 SKUs per product
     for (let j = 1; j <= 10; j++) {
+      const skuCode = `SKU-${i.toString().padStart(3, '0')}-${j.toString().padStart(2, '0')}`;
       await prisma.sku.upsert({
-        where: {
-          tenantId_skuCode: {
-            tenantId: localhostTenant.id,
-            skuCode: `SKU-${i}-${j}`,
-          },
-        },
+        where: { tenantId_skuCode: { tenantId: localhostTenant.id, skuCode } },
         create: {
-          skuCode: `SKU-${i}-${j}`,
+          skuCode,
           productId: product.id,
-          price: 100000 + j * 100000,
-          salePrice: 90000 + j * 90000,
-          stock: 50,
+          price: (1000 + i * 100 + j * 50) * 1000,
+          salePrice: (900 + i * 100 + j * 45) * 1000,
+          stock: 20 + j,
           status: 'ACTIVE',
           tenantId: localhostTenant.id,
         },
         update: {},
       });
     }
+    if (i % 10 === 0) console.log(`   ✅ Seeded ${i} products...`);
   }
 
-  // 8. Upsert Blogs random 1-2 per category
-  console.log('\n📰 Syncing Blogs...');
-  for (const cat of categories) {
-    const blogCount = Math.floor(Math.random() * 2) + 1;
-    for (let k = 1; k <= blogCount; k++) {
-      const blogSlug = `blog-${cat.slug}-${k}`;
-      await prisma.blog.upsert({
-        where: {
-          tenantId_slug: { tenantId: localhostTenant.id, slug: blogSlug },
-        },
-        create: {
-          title: `Fashion Trends: ${cat.name} Edition ${k}`,
-          slug: blogSlug,
-          excerpt: `Stay ahead of the curve with our latest insights on ${cat.name}.`,
-          content: `<p>In the evolving world of fashion, ${cat.name} plays a crucial role. This article explores the details...</p>`,
-          category: cat.name,
-          author: 'Editor',
-          tenantId: localhostTenant.id,
-          publishedAt: new Date(),
-          language: 'en',
-        },
-        update: {},
-      });
-      // Also a Vietnamese version
-      await prisma.blog.upsert({
-        where: {
-          tenantId_slug: {
-            tenantId: localhostTenant.id,
-            slug: `${blogSlug}-vi`,
-          },
-        },
-        create: {
-          title: `Xu hướng thời trang: ${cat.name} mẻ ${k}`,
-          slug: `${blogSlug}-vi`,
-          excerpt: `Dẫn đầu xu hướng với những hiểu biết mới nhất của chúng tôi về ${cat.name}.`,
-          content: `<p>Trong thế giới thời trang đang thay đổi, ${cat.name} đóng một vai trò quan trọng...</p>`,
-          category: cat.name,
-          author: 'Biên tập viên',
-          tenantId: localhostTenant.id,
-          publishedAt: new Date(),
-          language: 'vi',
-        },
-        update: {},
-      });
-    }
-  }
-
-  // 9. Sync Translations for /contact and General UI
-  console.log('\n📧 Syncing Translations & Pages...');
-
-  // Contact Page
-  await prisma.page.upsert({
-    where: {
-      tenantId_slug: { tenantId: localhostTenant.id, slug: '/contact' },
-    },
-    create: {
-      tenantId: localhostTenant.id,
-      slug: '/contact',
-      title: 'Contact Us',
-      isPublished: true,
-      blocks: [
-        {
-          type: 'ContactForm',
-          props: {
-            titleKey: 'contact.title',
-            subtitleKey: 'contact.subtitle',
-          },
-        },
-      ],
-    },
-    update: {},
-  });
-
-  const translations = [
-    // Contact Page
-    { locale: 'en', key: 'contact.badge', value: 'Get in Touch' },
-    { locale: 'en', key: 'contact.title', value: 'Contact Us' },
-    {
-      locale: 'en',
-      key: 'contact.subtitle',
-      value: 'We would love to hear from you. Please fill out the form below.',
-    },
-    { locale: 'en', key: 'contact.form.title', value: 'Send us a Message' },
-    { locale: 'en', key: 'contact.form.name', value: 'Your Name' },
-    { locale: 'en', key: 'contact.form.email', value: 'Email Address' },
-    { locale: 'en', key: 'contact.form.subject', value: 'Subject' },
-    { locale: 'en', key: 'contact.form.message', value: 'Message' },
-    { locale: 'en', key: 'contact.form.submit', value: 'Send Message' },
-    { locale: 'en', key: 'contact.form.placeholders.name', value: 'John Doe' },
-    {
-      locale: 'en',
-      key: 'contact.form.placeholders.email',
-      value: 'john@example.com',
-    },
-    {
-      locale: 'en',
-      key: 'contact.form.placeholders.subject',
-      value: 'How can we help?',
-    },
-    {
-      locale: 'en',
-      key: 'contact.form.placeholders.message',
-      value: 'Write your message here...',
-    },
-    { locale: 'en', key: 'contact.form.successTitle', value: 'Message Sent!' },
-    {
-      locale: 'en',
-      key: 'contact.form.successDesc',
-      value: 'We will get back to you soon.',
-    },
-    { locale: 'en', key: 'contact.form.sending', value: 'Sending...' },
-    {
-      locale: 'en',
-      key: 'contact.form.errors.name',
-      value: 'Please enter your name',
-    },
-    {
-      locale: 'en',
-      key: 'contact.form.errors.email',
-      value: 'Please enter your email',
-    },
-    {
-      locale: 'en',
-      key: 'contact.form.errors.emailInvalid',
-      value: 'Invalid email address',
-    },
-    {
-      locale: 'en',
-      key: 'contact.form.errors.subject',
-      value: 'Please enter a subject',
-    },
-    {
-      locale: 'en',
-      key: 'contact.form.errors.message',
-      value: 'Please enter your message',
-    },
-
-    { locale: 'vi', key: 'contact.badge', value: 'Liên hệ' },
-    { locale: 'vi', key: 'contact.title', value: 'Liên hệ với chúng tôi' },
-    {
-      locale: 'vi',
-      key: 'contact.subtitle',
-      value:
-        'Chúng tôi rất mong nhận được phản hồi từ bạn. Vui lòng điền vào biểu mẫu bên dưới.',
-    },
-    { locale: 'vi', key: 'contact.form.title', value: 'Gửi lời nhắn' },
-    { locale: 'vi', key: 'contact.form.name', value: 'Họ tên của bạn' },
-    { locale: 'vi', key: 'contact.form.email', value: 'Địa chỉ Email' },
-    { locale: 'vi', key: 'contact.form.subject', value: 'Tiêu đề' },
-    { locale: 'vi', key: 'contact.form.message', value: 'Nội dung lời nhắn' },
-    { locale: 'vi', key: 'contact.form.submit', value: 'Gửi tin nhắn' },
-    {
-      locale: 'vi',
-      key: 'contact.form.placeholders.name',
-      value: 'Nguyễn Văn A',
-    },
-    {
-      locale: 'vi',
-      key: 'contact.form.placeholders.email',
-      value: 'a@vidu.com',
-    },
-    {
-      locale: 'vi',
-      key: 'contact.form.placeholders.subject',
-      value: 'Chúng tôi có thể giúp gì?',
-    },
-    {
-      locale: 'vi',
-      key: 'contact.form.placeholders.message',
-      value: 'Viết lời nhắn của bạn tại đây...',
-    },
-    {
-      locale: 'vi',
-      key: 'contact.form.successTitle',
-      value: 'Gửi thành công!',
-    },
-    {
-      locale: 'vi',
-      key: 'contact.form.successDesc',
-      value: 'Chúng tôi sẽ phản hồi bạn sớm nhất.',
-    },
-    { locale: 'vi', key: 'contact.form.sending', value: 'Đang gửi...' },
-    {
-      locale: 'vi',
-      key: 'contact.form.errors.name',
-      value: 'Vui lòng nhập tên',
-    },
-    {
-      locale: 'vi',
-      key: 'contact.form.errors.email',
-      value: 'Vui lòng nhập email',
-    },
-    {
-      locale: 'vi',
-      key: 'contact.form.errors.emailInvalid',
-      value: 'Email không hợp lệ',
-    },
-    {
-      locale: 'vi',
-      key: 'contact.form.errors.subject',
-      value: 'Vui lòng nhập tiêu đề',
-    },
-    {
-      locale: 'vi',
-      key: 'contact.form.errors.message',
-      value: 'Vui lòng nhập lời nhắn',
-    },
-
-    // General UI
-    { locale: 'en', key: 'common.home', value: 'Home' },
-    { locale: 'vi', key: 'common.home', value: 'Trang chủ' },
+  // 8. Blogs (20)
+  console.log('\n📰 Seeding 20 Blogs...');
+  const blogTitles = [
+    'Art of Minimalist Living',
+    'Luxury Trends 2025',
+    'Choosing the Perfect Sofa',
+    'Modern Office Setup',
+    'Bedroom Interior Secrets',
+    'Lighting and Mood',
+    'Sustainable Furniture Choice',
+    'The Knoll Legacy',
+    'Italian Design Excellence',
+    'Roche Bobois Experience',
+    'Restoring Classics',
+    'Small Space Styling',
+    'Outdoor Oasis Design',
+    'Color Psychology in Decor',
+    'Traditional vs Modern',
+    'Dining Etiquette & Decor',
+    'The Future of Furniture',
+    'Herman Miller Innovation',
+    'Cozy Living Room Tips',
+    'Artisan Woodworking',
   ];
 
-  for (const t of translations) {
-    await prisma.translation.upsert({
+  for (let k = 0; k < 20; k++) {
+    const slug = `blog-post-${k + 1}`;
+    const category = categories[k % 10];
+    const image = `${furnitureImages[(k + 5) % furnitureImages.length]}?w=1200&q=80`;
+
+    await prisma.blog.upsert({
+      where: { tenantId_slug: { tenantId: localhostTenant.id, slug } },
+      create: {
+        title: blogTitles[k],
+        slug,
+        excerpt: `Discover the nuances of ${blogTitles[k].toLowerCase()} with our expert curation.`,
+        content: `<p>Luxury furniture is more than just utility; it's an expression of soul. In this piece we delve into ${blogTitles[k]}...</p><img src="${image}" alt="${blogTitles[k]}" style="width:100%; border-radius:12px; margin: 20px 0;"/>`,
+        category: category.name,
+        author: 'Luxe Editor',
+        tenantId: localhostTenant.id,
+        publishedAt: new Date(),
+        language: 'en',
+        image: image,
+      },
+      update: { image: image },
+    });
+
+    await prisma.blog.upsert({
       where: {
-        tenantId_locale_key: {
-          tenantId: localhostTenant.id,
-          locale: t.locale,
-          key: t.key,
-        },
+        tenantId_slug: { tenantId: localhostTenant.id, slug: `${slug}-vi` },
       },
       create: {
+        title: `${blogTitles[k]} (Tiếng Việt)`,
+        slug: `${slug}-vi`,
+        excerpt: `Khám phá các khía cạnh của ${blogTitles[k].toLowerCase()} thông qua sự tuyển chọn chuyên gia.`,
+        content: `<p>Nội thất cao cấp không chỉ là công năng; nó là sự biểu hiện của tâm hồn...</p><img src="${image}" alt="${blogTitles[k]}" style="width:100%; border-radius:12px; margin: 20px 0;"/>`,
+        category: category.name,
+        author: 'Biên tập viên Luxe',
         tenantId: localhostTenant.id,
-        locale: t.locale,
-        key: t.key,
-        value: t.value,
+        publishedAt: new Date(),
+        language: 'vi',
+        image: image,
       },
-      update: { value: t.value },
+      update: { image: image },
     });
   }
 
-  console.log('\n🎉 SEED COMPLETED!\n');
-  console.log('📋 Summary:');
-  console.log(`   - Permissions: ${allPermissions.length}`);
-  console.log('   - Roles: Super Admin, Admin, User');
-  console.log('   - Tenants: localhost, vercel');
-  console.log('   - Users: 3');
-  console.log('\n🔑 Login Credentials:');
-  console.log('   Super Admin: super@platform.com / 123456');
-  console.log('   Admin: admin@test.com / 123456');
-  console.log('   User: user@test.com / 123456');
+  console.log('\n🎉 SEEDING COMPLETED!');
+  console.log('   - 10 Categories');
+  console.log('   - 10 Brands');
+  console.log('   - 100 Products');
+  console.log('   - 1000 SKUs');
+  console.log('   - 20 Luxury Blogs');
 }
 
 main()
