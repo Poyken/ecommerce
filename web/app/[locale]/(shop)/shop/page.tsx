@@ -49,9 +49,9 @@ export async function generateMetadata({
     title = `${t("searchResults", { query: searchQuery })} | Luxe`;
   } else if (categoryId || brandId) {
     try {
-      const [categories, brandsRes] = await Promise.all([
+      const [categories, brands] = await Promise.all([
         productService.getCategories(),
-        http<ApiResponse<Brand[]>>("/brands", { skipAuth: true }),
+        productService.getBrands(),
       ]);
 
       if (categoryId) {
@@ -61,7 +61,7 @@ export async function generateMetadata({
         );
         if (category) title = `${category.name} | Luxe`;
       } else if (brandId) {
-        const brand = brandsRes.data?.find(
+        const brand = brands.find(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (b: any) => b.id === brandId || b.name === brandId
         );
@@ -97,17 +97,6 @@ export default async function ShopPage({
     typeof params.search === "string" ? params.search : undefined;
 
   try {
-    // These can be cached as they don't change per request
-    const getCachedCategories = async () => {
-      "use cache";
-      return productService.getCategories();
-    };
-
-    const getCachedBrands = async () => {
-      "use cache";
-      return productService.getBrands();
-    };
-
     const productsPromise = productService.getProducts({
       categoryId,
       brandId,
@@ -118,8 +107,8 @@ export default async function ShopPage({
       includeSkus: "true",
     });
 
-    const categoriesPromise = getCachedCategories();
-    const brandsPromise = getCachedBrands();
+    const categoriesPromise = productService.getCategories();
+    const brandsPromise = productService.getBrands();
     const suggestedProductsPromise = productService.getFeaturedProducts(4);
 
     // Fetch wishlist items (server-side) to ensure correct initial state

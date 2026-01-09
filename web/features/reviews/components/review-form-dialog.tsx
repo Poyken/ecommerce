@@ -166,7 +166,8 @@ function ReviewForm({
 
     let result: { success: boolean; error?: string };
     if (sku.review) {
-      result = await updateReviewAction(sku.review.id, {
+      result = await updateReviewAction({
+        reviewId: sku.review.id,
         rating: values.rating,
         content: values.content,
         images: imageUrls.length > 0 ? imageUrls : sku.review.images,
@@ -344,7 +345,7 @@ function ReviewForm({
               onClick={async () => {
                 setLoading(true);
                 if (!sku.review) return;
-                const result = await deleteReviewAction(sku.review.id);
+                const result = await deleteReviewAction({ reviewId: sku.review.id });
                 setLoading(false);
                 if (result.success) {
                   toast({

@@ -1,5 +1,4 @@
 import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import {
   Body,
   Controller,
@@ -14,12 +13,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import {
-  ApiConsumes,
-  ApiOperation,
-  ApiTags,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewsService } from './reviews.service';
@@ -30,6 +24,9 @@ import {
   ApiListResponse,
   ApiCreateResponse,
   ApiDeleteResponse,
+  ApiUpdateResponse,
+  ApiGetOneResponse,
+  Cached,
   RequirePermissions,
 } from '@/common/decorators/crud.decorators';
 
@@ -50,7 +47,7 @@ export class ReviewsController {
   @Get()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('review:read')
-  @ApiListResponse('Review')
+  @ApiListResponse('Review', { summary: 'Get all reviews (Admin)' })
   async findAll(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
@@ -69,11 +66,7 @@ export class ReviewsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @ApiCreateResponse('Review')
-  @ApiOperation({
-    summary: 'Gửi đánh giá',
-    description: 'Yêu cầu: Phải đã mua sản phẩm & ĐÃ GIAO HÀNG',
-  })
+  @ApiCreateResponse('Review', { summary: 'Gửi đánh giá' })
   async create(
     @GetUser('id') userId: string,
     @Body() createReviewDto: CreateReviewDto,
@@ -84,8 +77,7 @@ export class ReviewsController {
 
   @Get('check-eligibility')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Kiểm tra quyền đánh giá' })
+  @ApiGetOneResponse('Boolean', { summary: 'Kiểm tra quyền đánh giá' })
   async checkEligibility(
     @GetUser('id') userId: string,
     @Query('productId') productId: string,
@@ -103,26 +95,24 @@ export class ReviewsController {
   }
 
   @Get('product/:productId')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(60000) // 1 minute
-  @ApiOperation({ summary: 'Lấy đánh giá theo sản phẩm' })
+  @Cached(60) // 1 minute
+  @ApiListResponse('Review', { summary: 'Lấy đánh giá theo sản phẩm' })
   async findAllByProduct(
     @Param('productId') productId: string,
     @Query('cursor') cursor?: string,
     @Query('limit') limit = 10,
   ) {
-    const data = await this.reviewsService.findAllByProduct(
+    return this.reviewsService.findAllByProduct(
       productId,
       cursor,
       Number(limit),
     );
-    return { data };
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('review:delete')
-  @ApiDeleteResponse('Review')
+  @ApiDeleteResponse('Review', { summary: 'Xóa đánh giá (Admin)' })
   async remove(@Param('id') id: string) {
     const data = await this.reviewsService.remove(id);
     return { data };
@@ -130,8 +120,7 @@ export class ReviewsController {
 
   @Delete('mine/:id')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Xóa đánh giá của tôi' })
+  @ApiDeleteResponse('Review', { summary: 'Xóa đánh giá của tôi' })
   async removeOwn(@GetUser('id') userId: string, @Param('id') id: string) {
     const data = await this.reviewsService.removeOwn(userId, id);
     return { data };
@@ -140,8 +129,7 @@ export class ReviewsController {
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('review:update')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update review status (Admin)' })
+  @ApiUpdateResponse('Review', { summary: 'Update review status (Admin)' })
   async updateStatus(
     @Param('id') id: string,
     @Body('isApproved') isApproved: boolean,
@@ -152,8 +140,7 @@ export class ReviewsController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Cập nhật đánh giá' })
+  @ApiUpdateResponse('Review', { summary: 'Cập nhật đánh giá' })
   async update(
     @GetUser('id') userId: string,
     @Param('id') id: string,
@@ -165,10 +152,9 @@ export class ReviewsController {
 
   @Post('upload')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @UseInterceptors(FilesInterceptor('images', 5))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Upload review images' })
+  @ApiCreateResponse('String', { summary: 'Upload review images' })
   async uploadImages(@UploadedFiles() files: Array<Express.Multer.File>) {
     const uploaded = await Promise.all(
       files.map((file) => this.cloudinaryService.uploadImage(file)),
@@ -180,8 +166,7 @@ export class ReviewsController {
   @Post(':id/reply')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('review:update')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Trả lời đánh giá (Admin)' })
+  @ApiUpdateResponse('Review', { summary: 'Trả lời đánh giá (Admin)' })
   async reply(@Param('id') id: string, @Body('reply') reply: string) {
     const data = await this.reviewsService.replyToReview(id, reply);
     return { data };

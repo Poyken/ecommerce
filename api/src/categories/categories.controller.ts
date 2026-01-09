@@ -1,4 +1,13 @@
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import {
+  ApiCreateResponse,
+  ApiDeleteResponse,
+  ApiGetOneResponse,
+  ApiListResponse,
+  ApiUpdateResponse,
+  Cached,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
+import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
 import {
   Body,
   Controller,
@@ -12,41 +21,11 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 
-/**
- * =====================================================================
- * CATEGORIES CONTROLLER - Điều hướng yêu cầu về danh mục sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ACCESS CONTROL (RBAC):
- * - `create`, `update`, `remove` (Admin): Yêu cầu quyền cụ thể (VD: `category:create`) để đảm bảo chỉ Admin mới có thể thay đổi cấu trúc danh mục.
- * - `findAll`, `findOne` (Public): Cho phép mọi người truy cập để xem danh sách sản phẩm theo danh mục.
- *
- * 2. SWAGGER INTEGRATION:
- * - `@ApiTags('Product Categories')`: Giúp phân loại các API này vào nhóm "Danh mục sản phẩm" trên trang tài liệu `/docs`.
- * - `@ApiOperation`: Mô tả ngắn gọn chức năng của từng API cho các lập trình viên khác dễ hiểu.
- *
- * 3. QUERY PARAMETERS:
- * - `findAll(@Query('search'))`: Hỗ trợ tìm kiếm danh mục theo từ khóa ngay từ URL.
- *
- * 4. CACHING:
- * - GET /categories được cache 5 phút để giảm tải database cho dữ liệu ít thay đổi.
- * =====================================================================
- */
-import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
-import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
-import { FileInterceptor } from '@nestjs/platform-express';
-import {
-  ApiBearerAuth,
-  ApiConsumes,
-  ApiOperation,
-  ApiQuery,
-  ApiTags,
-} from '@nestjs/swagger';
 import { CategoriesService } from './categories.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -61,11 +40,10 @@ export class CategoriesController {
 
   @Post()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('category:create')
+  @RequirePermissions('category:create')
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Create new category' })
+  @ApiCreateResponse('Category', { summary: 'Create new category' })
   async create(
     @Body() createCategoryDto: CreateCategoryDto,
     @UploadedFile() file: Express.Multer.File,
@@ -79,27 +57,20 @@ export class CategoriesController {
   }
 
   @Get()
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(300000) // Cache 5 phút (300,000ms)
-  @ApiOperation({ summary: 'Get all categories (cached 5 mins)' })
-  @ApiQuery({ name: 'search', required: false, type: String })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @Cached(300) // Cache 5 phút (300s)
+  @ApiListResponse('Category', {
+    summary: 'Get all categories (cached 5 mins)',
+  })
   async findAll(
     @Query('search') search?: string,
     @Query('page') page = 1,
     @Query('limit') limit = 100,
   ) {
-    const data = await this.categoriesService.findAll(
-      search,
-      Number(page),
-      Number(limit),
-    );
-    return { data };
+    return this.categoriesService.findAll(search, Number(page), Number(limit));
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get category details' })
+  @ApiGetOneResponse('Category', { summary: 'Get category details' })
   async findOne(@Param('id') id: string) {
     const data = await this.categoriesService.findOne(id);
     return { data };
@@ -107,11 +78,10 @@ export class CategoriesController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('category:update')
+  @RequirePermissions('category:update')
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Update category' })
+  @ApiUpdateResponse('Category', { summary: 'Update category' })
   async update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
@@ -127,9 +97,8 @@ export class CategoriesController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('category:delete')
-  @ApiOperation({ summary: 'Delete category' })
+  @RequirePermissions('category:delete')
+  @ApiDeleteResponse('Category', { summary: 'Delete category' })
   async remove(@Param('id') id: string) {
     const data = await this.categoriesService.remove(id);
     return { data };

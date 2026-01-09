@@ -48,7 +48,7 @@ export function AddToCartButton({
 
     if (isLoggedIn) {
       startTransition(async () => {
-        const res = await addToCartAction(skuId);
+        const res = await addToCartAction({ skuId, quantity: 1 });
         if (res.success) {
           window.dispatchEvent(new Event("cart_updated"));
           toast({

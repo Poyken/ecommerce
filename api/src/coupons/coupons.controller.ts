@@ -1,7 +1,12 @@
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import {
+  ApiCreateResponse,
+  ApiDeleteResponse,
+  ApiGetOneResponse,
+  ApiListResponse,
+  ApiUpdateResponse,
+  Cached,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
 import {
   Body,
   Controller,
@@ -12,13 +17,13 @@ import {
   Post,
   Query,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
+import { ApiOperation, ApiTags, ApiQuery } from '@nestjs/swagger';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
 import { CouponsService } from './coupons.service';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
-
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 /**
  * =====================================================================
@@ -39,28 +44,14 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 @ApiTags('Coupons')
 @Controller('coupons')
 export class CouponsController {
-  /**
-   * =====================================================================
-   * COUPONS CONTROLLER - Quản lý mã giảm giá
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. VALIDATION LOGIC:
-   * - API `/validate` (Public) được gọi khi user nhấn "Áp dụng" ở trang Checkout.
-   * - Nó kiểm tra: Mã tồn tại? Còn hạn? Đủ điều kiện giá trị đơn hàng tối thiểu? Còn lượt dùng?
-   *
-   * 2. ADMIN MANAGEMENT:
-   * - Các API CRUD (Create/Update/Delete) yêu cầu quyền Admin để quản lý chiến dịch khuyến mãi.
-   * =====================================================================
-   */
   constructor(private readonly couponsService: CouponsService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('coupon:create')
-  @ApiOperation({ summary: 'Create a new discount coupon (Admin)' })
+  @RequirePermissions('coupon:create')
+  @ApiCreateResponse('Coupon', {
+    summary: 'Create a new discount coupon (Admin)',
+  })
   async create(@Body() createCouponDto: CreateCouponDto) {
     const data = await this.couponsService.create(createCouponDto);
     return { data };
@@ -68,15 +59,19 @@ export class CouponsController {
 
   @Get()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('coupon:read')
-  @ApiOperation({ summary: 'Get all coupons (Admin)' })
+  @RequirePermissions('coupon:read')
+  @ApiListResponse('Coupon', { summary: 'Get all coupons (Admin)' })
+  @ApiQuery({ name: 'page', required: false })
+  @ApiQuery({ name: 'limit', required: false })
   async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
     return this.couponsService.findAll(Number(page), Number(limit));
   }
 
   @Get('validate')
   @ApiOperation({ summary: 'Validate a coupon code' })
+  @ApiGetOneResponse('Coupon')
+  @ApiQuery({ name: 'code', required: true })
+  @ApiQuery({ name: 'amount', required: true })
   async validate(@Query('code') code: string, @Query('amount') amount: number) {
     const data = await this.couponsService.validateCoupon(code, Number(amount));
     return { data };
@@ -87,9 +82,8 @@ export class CouponsController {
    * Data ít thay đổi, cache để giảm tải database
    */
   @Get('available')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(300000) // 5 minutes
-  @ApiOperation({ summary: 'Get available public coupons' })
+  @Cached(300) // 5 minutes (300 seconds)
+  @ApiListResponse('Coupon', { summary: 'Get available public coupons' })
   async findAvailable() {
     const data = await this.couponsService.findAvailable();
     return { data };
@@ -97,9 +91,8 @@ export class CouponsController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('coupon:read')
-  @ApiOperation({ summary: 'Get coupon details by ID' })
+  @RequirePermissions('coupon:read')
+  @ApiGetOneResponse('Coupon', { summary: 'Get coupon details by ID' })
   async findOne(@Param('id') id: string) {
     const data = await this.couponsService.findOne(id);
     return { data };
@@ -107,9 +100,8 @@ export class CouponsController {
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('coupon:update')
-  @ApiOperation({ summary: 'Update coupon information' })
+  @RequirePermissions('coupon:update')
+  @ApiUpdateResponse('Coupon', { summary: 'Update coupon information' })
   async update(
     @Param('id') id: string,
     @Body() updateCouponDto: UpdateCouponDto,
@@ -120,9 +112,8 @@ export class CouponsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('coupon:delete')
-  @ApiOperation({ summary: 'Delete a coupon (Hard Delete)' })
+  @RequirePermissions('coupon:delete')
+  @ApiDeleteResponse('Coupon', { summary: 'Delete a coupon (Hard Delete)' })
   async remove(@Param('id') id: string) {
     const data = await this.couponsService.remove(id);
     return { data };

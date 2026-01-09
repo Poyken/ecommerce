@@ -342,19 +342,19 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
         couponCode: appliedCoupon?.code,
       });
 
-      if (res && "success" in res) {
-        if (res.paymentUrl) {
-          window.location.href = res.paymentUrl;
+      if (res.success) {
+        if ((res.data as any)?.paymentUrl) {
+          window.location.href = (res.data as any).paymentUrl;
           return;
         }
         window.dispatchEvent(new Event("cart_updated"));
 
         if (paymentMethod === "BANKING" || paymentMethod === "VIETQR") {
           setTempOrderData({
-            id: res.orderId,
+            id: (res.data as any)?.orderId || "",
             totalAmount: total,
             createdAt: new Date().toISOString(),
-            qrUrl: paymentMethod === "VIETQR" ? res.paymentUrl : undefined,
+            qrUrl: paymentMethod === "VIETQR" ? (res.data as any)?.paymentUrl : undefined,
           });
           setIsPaymentModalOpen(true);
           return;
@@ -365,11 +365,11 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
           description: t("toast.successDesc"),
           variant: "success",
         });
-        router.push(`/checkout/success?orderId=${res.orderId}`);
+        router.push(`/checkout/success?orderId=${(res.data as any)?.orderId}`);
       } else {
         toast({
           title: t("failed"),
-          description: res && "error" in res ? res.error : t("error"),
+          description: res.error || t("error"),
           variant: "destructive",
         });
       }

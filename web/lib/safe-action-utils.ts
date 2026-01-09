@@ -169,14 +169,14 @@ export function createVoidActionWrapper<TOutput>(
  * Revalidate multiple paths at once.
  */
 export function revalidatePaths(...paths: string[]): void {
-  paths.forEach((path) => revalidatePath(path));
+  paths.forEach((path) => (revalidatePath as any)(path));
 }
 
 /**
  * Revalidate multiple tags at once.
  */
 export function revalidateTags(...tags: string[]): void {
-  tags.forEach((tag) => revalidateTag(tag));
+  tags.forEach((tag) => (revalidateTag as any)(tag));
 }
 
 /**
@@ -186,8 +186,8 @@ export function revalidateAll(options: {
   paths?: string[];
   tags?: string[];
 }): void {
-  options.paths?.forEach((path) => revalidatePath(path));
-  options.tags?.forEach((tag) => revalidateTag(tag));
+  options.paths?.forEach((path) => (revalidatePath as any)(path));
+  options.tags?.forEach((tag) => (revalidateTag as any)(tag));
 }
 
 // =============================================================================
@@ -197,21 +197,22 @@ export function revalidateAll(options: {
 /**
  * Các presets cho revalidation phổ biến.
  */
-export const REVALIDATE = {
-  cart: () => revalidatePath("/cart"),
-  wishlist: () => revalidatePath("/wishlist"),
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const REVALIDATE: any = {
+  cart: () => (revalidatePath as any)("/cart"),
+  wishlist: () => (revalidatePath as any)("/wishlist"),
   orders: () => revalidatePaths("/orders", "/account/orders"),
   profile: () => revalidatePaths("/profile", "/account"),
   products: (productId?: string) => {
-    revalidatePath("/shop");
-    revalidatePath("/products");
+    (revalidatePath as any)("/shop");
+    (revalidatePath as any)("/products");
     if (productId) {
-      revalidatePath(`/products/${productId}`);
+      (revalidatePath as any)(`/products/${productId}`);
     }
   },
   admin: {
-    products: () => revalidatePath("/admin/products"),
-    orders: () => revalidatePath("/admin/orders"),
-    users: () => revalidatePath("/admin/users"),
+    products: () => (revalidatePath as any)("/admin/products"),
+    orders: () => (revalidatePath as any)("/admin/orders"),
+    users: () => (revalidatePath as any)("/admin/users"),
   },
 } as const;

@@ -205,7 +205,7 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('product:read')
   @ApiOperation({ summary: 'Export Products & SKUs to Excel' })
-  async export(@Res() res: Response) {
+  async export(@Res() res: any) {
     return this.exportService.exportToExcel(res);
   }
 

@@ -60,7 +60,7 @@ export function useCart(productName?: string): UseCartResult {
       try {
         // BƯỚC 1: Thử gọi Server Action (Lưu vào Database)
         // -------------------------------------------------------------
-        const result = await addToCartAction(skuId, quantity);
+        const result = await addToCartAction({ skuId, quantity });
 
         if (result.success) {
           // THÀNH CÔNG (User đã login):

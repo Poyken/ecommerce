@@ -29,6 +29,7 @@ import { http } from "@/lib/http";
 import { ApiResponse, PaginatedData } from "@/types/dtos";
 import { Category, Product } from "@/types/models";
 import { unstable_cache } from "next/cache";
+import { cache } from "react";
 
 // =============================================================================
 // 📦 TYPES - Định nghĩa kiểu dữ liệu
@@ -303,7 +304,13 @@ export const productService = {
    * @param id - ID của sản phẩm
    * @returns Đối tượng sản phẩm, hoặc null nếu không tìm thấy
    */
-  async getProduct(id: string): Promise<Product | null> {
+  /**
+   * Lấy chi tiết một sản phẩm theo ID.
+   *
+   * @param id - ID của sản phẩm
+   * @returns Đối tượng sản phẩm, hoặc null nếu không tìm thấy
+   */
+  getProduct: cache(async (id: string): Promise<Product | null> => {
     try {
       const response = await http<ApiResponse<Product>>(`/products/${id}`, {
         skipAuth: true,
@@ -319,7 +326,7 @@ export const productService = {
       }
       return null;
     }
-  },
+  }),
 
   /**
    * Lấy danh sách ID sản phẩm để generateStaticParams (SSG).

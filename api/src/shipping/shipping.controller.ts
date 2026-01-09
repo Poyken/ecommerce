@@ -37,26 +37,33 @@ export class ShippingController {
 
   @Get('provinces')
   @ApiOperation({ summary: 'Lấy danh sách Tỉnh/Thành phố' })
-  getProvinces() {
-    return this.shippingService.getProvinces();
+  async getProvinces() {
+    const data = await this.shippingService.getProvinces();
+    return { data };
   }
 
   @Get('districts/:provinceId')
   @ApiOperation({ summary: 'Lấy danh sách Quận/Huyện theo Tỉnh' })
-  getDistricts(@Param('provinceId') provinceId: string) {
-    return this.shippingService.getDistricts(Number(provinceId));
+  async getDistricts(@Param('provinceId') provinceId: string) {
+    const data = await this.shippingService.getDistricts(Number(provinceId));
+    return { data };
   }
 
   @Get('wards/:districtId')
   @ApiOperation({ summary: 'Lấy danh sách Phường/Xã theo Quận' })
-  getWards(@Param('districtId') districtId: string) {
-    return this.shippingService.getWards(Number(districtId));
+  async getWards(@Param('districtId') districtId: string) {
+    const data = await this.shippingService.getWards(Number(districtId));
+    return { data };
   }
 
   @Post('fee')
   @ApiOperation({ summary: 'Tính phí vận chuyển' })
-  calculateFee(@Body() body: { districtId: number; wardCode: string }) {
-    return this.shippingService.calculateFee(body.districtId, body.wardCode);
+  async calculateFee(@Body() body: { districtId: number; wardCode: string }) {
+    const data = await this.shippingService.calculateFee(
+      body.districtId,
+      body.wardCode,
+    );
+    return { data };
   }
 
   @Post('webhook')

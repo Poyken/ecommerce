@@ -73,7 +73,7 @@ const safePlaceOrder = protectedActionClient
     REVALIDATE.cart();
     REVALIDATE.orders();
 
-    return { success: true, paymentUrl, orderId };
+    return { paymentUrl, orderId };
   });
 
 // Action hủy đơn hàng (Admin/System style)

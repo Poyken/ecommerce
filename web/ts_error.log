@@ -1,0 +1,36 @@
+app/[locale]/(shop)/cart/cart-item-control.tsx(75,45): error TS2554: Expected 1 arguments, but got 2.
+app/[locale]/(shop)/checkout/checkout-client.tsx(346,17): error TS2339: Property 'paymentUrl' does not exist on type 'ActionResult<unknown>'.
+  Property 'paymentUrl' does not exist on type '{ success: false; error: string; }'.
+app/[locale]/(shop)/checkout/checkout-client.tsx(347,38): error TS2339: Property 'paymentUrl' does not exist on type 'ActionResult<unknown>'.
+  Property 'paymentUrl' does not exist on type '{ success: false; error: string; }'.
+app/[locale]/(shop)/checkout/checkout-client.tsx(354,21): error TS2339: Property 'orderId' does not exist on type 'ActionResult<unknown>'.
+  Property 'orderId' does not exist on type '{ success: false; error: string; }'.
+app/[locale]/(shop)/checkout/checkout-client.tsx(357,53): error TS2339: Property 'paymentUrl' does not exist on type 'ActionResult<unknown>'.
+  Property 'paymentUrl' does not exist on type '{ success: false; error: string; }'.
+app/[locale]/(shop)/checkout/checkout-client.tsx(368,54): error TS2339: Property 'orderId' does not exist on type 'ActionResult<unknown>'.
+  Property 'orderId' does not exist on type '{ success: false; error: string; }'.
+app/[locale]/(shop)/checkout/checkout-client.tsx(372,52): error TS2339: Property 'error' does not exist on type 'never'.
+app/[locale]/(shop)/order-failed/[orderId]/retry-button.tsx(58,43): error TS2554: Expected 1 arguments, but got 2.
+app/[locale]/(shop)/orders/orders-client.tsx(183,61): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ orderId: string; }'.
+app/[locale]/(shop)/orders/reorder-button.tsx(44,39): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ orderId: string; }'.
+app/[locale]/(shop)/orders/reorder-button.tsx(45,15): error TS2339: Property 'error' does not exist on type 'ActionResult<unknown>'.
+  Property 'error' does not exist on type '{ success: true; data?: unknown; }'.
+app/[locale]/(shop)/orders/reorder-button.tsx(49,28): error TS2339: Property 'error' does not exist on type 'ActionResult<unknown>'.
+  Property 'error' does not exist on type '{ success: true; data?: unknown; }'.
+app/[locale]/(shop)/products/[id]/add-to-cart-button.tsx(51,43): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ skuId: string; quantity: number; }'.
+app/[locale]/super-admin/(dashboard)/security/page.tsx(90,42): error TS2339: Property 'isEnabled' does not exist on type '{ isLockdown: boolean; }'.
+components/shared/index.ts(37,10): error TS2305: Module '"./purchase-toast"' has no exported member 'PurchaseToast'.
+features/admin/components/admin-charts.tsx(80,44): error TS2554: Expected 1 arguments, but got 2.
+features/blog/components/blog-form-dialog.tsx(122,25): error TS18048: 'catsRes.data' is possibly 'undefined'.
+features/cart/hooks/use-cart.ts(63,53): error TS2554: Expected 1 arguments, but got 2.
+features/orders/components/buy-again-button.tsx(47,50): error TS2554: Expected 1 arguments, but got 2.
+features/reviews/components/review-form-dialog.tsx(169,56): error TS2554: Expected 1 arguments, but got 2.
+features/reviews/components/review-form-dialog.tsx(347,57): error TS2345: Argument of type 'string' is not assignable to parameter of type '{ reviewId: string; }'.
+features/wishlist/components/wishlist-button.tsx(122,22): error TS2339: Property 'isWishlisted' does not exist on type '{ success: true; data?: unknown; } | { success: boolean; requiresAuth: boolean; error: string; isWishlisted?: undefined; } | { success: boolean; isWishlisted: any; requiresAuth?: undefined; error?: undefined; }'.
+  Property 'isWishlisted' does not exist on type '{ success: true; data?: unknown; }'.
+features/wishlist/components/wishlist-button.tsx(123,24): error TS2339: Property 'isWishlisted' does not exist on type '{ success: true; data?: unknown; } | { success: boolean; requiresAuth: boolean; error: string; isWishlisted?: undefined; } | { success: boolean; isWishlisted: any; requiresAuth?: undefined; error?: undefined; }'.
+  Property 'isWishlisted' does not exist on type '{ success: true; data?: unknown; }'.
+lib/action-helpers.ts(198,47): error TS2554: Expected 2 arguments, but got 1.
+lib/action-helpers.ts(259,47): error TS2554: Expected 2 arguments, but got 1.
+lib/safe-action-utils.ts(179,25): error TS2554: Expected 2 arguments, but got 1.
+lib/safe-action-utils.ts(190,34): error TS2554: Expected 2 arguments, but got 1.

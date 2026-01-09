@@ -41,8 +41,8 @@ export function ReorderButton({ orderId }: ReorderButtonProps) {
 
   const handleReorder = () => {
     startTransition(async () => {
-      const res = await reorderAction(orderId);
-      if (res.error) {
+      const res = await reorderAction({ orderId });
+      if (!res.success) {
         toast({
           variant: "destructive",
           title: tToast("error"),
