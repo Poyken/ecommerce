@@ -4,6 +4,10 @@ import * as path from "path";
 
 // AI Auditor - "The Skeptic Agent"
 // Purpose: Review code for logical flaws and security vulnerabilities that standard linters miss.
+// Giải thích cho thực tập sinh:
+// File này sử dụng Gemini AI để thực hiện việc review code một cách tự động.
+// Nó không chỉ kiểm tra cú pháp mà còn tìm kiếm các lỗi logic nghiệp vụ và các lỗ hổng bảo mật tiềm ẩn.
+// Các em có thể dùng lệnh: npx ts-node scripts/ai-audit.ts <đường-dẫn-file> để nhờ AI review code của mình.
 
 async function auditFile(filePath: string) {
   const apiKey = process.env.GOOGLE_API_KEY;

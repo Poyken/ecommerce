@@ -1,10 +1,9 @@
 # =====================================================================
 # RENDER BLUEPRINT - FULLSTACK DEPLOYMENT
 # =====================================================================
-# This file automates deployment to Render.com.
-# 1. Create a dynamic Blueprint on Render.
-# 2. Connect your GitHub repository.
-# 3. Render will provision all resources.
+# Giải thích cho thực tập sinh:
+# File này (Blueprint) dùng để tự động hóa việc triển khai (deployment) lên Render.com.
+# Nó định nghĩa cách các service (API, Web, DB, Redis) kết nối với nhau trên hạ tầng cloud.
 # =====================================================================
 
 databases:
@@ -91,7 +90,6 @@ services:
       - key: FRONTEND_URL
         value: http://web:10000 # Use internal service URL (no manual update needed)
 
-
   # 5. Worker Service (BullMQ Processor)
   # [OPTIMIZATION] Tách biệt xử lý ảnh và background jobs khỏi API chính
   - type: worker
@@ -112,4 +110,3 @@ services:
         fromDatabase:
           name: db
           property: connectionString
-

@@ -14,7 +14,10 @@ provider "aws" {
 
 # =============================================================================
 # INFRASTRUCTURE AS CODE (IaC) - CORE NETWORK
-# Standardized VPC and Networking to avoid "ClickOps" manual configuration.
+# Giải thích cho thực tập sinh:
+# File này sử dụng Terraform để định nghĩa hạ tầng hệ thống trên AWS dưới dạng code (IaC).
+# Thay vì bấm tay trên console, chúng ta dùng code để tạo VPC, Subnet và Security Group.
+# Điều này giúp việc quản lý hạ tầng trở nên minh bạch và dễ dàng tái sử dụng.
 # =============================================================================
 
 resource "aws_vpc" "main" {

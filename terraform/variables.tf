@@ -1,3 +1,6 @@
+# Giải thích cho thực tập sinh:
+# File này chứa các biến số (variables) để chúng ta có thể tùy chỉnh hạ tầng
+# mà không cần phải can thiệp trực tiếp vào logic chính của Terraform.
 variable "aws_region" {
   description = "AWS Region to deploy resources"
   type        = string

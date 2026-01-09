@@ -1,3 +1,8 @@
+# File: .github/workflows/codeql.yml
+# Giải thích cho thực tập sinh:
+# Workflow này sử dụng GitHub CodeQL để quét mã nguồn và phát hiện các lỗi bảo mật, lỗi logic hoặc các vấn đề về chất lượng code.
+# Đây là một công cụ phân tích tĩnh (Static Analysis) rất mạnh mẽ giúp đảm bảo code của chúng ta an toàn trước khi deploy.
+
 name: "CodeQL"
 
 on:

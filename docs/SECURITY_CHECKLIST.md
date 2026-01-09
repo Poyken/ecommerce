@@ -1,5 +1,11 @@
 # Security Checklist & Guidelines
 
+# Giải thích cho thực tập sinh:
+
+# Đây là danh sách các hạng mục kiểm tra bảo mật quan trọng.
+
+# Các em cần đọc kỹ checklist này khi xây dựng các tính năng liên quan đến Thanh toán, Đăng nhập hoặc Tải file.
+
 This document outlines the manual security review process for sensitive modules (`Auth`, `Payment`, `File Upload`).
 
 ## 🚨 Critical Areas (Line-by-Line Review Required)

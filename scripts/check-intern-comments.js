@@ -1,3 +1,8 @@
+// Giải thích cho thực tập sinh:
+// File này dùng để quét toàn bộ mã nguồn và kiểm tra xem các file quan trọng 
+// đã được ghi chú (comment) đầy đủ để hướng dẫn cho các em hay chưa.
+// Nó tìm kiếm từ khóa "thực tập sinh" trong các folder api và web.
+
 const fs = require('fs');
 const path = require('path');
 

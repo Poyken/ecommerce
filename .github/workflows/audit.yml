@@ -1,3 +1,8 @@
+# File: .github/workflows/audit.yml
+# Giải thích cho thực tập sinh:
+# Workflow này được sử dụng để kiểm tra các lỗ hổng bảo mật trong các thư viện (dependencies) của dự án.
+# Nó chạy lệnh 'npm audit' trong cả hai thư mục 'api' và 'web' để đảm bảo không có thư viện nào bị lỗi thời hoặc có nguy cơ bảo mật cao.
+
 name: Security Audit
 
 on:
