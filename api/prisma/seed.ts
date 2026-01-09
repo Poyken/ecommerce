@@ -714,7 +714,11 @@ async function main() {
     data: {
       name: 'Modern Ergonomic Chair',
       description: 'A very comfortable chair for long working hours.',
-      categoryId: categories[0].id,
+      categories: {
+        create: {
+          categoryId: categories[0].id,
+        },
+      },
       brandId: brands[0].id,
       tenantId: defaultTenant.id,
       slug: 'modern-ergonomic-chair',
