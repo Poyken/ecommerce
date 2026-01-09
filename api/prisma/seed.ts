@@ -127,58 +127,58 @@ async function main() {
     `   ✅ Tenants: ${localhostTenant.domain}, ${vercelTenant.domain}\n`,
   );
 
-  // 3. Upsert Super Admin Role (Global)
+  // 3. Upsert SUPER_ADMIN Role (Global)
   console.log('👔 Syncing Roles...');
   let superAdminRole = await prisma.role.findFirst({
-    where: { name: 'Super Admin', tenantId: null },
+    where: { name: 'SUPER_ADMIN', tenantId: null },
   });
 
   if (!superAdminRole) {
     superAdminRole = await prisma.role.create({
       data: {
-        name: 'Super Admin',
+        name: 'SUPER_ADMIN',
         tenantId: null,
         permissions: {
           create: allPermissions.map((p) => ({ permissionId: p.id })),
         },
       },
     });
-    console.log('   ✅ Super Admin Role created.');
+    console.log('   ✅ SUPER_ADMIN Role created.');
   } else {
-    console.log('   ✅ Super Admin Role exists.');
+    console.log('   ✅ SUPER_ADMIN Role exists.');
   }
 
-  // Admin Role (Tenant-specific)
+  // ADMIN Role (Tenant-specific)
   let adminRole = await prisma.role.findFirst({
-    where: { name: 'Admin', tenantId: localhostTenant.id },
+    where: { name: 'ADMIN', tenantId: localhostTenant.id },
   });
 
   if (!adminRole) {
     adminRole = await prisma.role.create({
       data: {
-        name: 'Admin',
+        name: 'ADMIN',
         tenantId: localhostTenant.id,
         permissions: {
           create: allPermissions
-            .filter((p) => !p.name.startsWith('superAdmin:'))
+            .filter((p) => !p.name.startsWith('SUPER_ADMIN:'))
             .map((p) => ({ permissionId: p.id })),
         },
       },
     });
-    console.log('   ✅ Admin Role created.');
+    console.log('   ✅ ADMIN Role created.');
   } else {
-    console.log('   ✅ Admin Role exists.');
+    console.log('   ✅ ADMIN Role exists.');
   }
 
-  // User Role (Tenant-specific, read-only)
+  // USER Role (Tenant-specific, read-only)
   let userRole = await prisma.role.findFirst({
-    where: { name: 'User', tenantId: localhostTenant.id },
+    where: { name: 'USER', tenantId: localhostTenant.id },
   });
 
   if (!userRole) {
     userRole = await prisma.role.create({
       data: {
-        name: 'User',
+        name: 'USER',
         tenantId: localhostTenant.id,
         permissions: {
           create: allPermissions
@@ -187,9 +187,9 @@ async function main() {
         },
       },
     });
-    console.log('   ✅ User Role created.');
+    console.log('   ✅ USER Role created.');
   } else {
-    console.log('   ✅ User Role exists.');
+    console.log('   ✅ USER Role exists.');
   }
   console.log('');
 

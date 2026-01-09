@@ -279,16 +279,20 @@ export class AuthService {
   }
 
   async login(dto: LoginDto, fingerprint?: string, ip?: string) {
-    const { email, password } = dto;
+    const { password } = dto;
+    const email = dto.email.toLowerCase().trim();
 
     const tenant = getTenant();
+    this.logger.log(
+      `[AUTH-DEBUG] Login attempt for email: "${email}" (normalized), Tenant Domain: ${tenant?.domain || 'Global'}`,
+    );
+
     // [GLOBAL LOGIN FIX]
     // Run outside of Tenant Context to bypass Prisma Extension's auto-filter.
-    // We manually handle the logic in the WHERE clause using the closure's 'tenant' variable.
     const user = await tenantStorage.run(undefined as any, () =>
       this.prisma.user.findFirst({
         where: {
-          email,
+          email: { equals: email, mode: 'insensitive' },
           OR: [
             { tenantId: tenant?.id },
             { roles: { some: { role: { name: 'SUPER_ADMIN' } } } },
@@ -299,8 +303,15 @@ export class AuthService {
     );
 
     if (!user) {
+      this.logger.warn(
+        `[AUTH-DEBUG] User NOT found for email: ${email} with tenant matching or SUPER_ADMIN role`,
+      );
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    this.logger.log(`[AUTH-DEBUG] User found: ${user.email}, ID: ${user.id}`);
+    const roles = user.roles.map((r) => r.role.name);
+    this.logger.log(`[AUTH-DEBUG] User Roles: ${roles.join(', ')}`);
 
     // [SECURITY] IP WHITELISTING
     // Check if user has specific IP restrictions (usually for ADMIN/STAFF)

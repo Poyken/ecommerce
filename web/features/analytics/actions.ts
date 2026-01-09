@@ -27,7 +27,7 @@ export async function savePerformanceMetricAction(data: {
   navigationType?: string;
 }) {
   try {
-    await http("/analytics/performance", {
+    await http("/analytics/vitals", {
       method: "POST",
       body: JSON.stringify(data),
       skipAuth: true, // Cho phép khách gửi telemetry để đo LCP/CLS thực tế
