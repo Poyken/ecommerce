@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { getTenant } from '@core/tenant/tenant.context';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import type { Cache } from 'cache-manager';
 
 @Injectable()
@@ -25,6 +25,8 @@ import type { Cache } from 'cache-manager';
  * =================================================================================================
  */
 export class PagesService {
+  private readonly logger = new Logger(PagesService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
@@ -176,14 +178,10 @@ export class PagesService {
     });
 
     // Clear cache for both old and new slug to be safe
-    console.log(
-      `[PagesService] Invalidate Cache: page:${tenant?.id}:${existing.slug}`,
-    );
+    this.logger.log(`Invalidate Cache: page:${tenant?.id}:${existing.slug}`);
     await this.cacheManager.del(`page:${tenant?.id}:${existing.slug}`);
     if (data.slug) {
-      console.log(
-        `[PagesService] Invalidate Cache: page:${tenant?.id}:${data.slug}`,
-      );
+      this.logger.log(`Invalidate Cache: page:${tenant?.id}:${data.slug}`);
       await this.cacheManager.del(`page:${tenant?.id}:${data.slug}`);
     }
 
@@ -199,9 +197,7 @@ export class PagesService {
       data: { deletedAt: new Date() },
     });
 
-    console.log(
-      `[PagesService] Invalidate Cache: page:${tenant?.id}:${existing.slug}`,
-    );
+    this.logger.log(`Invalidate Cache: page:${tenant?.id}:${existing.slug}`);
     await this.cacheManager.del(`page:${tenant?.id}:${existing.slug}`);
     return { success: true };
   }

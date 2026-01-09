@@ -389,3 +389,47 @@ export function validateInput<T>(
   }
   return { valid: false, error: result.error?.message || "Validation failed" };
 }
+
+// =============================================================================
+// PARAM NORMALIZATION UTILITIES
+// =============================================================================
+
+/**
+ * Normalizes action parameters for paginated endpoints.
+ * Handles both object params and legacy (page, limit, search) format.
+ *
+ * @example
+ * // New format (recommended):
+ * const params = normalizeActionParams({ page: 1, limit: 10, search: 'test', categoryId: 'abc' });
+ *
+ * // Legacy format (backward compatible):
+ * const params = normalizeActionParams(1, 10, 'test');
+ */
+export function normalizeActionParams(
+  paramsOrPage?: number | Record<string, any>,
+  limit?: number,
+  search?: string
+): Record<string, any> {
+  // If first param is a number, it's the legacy format (page, limit, search)
+  if (typeof paramsOrPage === "number") {
+    return {
+      page: paramsOrPage,
+      ...(limit && { limit }),
+      ...(search && { search }),
+    };
+  }
+
+  // Otherwise, it's the new object format
+  return paramsOrPage || {};
+}
+
+/**
+ * Type-safe version of normalizeActionParams with proper interface.
+ */
+export function normalizeListParams<T extends ListParams = ListParams>(
+  paramsOrPage?: number | T,
+  limit?: number,
+  search?: string
+): T {
+  return normalizeActionParams(paramsOrPage, limit, search) as T;
+}

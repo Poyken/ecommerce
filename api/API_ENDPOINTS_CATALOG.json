@@ -1,0 +1,1244 @@
+[
+  {
+    "method": "POST",
+    "path": "/addresses",
+    "controller": "addresses.controller.ts",
+    "function": "create"
+  },
+  {
+    "method": "GET",
+    "path": "/addresses",
+    "controller": "addresses.controller.ts",
+    "function": "findAll"
+  },
+  {
+    "method": "PATCH",
+    "path": "/addresses/:id",
+    "controller": "addresses.controller.ts",
+    "function": "update"
+  },
+  {
+    "method": "DELETE",
+    "path": "/addresses/:id",
+    "controller": "addresses.controller.ts",
+    "function": "remove"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/bulk/export/skus",
+    "controller": "bulk.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/admin/bulk/export/skus/excel",
+    "controller": "bulk.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/admin/bulk/export/skus/json",
+    "controller": "bulk.controller.ts",
+    "function": "exportSkusJson"
+  },
+  {
+    "method": "POST",
+    "path": "/admin/bulk/import/skus",
+    "controller": "bulk.controller.ts",
+    "function": "importSkus"
+  },
+  {
+    "method": "POST",
+    "path": "/admin/bulk/import/skus/excel",
+    "controller": "bulk.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/admin/bulk/update",
+    "controller": "bulk.controller.ts",
+    "function": "bulkUpdate"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/security/stats",
+    "controller": "security.controller.ts",
+    "function": "getStats"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/security/lockdown-status",
+    "controller": "security.controller.ts",
+    "function": "getLockdownStatus"
+  },
+  {
+    "method": "POST",
+    "path": "/admin/security/lockdown",
+    "controller": "security.controller.ts",
+    "function": "toggleLockdown"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/security/whitelist",
+    "controller": "security.controller.ts",
+    "function": "getWhitelist"
+  },
+  {
+    "method": "POST",
+    "path": "/admin/security/whitelist",
+    "controller": "security.controller.ts",
+    "function": "updateWhitelist"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/security/my-ip",
+    "controller": "security.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/agent/execute",
+    "controller": "agent.controller.ts",
+    "function": "executeCommand"
+  },
+  {
+    "method": "POST",
+    "path": "/agent/generate-ui",
+    "controller": "agent.controller.ts",
+    "function": "generateUI"
+  },
+  {
+    "method": "POST",
+    "path": "/ai-automation/generate-product-content",
+    "controller": "ai-automation.controller.ts",
+    "function": "generateProductContent"
+  },
+  {
+    "method": "POST",
+    "path": "/ai-automation/translate",
+    "controller": "ai-automation.controller.ts",
+    "function": "translateText"
+  },
+  {
+    "method": "POST",
+    "path": "/ai-automation/analyze-subscription",
+    "controller": "ai-automation.controller.ts",
+    "function": "analyzeSubscription"
+  },
+  {
+    "method": "POST",
+    "path": "/ai-automation/analyze-review-sentiment",
+    "controller": "ai-automation.controller.ts",
+    "function": "analyzeReviewSentiment"
+  },
+  {
+    "method": "POST",
+    "path": "/ai-automation/generate-embedding",
+    "controller": "ai-automation.controller.ts",
+    "function": "generateEmbedding"
+  },
+  {
+    "method": "POST",
+    "path": "/ai-automation/magic-write",
+    "controller": "ai-automation.controller.ts",
+    "function": "magicWrite"
+  },
+  {
+    "method": "POST",
+    "path": "/ai-automation/business-insights",
+    "controller": "ai-automation.controller.ts",
+    "function": "businessInsights"
+  },
+  {
+    "method": "POST",
+    "path": "/ai-automation/rag-answer",
+    "controller": "ai-automation.controller.ts",
+    "function": "ragAnswer"
+  },
+  {
+    "method": "POST",
+    "path": "/ai-chat/message",
+    "controller": "ai-chat.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/ai-chat/history",
+    "controller": "ai-chat.controller.ts",
+    "function": "getHistory"
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/stats",
+    "controller": "analytics.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/sales",
+    "controller": "analytics.controller.ts",
+    "function": "getSalesData"
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/top-products",
+    "controller": "analytics.controller.ts",
+    "function": "getTopProducts"
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/inventory",
+    "controller": "analytics.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/analytics/categories",
+    "controller": "analytics.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/analytics/vitals",
+    "controller": "analytics.controller.ts",
+    "function": "postVitals"
+  },
+  {
+    "method": "GET",
+    "path": "/audit",
+    "controller": "audit.controller.ts",
+    "function": "findAll"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/register",
+    "controller": "auth.controller.ts",
+    "function": "register"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/login",
+    "controller": "auth.controller.ts",
+    "function": "login"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/logout",
+    "controller": "auth.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/auth/me",
+    "controller": "auth.controller.ts",
+    "function": "getProfile"
+  },
+  {
+    "method": "PATCH",
+    "path": "/auth/me",
+    "controller": "auth.controller.ts",
+    "function": "updateProfile"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/refresh",
+    "controller": "auth.controller.ts",
+    "function": "refresh"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/forgot-password",
+    "controller": "auth.controller.ts",
+    "function": "forgotPassword"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/reset-password",
+    "controller": "auth.controller.ts",
+    "function": "resetPassword"
+  },
+  {
+    "method": "GET",
+    "path": "/auth/google",
+    "controller": "auth.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/auth/google/callback",
+    "controller": "auth.controller.ts",
+    "function": "googleCallback"
+  },
+  {
+    "method": "GET",
+    "path": "/auth/facebook",
+    "controller": "auth.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/auth/facebook/callback",
+    "controller": "auth.controller.ts",
+    "function": "facebookCallback"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/2fa/generate",
+    "controller": "auth.controller.ts",
+    "function": "generate2FA"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/2fa/enable",
+    "controller": "auth.controller.ts",
+    "function": "enable2FA"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/2fa/disable",
+    "controller": "auth.controller.ts",
+    "function": "disable2FA"
+  },
+  {
+    "method": "POST",
+    "path": "/auth/2fa/login",
+    "controller": "auth.controller.ts",
+    "function": "login2FA"
+  },
+  {
+    "method": "POST",
+    "path": "/blogs",
+    "controller": "blog.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/blogs/my-blogs",
+    "controller": "blog.controller.ts",
+    "function": "findMyBlogs"
+  },
+  {
+    "method": "GET",
+    "path": "/blogs",
+    "controller": "blog.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "PATCH",
+    "path": "/blogs/:id/toggle-publish",
+    "controller": "blog.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/blogs/categories",
+    "controller": "blog.controller.ts",
+    "function": "getCategoryStats"
+  },
+  {
+    "method": "GET",
+    "path": "/blogs/:id",
+    "controller": "blog.controller.ts",
+    "function": "findOne"
+  },
+  {
+    "method": "PATCH",
+    "path": "/blogs/:id",
+    "controller": "blog.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "DELETE",
+    "path": "/blogs/:id",
+    "controller": "blog.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/brands",
+    "controller": "brands.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/brands",
+    "controller": "brands.controller.ts",
+    "function": "findAll"
+  },
+  {
+    "method": "GET",
+    "path": "/brands/:id",
+    "controller": "brands.controller.ts",
+    "function": "findOne"
+  },
+  {
+    "method": "PATCH",
+    "path": "/brands/:id",
+    "controller": "brands.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "DELETE",
+    "path": "/brands/:id",
+    "controller": "brands.controller.ts",
+    "function": "remove"
+  },
+  {
+    "method": "GET",
+    "path": "/cart",
+    "controller": "cart.controller.ts",
+    "function": "getCart"
+  },
+  {
+    "method": "POST",
+    "path": "/cart",
+    "controller": "cart.controller.ts",
+    "function": "addToCart"
+  },
+  {
+    "method": "PATCH",
+    "path": "/cart/items/:id",
+    "controller": "cart.controller.ts",
+    "function": "updateItem"
+  },
+  {
+    "method": "DELETE",
+    "path": "/cart/items/:id",
+    "controller": "cart.controller.ts",
+    "function": "removeItem"
+  },
+  {
+    "method": "DELETE",
+    "path": "/cart",
+    "controller": "cart.controller.ts",
+    "function": "clearCart"
+  },
+  {
+    "method": "POST",
+    "path": "/cart/merge",
+    "controller": "cart.controller.ts",
+    "function": "mergeCart"
+  },
+  {
+    "method": "POST",
+    "path": "/categories",
+    "controller": "categories.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/categories",
+    "controller": "categories.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/categories/:id",
+    "controller": "categories.controller.ts",
+    "function": "findOne"
+  },
+  {
+    "method": "PATCH",
+    "path": "/categories/:id",
+    "controller": "categories.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "DELETE",
+    "path": "/categories/:id",
+    "controller": "categories.controller.ts",
+    "function": "remove"
+  },
+  {
+    "method": "GET",
+    "path": "/chat/conversations",
+    "controller": "chat.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/chat/history/:userId",
+    "controller": "chat.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/chat/my-history",
+    "controller": "chat.controller.ts",
+    "function": "getMyHistory"
+  },
+  {
+    "method": "GET",
+    "path": "/feature-flags/my-flags",
+    "controller": "feature-flags-public.controller.ts",
+    "function": "getMyFlags"
+  },
+  {
+    "method": "GET",
+    "path": "/admin/feature-flags",
+    "controller": "feature-flags.controller.ts",
+    "function": "findAll"
+  },
+  {
+    "method": "POST",
+    "path": "/admin/feature-flags",
+    "controller": "feature-flags.controller.ts",
+    "function": "create"
+  },
+  {
+    "method": "PATCH",
+    "path": "/admin/feature-flags/:key",
+    "controller": "feature-flags.controller.ts",
+    "function": "update"
+  },
+  {
+    "method": "DELETE",
+    "path": "/admin/feature-flags/:key",
+    "controller": "feature-flags.controller.ts",
+    "function": "remove"
+  },
+  {
+    "method": "GET",
+    "path": "/sitemap/sitemap.xml",
+    "controller": "sitemap.controller.ts",
+    "function": "getSitemap"
+  },
+  {
+    "method": "POST",
+    "path": "/coupons",
+    "controller": "coupons.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/coupons",
+    "controller": "coupons.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/coupons/validate",
+    "controller": "coupons.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/coupons/available",
+    "controller": "coupons.controller.ts",
+    "function": "findAvailable"
+  },
+  {
+    "method": "GET",
+    "path": "/coupons/:id",
+    "controller": "coupons.controller.ts",
+    "function": "findOne"
+  },
+  {
+    "method": "PATCH",
+    "path": "/coupons/:id",
+    "controller": "coupons.controller.ts",
+    "function": "update"
+  },
+  {
+    "method": "DELETE",
+    "path": "/coupons/:id",
+    "controller": "coupons.controller.ts",
+    "function": "remove"
+  },
+  {
+    "method": "GET",
+    "path": "/health",
+    "controller": "health.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/health/ready",
+    "controller": "health.controller.ts",
+    "function": "ready"
+  },
+  {
+    "method": "GET",
+    "path": "/health/info",
+    "controller": "health.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/health/metrics",
+    "controller": "health.controller.ts",
+    "function": "getMetrics"
+  },
+  {
+    "method": "GET",
+    "path": "/health/metrics/json",
+    "controller": "health.controller.ts",
+    "function": "getMetricsJson"
+  },
+  {
+    "method": "GET",
+    "path": "/health/debug-db",
+    "controller": "health.controller.ts",
+    "function": "debugDb"
+  },
+  {
+    "method": "GET",
+    "path": "/health/debug-orders",
+    "controller": "health.controller.ts",
+    "function": "debugOrders"
+  },
+  {
+    "method": "GET",
+    "path": "/health/debug-skus",
+    "controller": "health.controller.ts",
+    "function": "debugSkus"
+  },
+  {
+    "method": "POST",
+    "path": "/images/process",
+    "controller": "image-processor.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/images/resize",
+    "controller": "image-processor.controller.ts",
+    "function": "resizeImage"
+  },
+  {
+    "method": "GET",
+    "path": "/insights",
+    "controller": "insights.controller.ts",
+    "function": "getInsights"
+  },
+  {
+    "method": "POST",
+    "path": "/insights/refresh",
+    "controller": "insights.controller.ts",
+    "function": "refreshInsights"
+  },
+  {
+    "method": "GET",
+    "path": "/common/cloudinary/signature",
+    "controller": "cloudinary.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/newsletter/subscribe",
+    "controller": "newsletter.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/sitemap/sitemap.xml",
+    "controller": "sitemap.controller.ts",
+    "function": "getSitemap"
+  },
+  {
+    "method": "GET",
+    "path": "/notifications",
+    "controller": "notifications.controller.ts",
+    "function": "findAll"
+  },
+  {
+    "method": "GET",
+    "path": "/notifications/unread-count",
+    "controller": "notifications.controller.ts",
+    "function": "getUnreadCount"
+  },
+  {
+    "method": "PATCH",
+    "path": "/notifications/read-all",
+    "controller": "notifications.controller.ts",
+    "function": "markAllAsRead"
+  },
+  {
+    "method": "PATCH",
+    "path": "/notifications/:id/read",
+    "controller": "notifications.controller.ts",
+    "function": "markAsRead"
+  },
+  {
+    "method": "DELETE",
+    "path": "/notifications/:id",
+    "controller": "notifications.controller.ts",
+    "function": "delete"
+  },
+  {
+    "method": "DELETE",
+    "path": "/notifications/read-all",
+    "controller": "notifications.controller.ts",
+    "function": "deleteAllRead"
+  },
+  {
+    "method": "POST",
+    "path": "/notifications/admin/broadcast",
+    "controller": "notifications.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/notifications/admin/send",
+    "controller": "notifications.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/notifications/admin/all",
+    "controller": "notifications.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/notifications/admin/:id",
+    "controller": "notifications.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "DELETE",
+    "path": "/notifications/admin/cleanup",
+    "controller": "notifications.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/orders",
+    "controller": "orders.controller.ts",
+    "function": "create"
+  },
+  {
+    "method": "GET",
+    "path": "/orders/my-orders",
+    "controller": "orders.controller.ts",
+    "function": "findMyOrders"
+  },
+  {
+    "method": "GET",
+    "path": "/orders/my-orders/:id",
+    "controller": "orders.controller.ts",
+    "function": "findOneMyOrder"
+  },
+  {
+    "method": "GET",
+    "path": "/orders",
+    "controller": "orders.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/orders/:id",
+    "controller": "orders.controller.ts",
+    "function": "findOne"
+  },
+  {
+    "method": "PATCH",
+    "path": "/orders/:id/status",
+    "controller": "orders.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "PATCH",
+    "path": "/orders/my-orders/:id/cancel",
+    "controller": "orders.controller.ts",
+    "function": "cancelMyOrder"
+  },
+  {
+    "method": "GET",
+    "path": "/orders/:id/invoice",
+    "controller": "orders.controller.ts",
+    "function": "getInvoice"
+  },
+  {
+    "method": "GET",
+    "path": "/pages/:slug",
+    "controller": "pages.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/pages/:slug",
+    "controller": "pages.controller.ts",
+    "function": "getPage"
+  },
+  {
+    "method": "GET",
+    "path": "/pages/translations/:locale",
+    "controller": "pages.controller.ts",
+    "function": "getTranslations"
+  },
+  {
+    "method": "GET",
+    "path": "/pages/admin/list",
+    "controller": "pages.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/pages/admin/:id",
+    "controller": "pages.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/pages/admin",
+    "controller": "pages.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "PATCH",
+    "path": "/pages/admin/:id",
+    "controller": "pages.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "DELETE",
+    "path": "/pages/admin/:id",
+    "controller": "pages.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/payment/vnpay_return",
+    "controller": "payment.controller.ts",
+    "function": "vnpayReturn"
+  },
+  {
+    "method": "GET",
+    "path": "/payment/vnpay_ipn",
+    "controller": "payment.controller.ts",
+    "function": "vnpayIpn"
+  },
+  {
+    "method": "POST",
+    "path": "/payment/momo_ipn",
+    "controller": "payment.controller.ts",
+    "function": "momoIpn"
+  },
+  {
+    "method": "POST",
+    "path": "/payment/webhook/vietqr",
+    "controller": "payment.webhook.controller.ts",
+    "function": "handleVietQrWebhook"
+  },
+  {
+    "method": "POST",
+    "path": "/payment/webhook/test",
+    "controller": "payment.webhook.controller.ts",
+    "function": "manualTrigger"
+  },
+  {
+    "method": "POST",
+    "path": "/products",
+    "controller": "products.controller.ts",
+    "function": "create"
+  },
+  {
+    "method": "GET",
+    "path": "/products",
+    "controller": "products.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/products/semantic-search",
+    "controller": "products.controller.ts",
+    "function": "semanticSearch"
+  },
+  {
+    "method": "GET",
+    "path": "/products/:id",
+    "controller": "products.controller.ts",
+    "function": "findOne"
+  },
+  {
+    "method": "GET",
+    "path": "/products/:id/related",
+    "controller": "products.controller.ts",
+    "function": "getRelated"
+  },
+  {
+    "method": "PATCH",
+    "path": "/products/:id",
+    "controller": "products.controller.ts",
+    "function": "update"
+  },
+  {
+    "method": "DELETE",
+    "path": "/products/:id",
+    "controller": "products.controller.ts",
+    "function": "remove"
+  },
+  {
+    "method": "POST",
+    "path": "/products/skus/details",
+    "controller": "products.controller.ts",
+    "function": "getSkusDetails"
+  },
+  {
+    "method": "GET",
+    "path": "/products/:id/translations",
+    "controller": "products.controller.ts",
+    "function": "getTranslations"
+  },
+  {
+    "method": "POST",
+    "path": "/products/:id/translations",
+    "controller": "products.controller.ts",
+    "function": "translate"
+  },
+  {
+    "method": "GET",
+    "path": "/products/export/excel",
+    "controller": "products.controller.ts",
+    "function": "export"
+  },
+  {
+    "method": "POST",
+    "path": "/products/import/excel",
+    "controller": "products.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/rag/chat",
+    "controller": "rag.controller.ts",
+    "function": "chat"
+  },
+  {
+    "method": "POST",
+    "path": "/rag/refresh",
+    "controller": "rag.controller.ts",
+    "function": "refreshKnowledge"
+  },
+  {
+    "method": "POST",
+    "path": "/rag/policy",
+    "controller": "rag.controller.ts",
+    "function": "setPolicy"
+  },
+  {
+    "method": "GET",
+    "path": "/rag/suggestions",
+    "controller": "rag.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/reviews",
+    "controller": "reviews.controller.ts",
+    "function": "findAll"
+  },
+  {
+    "method": "POST",
+    "path": "/reviews",
+    "controller": "reviews.controller.ts",
+    "function": "create"
+  },
+  {
+    "method": "GET",
+    "path": "/reviews/check-eligibility",
+    "controller": "reviews.controller.ts",
+    "function": "checkEligibility"
+  },
+  {
+    "method": "GET",
+    "path": "/reviews/product/:productId",
+    "controller": "reviews.controller.ts",
+    "function": "findAllByProduct"
+  },
+  {
+    "method": "DELETE",
+    "path": "/reviews/:id",
+    "controller": "reviews.controller.ts",
+    "function": "remove"
+  },
+  {
+    "method": "DELETE",
+    "path": "/reviews/mine/:id",
+    "controller": "reviews.controller.ts",
+    "function": "removeOwn"
+  },
+  {
+    "method": "PATCH",
+    "path": "/reviews/:id/status",
+    "controller": "reviews.controller.ts",
+    "function": "updateStatus"
+  },
+  {
+    "method": "PATCH",
+    "path": "/reviews/:id",
+    "controller": "reviews.controller.ts",
+    "function": "update"
+  },
+  {
+    "method": "POST",
+    "path": "/reviews/upload",
+    "controller": "reviews.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/reviews/:id/reply",
+    "controller": "reviews.controller.ts",
+    "function": "reply"
+  },
+  {
+    "method": "POST",
+    "path": "/roles",
+    "controller": "roles.controller.ts",
+    "function": "create"
+  },
+  {
+    "method": "GET",
+    "path": "/roles",
+    "controller": "roles.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/roles/permissions",
+    "controller": "roles.controller.ts",
+    "function": "getAllPermissions"
+  },
+  {
+    "method": "POST",
+    "path": "/roles/permissions",
+    "controller": "roles.controller.ts",
+    "function": "createPermission"
+  },
+  {
+    "method": "PATCH",
+    "path": "/roles/permissions/:id",
+    "controller": "roles.controller.ts",
+    "function": "updatePermission"
+  },
+  {
+    "method": "DELETE",
+    "path": "/roles/permissions/:id",
+    "controller": "roles.controller.ts",
+    "function": "deletePermission"
+  },
+  {
+    "method": "GET",
+    "path": "/roles/:id",
+    "controller": "roles.controller.ts",
+    "function": "findOne"
+  },
+  {
+    "method": "PATCH",
+    "path": "/roles/:id",
+    "controller": "roles.controller.ts",
+    "function": "update"
+  },
+  {
+    "method": "DELETE",
+    "path": "/roles/:id",
+    "controller": "roles.controller.ts",
+    "function": "remove"
+  },
+  {
+    "method": "POST",
+    "path": "/roles/:id/permissions",
+    "controller": "roles.controller.ts",
+    "function": "assignPermissions"
+  },
+  {
+    "method": "GET",
+    "path": "/shipping/provinces",
+    "controller": "shipping.controller.ts",
+    "function": "getProvinces"
+  },
+  {
+    "method": "GET",
+    "path": "/shipping/districts/:provinceId",
+    "controller": "shipping.controller.ts",
+    "function": "getDistricts"
+  },
+  {
+    "method": "GET",
+    "path": "/shipping/wards/:districtId",
+    "controller": "shipping.controller.ts",
+    "function": "getWards"
+  },
+  {
+    "method": "POST",
+    "path": "/shipping/fee",
+    "controller": "shipping.controller.ts",
+    "function": "calculateFee"
+  },
+  {
+    "method": "POST",
+    "path": "/shipping/webhook",
+    "controller": "shipping.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/skus",
+    "controller": "skus.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/skus",
+    "controller": "skus.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/skus/:id",
+    "controller": "skus.controller.ts",
+    "function": "findOne"
+  },
+  {
+    "method": "PATCH",
+    "path": "/skus/:id",
+    "controller": "skus.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "DELETE",
+    "path": "/skus/:id",
+    "controller": "skus.controller.ts",
+    "function": "remove"
+  },
+  {
+    "method": "GET",
+    "path": "/subscriptions/current",
+    "controller": "subscriptions.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/subscriptions",
+    "controller": "subscriptions.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/subscriptions/upgrade",
+    "controller": "subscriptions.controller.ts",
+    "function": "upgradePlan"
+  },
+  {
+    "method": "POST",
+    "path": "/subscriptions/cancel",
+    "controller": "subscriptions.controller.ts",
+    "function": "cancelSubscription"
+  },
+  {
+    "method": "POST",
+    "path": "/subscriptions/:tenantId/cancel",
+    "controller": "subscriptions.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/tenants",
+    "controller": "tenants.controller.ts",
+    "function": "create"
+  },
+  {
+    "method": "GET",
+    "path": "/tenants",
+    "controller": "tenants.controller.ts",
+    "function": "findAll"
+  },
+  {
+    "method": "GET",
+    "path": "/tenants/me",
+    "controller": "tenants.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/tenants/:id",
+    "controller": "tenants.controller.ts",
+    "function": "findOne"
+  },
+  {
+    "method": "PATCH",
+    "path": "/tenants/:id",
+    "controller": "tenants.controller.ts",
+    "function": "update"
+  },
+  {
+    "method": "DELETE",
+    "path": "/tenants/:id",
+    "controller": "tenants.controller.ts",
+    "function": "remove"
+  },
+  {
+    "method": "GET",
+    "path": "/tenants/current/config",
+    "controller": "tenants.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "POST",
+    "path": "/users",
+    "controller": "users.controller.ts",
+    "function": "create"
+  },
+  {
+    "method": "GET",
+    "path": "/users",
+    "controller": "users.controller.ts",
+    "function": ""
+  },
+  {
+    "method": "GET",
+    "path": "/users/:id",
+    "controller": "users.controller.ts",
+    "function": "findOne"
+  },
+  {
+    "method": "PATCH",
+    "path": "/users/:id",
+    "controller": "users.controller.ts",
+    "function": "update"
+  },
+  {
+    "method": "POST",
+    "path": "/users/:id/roles",
+    "controller": "users.controller.ts",
+    "function": "assignRoles"
+  },
+  {
+    "method": "DELETE",
+    "path": "/users/:id",
+    "controller": "users.controller.ts",
+    "function": "remove"
+  },
+  {
+    "method": "POST",
+    "path": "/wishlist/toggle",
+    "controller": "wishlist.controller.ts",
+    "function": "toggle"
+  },
+  {
+    "method": "GET",
+    "path": "/wishlist/count",
+    "controller": "wishlist.controller.ts",
+    "function": "count"
+  },
+  {
+    "method": "GET",
+    "path": "/wishlist",
+    "controller": "wishlist.controller.ts",
+    "function": "findAll"
+  },
+  {
+    "method": "GET",
+    "path": "/wishlist/check",
+    "controller": "wishlist.controller.ts",
+    "function": "checkStatus"
+  },
+  {
+    "method": "POST",
+    "path": "/wishlist/merge",
+    "controller": "wishlist.controller.ts",
+    "function": "mergeWishlist"
+  }
+]

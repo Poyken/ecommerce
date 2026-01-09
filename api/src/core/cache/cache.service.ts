@@ -1,5 +1,5 @@
 import { RedisService } from '@core/redis/redis.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as zlib from 'zlib';
 
 /**
@@ -25,6 +25,7 @@ import * as zlib from 'zlib';
  */
 @Injectable()
 export class CacheService {
+  private readonly logger = new Logger(CacheService.name);
   private readonly DEFAULT_TTL = 300; // 5 phút
   private readonly JITTER_PERCENTAGE = 0.1; // ±10% variance
   private readonly COMPRESSION_THRESHOLD = 5120; // 5KB
@@ -84,10 +85,7 @@ export class CacheService {
         data = zlib.gunzipSync(compressedData).toString('utf-8');
       } catch (err) {
         // Fallback to raw data if decompression fails
-        console.error(
-          `[CacheService] Decompression failed for key ${key}`,
-          err,
-        );
+        this.logger.error(`Decompression failed for key ${key}`, err);
       }
     }
 
@@ -167,9 +165,7 @@ export class CacheService {
     if (keys.length > 0) {
       // Xóa các key trong tag và bản thân tag set
       await Promise.all([this.redis.del(...keys), this.redis.del(tagName)]);
-      console.log(
-        `[CacheService] Invalidated tag: ${tag} (${keys.length} keys)`,
-      );
+      this.logger.log(`Invalidated tag: ${tag} (${keys.length} keys)`);
     }
   }
 

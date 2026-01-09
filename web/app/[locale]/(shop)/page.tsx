@@ -5,7 +5,7 @@ import {
   ProductsSkeleton,
 } from "@/components/shared/skeletons/home-skeleton";
 import { HomeWrapper } from "@/features/home/components/home-wrapper";
-import { HeroSection } from "@/features/products/components/hero-section";
+import { HeroSection } from "@/features/home/components/hero-section";
 import { HomeContent } from "@/features/products/components/home-content";
 import { productService } from "@/services/product.service";
 import { Brand, Category, Product } from "@/types/models";

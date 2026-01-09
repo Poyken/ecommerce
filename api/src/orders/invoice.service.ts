@@ -65,6 +65,7 @@ export class InvoiceService {
       where: { id: orderId },
       include: {
         user: true,
+        coupon: true, // Include coupon for discount calculation
         items: {
           include: {
             sku: {
@@ -106,7 +107,21 @@ export class InvoiceService {
     const subtotal = items.reduce((sum, item) => sum + item.total, 0);
     const tax = 0; // VAT can be added later
     const shipping = Number(order.shippingFee || 0);
-    const discount = order.couponId ? 0 : 0; // TODO: Calculate discount from coupon
+
+    // Calculate discount from coupon
+    let discount = 0;
+    if (order.coupon) {
+      if (order.coupon.discountType === 'PERCENTAGE') {
+        discount = subtotal * (Number(order.coupon.discountValue) / 100);
+        // Apply max discount limit if specified
+        if (order.coupon.maxDiscountAmount) {
+          discount = Math.min(discount, Number(order.coupon.maxDiscountAmount));
+        }
+      } else if (order.coupon.discountType === 'FIXED_AMOUNT') {
+        discount = Number(order.coupon.discountValue);
+      }
+    }
+
     const total = Number(order.totalAmount);
 
     // Generate invoice number

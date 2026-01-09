@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 
-import { Permissions } from '@/auth/decorators/permissions.decorator';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import {
@@ -20,6 +19,7 @@ import {
   ApiGetOneResponse,
   ApiListResponse,
   ApiUpdateResponse,
+  RequirePermissions,
 } from '@/common/decorators/crud.decorators';
 import { AssignPermissionsDto } from './dto/assign-permissions.dto';
 import { CreatePermissionDto } from './dto/create-permission.dto';
@@ -56,7 +56,7 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Post()
-  @Permissions('role:create')
+  @RequirePermissions('role:create')
   @ApiCreateResponse('Role', { summary: 'Tạo vai trò mới' })
   async create(@Body() createRoleDto: CreateRoleDto) {
     const data = await this.rolesService.create(createRoleDto);
@@ -64,7 +64,7 @@ export class RolesController {
   }
 
   @Get()
-  @Permissions('role:read')
+  @RequirePermissions('role:read')
   @ApiListResponse('Role', { summary: 'Lấy tất cả vai trò' })
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'page', required: false, type: Number })
@@ -88,7 +88,7 @@ export class RolesController {
   }
 
   @Post('permissions')
-  @Permissions('permission:create')
+  @RequirePermissions('permission:create')
   @ApiCreateResponse('Permission', { summary: 'Tạo quyền hạn mới' })
   async createPermission(@Body() dto: CreatePermissionDto) {
     const data = await this.rolesService.createPermission(dto);
@@ -96,7 +96,7 @@ export class RolesController {
   }
 
   @Patch('permissions/:id')
-  @Permissions('permission:update')
+  @RequirePermissions('permission:update')
   @ApiUpdateResponse('Permission', { summary: 'Cập nhật quyền hạn' })
   async updatePermission(
     @Param('id') id: string,
@@ -107,7 +107,7 @@ export class RolesController {
   }
 
   @Delete('permissions/:id')
-  @Permissions('permission:delete')
+  @RequirePermissions('permission:delete')
   @ApiDeleteResponse('Permission', { summary: 'Xóa quyền hạn' })
   async deletePermission(@Param('id') id: string) {
     const data = await this.rolesService.deletePermission(id);
@@ -117,7 +117,7 @@ export class RolesController {
   // ============= CHI TIẾT VAI TRÒ =============
 
   @Get(':id')
-  @Permissions('role:read')
+  @RequirePermissions('role:read')
   @ApiGetOneResponse('Role', { summary: 'Lấy chi tiết vai trò' })
   async findOne(@Param('id') id: string) {
     const data = await this.rolesService.findOne(id);
@@ -125,7 +125,7 @@ export class RolesController {
   }
 
   @Patch(':id')
-  @Permissions('role:update')
+  @RequirePermissions('role:update')
   @ApiUpdateResponse('Role', { summary: 'Cập nhật vai trò' })
   async update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
     const data = await this.rolesService.update(id, updateRoleDto);
@@ -133,7 +133,7 @@ export class RolesController {
   }
 
   @Delete(':id')
-  @Permissions('role:delete')
+  @RequirePermissions('role:delete')
   @ApiDeleteResponse('Role', { summary: 'Xóa vai trò' })
   async remove(@Param('id') id: string) {
     const data = await this.rolesService.remove(id);
@@ -141,7 +141,7 @@ export class RolesController {
   }
 
   @Post(':id/permissions')
-  @Permissions('role:update')
+  @RequirePermissions('role:update')
   @ApiUpdateResponse('Role', { summary: 'Gán quyền hạn cho vai trò' })
   async assignPermissions(
     @Param('id') id: string,
