@@ -260,6 +260,57 @@ async function main() {
     console.log('   ✅ User exists: user@test.com');
   }
 
+  // 5. Upsert Essential Pages
+  console.log('\n📄 Syncing Essential Pages...');
+  const tenants = [localhostTenant, vercelTenant];
+  for (const tenant of tenants) {
+    // Home Page
+    await prisma.page.upsert({
+      where: {
+        tenantId_slug: { tenantId: tenant.id, slug: '/' },
+      },
+      create: {
+        tenantId: tenant.id,
+        slug: '/',
+        title: 'Home Page',
+        isPublished: true,
+        blocks: [
+          {
+            type: 'Hero',
+            props: {
+              title: `Welcome to ${tenant.name}`,
+              subtitle: 'Luxury shopping experience redefined.',
+            },
+          },
+        ],
+      },
+      update: {},
+    });
+
+    // About Us
+    await prisma.page.upsert({
+      where: {
+        tenantId_slug: { tenantId: tenant.id, slug: '/about' },
+      },
+      create: {
+        tenantId: tenant.id,
+        slug: '/about',
+        title: 'About Us',
+        isPublished: true,
+        blocks: [
+          {
+            type: 'Content',
+            props: {
+              html: '<p>We are a premium e-commerce platform.</p>',
+            },
+          },
+        ],
+      },
+      update: {},
+    });
+    console.log(`   ✅ Essential pages ready for tenant: ${tenant.domain}`);
+  }
+
   console.log('\n🎉 SEED COMPLETED!\n');
   console.log('📋 Summary:');
   console.log(`   - Permissions: ${allPermissions.length}`);

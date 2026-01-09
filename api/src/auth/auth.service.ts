@@ -289,7 +289,7 @@ export class AuthService {
 
     // [GLOBAL LOGIN FIX - ULTIMATE]
     // Step 1: Find user by email ONLY, bypassing all tenant filters
-    const user = await tenantStorage
+    let user = await tenantStorage
       .run(undefined as any, () =>
         this.prisma.user.findFirst({
           where: {
@@ -300,12 +300,39 @@ export class AuthService {
         }),
       )
       .catch((err) => {
-        this.logger.error(`[AUTH-DEBUG] Database error: ${err.message}`);
+        this.logger.error(`[AUTH-DEBUG] Primary lookup error: ${err.message}`);
         return null;
       });
 
+    // FALLBACK: If user not found via Prisma (maybe extension interception issue), try direct Query
     if (!user) {
-      this.logger.warn(`[AUTH-DEBUG] User NOT found for email: ${email}`);
+      this.logger.warn(
+        `[AUTH-DEBUG] User NOT found via Prisma lookup, trying direct raw query for ${email}`,
+      );
+      const rawUsers = await this.prisma.$queryRawUnsafe<any[]>(
+        `SELECT id, email, "tenantId" FROM "User" WHERE LOWER(email) = LOWER($1) AND "deletedAt" IS NULL LIMIT 1`,
+        email,
+      );
+
+      if (rawUsers && rawUsers.length > 0) {
+        const rawUser = rawUsers[0];
+        this.logger.log(
+          `[AUTH-DEBUG] User FOUND via RAW query: ${rawUser.email}, Tenant: ${rawUser.tenantId}. Attempting full reload...`,
+        );
+        // If found via raw, try to load via ID explicitly
+        user = await tenantStorage.run(undefined as any, () =>
+          this.prisma.user.findUnique({
+            where: { id: rawUser.id },
+            select: this.USER_PERMISSION_SELECT,
+          }),
+        );
+      }
+    }
+
+    if (!user) {
+      this.logger.warn(
+        `[AUTH-DEBUG] User NOT found even after fallback for email: ${email}`,
+      );
       throw new UnauthorizedException('Invalid credentials');
     }
 
