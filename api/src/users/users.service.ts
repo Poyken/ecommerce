@@ -128,6 +128,7 @@ export class UsersService extends BaseCrudService<
         password: hashedPassword,
         firstName,
         lastName,
+        tenantId: tenant!.id,
       },
     });
 
