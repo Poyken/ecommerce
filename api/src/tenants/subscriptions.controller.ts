@@ -35,6 +35,14 @@ import { BillingFrequency, TenantPlan } from '@prisma/client';
 
 import { IsEnum } from 'class-validator';
 
+import { RequirePermissions } from '@/common/decorators/crud.decorators';
+import { PermissionsGuard } from '@/auth/permissions.guard';
+import {
+  ApiGetOneResponse,
+  ApiListResponse,
+  ApiUpdateResponse,
+} from '@/common/decorators/crud.decorators';
+
 class UpgradePlanDto {
   @IsEnum(TenantPlan)
   plan: TenantPlan;
@@ -42,9 +50,6 @@ class UpgradePlanDto {
   @IsEnum(BillingFrequency)
   frequency: BillingFrequency;
 }
-
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { PermissionsGuard } from '@/auth/permissions.guard';
 
 @ApiTags('Subscriptions')
 @Controller('subscriptions')
@@ -54,50 +59,61 @@ export class SubscriptionsController {
   constructor(private readonly subscriptionsService: SubscriptionsService) {}
 
   @Get('current')
-  @Permissions('tenant:read')
-  @ApiOperation({ summary: 'Get current subscription details' })
+  @RequirePermissions('tenant:read')
+  @ApiGetOneResponse('Subscription', {
+    summary: 'Get current subscription details',
+  })
   async getCurrentSubscription(@Request() req: any) {
-    // Assuming tenantId is attached to user via JwtStrategy (which we did earlier)
     const tenantId = req.user.tenantId;
-    return this.subscriptionsService.getCurrentSubscription(tenantId);
+    const result =
+      await this.subscriptionsService.getCurrentSubscription(tenantId);
+    return { data: result };
   }
 
   @Get()
-  @Permissions('admin:read')
-  @ApiOperation({ summary: 'List all subscriptions (Super Admin)' })
+  @RequirePermissions('admin:read')
+  @ApiListResponse('Subscription', {
+    summary: 'List all subscriptions (Super Admin)',
+  })
   async getAllSubscriptions(@Query() query: any) {
-    return this.subscriptionsService.findAll({
+    const result = await this.subscriptionsService.findAll({
       page: query.page ? Number(query.page) : 1,
       limit: query.limit ? Number(query.limit) : 10,
       search: query.search,
       status: query.status,
     });
+    return result; // Result already has { data, meta }
   }
 
   @Post('upgrade')
-  @Permissions('tenant:update')
-  @ApiOperation({ summary: 'Upgrade tenant plan' })
+  @RequirePermissions('tenant:update')
+  @ApiUpdateResponse('Subscription', { summary: 'Upgrade tenant plan' })
   async upgradePlan(@Request() req: any, @Body() dto: UpgradePlanDto) {
     const tenantId = req.user.tenantId;
-    return this.subscriptionsService.upgradePlan(
+    const result = await this.subscriptionsService.upgradePlan(
       tenantId,
       dto.plan,
       dto.frequency,
     );
+    return { data: result };
   }
 
   @Post('cancel')
-  @Permissions('tenant:update')
-  @ApiOperation({ summary: 'Cancel current subscription' })
+  @RequirePermissions('tenant:update')
+  @ApiUpdateResponse('Subscription', { summary: 'Cancel current subscription' })
   async cancelSubscription(@Request() req: any) {
     const tenantId = req.user.tenantId;
-    return this.subscriptionsService.cancelSubscription(tenantId);
+    const result = await this.subscriptionsService.cancelSubscription(tenantId);
+    return { data: result };
   }
 
   @Post(':tenantId/cancel')
-  @Permissions('admin:update')
-  @ApiOperation({ summary: 'Cancel specific tenant subscription (Admin)' })
+  @RequirePermissions('admin:update')
+  @ApiUpdateResponse('Subscription', {
+    summary: 'Cancel specific tenant subscription (Admin)',
+  })
   async cancelTenantSubscription(@Param('tenantId') tenantId: string) {
-    return this.subscriptionsService.cancelSubscription(tenantId);
+    const result = await this.subscriptionsService.cancelSubscription(tenantId);
+    return { data: result };
   }
 }

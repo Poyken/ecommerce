@@ -24,10 +24,14 @@
  * @param amount - Số tiền cần format
  * @returns Chuỗi đã format (VD: "100.000 ₫")
  */
-export function formatVND(amount: number): string {
+export function formatVND(
+  amount: number,
+  options: Intl.NumberFormatOptions = {}
+): string {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
+    ...options,
   }).format(amount);
 }
 

@@ -1,5 +1,3 @@
-"use server";
-
 /**
  * =====================================================================
  * SAFE ACTION UTILITIES - Wrapper patterns cho next-safe-action
@@ -165,30 +163,12 @@ export function createVoidActionWrapper<TOutput>(
 // REVALIDATION HELPERS
 // =============================================================================
 
-/**
- * Revalidate multiple paths at once.
- */
-export function revalidatePaths(...paths: string[]): void {
-  paths.forEach((path) => (revalidatePath as any)(path));
-}
+// =============================================================================
+// REVALIDATION HELPERS
+// =============================================================================
 
-/**
- * Revalidate multiple tags at once.
- */
-export function revalidateTags(...tags: string[]): void {
-  tags.forEach((tag) => (revalidateTag as any)(tag));
-}
-
-/**
- * Revalidate paths and tags together.
- */
-export function revalidateAll(options: {
-  paths?: string[];
-  tags?: string[];
-}): void {
-  options.paths?.forEach((path) => (revalidatePath as any)(path));
-  options.tags?.forEach((tag) => (revalidateTag as any)(tag));
-}
+// Removed wrapper functions to avoid build issues with Next.js 16 optimization.
+// Use revalidatePath and revalidateTag directly.
 
 // =============================================================================
 // COMMON REVALIDATION PRESETS
@@ -199,20 +179,26 @@ export function revalidateAll(options: {
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const REVALIDATE: any = {
-  cart: () => (revalidatePath as any)("/cart"),
-  wishlist: () => (revalidatePath as any)("/wishlist"),
-  orders: () => revalidatePaths("/orders", "/account/orders"),
-  profile: () => revalidatePaths("/profile", "/account"),
+  cart: () => revalidatePath("/cart", "page"),
+  wishlist: () => revalidatePath("/wishlist", "page"),
+  orders: () => {
+    revalidatePath("/orders", "page");
+    revalidatePath("/account/orders", "page");
+  },
+  profile: () => {
+    revalidatePath("/profile", "page");
+    revalidatePath("/account", "page");
+  },
   products: (productId?: string) => {
-    (revalidatePath as any)("/shop");
-    (revalidatePath as any)("/products");
+    revalidatePath("/shop", "page");
+    revalidatePath("/products", "page");
     if (productId) {
-      (revalidatePath as any)(`/products/${productId}`);
+      revalidatePath(`/products/${productId}`, "page");
     }
   },
   admin: {
-    products: () => (revalidatePath as any)("/admin/products"),
-    orders: () => (revalidatePath as any)("/admin/orders"),
-    users: () => (revalidatePath as any)("/admin/users"),
+    products: () => revalidatePath("/admin/products", "page"),
+    orders: () => revalidatePath("/admin/orders", "page"),
+    users: () => revalidatePath("/admin/users", "page"),
   },
 } as const;

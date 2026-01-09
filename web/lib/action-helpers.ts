@@ -195,12 +195,12 @@ export async function handleMutation<T>(
 
     // Revalidate tags
     if (options.revalidateTags) {
-      options.revalidateTags.forEach((tag) => revalidateTag(tag));
+      options.revalidateTags.forEach((tag) => revalidateTag(tag, "max"));
     }
 
     // Revalidate paths
     if (options.revalidatePaths) {
-      options.revalidatePaths.forEach((path) => revalidatePath(path));
+      options.revalidatePaths.forEach((path) => revalidatePath(path, "page"));
     }
 
     return { success: true, data: result };
@@ -256,10 +256,10 @@ export async function deleteAction(
     await http(`${baseUrl}/${id}`, { method: "DELETE" });
 
     if (options?.revalidateTags) {
-      options.revalidateTags.forEach((tag) => revalidateTag(tag));
+      options.revalidateTags.forEach((tag) => revalidateTag(tag, "max"));
     }
     if (options?.revalidatePaths) {
-      options.revalidatePaths.forEach((path) => revalidatePath(path));
+      options.revalidatePaths.forEach((path) => revalidatePath(path, "page"));
     }
 
     return { success: true };

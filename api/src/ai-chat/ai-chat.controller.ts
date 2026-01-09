@@ -53,7 +53,7 @@ export class AiChatController {
 
   @Post('message')
   @UseGuards(OptionalJwtAuthGuard)
-  @Throttle({ default: { limit: 30, ttl: 60000 } }) // 30 req/min for auth, will be overridden for guests
+  @Throttle({ default: { limit: 30, ttl: 60000 } })
   @ApiOperation({ summary: 'Gửi tin nhắn cho AI và nhận phản hồi' })
   @ApiBearerAuth()
   async sendMessage(@Request() req, @Body() dto: SendMessageDto) {
@@ -67,7 +67,6 @@ export class AiChatController {
     );
 
     return {
-      success: true,
       data: {
         response: result.response,
         sessionId: result.sessionId,
@@ -84,7 +83,6 @@ export class AiChatController {
 
     if (!userId) {
       return {
-        success: true,
         data: [],
         message: 'Guest users do not have persistent history',
       };
@@ -93,7 +91,6 @@ export class AiChatController {
     const history = await this.aiChatService.getHistory(userId);
 
     return {
-      success: true,
       data: history,
     };
   }

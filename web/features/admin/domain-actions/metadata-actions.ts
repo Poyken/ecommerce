@@ -57,7 +57,7 @@ export async function createBrandAction(
       method: "POST",
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
-    revalidatePath("/admin/brands");
+    revalidatePath("/admin/brands", "page");
     return res.data;
   }, "Failed to create brand");
 }
@@ -71,7 +71,7 @@ export async function updateBrandAction(
       method: "PATCH",
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
-    revalidatePath("/admin/brands");
+    revalidatePath("/admin/brands", "page");
     return res.data;
   }, "Failed to update brand");
 }
@@ -81,7 +81,7 @@ export async function deleteBrandAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/brands/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/brands");
+    revalidatePath("/admin/brands", "page");
   }, "Failed to delete brand");
 }
 
@@ -107,7 +107,7 @@ export async function createCategoryAction(
       method: "POST",
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
-    revalidatePath("/admin/categories");
+    revalidatePath("/admin/categories", "page");
     return res.data;
   }, "Failed to create category");
 }
@@ -121,7 +121,7 @@ export async function updateCategoryAction(
       method: "PATCH",
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
-    revalidatePath("/admin/categories");
+    revalidatePath("/admin/categories", "page");
     return res.data;
   }, "Failed to update category");
 }
@@ -131,7 +131,7 @@ export async function deleteCategoryAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/categories/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/categories");
+    revalidatePath("/admin/categories", "page");
   }, "Failed to delete category");
 }
 
@@ -157,7 +157,7 @@ export async function createCouponAction(
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/coupons");
+    revalidatePath("/admin/coupons", "page");
     return res.data;
   }, "Failed to create coupon");
 }
@@ -171,7 +171,7 @@ export async function updateCouponAction(
       method: "PATCH",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/coupons");
+    revalidatePath("/admin/coupons", "page");
     return res.data;
   }, "Failed to update coupon");
 }
@@ -181,6 +181,6 @@ export async function deleteCouponAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/coupons/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/coupons");
+    revalidatePath("/admin/coupons", "page");
   }, "Failed to delete coupon");
 }

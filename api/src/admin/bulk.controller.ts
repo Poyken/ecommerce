@@ -1,4 +1,4 @@
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { RequirePermissions } from '@/common/decorators/crud.decorators';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import {
@@ -26,47 +26,16 @@ import { BulkUpdateDto, ImportSkusDto } from './dto/bulk.dto';
  * =====================================================================
  * BULK CONTROLLER - QUẢN LÝ THAO TÁC HÀNG LOẠT (DÀNH CHO ADMIN)
  * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MASS OPERATIONS (Thao tác quy mô lớn):
- * - Dùng để Admin cập nhật hàng ngàn sản phẩm, kho hàng hoặc giá cả cùng lúc thông qua CSV/Excel.
- * - Tránh việc phải sửa từng cái một trên giao diện Web, giúp tiết kiệm thời gian.
- *
- * 2. DRY RUN (Chế độ chạy thử):
- * - Khi Import, ta có option `dryRun`. Nếu bật, hệ thống chỉ CHECK lỗi (data hợp lệ không, category có tồn tại không...) mà KHÔNG ghi vào DB.
- * - Admin nên chạy dry-run trước khi thực hiện thật để tránh hỏng dữ liệu.
- *
- * 3. EXCEL/CSV STREAMING:
- * - Khi xuất dữ liệu lớn, ta dùng streaming để gửi dữ liệu về client theo từng đoạn, tránh việc server bị treo khi xử lý quá nhiều dòng.
- * =====================================================================
  */
-@ApiTags('Bulk Operations')
+@ApiTags('Admin - Bulk Operations')
 @Controller('admin/bulk')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @ApiBearerAuth()
 export class BulkController {
-  /**
-   * =====================================================================
-   * BULK OPERATIONS CONTROLLER - Xử lý hàng loạt
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. STREAMING RESPONSE (Xuất CSV):
-   * - API `export/skus` trả về một CSV file.
-   * - `Header('Content-Type', 'text/csv')`: Bảo trình duyệt đây là file tải về.
-   * - Dữ liệu được stream trực tiếp từ DB ra response để tránh tràn RAM (Memory Leak) khi dữ liệu quá lớn.
-   *
-   * 2. BULK IMPORT:
-   * - API `import/skus` nhận vào một mảng lớn dữ liệu JSON.
-   * - Service sẽ xử lý theo lô (Batch Processing) để tối ưu hiệu năng ghi vào DB.
-   * =====================================================================
-   */
   constructor(private readonly bulkService: BulkService) {}
 
   @Get('export/skus')
-  @Permissions('sku:read')
+  @RequirePermissions('sku:read')
   @Header('Content-Type', 'text/csv')
   @Header('Content-Disposition', 'attachment; filename=skus-export.csv')
   @ApiOperation({ summary: 'Xuất danh sách SKU ra CSV' })
@@ -75,7 +44,7 @@ export class BulkController {
   }
 
   @Get('export/skus/excel')
-  @Permissions('sku:read')
+  @RequirePermissions('sku:read')
   @Header(
     'Content-Type',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -87,7 +56,7 @@ export class BulkController {
   }
 
   @Get('export/skus/json')
-  @Permissions('sku:read')
+  @RequirePermissions('sku:read')
   @ApiOperation({ summary: 'Xuất danh sách SKU ra JSON' })
   async exportSkusJson() {
     const data = await this.bulkService.exportSkus();
@@ -95,14 +64,15 @@ export class BulkController {
   }
 
   @Post('import/skus')
-  @Permissions('sku:update')
+  @RequirePermissions('sku:update')
   @ApiOperation({ summary: 'Nhập dữ liệu SKU từ JSON (có hỗ trợ dry-run)' })
   async importSkus(@Body() body: ImportSkusDto) {
-    return this.bulkService.importSkus(body.rows, body.dryRun);
+    const result = await this.bulkService.importSkus(body.rows, body.dryRun);
+    return { data: result };
   }
 
   @Post('import/skus/excel')
-  @Permissions('sku:update')
+  @RequirePermissions('sku:update')
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -126,13 +96,18 @@ export class BulkController {
   ) {
     // Parse dryRun boolean from string
     const isDryRun = dryRun === 'true';
-    return this.bulkService.importSkusFromExcel(file.buffer, isDryRun);
+    const result = await this.bulkService.importSkusFromExcel(
+      file.buffer,
+      isDryRun,
+    );
+    return { data: result };
   }
 
   @Post('update')
-  @Permissions('sku:update')
+  @RequirePermissions('sku:update')
   @ApiOperation({ summary: 'Cập nhật giá/tồn kho hàng loạt' })
   async bulkUpdate(@Body() dto: BulkUpdateDto) {
-    return this.bulkService.bulkUpdate(dto);
+    const result = await this.bulkService.bulkUpdate(dto);
+    return { data: result };
   }
 }

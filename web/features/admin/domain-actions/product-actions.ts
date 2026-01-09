@@ -54,7 +54,7 @@ export async function createProductAction(
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/products");
+    revalidatePath("/admin/products", "page");
     return res.data;
   }, "Failed to create product");
 }
@@ -68,7 +68,7 @@ export async function updateProductAction(
       method: "PATCH",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/products");
+    revalidatePath("/admin/products", "page");
     return res.data;
   }, "Failed to update product");
 }
@@ -78,7 +78,7 @@ export async function deleteProductAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/products/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/products");
+    revalidatePath("/admin/products", "page");
   }, "Failed to delete product");
 }
 
@@ -117,7 +117,7 @@ export async function updateSkuAction(
       method: "PATCH",
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
-    revalidatePath("/admin/products");
+    revalidatePath("/admin/products", "page");
     return res.data;
   }, "Failed to update SKU");
 }
@@ -148,7 +148,7 @@ export async function updateProductTranslationAction(
         body: JSON.stringify(data),
       }
     );
-    revalidatePath("/admin/products");
+    revalidatePath("/admin/products", "page");
     return res.data;
   }, "Failed to update translation");
 }

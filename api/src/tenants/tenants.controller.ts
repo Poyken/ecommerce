@@ -1,4 +1,11 @@
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import {
+  ApiCreateResponse,
+  ApiDeleteResponse,
+  ApiGetOneResponse,
+  ApiListResponse,
+  ApiUpdateResponse,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import {
@@ -43,61 +50,66 @@ export class TenantsController {
 
   @Post()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('tenant:create')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Create a new Tenant (Store)' })
-  create(@Body() createTenantDto: CreateTenantDto) {
-    return this.tenantsService.create(createTenantDto);
+  @RequirePermissions('tenant:create')
+  @ApiCreateResponse('Tenant', { summary: 'Create a new Tenant (Store)' })
+  async create(@Body() createTenantDto: CreateTenantDto) {
+    const data = await this.tenantsService.create(createTenantDto);
+    return { data };
   }
 
   @Get()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('tenant:read')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'List all Tenants' })
-  findAll() {
-    return this.tenantsService.findAll();
+  @RequirePermissions('tenant:read')
+  @ApiListResponse('Tenant', { summary: 'List all Tenants' })
+  async findAll() {
+    const data = await this.tenantsService.findAll();
+    return { data };
   }
 
   @Get('me')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('tenant:read')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Lấy thông tin store của tôi (Tenant Admin)' })
+  @RequirePermissions('tenant:read')
+  @ApiGetOneResponse('Tenant', {
+    summary: 'Lấy thông tin store của tôi (Tenant Admin)',
+  })
   async getMyTenant(@Request() req: any) {
     const tenantId = req.user.tenantId;
     if (!tenantId)
       throw new NotFoundException(
         'Your user is not associated with any tenant',
       );
-    return this.tenantsService.findOne(tenantId);
+    const data = await this.tenantsService.findOne(tenantId);
+    return { data };
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('tenant:read')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get Tenant info by ID' })
-  findOne(@Param('id') id: string) {
-    return this.tenantsService.findOne(id);
+  @RequirePermissions('tenant:read')
+  @ApiGetOneResponse('Tenant', { summary: 'Get Tenant info by ID' })
+  async findOne(@Param('id') id: string) {
+    const data = await this.tenantsService.findOne(id);
+    return { data };
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('tenant:update')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Update Tenant configuration' })
-  update(@Param('id') id: string, @Body() updateTenantDto: UpdateTenantDto) {
-    return this.tenantsService.update(id, updateTenantDto);
+  @RequirePermissions('tenant:update')
+  @ApiUpdateResponse('Tenant', { summary: 'Update Tenant configuration' })
+  async update(
+    @Param('id') id: string,
+    @Body() updateTenantDto: UpdateTenantDto,
+  ) {
+    const data = await this.tenantsService.update(id, updateTenantDto);
+    return { data };
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('tenant:delete')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Delete a Tenant' })
-  remove(@Param('id') id: string) {
-    return this.tenantsService.remove(id);
+  @RequirePermissions('tenant:delete')
+  @ApiDeleteResponse('Tenant', { summary: 'Delete a Tenant' })
+  async remove(@Param('id') id: string) {
+    const data = await this.tenantsService.remove(id);
+    return { data };
   }
 
   // PUBLIC ENDPOINT - No Guards
@@ -108,20 +120,24 @@ export class TenantsController {
 
     if (!tenant) {
       return {
-        name: 'Platform Default',
-        themeConfig: {
-          primaryColor: '#000000',
-          borderRadius: '0.5rem',
+        data: {
+          name: 'Platform Default',
+          themeConfig: {
+            primaryColor: '#000000',
+            borderRadius: '0.5rem',
+          },
         },
       };
     }
 
     return {
-      id: tenant.id,
-      name: tenant.name,
-      domain: tenant.domain,
-      themeConfig: tenant.themeConfig,
-      plan: tenant.plan,
+      data: {
+        id: tenant.id,
+        name: tenant.name,
+        domain: tenant.domain,
+        themeConfig: tenant.themeConfig,
+        plan: tenant.plan,
+      },
     };
   }
 }

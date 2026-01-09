@@ -41,7 +41,7 @@ export async function createTenantAction(
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/super-admin/tenants");
+    revalidatePath("/super-admin/tenants", "page");
     return res.data;
   }, "Failed to create tenant");
 }
@@ -55,7 +55,7 @@ export async function updateTenantAction(
       method: "PUT",
       body: JSON.stringify(data),
     });
-    revalidatePath("/super-admin/tenants");
+    revalidatePath("/super-admin/tenants", "page");
     return res.data;
   }, "Failed to update tenant");
 }
@@ -65,7 +65,7 @@ export async function deleteTenantAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/tenants/${id}`, { method: "DELETE" });
-    revalidatePath("/super-admin/tenants");
+    revalidatePath("/super-admin/tenants", "page");
   }, "Failed to delete tenant");
 }
 
@@ -83,6 +83,6 @@ export async function cancelSubscriptionAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/subscriptions/${id}/cancel`, { method: "POST" });
-    revalidatePath("/super-admin/subscriptions");
+    revalidatePath("/super-admin/subscriptions", "page");
   }, "Failed to cancel subscription");
 }

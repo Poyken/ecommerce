@@ -53,6 +53,10 @@ async function DynamicCheckout() {
     error = e instanceof Error ? e.message : "Failed to load checkout data";
   }
 
+  if (!profileRes?.data) {
+    redirect("/login?callbackUrl=/checkout");
+  }
+
   const cart = cartRes?.data || null;
   const addresses = profileRes?.data?.addresses || [];
 

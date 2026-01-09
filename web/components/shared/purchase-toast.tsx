@@ -74,7 +74,7 @@ const fakePurchases: PurchaseNotification[] = [
   },
 ];
 
-export function SocialProofToast() {
+export function PurchaseToast() {
   const [currentNotification, setCurrentNotification] =
     useState<PurchaseNotification | null>(null);
   const [isVisible, setIsVisible] = useState(false);

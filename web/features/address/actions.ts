@@ -102,8 +102,8 @@ function validateRequiredFields(data: AddressFormData): boolean {
  * Đảm bảo cache được làm mới sau khi thay đổi.
  */
 function revalidateAddressPaths() {
-  revalidatePath("/cart"); // Cart page có thể hiển thị địa chỉ giao hàng
-  revalidatePath("/profile"); // Profile page hiển thị danh sách địa chỉ
+  revalidatePath("/cart", "page"); // Cart page có thể hiển thị địa chỉ giao hàng
+  revalidatePath("/profile", "page"); // Profile page hiển thị danh sách địa chỉ
 }
 
 // =============================================================================

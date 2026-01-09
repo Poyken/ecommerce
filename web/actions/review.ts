@@ -97,7 +97,7 @@ export async function createReviewAction(data: CreateReviewData) {
       body: JSON.stringify(parsed.data),
     });
     // Revalidate trang sản phẩm để hiển thị review mới
-    revalidatePath(`/products/${data.productId}`);
+    revalidatePath(`/products/${data.productId}`, "page");
     return { success: true };
   } catch (error: unknown) {
     return {

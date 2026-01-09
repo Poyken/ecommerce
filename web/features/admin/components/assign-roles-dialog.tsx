@@ -52,10 +52,11 @@ export function AssignRolesDialog({
   useEffect(() => {
     if (open) {
       getRolesAction().then((response) => {
-        if ("data" in response && response.data) {
-          setRoles(response.data);
+        if (response.success && response.data) {
+          const rolesData = response.data;
+          setRoles(rolesData);
           // Chuyển đổi ID vai trò hiện tại thành tên
-          const currentRoleNames = response.data
+          const currentRoleNames = rolesData
             .filter((role: Role) => currentRoles.includes(role.id))
             .map((role: Role) => role.name);
           setSelectedRoleNames(currentRoleNames);

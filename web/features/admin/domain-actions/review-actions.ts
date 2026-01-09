@@ -39,7 +39,7 @@ export async function deleteReviewAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/reviews/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/reviews");
+    revalidatePath("/admin/reviews", "page");
   }, "Failed to delete review");
 }
 
@@ -52,7 +52,7 @@ export async function replyToReviewAction(
       method: "POST",
       body: JSON.stringify({ reply }),
     });
-    revalidatePath("/admin/reviews");
+    revalidatePath("/admin/reviews", "page");
     return res.data;
   }, "Failed to reply to review");
 }
@@ -66,7 +66,7 @@ export async function updateReviewStatusAction(
       method: "PATCH",
       body: JSON.stringify({ isApproved }),
     });
-    revalidatePath("/admin/reviews");
+    revalidatePath("/admin/reviews", "page");
     return res.data;
   }, "Failed to update review status");
 }
@@ -82,7 +82,7 @@ export async function analyzeReviewSentimentAction(
         body: JSON.stringify({ text }),
       }
     );
-    revalidatePath("/admin/reviews");
+    revalidatePath("/admin/reviews", "page");
     return res.data;
   }, "Failed to analyze sentiment");
 }

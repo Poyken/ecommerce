@@ -180,7 +180,7 @@ export function OrdersClient({ orders, meta }: OrdersClientProps) {
                                     await import(
                                       "@/features/orders/actions"
                                     ).then((mod) =>
-                                      mod.cancelOrderAction(order.id)
+                                      mod.cancelOrderAction({ orderId: order.id })
                                     );
                                   }}
                                   className="bg-destructive hover:bg-destructive/90 text-destructive-foreground border-none"

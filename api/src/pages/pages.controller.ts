@@ -1,4 +1,11 @@
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import {
+  RequirePermissions,
+  ApiListResponse,
+  ApiGetOneResponse,
+  ApiCreateResponse,
+  ApiUpdateResponse,
+  ApiDeleteResponse,
+} from '@/common/decorators/crud.decorators';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import {
@@ -15,8 +22,6 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PagesService } from './pages.service';
 
-@ApiTags('Pages')
-@Controller('pages')
 @ApiTags('Pages')
 @Controller('pages')
 /**
@@ -56,59 +61,65 @@ export class PagesController {
     const lookupSlug = slug === 'home' ? '/' : `/${slug}`;
     const page = await this.pagesService.findBySlug(lookupSlug);
     if (!page) throw new NotFoundException('Page not found');
-    return page;
+    return { data: page };
   }
 
   @Get('translations/:locale')
   @ApiOperation({ summary: 'Get translations for a locale' })
   async getTranslations(@Param('locale') locale: string) {
-    return this.pagesService.getTranslations(locale);
+    const result = await this.pagesService.getTranslations(locale);
+    return { data: result };
   }
 
   // --- ADMIN ---
 
   @Get('admin/list')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('page:read')
+  @RequirePermissions('page:read')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Admin: List all pages' })
+  @ApiListResponse('Page', { summary: 'Admin: List all pages' })
   async findAll() {
-    return this.pagesService.findAll();
+    const result = await this.pagesService.findAll();
+    return { data: result };
   }
 
   @Get('admin/:id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('page:read')
+  @RequirePermissions('page:read')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Admin: Get page by ID' })
+  @ApiGetOneResponse('Page', { summary: 'Admin: Get page by ID' })
   async findById(@Param('id') id: string) {
-    return this.pagesService.findById(id);
+    const result = await this.pagesService.findById(id);
+    return { data: result };
   }
 
   @Post('admin')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('page:create')
+  @RequirePermissions('page:create')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Admin: Create new page' })
+  @ApiCreateResponse('Page', { summary: 'Admin: Create new page' })
   async create(@Body() data: any) {
-    return this.pagesService.create(data);
+    const result = await this.pagesService.create(data);
+    return { data: result };
   }
 
   @Patch('admin/:id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('page:update')
+  @RequirePermissions('page:update')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Admin: Update existing page' })
+  @ApiUpdateResponse('Page', { summary: 'Admin: Update existing page' })
   async update(@Param('id') id: string, @Body() data: any) {
-    return this.pagesService.update(id, data);
+    const result = await this.pagesService.update(id, data);
+    return { data: result };
   }
 
   @Delete('admin/:id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('page:delete')
+  @RequirePermissions('page:delete')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Admin: Delete page' })
+  @ApiDeleteResponse('Page', { summary: 'Admin: Delete page' })
   async delete(@Param('id') id: string) {
-    return this.pagesService.delete(id);
+    const result = await this.pagesService.delete(id);
+    return { data: result };
   }
 }

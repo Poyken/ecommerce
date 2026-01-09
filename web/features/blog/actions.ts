@@ -56,8 +56,8 @@ export async function createBlogAction(
     });
 
     // Làm mới cache cho trang quản trị và trang blog người dùng
-    revalidatePath("/admin/blogs");
-    revalidatePath("/blog");
+    revalidatePath("/admin/blogs", "page");
+    revalidatePath("/blog", "page");
 
     return { success: true };
   } catch (error: unknown) {
@@ -96,8 +96,8 @@ export async function updateBlogAction(
       body: isFormData ? data : JSON.stringify(data),
     });
 
-    revalidatePath("/admin/blogs");
-    revalidatePath("/blog");
+    revalidatePath("/admin/blogs", "page");
+    revalidatePath("/blog", "page");
 
     return { success: true };
   } catch (error: unknown) {
@@ -115,8 +115,8 @@ export async function deleteBlogAction(id: string): Promise<ActionResult> {
   try {
     await http(`/blogs/${id}`, { method: "DELETE" });
 
-    revalidatePath("/admin/blogs");
-    revalidatePath("/blog");
+    revalidatePath("/admin/blogs", "page");
+    revalidatePath("/blog", "page");
 
     return { success: true };
   } catch (error: unknown) {
@@ -136,8 +136,8 @@ export async function toggleBlogPublishAction(
   try {
     await http(`/blogs/${id}/toggle-publish`, { method: "PATCH" });
 
-    revalidatePath("/admin/blogs");
-    revalidatePath("/blog");
+    revalidatePath("/admin/blogs", "page");
+    revalidatePath("/blog", "page");
 
     return { success: true };
   } catch (error: unknown) {

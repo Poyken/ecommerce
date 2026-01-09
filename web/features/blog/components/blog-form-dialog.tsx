@@ -113,13 +113,14 @@ export function BlogFormDialog({
 
       if (categories.length === 0) {
         const catsRes = await getCategoriesAction(1, 100);
-        if (catsRes && "data" in catsRes && catsRes.data) {
-          setCategories(catsRes.data);
+        if (catsRes.success && catsRes.data) {
+          const fetchedCats = catsRes.data;
+          setCategories(fetchedCats);
           // Set default category if creating
-          if (!blog && !formData.category && catsRes.data.length > 0) {
+          if (!blog && !formData.category && fetchedCats.length > 0) {
             setFormData((prev) => ({
               ...prev,
-              category: catsRes.data[0].name,
+              category: fetchedCats[0].name,
             }));
           }
         }

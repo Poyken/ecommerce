@@ -32,49 +32,66 @@
  * =====================================================================
  */
 
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { RequirePermissions } from '@/common/decorators/crud.decorators';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import { Body, Controller, Get, Post, UseGuards, Req } from '@nestjs/common';
 import { SecurityService } from './security.service';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Admin - Security')
 @Controller('admin/security')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
+@ApiBearerAuth()
 export class SecurityController {
   constructor(private readonly securityService: SecurityService) {}
 
   @Get('stats')
-  @Permissions('superAdmin:read')
+  @RequirePermissions('superAdmin:read')
+  @ApiOperation({ summary: 'Lấy thống kê bảo mật (Super Admin)' })
   async getStats() {
-    return this.securityService.getSecurityStats();
+    const result = await this.securityService.getSecurityStats();
+    return { data: result };
   }
 
   @Get('lockdown-status')
-  @Permissions('superAdmin:read')
+  @RequirePermissions('superAdmin:read')
+  @ApiOperation({ summary: 'Kiểm tra trạng thái khóa hệ thống' })
   async getLockdownStatus() {
-    return { isEnabled: await this.securityService.getLockdownStatus() };
+    const isLockdown = await this.securityService.getLockdownStatus();
+    return { data: { isLockdown } };
   }
 
   @Post('lockdown')
-  @Permissions('superAdmin:write')
+  @RequirePermissions('superAdmin:write')
+  @ApiOperation({ summary: 'Bật/tắt chế độ khóa hệ thống khẩn cấp' })
   async toggleLockdown(@Body() body: { isEnabled: boolean }) {
-    return this.securityService.setSystemLockdown(body.isEnabled);
+    const result = await this.securityService.setSystemLockdown(body.isEnabled);
+    return { data: result };
   }
 
   @Get('whitelist')
-  @Permissions('superAdmin:read')
+  @RequirePermissions('superAdmin:read')
+  @ApiOperation({ summary: 'Lấy danh sách IP whitelist của user' })
   async getWhitelist(@Req() req: any) {
-    return this.securityService.getWhitelistedIps(req.user.id);
+    const result = await this.securityService.getWhitelistedIps(req.user.id);
+    return { data: result };
   }
 
   @Post('whitelist')
-  @Permissions('superAdmin:write')
+  @RequirePermissions('superAdmin:write')
+  @ApiOperation({ summary: 'Cập nhật danh sách IP whitelist' })
   async updateWhitelist(@Req() req: any, @Body() body: { ips: string[] }) {
-    return this.securityService.updateWhitelistedIps(req.user.id, body.ips);
+    const result = await this.securityService.updateWhitelistedIps(
+      req.user.id,
+      body.ips,
+    );
+    return { data: result };
   }
 
   @Get('my-ip')
-  @Permissions('superAdmin:read')
+  @RequirePermissions('superAdmin:read')
+  @ApiOperation({ summary: 'Lấy IP hiện tại của user' })
   getMyIp(@Req() req: any) {
     // In a production environment with a proxy, you might need to check x-forwarded-for
     const forwarded = req.headers['x-forwarded-for'];
@@ -84,6 +101,8 @@ export class SecurityController {
         ? forwarded.split(',')[0]
         : req.ip || req.connection.remoteAddress;
 
-    return { ip: typeof ip === 'string' ? ip.trim() : String(ip || '') };
+    return {
+      data: { ip: typeof ip === 'string' ? ip.trim() : String(ip || '') },
+    };
   }
 }

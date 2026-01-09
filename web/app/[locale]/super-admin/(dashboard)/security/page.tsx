@@ -87,7 +87,7 @@ export default function SecurityHubPage() {
           setStats(statsRes.data);
         }
         if (lockdownRes.success && lockdownRes.data) {
-          setIsLockdown(lockdownRes.data.isEnabled);
+          setIsLockdown(lockdownRes.data.isLockdown);
         }
         if (whitelistRes.success && Array.isArray(whitelistRes.data)) {
           setWhitelist(whitelistRes.data);

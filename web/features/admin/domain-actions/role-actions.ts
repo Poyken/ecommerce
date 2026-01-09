@@ -22,7 +22,7 @@ export async function createPermissionAction(
       method: "POST",
       body: JSON.stringify({ name }),
     });
-    revalidatePath("/admin/permissions");
+    revalidatePath("/admin/permissions", "page");
     return res.data;
   }, "Failed to create permission");
 }
@@ -39,7 +39,7 @@ export async function updatePermissionAction(
         body: JSON.stringify({ name }),
       }
     );
-    revalidatePath("/admin/permissions");
+    revalidatePath("/admin/permissions", "page");
     return res.data;
   }, "Failed to update permission");
 }
@@ -49,7 +49,7 @@ export async function deletePermissionAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/roles/permissions/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/permissions");
+    revalidatePath("/admin/permissions", "page");
   }, "Failed to delete permission");
 }
 
@@ -108,7 +108,7 @@ export async function createRoleAction(data: {
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/roles");
+    revalidatePath("/admin/roles", "page");
     return res.data;
   }, "Failed to create role");
 }
@@ -122,7 +122,7 @@ export async function updateRoleAction(
       method: "PATCH",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/roles");
+    revalidatePath("/admin/roles", "page");
     return res.data;
   }, "Failed to update role");
 }
@@ -132,6 +132,6 @@ export async function deleteRoleAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/roles/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/roles");
+    revalidatePath("/admin/roles", "page");
   }, "Failed to delete role");
 }

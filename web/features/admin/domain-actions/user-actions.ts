@@ -47,7 +47,7 @@ export async function createUserAction(
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/users");
+    revalidatePath("/admin/users", "page");
     return res.data;
   }, "Failed to create user");
 }
@@ -61,7 +61,7 @@ export async function updateUserAction(
       method: "PATCH",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/users");
+    revalidatePath("/admin/users", "page");
     return res.data;
   }, "Failed to update user");
 }
@@ -71,7 +71,7 @@ export async function deleteUserAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/users/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/users");
+    revalidatePath("/admin/users", "page");
   }, "Failed to delete user");
 }
 
@@ -84,6 +84,6 @@ export async function assignRolesAction(
       method: "POST",
       body: JSON.stringify({ roleIds }),
     });
-    revalidatePath("/admin/users");
+    revalidatePath("/admin/users", "page");
   }, "Failed to assign roles");
 }

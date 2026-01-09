@@ -44,7 +44,7 @@ export function BuyAgainButton({ skuId }: BuyAgainButtonProps) {
 
     startTransition(async () => {
       try {
-        const res = await addToCartAction(skuId, 1);
+        const res = await addToCartAction({ skuId, quantity: 1 });
         if (res.success) {
           window.dispatchEvent(new Event("cart_updated"));
           toast({

@@ -1,4 +1,8 @@
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import {
+  ApiGetOneResponse,
+  ApiListResponse,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
@@ -6,48 +10,18 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AnalyticsService } from './analytics.service';
 import { CreateVitalDto } from './dto/create-vital.dto';
 
-/**
- * =====================================================================
- * ANALYTICS CONTROLLER - TRUNG TÂM PHÂN TÍCH DỮ LIỆU
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. STORE STATISTICS:
- * - Cung cấp dữ liệu tổng quan cho Dashboard của Admin: Doanh thu, số đơn hàng, top sản phẩm bán chạy.
- * - Dữ liệu này thường rất nặng nên cần được tối ưu bằng Aggregate hoặc Materialized Views (Trong tương lai).
- *
- * 2. WEB VITALS (Đo lường hiệu năng):
- * - API `/vitals` nhận dữ liệu từ Frontend về tốc độ Load trang của người dùng thực tế.
- * - Giúp team kỹ thuật biết được web có đang bị chậm ở đâu không để kịp thời tối ưu.
- * =====================================================================
- */
 @ApiTags('Analytics')
 @ApiBearerAuth()
 @Controller('analytics')
 export class AnalyticsController {
-  /**
-   * =====================================================================
-   * ANALYTICS CONTROLLER - Điều khiển Báo cáo thống kê
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. AGGREGATION API:
-   * - Controller này không trực tiếp xử lý data mà gọi Service để thực hiện các phép tính "nặng" (Aggregation) trên Database.
-   * - Các API ở đây thường mất nhiều thời gian hơn CRUD bình thường.
-   *
-   * 2. DATE RANGES (Dải ngày):
-   * - Client có thể gửi `startDate`, `endDate` hoặc `days` (ví dụ: 7 ngày qua).
-   * - Logic `getSalesData` tự động tính toán thời gian bắt đầu nếu chỉ nhận được tham số `days`.
-   * =====================================================================
-   */
   constructor(private readonly analyticsService: AnalyticsService) {}
 
   @Get('stats')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('analytics:read')
-  @ApiOperation({ summary: 'Get overall store statistics' })
+  @RequirePermissions('analytics:read')
+  @ApiGetOneResponse('Analytics Stats', {
+    summary: 'Get overall store statistics',
+  })
   async getStats(
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
@@ -58,8 +32,8 @@ export class AnalyticsController {
 
   @Get('sales')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('analytics:read')
-  @ApiOperation({ summary: 'Get sales data over time' })
+  @RequirePermissions('analytics:read')
+  @ApiListResponse('Sales Data', { summary: 'Get sales data over time' })
   async getSalesData(
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
@@ -76,8 +50,8 @@ export class AnalyticsController {
 
   @Get('top-products')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('analytics:read')
-  @ApiOperation({ summary: 'Get top selling products' })
+  @RequirePermissions('analytics:read')
+  @ApiListResponse('Top Products', { summary: 'Get top selling products' })
   async getTopProducts(
     @Query('limit') limit?: string,
     @Query('startDate') startDate?: string,
@@ -93,8 +67,10 @@ export class AnalyticsController {
 
   @Get('inventory')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('analytics:read')
-  @ApiOperation({ summary: 'Analyze inventory health' })
+  @RequirePermissions('analytics:read')
+  @ApiGetOneResponse('Inventory Analysis', {
+    summary: 'Analyze inventory health',
+  })
   async getInventoryAnalysis() {
     const data = await this.analyticsService.getInventoryAnalysis();
     return { data };
@@ -102,8 +78,10 @@ export class AnalyticsController {
 
   @Get('categories')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('analytics:read')
-  @ApiOperation({ summary: 'Get revenue by category' })
+  @RequirePermissions('analytics:read')
+  @ApiListResponse('Revenue by Category', {
+    summary: 'Get revenue by category',
+  })
   async getRevenueByCategory(
     @Query('startDate') startDate?: string,
     @Query('endDate') endDate?: string,
@@ -118,14 +96,14 @@ export class AnalyticsController {
   @Post('vitals')
   @ApiOperation({ summary: 'Receive Web Vitals telemetry' })
   async postVitals(@Body() data: CreateVitalDto) {
-    // Map DTO to Service interface explicitly to avoid any type mismatch issues
-    return this.analyticsService.savePerformanceMetric({
+    const result = await this.analyticsService.savePerformanceMetric({
       name: data.name,
       value: data.value,
       rating: data.rating,
-      url: data.url || '', // Default usually provided but safe fallback
+      url: data.url || '',
       userAgent: data.userAgent,
       navigationType: data.navigationType,
     });
+    return { data: result };
   }
 }

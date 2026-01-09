@@ -58,7 +58,7 @@ export async function updateOrderStatusAction(
         cancellationReason: reason,
       }),
     });
-    revalidatePath("/admin/orders");
+    revalidatePath("/admin/orders", "page");
     return res.data;
   }, "Failed to update order status");
 }

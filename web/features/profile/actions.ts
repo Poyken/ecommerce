@@ -218,7 +218,7 @@ export async function updateProfileAction(formData: FormData) {
     }
 
     // Revalidate profile page để hiển thị dữ liệu mới
-    revalidatePath("/profile");
+    revalidatePath("/profile", "page");
     return { success: true };
   } catch (error: unknown) {
     const message =
@@ -255,7 +255,7 @@ export async function enableTwoFactorAction(token: string, secret: string) {
       method: "POST",
       body: JSON.stringify({ token, secret }),
     });
-    revalidatePath("/profile");
+    revalidatePath("/profile", "page");
     return { success: true };
   } catch (error: unknown) {
     return { success: false, error: (error as Error).message };
@@ -272,7 +272,7 @@ export async function disableTwoFactorAction(token: string) {
       method: "POST",
       body: JSON.stringify({ token }),
     });
-    revalidatePath("/profile");
+    revalidatePath("/profile", "page");
     return { success: true };
   } catch (error: unknown) {
     return { success: false, error: (error as Error).message };

@@ -1,11 +1,11 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { http } from "@/lib/http";
 import { protectedActionClient } from "@/lib/safe-action";
 import {
   createActionWrapper,
   createVoidActionWrapper,
-  revalidatePaths,
 } from "@/lib/safe-action-utils";
 import { ApiResponse } from "@/types/dtos";
 import { Notification } from "@/types/models";
@@ -58,14 +58,14 @@ const safeMarkAsRead = protectedActionClient
   .schema(MarkReadSchema)
   .action(async ({ parsedInput }) => {
     await http(`/notifications/${parsedInput.id}/read`, { method: "PATCH" });
-    revalidatePaths("/notifications");
+    revalidatePath("/notifications", "page");
     return { success: true };
   });
 
 // Đánh dấu đọc hết
 const safeMarkAllAsRead = protectedActionClient.action(async () => {
   await http("/notifications/read-all", { method: "PATCH" });
-  revalidatePaths("/notifications");
+  revalidatePath("/notifications", "page");
   return { success: true };
 });
 
@@ -121,16 +121,16 @@ export const sendNotificationToUserAction = createActionWrapper(
 export async function getNotificationsAction(limit = 10) {
   await cookies();
   try {
-    const res = await http<ApiResponse<{ items: Notification[] }>>(
+    const res = await http<ApiResponse<Notification[]>>(
       `/notifications?limit=${limit}`,
       {
         skipRedirectOn401: true,
       }
     );
-    // Support both formats if backend varies
-    const items =
-      (res.data as unknown as Notification[]) || res.data?.items || [];
-    return { data: items };
+    return {
+      data: res.data || [],
+      meta: res.meta,
+    };
   } catch (error) {
     return { data: [] };
   }
@@ -142,13 +142,11 @@ export async function getNotificationsAction(limit = 10) {
 export async function getUnreadCountAction() {
   await cookies();
   try {
-    const res = await http<ApiResponse<{ count: number }>>(
-      "/notifications/unread-count",
-      {
-        skipRedirectOn401: true,
-      }
-    );
-    return { count: res.data?.count || 0 };
+    const res = await http<ApiResponse<number>>("/notifications/unread-count", {
+      skipRedirectOn401: true,
+    });
+    // Backend returns { data: number }
+    return { count: typeof res.data === "number" ? res.data : 0 };
   } catch (error) {
     return { count: 0 };
   }

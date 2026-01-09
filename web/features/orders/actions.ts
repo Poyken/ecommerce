@@ -1,12 +1,9 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { http } from "@/lib/http";
 import { protectedActionClient } from "@/lib/safe-action";
-import {
-  createActionWrapper,
-  REVALIDATE,
-  revalidatePaths,
-} from "@/lib/safe-action-utils";
+import { createActionWrapper, REVALIDATE } from "@/lib/safe-action-utils";
 import { CheckoutSchema } from "@/lib/schemas";
 import { ApiResponse } from "@/types/dtos";
 import { Order } from "@/types/models";
@@ -114,7 +111,8 @@ const safeSimulatePaymentSuccess = protectedActionClient
         notify: true,
       }),
     });
-    revalidatePaths(`/orders/${parsedInput.orderId}`, "/orders");
+    revalidatePath(`/orders/${parsedInput.orderId}`, "page");
+    revalidatePath("/orders", "page");
     return { success: true };
   });
 

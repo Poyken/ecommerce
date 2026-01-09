@@ -17,10 +17,10 @@ const AiChatWidget = dynamic(
   { ssr: false }
 );
 
-const SocialProofToast = dynamic(
+const PurchaseToast = dynamic(
   () =>
     import("@/components/shared/purchase-toast").then(
-      (m) => m.SocialProofToast
+      (m) => m.PurchaseToast
     ),
   { ssr: false }
 );
@@ -57,7 +57,7 @@ export function ClientOnlyWidgets({
  */
   return (
     <>
-      <SocialProofToast />
+      <PurchaseToast />
       {/* 
         LOGGED IN: Use Unified Widget (AI + Support Tabs)
         GUEST: Use AI Widget Only (Previous behavior)

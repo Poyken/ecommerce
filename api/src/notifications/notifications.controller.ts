@@ -1,4 +1,11 @@
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import {
+  ApiDeleteResponse,
+  ApiGetOneResponse,
+  ApiListResponse,
+  ApiUpdateResponse,
+  ApiCreateResponse,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import { EmailService } from '@integrations/email/email.service';
@@ -44,7 +51,7 @@ import { NotificationsService } from './notifications.service';
  * =====================================================================
  */
 
-@ApiTags('Notifications')
+@ApiTags('Admin - Notifications')
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -57,99 +64,102 @@ export class NotificationsController {
   ) {}
 
   // ========== USER ENDPOINTS ==========
-
   /**
    * Lấy danh sách thông báo của user hiện tại
    */
   @Get()
+  @ApiListResponse('Notification')
   @ApiOperation({ summary: 'Lấy danh sách thông báo của user hiện tại' })
   async findAll(
     @Request() req,
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ) {
-    try {
-      const userId = req.user.userId || req.user.id;
-      if (!userId) {
-        this.logger.warn(
-          '[NotificationsController] No userId found in request',
-          {
-            user: req.user,
-          },
-        );
-      }
-      const data = await this.notificationsService.findAll(
+    const userId = req.user.userId || req.user.id;
+    const { items, total, unreadCount, hasMore } =
+      await this.notificationsService.findAll(
         userId,
         limit ? parseInt(limit) : 20,
         offset ? parseInt(offset) : 0,
       );
-      return { data };
-    } catch (err) {
-      this.logger.error('[NotificationsController] findAll error:', err);
-      throw err;
-    }
+
+    return {
+      data: items,
+      meta: {
+        total,
+        unreadCount,
+        hasMore,
+        limit: limit ? parseInt(limit) : 20,
+        offset: offset ? parseInt(offset) : 0,
+      },
+    };
   }
 
   /**
    * Đếm số thông báo chưa đọc
    */
   @Get('unread-count')
+  @ApiGetOneResponse('Notification Count')
   @ApiOperation({ summary: 'Đếm số thông báo chưa đọc' })
   async getUnreadCount(@Request() req) {
-    const data = await this.notificationsService.getUnreadCount(
+    const count = await this.notificationsService.getUnreadCount(
       req.user.userId || req.user.id,
     );
-    return { data };
+    return { data: count };
   }
 
   /**
    * Đánh dấu tất cả thông báo đã đọc
    */
   @Patch('read-all')
+  @ApiUpdateResponse('Notification')
   @ApiOperation({ summary: 'Đánh dấu tất cả thông báo đã đọc' })
   async markAllAsRead(@Request() req) {
-    const data = await this.notificationsService.markAllAsRead(
+    const result = await this.notificationsService.markAllAsRead(
       req.user.userId || req.user.id,
     );
-    return { data };
+    return { data: result };
   }
 
   /**
    * Đánh dấu một thông báo đã đọc
    */
   @Patch(':id/read')
+  @ApiUpdateResponse('Notification')
   @ApiOperation({ summary: 'Đánh dấu một thông báo đã đọc' })
   async markAsRead(@Request() req, @Param('id') id: string) {
-    const data = await this.notificationsService.markAsRead(
+    const result = await this.notificationsService.markAsRead(
       id,
       req.user.userId || req.user.id,
     );
-    return { data };
+    return { data: result };
   }
 
   /**
    * Xóa một thông báo
    */
   @Delete(':id')
+  @ApiDeleteResponse('Notification')
   @ApiOperation({ summary: 'Xóa một thông báo' })
   async delete(@Request() req, @Param('id') id: string) {
-    const data = await this.notificationsService.delete(
+    const result = await this.notificationsService.delete(
       id,
       req.user.userId || req.user.id,
     );
-    return { data };
+    return { data: result };
   }
 
   /**
    * Xóa tất cả thông báo đã đọc
    */
   @Delete('read-all')
+  @ApiDeleteResponse('Notification')
   @ApiOperation({ summary: 'Xóa tất cả thông báo đã đọc' })
   async deleteAllRead(@Request() req) {
-    const data = await this.notificationsService.deleteAllRead(
+    const result = await this.notificationsService.deleteAllRead(
       req.user.userId || req.user.id,
     );
-    return { data };
+    return { data: result };
   }
 
   // ========== ADMIN ENDPOINTS ==========
@@ -159,7 +169,8 @@ export class NotificationsController {
    */
   @Post('admin/broadcast')
   @UseGuards(PermissionsGuard)
-  @Permissions('notification:create')
+  @RequirePermissions('notification:create')
+  @ApiCreateResponse('Notification')
   @ApiOperation({ summary: 'Gửi thông báo cho TẤT CẢ users (Broadcast)' })
   async broadcast(@Body(ValidationPipe) data: BroadcastNotificationDto) {
     const result = await this.notificationsService.broadcast({
@@ -182,7 +193,8 @@ export class NotificationsController {
    */
   @Post('admin/send')
   @UseGuards(PermissionsGuard)
-  @Permissions('notification:create')
+  @RequirePermissions('notification:create')
+  @ApiCreateResponse('Notification')
   @ApiOperation({ summary: 'Gửi thông báo cho user cụ thể' })
   async sendToUser(@Body(ValidationPipe) data: SendToUserDto) {
     try {
@@ -214,7 +226,8 @@ export class NotificationsController {
    */
   @Get('admin/all')
   @UseGuards(PermissionsGuard)
-  @Permissions('notification:read')
+  @RequirePermissions('notification:read')
+  @ApiListResponse('Notification')
   @ApiOperation({ summary: 'Lấy tất cả thông báo (Admin view với filters)' })
   async findAllAdmin(
     @Query('page') page?: string,
@@ -241,7 +254,8 @@ export class NotificationsController {
    */
   @Get('admin/:id')
   @UseGuards(PermissionsGuard)
-  @Permissions('notification:read')
+  @RequirePermissions('notification:read')
+  @ApiGetOneResponse('Notification')
   @ApiOperation({ summary: 'Lấy chi tiết một thông báo (Admin)' })
   async findOne(@Param('id') id: string) {
     const data = await this.notificationsService.findOne(id);
@@ -253,7 +267,8 @@ export class NotificationsController {
    */
   @Delete('admin/cleanup')
   @UseGuards(PermissionsGuard)
-  @Permissions('notification:delete')
+  @RequirePermissions('notification:delete')
+  @ApiDeleteResponse('Notification')
   @ApiOperation({ summary: 'Cleanup: Xóa thông báo đã đọc cũ (Admin)' })
   async cleanupOldNotifications(@Query('daysOld') daysOld?: string) {
     const data = await this.notificationsService.deleteOldReadNotifications(

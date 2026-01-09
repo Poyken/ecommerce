@@ -55,7 +55,7 @@ export function RetryOrderButton({ order }: RetryButtonProps) {
     try {
       // Add all items from the failed order back to cart
       for (const item of order.items) {
-        await addToCartAction(item.skuId, item.quantity);
+        await addToCartAction({ skuId: item.skuId, quantity: item.quantity });
       }
 
       toast({

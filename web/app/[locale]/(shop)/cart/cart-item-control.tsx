@@ -72,7 +72,7 @@ export function CartItemControl({
     } else {
       // Logic cho User đã đăng nhập: Gọi API
       startTransition(async () => {
-        await updateCartItemAction(item.id, newQuantity);
+        await updateCartItemAction({ itemId: item.id, quantity: newQuantity });
         window.dispatchEvent(new Event("cart_updated"));
       });
     }

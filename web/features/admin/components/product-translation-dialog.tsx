@@ -147,7 +147,7 @@ function ProductTranslationForm({ product }: { product: Product }) {
     setIsLoading(true);
     try {
       const response = await getProductTranslationsAction(product.id);
-      if ("data" in response && response.data) {
+      if (response.success && response.data) {
         setTranslations(response.data as ProductTranslation[]);
       }
     } finally {

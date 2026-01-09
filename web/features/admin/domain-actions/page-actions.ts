@@ -35,7 +35,7 @@ export async function createPageAction(data: any): Promise<ActionResult<any>> {
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/pages");
+    revalidatePath("/admin/pages", "page");
     return res.data;
   }, "Failed to create page");
 }
@@ -49,7 +49,7 @@ export async function updatePageAction(
       method: "PUT",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/pages");
+    revalidatePath("/admin/pages", "page");
     return res.data;
   }, "Failed to update page");
 }
@@ -59,6 +59,6 @@ export async function deletePageAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/pages/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/pages");
+    revalidatePath("/admin/pages", "page");
   }, "Failed to delete page");
 }
