@@ -47,6 +47,7 @@ export class CsrfGuard implements CanActivate {
     '/api/v1/health',
     '/api/v1/notifications',
     '/api/v1/ai-chat', // AI Chat (guest + logged-in)
+    '/api/v1/analytics/vitals', // Vercel Analytics
   ];
 
   canActivate(context: ExecutionContext): boolean {
