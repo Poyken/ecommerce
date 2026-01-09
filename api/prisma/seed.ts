@@ -659,7 +659,7 @@ async function main() {
         fontFamily: 'Inter',
         borderRadius: '8px',
       },
-      id: 'default-tenant-id', // Optional: fix ID for predictability
+      id: 'default-tenant-id', // Optional: fix ID for predictability (for testing)
     },
   });
   console.log('✅ Default Tenant (localhost) ensured.');
