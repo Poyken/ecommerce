@@ -136,6 +136,7 @@ async function bootstrap() {
         'http://localhost:3000',
         'http://localhost:8080',
         'https://web-okfy.onrender.com',
+        'https://web-faxqzimea-poykens-projects.vercel.app',
       ].filter(Boolean); // Lọc bỏ giá trị undefined/null
 
       // 1. Cho phép request không có origin (Server-to-Server, Tools like Postman)

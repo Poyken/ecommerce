@@ -30,12 +30,12 @@ export async function generateStaticParams() {
   try {
     const ids = await blogService.getBlogIds();
     if (ids.length === 0) {
-      return [{ id: "fallback" }];
+      return [];
     }
     return ids.map((id) => ({ id }));
   } catch (error) {
     console.warn("Failed to generate blog static params:", error);
-    return [{ id: "fallback" }];
+    return [];
   }
 }
 

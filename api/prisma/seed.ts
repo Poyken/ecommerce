@@ -637,7 +637,7 @@ async function main() {
       password: hashPassword,
       firstName: 'The',
       lastName: 'Architect',
-      tenantId: null, // Global User
+      tenantId: undefined, // Global User
     },
   });
   await prisma.userRole.create({
