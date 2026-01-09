@@ -32,7 +32,12 @@ export default async function AuditLogsPage({
   const search = (params?.search as string) || "";
   const filter = (params?.filter as string) || "all";
 
-  const response = await getAuditLogsAction(page, 20, search, filter);
+  const response = await getAuditLogsAction({
+    page,
+    limit: 20,
+    search,
+    filter,
+  });
 
   if ("error" in response) {
     return (
