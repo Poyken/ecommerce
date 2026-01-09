@@ -148,36 +148,42 @@ export function ShopContent({
     [searchParams]
   );
 
-  const handleFilter = (
-    type: "categoryId" | "brandId",
-    value: string | null
-  ) => {
-    // Avoid redundant navigation if value hasn't changed
-    if (searchParams.get(type) === value) return;
+  const handleFilter = useCallback(
+    (type: "categoryId" | "brandId", value: string | null) => {
+      // Avoid redundant navigation if value hasn't changed
+      if (searchParams.get(type) === value) return;
 
-    startTransition(() => {
-      const queryString = createQueryString(type, value);
-      router.replace(`${pathname}?${queryString}`, { scroll: false });
-    });
-  };
-
-  const handleSortChange = (value: string) => {
-    startTransition(() => {
-      router.replace(`${pathname}?${createQueryString("sort", value)}`, {
-        scroll: false,
+      startTransition(() => {
+        const queryString = createQueryString(type, value);
+        router.replace(`${pathname}?${queryString}`, { scroll: false });
       });
-    });
-  };
+    },
+    [searchParams, createQueryString, router, pathname]
+  );
 
-  const handleRemoveFilter = (key: string) => {
-    startTransition(() => {
-      router.replace(`${pathname}?${createQueryString(key, null)}`, {
-        scroll: false,
+  const handleSortChange = useCallback(
+    (value: string) => {
+      startTransition(() => {
+        router.replace(`${pathname}?${createQueryString("sort", value)}`, {
+          scroll: false,
+        });
       });
-    });
-  };
+    },
+    [createQueryString, router, pathname]
+  );
 
-  const handleClearAllFilters = () => {
+  const handleRemoveFilter = useCallback(
+    (key: string) => {
+      startTransition(() => {
+        router.replace(`${pathname}?${createQueryString(key, null)}`, {
+          scroll: false,
+        });
+      });
+    },
+    [createQueryString, router, pathname]
+  );
+
+  const handleClearAllFilters = useCallback(() => {
     startTransition(() => {
       const params = new URLSearchParams(searchParams.toString());
       params.delete("categoryId");
@@ -193,7 +199,7 @@ export function ShopContent({
         scroll: false,
       });
     });
-  };
+  }, [searchParams, router, pathname]);
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-accent/30">

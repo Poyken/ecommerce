@@ -54,7 +54,7 @@ export function RecentlyViewedSection({
   const [mounted, setMounted] = useState(false);
   const products = useRecentlyViewedStore((state) => state.products);
   const clearAll = useRecentlyViewedStore((state) => state.clearAll);
-  const openQuickView = useQuickViewStore((state) => state.openQuickView);
+  const open = useQuickViewStore((state) => state.open);
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
@@ -107,11 +107,14 @@ export function RecentlyViewedSection({
             key={product.id}
             product={product}
             onQuickView={() =>
-              openQuickView(product.id, undefined, {
-                name: product.name,
-                price: product.salePrice || product.price,
-                imageUrl: product.imageUrl,
-                category: product.categoryName,
+              open({
+                productId: product.id,
+                initialData: {
+                  name: product.name,
+                  price: product.salePrice || product.price,
+                  imageUrl: product.imageUrl,
+                  category: product.categoryName,
+                },
               })
             }
           />

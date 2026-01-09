@@ -2,10 +2,14 @@
 
 import { http } from "@/lib/http";
 import { protectedActionClient } from "@/lib/safe-action";
+import {
+  createActionWrapper,
+  REVALIDATE,
+  revalidatePaths,
+} from "@/lib/safe-action-utils";
 import { CheckoutSchema } from "@/lib/schemas";
 import { ApiResponse } from "@/types/dtos";
 import { Order } from "@/types/models";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 /**
@@ -32,72 +36,114 @@ import { z } from "zod";
  * =====================================================================
  */
 
+// --- VALIDATION SCHEMAS ---
+
 const CancelOrderSchema = z.object({
   orderId: z.string(),
 });
 
-/**
- * Dữ liệu cần thiết để đặt hàng.
- */
-interface PlaceOrderData {
-  recipientName: string;
-  phoneNumber: string;
-  shippingAddress: string;
-  addressId?: string;
-  paymentMethod: "COD" | "CARD" | "BANKING" | "VNPAY" | "MOMO" | "VIETQR";
-  itemIds?: string[];
-  couponCode?: string;
-  returnUrl?: string;
-}
+const CancelOrderWithReasonSchema = z.object({
+  orderId: z.string(),
+  cancellationReason: z.string().min(1, "Reason is required"),
+});
 
-// --- SAFE ACTIONS ---
+const SimulationSchema = z.object({
+  orderId: z.string(),
+});
 
-// Action đặt hàng - Được bảo vệ bằng Authentication và Zod Validation
+// --- SAFE ACTIONS (Internal) ---
+
+// Action đặt hàng
 const safePlaceOrder = protectedActionClient
   .schema(CheckoutSchema)
   .action(async ({ parsedInput }) => {
-    try {
-      const res = await http<
-        ApiResponse<{
-          id: string;
-          paymentUrl?: string;
-        }>
-      >("/orders", {
-        method: "POST",
-        body: JSON.stringify(parsedInput),
-      });
+    const res = await http<
+      ApiResponse<{
+        id: string;
+        paymentUrl?: string;
+      }>
+    >("/orders", {
+      method: "POST",
+      body: JSON.stringify(parsedInput),
+    });
 
-      const paymentUrl = res.data?.paymentUrl;
-      const orderId = res.data?.id;
+    const paymentUrl = res.data?.paymentUrl;
+    const orderId = res.data?.id;
 
-      // Xóa cache các trang liên quan để hiển thị dữ liệu mới nhất
-      revalidatePath("/cart");
-      revalidatePath("/orders");
+    REVALIDATE.cart();
+    REVALIDATE.orders();
 
-      return { success: true, paymentUrl, orderId };
-    } catch (error: unknown) {
-      throw error;
-    }
+    return { success: true, paymentUrl, orderId };
   });
 
-// Action hủy đơn hàng
+// Action hủy đơn hàng (Admin/System style)
 const safeCancelOrder = protectedActionClient
   .schema(CancelOrderSchema)
   .action(async ({ parsedInput }) => {
-    try {
-      await http(`/orders/${parsedInput.orderId}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status: "CANCELLED" }),
-      });
-      revalidatePath("/orders");
-      revalidatePath(`/orders/${parsedInput.orderId}`);
-      return { success: true };
-    } catch (error) {
-      throw error;
-    }
+    await http(`/orders/${parsedInput.orderId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: "CANCELLED" }),
+    });
+    REVALIDATE.orders();
+    return { success: true };
+  });
+
+// Action hủy đơn hàng với lý do (User action)
+const safeCancelOrderWithReason = protectedActionClient
+  .schema(CancelOrderWithReasonSchema)
+  .action(async ({ parsedInput }) => {
+    await http(`/orders/my-orders/${parsedInput.orderId}/cancel`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        cancellationReason: parsedInput.cancellationReason,
+      }),
+    });
+    REVALIDATE.orders();
+    return { success: true };
+  });
+
+// Action giả lập thanh toán thành công
+const safeSimulatePaymentSuccess = protectedActionClient
+  .schema(SimulationSchema)
+  .action(async ({ parsedInput }) => {
+    await http<ApiResponse<void>>(`/orders/${parsedInput.orderId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({
+        status: "PROCESSING",
+        paymentStatus: "PAID",
+        notify: true,
+      }),
+    });
+    revalidatePaths(`/orders/${parsedInput.orderId}`, "/orders");
+    return { success: true };
   });
 
 // --- EXPORTS (Wrapper Functions) ---
+
+export const placeOrderAction = createActionWrapper(
+  safePlaceOrder,
+  "Invalid order data"
+);
+
+export const cancelOrderAction = createActionWrapper(
+  safeCancelOrder,
+  "Failed to cancel order"
+);
+
+export const cancelOrderWithReasonAction = async (
+  orderId: string,
+  cancellationReason: string
+) => {
+  const wrapper = createActionWrapper(safeCancelOrderWithReason);
+  return wrapper({ orderId, cancellationReason });
+};
+
+export const simulatePaymentSuccessAction = async (orderId: string) => {
+  const wrapper = createActionWrapper(safeSimulatePaymentSuccess);
+  return wrapper({ orderId });
+};
+
+// --- QUERY ACTIONS ---
 
 export async function getMyOrdersAction(page = 1, limit = 10) {
   try {
@@ -110,55 +156,6 @@ export async function getMyOrdersAction(page = 1, limit = 10) {
   }
 }
 
-export async function placeOrderAction(data: PlaceOrderData) {
-  const result = await safePlaceOrder(data);
-
-  if (result?.serverError || result?.validationErrors) {
-    if (result.validationErrors) {
-      console.error(
-        "Validation Errors:",
-        JSON.stringify(result.validationErrors, null, 2)
-      );
-    }
-    return { error: result.serverError || "Invalid order data" };
-  }
-
-  // result.data contains { success, paymentUrl, orderId }
-  return result.data;
-}
-
-export async function cancelOrderAction(orderId: string) {
-  const result = await safeCancelOrder({ orderId });
-
-  if (result?.serverError) {
-    return { error: result.serverError };
-  }
-
-  return { success: true };
-}
-
-/**
- * Hủy đơn hàng với lý do - User cancel flow
- */
-export async function cancelOrderWithReasonAction(
-  orderId: string,
-  cancellationReason: string
-) {
-  try {
-    await http(`/orders/my-orders/${orderId}/cancel`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        cancellationReason,
-      }),
-    });
-    revalidatePath("/orders");
-    revalidatePath(`/orders/${orderId}`);
-    return { success: true };
-  } catch (error: unknown) {
-    return { error: (error as Error).message };
-  }
-}
-
 /**
  * Lấy chi tiết một đơn hàng của người dùng hiện tại.
  */
@@ -166,26 +163,6 @@ export async function getOrderDetailsAction(orderId: string) {
   try {
     const res = await http<ApiResponse<Order>>(`/orders/${orderId}`);
     return { data: res.data };
-  } catch (error: unknown) {
-    return { error: (error as Error).message };
-  }
-}
-
-/**
- * SIMULATION ONLY: Mark order as Paid (Processing) to simulate webhook.
- */
-export async function simulatePaymentSuccessAction(orderId: string) {
-  try {
-    await http<ApiResponse<void>>(`/orders/${orderId}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        status: "PROCESSING",
-        paymentStatus: "PAID",
-        notify: true,
-      }),
-    });
-    revalidatePath(`/orders/${orderId}`);
-    return { success: true };
   } catch (error: unknown) {
     return { error: (error as Error).message };
   }

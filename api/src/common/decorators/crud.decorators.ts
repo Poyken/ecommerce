@@ -14,7 +14,16 @@
  * =====================================================================
  */
 
-import { applyDecorators, SetMetadata, Type } from '@nestjs/common';
+import {
+  CacheInterceptor,
+  CacheTTL as NestCacheTTL,
+} from '@nestjs/cache-manager';
+import {
+  applyDecorators,
+  SetMetadata,
+  Type,
+  UseInterceptors,
+} from '@nestjs/common';
 import {
   ApiOperation,
   ApiResponse,
@@ -31,10 +40,12 @@ import {
  */
 export function ApiListResponse(
   entityName: string,
-  entityType?: Type<unknown>,
+  options?: { summary?: string; type?: Type<unknown> },
 ) {
   return applyDecorators(
-    ApiOperation({ summary: `Lấy danh sách ${entityName}` }),
+    ApiOperation({
+      summary: options?.summary || `Lấy danh sách ${entityName}`,
+    }),
     ApiResponse({
       status: 200,
       description: `Danh sách ${entityName} với phân trang`,
@@ -48,9 +59,12 @@ export function ApiListResponse(
 /**
  * Decorator cho Get One endpoint.
  */
-export function ApiGetOneResponse(entityName: string) {
+export function ApiGetOneResponse(
+  entityName: string,
+  options?: { summary?: string },
+) {
   return applyDecorators(
-    ApiOperation({ summary: `Lấy chi tiết ${entityName}` }),
+    ApiOperation({ summary: options?.summary || `Lấy chi tiết ${entityName}` }),
     ApiResponse({
       status: 200,
       description: `Chi tiết ${entityName}`,
@@ -65,9 +79,12 @@ export function ApiGetOneResponse(entityName: string) {
 /**
  * Decorator cho Create endpoint.
  */
-export function ApiCreateResponse(entityName: string) {
+export function ApiCreateResponse(
+  entityName: string,
+  options?: { summary?: string },
+) {
   return applyDecorators(
-    ApiOperation({ summary: `Tạo ${entityName} mới` }),
+    ApiOperation({ summary: options?.summary || `Tạo ${entityName} mới` }),
     ApiBearerAuth(),
     ApiResponse({
       status: 201,
@@ -83,9 +100,12 @@ export function ApiCreateResponse(entityName: string) {
 /**
  * Decorator cho Update endpoint.
  */
-export function ApiUpdateResponse(entityName: string) {
+export function ApiUpdateResponse(
+  entityName: string,
+  options?: { summary?: string },
+) {
   return applyDecorators(
-    ApiOperation({ summary: `Cập nhật ${entityName}` }),
+    ApiOperation({ summary: options?.summary || `Cập nhật ${entityName}` }),
     ApiBearerAuth(),
     ApiResponse({
       status: 200,
@@ -101,9 +121,12 @@ export function ApiUpdateResponse(entityName: string) {
 /**
  * Decorator cho Delete endpoint.
  */
-export function ApiDeleteResponse(entityName: string) {
+export function ApiDeleteResponse(
+  entityName: string,
+  options?: { summary?: string },
+) {
   return applyDecorators(
-    ApiOperation({ summary: `Xóa ${entityName}` }),
+    ApiOperation({ summary: options?.summary || `Xóa ${entityName}` }),
     ApiBearerAuth(),
     ApiResponse({
       status: 200,
@@ -113,6 +136,21 @@ export function ApiDeleteResponse(entityName: string) {
       status: 404,
       description: `${entityName} không tồn tại`,
     }),
+  );
+}
+
+// =============================================================================
+// CACHE DECORATORS
+// =============================================================================
+
+/**
+ * Composite decorator cho Caching.
+ * Bao gồm: @UseInterceptors(CacheInterceptor) và @CacheTTL(ms).
+ */
+export function Cached(ttlMs: number) {
+  return applyDecorators(
+    UseInterceptors(CacheInterceptor),
+    NestCacheTTL(ttlMs),
   );
 }
 

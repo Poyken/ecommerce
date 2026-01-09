@@ -26,11 +26,11 @@ interface AiChatContentProps {
 const MarkdownLink = ({
   href,
   children,
-  openQuickView,
+  open,
 }: {
   href?: string;
   children: React.ReactNode;
-  openQuickView: (id: string, skuId?: string) => void;
+  open: (data: { productId: string; skuId?: string }) => void;
 }) => {
   if (href?.startsWith("quickview:")) {
     const handleClick = (e: React.MouseEvent) => {
@@ -39,7 +39,7 @@ const MarkdownLink = ({
       const [id, query] = path.split("?");
       const params = new URLSearchParams(query);
       const skuId = params.get("sku") || undefined;
-      openQuickView(id, skuId);
+      open({ productId: id, skuId });
     };
 
     return (
@@ -96,7 +96,7 @@ export function AiChatContent({
       }
     },
   });
-  const { openQuickView } = useQuickViewStore();
+  const { open } = useQuickViewStore();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
 
@@ -199,7 +199,7 @@ export function AiChatContent({
                           a: ({ href, children, ...props }) => (
                             <MarkdownLink
                               href={href}
-                              openQuickView={openQuickView}
+                              open={open}
                             >
                               {children}
                             </MarkdownLink>

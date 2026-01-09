@@ -1,10 +1,16 @@
 "use server";
 
-import { fetchList, handleMutation } from "@/lib/action-helpers";
 import { http } from "@/lib/http";
+import { protectedActionClient } from "@/lib/safe-action";
+import {
+  createActionWrapper,
+  createVoidActionWrapper,
+  revalidatePaths,
+} from "@/lib/safe-action-utils";
 import { ApiResponse } from "@/types/dtos";
 import { Notification } from "@/types/models";
 import { cookies } from "next/headers";
+import { z } from "zod";
 
 /**
  * =====================================================================
@@ -26,21 +32,105 @@ import { cookies } from "next/headers";
  * =====================================================================
  */
 
-/**
- * Lấy danh sách thông báo của người dùng hiện tại.
- */
+// --- VALIDATION SCHEMAS ---
+
+const MarkReadSchema = z.object({
+  id: z.string(),
+});
+
+const BroadcastSchema = z.object({
+  title: z.string().min(1),
+  message: z.string().min(1),
+  type: z.string().optional(),
+  link: z.string().optional(),
+  sendEmail: z.boolean().optional(),
+});
+
+const SendUserSchema = BroadcastSchema.extend({
+  userId: z.string(),
+  email: z.string().email().optional(),
+});
+
+// --- SAFE ACTIONS (Mutations) ---
+
+// Đánh dấu đã đọc
+const safeMarkAsRead = protectedActionClient
+  .schema(MarkReadSchema)
+  .action(async ({ parsedInput }) => {
+    await http(`/notifications/${parsedInput.id}/read`, { method: "PATCH" });
+    revalidatePaths("/notifications");
+    return { success: true };
+  });
+
+// Đánh dấu đọc hết
+const safeMarkAllAsRead = protectedActionClient.action(async () => {
+  await http("/notifications/read-all", { method: "PATCH" });
+  revalidatePaths("/notifications");
+  return { success: true };
+});
+
+// Admin Broadcast
+const safeBroadcast = protectedActionClient
+  .schema(BroadcastSchema)
+  .action(async ({ parsedInput }) => {
+    await http("/notifications/admin/broadcast", {
+      method: "POST",
+      body: JSON.stringify(parsedInput),
+    });
+    return { success: true };
+  });
+
+// Admin Send User
+const safeSendUser = protectedActionClient
+  .schema(SendUserSchema)
+  .action(async ({ parsedInput }) => {
+    await http("/notifications/admin/send", {
+      method: "POST",
+      body: JSON.stringify(parsedInput),
+    });
+    return { success: true };
+  });
+
+// --- EXPORTED ACTIONS (Wrappers) ---
+
+export const markAsReadAction = async (id: string) => {
+  const wrapper = createActionWrapper(safeMarkAsRead, "Failed to mark as read");
+  return wrapper({ id });
+};
+
+export const markAllAsReadAction = createVoidActionWrapper(
+  safeMarkAllAsRead,
+  "Failed to mark all as read"
+);
+
+export const broadcastNotificationAction = createActionWrapper(
+  safeBroadcast,
+  "Failed to broadcast"
+);
+
+export const sendNotificationToUserAction = createActionWrapper(
+  safeSendUser,
+  "Failed to send notification"
+);
+
+// --- QUERY ACTIONS (Fetches) ---
+
 /**
  * Lấy danh sách thông báo của người dùng hiện tại.
  */
 export async function getNotificationsAction(limit = 10) {
   await cookies();
   try {
-    const res = await fetchList<Notification>("/notifications", {
-      limit,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      skipRedirectOn401: true,
-    } as any);
-    return { data: res.data || [] };
+    const res = await http<ApiResponse<{ items: Notification[] }>>(
+      `/notifications?limit=${limit}`,
+      {
+        skipRedirectOn401: true,
+      }
+    );
+    // Support both formats if backend varies
+    const items =
+      (res.data as unknown as Notification[]) || res.data?.items || [];
+    return { data: items };
   } catch (error) {
     return { data: [] };
   }
@@ -65,61 +155,6 @@ export async function getUnreadCountAction() {
 }
 
 /**
- * Đánh dấu một thông báo là đã đọc.
- */
-export async function markAsReadAction(id: string) {
-  return handleMutation(
-    () => http(`/notifications/${id}/read`, { method: "PATCH" }),
-    { revalidatePaths: ["/notifications"] }
-  );
-}
-
-/**
- * Đánh dấu tất cả thông báo của user là đã đọc.
- */
-export async function markAllAsReadAction() {
-  return handleMutation(
-    () => http("/notifications/read-all", { method: "PATCH" }),
-    { revalidatePaths: ["/notifications"] }
-  );
-}
-
-/**
- * [ADMIN] Gửi thông báo (Broadcast hoặc tới User cụ thể).
- */
-export async function broadcastNotificationAction(data: {
-  title: string;
-  message: string;
-  type?: string;
-  link?: string;
-  sendEmail?: boolean;
-}) {
-  return handleMutation(() =>
-    http("/notifications/admin/broadcast", {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
-  );
-}
-
-export async function sendNotificationToUserAction(data: {
-  userId: string;
-  title: string;
-  message: string;
-  type?: string;
-  link?: string;
-  sendEmail?: boolean;
-  email?: string;
-}) {
-  return handleMutation(() =>
-    http("/notifications/admin/send", {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
-  );
-}
-
-/**
  * [ADMIN] Lấy danh sách tất cả thông báo hệ thống.
  */
 export async function getAdminNotificationsAction(
@@ -128,10 +163,27 @@ export async function getAdminNotificationsAction(
   userId?: string,
   type?: string
 ) {
-  return fetchList<Notification>("/notifications/admin/all", {
-    page,
-    limit,
-    userId,
-    type,
-  });
+  await cookies();
+  try {
+    // Build query string
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+    if (userId) params.append("userId", userId);
+    if (type) params.append("type", type);
+
+    const res = await http<ApiResponse<Notification[]>>(
+      `/notifications/admin/all?${params.toString()}`
+    );
+    return {
+      data: res.data || [],
+      meta: res.meta,
+    };
+  } catch (error) {
+    return {
+      data: [],
+      error: error instanceof Error ? error.message : "Error",
+    };
+  }
 }

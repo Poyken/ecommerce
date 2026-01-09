@@ -118,43 +118,24 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
 
   refresh: async () => {
-    // This is a placeholder, implementation will likely be in Initializer
-    // but we can expose it if we have access to fetch
     set({ isLoading: true });
     try {
-      const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+      // Use Server Actions for data fetching
       const [listRes, countRes] = await Promise.all([
-        fetch(`${apiUrl}/notifications?limit=10`, {
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }).then((r) => r.json()),
-        fetch(`${apiUrl}/notifications/unread-count`, {
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }).then((r) => r.json()),
+        import("@/features/notifications/actions").then((mod) =>
+          mod.getNotificationsAction(10)
+        ),
+        import("@/features/notifications/actions").then((mod) =>
+          mod.getUnreadCountAction()
+        ),
       ]);
 
-      // API returns { data: { items: [], unreadCount: number } }
-      if (listRes.data && Array.isArray(listRes.data.items)) {
-        set({ notifications: listRes.data.items });
-        // Also get unreadCount from list response if available
-        if (typeof listRes.data.unreadCount === "number") {
-          set({ unreadCount: listRes.data.unreadCount });
-        }
-      } else if (Array.isArray(listRes.data)) {
+      if (listRes.data && Array.isArray(listRes.data)) {
         set({ notifications: listRes.data });
       }
 
-      // API returns { data: number } for unread count
-      if (typeof countRes.data === "number") {
-        set({ unreadCount: countRes.data });
-      } else if (typeof countRes.data?.count === "number") {
-        set({ unreadCount: countRes.data.count });
+      if (typeof countRes.count === "number") {
+        set({ unreadCount: countRes.count });
       }
     } catch (e) {
       console.error("Store refresh failed", e);

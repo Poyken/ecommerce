@@ -65,7 +65,7 @@ const MarkdownLink = ({
   href?: string;
   children: React.ReactNode;
 }) => {
-  const { openQuickView } = useQuickViewStore();
+  const { open } = useQuickViewStore();
 
   if (href?.startsWith("quickview:")) {
     const handleClick = (e: React.MouseEvent) => {
@@ -74,7 +74,7 @@ const MarkdownLink = ({
       const [id, query] = path.split("?");
       const params = new URLSearchParams(query);
       const skuId = params.get("sku") || undefined;
-      openQuickView(id, skuId);
+      open({ productId: id, skuId });
     };
 
     return (

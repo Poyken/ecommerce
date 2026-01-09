@@ -23,10 +23,17 @@
  * =====================================================================
  */
 
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import {
+  ApiCreateResponse,
+  ApiDeleteResponse,
+  ApiGetOneResponse,
+  ApiListResponse,
+  ApiUpdateResponse,
+  Cached,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
 import {
   Body,
   Controller,
@@ -38,11 +45,11 @@ import {
   Query,
   Res,
   UploadedFile,
-  UseGuards,
   UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -61,16 +68,12 @@ export class ProductsController {
 
   /**
    * Tạo sản phẩm mới.
-   * Yêu cầu quyền: product:create
-   *
    * Auto-generate SKUs dựa trên Options được cung cấp.
-   * VD: Options = [Màu: Đen, Trắng] + [Size: S, M] → 4 SKUs
    */
   @Post()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('product:create')
-  @ApiOperation({ summary: 'Tạo sản phẩm mới (Admin)' })
+  @RequirePermissions('product:create')
+  @ApiCreateResponse('Product', { summary: 'Tạo sản phẩm mới (Admin)' })
   async create(@Body() createProductDto: CreateProductDto) {
     const data = await this.productsService.create(createProductDto);
     return { data };
@@ -79,25 +82,25 @@ export class ProductsController {
   /**
    * Lấy danh sách sản phẩm với bộ lọc.
    * Public API - Dùng cho trang Danh sách sản phẩm (PLP).
-   *
-   * Hỗ trợ: search, categoryId, brandId, minPrice, maxPrice, sort, pagination
    * 🚀 CACHED: 2 minutes TTL
    */
   @Get()
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(120000) // 2 minutes
-  @ApiOperation({ summary: 'Lấy danh sách sản phẩm (có phân trang & lọc)' })
+  @Cached(120000)
+  @ApiListResponse('Product', {
+    summary: 'Lấy danh sách sản phẩm (có phân trang & lọc)',
+  })
   findAll(@Query() query: FilterProductDto) {
     return this.productsService.findAll(query);
   }
 
   /**
    * Semantic Search - Tìm kiếm theo ngữ nghĩa.
-   * Public API - Tìm sản phẩm dựa trên ý nghĩa câu hỏi (không chỉ keyword).
-   * VD: "áo ấm cho mùa đông" sẽ tìm thấy "Áo Khoác Parka" dù không có từ khớp.
+   * Public API.
    */
   @Get('semantic-search')
-  @ApiOperation({ summary: 'Tìm kiếm sản phẩm bằng AI (Semantic Search)' })
+  @ApiListResponse('Product', {
+    summary: 'Tìm kiếm sản phẩm bằng AI (Semantic Search)',
+  })
   async semanticSearch(
     @Query('q') query: string,
     @Query('limit') limit?: string,
@@ -112,15 +115,11 @@ export class ProductsController {
   /**
    * Lấy chi tiết sản phẩm.
    * Public API - Dùng cho trang Chi tiết sản phẩm (PDP).
-   *
-   * Trả về: Thông tin product, Options, và tất cả SKUs biến thể.
-   *
    * Đã kích hoạt Caching (Redis) - TTL 5 phút.
    */
   @Get(':id')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(300000) // 5 minutes
-  @ApiOperation({ summary: 'Lấy chi tiết sản phẩm' })
+  @Cached(300000)
+  @ApiGetOneResponse('Product', { summary: 'Lấy chi tiết sản phẩm' })
   async findOne(@Param('id') id: string) {
     const data = await this.productsService.findOne(id);
     return { data };
@@ -128,12 +127,10 @@ export class ProductsController {
 
   /**
    * Lấy danh sách sản phẩm liên quan.
-   * Public API - Dùng cho trang PDP để suggest sản phẩm khác.
    */
   @Get(':id/related')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(300000) // 5 minutes
-  @ApiOperation({ summary: 'Lấy danh sách sản phẩm liên quan' })
+  @Cached(300000)
+  @ApiListResponse('Product', { summary: 'Lấy danh sách sản phẩm liên quan' })
   async getRelated(@Param('id') id: string) {
     const data = await this.productsService.getRelatedProducts(id);
     return { data };
@@ -141,16 +138,12 @@ export class ProductsController {
 
   /**
    * Cập nhật thông tin sản phẩm.
-   * Yêu cầu quyền: product:update
-   *
-   * Lưu ý: Nếu cập nhật Options, SKUs sẽ được tự động migrate
-   * với chiến lược "Smart Migration" - Kế thừa price/stock từ biến thể cũ matching.
+   * Lưu ý: Smart Migration cho SKUs.
    */
   @Patch(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('product:update')
-  @ApiOperation({ summary: 'Cập nhật sản phẩm (Admin)' })
+  @RequirePermissions('product:update')
+  @ApiUpdateResponse('Product', { summary: 'Cập nhật sản phẩm (Admin)' })
   async update(
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
@@ -161,16 +154,11 @@ export class ProductsController {
 
   /**
    * Xóa sản phẩm (Soft Delete).
-   * Yêu cầu quyền: product:delete
-   *
-   * Không xóa vĩnh viễn, chỉ đánh dấu deletedAt và deactivate các SKUs.
-   * Dữ liệu vẫn còn trong DB để phục vụ báo cáo và lịch sử đơn hàng.
    */
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('product:delete')
-  @ApiOperation({ summary: 'Xóa sản phẩm (Admin)' })
+  @RequirePermissions('product:delete')
+  @ApiDeleteResponse('Product', { summary: 'Xóa sản phẩm (Admin)' })
   async remove(@Param('id') id: string) {
     const data = await this.productsService.remove(id);
     return { data };
@@ -179,20 +167,20 @@ export class ProductsController {
   /**
    * Lấy thông tin chi tiết của nhiều SKUs cùng lúc.
    * Public API - Dùng cho Guest Cart.
-   *
-   * Guest Cart lưu trong localStorage chỉ có skuId + quantity.
-   * Endpoint này giúp lấy thông tin hiển thị: tên, giá, ảnh, options.
    */
   @Post('skus/details')
-  @ApiOperation({ summary: 'Lấy thông tin nhiều SKUs (cho Guest Cart)' })
+  @ApiListResponse('Sku', {
+    summary: 'Lấy thông tin nhiều SKUs (cho Guest Cart)',
+  })
   async getSkusDetails(@Body() body: { skuIds: string[] }) {
     const data = await this.productsService.getSkusByIds(body.skuIds);
     return { data };
   }
+
   @Get(':id/translations')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('product:read')
+  @RequirePermissions('product:read')
+  @ApiListResponse('any', { summary: 'Lấy bản dịch sản phẩm' })
   async getTranslations(@Param('id') id: string) {
     const data = await this.productsService.getTranslations(id);
     return { data };
@@ -200,9 +188,8 @@ export class ProductsController {
 
   @Post(':id/translations')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('product:update')
-  @ApiOperation({ summary: 'Dịch thông tin sản phẩm' })
+  @RequirePermissions('product:update')
+  @ApiCreateResponse('any', { summary: 'Dịch thông tin sản phẩm' })
   async translate(
     @Param('id') id: string,
     @Body() body: { locale: string; name: string; description?: string },
@@ -216,8 +203,7 @@ export class ProductsController {
    */
   @Get('export/excel')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('product:read')
+  @RequirePermissions('product:read')
   @ApiOperation({ summary: 'Export Products & SKUs to Excel' })
   async export(@Res() res: Response) {
     return this.exportService.exportToExcel(res);
@@ -228,10 +214,9 @@ export class ProductsController {
    */
   @Post('import/excel')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @ApiBearerAuth()
-  @Permissions('product:create')
+  @RequirePermissions('product:create')
   @UseInterceptors(FileInterceptor('file'))
-  @ApiOperation({ summary: 'Import Products & SKUs from Excel' })
+  @ApiCreateResponse('any', { summary: 'Import Products & SKUs from Excel' })
   async import(@UploadedFile() file: Express.Multer.File) {
     const data = await this.importService.importFromExcel(file);
     return { data };

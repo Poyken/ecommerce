@@ -1,3 +1,13 @@
+import { PermissionsGuard } from '@/auth/permissions.guard';
+import * as requestWithUserInterface from '@/auth/interfaces/request-with-user.interface';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import {
+  ApiCreateResponse,
+  ApiGetOneResponse,
+  ApiListResponse,
+  ApiUpdateResponse,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
 import {
   Body,
   Controller,
@@ -9,30 +19,6 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-
-/**
- * =====================================================================
- * ORDERS CONTROLLER - Điều hướng yêu cầu về đơn hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ROLE-BASED ACCESS CONTROL (RBAC):
- * - Hệ thống phân biệt rõ ràng giữa route cho người dùng (`my-orders`) và route cho Admin.
- * - `@Permissions('order:read')`: Sử dụng Custom Decorator kết hợp với `PermissionsGuard` để kiểm tra quyền hạn chi tiết của Admin.
- *
- * 2. PARAMETER HANDLING:
- * - `@Query()`: Dùng để lấy các tham số lọc, tìm kiếm và phân trang từ URL (VD: `?page=1&limit=10`).
- * - `@Param('id')`: Dùng để lấy ID đơn hàng từ đường dẫn (VD: `/orders/123`).
- *
- * 3. SWAGGER DOCUMENTATION:
- * - `@ApiOperation`: Mô tả ngắn gọn chức năng của từng API, giúp tài liệu Swagger dễ hiểu hơn cho các thành viên khác trong team.
- * =====================================================================
- */
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import * as requestWithUserInterface from '@/auth/interfaces/request-with-user.interface';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -55,7 +41,7 @@ export class OrdersController {
   ) {}
 
   @Post()
-  @ApiOperation({ summary: 'Thanh toán / Tạo đơn hàng' })
+  @ApiCreateResponse('Order', { summary: 'Thanh toán / Tạo đơn hàng' })
   async create(
     @Request() req: requestWithUserInterface.RequestWithUser,
     @Body() createOrderDto: CreateOrderDto,
@@ -65,7 +51,9 @@ export class OrdersController {
   }
 
   @Get('my-orders')
-  @ApiOperation({ summary: 'Lấy lịch sử đơn hàng của người dùng hiện tại' })
+  @ApiListResponse('Order', {
+    summary: 'Lấy lịch sử đơn hàng của người dùng hiện tại',
+  })
   async findMyOrders(
     @Request() req: requestWithUserInterface.RequestWithUser,
     @Query('page') page = 1,
@@ -79,12 +67,12 @@ export class OrdersController {
   }
 
   @Get('my-orders/:id')
-  @ApiOperation({ summary: 'Lấy chi tiết một đơn hàng cụ thể' })
+  @ApiGetOneResponse('Order', { summary: 'Lấy chi tiết một đơn hàng cụ thể' })
   async findOneMyOrder(
     @Request() req: requestWithUserInterface.RequestWithUser,
     @Param('id') id: string,
   ) {
-    // TODO: Thêm kiểm tra quyền sở hữu bên trong service
+    // TODO: Thêm kiểm tra quyền sở hữu bên trong service (đã có check owner)
     const data = await this.ordersService.findOne(id, req.user.id);
     return { data };
   }
@@ -92,11 +80,10 @@ export class OrdersController {
   // Các route Admin
   @Get()
   @UseGuards(PermissionsGuard)
-  @Permissions('order:read')
-  @ApiOperation({ summary: 'Lấy tất cả đơn hàng (Admin)' })
+  @RequirePermissions('order:read')
+  @ApiListResponse('Order', { summary: 'Lấy tất cả đơn hàng (Admin)' })
   @ApiQuery({ name: 'search', required: false, type: String })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiQuery({ name: 'status', required: false, type: String })
   @ApiQuery({ name: 'userId', required: false, type: String })
   findAll(
     @Query('search') search?: string,
@@ -118,8 +105,8 @@ export class OrdersController {
 
   @Get(':id')
   @UseGuards(PermissionsGuard)
-  @Permissions('order:read')
-  @ApiOperation({ summary: 'Lấy chi tiết đơn hàng (Admin)' })
+  @RequirePermissions('order:read')
+  @ApiGetOneResponse('Order', { summary: 'Lấy chi tiết đơn hàng (Admin)' })
   async findOne(@Param('id') id: string) {
     const data = await this.ordersService.findOneAdmin(id);
     return { data };
@@ -127,8 +114,10 @@ export class OrdersController {
 
   @Patch(':id/status')
   @UseGuards(PermissionsGuard)
-  @Permissions('order:update')
-  @ApiOperation({ summary: 'Cập nhật trạng thái đơn hàng (Admin)' })
+  @RequirePermissions('order:update')
+  @ApiUpdateResponse('Order', {
+    summary: 'Cập nhật trạng thái đơn hàng (Admin)',
+  })
   async updateStatus(
     @Param('id') id: string,
     @Body() dto: UpdateOrderStatusDto,
@@ -138,7 +127,7 @@ export class OrdersController {
   }
 
   @Patch('my-orders/:id/cancel')
-  @ApiOperation({ summary: 'Hủy đơn hàng của chính mình (User)' })
+  @ApiUpdateResponse('Order', { summary: 'Hủy đơn hàng của chính mình (User)' })
   async cancelMyOrder(
     @Request() req: requestWithUserInterface.RequestWithUser,
     @Param('id') id: string,
@@ -154,8 +143,8 @@ export class OrdersController {
 
   @Get(':id/invoice')
   @UseGuards(PermissionsGuard)
-  @Permissions('order:read')
-  @ApiOperation({ summary: 'Lấy dữ liệu hóa đơn (Admin)' })
+  @RequirePermissions('order:read')
+  @ApiGetOneResponse('Invoice', { summary: 'Lấy dữ liệu hóa đơn (Admin)' })
   async getInvoice(@Param('id') id: string) {
     const data = await this.invoiceService.generateInvoiceData(id);
     return { data };

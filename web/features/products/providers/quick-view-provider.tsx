@@ -26,18 +26,18 @@ const ProductQuickViewDialog = dynamic(() =>
  * =====================================================================
  */
 export function QuickViewProvider() {
-  const { isOpen, closeQuickView, productId, skuId, initialData } =
+  const { isOpen, close, data } =
     useQuickViewStore();
 
-  if (!productId) return null;
+  if (!data?.productId) return null;
 
   return (
     <ProductQuickViewDialog
       isOpen={isOpen}
-      onOpenChange={(open) => !open && closeQuickView()}
-      productId={productId}
-      initialSkuId={skuId || undefined}
-      initialData={initialData || undefined}
+      onOpenChange={(open) => !open && close()}
+      productId={data.productId}
+      initialSkuId={data.skuId || undefined}
+      initialData={data.initialData || undefined}
     />
   );
 }

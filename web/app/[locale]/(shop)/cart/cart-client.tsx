@@ -316,7 +316,7 @@ export function CartClient({ cart }: CartClientProps) {
         localStorage.setItem("guest_cart", JSON.stringify(updatedCart));
         window.dispatchEvent(new Event("guest_cart_updated"));
       } else {
-        const res = await removeFromCartAction(id);
+        const res = await removeFromCartAction({ itemId: id });
         if (res.success) {
           toast({
             variant: "success",
@@ -371,7 +371,7 @@ export function CartClient({ cart }: CartClientProps) {
             localStorage.setItem("guest_cart", JSON.stringify(updatedCart));
             window.dispatchEvent(new Event("guest_cart_updated"));
           } else {
-            const res = await updateCartItemAction(id, quantity);
+            const res = await updateCartItemAction({ itemId: id, quantity });
             if (!res.success) {
               const availableStock = (res as { availableStock?: number })
                 .availableStock;
@@ -389,7 +389,7 @@ export function CartClient({ cart }: CartClientProps) {
                       : item
                   )
                 );
-                await updateCartItemAction(id, availableStock);
+                await updateCartItemAction({ itemId: id, quantity: availableStock });
               } else {
                 toast({
                   title: t("updateFailed"),

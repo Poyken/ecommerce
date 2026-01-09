@@ -1,3 +1,13 @@
+import { PermissionsGuard } from '@/auth/permissions.guard';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import {
+  ApiCreateResponse,
+  ApiDeleteResponse,
+  ApiGetOneResponse,
+  ApiListResponse,
+  ApiUpdateResponse,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
 import {
   Body,
   Controller,
@@ -7,9 +17,14 @@ import {
   Patch,
   Post,
   Query,
-  UseGuards,
   Request,
+  UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { AssignRolesDto } from './dto/assign-roles.dto';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { UsersService } from './users.service';
 
 /**
  * =====================================================================
@@ -33,20 +48,6 @@ import {
  * - Hỗ trợ phân trang và tìm kiếm để Admin dễ dàng quản lý khi số lượng người dùng lên đến hàng ngàn.
  * =====================================================================
  */
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
-import { AssignRolesDto } from './dto/assign-roles.dto';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UsersService } from './users.service';
 
 @ApiTags('Users (Admin)')
 @Controller('users')
@@ -56,21 +57,20 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @Permissions('user:create')
-  @ApiOperation({ summary: 'Create a new user (Admin)' })
-  @ApiResponse({ status: 201, description: 'User created successfully.' })
+  @RequirePermissions('user:create')
+  @ApiCreateResponse('User', { summary: 'Create a new user (Admin)' })
   async create(@Body() createUserDto: CreateUserDto) {
     const data = await this.usersService.create(createUserDto);
     return { data };
   }
 
   @Get()
-  @Permissions('user:read')
-  @ApiOperation({ summary: 'Get list of users' })
+  @RequirePermissions('user:read')
+  @ApiListResponse('User', { summary: 'Get list of users' })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'search', required: false, type: String })
-  @ApiResponse({ status: 200, description: 'Return paginated users.' })
+  @ApiQuery({ name: 'role', required: false, type: String })
   async findAll(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
@@ -90,37 +90,32 @@ export class UsersController {
   }
 
   @Get(':id')
-  @Permissions('user:read')
-  @ApiOperation({ summary: 'Get user details' })
-  @ApiResponse({ status: 200, description: 'Return user details.' })
-  @ApiResponse({ status: 404, description: 'User not found.' })
+  @RequirePermissions('user:read')
+  @ApiGetOneResponse('User', { summary: 'Get user details' })
   async findOne(@Param('id') id: string) {
     const data = await this.usersService.findOne(id);
     return { data };
   }
 
   @Patch(':id')
-  @Permissions('user:update')
-  @ApiOperation({ summary: 'Update user info' })
-  @ApiResponse({ status: 200, description: 'User updated successfully.' })
+  @RequirePermissions('user:update')
+  @ApiUpdateResponse('User', { summary: 'Update user info' })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     const data = await this.usersService.update(id, updateUserDto);
     return { data };
   }
 
   @Post(':id/roles')
-  @Permissions('user:update')
-  @ApiOperation({ summary: 'Assign roles to user' })
-  @ApiResponse({ status: 200, description: 'Roles assigned successfully.' })
+  @RequirePermissions('user:update')
+  @ApiCreateResponse('User', { summary: 'Assign roles to user' })
   async assignRoles(@Param('id') id: string, @Body() dto: AssignRolesDto) {
     const data = await this.usersService.assignRoles(id, dto.roles);
     return { data };
   }
 
   @Delete(':id')
-  @Permissions('user:delete')
-  @ApiOperation({ summary: 'Delete user' })
-  @ApiResponse({ status: 200, description: 'User deleted successfully.' })
+  @RequirePermissions('user:delete')
+  @ApiDeleteResponse('User', { summary: 'Delete user' })
   async remove(@Param('id') id: string) {
     const data = await this.usersService.remove(id);
     return { data };

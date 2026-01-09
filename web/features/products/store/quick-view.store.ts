@@ -1,26 +1,14 @@
-import { create } from "zustand";
+import { createModalStore } from "@/lib/store-factories";
 
-interface QuickViewState {
-  isOpen: boolean;
-  productId: string | null;
-  skuId: string | null;
-  initialData: {
+export interface QuickViewData {
+  productId: string;
+  skuId?: string;
+  initialData?: {
     name: string;
     price: number;
     imageUrl: string;
     category?: string;
-  } | null;
-  openQuickView: (
-    productId: string,
-    skuId?: string,
-    initialData?: {
-      name: string;
-      price: number;
-      imageUrl: string;
-      category?: string;
-    }
-  ) => void;
-  closeQuickView: () => void;
+  };
 }
 
 /**
@@ -30,23 +18,10 @@ interface QuickViewState {
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. STATE MANAGEMENT:
- * - Lưu trữ trạng thái `isOpen`, `productId` của Modal xem nhanh.
- * - `initialData` giúp hiển thị ngay Tên/Giá/Ảnh trong khi chờ API fetch full details (Optimistic UI).
+ * 1. REFACTORED VỚI FACTORY:
+ * - Sử dụng `createModalStore` pattern chuẩn.
+ * - `data` chứa { productId, skuId, initialData }.
+ * - Actions chuẩn hóa: `open(data)`, `close()`.
  * =====================================================================
  */
-export const useQuickViewStore = create<QuickViewState>((set) => ({
-  isOpen: false,
-  productId: null,
-  skuId: null,
-  initialData: null,
-  openQuickView: (productId, skuId, initialData) =>
-    set({
-      isOpen: true,
-      productId,
-      skuId: skuId || null,
-      initialData: initialData || null,
-    }),
-  closeQuickView: () =>
-    set({ isOpen: false, productId: null, skuId: null, initialData: null }),
-}));
+export const useQuickViewStore = createModalStore<QuickViewData>();

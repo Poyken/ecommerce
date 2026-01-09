@@ -23,6 +23,7 @@
 
 import { http } from "@/lib/http";
 import { protectedActionClient } from "@/lib/safe-action";
+import { createActionWrapper, REVALIDATE } from "@/lib/safe-action-utils";
 import { ReviewSchema, UpdateReviewSchema } from "@/lib/schemas";
 import { ApiResponse } from "@/types/dtos";
 import { Review } from "@/types/models";
@@ -68,16 +69,12 @@ export interface ReviewEligibility {
 const safeCreateReview = protectedActionClient
   .schema(ReviewSchema)
   .action(async ({ parsedInput: data }) => {
-    try {
-      await http("/reviews", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-      revalidatePath(`/products/${data.productId}`);
-      return { success: true };
-    } catch (error: unknown) {
-      throw new Error(error instanceof Error ? error.message : "Failure");
-    }
+    await http("/reviews", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    REVALIDATE.products(data.productId);
+    return { success: true };
   });
 
 /* 
@@ -93,15 +90,11 @@ const UpdateReviewWithIdSchema = UpdateReviewSchema.extend({
 const safeUpdateReview = protectedActionClient
   .schema(UpdateReviewWithIdSchema)
   .action(async ({ parsedInput: { reviewId, ...data } }) => {
-    try {
-      await http(`/reviews/${reviewId}`, {
-        method: "PATCH",
-        body: JSON.stringify(data),
-      });
-      return { success: true };
-    } catch (error: unknown) {
-      throw new Error(error instanceof Error ? error.message : "Failure");
-    }
+    await http(`/reviews/${reviewId}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+    return { success: true };
   });
 
 const DeleteReviewSchema = z.object({ reviewId: z.string() });
@@ -109,14 +102,10 @@ const DeleteReviewSchema = z.object({ reviewId: z.string() });
 const safeDeleteReview = protectedActionClient
   .schema(DeleteReviewSchema)
   .action(async ({ parsedInput: { reviewId } }) => {
-    try {
-      await http(`/reviews/mine/${reviewId}`, {
-        method: "DELETE",
-      });
-      return { success: true };
-    } catch (error: unknown) {
-      throw new Error(error instanceof Error ? error.message : "Failure");
-    }
+    await http(`/reviews/mine/${reviewId}`, {
+      method: "DELETE",
+    });
+    return { success: true };
   });
 
 // =============================================================================
@@ -127,55 +116,26 @@ const safeDeleteReview = protectedActionClient
  * Tạo đánh giá mới cho sản phẩm.
  * Uses CSRF-protected safe action internally.
  */
-export async function createReviewAction(data: CreateReviewData) {
-  const result = await safeCreateReview(data);
-
-  if (result?.serverError || result?.validationErrors) {
-    const errorMsg = result.serverError || "Validation Error";
-    return {
-      success: false,
-      error: errorMsg,
-      errors: result.validationErrors,
-    };
-  }
-
-  return { success: true };
-}
+export const createReviewAction = createActionWrapper(
+  safeCreateReview,
+  "Validation Error"
+);
 
 /**
  * Cập nhật đánh giá đã tồn tại.
  */
-export async function updateReviewAction(
-  reviewId: string,
-  data: UpdateReviewData
-) {
-  const result = await safeUpdateReview({ reviewId, ...data });
-
-  if (result?.serverError || result?.validationErrors) {
-    return {
-      success: false,
-      error: result.serverError || "Failed to update review",
-    };
-  }
-
-  return { success: true };
-}
+export const updateReviewAction = createActionWrapper(
+  safeUpdateReview,
+  "Failed to update review"
+);
 
 /**
  * Xóa đánh giá của mình.
  */
-export async function deleteReviewAction(reviewId: string) {
-  const result = await safeDeleteReview({ reviewId });
-
-  if (result?.serverError) {
-    return {
-      success: false,
-      error: result.serverError,
-    };
-  }
-
-  return { success: true };
-}
+export const deleteReviewAction = createActionWrapper(
+  safeDeleteReview,
+  "Failed to delete review"
+);
 
 /**
  * Kiểm tra xem user có đủ điều kiện đánh giá sản phẩm không.
@@ -221,5 +181,22 @@ export async function getReviewsAction(productId: string, cursor?: string) {
     return { success: true, data: res.data, meta: res.meta };
   } catch {
     return { success: false, error: "Không thể tải đánh giá" };
+  }
+}
+
+/**
+ * Upload ảnh cho đánh giá.
+ * Form Data proxy action.
+ */
+export async function uploadReviewImagesAction(formData: FormData) {
+  try {
+    const res = await http<{ urls: string[] }>("/reviews/upload", {
+      method: "POST",
+      body: formData,
+    });
+    return { urls: res.urls, success: true };
+  } catch (error: unknown) {
+    console.error("uploadReviewImagesAction error:", error);
+    return { error: (error as Error).message, success: false };
   }
 }

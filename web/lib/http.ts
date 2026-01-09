@@ -1,6 +1,7 @@
 // import { cookies } from "next/headers"; // Moved to dynamic import
 import { redirect } from "next/navigation";
 // import "server-only"; // Removed to allow client-side usage
+import { API_CONFIG, HTTP_STATUS } from "./constants";
 import { env } from "./env";
 
 /**
@@ -36,6 +37,8 @@ type FetchOptions = RequestInit & {
   next?: NextFetchRequestConfig;
   /** Bỏ qua tự động redirect về login khi gặp lỗi 401 */
   skipRedirectOn401?: boolean;
+  /** Timeout request (ms) */
+  timeout?: number;
 };
 
 /**
@@ -59,7 +62,7 @@ type FetchOptions = RequestInit & {
  * });
  */
 export async function http<T>(path: string, options: FetchOptions = {}) {
-  const { params, headers, skipAuth, ...rest } = options;
+  const { params, headers, skipAuth, timeout, ...rest } = options;
 
   // ========================================
   // 3. CẤU HÌNH HEADERS & CSRF & AUTH
@@ -124,11 +127,6 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     }
   }
 
-  // ... (URL construction code remains mainly effectively same but ensure variable scope) ...
-  // Need to be careful not to break existing logic.
-  // The structure of the original function had these sections interleaved.
-  // I will replace the whole block starting from section 3 down to headers construction.
-
   // ========================================
   // 2. XÂY DỰNG URL ĐẦY ĐỦ
   // ========================================
@@ -192,6 +190,9 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   const isClient = typeof window !== "undefined";
   const dedupKey = `${url.toString()}-${JSON.stringify(requestHeaders)}`;
 
+  // Note: We skip deduplication if AbortController (timeout) involves,
+  // but standard fetch logic handles it fine.
+
   if (isClient && isGet) {
     const existingRequest = (window as any)._pendingRequests?.get(dedupKey);
     if (existingRequest) {
@@ -210,9 +211,15 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   // Define executeFetch internal function
   const executeFetch = async (): Promise<T> => {
     // ========================================
-    // 4. THỰC HIỆN REQUEST
+    // 4. THỰC HIỆN REQUEST (WITH TIMEOUT)
     // ========================================
     let res: Response;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      timeout ?? API_CONFIG.DEFAULT_TIMEOUT
+    );
+
     try {
       if (process.env.NODE_ENV === "development") {
         console.log(
@@ -224,24 +231,29 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
       res = await fetch(url.toString(), {
         headers: requestHeaders,
         credentials: "include", // Quan trọng để gửi Cookie khi gọi API khác origin (CORS)
+        signal: controller.signal,
         ...rest,
       });
     } catch (error) {
-      console.warn(`[HTTP Fetch Error] Failed to reach ${url}:`, error);
+      if ((error as Error).name === "AbortError") {
+        console.warn(`[HTTP Fetch Timeout] ${url} after ${timeout ?? 10000}ms`);
+      } else {
+        console.warn(`[HTTP Fetch Error] Failed to reach ${url}:`, error);
+      }
+
       // Return a dummy response that won't break the build logic
-      // We return a mock response that looks like a successful empty response
-      // to prevent components from crashing on build.
       return {
         data: [],
         meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
       } as T;
+    } finally {
+      clearTimeout(timeoutId);
     }
 
     // ========================================
     // 5. XỬ LÝ LỖI
     // ========================================
     if (!res.ok) {
-      // Extract error message từ response body first, as it's needed for isUserNotFound
       let errorMessage = `API Error: ${res.status} ${res.statusText}`;
       let errorBody: unknown = null;
 
@@ -249,7 +261,6 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
         errorBody = await res.json();
         if (errorBody && typeof errorBody === "object") {
           const body = errorBody as Record<string, unknown>;
-          // Handle NestJS validation errors and standard error messages
           const rawMessage = body.message || body.error;
 
           if (Array.isArray(rawMessage)) {
@@ -257,7 +268,6 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
           } else if (typeof rawMessage === "string") {
             errorMessage = rawMessage;
           } else if (typeof rawMessage === "object" && rawMessage !== null) {
-            // Handle nested NestJS exception response
             const innerMessage =
               (rawMessage as Record<string, unknown>).message ||
               (rawMessage as Record<string, unknown>).error;
@@ -275,13 +285,16 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
       }
 
       // 401 Unauthorized → Chuyển về trang login
-      if (res.status === 401 && !options.skipRedirectOn401) {
+      if (
+        res.status === HTTP_STATUS.UNAUTHORIZED &&
+        !options.skipRedirectOn401
+      ) {
         console.warn(
           `[HTTP ${res.status}] Unauthorized request to: ${url}. Redirecting to /login.`
         );
         if (typeof window !== "undefined") {
           window.location.href = "/login";
-          // Stop execution to avoid throwing error downstream
+          // Stop execution
           return new Promise<T>(() => {});
         } else {
           redirect("/login");
@@ -295,7 +308,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
       error.status = res.status;
       error.body = errorBody;
 
-      const isUnauthorized = res.status === 401;
+      const isUnauthorized = res.status === HTTP_STATUS.UNAUTHORIZED;
       if (!isUnauthorized || options.skipRedirectOn401) {
         if (isUnauthorized) {
           console.warn(
@@ -309,10 +322,6 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
               res.status
             }, URL: ${url.toString()}, Message: ${errorMessage}`
           );
-          console.error(
-            `[HTTP Error Body]:`,
-            JSON.stringify(errorBody, null, 2)
-          );
         }
       }
 
@@ -322,8 +331,8 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     // ========================================
     // 6. PARSE VÀ TRẢ VỀ DATA
     // ========================================
-    // Handle 204 No Content (DELETE typically returns this)
-    if (res.status === 204) {
+    // Handle 204 No Content
+    if (res.status === HTTP_STATUS.NO_CONTENT) {
       return null as T;
     }
 

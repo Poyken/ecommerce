@@ -14,34 +14,30 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes } from '@nestjs/swagger';
+import {
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewsService } from './reviews.service';
+import { GetUser } from '@/auth/decorators/get-user.decorator';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
+import {
+  ApiListResponse,
+  ApiCreateResponse,
+  ApiDeleteResponse,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
 
 /**
  * =====================================================================
  * REVIEWS CONTROLLER - Điều hướng yêu cầu về đánh giá
  * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ACCESS CONTROL (Kiểm soát truy cập):
- * - `findAll` và `remove` (Admin): Yêu cầu cả `JwtAuthGuard` và `PermissionsGuard` để đảm bảo chỉ Admin có quyền mới được quản lý review.
- * - `create`, `update`, `removeOwn` (User): Chỉ yêu cầu `JwtAuthGuard` vì đây là quyền cơ bản của mọi người dùng đã đăng nhập.
- *
- * 2. CUSTOM DECORATORS:
- * - `@GetUser('id')`: Một decorator tự chế giúp lấy ID người dùng trực tiếp từ Token, làm code sạch hơn so với việc dùng `req.user.id`.
- *
- * 3. PUBLIC VS PRIVATE ROUTES:
- * - `findAllByProduct`: Là route công khai (Public), không cần Guard, giúp khách vãng lai cũng có thể đọc được các đánh giá sản phẩm.
- * =====================================================================
  */
-import { GetUser } from '@/auth/decorators/get-user.decorator';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Reviews')
 @Controller('reviews')
@@ -53,9 +49,8 @@ export class ReviewsController {
 
   @Get()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('review:read')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Lấy tất cả đánh giá (Admin)' })
+  @RequirePermissions('review:read')
+  @ApiListResponse('Review')
   async findAll(
     @Query('page') page = 1,
     @Query('limit') limit = 10,
@@ -63,21 +58,21 @@ export class ReviewsController {
     @Query('status') status?: string,
     @Query('search') search?: string,
   ) {
-    const data = await this.reviewsService.findAll(
+    return this.reviewsService.findAll(
       Number(page),
       Number(limit),
       rating ? Number(rating) : undefined,
       status,
       search,
     );
-    return data; // Service returns { data, meta }
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard) // Chỉ cần Login là được, không cần quyền đặc biệt
-  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiCreateResponse('Review')
   @ApiOperation({
-    summary: 'Gửi đánh giá (Phải đã mua sản phẩm & ĐÃ GIAO HÀNG)',
+    summary: 'Gửi đánh giá',
+    description: 'Yêu cầu: Phải đã mua sản phẩm & ĐÃ GIAO HÀNG',
   })
   async create(
     @GetUser('id') userId: string,
@@ -126,9 +121,8 @@ export class ReviewsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('review:delete')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Xóa đánh giá (Admin)' })
+  @RequirePermissions('review:delete')
+  @ApiDeleteResponse('Review')
   async remove(@Param('id') id: string) {
     const data = await this.reviewsService.remove(id);
     return { data };
@@ -145,7 +139,7 @@ export class ReviewsController {
 
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('review:update')
+  @RequirePermissions('review:update')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update review status (Admin)' })
   async updateStatus(
@@ -182,9 +176,10 @@ export class ReviewsController {
     const urls = uploaded.map((res) => res.secure_url);
     return { data: urls };
   }
+
   @Post(':id/reply')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('review:update')
+  @RequirePermissions('review:update')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Trả lời đánh giá (Admin)' })
   async reply(@Param('id') id: string, @Body('reply') reply: string) {
