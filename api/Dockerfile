@@ -63,4 +63,4 @@ COPY --from=builder --chown=nestjs:nodejs /app/prisma ./prisma
 
 USER nestjs
 EXPOSE 8080
-CMD ["node", "dist/main"]
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy && node dist/main"]
