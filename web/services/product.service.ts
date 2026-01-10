@@ -5,6 +5,9 @@ import { http } from "@/lib/http";
 import { ApiResponse, PaginationMeta } from "@/types/dtos";
 import { Brand, Category, Product, Sku } from "@/types/models";
 
+// Type alias - Product with full relations is just Product
+type ProductWithVariants = Product;
+
 interface ProductsResponse {
   data: Product[];
   meta: PaginationMeta;
@@ -20,6 +23,7 @@ interface ProductFilters {
   maxPrice?: number;
   sort?: string;
   featured?: boolean;
+  includeSkus?: string | boolean;
 }
 
 export const productService = {
@@ -37,6 +41,7 @@ export const productService = {
       maxPrice: filters.maxPrice,
       sort: filters.sort,
       featured: filters.featured,
+      includeSkus: filters.includeSkus,
     };
 
     const response = await http<ApiResponse<Product[]>>("/products", {
@@ -174,6 +179,42 @@ export const productService = {
         }
       );
       return response.data || [];
+    } catch {
+      return [];
+    }
+  },
+
+  /**
+   * Get all brand IDs for static generation
+   */
+  async getBrandIds(): Promise<string[]> {
+    try {
+      const brands = await this.getBrands();
+      return brands.map((brand) => brand.id);
+    } catch {
+      return [];
+    }
+  },
+
+  /**
+   * Get all category IDs for static generation
+   */
+  async getCategoryIds(): Promise<string[]> {
+    try {
+      const categories = await this.getCategories();
+      return categories.map((category) => category.id);
+    } catch {
+      return [];
+    }
+  },
+
+  /**
+   * Get all product IDs for static generation
+   */
+  async getProductIds(limit = 100): Promise<string[]> {
+    try {
+      const response = await this.getProducts({ limit });
+      return response.data.map((product) => product.id);
     } catch {
       return [];
     }

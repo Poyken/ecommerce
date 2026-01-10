@@ -92,4 +92,56 @@ export const blogService = {
       return [];
     }
   },
+
+  /**
+   * Get all blog IDs for static generation
+   */
+  async getBlogIds(): Promise<string[]> {
+    try {
+      const response = await this.getBlogs({ limit: 100, status: "published" });
+      return response.data.map((blog) => blog.id);
+    } catch {
+      return [];
+    }
+  },
+
+  /**
+   * Alias for getBlog - Get blog post by slug or ID
+   */
+  async getBlogBySlug(slugOrId: string): Promise<BlogWithProducts | null> {
+    return this.getBlog(slugOrId);
+  },
+
+  /**
+   * Get category statistics - count of blogs per category
+   */
+  async getCategoryStats(): Promise<{
+    categories: { category: string; count: number }[];
+    total: number;
+  } | null> {
+    try {
+      const response = await http<
+        ApiResponse<{
+          categories: { category: string; count: number }[];
+          total: number;
+        }>
+      >("/blogs/category-stats", {
+        skipAuth: true,
+        next: { revalidate: 3600 },
+      });
+      return response.data || null;
+    } catch {
+      // Fallback: compute stats from categories
+      try {
+        const categories = await this.getCategories();
+        const categoryStats = categories.map((cat) => ({
+          category: cat,
+          count: 0,
+        }));
+        return { categories: categoryStats, total: 0 };
+      } catch {
+        return null;
+      }
+    }
+  },
 };

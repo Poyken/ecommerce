@@ -20,7 +20,10 @@ import { useTranslations } from "next-intl";
 import { use } from "react";
 
 interface ShopStatsProps {
-  productsPromise: Promise<ApiResponse<Product[]>>;
+  productsPromise: Promise<{
+    data: Product[];
+    meta: { page: number; limit: number; total: number; lastPage: number };
+  }>;
 }
 
 export function ShopStats({ productsPromise }: ShopStatsProps) {

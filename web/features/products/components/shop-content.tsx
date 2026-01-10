@@ -63,7 +63,10 @@ import {
  */
 
 interface ShopContentProps {
-  productsPromise: Promise<ApiResponse<Product[]>>;
+  productsPromise: Promise<{
+    data: Product[];
+    meta: { page: number; limit: number; total: number; lastPage: number };
+  }>;
   categoriesPromise: Promise<Category[]>;
   brandsPromise: Promise<Brand[]>;
   suggestedProductsPromise: Promise<Product[]>;

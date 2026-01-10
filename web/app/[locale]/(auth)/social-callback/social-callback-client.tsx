@@ -18,7 +18,7 @@ export function SocialCallbackClient() {
 
     // Small delay to ensure cookies are set
     const timer = setTimeout(() => {
-      router.replace(redirectTo);
+      router.replace(redirectTo as any);
     }, 500);
 
     return () => clearTimeout(timer);

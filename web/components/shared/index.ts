@@ -20,7 +20,7 @@ export { DataTableEmptyRow } from "./data-table-empty-row";
 // Other shared components
 export { BackButton } from "./back-button";
 export { BackgroundBlob } from "./background-blob";
-export { BentoGrid, BentoCard } from "./bento-grid";
+export { BentoGrid } from "./bento-grid";
 export { BreadcrumbNav } from "./breadcrumb-nav";
 export { ErrorBoundary } from "./error-boundary";
 export { FormDialog } from "./form-dialog";

@@ -35,7 +35,10 @@ import { useSearchParams } from "next/navigation";
 import { use, useEffect, useState, useTransition } from "react";
 
 interface ShopGridProps {
-  productsPromise: Promise<ApiResponse<Product[]>>;
+  productsPromise: Promise<{
+    data: Product[];
+    meta: { page: number; limit: number; total: number; lastPage: number };
+  }>;
   suggestedProductsPromise: Promise<Product[]>;
   wishlistItems?: Product[];
   columns: 3 | 4 | 5;

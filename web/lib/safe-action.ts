@@ -3,7 +3,6 @@ import {
   DEFAULT_SERVER_ERROR_MESSAGE,
 } from "next-safe-action";
 import { cookies } from "next/headers";
-import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { getErrorMessage } from "./error-utils";
 import { ApiResponse, ActionResult } from "@/types/api";
@@ -113,6 +112,24 @@ export function createActionWrapper<TInput, TOutput>(
 }
 
 /**
+ * Tạo wrapper function cho safe action không có input (void actions).
+ * Dùng cho các action như clearCart, markAllAsRead, etc.
+ */
+export function createVoidActionWrapper<TOutput>(
+  safeAction: () => Promise<SafeActionResult<TOutput> | any>,
+  defaultError = "Đã có lỗi xảy ra"
+) {
+  return async (): Promise<ActionResult<TOutput>> => {
+    try {
+      const result = await safeAction();
+      return unwrapResult(result, defaultError);
+    } catch (error) {
+      return { success: false, error: getErrorMessage(error) || defaultError };
+    }
+  };
+}
+
+/**
  * Helper to wrap standard server action logic with try-catch.
  */
 export async function wrapServerAction<T>(
@@ -146,12 +163,14 @@ export const REVALIDATE = {
     revalidatePath("/shop", "page");
     if (productId) revalidatePath(`/products/${productId}`, "page");
   },
+  profile: () => revalidatePath("/profile", "page"),
   admin: {
     products: () => revalidatePath("/admin/products", "page"),
     orders: () => revalidatePath("/admin/orders", "page"),
     categories: () => revalidatePath("/admin/categories", "page"),
     brands: () => revalidatePath("/admin/brands", "page"),
     blogs: () => revalidatePath("/admin/blogs", "page"),
+    notifications: () => revalidatePath("/admin/notifications", "page"),
   },
   superAdmin: {
     tenants: () => revalidatePath("/super-admin/tenants", "page"),
