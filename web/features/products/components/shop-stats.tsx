@@ -14,7 +14,6 @@
 
 "use client";
 
-import { ApiResponse } from "@/types/dtos";
 import { Product } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { use } from "react";

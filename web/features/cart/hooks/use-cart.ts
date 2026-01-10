@@ -97,8 +97,6 @@ export function useCart(productName?: string): UseCartResult {
         // BƯỚC 2: Fallback sang Guest Cart (LocalStorage)
         // -------------------------------------------------------------
         if (!addedSuccessfully) {
-          console.log("Adding to guest cart (fallback)...");
-
           // Lấy giỏ hàng hiện tại từ LocalStorage (hoặc mảng rỗng nếu chưa có)
           const guestCart = JSON.parse(
             localStorage.getItem("guest_cart") || "[]"

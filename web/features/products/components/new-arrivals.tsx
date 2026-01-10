@@ -40,7 +40,6 @@ interface NewArrivalsProps {
   columns?: number;
   layout?: "grid" | "carousel";
   alignment?: "left" | "center";
-  cardStyle?: "default" | "luxury" | "minimal";
 }
 
 export function NewArrivals({
@@ -51,7 +50,6 @@ export function NewArrivals({
   columns = 5,
   layout = "grid",
   alignment = "left",
-  cardStyle = "default",
 }: NewArrivalsProps) {
   const t = useTranslations("home");
   const inStockProducts = products.filter((product) =>

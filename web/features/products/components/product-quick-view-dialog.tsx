@@ -62,7 +62,6 @@ export function ProductQuickViewDialog({
   initialSkuId,
   initialData,
 }: ProductQuickViewDialogProps) {
-  const t = useTranslations("common.shop");
   const { toast } = useToast();
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
@@ -137,7 +136,7 @@ export function ProductQuickViewDialog({
     return () => {
       isMounted = false;
     };
-  }, [isOpen, productId]); // Removed 'product' from dependency array
+  }, [isOpen, productId, onOpenChange, toast]); // Removed 'product' from dependency array
 
   const { addToCart, isAdding } = useCart(
     product?.name || initialData?.name || ""
@@ -337,7 +336,6 @@ export function ProductQuickViewDialog({
                     <ProductVariantSelector
                       options={product.options || []}
                       skus={product.skus || []}
-                      isLoggedIn={true} // Assuming true or handling guest in selector
                       selectedSkuId={currentSkuId}
                       onSkuChange={handleSkuChange}
                       onImageChange={setActiveImage}

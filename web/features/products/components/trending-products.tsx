@@ -37,7 +37,6 @@ interface TrendingProductsProps {
   columns?: number;
   layout?: "grid" | "carousel";
   alignment?: "left" | "center";
-  cardStyle?: "default" | "luxury" | "minimal";
 }
 
 export function TrendingProducts({
@@ -48,7 +47,6 @@ export function TrendingProducts({
   columns = 5,
   layout = "grid",
   alignment = "center",
-  cardStyle = "default",
 }: TrendingProductsProps) {
   const t = useTranslations("home");
   const inStockProducts = products.filter((product) =>

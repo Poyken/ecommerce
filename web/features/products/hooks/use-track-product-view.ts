@@ -37,5 +37,5 @@ export function useTrackProductView(product: TrackableProduct | null) {
     if (product && product.id && product.name) {
       addProduct(product);
     }
-  }, [product?.id]); // Chỉ track khi product ID thay đổi
+  }, [addProduct, product]); // Chỉ track khi product ID thay đổi
 }

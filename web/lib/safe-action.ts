@@ -164,6 +164,7 @@ export const REVALIDATE = {
     if (productId) revalidatePath(`/products/${productId}`, "page");
   },
   profile: () => revalidatePath("/profile", "page"),
+  wishlist: () => revalidatePath("/wishlist", "page"),
   admin: {
     products: () => revalidatePath("/admin/products", "page"),
     orders: () => revalidatePath("/admin/orders", "page"),
@@ -171,9 +172,16 @@ export const REVALIDATE = {
     brands: () => revalidatePath("/admin/brands", "page"),
     blogs: () => revalidatePath("/admin/blogs", "page"),
     notifications: () => revalidatePath("/admin/notifications", "page"),
+    coupons: () => revalidatePath("/admin/coupons", "page"),
+    pages: () => revalidatePath("/admin/pages", "page"),
+    roles: () => revalidatePath("/admin/roles", "page"),
+    users: () => revalidatePath("/admin/users", "page"),
+    reviews: () => revalidatePath("/admin/reviews", "page"),
   },
   superAdmin: {
     tenants: () => revalidatePath("/super-admin/tenants", "page"),
+    security: () => revalidatePath("/super-admin/security", "page"),
+    subscriptions: () => revalidatePath("/super-admin/subscriptions", "page"),
   },
   path: (path: string, type: "page" | "layout" = "page") =>
     revalidatePath(path, type),

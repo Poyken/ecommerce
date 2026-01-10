@@ -1,6 +1,4 @@
-// import { cookies } from "next/headers"; // Moved to dynamic import
 import { redirect } from "next/navigation";
-// import "server-only"; // Removed to allow client-side usage
 import { API_CONFIG, HTTP_STATUS } from "./constants";
 import { env } from "./env";
 
@@ -197,7 +195,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     const existingRequest = (window as any)._pendingRequests?.get(dedupKey);
     if (existingRequest) {
       if (process.env.NODE_ENV === "development") {
-        console.log(`[HTTP] Deduplicating Parallel Request: ${url.toString()}`);
+        // console.debug(`[HTTP] Deduplicating Parallel Request: ${url.toString()}`);
       }
       return existingRequest;
     }
@@ -222,11 +220,11 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
 
     try {
       if (process.env.NODE_ENV === "development") {
-        console.log(
-          `[HTTP] Fetching: ${url.toString()} (Authorized: ${
-            !!accessToken || !!requestHeaders["Authorization"]
-          })`
-        );
+        // console.debug(
+        //   `[HTTP] Fetching: ${url.toString()} (Authorized: ${
+        //     !!accessToken || !!requestHeaders["Authorization"]
+        //   })`
+        // );
       }
       res = await fetch(url.toString(), {
         headers: requestHeaders,

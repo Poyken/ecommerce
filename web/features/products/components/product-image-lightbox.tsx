@@ -2,12 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-    type CarouselApi,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
@@ -40,22 +40,22 @@ export function ProductImageLightbox({
   skus,
   options,
 }: ProductImageLightboxProps) {
-/**
- * =====================================================================
- * PRODUCT IMAGE LIGHTBOX - Xem ảnh phóng to
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TRANSFORM WRAPPER (Zoom/Pan):
- * - Sử dụng thư viện `react-zoom-pan-pinch`.
- * - Cho phép user dùng chuột (scroll) hoặc ngón tay (pinch) để zoom ảnh.
- *
- * 2. SYNC LOGIC:
- * - Khi slide carousel thay đổi -> Cập nhật `activeImage` state ở component cha.
- * - Khi user chọn thumbnail -> Scroll carousel tới slide tương ứng.
- * =====================================================================
- */
+  /**
+   * =====================================================================
+   * PRODUCT IMAGE LIGHTBOX - Xem ảnh phóng to
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. TRANSFORM WRAPPER (Zoom/Pan):
+   * - Sử dụng thư viện `react-zoom-pan-pinch`.
+   * - Cho phép user dùng chuột (scroll) hoặc ngón tay (pinch) để zoom ảnh.
+   *
+   * 2. SYNC LOGIC:
+   * - Khi slide carousel thay đổi -> Cập nhật `activeImage` state ở component cha.
+   * - Khi user chọn thumbnail -> Scroll carousel tới slide tương ứng.
+   * =====================================================================
+   */
   // ... (keeping existing comments and hooks)
   const t = useTranslations("product");
   const [api, setApi] = useState<CarouselApi>();
@@ -127,7 +127,9 @@ export function ProductImageLightbox({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ?.map((ov: any) => {
       const option = options?.find((o) => o.id === ov.optionValue.optionId);
-      const value = option?.values.find((v: OptionValue) => v.id === ov.optionValueId);
+      const value = option?.values.find(
+        (v: OptionValue) => v.id === ov.optionValueId
+      );
       return option && value ? `${option.name}: ${value.value}` : null;
     })
     .filter(Boolean)
@@ -202,7 +204,7 @@ export function ProductImageLightbox({
                         doubleClick={{ disabled: true }}
                         onTransformed={onTransformed}
                       >
-                        {({ zoomIn, zoomOut, resetTransform, ...rest }) => {
+                        {({ zoomIn, resetTransform, ...rest }) => {
                           const handleClick = (e: React.MouseEvent) => {
                             e.stopPropagation();
 

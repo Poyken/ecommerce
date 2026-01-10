@@ -37,11 +37,6 @@ import "server-only";
  * await createSession(accessToken, refreshToken);
  */
 export async function createSession(accessToken: string, refreshToken: string) {
-  const isProduction = process.env.NODE_ENV === "production";
-  console.log(`[Session] Creating session. NODE_ENV=${process.env.NODE_ENV}`);
-  console.log(`[Session] Access token length: ${accessToken?.length || 0}`);
-  console.log(`[Session] Refresh token length: ${refreshToken?.length || 0}`);
-
   const cookieStore = await cookies();
 
   // Common cookie options
@@ -61,9 +56,6 @@ export async function createSession(accessToken: string, refreshToken: string) {
     ...cookieOptions,
     maxAge: 15 * 60, // 15 phút (seconds)
   });
-  console.log(
-    `[Session] ✅ accessToken cookie set (Secure: ${isProduction}, SameSite: lax)`
-  );
 
   // Refresh Token - Dùng để lấy accessToken mới khi hết hạn
   // Thời hạn dài hơn (7 ngày) để user không phải login lại
@@ -71,19 +63,6 @@ export async function createSession(accessToken: string, refreshToken: string) {
     ...cookieOptions,
     maxAge: 7 * 24 * 60 * 60, // 7 ngày (seconds)
   });
-  console.log(
-    `[Session] ✅ refreshToken cookie set (Secure: ${isProduction}, SameSite: lax)`
-  );
-
-  // Verify cookies were actually set
-  const verifyAccess = cookieStore.get("accessToken");
-  const verifyRefresh = cookieStore.get("refreshToken");
-  console.log(
-    `[Session] Verification - accessToken exists: ${!!verifyAccess?.value}`
-  );
-  console.log(
-    `[Session] Verification - refreshToken exists: ${!!verifyRefresh?.value}`
-  );
 }
 
 /**

@@ -1,4 +1,5 @@
 import { io, Socket } from "socket.io-client";
+import { env } from "./env";
 
 /**
  * =====================================================================
@@ -36,7 +37,7 @@ class NotificationSocketClient {
     }
 
     // WebSocket server is at port 8080 (not /api/v1)
-    const serverUrl = "http://localhost:8080";
+    const serverUrl = env.SOCKET_URL;
 
     this.socket = io(`${serverUrl}/notifications`, {
       auth: {

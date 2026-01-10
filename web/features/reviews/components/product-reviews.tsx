@@ -110,7 +110,7 @@ export function ProductReviews({
           (eligibilityRes.data.purchasedSkus as unknown as PurchasedSku[]) || []
         );
       }
-    } catch (_e) {
+    } catch {
       // console.error(e);
       setError("Failed to load reviews");
     }
@@ -126,7 +126,7 @@ export function ProductReviews({
         setReviews((prev) => [...prev, ...(res.data as any[])]);
         setMeta((res.meta as any) || null);
       }
-    } catch (_e) {
+    } catch {
       // console.error("Failed to load more reviews", e);
     }
     setLoadingMore(false);

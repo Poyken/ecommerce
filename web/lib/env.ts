@@ -65,7 +65,12 @@ const formattedServerApiUrl = rawServerApiUrl.includes("/api/v1")
   ? rawServerApiUrl
   : `${rawServerApiUrl}/api/v1`;
 
-export const env = envSchema.parse({
-  NEXT_PUBLIC_API_URL: formattedApiUrl,
-  API_URL: formattedServerApiUrl,
-});
+const socketUrl = formattedApiUrl.replace("/api/v1", "");
+
+export const env = {
+  ...envSchema.parse({
+    NEXT_PUBLIC_API_URL: formattedApiUrl,
+    API_URL: formattedServerApiUrl,
+  }),
+  SOCKET_URL: socketUrl,
+};

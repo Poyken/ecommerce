@@ -26,13 +26,12 @@ import { ProductCard } from "@/features/products/components/product-card";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { ApiResponse } from "@/types/dtos";
 import { Product } from "@/types/models";
 import { AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { use, useEffect, useState, useTransition } from "react";
+import { use, useCallback, useEffect, useState, useTransition } from "react";
 
 interface ShopGridProps {
   productsPromise: Promise<{
@@ -54,7 +53,7 @@ export function ShopGrid({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const { data: products, meta: pagination } = use(productsPromise);
   const suggestedProducts = use(suggestedProductsPromise);
@@ -81,20 +80,14 @@ export function ShopGrid({
     },
   };
 
-  const createQueryString = (name: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set(name, value);
-    return params.toString();
-  };
-
-  const handlePageChange = (page: number) => {
-    startTransition(() => {
-      router.replace(
-        `${pathname}?${createQueryString("page", page.toString())}`,
-        { scroll: true }
-      );
-    });
-  };
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set(name, value);
+      return params.toString();
+    },
+    [searchParams]
+  );
 
   // Prefetch adjacent pages for faster navigation
   useEffect(() => {

@@ -7,18 +7,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import {
-  AlignCenter,
-  AlignLeft,
-  AlignRight,
-  AlignJustify,
-  Baseline,
-  Maximize2,
-  BoxSelect,
-  Layers,
-  Move,
-} from "lucide-react";
+
+import { Maximize2, BoxSelect, Layers } from "lucide-react";
 
 interface BlockStyleControlsProps {
   styles?: {

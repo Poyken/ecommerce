@@ -18,7 +18,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -33,7 +32,7 @@ export function DataTablePagination({
   total,
   limit,
 }: DataTablePaginationProps) {
-  const t = useTranslations("common.shop"); // Fallback or adjust key
+  // const t = useTranslations("common.shop"); // Fallback or adjust key
   const router = useRouter();
   const searchParams = useSearchParams();
   const [jumpPage, setJumpPage] = useState("");

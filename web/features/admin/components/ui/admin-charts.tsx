@@ -1,26 +1,21 @@
 "use client";
 
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import { formatCurrency } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatCurrency, formatVND } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import {
-    Bar,
-    BarChart,
-    Cell,
-    Legend,
-    Line,
-    LineChart,
-    Pie,
-    PieChart,
-    ResponsiveContainer,
-    Tooltip,
-    XAxis,
-    YAxis,
+  Bar,
+  BarChart,
+  Cell,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
 } from "recharts";
 
 /**
@@ -43,8 +38,6 @@ import {
  * - `notation: "compact"`: Biến số 1.500.000 thành "1.5Tr" -> Giúp biểu đồ thoáng và dễ đọc hơn.
  * =====================================================================
  */
-
-
 
 export interface SalesTrendData {
   name: string;
@@ -77,7 +70,7 @@ export function SalesTrendChart({ data }: { data: SalesTrendData[] }) {
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) =>
-                formatCurrency(value || 0, {
+                formatVND(value || 0, {
                   notation: "compact",
                   maximumFractionDigits: 1,
                 })

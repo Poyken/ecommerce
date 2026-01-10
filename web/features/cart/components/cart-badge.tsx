@@ -33,7 +33,7 @@ interface CartBadgeProps {
   initialCount?: number;
 }
 
-export const CartBadge = memo(function CartBadge(_props: CartBadgeProps) {
+export const CartBadge = memo(function CartBadge() {
   const { count } = useCartStore();
 
   // Không hiển thị badge nếu giỏ hàng trống

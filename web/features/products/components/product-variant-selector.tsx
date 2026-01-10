@@ -36,7 +36,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 interface ProductVariantSelectorProps {
   options: ProductOption[]; // Danh sách các Option (Màu, Size)
   skus: Sku[]; // Danh sách các biến thể thực tế (SKU)
-  isLoggedIn?: boolean;
   selectedSkuId?: string | null;
   onSkuChange?: (sku: Sku | null) => void;
   onImageChange?: (imageUrl: string) => void;
@@ -52,7 +51,6 @@ interface ProductVariantSelectorProps {
 export function ProductVariantSelector({
   options,
   skus,
-  isLoggedIn = false,
   selectedSkuId,
   onSkuChange,
   onImageChange,

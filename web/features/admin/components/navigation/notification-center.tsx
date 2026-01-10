@@ -3,22 +3,22 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuGroup,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import {
-    AlertTriangle,
-    Bell,
-    Check,
-    Package,
-    ShoppingCart,
+  AlertTriangle,
+  Bell,
+  Check,
+  Package,
+  ShoppingCart,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -67,7 +67,6 @@ export function NotificationCenter({
   notifications,
   onMarkRead,
   onMarkAllRead,
-  onClear,
 }: NotificationCenterProps) {
   const t = useTranslations("admin");
   const tCommon = useTranslations("common");
@@ -166,7 +165,7 @@ export function NotificationCenter({
                 )}
                 onClick={() => handleNotificationClick(notification)}
               >
-                <div className="flex-shrink-0 mt-0.5">
+                <div className="shrink-0 mt-0.5">
                   {getIcon(notification.type)}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -186,7 +185,7 @@ export function NotificationCenter({
                   </p>
                 </div>
                 {!notification.isRead && (
-                  <div className="h-2 w-2 bg-primary rounded-full flex-shrink-0 mt-1.5" />
+                  <div className="h-2 w-2 bg-primary rounded-full shrink-0 mt-1.5" />
                 )}
               </DropdownMenuItem>
             ))

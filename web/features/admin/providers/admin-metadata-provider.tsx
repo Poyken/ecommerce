@@ -77,17 +77,15 @@ export function AdminMetadataProvider({
 
   // Extract brands with proper type guard
   const brands = (() => {
-    if (!brandsRes || 'error' in brandsRes) return [];
+    if (!brandsRes || "error" in brandsRes) return [];
     if (Array.isArray(brandsRes.data)) return brandsRes.data;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (brandsRes.data as any)?.data || [];
   })();
-  
+
   // Extract categories with proper type guard
   const categories = (() => {
-    if (!categoriesRes || 'error' in categoriesRes) return [];
+    if (!categoriesRes || "error" in categoriesRes) return [];
     if (Array.isArray(categoriesRes.data)) return categoriesRes.data;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (categoriesRes.data as any)?.data || [];
   })();
 

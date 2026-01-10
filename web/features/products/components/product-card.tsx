@@ -70,7 +70,6 @@ export const ProductCard = memo(function ProductCard({
   reviewCount,
   initialIsWishlisted = false,
   isCompact = false,
-  options,
 }: ProductCardProps) {
   // 1. HOOKS KHỞI TẠO
   const t = useTranslations("productCard");
@@ -163,8 +162,6 @@ export const ProductCard = memo(function ProductCard({
         }}
         onMouseEnter={prefetchProduct}
       />
-
-
     </>
   );
 });

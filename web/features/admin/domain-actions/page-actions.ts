@@ -1,7 +1,7 @@
 "use server";
 
 import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/api-helpers";
+import { normalizePaginationParams } from "@/lib/utils";
 import { ApiResponse, ActionResult } from "@/types/dtos";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 

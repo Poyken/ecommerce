@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import { Calendar, Edit, FileText, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 /**
  * =====================================================================
@@ -48,7 +48,7 @@ export function ProfileBlogsTab() {
     null
   );
 
-  const fetchBlogs = async () => {
+  const fetchBlogs = useCallback(async () => {
     try {
       setIsLoading(true);
       const res = await getMyBlogsAction();
@@ -66,11 +66,11 @@ export function ProfileBlogsTab() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [t, toast]);
 
   useEffect(() => {
     fetchBlogs();
-  }, []);
+  }, [fetchBlogs]);
 
   const handleCreate = () => {
     setSelectedBlog(null);

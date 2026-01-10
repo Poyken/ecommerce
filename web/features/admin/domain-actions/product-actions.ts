@@ -1,7 +1,7 @@
 "use server";
 
 import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/api-helpers";
+import { normalizePaginationParams } from "@/lib/utils";
 import {
   ApiResponse,
   ActionResult,
@@ -11,8 +11,6 @@ import {
 } from "@/types/dtos";
 import { Product, ProductTranslation, Sku } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
-
-// Parameters normalization is handled by lib/api-helpers/normalizePaginationParams
 
 // --- PRODUCTS ---
 

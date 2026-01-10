@@ -25,7 +25,6 @@ import { ShopGrid } from "@/features/products/components/shop-grid";
 import { usePathname, useRouter } from "@/i18n/routing";
 import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
-import { ApiResponse } from "@/types/dtos";
 import { Brand, Category, Product } from "@/types/models";
 import { AnimatePresence } from "framer-motion";
 import { Filter, X } from "lucide-react";

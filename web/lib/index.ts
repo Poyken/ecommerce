@@ -15,7 +15,6 @@
  */
 
 // Utils chung
-export { cn } from "./utils";
 
 // Format utilities (merged into utils)
 export * from "./utils";

@@ -22,12 +22,12 @@
 
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-    type CarouselApi,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { m } from "@/lib/animations";
@@ -68,7 +68,7 @@ export const ProductImageGallery = memo(function ProductImageGallery({
   onLightboxChange,
 }: ProductImageGalleryProps) {
   // ... (existing logic)
-  const [api, setApi] = useState<CarouselApi>();
+  const [, setApi] = useState<CarouselApi>();
   const [isFirstLoadReady, setIsFirstLoadReady] = useState(false);
 
   // ... (useEffect for carousel)
@@ -86,11 +86,9 @@ export const ProductImageGallery = memo(function ProductImageGallery({
       const firstImage = activeImage || images[0];
       img.src = firstImage;
       img.onload = () => {
-         
         setIsFirstLoadReady(true);
       };
       img.onerror = () => {
-         
         setIsFirstLoadReady(true); // Don't block UI on error
       };
 
@@ -100,7 +98,6 @@ export const ProductImageGallery = memo(function ProductImageGallery({
         setDisplayImage(firstImage);
       }
     } else {
-       
       setIsFirstLoadReady(true);
     }
   }, [images, activeImage, displayImage, isTransitioning]);
