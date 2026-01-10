@@ -1,3 +1,20 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// SUPER ADMIN INVOICES PAGE - TRANG QUẢN LÝ HÓA ĐƠN NỀN TẢNG
+// =================================================================================================
+//
+// Đây là Server Component chịu trách nhiệm hiển thị danh sách hóa đơn SaaS (Software-as-a-Service).
+// Hóa đơn này là tiền phí mà các Tenants (Chủ shop) trả cho Platform, KHÔNG PHẢI hóa đơn bán hàng lẻ.
+//
+// CHỨC NĂNG CHÍNH:
+// 1. Data Fetching: Gọi `getInvoicesAction` để lấy dữ liệu ngay trên server (SSR).
+// 2. Error Handling: Cung cấp fallback data an toàn nếu API gặp sự cố, tránh crash trang.
+// 3. SEO & Metadata: (Có thể mở rộng) Là nơi thích hợp để define metadata cho trang.
+//
+// LƯU Ý:
+// - Dữ liệu được truyền xuống Client Component (`InvoicesClient`) để xử lý tương tác.
+// - Page này nằm trong route group `(dashboard)` nên thừa hưởng layout chung của Admin.
+// ================================================================================================= 
 import { getInvoicesAction } from "@/features/superadmin/domain-actions/invoices-actions";
 import { InvoicesClient } from "./invoices-client";
 

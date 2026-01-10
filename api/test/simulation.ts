@@ -1,3 +1,24 @@
+/**
+ * =====================================================================
+ * E2E SIMULATION - Giả lập luồng người dùng mua hàng
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SCENARIO (Kịch bản):
+ * - Script này mô phỏng toàn bộ hành trình của một user mới:
+ *   1. Đăng ký (Register)
+ *   2. Đăng nhập (Login) -> Lấy Token
+ *   3. Xem sản phẩm (Browse)
+ *   4. Thêm vào giỏ (Add to Cart)
+ *   5. Đặt hàng (Checkout)
+ *   6. Admin vào kiểm tra đơn hàng.
+ *
+ * 2. CSRF & AUTH:
+ * - Script xử lý tự động việc lấy Cookie và Header `x-csrf-token`.
+ * - Tự động gắn Bearer Token vào header sau khi login thành công.
+ * =====================================================================
+ */
 import axios from 'axios';
 import { randomUUID } from 'crypto';
 

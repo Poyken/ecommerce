@@ -1,3 +1,22 @@
+/**
+ * =====================================================================
+ * DATA SECURITY VERIFY - Script kiểm thử bảo mật nâng cao
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MULTI-TENANT ISOLATION:
+ * - Kiểm tra xem Tenant A có xem trộm được dữ liệu của Tenant B không?
+ * - Đây là yếu tố SỐNG CÒN của hệ thống SaaS. Nếu lộ -> Kiện tụng, Sập tiệm.
+ *
+ * 2. RBAC BOUNDARIES:
+ * - Kiểm tra xem User thường có gọi được API của Admin (VD: Xóa sản phẩm) không?
+ *
+ * 3. SESSION PINNING:
+ * - Kiểm tra cơ chế chống trộm Token. Token bị đánh cắp nhưng dùng trên
+ *   User-Agent (Trình duyệt) khác thì phải bị chặn ngay (Status 401).
+ * =====================================================================
+ */
 import axios from 'axios';
 import { randomUUID } from 'crypto';
 

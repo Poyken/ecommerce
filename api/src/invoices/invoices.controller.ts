@@ -1,3 +1,19 @@
+/**
+ * =====================================================================
+ * INVOICES CONTROLLER (SUPER ADMIN)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SCOPE:
+ * - Controller này chỉ dành cho SuperAdmin để xem doanh thu từ việc cho thuê phần mềm.
+ * - Tenant (Chủ shop) sẽ xem hóa đơn của họ ở một Controller khác (hoặc filter theo tenantId).
+ *
+ * 2. PAGINATION:
+ * - API List luôn cần phân trang (`page`, `limit`) để tránh load hàng nghìn hóa đơn cùng lúc
+ *   gây sập DB.
+ * =====================================================================
+ */
 import { Controller, Get, Param, Patch, Query, Body } from '@nestjs/common';
 import { InvoicesService } from './invoices.service';
 

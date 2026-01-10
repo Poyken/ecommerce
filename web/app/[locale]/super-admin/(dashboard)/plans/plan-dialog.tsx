@@ -1,3 +1,25 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// PLAN DIALOG COMPONENT - FORM THÊM/SỬA GÓI DỊCH VỤ
+// =================================================================================================
+//
+// Component này sử dụng Radix UI Dialog kết hợp với React Hook Form để quản lý việc nhập liệu.
+//
+// CHI TIẾT KỸ THUẬT:
+// 1. Zod Validation (`planSchema`):
+//    - Xác thực kỹ càng các field như `slug` (chỉ cho phép ký tự thường và gạch nối).
+//    - `min(-1)` cho `maxProducts` để biểu thị giá trị "Vô hạn" (Unlimited).
+//
+// 2. Controlled vs Uncontrolled Dialog:
+//    - Component hỗ trợ cả 2 chế độ mở Dialog:
+//      a) Nội bộ (Internal State): Tự quản lý `open` state.
+//      b) Điều khiển từ ngoài (Controlled State): Nhận `open` và `onOpenChange` từ cha.
+//    - Điều này giúp tái sử dụng component dễ dàng cho cả nút "Add New" (tự mở) và nút "Edit" (cha mở).
+//
+// 3. Form Reset Pattern:
+//    - Sử dụng `useEffect` để reset form values mỗi khi `planToEdit` thay đổi.
+//    - Đảm bảo form luôn sạch sẽ hoặc chứa đúng dữ liệu cần sửa khi mở ra.
+// ================================================================================================= 
 "use client";
 
 import { Button } from "@/components/ui/button";

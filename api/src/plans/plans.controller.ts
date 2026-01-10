@@ -1,3 +1,22 @@
+/**
+ * =====================================================================
+ * PLANS CONTROLLER - API Gói dịch vụ (SaaS Plans)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. PUBLIC vs PROTECTED:
+ * - GET `/plans`: Thường là Public để hiển thị bảng giá trên Landing Page.
+ * - POST/PATCH/DELETE: Phải bảo vệ nghiêm ngặt (chỉ SuperAdmin) để tránh
+ *   kẻ xấu sửa giá tiền.
+ *
+ * 2. RESTful STANDARD:
+ * - Controller này tuân thủ chuẩn REST cơ bản:
+ *   + GET /: Lấy list
+ *   + GET /:id: Lấy chi tiết
+ *   + POST /: Tạo mới
+ * =====================================================================
+ */
 import {
   Body,
   Controller,

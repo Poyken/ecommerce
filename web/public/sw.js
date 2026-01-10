@@ -1,3 +1,22 @@
+/**
+ * =====================================================================
+ * SERVICE WORKER - Bộ não của PWA (Progressive Web App)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SERVICE WORKER LÀ GÌ?
+ * - Một script chạy ngầm (background) tách biệt với trang web chính.
+ * - Hoạt động như một "Proxy" giữa Trình duyệt và Mạng (Internet).
+ *
+ * 2. CHỨC NĂNG TRONG FILE NÀY:
+ * - `install`: Cache các file tĩnh quan trọng (offline page, logo, css...).
+ * - `fetch`: Chặn mọi request mạng.
+ *    - Nếu có trong Cache -> Trả về ngay (Siêu nhanh ⚡).
+ *    - Nếu không -> Gọi ra Internet.
+ *    - Nếu mất mạng -> Trả về trang "Offline" custom.
+ * =====================================================================
+ */ 
 // Service Worker for PWA offline support
 // This file will be served from the public folder and registered in the client.
 const CACHE_NAME = 'poyken-ecommerce-v1';

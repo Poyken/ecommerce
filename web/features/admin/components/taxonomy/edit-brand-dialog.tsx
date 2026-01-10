@@ -1,3 +1,22 @@
+/**
+ * =====================================================================
+ * EDIT BRAND DIALOG - Form chỉnh sửa thương hiệu
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. QUẢN LÝ ẢNH (Image Logic):
+ * - Trạng thái ảnh phức tạp hơn text bình thường:
+ *   + Giữ nguyên (không làm gì).
+ *   + Thay ảnh mới (`image` Object).
+ *   + Xóa ảnh cũ (`isImageRemoved = true`).
+ * - Cần `URL.revokeObjectURL(imagePreview)` trong `useEffect` để tránh Memory Leak
+ *   khi tạo preview URL từ file upload.
+ *
+ * 2. COMPUTED VALUES (`useMemo`):
+ * - `currentImageUrl`: Tính toán URL nào sẽ hiển thị (preview mới hay URL cũ).
+ * =====================================================================
+ */ 
 "use client";
 
 import { FormDialog } from "@/components/shared/form-dialog";

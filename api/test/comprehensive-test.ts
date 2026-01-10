@@ -1,3 +1,19 @@
+/**
+ * =====================================================================
+ * COMPREHENSIVE TEST - Script kiểm thử toàn diện hệ thống
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. PHẠM VI:
+ * - Kiểm tra RẤT NHIỀU endpoints (Hơn 200 APIs).
+ * - Bao gồm cả các module phụ: Blog, Page, Coupon, AI Automation...
+ *
+ * 2. STATE MANAGEMENT:
+ * - Script lưu giữ state (ID của các object vừa tạo) để dùng cho step sau.
+ *   VD: Tạo Category xong lấy ID đó để tạo Product.
+ * =====================================================================
+ */
 import axios from 'axios';
 import { randomUUID } from 'crypto';
 import * as fs from 'fs';

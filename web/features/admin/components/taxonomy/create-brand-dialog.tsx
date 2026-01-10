@@ -1,3 +1,19 @@
+/**
+ * =====================================================================
+ * CREATE BRAND DIALOG - Form tạo Thương hiệu mới
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. USE TRANSITION:
+ * - Sử dụng `useTransition` để đánh dấu trạng thái "Pending" khi đang gọi Server Action.
+ * - Giúp UI không bị đơ (non-blocking) và có thể hiển thị loading spinner.
+ *
+ * 2. UNCONTROLLED vs CONTROLLED:
+ * - Form này dùng Controlled Inputs (state `name`, `image`) để dễ dàng validate
+ *   ngay khi user gõ phím.
+ * =====================================================================
+ */ 
 "use client";
 
 import { FormDialog } from "@/components/shared/form-dialog";

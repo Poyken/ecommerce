@@ -1,3 +1,22 @@
+/**
+ * =====================================================================
+ * SUPER ADMIN SERVICE - Logic cốt lõi cho Super Admin
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. GLOBAL CONTEXT (`runGlobal`):
+ * - Hệ thống mặc định chạy trong `TenantContext` (chỉ thấy dữ liệu của 1 cửa hàng).
+ * - SuperAdmin cần thấy TẤT CẢ. `runGlobal` dùng `tenantStorage.run(undefined)`
+ *   để bypass bộ lọc Tenant RLS (Row Level Security) của Prisma.
+ *
+ * 2. IMPERSONATION (Đóng vai):
+ * - Tính năng cực mạnh cho CS/Support.
+ * - Cho phép SuperAdmin đăng nhập tức thì vào tài khoản Owner của bất kỳ Tenant nào
+ *   mà không cần mật khẩu.
+ * - Cơ chế: Tạo ra một Token thật nhưng với Session Type đặc biệt.
+ * =====================================================================
+ */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { TokenService } from '@/auth/token.service';

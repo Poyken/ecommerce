@@ -1,3 +1,16 @@
+/**
+ * =====================================================================
+ * SUPER ADMIN CONTROLLER
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SECURITY CAO CẤP:
+ * - `@Permissions('SUPER_ADMIN')`: Chỉ user có quyền tối thượng mới truy cập được.
+ * - Endpoint này cực kỳ nhạy cảm vì chứa số liệu tài chính toàn hệ thống
+ *   và quyền truy cập vào bất kỳ tenant nào.
+ * =====================================================================
+ */
 import { Controller, Get, Post, Param, UseGuards } from '@nestjs/common';
 import { SuperAdminService } from './super-admin.service';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';

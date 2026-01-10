@@ -1,3 +1,21 @@
+/**
+ * =====================================================================
+ * ROLE ACTIONS - Quản lý Vai trò & Quyền hạn
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CONCEPT: RBAC (Role-Based Access Control)
+ * - Users có Roles.
+ * - Roles có Permissions.
+ * - Thay vì gán quyền lẻ tẻ cho từng user, ta gán Role.
+ *
+ * 2. ACTIONS:
+ * - `createRole`, `updateRole`, `deleteRole`: CRUD Roles.
+ * - `assignPermissionsAction`: Quan trọng nhất. Quy định Role này làm được gì.
+ *   (VD: Role "Editor" được `create:product`, `update:product`...).
+ * =====================================================================
+ */
 "use server";
 
 import { http } from "@/lib/http";

@@ -1,3 +1,18 @@
+/**
+ * =====================================================================
+ * BUSINESS TAB - Tab Kinh doanh (Analytics)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. DATA VISUALIZATION:
+ * - Sử dụng các thư viện biểu đồ (Lazy Admin Charts) để vẽ Chart doanh thu.
+ * - Các chỉ số KPI (Key Performance Indicators): Doanh thu, Đơn hàng, Khách hàng, Sản phẩm.
+ *
+ * 2. UX:
+ * - Các thẻ Card có hiệu ứng hover border màu (`border-l-4`) để phân biệt nhanh các nhóm chỉ số.
+ * =====================================================================
+ */ 
 "use client";
 
 import {

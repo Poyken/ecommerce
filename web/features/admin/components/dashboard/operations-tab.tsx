@@ -1,3 +1,19 @@
+/**
+ * =====================================================================
+ * OPERATIONS TAB - Trung tâm điều hành (Dashboard)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MỤC ĐÍCH:
+ * - Tab này giúp Admin nắm bắt nhanh tình trạng vận hành hàng ngày.
+ * - Các chỉ số QUAN TRỌNG NHẤT: Đơn hàng cần xử lý (Pending), Hết hàng (Low Stock).
+ *
+ * 2. `getStatusStyle`:
+ * - Helper function để tô màu Badge trạng thái đơn hàng.
+ * - UX Design: Màu sắc giúp nhận diện nhanh (Xanh lá = OK, Cam = Chờ, Đỏ = Hủy).
+ * =====================================================================
+ */ 
 "use client";
 
 import {

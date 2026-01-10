@@ -1,3 +1,19 @@
+/**
+ * =====================================================================
+ * BULK CONTROLLER - Xử lý dữ liệu lớn (Import/Export)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. STREAMING RESPONSE:
+ * - Export file (CSV/Excel) trả về Buffer hoặc Stream để client tải xuống.
+ * - Header `Content-Disposition: attachment` báo trình duyệt tải file về thay vì hiển thị.
+ *
+ * 2. BULK IMPORT:
+ * - Hỗ trợ nhập liệu từ Excel. Có chế độ `dryRun` (chạy thử) để validate dữ liệu
+ *   trước khi ghi thật vào DB.
+ * =====================================================================
+ */
 import { RequirePermissions } from '@/common/decorators/crud.decorators';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';

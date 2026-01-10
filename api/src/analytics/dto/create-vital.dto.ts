@@ -1,3 +1,21 @@
+/**
+ * =====================================================================
+ * CREATE VITAL DTO - Web Vitals Data Object
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. GOOGLE WEB VITALS:
+ * - Đây là các chỉ số đo lường UX do Google định nghĩa.
+ * - FCP (First Contentful Paint): Tốc độ hiển thị.
+ * - LCP (Largest Contentful Paint): Tốc độ hiển thị nội dung chính.
+ * - CLS (Cumulative Layout Shift): Độ ổn định giao diện.
+ * - INP (Interaction to Next Paint): Độ phản hồi.
+ *
+ * 2. DATA COLLECTION:
+ * - DTO này định nghĩa cấu trúc dữ liệu mà Frontend gửi về để Server lưu trữ.
+ * =====================================================================
+ */
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 

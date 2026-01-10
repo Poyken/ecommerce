@@ -1,3 +1,24 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// BACKEND API DOCUMENTATION - TÀI LIỆU KIẾN TRÚC BACKEND
+// =================================================================================================
+//
+// Chào mừng bạn đến với phần lõi xử lý Logic của hệ thống (Brain of the Operation).
+// API này được xây dựng trên NestJS, framework Node.js mạnh mẽ và chặt chẽ nhất hiện nay.
+//
+// KIẾN TRÚC CỐT LÕI (CORE ARCHITECTURE):
+// 1. Modular Design: Code được chia thành các Modules độc lập (như lắp ghép LEGO).
+//    Mỗi module quản lý một domain riêng (Product, Order, Auth...).
+// 2. Multi-Tenancy (Đa thuê bao):
+//    Một DB nhưng phục vụ hàng nghìn cửa hàng (Tenants) khác nhau. Dữ liệu được cách ly tuyệt đối.
+// 3. Layered Architecture:
+//    Controller (Tiếp nhận request) -> Service (Xử lý nghiệp vụ) -> Repository (Tương tác DB).
+//
+// QUY TẮC BẢO MẬT (SECURITY RULES):
+// - KHÔNG commit `.env` file.
+// - Luôn validate dữ liệu đầu vào bằng DTO (Data Transfer Object).
+// - Mọi API nhạy cảm đều phải có Guards (Auth, Roles).
+// =================================================================================================
 /**
  * =====================================================================
  * E-COMMERCE PLATFORM - API CODEBASE

@@ -1,3 +1,19 @@
+/**
+ * =====================================================================
+ * PRODUCT BASIC INFO - Form thông tin cơ bản
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MAGIC WRITE BUTTON (AI):
+ * - Nút "Magic Write" tích hợp AI để tự động viết mô tả sản phẩm chuẩn SEO
+ *   dựa trên Tên sp, Danh mục và Thương hiệu.
+ *
+ * 2. UX:
+ * - Validate form realtime và hiển thị lỗi bằng Animation (`AnimatePresence`)
+ *   giúp giao diện mượt mà, thân thiện hơn thông báo lỗi cứng nhắc.
+ * =====================================================================
+ */ 
 "use client";
 
 import { Input } from "@/components/ui/input";

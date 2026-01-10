@@ -1,3 +1,23 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// PLANS LIST CLIENT COMPONENT
+// =================================================================================================
+//
+// Component hiển thị danh sách các Subscription Plans dưới dạng bảng.
+//
+// ĐIỂM CẦN LƯU Ý:
+// 1. Data Type Consistency: Interface `SubscriptionPlan` phải khớp với Prisma Model ở Backend và
+//    kiểu dữ liệu component cha truyền xuống.
+//
+// 2. State Management:
+//    - `plans`: State local để render UI. Mặc dù dữ liệu ban đầu đến từ Server Props (`initialPlans`),
+//      việc có state local cho phép ta thực hiện các thao tác filters/sort client-side sau này nếu cần.
+//    - `editingPlan`: Lưu trữ object plan đang được chọn để sửa.
+//
+// 3. Delete Flow:
+//    - Xác nhận bằng `window.confirm` đơn giản (có thể nâng cấp lên Dialog đẹp hơn sau này).
+//    - Gọi Server Action `deletePlanAction` và dùng `router.refresh()` để reload data.
+// ================================================================================================= 
 "use client";
 
 import { Badge } from "@/components/ui/badge";

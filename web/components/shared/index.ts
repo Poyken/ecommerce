@@ -1,3 +1,19 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// SHARED COMPONENTS INDEX - KHO COMPONENT CHUNG
+// =================================================================================================
+//
+// File này đóng vai trò là "Cổng xuất" (Barrel Export) cho thư mục `components/shared`.
+//
+// LỢI ÍCH:
+// 1. Gọn gàng khi import: Thay vì import từ đường dẫn dài như `@/components/shared/optimized-image`,
+//    bạn chỉ cần viết: `import { OptimizedImage } from "@/components/shared"`.
+// 2. Encapsulation: Kiểm soát được component nào muốn public ra ngoài, component nào giữ riêng (private).
+//
+// QUY TẮC:
+// - Khi tạo file mới trong folder này, hãy nhớ thêm dòng `export ...` vào đây.
+// - Nhóm các export theo chức năng (Image, Data Table, UI...) để dễ quản lý.
+// =================================================================================================
 /**
  * =====================================================================
  * SHARED COMPONENTS INDEX - Central Export Point

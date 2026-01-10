@@ -1,3 +1,22 @@
+/**
+ * =====================================================================
+ * STRING UTILS - Các hàm tiện ích xử lý chuỗi
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. KHI NÀO DÙNG?
+ * - Bất cứ khi nào bạn cần xử lý chuỗi (String) mà logic đó có thể tái sử dụng.
+ * - Ví dụ: Tạo URL thân thiện (slug), kiểm tra base64, lấy hashtag...
+ *
+ * 2. HÀM NỔI BẬT:
+ * - `createSlug`: Biến "Tiếng Việt có dấu" thành "tieng-viet-co-dau" (dùng cho URL sản phẩm).
+ * - `extractHashtags`: Lấy danh sách #hashtag từ bài viết.
+ *
+ * ⚠️ LƯU Ý:
+ * - Ưu tiên dùng các thư viện đã được test kỹ (như `slugify`) thay vì tự regex nếu phức tạp.
+ * =====================================================================
+ */
 import slugify from 'slugify';
 
 /**

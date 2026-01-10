@@ -1,3 +1,19 @@
+/**
+ * =====================================================================
+ * INVOICES SERVICE - Xuất hóa đơn cho Tenant
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. RELATIONAL DATA:
+ * - `findAllSuperAdmin`: Khi lấy danh sách hóa đơn, cần `include` thêm
+ *   thông tin `tenant` (để biết ai trả) và `subscriptionPlan` (trả cho gói nào).
+ *
+ * 2. MANUAL STATUS UPDATE:
+ * - Trong trường hợp Tenant chuyển khoản ngân hàng (Bank Transfer) thay vì
+ *   cổng thanh toán tự động, Admin cần nút bấm để "Duyệt" (Mark as Paid).
+ * =====================================================================
+ */
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 

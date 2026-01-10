@@ -1,3 +1,24 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// DATABASE SEEDING SCRIPT - KHỞI TẠO DỮ LIỆU MẪU
+// =================================================================================================
+//
+// Script này chạy một lần để điền đầy database với dữ liệu ban đầu, giúp developer
+// có ngay một môi trường "có hồn" để code mà không cần nhập liệu thủ công.
+//
+// QUY TRÌNH SEEDING:
+// 1. Permissions: Tạo danh sách toàn bộ quyền hạn (hardcoded text) để hệ thống RBAC hoạt động.
+// 2. Tenants: Tạo một store mẫu (Luxe Home) domain `localhost` để dev local.
+// 3. Roles: Tạo 3 roles cơ bản (SUPER_ADMIN, ADMIN, USER) và gán quyền tương ứng.
+// 4. Users: Tạo các user mẫu đại diện cho từng role. Password mặc định la `12345678`.
+// 5. Sample Data:
+//    - 10 Brands (Thương hiệu nội thất nổi tiếng).
+//    - 10 Categories (Phòng khách, Ngủ, Bếp...).
+//    - 100 Products & 1000 SKUs (Tạo dữ liệu lớn để test performance phân trang).
+//    - 20 Blog Posts (Test tính năng CMS/Blog).
+//
+// CHẠY SCRIPT: `npx prisma db seed`
+// =================================================================================================
 import { PrismaClient, Role, Brand, Category } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 

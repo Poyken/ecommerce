@@ -1,3 +1,16 @@
+/**
+ * =====================================================================
+ * CATEGORIES CONTROLLER
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. HIERARCHY DATA:
+ * - Danh mục thường có cấu trúc cây (Cha - Con).
+ * - Controller này cung cấp API CRUD cơ bản.
+ * - API `findAll` có cache vì danh mục ít thay đổi.
+ * =====================================================================
+ */
 import {
   ApiCreateResponse,
   ApiDeleteResponse,

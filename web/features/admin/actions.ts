@@ -1,3 +1,20 @@
+/**
+ * =====================================================================
+ * ADMIN SERVER ACTIONS ENTRY POINT
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MỤC ĐÍCH:
+ * - File này đóng vai trò là "Central Export Point" cho tất cả Server Actions của Admin.
+ * - Giúp các Client Components chỉ cần import từ `@/features/admin/actions`
+ *   thay vì phải nhớ đường dẫn chi tiết tới từng file domain.
+ *
+ * 2. CẤU TRÚC:
+ * - Chúng ta chia nhỏ actions theo domain (product, order, user...) để dễ quản lý (Separation of Concerns).
+ * - Nhưng ở đây ta gom lại (re-export) để dễ sử dụng (Developer Experience).
+ * =====================================================================
+ */
 // "use server";
 
 /**

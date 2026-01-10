@@ -1,3 +1,20 @@
+/**
+ * =====================================================================
+ * NOTIFICATION ACTIONS - Gửi thông báo hệ thống
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. BROADCAST vs UNICAST:
+ * - `broadcastNotificationAction`: Gửi cho TẤT CẢ user (hoặc nhóm user).
+ *   VD: "Hệ thống bảo trì 2h tới".
+ * - `sendNotificationToUserAction`: Gửi cho 1 User cụ thể.
+ *   VD: "Đơn hàng #123 của bạn đã được giao".
+ *
+ * 2. REAL-TIME:
+ * - Backend sau khi nhận request sẽ đẩy qua WebSocket (Socket.IO) tới client đang online.
+ * =====================================================================
+ */
 "use server";
 
 import { http } from "@/lib/http";

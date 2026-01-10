@@ -1,3 +1,21 @@
+/**
+ * =====================================================================
+ * PING TEST - Kiểm tra kết nối API cơ bản
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SMOKE TEST:
+ * - Script này chạy đơn giản để xem Backend có đang "sống" (alive) không.
+ * - Test 2 endpoints:
+ *   + `/health`: Endpoint nhẹ nhất, chỉ trả về "OK".
+ *   + `/products`: Test kết nối Database (vì phải query sản phẩm).
+ *
+ * 2. CÁCH CHẠY:
+ * - Dùng `ts-node` hoặc `bun` để chạy file này từ terminal.
+ * - Hữu ích khi deploy xong hoặc trước khi chạy E2E tests.
+ * =====================================================================
+ */
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8080/api/v1';

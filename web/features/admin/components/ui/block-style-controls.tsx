@@ -1,5 +1,23 @@
 /**
  * =====================================================================
+ * BLOCK STYLE CONTROLS - Trình chỉnh sửa CSS Visually
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. NO-CODE EDITOR:
+ * - Component này là trái tim của Page Builder.
+ * - Cho phép Marketer chỉnh sửa Margin, Padding, Màu sắc, Flexbox...
+ *   thông qua giao diện (GUI) thay vì viết code CSS.
+ *
+ * 2. CSS MAPPING:
+ * - Các giá trị input (VD: "20px") sẽ được map trực tiếp vào `style` prop
+ *   của React Element khi render.
+ * - Hỗ trợ cả các thuộc tính nâng cao như `zIndex`, `boxShadow`, `animation`.
+ * =====================================================================
+ */ 
+/**
+ * =====================================================================
  * BLOCK STYLE CONTROLS - BỘ ĐIỀU KHIỂN STYLE CHO CMS BLOCKS
  * =====================================================================
  */

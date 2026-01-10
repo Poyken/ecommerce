@@ -1,3 +1,18 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// PERMISSIONS CLIENT PAGE - GIAO DIỆN QUẢN LÝ QUYỀN
+// =================================================================================================
+//
+// Component này cung cấp giao diện CRUD (Create, Read, Update, Delete) cho Permissions.
+// Mặc dù Permissions thường ít khi thay đổi (thường được define cứng trong code), UI này hữu ích
+// cho việc review hoặc điều chỉnh thủ công trong các trường hợp đặc biệt.
+//
+// TÍNH NĂNG CHÍNH:
+// 1. Tìm kiếm (Search): Lọc permissions theo tên để nhanh chóng tìm quyền cần sửa.
+// 2. Dialogs: Sử dụng các Dialog component tách biệt (`CreatePermissionDialog`, `EditPermissionDialog`)
+//    để giữ code sạch sẽ và dễ bảo trì.
+// 3. Delete Confirmation: Luôn hỏi lại trước khi xóa để tránh thao tác nhầm lẫn nguy hiểm.
+// ================================================================================================= 
 "use client";
 
 import { GlassButton } from "@/components/shared/glass-button";

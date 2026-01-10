@@ -1,3 +1,19 @@
+/**
+ * =====================================================================
+ * ANALYTICS CONTROLLER - Thống kê & Báo cáo
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. AGGREGATION:
+ * - Các API này thường gọi query rất nặng (SUM, COUNT, GROUP BY).
+ * - Frontend thường sẽ gọi các API này khi vào trang Dashboard.
+ *
+ * 2. WEB VITALS (`postVitals`):
+ * - Endpoint nhận metrics hiệu năng (LCP, CLS, INP) từ trình duyệt người dùng
+ *   gửi về để giám sát trải nghiệm người dùng thực tế (RUM - Real User Monitoring).
+ * =====================================================================
+ */
 import {
   ApiGetOneResponse,
   ApiListResponse,

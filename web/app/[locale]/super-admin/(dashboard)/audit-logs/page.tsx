@@ -1,3 +1,22 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// SUPER ADMIN AUDIT LOGS - NHẬT KÝ HOẠT ĐỘNG TOÀN NỀN TẢNG
+// =================================================================================================
+//
+// Trang này cho phép Super Admin tra cứu lịch sử hoạt động (Audit Logs) của TOÀN BỘ hệ thống.
+// Khác với Admin thường (chỉ xem được log của shop mình), Super Admin cần cái nhìn tổng quan
+// để phát hiện các vấn đề bảo mật hoặc lỗi kỹ thuật ở cấp độ hạ tầng/nền tảng.
+//
+// LUỒNG DỮ LIỆU:
+// 1. Nhận `searchParams` từ URL (page, search keyword, filter type).
+// 2. Gọi Server Action `getAuditLogsAction`. Lưu ý: Action này cần đủ thông minh để biết
+//    khi nào đang được gọi bởi Super Admin để trả dữ liệu global thay vì scoped theo tenant.
+// 3. Access Control: Nếu API trả lỗi (403/Forbidden), hiển thị thông báo "Access Denied" trang trọng.
+//
+// TÁI SỬ DỤNG COMPONENT:
+// - Chúng ta tái sử dụng `AuditLogsClient` của Admin thường, vì giao diện hiển thị log là tương tự.
+// - Props `basePath` giúp điều hướng phân trang đúng về URL của Super Admin.
+// ================================================================================================= 
 import { AuditLogsClient } from "@/app/[locale]/admin/(dashboard)/audit-logs/audit-logs-client";
 import { getAuditLogsAction } from "@/features/admin/domain-actions/security-actions";
 import { getTranslations } from "next-intl/server";

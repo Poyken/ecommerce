@@ -1,3 +1,22 @@
+/**
+ * =====================================================================
+ * TECHOPS TAB - Giám sát Kỹ thuật (DevOps Dashboard)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SYSTEM MONITORING:
+ * - Màn hình này dành cho đội kỹ thuật (Dev/Ops).
+ * - Theo dõi sức khỏe hệ thống: API, Database, Worker Nodes, Storage S3.
+ *
+ * 2. JOB QUEUES (BullMQ):
+ * - Hiển thị trạng thái các hàng đợi xử lý ngầm (Gửi mail, Resize ảnh...).
+ * - Nếu `waiting` tăng cao đột biến -> Hệ thống đang bị tắc nghẽn (Bottleneck).
+ *
+ * 3. ERROR LOGS:
+ * - Feed lỗi thời gian thực (giả lập) để phát hiện sự cố nhanh.
+ * =====================================================================
+ */ 
 "use client";
 
 import {

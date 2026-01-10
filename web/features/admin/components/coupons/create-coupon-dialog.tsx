@@ -1,3 +1,22 @@
+/**
+ * =====================================================================
+ * CREATE COUPON FORM - Form tạo mã giảm giá
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. UI/UX:
+ * - Sử dụng `FormDialog` để hiển thị form trong Modal.
+ * - Có validate form (`validateCouponForm`) và feedback lỗi (`toast`, `AnimatedError`).
+ *
+ * 2. `useTransition`:
+ * - Hook này của React 18 giúp đánh dấu việc gọi API (`startTransition`) là "việc phụ".
+ * - Giúp UI không bị đơ (freeze) khi đang submit form.
+ *
+ * 3. LOGIC:
+ * - Khi submit thành công -> Reset form -> Đóng dialog -> Hiển thị Toast Success.
+ * =====================================================================
+ */ 
 "use client";
 
 import { createCouponAction } from "@/features/admin/actions";

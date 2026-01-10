@@ -1,3 +1,24 @@
+/**
+ * =====================================================================
+ * CREATE USER DIALOG - Form tạo nhân viên mới
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MỤC ĐÍCH:
+ * - Dùng để admin tạo tài khoản cho nhân viên khác.
+ * - KHÔNG PHẢI form đăng ký (Register) ngoại public website.
+ *
+ * 2. VALIDATION:
+ * - Email: Phải đúng định dạng regex.
+ * - Password: Tối thiểu 6 ký tự.
+ * - Tên/Họ: Bắt buộc.
+ *
+ * 3. SECURITY:
+ * - Password được gửi qua API (`createUserAction`) và sẽ được hash (mã hóa) ở Backend.
+ * - Không bao giờ lưu plain-text password.
+ * =====================================================================
+ */ 
 "use client";
 
 import { createUserAction } from "@/features/admin/actions";

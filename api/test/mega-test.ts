@@ -1,3 +1,19 @@
+/**
+ * =====================================================================
+ * MEGA TEST - Kịch bản kiểm thử tích hợp (Integration Test)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. ISOLATED TESTING:
+ * - File này chạy độc lập, tự tạo session axios riêng cho 3 vai trò:
+ *   SuperAdmin, Admin, User.
+ *
+ * 2. TEST FLOW (Luồng kiểm thử):
+ * - Auth -> Tạo MetaData (Cat/Brand) -> Tạo Product -> Mua hàng (Order) -> Admin duyệt.
+ * - Nếu script chạy từ đầu đến cuối không lỗi (xanh lè) -> Core luồng chính hoạt động tốt.
+ * =====================================================================
+ */
 import axios from 'axios';
 import { randomUUID } from 'crypto';
 

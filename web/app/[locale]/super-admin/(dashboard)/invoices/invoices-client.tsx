@@ -1,3 +1,24 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// INVOICES CLIENT COMPONENT - GIAO DIỆN QUẢN LÝ HÓA ĐƠN
+// =================================================================================================
+//
+// Component này xử lý các tương tác người dùng liên quan đến danh sách hóa đơn.
+// Vì cần dùng `useState` (quản lý state local) và `onClick` (event handler), file này phải là "use client".
+//
+// CÁC TÍNH NĂNG CHÍNH:
+// 1. Hiển thị danh sách: Render bảng hóa đơn với các thông tin: Tenant, Số tiền, Trạng thái.
+// 2. Cập nhật trạng thái (Manual Action):
+//    - Cho phép Super Admin đánh dấu hóa đơn là "Đã thanh toán" (ví dụ: khi nhận chuyển khoản ngân hàng).
+//    - Hủy hóa đơn nếu có sai sót.
+// 3. Optimistic UI (cơ bản):
+//    - Khi API trả về thành công, state local được cập nhật ngay lập tức (`setInvoices`)
+//    - `router.refresh()` giúp đồng bộ lại dữ liệu mới nhất từ server mà không reload trọn trang.
+//
+// HELPER FUNCTIONS:
+// - `getStatusBadge`: Render badge màu sắc trực quan (Xanh = Paid, Vàng = Pending, Đỏ = Overdue).
+// - `formatCurrency`: Utility để hiển thị tiền tệ chuẩn format quốc tế.
+// ================================================================================================= 
 "use client";
 
 import { Badge } from "@/components/ui/badge";

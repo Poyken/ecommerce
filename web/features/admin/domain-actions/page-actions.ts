@@ -1,3 +1,20 @@
+/**
+ * =====================================================================
+ * PAGE BUILDER ACTIONS - Quản lý CMS Pages
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CMS (Content Management System):
+ * - Hệ thống cho phép Marketing/Admin tự tạo Landing Page mà không cần Dev code.
+ * - Lưu trữ cấu trúc page dưới dạng JSON Blocks.
+ *
+ * 2. CRUD:
+ * - Tạo, Sửa (JSON Blocks), Xóa page.
+ * - `revalidatePath` (thông qua `REVALIDATE`) cực quan trọng ở đây để khi Admin sửa xong,
+ *   User ngoài trang chủ thấy content mới ngay lập tức (Next.js ISR/On-demand Revalidation).
+ * =====================================================================
+ */
 "use server";
 
 import { http } from "@/lib/http";

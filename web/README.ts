@@ -1,3 +1,19 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// FRONTEND DOCUMENTATION & ARCHITECTURE - TÀI LIỆU KIẾN TRÚC FRONTEND
+// =================================================================================================
+//
+// Chào mừng bạn đến với codebase Frontend của dự án E-Commerce Platform!
+// File này đóng vai trò như một bản đồ tóm tắt (Cheat Sheet) giúp bạn nắm bắt nhanh
+// cấu trúc và các công nghệ cốt lõi đang được sử dụng.
+//
+// ĐIỂM NHẤN QUAN TRỌNG:
+// 1. Next.js App Router: Chúng ta sử dụng mô hình routing mới nhất, ưu tiên Server Components.
+// 2. Feature-First Organization: Code được chia theo "tính năng" (Products, Cart) thay vì "loại file".
+// 3. Strict TypeScript: Mọi dữ liệu đều phải được định nghĩa kiểu rõ ràng. Không dùng `any`.
+//
+// HÃY ĐỌC KỸ CÁC MỤC DƯỚI ĐÂY TRƯỚC KHI BẮT ĐẦU CODE.
+// =================================================================================================
 /**
  * =====================================================================
  * E-COMMERCE PLATFORM - WEB FRONTEND

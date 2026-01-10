@@ -1,3 +1,24 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// ROLES CLIENT PAGE - UI QUẢN LÝ ROLES
+// =================================================================================================
+//
+// Client Component này cung cấp giao diện tương tác đầy đủ cho CRUD Roles.
+//
+// CÁC KỸ THUẬT UX NÂNG CAO:
+// 1. Debounced Search:
+//    - Sử dụng `useDebouncedCallback` để delay việc search 300ms sau khi người dùng ngừng gõ.
+//    - Tránh spam request lên URL/Server.
+// 2. URL State Sync:
+//    - Đồng bộ từ khóa tìm kiếm lên URL query params (`?search=...`).
+//    - Giúp người dùng có thể bookmark hoặc share link kết quả tìm kiếm.
+// 3. React Transitions:
+//    - Dùng `useTransition` khi update URL để tránh blocking UI, giữ giao diện mượt mà.
+//
+// COMPONENTS:
+// - `GlassButton`: Button với hiệu ứng kính mờ (frosted glass) theo design system.
+// - `AdminPageHeader`: Component tiêu đề chuẩn hóa cho các trang quản trị.
+// ================================================================================================= 
 "use client";
 
 import { GlassButton } from "@/components/shared/glass-button";

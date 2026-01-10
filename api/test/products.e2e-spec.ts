@@ -1,3 +1,19 @@
+/**
+ * =====================================================================
+ * PRODUCTS E2E SPEC - Kiểm thử End-to-End cho Product
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SUPERTEST:
+ * - Thư viện phổ biến nhất để test HTTP API trong hệ sinh thái Node.js/NestJS.
+ * - Giả lập Client gửi request vào App thật (đã compile).
+ *
+ * 2. TEST CASES:
+ * - GET /products: Phải trả về mảng dữ liệu.
+ * - Error Handling: Request ID rác (non-existent-id) phải trả về 404 Not Found.
+ * =====================================================================
+ */
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';

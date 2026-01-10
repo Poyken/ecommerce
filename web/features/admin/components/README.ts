@@ -1,3 +1,19 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// ADMIN UI COMPONENT STANDARDS - QUY CHUẨN CODE GIAO DIỆN
+// =================================================================================================
+//
+// File này KHÔNG PHẢI code chạy, mà là tài liệu kỹ thuật (Design Guideline).
+// Nó quy định cách viết component trong folder Admin để đảm bảo code đồng nhất giữa các thành viên team.
+//
+// CÁC QUY TẮC CỐT LÕI:
+// 1. Naming: Tên file `kebab-case` (create-product.tsx), Tên component `PascalCase` (CreateProduct).
+// 2. Dialog Pattern: Mọi Dialog popup phải dùng wrapper `FormDialog` để thống nhất style header/footer.
+// 3. Validation: Sử dụng thư viện Zod kết hợp với `AnimatedError` để thông báo lỗi mượt mà.
+// 4. i18n: Không hardcode text tiếng Anh, tất cả phải dùng hàm `t()` của `useTranslations`.
+//
+// HÃY ĐỌC KỸ TRƯỚC KHI TẠO FILE MỚI TRONG FOLDER NÀY.
+// =================================================================================================
 /**
  * =====================================================================
  * ADMIN COMPONENTS - STANDARDIZED STRUCTURE

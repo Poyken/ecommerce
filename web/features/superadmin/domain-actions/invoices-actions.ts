@@ -1,3 +1,23 @@
+/**
+ * =====================================================================
+ * INVOICES ACTIONS (Super Admin Side) - Quản lý Hóa đơn của Tenants
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MỤC ĐÍCH:
+ * - Module này dành cho Admin tổng (SuperAdmin) để quản lý việc thanh toán
+ *   của các Tenants (chủ shop thuê hệ thống).
+ *
+ * 2. ZOD VALIDATION:
+ * - `getInvoicesSchema`: Validate page/limit (tránh user truyền số âm, chữ...)
+ * - `updateStatusSchema`: Đảm bảo status là string hợp lệ.
+ *
+ * 3. REVALIDATE:
+ * - Sau khi update trạng thái hóa đơn (VD: Paid -> Cancelled), cần clear cache
+ *   để trang danh sách hiển thị đúng ngay lập tức.
+ * =====================================================================
+ */
 "use server";
 
 import { protectedActionClient } from "@/lib/safe-action";

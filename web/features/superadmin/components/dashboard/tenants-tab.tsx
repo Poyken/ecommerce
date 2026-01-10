@@ -1,3 +1,19 @@
+/**
+ * =====================================================================
+ * TENANTS TAB - Danh sách Tenants (Super Admin)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. MULTI-TENANT UI:
+ * - Hiển thị danh sách các cửa hàng đang thuê hệ thống.
+ * - Mỗi thẻ Tenant hiển thị các chỉ số cơ bản (User, Sản phẩm, Đơn hàng) để đánh giá nhanh quy mô.
+ *
+ * 2. IMPERSONATION ENTRY POINT:
+ * - Nút "Log in as Owner" (khi được implement) sẽ gọi API `impersonate`
+ *   để truy cập vào dashboard của tenant đó.
+ * =====================================================================
+ */ 
 "use client";
 
 import {

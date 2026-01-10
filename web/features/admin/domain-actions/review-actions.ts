@@ -1,3 +1,20 @@
+/**
+ * =====================================================================
+ * REVIEW ACTIONS - Tương tác với API Đánh giá
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. AI INTEGRATION:
+ * - `analyzeReviewSentimentAction`: Gọi AI endpoint để phân tích cảm xúc
+ *   (Tích cực, Tiêu cực, Trung tính) dựa trên nội dung text của review.
+ * - Giúp Admin lọc nhanh các review tiêu cực để ưu tiên xử lý.
+ *
+ * 2. MODERATION FLOW:
+ * - `updateReviewStatusAction`: Duyệt (Approve) hoặc Ẩn (Hide) review.
+ * - Chỉ review đã duyệt mới được hiện ngoài Storefront.
+ * =====================================================================
+ */
 "use server";
 
 import { http } from "@/lib/http";

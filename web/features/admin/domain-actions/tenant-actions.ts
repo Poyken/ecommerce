@@ -1,3 +1,19 @@
+/**
+ * =====================================================================
+ * TENANT ACTIONS - Quản lý Khách hàng Doanh nghiệp (SaaS)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. CONTEXT:
+ * - Hệ thống của chúng ta là Multi-tenant (SaaS).
+ * - `Tenant` đại diện cho một khách hàng doanh nghiệp thuê platform.
+ *
+ * 2. SUPER ADMIN ONLY:
+ * - Các actions này chỉ dành cho SuperAdmin. Tenant Admin bình thường không được gọi.
+ * - `REVALIDATE.superAdmin.tenants()`: Cache key riêng biệt cho khu vực SuperAdmin.
+ * =====================================================================
+ */
 "use server";
 
 import { http } from "@/lib/http";

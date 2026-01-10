@@ -1,3 +1,22 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// API ENDPOINT EXTRACTION SCRIPT - TOOL TỰ ĐỘNG HÓA TÀI LIỆU
+// =================================================================================================
+//
+// Script này quét toàn bộ source code (`src/`) để tìm và liệt kê tất cả API Endpoints.
+// Nó hoạt động bằng cách phân tích tĩnh (Static Analysis) các file `.controller.ts`.
+//
+// CƠ CHẾ HOẠT ĐỘNG (REGEX PARSING):
+// 1. Tìm các file `*.controller.ts`.
+// 2. Đọc nội dung file, tìm decorator `@Controller('path')` để lấy base path.
+// 3. Tìm các decorator method `@Get`, `@Post`, `@Put`... để lấy HTTP method và sub-path.
+// 4. Kết hợp lại thành full endpoint URL (ví dụ: `POST /api/v1/auth/login`).
+//
+// MỤC ĐÍCH:
+// - Tạo ra file `API_ENDPOINTS_CATALOG.json` dùng để tham khảo nhanh.
+// - Giúp Frontend Dev biết Backend có những API nào mà không cần đọc từng file code.
+// - Kiểm toán (Audit) xem có endpoint nào bị thừa hoặc path đặt tên chưa chuẩn không.
+// ================================================================================================= 
 // API Endpoint Extraction Script
 // Run: node scripts/extract-api-endpoints.js
 

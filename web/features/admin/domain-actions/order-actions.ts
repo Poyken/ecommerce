@@ -1,3 +1,20 @@
+/**
+ * =====================================================================
+ * ORDER ADMIN ACTIONS - Xử lý Đơn hàng (Admin Side)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. WORKFLOW XỬ LÝ ĐƠN:
+ * - Lấy danh sách đơn (`getOrdersAction`) với bộ lọc (search, status).
+ * - Xem chi tiết (`getOrderDetailsAction`).
+ * - Cập nhật trạng thái (`updateOrderStatusAction`): Duyệt đơn, Giao hàng, Hủy đơn.
+ *
+ * 2. NOTIFICATIONS:
+ * - Khi đổi trạng thái (VD: Shipped), hệ thống thường có tham số `notify: true`
+ *   để gửi email/notification cho khách hàng.
+ * =====================================================================
+ */
 "use server";
 
 import { http } from "@/lib/http";

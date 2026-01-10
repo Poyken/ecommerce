@@ -1,3 +1,22 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// BUSINESS ANALYTICS TAB - BẢNG ĐIỀU KHIỂN KINH DOANH
+// =================================================================================================
+//
+// Component này vẽ các biểu đồ và hiển thị các chỉ số tài chính vĩ mô cho Super Admin.
+//
+// THƯ VIỆN ĐỒ HỌA (RECHARTS):
+// - Sử dụng `Recharts` để vẽ biểu đồ miền (AreaChart) và biểu đồ cột (BarChart).
+// - `ResponsiveContainer` giúp biểu đồ tự co giãn theo kích thước màn hình cha.
+//
+// CẤU TRÚC UI:
+// 1. KPI Cards: 4 thẻ trên cùng hiển thị các con số quan trọng (MRR, Tenant mới, Churn...).
+// 2. Charts Section:
+//    - MRR Growth: Biểu đồ tăng trưởng doanh thu định kỳ theo tháng.
+//    - Churn Rate: Tỉ lệ rời bỏ của khách hàng theo tuần.
+//
+// LƯU Ý: Hiện tại data đồ thị đang là Mock Data (cứng), cần được thay thế bằng API thật trong tương lai.
+// ================================================================================================= 
 "use client";
 
 import {

@@ -1,5 +1,22 @@
 /**
  * =====================================================================
+ * ERROR UTILS - Tiện ích xử lý lỗi
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. VẤN ĐỀ:
+ * - Trong JS/TS, `error` trong catch block có kiểu `unknown` (có thể là Error, string, object, null...).
+ * - Việc lấy message lỗi thường lặp đi lặp lại code kiểm tra (`instanceof Error`, check property...).
+ *
+ * 2. GIẢI PHÁP:
+ * - `getErrorMessage(err)`: Hàm chuẩn hóa để LUÔN trả về string dễ đọc cho user.
+ * - Các hàm kiểm tra loại lỗi (`isNetworkError`, `isUnauthorizedError`) để UI phản ứng phù hợp
+ *   (VD: Mất mạng -> Show Toast báo kiểm tra kết nối; 401 -> Redirect login).
+ * =====================================================================
+ */
+/**
+ * =====================================================================
  * ERROR UTILITIES - Centralized Error Handling
  * =====================================================================
  */
