@@ -41,6 +41,7 @@ import { PagesModule } from '@/pages/pages.module';
 import { PaymentModule } from '@/payment/payment.module';
 import { ProductsModule } from '@/products/products.module';
 import { PlansModule } from '@/plans/plans.module';
+import { InvoicesModule } from '@/invoices/invoices.module';
 import { ReviewsModule } from '@/reviews/reviews.module';
 import { RolesModule } from '@/roles/roles.module';
 import { ShippingModule } from '@/shipping/shipping.module';
@@ -86,6 +87,7 @@ import { RagModule } from './rag/rag.module';
 import { SentryModule } from '@core/sentry/sentry.module';
 import { DataLoaderModule } from '@core/dataloader/dataloader.module';
 import { MetricsModule } from '@core/metrics/metrics.module';
+import { SuperAdminModule } from '@/super-admin/super-admin.module';
 
 @Module({
   imports: [
@@ -181,6 +183,7 @@ import { MetricsModule } from '@core/metrics/metrics.module';
     ProductsModule, // Sản phẩm
     SkusModule, // Biến thể sản phẩm (SKU - Stock Keeping Unit)
     PlansModule,
+    InvoicesModule,
     // 9. CartModule - Giỏ hàng
     CartModule,
 
@@ -218,6 +221,7 @@ import { MetricsModule } from '@core/metrics/metrics.module';
     SitemapModule,
 
     AdminModule,
+    SuperAdminModule,
 
     ShippingModule,
 

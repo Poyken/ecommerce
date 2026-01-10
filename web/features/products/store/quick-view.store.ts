@@ -1,4 +1,4 @@
-import { createModalStore } from "@/lib/store-factories";
+import { create } from "zustand";
 
 export interface QuickViewData {
   productId: string;
@@ -11,17 +11,18 @@ export interface QuickViewData {
   };
 }
 
-/**
- * =====================================================================
- * QUICK VIEW STORE (ZUSTAND)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REFACTORED VỚI FACTORY:
- * - Sử dụng `createModalStore` pattern chuẩn.
- * - `data` chứa { productId, skuId, initialData }.
- * - Actions chuẩn hóa: `open(data)`, `close()`.
- * =====================================================================
- */
-export const useQuickViewStore = createModalStore<QuickViewData>();
+interface QuickViewState {
+  isOpen: boolean;
+  data: QuickViewData | null;
+  open: (data: QuickViewData) => void;
+  close: () => void;
+  toggle: () => void;
+}
+
+export const useQuickViewStore = create<QuickViewState>((set) => ({
+  isOpen: false,
+  data: null,
+  open: (data) => set({ isOpen: true, data }),
+  close: () => set({ isOpen: false, data: null }),
+  toggle: () => set((state) => ({ isOpen: !state.isOpen })),
+}));

@@ -1,29 +1,47 @@
 "use server";
 
-import { wrapServerAction } from "@/lib/server-action-wrapper";
+import { protectedActionClient } from "@/lib/safe-action";
 import { http } from "@/lib/http";
 import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
-export const getPlansAction = wrapServerAction(async () => {
-  return http.get("/plans");
+export const getPlansAction = protectedActionClient.action(async () => {
+  return http("/plans");
 });
 
-export const createPlanAction = wrapServerAction(async (data: any) => {
-  const res = await http.post("/plans", data);
-  revalidatePath("/super-admin/plans");
-  return res;
-});
-
-export const updatePlanAction = wrapServerAction(
-  async (id: string, data: any) => {
-    const res = await http.patch(`/plans/${id}`, data);
+export const createPlanAction = protectedActionClient
+  .schema(z.any())
+  .action(async ({ parsedInput: data }) => {
+    const res = await http("/plans", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
     revalidatePath("/super-admin/plans");
     return res;
-  }
-);
+  });
 
-export const deletePlanAction = wrapServerAction(async (id: string) => {
-  const res = await http.delete(`/plans/${id}`);
-  revalidatePath("/super-admin/plans");
-  return res;
-});
+export const updatePlanAction = protectedActionClient
+  .schema(
+    z.object({
+      id: z.string(),
+      data: z.any(),
+    })
+  )
+  .action(async ({ parsedInput: { id, data } }) => {
+    const res = await http(`/plans/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+    revalidatePath("/super-admin/plans");
+    return res;
+  });
+
+export const deletePlanAction = protectedActionClient
+  .schema(z.object({ id: z.string() }))
+  .action(async ({ parsedInput: { id } }) => {
+    const res = await http(`/plans/${id}`, {
+      method: "DELETE",
+    });
+    revalidatePath("/super-admin/plans");
+    return res;
+  });

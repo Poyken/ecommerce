@@ -22,7 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/shared/use-toast";
 import {
   createPlanAction,
   updatePlanAction,
@@ -73,7 +73,7 @@ export function PlanDialog({
   const router = useRouter();
 
   const form = useForm<PlanFormValues>({
-    resolver: zodResolver(planSchema),
+    resolver: zodResolver(planSchema) as any,
     defaultValues: {
       name: "",
       slug: "",
@@ -119,12 +119,12 @@ export function PlanDialog({
     try {
       let res;
       if (planToEdit) {
-        res = await updatePlanAction(planToEdit.id, data);
+        res = await updatePlanAction({ id: planToEdit.id, data });
       } else {
         res = await createPlanAction(data);
       }
 
-      if (res.success) {
+      if (res?.data) {
         toast({
           title: "Success",
           description: planToEdit
@@ -136,7 +136,7 @@ export function PlanDialog({
       } else {
         toast({
           title: "Error",
-          description: res.message || "Something went wrong",
+          description: res?.serverError || "Something went wrong",
           variant: "destructive",
         });
       }

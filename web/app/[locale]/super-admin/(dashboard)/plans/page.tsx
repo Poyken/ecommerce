@@ -5,7 +5,8 @@ import { getPlansAction } from "@/features/superadmin/domain-actions/plans-actio
 import { PlanDialog } from "./plan-dialog";
 
 export default async function PlansPage() {
-  const { data: plans = [] } = await getPlansAction();
+  const { data: plansRes } = await getPlansAction();
+  const plans = plansRes || [];
 
   return (
     <div className="space-y-6">

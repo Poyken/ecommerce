@@ -709,7 +709,7 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
                   }}
                 >
                   <Avatar>
-                    <AvatarImage src={member.avatarUrl} />
+                    <AvatarImage src={member.avatarUrl || undefined} />
                     <AvatarFallback>{member.firstName[0]}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1 overflow-hidden">

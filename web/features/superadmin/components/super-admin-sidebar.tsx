@@ -13,6 +13,7 @@ import {
   LayoutDashboard,
   MessageSquare,
   Package,
+  Receipt,
   Settings,
   Shield,
   ShieldCheck,
@@ -104,7 +105,13 @@ export function SuperAdminSidebar() {
           title: t("subscriptions"),
           href: "/super-admin/subscriptions",
           icon: CreditCard,
-          permission: "tenant:read",
+          permission: "superAdmin:read",
+        },
+        {
+          title: "Invoices",
+          href: "/super-admin/invoices",
+          icon: Receipt,
+          permission: "superAdmin:read",
         },
       ],
     },
@@ -174,13 +181,13 @@ export function SuperAdminSidebar() {
   return (
     <aside
       className={cn(
-        "z-20 border-r border-border bg-slate-900 text-slate-100 flex flex-col h-screen sticky top-0 transition-all duration-300",
+        "z-20 border-r border-border bg-card text-card-foreground flex flex-col h-screen sticky top-0 transition-all duration-300",
         isCollapsed ? "w-20" : "w-72"
       )}
     >
       <div
         className={cn(
-          "h-16 px-4 border-b border-slate-700 flex items-center",
+          "h-16 px-4 border-b border-border flex items-center",
           isCollapsed ? "justify-center" : "justify-between"
         )}
       >
@@ -190,7 +197,7 @@ export function SuperAdminSidebar() {
             isCollapsed ? "hidden" : ""
           )}
         >
-          <Shield className="h-6 w-6 text-emerald-400" />
+          <Shield className="h-6 w-6 text-primary" />
           <span> SaaS Ecommerce </span>
         </div>
 
@@ -199,7 +206,7 @@ export function SuperAdminSidebar() {
           size="icon"
           onClick={() => setIsCollapsed(!isCollapsed)}
           className={cn(
-            "h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-800",
+            "h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-accent",
             !isCollapsed && "ml-auto"
           )}
         >
@@ -215,7 +222,7 @@ export function SuperAdminSidebar() {
         {filteredSidebarItems.map((group) => (
           <div key={group.title}>
             {!isCollapsed && (
-              <h3 className="px-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 whitespace-nowrap">
+              <h3 className="px-4 text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 whitespace-nowrap">
                 {group.title}
               </h3>
             )}
@@ -234,8 +241,8 @@ export function SuperAdminSidebar() {
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative overflow-hidden",
                       isActive
-                        ? "text-white bg-indigo-600 shadow-lg shadow-indigo-900/50"
-                        : "text-slate-400 hover:text-white hover:bg-slate-800",
+                        ? "text-primary-foreground bg-primary shadow-md"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent",
                       isCollapsed && "justify-center px-2"
                     )}
                     title={isCollapsed ? item.title : undefined}
@@ -244,8 +251,8 @@ export function SuperAdminSidebar() {
                       className={cn(
                         "h-5 w-5 transition-colors shrink-0",
                         isActive
-                          ? "text-white"
-                          : "text-slate-400 group-hover:text-white"
+                          ? "text-primary-foreground"
+                          : "text-muted-foreground group-hover:text-foreground"
                       )}
                     />
                     {!isCollapsed && (
@@ -259,16 +266,16 @@ export function SuperAdminSidebar() {
         ))}
       </div>
 
-      <div className="p-4 border-t border-slate-700 bg-slate-950/30">
+      <div className="p-4 border-t border-border bg-muted/30">
         <Link
           href="/"
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 border border-transparent hover:border-slate-700 group",
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 border border-transparent hover:border-border group",
             isCollapsed && "justify-center px-2"
           )}
           title={isCollapsed ? t("backToStore") : undefined}
         >
-          <Store className="h-5 w-5 group-hover:text-emerald-400 transition-colors shrink-0" />
+          <Store className="h-5 w-5 group-hover:text-primary transition-colors shrink-0" />
           {!isCollapsed && (
             <span className="whitespace-nowrap">{t("backToStore")}</span>
           )}
@@ -276,12 +283,12 @@ export function SuperAdminSidebar() {
         <Link
           href="/admin"
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-200 border border-transparent hover:border-slate-700 group mt-2",
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 border border-transparent hover:border-border group mt-2",
             isCollapsed && "justify-center px-2"
           )}
           title={isCollapsed ? "Tenant Admin" : undefined}
         >
-          <LayoutDashboard className="h-5 w-5 group-hover:text-blue-400 transition-colors shrink-0" />
+          <LayoutDashboard className="h-5 w-5 group-hover:text-primary transition-colors shrink-0" />
           {!isCollapsed && (
             <span className="whitespace-nowrap">
               {t("tenantAdmin") || "Tenant Admin"}

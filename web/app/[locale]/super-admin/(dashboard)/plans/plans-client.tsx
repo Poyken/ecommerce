@@ -21,7 +21,7 @@ import { deletePlanAction } from "@/features/superadmin/domain-actions/plans-act
 import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { PlanDialog } from "./plan-dialog";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/shared/use-toast";
 import { useRouter } from "next/navigation";
 
 // Type definition matching Prisma Model
@@ -59,15 +59,15 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this plan?")) return;
 
-    const res = await deletePlanAction(id);
-    if (res.success) {
+    const res = await deletePlanAction({ id });
+    if (res?.data) {
       toast({ title: "Plan deleted" });
       router.refresh();
     } else {
       toast({
         title: "Failed to delete",
         variant: "destructive",
-        description: res.message,
+        description: res?.serverError || "Failed to delete plan",
       });
     }
   };
