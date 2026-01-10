@@ -10,7 +10,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/shared/user-avatar";
-import { AiInsightsWidget } from "@/components/admin/ai-insights-widget";
 import { RecentChatsWidget } from "@/features/admin/components/widgets/recent-chats-widget";
 import {
   Star,
@@ -31,10 +30,8 @@ export function CustomersTab({ recentReviews }: CustomersTabProps) {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* AI Insights - Understanding Customers */}
+        {/* Customer Reviews */}
         <div className="lg:col-span-2 space-y-6">
-          <AiInsightsWidget />
-
           {/* Reviews Section */}
           <Card className="rounded-2xl shadow-sm">
             <CardHeader className="flex flex-row items-center justify-between">

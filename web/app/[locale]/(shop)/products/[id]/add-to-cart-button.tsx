@@ -2,7 +2,7 @@
 
 import { addToCartAction } from "@/features/cart/actions";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 

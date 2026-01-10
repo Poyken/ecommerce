@@ -22,7 +22,7 @@
 import { getAvailableCouponsAction } from "@/features/coupons/actions";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Coupon } from "@/types/models";
 import { m } from "@/lib/animations";

@@ -1,7 +1,7 @@
 "use client";
 
 import { ErrorBoundary } from "@/components/shared/error-boundary";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

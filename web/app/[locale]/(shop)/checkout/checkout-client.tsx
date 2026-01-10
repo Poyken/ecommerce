@@ -44,7 +44,7 @@ import {
 import { placeOrderAction } from "@/features/orders/actions";
 import { calculateShippingFeeAction } from "@/features/shipping/actions";
 // import { AddAddressDialog } from "@/features/admin/components/dialogs/add-address-dialog"; // Replaced with dynamic import
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getGuestCartDetailsAction } from "@/features/cart/actions";
 import { AddressSelector } from "@/features/checkout/components/address-selector";

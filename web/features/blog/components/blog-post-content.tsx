@@ -13,7 +13,7 @@ import { ArrowLeft, Calendar, Clock, Share2, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";

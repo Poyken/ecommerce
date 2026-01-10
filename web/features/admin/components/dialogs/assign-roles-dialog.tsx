@@ -3,7 +3,7 @@
 import { assignRolesAction, getRolesAction } from "@/features/admin/actions";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormDialog } from "@/components/shared/form-dialog";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Role } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState, useTransition } from "react";

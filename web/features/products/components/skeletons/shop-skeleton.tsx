@@ -17,7 +17,7 @@
  */
 
 import { Skeleton } from "@/components/ui/skeleton";
-import { ProductsSkeleton } from "./home-skeleton";
+import { ProductsSkeleton } from "@/features/home/components/skeletons/home-skeleton";
 
 export function ShopSkeleton() {
   return (

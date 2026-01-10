@@ -4,7 +4,7 @@ import { createUserAction } from "@/features/admin/actions";
 import { FormDialog } from "@/components/shared/form-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";

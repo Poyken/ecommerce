@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 
 import { StatusBadge } from "@/components/shared/status-badge";
-import { toast } from "@/components/shared/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

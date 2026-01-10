@@ -15,7 +15,7 @@
  * =====================================================================
  */
 
-import { BlockData, BlockRenderer } from "@/components/cms/block-renderer";
+import { BlockData, BlockRenderer } from "@/features/cms/components/block-renderer";
 import { HomeWrapper } from "@/features/home/components/home-wrapper";
 import { productService } from "@/services/product.service";
 import { Metadata } from "next";

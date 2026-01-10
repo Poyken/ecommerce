@@ -1,7 +1,7 @@
 "use client";
 
 import { GlassButton } from "@/components/shared/glass-button";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";

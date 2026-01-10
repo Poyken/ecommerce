@@ -1,4 +1,4 @@
-import { BlockData, BlockRenderer } from "@/components/cms/block-renderer";
+import { BlockData, BlockRenderer } from "@/features/cms/components/block-renderer";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import {
   CategoriesSkeleton,

@@ -26,7 +26,7 @@
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { OptimizedImage } from "@/components/shared/optimized-image";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,

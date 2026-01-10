@@ -57,7 +57,7 @@ import {
   getMyIpAction,
 } from "@/features/admin/actions";
 import { SecurityStats } from "@/types/dtos";
-import { toast } from "@/components/shared/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 

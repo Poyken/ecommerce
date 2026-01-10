@@ -1,6 +1,6 @@
 "use client";
 
-import { ProfileForm } from "@/components/organisms/profile-form";
+import { ProfileForm } from "@/features/profile/components/profile-form";
 import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { User } from "@/types/models";
 import { m } from "@/lib/animations";

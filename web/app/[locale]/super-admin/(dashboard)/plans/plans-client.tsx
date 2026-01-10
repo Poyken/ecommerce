@@ -21,7 +21,7 @@ import { deletePlanAction } from "@/features/superadmin/domain-actions/plans-act
 import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { PlanDialog } from "./plan-dialog";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
 // Type definition matching Prisma Model

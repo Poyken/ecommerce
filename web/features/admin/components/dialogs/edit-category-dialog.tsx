@@ -2,7 +2,7 @@
 
 import { FormDialog } from "@/components/shared/form-dialog";
 import { ImageUpload } from "@/components/shared/image-upload";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {

@@ -19,7 +19,7 @@ import { useEffect } from "react";
 import {
   FeatureFlagState,
   useFeatureFlagStore,
-} from "../store/feature-flag.store";
+} from "@/features/admin/store/feature-flag.store";
 
 export function FeatureFlagInitializer() {
   const fetchFlags = useFeatureFlagStore(

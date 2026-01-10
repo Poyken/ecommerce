@@ -1,6 +1,6 @@
 "use client";
 
-import { toast } from "@/components/shared/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CardContent, CardFooter } from "@/components/ui/card";

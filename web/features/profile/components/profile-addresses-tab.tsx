@@ -37,7 +37,7 @@ import {
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { AddAddressDialog } from "@/features/admin/components/dialogs/add-address-dialog";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { m } from "@/lib/animations";
 import { Edit, MapPin, Plus, Trash2 } from "lucide-react";

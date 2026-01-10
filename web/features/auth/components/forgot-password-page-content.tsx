@@ -5,7 +5,7 @@ import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Link } from "@/i18n/routing";
 import { forgotPasswordSchema } from "@/lib/schemas";
 import { m } from "@/lib/animations";

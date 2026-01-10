@@ -25,7 +25,7 @@ import { useState, useTransition } from "react";
  * =====================================================================
  */
 
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { CartItem } from "@/types/models";
 
 export function CartItemControl({

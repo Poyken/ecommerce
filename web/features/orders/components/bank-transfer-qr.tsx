@@ -1,7 +1,7 @@
 "use client";
 
 import { GlassCard } from "@/components/shared/glass-card";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { simulatePaymentSuccessAction } from "@/features/orders/actions";
 import { useRouter } from "@/i18n/routing";

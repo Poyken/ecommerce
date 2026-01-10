@@ -1,6 +1,6 @@
 "use client";
 
-import { toast } from "@/components/shared/use-toast"; // Use shared toast hook
+import { toast } from "@/components/ui/use-toast"; // Use shared toast hook
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

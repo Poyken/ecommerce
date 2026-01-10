@@ -1,4 +1,4 @@
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { addToCartAction } from "@/features/cart/actions";
 import { useCartStore } from "@/features/cart/store/cart.store";
 import { useTranslations } from "next-intl";

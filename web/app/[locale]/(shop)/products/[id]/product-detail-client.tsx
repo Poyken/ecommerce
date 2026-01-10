@@ -1,7 +1,7 @@
 "use client";
 
 import { GlassCard } from "@/components/shared/glass-card";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { MobileStickyCart } from "@/features/cart/components/mobile-sticky-cart";
 import { useCart } from "@/features/cart/hooks/use-cart";
 import { ProductImageGallery } from "@/features/products/components/product-image-gallery";

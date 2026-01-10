@@ -23,7 +23,7 @@
  * =====================================================================
  */
 import { MotionButton } from "@/components/shared/motion-button";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { toggleWishlistAction } from "@/features/wishlist/actions";
 import { useGuestWishlist } from "@/features/wishlist/hooks/use-guest-wishlist";

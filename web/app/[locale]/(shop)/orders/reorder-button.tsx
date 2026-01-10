@@ -2,7 +2,7 @@
 
 import { reorderAction } from "@/features/cart/actions";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";

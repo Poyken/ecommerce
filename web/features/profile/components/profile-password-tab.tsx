@@ -24,7 +24,7 @@ import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/shared/password-input";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { m } from "@/lib/animations";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";

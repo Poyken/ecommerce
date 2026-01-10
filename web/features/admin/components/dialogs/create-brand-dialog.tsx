@@ -5,7 +5,7 @@ import { FormDialog } from "@/components/shared/form-dialog";
 import { ImageUpload } from "@/components/shared/image-upload";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import { Award } from "lucide-react";

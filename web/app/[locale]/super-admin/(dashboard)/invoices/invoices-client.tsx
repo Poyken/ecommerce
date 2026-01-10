@@ -20,7 +20,7 @@ import {
 import { updateInvoiceStatusAction } from "@/features/superadmin/domain-actions/invoices-actions";
 import { MoreHorizontal, Ban, CheckCircle, FileText } from "lucide-react";
 import { useState } from "react";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 

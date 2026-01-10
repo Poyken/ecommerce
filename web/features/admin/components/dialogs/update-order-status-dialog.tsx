@@ -1,7 +1,7 @@
 "use client";
 
 import { FormDialog } from "@/components/shared/form-dialog";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Select,
   SelectContent,

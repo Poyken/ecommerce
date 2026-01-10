@@ -4,7 +4,7 @@
  * =====================================================================
  *
  * Export tất cả shared components từ một điểm duy nhất.
- * Import: import { OptimizedImage, EmptyState } from "@/components/shared"
+ * Import: import { OptimizedImage, ShopEmptyState } from "@/components/shared"
  */
 
 // Data states (loading, error, empty)
@@ -13,10 +13,15 @@ export * from "./data-states";
 // Image components
 export { OptimizedImage, ProductImage } from "./optimized-image";
 
+// Data table components
+export { DataTablePagination } from "./data-table-pagination";
+export { DataTableEmptyRow } from "./data-table-empty-row";
+
 // Other shared components
 export { BackButton } from "./back-button";
+export { BackgroundBlob } from "./background-blob";
+export { BentoGrid, BentoCard } from "./bento-grid";
 export { BreadcrumbNav } from "./breadcrumb-nav";
-export { ShopEmptyState } from "./shop-empty-state";
 export { ErrorBoundary } from "./error-boundary";
 export { FormDialog } from "./form-dialog";
 export { GlassButton } from "./glass-button";
@@ -29,6 +34,7 @@ export { MotionButton } from "./motion-button";
 export { NavCard } from "./nav-card";
 export { PasswordInput } from "./password-input";
 export { SearchInput } from "./search-input";
+export { ShopEmptyState } from "./shop-empty-state";
 export { SmoothScroll } from "./smooth-scroll";
 export { StatusBadge } from "./status-badge";
 export { StickyHeader } from "./sticky-header";

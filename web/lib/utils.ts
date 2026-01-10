@@ -39,6 +39,10 @@ export function formatVND(
   }).format(amount);
 }
 
+export function formatNumber(amount: number, locale = "vi-VN"): string {
+  return new Intl.NumberFormat(locale).format(amount);
+}
+
 export function formatCurrency(
   amount: number,
   locale = "vi-VN",

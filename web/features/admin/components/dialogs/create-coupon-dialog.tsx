@@ -11,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";

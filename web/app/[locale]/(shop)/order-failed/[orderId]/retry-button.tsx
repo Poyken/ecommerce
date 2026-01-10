@@ -1,6 +1,6 @@
 "use client";
 
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { addToCartAction } from "@/features/cart/actions";
 import { Loader2, RefreshCcw } from "lucide-react";

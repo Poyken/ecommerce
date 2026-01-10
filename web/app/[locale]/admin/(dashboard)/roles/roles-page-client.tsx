@@ -21,7 +21,7 @@ import { Role } from "@/types/models";
 import { Edit2, Plus, Shield, Trash2 } from "lucide-react";
 
 import { useState, useTransition } from "react";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { BlockRenderer } from "@/components/cms/block-renderer";
-import { useToast } from "@/components/shared/use-toast";
+import { BlockRenderer } from "@/features/cms/components/block-renderer";
+import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
