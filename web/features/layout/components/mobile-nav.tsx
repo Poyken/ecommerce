@@ -95,10 +95,7 @@ export function MobileBottomNav({
                   {item.label === t("cart") ? (
                     <>
                       <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-                      <CartBadge
-                        initialUser={initialUser}
-                        initialCount={initialCartCount}
-                      />
+                      <CartBadge />
                     </>
                   ) : (
                     <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
