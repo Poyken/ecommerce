@@ -128,7 +128,7 @@ async function main() {
   }
 
   // 4. Users
-  const passwordHash = await bcrypt.hash('123456', 10);
+  const passwordHash = await bcrypt.hash('12345678', 10);
   const users = [
     {
       email: 'super@platform.com',

@@ -520,7 +520,7 @@ export function PageBuilderClient({
                   <Label className="text-[10px]">Overlay Type</Label>
                   <select
                     className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.overlayType || "dark"}
+                    value={block.props.overlayType || "none"}
                     onChange={(e) =>
                       updateBlockProps(block.id, {
                         overlayType: e.target.value,
@@ -541,7 +541,7 @@ export function PageBuilderClient({
                     min="0"
                     max="1"
                     step="0.1"
-                    value={block.props.overlayOpacity ?? 0.4}
+                    value={block.props.overlayOpacity ?? 0}
                     onChange={(e) =>
                       updateBlockProps(block.id, {
                         overlayOpacity: parseFloat(e.target.value),
@@ -2479,112 +2479,6 @@ export function PageBuilderClient({
                 />
               </div>
 
-              {/* Only show Colors if NOT transparent */}
-              {!(
-                block.props.styles?.transparent || block.props.transparent
-              ) && (
-                <div className="space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                  <Label className="text-[10px] font-bold">
-                    Background Color
-                  </Label>
-                  <div className="flex gap-2 items-center">
-                    <div
-                      className="relative w-8 h-8 rounded-full border shadow-sm overflow-hidden flex-none pointer-events-none"
-                      style={{
-                        backgroundColor:
-                          block.props.styles?.backgroundColor || "#ffffff",
-                      }}
-                    />
-                    <div className="relative flex-1">
-                      <Input
-                        value={block.props.styles?.backgroundColor || ""}
-                        onChange={(e) =>
-                          updateBlockProps(block.id, {
-                            styles: {
-                              ...block.props.styles,
-                              backgroundColor: e.target.value,
-                            },
-                          })
-                        }
-                        placeholder="#ffffff"
-                        className="h-8 text-xs font-mono pl-8"
-                      />
-                      <div className="absolute left-2 top-1.5 w-4 h-5 opacity-0 overflow-hidden">
-                        <Input
-                          type="color"
-                          value={
-                            block.props.styles?.backgroundColor || "#ffffff"
-                          }
-                          onChange={(e) =>
-                            updateBlockProps(block.id, {
-                              styles: {
-                                ...block.props.styles,
-                                backgroundColor: e.target.value,
-                              },
-                            })
-                          }
-                          className="w-[200%] h-[200%] -m-2 cursor-pointer p-0 border-0"
-                        />
-                      </div>
-                      <div className="absolute left-2 top-0 h-full flex items-center pointer-events-none">
-                        <div
-                          className="w-4 h-4 rounded-full border shadow-sm"
-                          style={{
-                            backgroundColor:
-                              block.props.styles?.backgroundColor || "#ffffff",
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              <div className="space-y-2">
-                <Label className="text-[10px] font-bold">Text Color</Label>
-                <div className="flex gap-2 items-center">
-                  <div className="relative flex-1">
-                    <Input
-                      value={block.props.styles?.textColor || ""}
-                      onChange={(e) =>
-                        updateBlockProps(block.id, {
-                          styles: {
-                            ...block.props.styles,
-                            textColor: e.target.value,
-                          },
-                        })
-                      }
-                      placeholder="Inherit"
-                      className="h-8 text-xs font-mono pl-8"
-                    />
-                    <div className="absolute left-2 top-1.5 w-4 h-5 opacity-0 overflow-hidden">
-                      <Input
-                        type="color"
-                        value={block.props.styles?.textColor || "#000000"}
-                        onChange={(e) =>
-                          updateBlockProps(block.id, {
-                            styles: {
-                              ...block.props.styles,
-                              textColor: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-[200%] h-[200%] -m-2 cursor-pointer p-0 border-0"
-                      />
-                    </div>
-                    <div className="absolute left-2 top-0 h-full flex items-center pointer-events-none">
-                      <div
-                        className="w-4 h-4 rounded-full border shadow-sm"
-                        style={{
-                          backgroundColor:
-                            block.props.styles?.textColor || "#000000",
-                        }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               <div className="flex items-center justify-between border p-2 rounded-lg bg-muted/20">
                 <div className="space-y-0.5">
                   <Label className="text-[10px] uppercase font-bold opacity-70">
@@ -2873,6 +2767,12 @@ export function PageBuilderClient({
                 </Button>
               </div>
             </div>
+            <BlockStyleControls
+              styles={block.props.styles}
+              onChange={(newStyles) =>
+                updateBlockProps(block.id, { styles: newStyles })
+              }
+            />
           </div>
         );
 
@@ -2900,138 +2800,8 @@ export function PageBuilderClient({
               </div>
             </div>
 
-            {/* Design Customization */}
-            <div className="space-y-4 pt-2 pb-4 border-b">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Design Override
-              </Label>
-              <div className="space-y-2">
-                <Label className="text-[10px] font-bold">
-                  Background Color
-                </Label>
-                <div className="flex gap-2 items-center">
-                  <div className="relative flex-1">
-                    <Input
-                      value={block.props.styles?.backgroundColor || ""}
-                      onChange={(e) =>
-                        updateBlockProps(block.id, {
-                          styles: {
-                            ...block.props.styles,
-                            backgroundColor: e.target.value,
-                          },
-                        })
-                      }
-                      placeholder="Default Theme"
-                      className="h-8 text-xs font-mono pl-8"
-                    />
-                    <div className="absolute left-2 top-1.5 w-4 h-5 opacity-0 overflow-hidden">
-                      <Input
-                        type="color"
-                        value={block.props.styles?.backgroundColor || "#000000"}
-                        onChange={(e) =>
-                          updateBlockProps(block.id, {
-                            styles: {
-                              ...block.props.styles,
-                              backgroundColor: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-[200%] h-[200%] -m-2 cursor-pointer p-0 border-0"
-                      />
-                    </div>
-                    <div className="absolute left-2 top-0 h-full flex items-center pointer-events-none">
-                      <div
-                        className="w-4 h-4 rounded-full border shadow-sm"
-                        style={{
-                          backgroundColor:
-                            block.props.styles?.backgroundColor || "#000000",
-                        }}
-                      />
-                    </div>
-                    {block.props.styles?.backgroundColor && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-0 top-0 h-8 w-8 text-muted-foreground hover:text-destructive z-10"
-                        onClick={() =>
-                          updateBlockProps(block.id, {
-                            styles: {
-                              ...block.props.styles,
-                              backgroundColor: undefined,
-                            },
-                          })
-                        }
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-[10px] font-bold">Text Color</Label>
-                <div className="flex gap-2 items-center">
-                  <div className="relative flex-1">
-                    <Input
-                      value={block.props.styles?.textColor || ""}
-                      onChange={(e) =>
-                        updateBlockProps(block.id, {
-                          styles: {
-                            ...block.props.styles,
-                            textColor: e.target.value,
-                          },
-                        })
-                      }
-                      placeholder="Default Theme"
-                      className="h-8 text-xs font-mono pl-8"
-                    />
-                    <div className="absolute left-2 top-1.5 w-4 h-5 opacity-0 overflow-hidden">
-                      <Input
-                        type="color"
-                        value={block.props.styles?.textColor || "#ffffff"}
-                        onChange={(e) =>
-                          updateBlockProps(block.id, {
-                            styles: {
-                              ...block.props.styles,
-                              textColor: e.target.value,
-                            },
-                          })
-                        }
-                        className="w-[200%] h-[200%] -m-2 cursor-pointer p-0 border-0"
-                      />
-                    </div>
-                    <div className="absolute left-2 top-0 h-full flex items-center pointer-events-none">
-                      <div
-                        className="w-4 h-4 rounded-full border shadow-sm"
-                        style={{
-                          backgroundColor:
-                            block.props.styles?.textColor || "#ffffff",
-                        }}
-                      />
-                    </div>
-                    {block.props.styles?.textColor && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="absolute right-0 top-0 h-8 w-8 text-muted-foreground hover:text-destructive z-10"
-                        onClick={() =>
-                          updateBlockProps(block.id, {
-                            styles: {
-                              ...block.props.styles,
-                              textColor: undefined,
-                            },
-                          })
-                        }
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center justify-between border p-2 rounded-lg bg-muted/20">
+            {/* Design Customization - Moved to BlockStyleControls */}
+            <div className="flex items-center justify-between border p-2 rounded-lg bg-muted/20 mt-4">
               <Label className="text-xs">Show Contact Info</Label>
               <Switch
                 checked={block.props.showContact !== false}
@@ -3272,9 +3042,16 @@ export function PageBuilderClient({
                     updateBlockProps(block.id, { socialLinks: newSocials });
                   }}
                 >
-                  <Plus className="h-3.5 w-3.5 mr-1" /> Add Social Link
+                  <Plus className="h-4 w-4 mr-1" /> Add Social Link
                 </Button>
               </div>
+
+              <BlockStyleControls
+                styles={block.props.styles}
+                onChange={(newStyles) =>
+                  updateBlockProps(block.id, { styles: newStyles })
+                }
+              />
             </div>
           </div>
         );
