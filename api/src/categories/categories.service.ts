@@ -55,9 +55,9 @@ export class CategoriesService extends BaseCrudService<
 
   /**
    * Tạo danh mục mới.
-   * - Tự động tạo slug từ tên nếu không được cung cấp.
-   * - Kiểm tra trùng lặp tên hoặc slug.
-   * - Kiểm tra danh mục cha (nếu có) để tạo cây danh mục.
+   * - Tự động tạo slug từ tên nếu người dùng không nhập.
+   * - Kiểm tra trùng lặp tên hoặc slug (Tránh lỗi Unique Constraint).
+   * - Validate danh mục cha (Parent ID) để xây dựng cây phân cấp (Tree Structure).
    */
   async create(createCategoryDto: CreateCategoryDto) {
     // 1. Tạo slug (URL friendly string) từ tên danh mục
@@ -104,7 +104,9 @@ export class CategoriesService extends BaseCrudService<
 
   /**
    * Lấy danh sách tất cả danh mục.
-   * Hiện tại đang lấy flat list (danh sách phẳng), sắp xếp mới nhất lên đầu.
+   * - Trả về danh sách phẳng (Flat List), sắp xếp mới nhất lên đầu.
+   * - Caching: Cache kết quả 1 giờ vì danh mục ít khi thay đổi.
+   * - Count: Đếm số lượng sản phẩm trong mỗi danh mục.
    */
   async findAll(search?: string, page = 1, limit = 100) {
     const cacheKey = `categories:all:${search || 'none'}:${page}:${limit}`;
@@ -169,8 +171,8 @@ export class CategoriesService extends BaseCrudService<
 
   /**
    * Cập nhật thông tin danh mục.
-   * - Cho phép cập nhật tên, slug, parentId.
-   * - Nếu cập nhật slug, phải kiểm tra trùng lặp.
+   * - Cho phép đổi tên, slug, hoặc di chuyển danh mục cha (Re-parenting).
+   * - Logic quan trọng: Nếu đổi slug, bắt buộc phải kiểm tra trùng lặp với các danh mục KHÁC.
    */
   async update(id: string, updateCategoryDto: UpdateCategoryDto) {
     const category = await this.findOneBase(id);
@@ -210,10 +212,10 @@ export class CategoriesService extends BaseCrudService<
   }
 
   /**
-   * Xóa danh mục.
-   * - Có kiểm tra ràng buộc dữ liệu (Constraint Check).
-   * - KHÔNG cho phép xóa nếu danh mục đang chứa sản phẩm.
-   * - KHÔNG cho phép xóa nếu danh mục đang có danh mục con (phải xóa con trước hoặc chuyển cha).
+   * Xóa danh mục (Soft Delete).
+   * - RÀNG BUỘC TOÀN VẸN (Integrity Constraints):
+   *   1. KHÔNG được xóa nếu danh mục đang chứa sản phẩm -> Yêu cầu user di chuyển sản phẩm trước.
+   *   2. KHÔNG được xóa nếu danh mục đang có danh mục con -> Yêu cầu user xử lý cây danh mục trước.
    */
   async remove(id: string) {
     // 1. Check sản phẩm con

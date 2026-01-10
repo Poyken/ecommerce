@@ -60,9 +60,9 @@ export class PaymentService {
   }
 
   /**
-   * Xử lý thanh toán bằng chiến lược đã chọn.
+   * Xử lý thanh toán bằng chiến lược đã chọn (Strategy Pattern).
    * @param method Mã phương thức thanh toán (ví dụ: 'COD', 'CREDIT_CARD')
-   * @param details Chi tiết thanh toán
+   * @param details Chi tiết thanh toán (Số tiền, ID đơn hàng, v.v.)
    */
   async processPayment(method: string, details: CreatePaymentDto) {
     const strategy = this.strategies.get(method.toUpperCase());
@@ -73,36 +73,29 @@ export class PaymentService {
       );
     }
 
+    // Ủy quyền xử lý cho Strategy cụ thể
     return strategy.processPayment(details);
   }
 
   /**
-   * Xử lý webhook từ cổng thanh toán (hoặc giả lập)
+   * Xử lý Webhook từ cổng thanh toán (Momo, VNPay, Stripe) hoặc giả lập.
+   * - Nhiệm vụ: Xác nhận thanh toán thành công và cập nhật trạng thái đơn hàng.
+   * - Bảo mật: Cần verify chữ ký (Signature) trong thực tế (được handle bởi Guard hoặc Strategy).
    * @param payload Dữ liệu webhook nhận được
    */
   async handleWebhook(payload: WebhookPayloadDto) {
     this.logger.log(`Processing webhook: ${JSON.stringify(payload)}`);
 
-    // 1. Phân tích nội dung để tìm Order ID
-    // Giả sử nội dung chuyển khoản có dạng: "THANHTOAN <ORDER_ID>" hoặc chỉ chứa ID
-    // Ta sẽ tìm chuỗi nào khớp với định dạng CLR... (tùy format ID của bạn)
-    // Ở đây đơn giản là tìm chuỗi Order ID trong content.
-
-    // Cải thiện logic parse ID: Tìm chuỗi bắt đầu bằng 'clr' (nếu dùng cuid) hoặc uuid
-    // Trong context này, giả sử Order ID là chuỗi được gửi kèm.
-
-    // Logic đơn giản: Regex tìm order id từ content (giả sử order id ko có khoảng trắng)
-    // Ví dụ content: "Thanh toan don hang clr123456..."
-    // Trong thực tế cần regex chính xác hơn dựa trên format Order ID của hệ thống.
-
-    // Tạm thời: Lấy tất cả các từ trong content và check xem từ nào là Order ID tồn tại trong DB
+    // 1. Phân tích nội dung chuyển khoản để tìm Order ID
+    // Giả sử nội dung chuyển khoản có dạng: "THANHTOAN <ORDER_ID>" hoặc chỉ chứa ID.
+    // Logic thực tế cần Regex phức tạp hơn tùy theo cú pháp quy định với ngân hàng.
     const possibleIds = payload.content.split(/\s+/).map((s) => s.trim());
 
-    let order: any = null; // Use explicit type or let Prisma inference work, using 'any' temporarily to bypass if complexity is high, but better to use proper type if available.
-    // Better approach:
+    let order: any = null;
 
+    // Duyệt qua từng từ trong nội dung để tìm đơn hàng
     for (const id of possibleIds) {
-      // Bỏ qua các từ quá ngắn
+      // Bỏ qua các từ quá ngắn (ID thường dài > 8 ký tự uuid/cuid)
       if (id.length < 8) continue;
 
       const found = await this.prisma.order.findUnique({ where: { id } });
@@ -114,37 +107,43 @@ export class PaymentService {
 
     if (!order) {
       this.logger.warn(
-        `Could not find valid Order ID in webhook content: ${payload.content}`,
+        `Không tìm thấy Order ID hợp lệ trong nội dung webhook: ${payload.content}`,
       );
-      throw new NotFoundException('Order not found in webhook content');
+      throw new NotFoundException(
+        'Không tìm thấy đơn hàng trong nội dung thanh toán',
+      );
     }
 
+    // Kiểm tra idempotency (Tính lặp lại): Nếu đã thanh toán rồi thì bỏ qua
     if (order.paymentStatus === 'PAID') {
-      this.logger.log(`Order ${order.id} is already PAID. Ignoring.`);
-      return { success: true, message: 'Order already paid' };
+      this.logger.log(`Đơn hàng ${order.id} đã thanh toán trước đó. Bỏ qua.`);
+      return { success: true, message: 'Đơn hàng đã được thanh toán' };
     }
 
-    // 2. Validate số tiền
+    // 2. Validate số tiền thanh toán (Tránh gian lận chuyển thiếu)
+    // Lưu ý: So sánh số thực (Float) cần cẩn thận sai số, nhưng ở đây dùng Decimal/Number cơ bản.
     if (payload.amount < Number(order.totalAmount)) {
       this.logger.warn(
-        `Insufficient amount. Expected ${order.totalAmount}, got ${payload.amount}`,
+        `Số tiền không đủ. Yêu cầu ${order.totalAmount}, nhận được ${payload.amount}`,
       );
       // Có thể update status là "PARTIAL_PAYMENT" hoặc chỉ log cảnh báo
-      throw new BadRequestException('Insufficient payment amount');
+      throw new BadRequestException('Số tiền thanh toán không đủ');
     }
 
-    // 3. Update Order Status
+    // 3. Cập nhật trạng thái đơn hàng sang PAID và PROCESSING
     await this.prisma.order.update({
       where: { id: order.id },
       data: {
         paymentStatus: 'PAID',
         transactionId: payload.gatewayTransactionId || `TRX-${Date.now()}`,
+        // Nếu đơn hàng đang chờ (PENDING) -> Tự động chuyển sang đang xử lý (PROCESSING)
         status: order.status === 'PENDING' ? 'PROCESSING' : order.status,
-        // Nếu đang PENDING -> Auto chuyển PROCESSING khi đã thanh toán
       },
     });
 
-    this.logger.log(`Successfully updated Order ${order.id} to PAID`);
+    this.logger.log(
+      `Cập nhật thành công đơn hàng ${order.id} sang trạng thái ĐÃ THANH TOÁN`,
+    );
     return { success: true, orderId: order.id };
   }
 }

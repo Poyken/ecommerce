@@ -73,28 +73,31 @@ export class OrdersService {
   ) {}
 
   /**
-   * Create a new order from cart items
+   * Tạo đơn hàng mới từ giỏ hàng.
    *
-   * ✅ PRODUCTION-SAFE: ALL validation happens INSIDE transaction
-   * ✅ No TOCTOU bugs (stock validated atomically)
-   * ✅ No overselling possible
+   * ✅ AN TOÀN CHO PRODUCTION:
+   * - Mọi logic validation được đặt BÊN TRONG transaction để tránh lỗi Race Condition.
+   * - Không bao giờ xảy ra tình trạng "Bán quá số lượng tồn kho" (No overselling).
+   * - Đảm bảo tính nhất quán: Tạo đơn xong là phải trừ kho, xóa giỏ hàng.
    */
   async create(userId: string, createOrderDto: CreateOrderDto) {
-    // 0. Get tenant context early
+    // 0. Lấy context Tenant hiện tại (Cửa hàng nào?)
     const tenant = getTenant();
-    if (!tenant) throw new BadRequestException('Tenant context missing');
+    if (!tenant)
+      throw new BadRequestException(
+        'Không xác định được Cửa hàng hiện tại (Tenant context missing)',
+      );
 
-    // Return entire order creation in one big transaction
+    // Bọc toàn bộ quá trình tạo đơn hàng trong 1 Transaction lớn
     const order = await this.prisma.$transaction(
       async (tx) => {
-        // 1. Validate user exists
+        // 1. Kiểm tra User có tồn tại không
         const user = await tx.user.findUnique({ where: { id: userId } });
         if (!user) {
           throw new BadRequestException('User không tồn tại');
         }
 
-        // 2. Get cart with items (inside transaction)
-
+        // 2. Lấy giỏ hàng và chi tiết sản phẩm (Trong cùng transaction để đảm bảo dữ liệu mới nhất)
         const cart = await tx.cart.findUnique({
           where: {
             userId_tenantId: {
@@ -113,7 +116,7 @@ export class OrdersService {
           throw new BadRequestException('Giỏ hàng trống');
         }
 
-        // 3. Filter items to process
+        // 3. Lọc ra các sản phẩm user muốn mua (nếu chọn checkbox) hoặc mua tất cả
         const itemsToProcess =
           createOrderDto.itemIds && createOrderDto.itemIds.length > 0
             ? cart.items.filter((item) =>
@@ -122,10 +125,10 @@ export class OrdersService {
             : cart.items;
 
         if (itemsToProcess.length === 0) {
-          throw new BadRequestException('No items selected for checkout');
+          throw new BadRequestException('Chưa chọn sản phẩm nào để thanh toán');
         }
 
-        // 4. Validate stock and calculate price INSIDE transaction
+        // 4. Validate tồn kho và tính giá tiền (Ngay trong Transaction)
         let totalAmount = 0;
         const orderItemsData: {
           skuId: string;
@@ -137,7 +140,7 @@ export class OrdersService {
           imageUrl?: string;
         }[] = [];
 
-        // [P10 OPTIMIZATION] Batch fetch SKUs to avoid n+1 inside loop
+        // [TỐI ƯU HÓA] Batch fetch (lấy một lần) các SKU để tránh lỗi N+1 Queries trong vòng lặp
         const uniqueSkuIds = [...new Set(itemsToProcess.map((i) => i.skuId))];
         const skus = await tx.sku.findMany({
           where: { id: { in: uniqueSkuIds } },
@@ -181,11 +184,11 @@ export class OrdersService {
 
           if (sku.status !== 'ACTIVE') {
             throw new BadRequestException(
-              `Sản phẩm ${sku.skuCode} không còn được bán`,
+              `Sản phẩm ${sku.skuCode} hiện đang ngừng kinh doanh`,
             );
           }
 
-          // ✅ Stock validation INSIDE transaction (prevents TOCTOU)
+          // ✅ Quan trọng: Check tồn kho trong Transaction (Chặn đứng mọi user khác đang mua cùng lúc)
           if (sku.stock < item.quantity) {
             throw new BadRequestException(
               `Sản phẩm ${sku.skuCode} không đủ số lượng (Yêu cầu: ${item.quantity}, Còn: ${sku.stock})`,
@@ -195,6 +198,8 @@ export class OrdersService {
           const price = Number(sku.price);
           totalAmount += price * item.quantity;
 
+          // Tạo tên snapshot cho SKU (VD: "Áo Thun (Đỏ - M)") để lưu cứng vào đơn hàng
+          // Giúp admin xem lại đơn hàng cũ vẫn thấy đúng tên sản phẩm lúc mua, dù sau này sản phẩm có bị đổi tên.
           const optionsString = sku.optionValues
             .map((ov) => ov.optionValue.value)
             .join(' - ');
@@ -213,12 +218,12 @@ export class OrdersService {
           });
         }
 
-        // 5. Validate and apply coupon (inside transaction)
+        // 5. Kiểm tra và Áp dụng Mã giảm giá (Coupon)
         let couponId: string | null = null;
         let discountAmount = 0;
 
         if (createOrderDto.couponCode) {
-          // Validate coupon INSIDE transaction
+          // Lấy thông tin coupon ngay trong transaction để đảm bảo dữ liệu đúng nhất
           const coupon = await tx.coupon.findUnique({
             where: {
               tenantId_code: {
@@ -244,7 +249,7 @@ export class OrdersService {
             throw new BadRequestException('Mã giảm giá không tồn tại');
           }
 
-          // 🔒 SECURITY: WELCOME coupons are personal - check if user is the owner
+          // 🔒 BẢO MẬT: Chặn dùng trộm mã WELCOME của người khác
           if (coupon.code.startsWith('WELCOME-')) {
             const ownerNotification = await tx.notification.findFirst({
               where: {
@@ -256,21 +261,23 @@ export class OrdersService {
 
             if (!ownerNotification) {
               throw new BadRequestException(
-                'Mã giảm giá này chỉ dành cho tài khoản đã được tặng',
+                'Mã giảm giá này không thuộc về tài khoản của bạn',
               );
             }
           }
 
           const now = new Date();
           if (coupon.startDate && now < new Date(coupon.startDate)) {
-            throw new BadRequestException('Mã giảm giá chưa có hiệu lực');
+            throw new BadRequestException(
+              'Mã giảm giá chưa đến thời gian hiệu lực',
+            );
           }
 
           if (coupon.endDate && now > new Date(coupon.endDate)) {
             throw new BadRequestException('Mã giảm giá đã hết hạn');
           }
 
-          // ✅ Atomic usage limit check
+          // ✅ Atomic Check Limit: Đảm bảo không bị vượt quá số lượt sử dụng
           if (
             coupon.usageLimit !== null &&
             coupon.usedCount >= coupon.usageLimit
@@ -283,11 +290,11 @@ export class OrdersService {
             totalAmount < Number(coupon.minOrderAmount)
           ) {
             throw new BadRequestException(
-              `Đơn hàng tối thiểu ${Number(coupon.minOrderAmount)} để sử dụng mã này`,
+              `Đơn hàng cần tối thiểu ${Number(coupon.minOrderAmount)}đ để sử dụng mã này`,
             );
           }
 
-          // Calculate discount
+          // Tính toán số tiền giảm
           if (coupon.discountType === 'PERCENTAGE') {
             discountAmount = (totalAmount * Number(coupon.discountValue)) / 100;
             if (coupon.maxDiscountAmount) {
@@ -303,15 +310,15 @@ export class OrdersService {
           couponId = coupon.id;
           totalAmount = Math.max(0, totalAmount - discountAmount);
 
-          // ✅ Increment usage count atomically
+          // ✅ Tăng biến đếm số lần sử dụng (Atomic Increment)
           await tx.coupon.update({
             where: { id: couponId },
             data: { usedCount: { increment: 1 } },
           });
         }
 
-        // 6. Calculate shipping fee
-        // Note: External API call - consider moving to async job if too slow
+        // 6. Tính phí vận chuyển (Shipping Fee)
+        // Lưu ý: Gọi API bên ngoài có thể chậm, cân nhắc đưa vào background job nếu cần tối ưu tốc độ.
         let shippingFee = 0;
         let recipientName = createOrderDto.recipientName;
         let phoneNumber = createOrderDto.phoneNumber;
@@ -342,16 +349,16 @@ export class OrdersService {
                 );
               } catch (error) {
                 this.logger.warn(
-                  'Shipping fee calculation failed, using default',
+                  'Lỗi tính phí vận chuyển từ GHN, sử dụng phí mặc định',
                 );
-                shippingFee = 30000; // ✅ Fallback fee
+                shippingFee = 30000; // ✅ Mức phí dự phòng an toàn
               }
             }
           }
         }
         totalAmount += shippingFee;
 
-        // 7. Create order (inside existing transaction)
+        // 7. Tạo đơn hàng (Order) vào Database
         const order = await tx.order.create({
           data: {
             userId,
@@ -377,7 +384,7 @@ export class OrdersService {
           include: { items: true },
         });
 
-        // 8. Reserve stock for all items
+        // 8. Trừ tồn kho (Reserve Stock) cho từng sản phẩm
         for (const item of itemsToProcess) {
           await this.inventoryService.reserveStock(
             item.skuId,
@@ -386,7 +393,7 @@ export class OrdersService {
           );
         }
 
-        // 9. Clear processed items from cart
+        // 9. Xóa các sản phẩm đã mua khỏi giỏ hàng
         const itemIdsToDelete = itemsToProcess.map((i) => i.id);
         await tx.cartItem.deleteMany({
           where: {
@@ -395,8 +402,9 @@ export class OrdersService {
           },
         });
 
-        // --- 10. [RELIABILITY] OUTBOX PATTERN ---
-        // Save events to DB inside the transaction for atomic guarantee
+        // --- 10. [RELIABILITY] OUTBOX PATTERN (Đảm bảo độ tin cậy) ---
+        // Thay vì gửi event ngay, ta lưu event vào DB cùng transaction.
+        // Worker sẽ đọc bảng OutboxEvent và xử lý sau (Gửi email, bắn thông báo...).
         await tx.outboxEvent.create({
           data: {
             aggregateType: 'ORDER',
@@ -418,13 +426,14 @@ export class OrdersService {
         return order;
       },
       {
-        isolationLevel: 'Serializable',
-        timeout: 10000, // 10 second timeout
+        isolationLevel: 'Serializable', // Mức cô lập cao nhất: Chặn hoàn toàn các transaction khác can thiệp
+        timeout: 10000, // Timeout 10 giây để tránh deadlock treo hệ thống
       },
     );
 
     let paymentUrl: string | undefined;
 
+    // Xử lý thanh toán Online (Momo, VNPAY...) sau khi transaction DB thành công
     try {
       if (createOrderDto.paymentMethod) {
         const paymentResult = await this.paymentService.processPayment(
@@ -439,7 +448,7 @@ export class OrdersService {
         if (paymentResult.success) {
           paymentUrl = paymentResult.paymentUrl;
 
-          // Create payment record
+          // Tạo bản ghi lịch sử thanh toán
           await this.prisma.payment.create({
             data: {
               orderId: order.id,
@@ -451,6 +460,7 @@ export class OrdersService {
             },
           });
 
+          // Nếu thanh toán thành công ngay lập tức (không cần redirect URL) -> Update đơn thành PAID
           if (!paymentUrl) {
             await this.prisma.order.update({
               where: { id: order.id },
@@ -464,7 +474,9 @@ export class OrdersService {
         }
       }
     } catch (error) {
-      this.logger.error(`Payment failed for order ${order.id}`, error);
+      this.logger.error(`Lỗi xử lý thanh toán cho đơn hàng ${order.id}`, error);
+      // Không throw lỗi ở đây để tránh làm user hoang mang, đơn hàng đã tạo thành công
+      // User có thể thanh toán lại sau.
     }
 
     return { ...order, paymentUrl };
@@ -727,15 +739,17 @@ export class OrdersService {
     const order = await this.prisma.order.findUnique({
       where: { id: orderId },
     });
-    if (!order) throw new NotFoundException('Order not found');
+    if (!order) throw new NotFoundException('Không tìm thấy đơn hàng');
+
+    // Bảo mật: Không cho hủy đơn của người khác
     if (order.userId !== userId) {
       throw new BadRequestException('Bạn không có quyền hủy đơn hàng này');
     }
 
-    // Only allow cancelling PENDING orders
+    // Quy tắc nghiệp vụ: Chỉ được hủy khi đơn ở trạng thái PENDING (Chờ xử lý)
     if (order.status !== OrderStatus.PENDING) {
       throw new BadRequestException(
-        'Chỉ có thể hủy đơn hàng đang ở trạng thái Chờ xử lý (Pending).',
+        'Chỉ có thể hủy đơn hàng đang ở trạng thái Chờ xử lý. Nếu đơn hàng đã được giao cho đơn vị vận chuyển, vui lòng liên hệ CSKH.',
       );
     }
 
@@ -751,13 +765,14 @@ export class OrdersService {
       where: { id },
       include: { items: true },
     });
-    if (!order) throw new NotFoundException('Order not found');
+    if (!order) throw new NotFoundException('Không tìm thấy đơn hàng');
 
     const currentStatus = order.status;
     const newStatus = dto.status;
 
     let isValid = false;
 
+    // Máy trạng thái (State Machine): Kiểm tra luồng chuyển đổi trạng thái hợp lệ
     switch (currentStatus) {
       case OrderStatus.PENDING:
         if (
@@ -782,7 +797,7 @@ export class OrdersService {
         break;
       case OrderStatus.DELIVERED:
       case OrderStatus.CANCELLED:
-        isValid = false;
+        isValid = false; // Trạng thái cuối cùng, không thể thay đổi
         break;
       default:
         isValid = false;
@@ -790,19 +805,18 @@ export class OrdersService {
 
     if (!isValid) {
       throw new BadRequestException(
-        `Cannot change status from ${currentStatus} to ${newStatus}`,
+        `Không thể chuyển trạng thái từ ${currentStatus} sang ${newStatus}`,
       );
     }
 
-    // BLOCK MANUAL 'SHIPPED': Ensure flow follows GHN Webhook
+    // CHẶN THAO TÁC THỦ CÔNG: Đảm bảo luồng trạng thái tuân thủ Webhook từ GHN
     if (newStatus === OrderStatus.SHIPPED && !dto.force) {
       throw new BadRequestException(
         'Không được cập nhật thủ công sang "Đã Giao ĐVVC". Trạng thái này sẽ tự động cập nhật khi GHN qua lấy hàng (Picked). Nếu cần thiết, hãy dùng flag "force: true".',
       );
     }
 
-    // Additional Check: Prevent PROCESSING non-COD orders if not PAID
-    // BUT: If paymentStatus is being set to PAID in this request, allow it (payment confirmation flow)
+    // Kiểm tra bổ sung: Không cho phép xử lý đơn hàng COD nếu chưa thanh toán (Trừ khi admin xác nhận thanh toán ngay lúc này)
     const effectivePaymentStatus = dto.paymentStatus || order.paymentStatus;
     if (
       newStatus === OrderStatus.PROCESSING &&
@@ -810,35 +824,32 @@ export class OrdersService {
       effectivePaymentStatus !== 'PAID'
     ) {
       throw new BadRequestException(
-        `Cannot process order with payment method ${order.paymentMethod} until payment is confirmed (Status: ${order.paymentStatus}).`,
+        `Không thể xử lý đơn hàng thanh toán qua ${order.paymentMethod} khi chưa nhận được tiền (Status: ${order.paymentStatus}).`,
       );
     }
 
-    // 🔴 ENFORCE CANCELLATION REASON
+    // 🔴 BẮT BUỘC CÓ LÝ DO HỦY
     if (newStatus === OrderStatus.CANCELLED && !dto.cancellationReason) {
-      throw new BadRequestException(
-        'Vui lòng cung cấp lý do hủy đơn hàng (Required cancellationReason).',
-      );
+      throw new BadRequestException('Vui lòng cung cấp lý do hủy đơn hàng.');
     }
 
     const transactionResult = await this.prisma.$transaction(async (tx) => {
       if (newStatus === OrderStatus.CANCELLED) {
-        // Validation: If order has shipping code, try to cancel on GHN first
+        // Nếu đơn hàng đã có mã vận đơn, thử hủy bên GHN trước
         if (order.shippingCode) {
           const cancelSuccess =
             await this.shippingService.ghnService.cancelOrder(
               order.shippingCode,
             );
           if (!cancelSuccess) {
-            // Option: Throw error to prevent local cancel if remote fail
-            // Or: Warning and proceed?
-            // Decided: Throw error to ensure consistency. Admin should know GHN cancel failed.
+            // Quyết định: Throw lỗi để đảm bảo tính nhất quán. Admin cần biết là hủy bên GHN thất bại.
             throw new BadRequestException(
               'Không thể hủy đơn hàng trên hệ thống GHN. Đơn hàng có thể đã được giao hoặc đang xử lý. Vui lòng kiểm tra trên portal GHN.',
             );
           }
         }
 
+        // Hoàn trả tồn kho (Release Stock)
         for (const item of order.items) {
           await this.inventoryService.releaseStock(
             item.skuId,
@@ -862,7 +873,7 @@ export class OrdersService {
       });
 
       if (dto.notify !== false) {
-        // Send email notification for status changes
+        // Gửi email thông báo (Không chặn luồng chính)
         const emailStatuses = [
           OrderStatus.PROCESSING,
           OrderStatus.SHIPPED,
@@ -871,9 +882,9 @@ export class OrdersService {
         ];
 
         if ((emailStatuses as any[]).includes(newStatus)) {
-          // 🚀 OPTIMIZATION: Fire and forget email (non-blocking)
+          // 🚀 TỐI ƯU: Fire-and-forget (Gửi background)
           this.emailService.sendOrderStatusUpdate(updatedOrder).catch((e) => {
-            this.logger.error('Failed to send status update email', e);
+            this.logger.error('Lỗi gửi email cập nhật trạng thái', e);
           });
         }
 
@@ -888,7 +899,7 @@ export class OrdersService {
               message = `Đơn hàng #${id.slice(-8)} của bạn đang được chuẩn bị.`;
               notiType = 'ORDER_PROCESSING';
               break;
-            // SHIPPED case removed as it is handled by webhook now
+            // SHIPPED được xử lý bởi webhook riêng
             case OrderStatus.DELIVERED:
               title = 'Giao hàng thành công';
               message = `Đơn hàng #${id.slice(-8)} đã được giao thành công. Cảm ơn bạn đã mua sắm!`;
@@ -919,8 +930,8 @@ export class OrdersService {
             notification,
           );
 
-          // ALSO: Notify ALL admins about this order status change
-          // This fulfills the user request: "admin yes order đó thì nên có 1 noti cho admin"
+          // ĐỒNG THỜI: Thông báo cho tất cả Admin về sự thay đổi này
+          // Đáp ứng yêu cầu: "admin yes order đó thì nên có 1 noti cho admin"
           try {
             const adminUsers = await this.prisma.user.findMany({
               where: {
@@ -942,7 +953,7 @@ export class OrdersService {
                   ? 'ADMIN_ORDER_ACCEPTED'
                   : `ADMIN_ORDER_${newStatus}`;
 
-              // 🚀 OPTIMIZATION: Non-blocking broadcast
+              // 🚀 TỐI ƯU: Broadcast không chặn (Non-blocking)
               this.notificationsService
                 .broadcastToUserIds(adminIds, {
                   type: adminNotiType,
@@ -951,10 +962,10 @@ export class OrdersService {
                   link: `/admin/orders/${id}`,
                 })
                 .catch((e) =>
-                  this.logger.error('Failed to broadcast to admins', e),
+                  this.logger.error('Lỗi broadcast thông báo cho admin', e),
                 );
 
-              // Broadcast to all connected admins via socket
+              // Gửi qua Socket trực tiếp cho Admin đang online
               adminIds.forEach((adminId) => {
                 this.notificationsGateway.sendNotificationToUser(adminId, {
                   type: adminNotiType,
@@ -966,31 +977,25 @@ export class OrdersService {
               });
             }
           } catch (adminNotiError) {
-            this.logger.error(
-              'Failed to notify admins about status update',
-              adminNotiError,
-            );
+            this.logger.error('Lỗi thông báo cho admin', adminNotiError);
           }
         } catch (error) {
-          this.logger.error(
-            'Failed to create status update notification',
-            error,
-          );
+          this.logger.error('Lỗi tạo thông báo cập nhật trạng thái', error);
         }
       }
 
       return updatedOrder;
     });
 
-    // 🚀 OPTIMIZATION: Move External API Call (GHN) OUT of Transaction
-    // AND: Make it non-blocking
+    // 🚀 TỐI ƯU HÓA: Đưa việc gọi API bên thứ 3 (GHN) ra KHỎI Transaction
+    // VÀ: Chạy ngầm (Non-blocking)
     if (newStatus === OrderStatus.PROCESSING) {
-      // Automatically sync with GHN if addressId exists
+      // Tự động đồng bộ với GHN nếu có địa chỉ
       if (transactionResult.addressId) {
         // Fire and forget GHN sync
         this.syncWithGHN(transactionResult).catch((e) => {
           this.logger.error(
-            `Background GHN sync failed for order ${transactionResult.id}`,
+            `Đồng bộ GHN nền thất bại cho đơn ${transactionResult.id}`,
             e,
           );
         });
@@ -1000,6 +1005,9 @@ export class OrdersService {
     return transactionResult;
   }
 
+  /**
+   * Đồng bộ đơn hàng sang Giao Hàng Nhanh (GHN)
+   */
   /**
    * Đồng bộ đơn hàng sang Giao Hàng Nhanh (GHN)
    */
@@ -1020,7 +1028,7 @@ export class OrdersService {
   ) {
     try {
       if (!order.addressId) {
-        this.logger.warn(`Missing addressId for order ${order.id}`);
+        this.logger.warn(`Đơn hàng ${order.id} thiếu addressId`);
         return;
       }
       const address = await this.prisma.address.findUnique({
@@ -1028,20 +1036,20 @@ export class OrdersService {
       });
 
       if (!address || !address.districtId || !address.wardCode) {
-        this.logger.warn(`Missing GHN address info for order ${order.id}`);
+        this.logger.warn(
+          `Thiếu thông tin quận/huyện phường/xã cho GHN ở đơn ${order.id}`,
+        );
         return;
       }
 
-      // Validate and sanitize phone number
-      // Regex: Starts with 0, followed by 3,5,7,8,9, and 8 digit numbers (Total 10)
+      // Xử lý SĐT: Loại bỏ ký tự không phải số
       let toPhone = (order.phoneNumber || '').replace(/\D/g, '');
       if (!/^0[35789]\d{8}$/.test(toPhone)) {
         this.logger.warn(
-          `Invalid phone number '${order.phoneNumber}' for order ${order.id}. Using fallback.`,
+          `SĐT không hợp lệ '${order.phoneNumber}' ở đơn ${order.id}. Đang dùng sĐT mặc định để test.`,
         );
-        // Fallback for testing/dev: Use a known valid format if original is invalid
-        // CAUTION: This is for development/demo purposes to unblock the flow.
-        // In production, we should probably fail or use customer support phone.
+        // Fallback cho môi trường test/dev để không bị chặn flow.
+        // Trong Production thực tế nên throw lỗi hoặc yêu cầu user cập nhật lại số.
         toPhone = '0901234567';
       }
 
@@ -1051,9 +1059,9 @@ export class OrdersService {
       }
 
       const ghnOrderData = {
-        payment_type_id: order.paymentMethod === 'COD' ? 2 : 1,
+        payment_type_id: order.paymentMethod === 'COD' ? 2 : 1, // 2: Người mua trả tiền (COD), 1: Người bán trả cước (Hoặc đã thanh toán - tùy cấu hình GHN)
         note: `Don hang #${order.id.slice(-8)}`,
-        required_note: 'CHOXEMHANGKHONGTHU',
+        required_note: 'CHOXEMHANGKHONGTHU', // Cho xem hàng nhưng không cho thử
         return_phone: returnPhone,
         return_address: address.street,
         to_name: order.recipientName,
@@ -1062,13 +1070,13 @@ export class OrdersService {
         to_ward_code: address.wardCode,
         to_district_id: address.districtId,
         cod_amount:
-          order.paymentStatus === 'PAID' ? 0 : Number(order.totalAmount),
+          order.paymentStatus === 'PAID' ? 0 : Number(order.totalAmount), // Nếu đã trả tiền (PAYMENT/MOMO) thì COD = 0
         content: `Don hang tu Poyken E-commerce`,
         weight: this.DEFAULT_WEIGHT,
         length: this.DEFAULT_LENGTH,
         width: this.DEFAULT_WIDTH,
         height: this.DEFAULT_HEIGHT,
-        service_type_id: 2,
+        service_type_id: 2, // Gói chuẩn/Nhanh (tùy cấu hình)
         items: order.items.map((item) => ({
           name: item.sku.product.name,
           code: item.sku.skuCode,
@@ -1078,17 +1086,17 @@ export class OrdersService {
       };
 
       this.logger.debug(
-        `[GHN] Creating order ${order.id} with data: ${JSON.stringify(ghnOrderData)}`,
+        `[GHN] Đang tạo vận đơn cho ${order.id} với data: ${JSON.stringify(ghnOrderData)}`,
       );
 
       const ghnResponse =
         await this.shippingService.ghnService.createShippingOrder(ghnOrderData);
 
       this.logger.debug(
-        `[GHN] Response for order ${order.id}: ${JSON.stringify(ghnResponse)}`,
+        `[GHN] Kết quả từ GHN cho đơn ${order.id}: ${JSON.stringify(ghnResponse)}`,
       );
 
-      // Save GHN Tracking Code to Order
+      // Lưu mã vận đơn GHN vào Order
       await this.prisma.order.update({
         where: { id: order.id },
         data: {
@@ -1097,13 +1105,14 @@ export class OrdersService {
       });
 
       this.logger.log(
-        `Synced order ${order.id} with GHN: ${ghnResponse.order_code}`,
+        `Đã đồng bộ đơn hàng ${order.id} sang GHN thành công: ${ghnResponse.order_code}`,
       );
     } catch (error: any) {
       this.logger.error(
-        `Failed to sync order ${order.id} with GHN: ${error.message}`,
+        `Đồng bộ GHN thất bại cho đơn ${order.id}: ${error.message}`,
         error.response?.data || error,
       );
+      // Không throw lỗi chết app, chỉ log warning
     }
   }
 

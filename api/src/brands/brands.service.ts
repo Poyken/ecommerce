@@ -42,6 +42,7 @@ export class BrandsService extends BaseCrudService<
 
   /**
    * Tạo thương hiệu mới (Brand).
+   * - Kiểm tra trùng lặp tên trong phạm vi Tenant hiện tại.
    * Ví dụ: Apple, Samsung, Nike.
    */
   async create(createBrandDto: CreateBrandDto) {
@@ -65,7 +66,9 @@ export class BrandsService extends BaseCrudService<
 
   /**
    * Lấy danh sách thương hiệu.
-   * Sắp xếp theo tên A-Z để dễ tìm kiếm.
+   * - Hỗ trợ tìm kiếm theo tên.
+   * - Sắp xếp theo tên A-Z để user dễ chọn trong Dropdown.
+   * - Kèm theo số lượng sản phẩm của mỗi Brand (`_count`).
    */
   async findAll(search?: string, page = 1, limit = 10) {
     const where = search
@@ -132,8 +135,9 @@ export class BrandsService extends BaseCrudService<
   }
 
   /**
-   * Xóa thương hiệu.
-   * Ràng buộc: Không được xóa nếu đang có sản phẩm thuộc thương hiệu này.
+   * Xóa thương hiệu (Soft Delete).
+   * - Ràng buộc: KHÔNG ĐƯỢC xóa nếu thương hiệu đang gắn với bất kỳ sản phẩm nào.
+   * - Mục đích: Tránh làm hỏng dữ liệu sản phẩm (Orphaned products).
    */
   async remove(id: string) {
     const hasProducts = await this.prisma.product.findFirst({

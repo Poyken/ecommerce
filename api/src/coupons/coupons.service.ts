@@ -55,13 +55,13 @@ export class CouponsService extends BaseCrudService<
    * - Khi so sánh thời gian (`startDate`, `endDate`), ta cần tính đến độ trễ của server hoặc sự lệch giờ giữa client-server.
    * - `bufferMs = 2 * 60 * 1000` (2 phút) được thêm vào để "du di", tránh trường hợp user vừa bấm áp dụng đúng giây hết hạn thì bị lỗi oan.
    *
-   * 2. DATA INTEGRITY (Toàn vẹn dữ liệu):
+   * 2. TOÀN VẸN DỮ LIỆU (Data Integrity):
    * - Hàm `remove`: Không cho phép xóa Coupon đã từng được sử dụng trong đơn hàng (`usedInOrders`).
-   * - Lý do: Nếu xóa, lịch sử đơn hàng sẽ bị lỗi reference hoặc mất thông tin giảm giá. Thay vào đó, hãy dùng Soft Delete hoặc set `isActive = false`.
+   * - Lý do: Nếu xóa, lịch sử đơn hàng sẽ bị lỗi tham chiếu hoặc mất thông tin giảm giá. Thay vào đó, hãy dùng Soft Delete hoặc set `isActive = false`.
    *
-   * 3. IN-MEMORY FILTERING:
-   * - Hàm `findAvailable` lấy hết coupon active về rồi filter bằng TS thay vì DB query phức tạp.
-   * - Lý do: Logic so sánh ngày tháng trong DB query đôi khi gặp vấn đề Timezone khó debug, làm ở App Layer dễ kiểm soát hơn (với số lượng coupon ít).
+   * 3. LỌC TRONG BỘ NHỚ (In-Memory Filtering):
+   * - Hàm `findAvailable` lấy hết coupon active về rồi filter bằng code thay vì DB query phức tạp.
+   * - Lý do: Logic so sánh ngày tháng trong DB query đôi khi gặp vấn đề Timezone khó debug, xử lý ở tầng Application dễ kiểm soát hơn (với số lượng coupon ít).
    * =====================================================================
    */
 
@@ -89,7 +89,7 @@ export class CouponsService extends BaseCrudService<
 
   async findAvailable() {
     const now = new Date();
-    // Debugging Timezone: Fetch all active coupons and filter in memory
+    // Debugging Timezone: Fetch tất cả coupon đang hoạt động và lọc trong RAM
     const candidates = await this.model.findMany({
       where: {
         isActive: true,
@@ -101,9 +101,7 @@ export class CouponsService extends BaseCrudService<
       const start = new Date(coupon.startDate);
       const end = new Date(coupon.endDate);
 
-      // Use loose comparison or adjust if timezone issue suspected
-      // For now, strict compare but log failures
-      // Timezone Lenience: Add 2-minute buffer
+      // Timezone Lenience: Thêm buffer 2 phút
       const bufferMs = 2 * 60 * 1000;
 
       if (start.getTime() - bufferMs > now.getTime()) {
@@ -161,7 +159,7 @@ export class CouponsService extends BaseCrudService<
   async remove(id: string) {
     await this.findOneBase(id);
 
-    // Check if coupon has been used in orders
+    // Kiểm tra xem coupon đã được sử dụng trong đơn hàng nào chưa
     const usedInOrders = await this.prisma.order.findFirst({
       where: { couponId: id },
     });

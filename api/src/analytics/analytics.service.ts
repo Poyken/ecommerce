@@ -10,16 +10,16 @@ import { Cron, CronExpression } from '@nestjs/schedule';
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. DATE FILTERS:
+ * 1. DATE FILTERS (Bộ lọc ngày tháng):
  * - Hỗ trợ lọc theo khoảng thời gian tùy chỉnh (Start Date -> End Date).
  * - Mặc định là 30 ngày gần nhất nếu không có tham số.
  *
- * 2. PERFORMANCE OPTIMIZATION:
- * - Sử dụng `Promise.all` để chạy song song các truy vấn độc lập.
- * - Sử dụng `aggregate`, `groupBy` của Prisma để tính toán trực tiếp trên database.
+ * 2. TỐI ƯU HIỆU NĂNG (Performance Optimization):
+ * - Sử dụng `Promise.all` để chạy song song các truy vấn số liệu độc lập (Không chờ đợi lẫn nhau).
+ * - Sử dụng `aggregate`, `groupBy` và `Raw SQL` của Prisma để tính toán trực tiếp trên database, tránh kéo hàng vạn bản ghi về RAM.
  *
- * 3. INVENTORY ANALYSIS:
- * - Phân tích tình trạng kho hàng: Hết hàng, sắp hết, tồn kho nhiều.
+ * 3. INVENTORY ANALYSIS (Phân tích tồn kho):
+ * - Phân tích giúp chủ shop biết: Hàng nào hết, hàng nào sắp hết (Low Stock), hàng nào tồn nhiều để xả kho.
  * =====================================================================
  */
 
@@ -194,8 +194,8 @@ export class AnalyticsService {
   }
 
   /**
-   * [P16 OPTIMIZATION] Historical Stats Pre-computation
-   * Warms the cache daily to ensure instant load of Admin Dashboard comparison data.
+   * [P16 OPTIMIZATION] Tính toán trước dữ liệu lịch sử (Pre-computation).
+   * - Làm nóng Cache (Cache Warming) mỗi ngày để Dashboard Admin load "nhanh như điện" vào buổi sáng.
    */
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async precomputeHistoricalStats() {
@@ -282,8 +282,8 @@ export class AnalyticsService {
     return this.cacheService.getOrSet(
       cacheKey,
       async () => {
-        // [P8 OPTIMIZATION] Use separate COUNT queries for much better scalability
-        // This avoids OOM when catalog has millions of SKUs
+        // [P8 OPTIMIZATION] Tách nhỏ các câu lệnh `count` riêng biệt để tăng khả năng mở rộng (Scalability).
+        // Tránh lỗi bộ nhớ (OOM) khi danh mục sản phẩm (Catalog) có hàng triệu SKUs.
         const [
           totalSkus,
           lowStockCount,
@@ -326,8 +326,8 @@ export class AnalyticsService {
       async () => {
         const { start, end } = this.getDateRange(startDate, endDate);
 
-        // [P1 OPTIMIZATION] Use Raw SQL to calculate total revenue per category directly
-        // This is significantly faster than fetching all records and iterating in memory
+        // [P1 OPTIMIZATION] Sử dụng Raw SQL để tính tổng doanh thu theo Category.
+        // Nhanh hơn gấp nhiều lần so với việc fetch toàn bộ OrderItem về rồi tính toán bằng Javascript (in-memory).
         const result: any[] = await this.prisma.$queryRaw`
           SELECT 
             c."name" as name,
@@ -355,8 +355,9 @@ export class AnalyticsService {
   }
 
   /**
-   * [P16 OPTIMIZATION] Metric Write Buffering
-   * Buffers performance metrics and flushes them in batches to reduce DB IOPS.
+   * [P16 OPTIMIZATION] Đệm ghi chỉ số (Metric Write Buffering).
+   * - Gom các data points vào buffer và ghi xuống DB theo lô (Batch Flush).
+   * - Giảm thiểu số lượng kết nối và thao tác ghi xuống DB (Reduced IOPS).
    */
   async savePerformanceMetric(data: {
     name: string;

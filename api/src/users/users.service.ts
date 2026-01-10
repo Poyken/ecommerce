@@ -100,7 +100,7 @@ export class UsersService extends BaseCrudService<
   async create(createUserDto: CreateUserDto) {
     const { email, password, firstName, lastName } = createUserDto;
 
-    // [PLAN LIMIT] Check staff limit
+    // [PLAN LIMIT] Kiểm tra giới hạn nhân viên của Tenant
     const tenant = getTenant();
     if (tenant) {
       await this.planUsageService.checkStaffLimit(tenant.id);
@@ -148,7 +148,7 @@ export class UsersService extends BaseCrudService<
   ) {
     const where: Prisma.UserWhereInput = {};
 
-    // [SECURITY] User Isolation
+    // [BẢO MẬT] Cô lập dữ liệu theo từng Tenant (User Isolation)
     if (tenantId) {
       where.tenantId = tenantId;
     }
@@ -202,7 +202,7 @@ export class UsersService extends BaseCrudService<
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    // Check existence
+    // Kiểm tra sự tồn tại trước khi update
     await this.findOneBase(id);
 
     if (updateUserDto.password) {
@@ -221,7 +221,7 @@ export class UsersService extends BaseCrudService<
   }
 
   async remove(id: string) {
-    // Check existence
+    // Kiểm tra sự tồn tại trước khi xóa
     await this.findOneBase(id);
 
     await this.softDeleteBase(id);

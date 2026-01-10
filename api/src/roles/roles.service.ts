@@ -19,21 +19,21 @@ import { getTenant } from '@core/tenant/tenant.context';
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. MANY-TO-MANY RELATIONSHIP:
- * - Mối quan hệ giữa `Role` và `Permission` là n-n (nhiều-nhiều).
- * - Ta sử dụng bảng trung gian `RolePermission` để lưu trữ các liên kết này.
+ * 1. QUAN HỆ NHIỀU - NHIỀU (Many-to-Many):
+ * - Mối quan hệ giữa `Role` và `Permission` là n-n. Một Role có nhiều Permission, một Permission thuộc về nhiều Role.
+ * - Ta sử dụng bảng trung gian `RolePermission` để lưu trữ các liên kết này nhằm tối ưu hóa truy vấn.
  *
- * 2. ATOMIC ASSIGNMENT (Gán quyền nguyên tử):
+ * 2. GÁN QUYỀN NGUYÊN TỐ (Atomic Assignment):
  * - Trong hàm `assignPermissions`, ta sử dụng `$transaction` để đảm bảo:
  *   - Bước 1: Xóa sạch các quyền cũ của Role.
  *   - Bước 2: Thêm danh sách các quyền mới.
- * - Điều này giúp tránh việc bị trùng lặp hoặc sót quyền khi cập nhật.
+ * - Điều này giúp tránh việc bị trùng lặp, sót quyền hoặc dữ liệu không nhất quán khi cập nhật.
  *
- * 3. CONFLICT HANDLING:
- * - Kiểm tra trùng tên (`findUnique`) trước khi tạo Role hoặc Permission mới để đảm bảo tính duy nhất trong hệ thống.
+ * 3. XỬ LÝ XUNG ĐỘT (Conflict Handling):
+ * - Luôn kiểm tra trùng tên (`findFirst`) trước khi tạo Role hoặc Permission mới để đảm bảo tính duy nhất trong hệ thống (Unique Constraint).
  *
- * 4. CASCADE DELETE:
- * - Khi xóa một Role hoặc Permission, các liên kết trong bảng `RolePermission` cũng cần được xử lý (thường là tự động xóa nhờ cấu hình Prisma/DB).
+ * 4. XÓA LAN TRUYỀN (Cascade Delete):
+ * - Khi xóa một Role hoặc Permission, các liên kết trong bảng `RolePermission` cũng cần được xử lý (thường là DB tự động xóa nhờ `ON DELETE CASCADE`).
  * =====================================================================
  */
 
@@ -67,8 +67,7 @@ export class RolesService {
     });
 
     if (createRoleDto.permissions && createRoleDto.permissions.length > 0) {
-      // Find permissions by name or ID? Usually frontend sends names in some places, IDs in others.
-      // DTO says IDs (isString). Let's assume IDs based on CreateRoleAction in web.
+      // Tìm permissions theo ID (giả sử Frontend gửi lên danh sách ID)
       const permissions = await this.prisma.permission.findMany({
         where: { id: { in: createRoleDto.permissions } },
       });
@@ -143,7 +142,7 @@ export class RolesService {
       });
 
       if (permissions) {
-        // Clear old permissions and assign new ones
+        // Xóa quyền cũ và gán quyền mới (Reset Permissions)
         await tx.rolePermission.deleteMany({ where: { roleId: id } });
 
         if (permissions.length > 0) {
@@ -174,6 +173,7 @@ export class RolesService {
   /**
    * Gán danh sách Permission cho Role.
    * Ví dụ: Role "MANAGER" được quyền ["user:read", "product:create", ...].
+   * - Sử dụng Transaction để đảm bảo tính toàn vẹn dữ liệu.
    */
   async assignPermissions(id: string, dto: AssignPermissionsDto) {
     const role = await this.prisma.role.findUnique({ where: { id } });

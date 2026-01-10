@@ -8,21 +8,25 @@ import { UpdateTenantDto } from './dto/update-tenant.dto';
 @Injectable()
 /**
  * =================================================================================================
- * TENANTS SERVICE - LOGIC NGHIỆP VỤ QUẢN LÝ CỬA HÀNG
+ * TENANTS SERVICE - LOGIC NGHIỆP VỤ QUẢN LÝ CỬA HÀNG (MULTI-TENANCY)
  * =================================================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. TRANSACTION (GIAO DỊCH NGUYÊN TỐ):
- *    - Khi tạo mới một Tenant (`create`), ta phải làm 2 việc:
- *      A. Tạo dòng dữ liệu trong bảng `Tenant`.
- *      B. Tạo tài khoản `User` (Admin) cho Tenant đó.
- *    - Vấn đề: Nếu A thành công mà B thất bại -> Dữ liệu rác (Cửa hàng không có chủ).
- *    - Giải pháp: Dùng `prisma.$transaction`. Nếu B lỗi, A sẽ tự động bị hủy (Rollback).
+ *    - Khi tạo mới một Tenant (`create`), ta phải làm 2 việc cùng lúc:
+ *      A. Tạo dòng dữ liệu trong bảng `Tenant` (Thông tin cửa hàng).
+ *      B. Tạo tài khoản `User` (Admin) quản trị cho Tenant đó.
+ *    - Vấn đề: Nếu A thành công nhưng B thất bại -> Dữ liệu rác (Cửa hàng không có chủ).
+ *    - Giải pháp: Dùng `prisma.$transaction`. Nếu có bất kỳ lỗi nào xảy ra ở bước B, bước A sẽ tự động bị hủy bỏ (Rollback).
  *
- * 2. MẬT KHẨU (HASHING):
- *    - Mật khẩu admin KHÔNG ĐƯỢC lưu dưới dạng text (plain-text).
- *    - Bắt buộc phải mã hóa bằng `bcrypt` trước khi lưu vào DB.
+ * 2. MẬT KHẨU AN TOÀN (Hashing):
+ *    - Mật khẩu admin TUYỆT ĐỐI KHÔNG ĐƯỢC lưu dưới dạng text (plain-text).
+ *    - Bắt buộc phải mã hóa một chiều bằng `bcrypt` trước khi lưu vào DB.
+ *
+ * 3. CASCADE DELETION (Xóa lan truyền) - CẨN TRỌNG:
+ *    - Việc xóa một Tenant là thao tác cực kỳ nguy hiểm vì nó sẽ xóa toàn bộ dữ liệu liên quan (Sản phẩm, Đơn hàng, User...).
+ *    - Hãy chắc chắn rằng bạn hiểu rõ cơ chế Cascade của DB hoặc xử lý Soft Delete.
  * =================================================================================================
  */
 export class TenantsService {
@@ -32,7 +36,7 @@ export class TenantsService {
     const { adminEmail, adminPassword, ...tenantData } = createTenantDto;
 
     return this.prisma.$transaction(async (tx) => {
-      // 1. Create Tenant
+      // 1. Tạo Tenant mới
       const tenant = await tx.tenant.create({
         data: {
           name: tenantData.name,
@@ -42,14 +46,14 @@ export class TenantsService {
         },
       });
 
-      // 2. Create Admin User if requested
+      // 2. Tạo tài khoản Admin mặc định (nếu có yêu cầu)
       if (adminEmail && adminPassword) {
         const hashedPassword = await bcrypt.hash(
           adminPassword,
           AUTH_CONFIG.BCRYPT_ROUNDS,
         );
 
-        // Ensure ADMIN role exists for this specific tenant
+        // Đảm bảo role ADMIN tồn tại cho tenant này (hoặc tạo mới nếu chưa có)
         let adminRole = await tx.role.findFirst({
           where: { name: 'ADMIN', tenantId: tenant.id },
         });
@@ -116,7 +120,7 @@ export class TenantsService {
   }
 
   async update(id: string, updateTenantDto: UpdateTenantDto) {
-    // Ensure existence
+    // Kiểm tra sự tồn tại
     await this.findOne(id);
 
     return this.prisma.tenant.update({
@@ -126,9 +130,9 @@ export class TenantsService {
   }
 
   async remove(id: string) {
-    // Check constraints (users, orders, etc.) or cascade?
-    // Prisma usually handles cascade if defined, but Tenant deletion is dangerous.
-    // For now, allow delete.
+    // Kiểm tra các ràng buộc (Cascade Delete?)
+    // Prisma schema thường handle việc cascade, nhưng xóa Tenant là hành động nguy hiểm.
+    // Hiện tại cho phép xóa trực tiếp. Cần cẩn trọng!
     return this.prisma.tenant.delete({
       where: { id },
     });

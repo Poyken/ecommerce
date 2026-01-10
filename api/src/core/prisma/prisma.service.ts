@@ -42,8 +42,8 @@ export class PrismaService
 
     const threshold = 200;
 
-    // [P8 OPTIMIZATION] Use $extends for modern logging and performance monitoring
-    // Returns the extended client which will be used as the actual singleton instance
+    // [P8 OPTIMIZATION] Sử dụng $extends để thêm tính năng logging và giám sát hiệu năng
+    // Trả về extended client (singleton instance) thay vì client gốc.
     return this.$extends(tenancyExtension).$extends({
       query: {
         $allModels: {
@@ -54,7 +54,7 @@ export class PrismaService
 
             if (duration > threshold) {
               const logger = new Logger('PrismaPerformance');
-              // Sanitize args to avoid logging sensitive info like passwords
+              // Loại bỏ các thông tin nhạy cảm (Sanitize) trước khi log để bảo mật
               const sanitizedArgs = JSON.parse(JSON.stringify(args));
               const sensitiveFields = ['password', 'token', 'secret', 'key'];
 

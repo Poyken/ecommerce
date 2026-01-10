@@ -50,6 +50,11 @@ export class ReviewsService extends BaseCrudService<
   }
 
   /* ... Custom logic for invalidating cache ... */
+  /**
+   * Cập nhật Cache điểm đánh giá của sản phẩm (Rating Cache).
+   * - Tính toán lại điểm trung bình (`avgRating`) và tổng số đánh giá (`reviewCount`).
+   * - Lưu trực tiếp vào bảng `Product` để tối ưu tốc độ đọc (Read-heavy Database Optimization).
+   */
   private async updateProductRatingCache(
     productId: string,
     tx: any = this.prisma,
@@ -123,7 +128,7 @@ export class ReviewsService extends BaseCrudService<
       );
     }
 
-    /* Use Transaction for creation and cache update */
+    /* Transaction đảm bảo tính nhất quán: Tạo review -> Cập nhật điểm rating của Product ngay lập tức */
     const review = await this.prisma.$transaction(async (tx) => {
       const newReview = await tx.review.create({
         data: {
@@ -219,7 +224,12 @@ export class ReviewsService extends BaseCrudService<
     };
   }
 
-  /* ... Custom findAllByProduct (Cursor pagination, specific to reviews) ... */
+  /* ... Custom findAllByProduct (Cursor pagination pagination riêng cho review) ... */
+  /**
+   * Lấy danh sách đánh giá của sản phẩm cho User xem.
+   * - Sử dụng Cursor-based Pagination (thay vì Offset) để tối ưu hiệu năng cho list dài vô tận (Infinite Scroll).
+   * - Trả về kèm thông tin người dùng và biến thể sản phẩm họ đã mua.
+   */
   async findAllByProduct(productId: string, cursor?: string, limit = 10) {
     const reviews = await this.model.findMany({
       where: { productId, isApproved: true },
@@ -288,7 +298,7 @@ export class ReviewsService extends BaseCrudService<
     };
   }
 
-  /* ... Generic findAll for Admin ... */
+  /* ... Generic findAll cho Admin ... */
   async findAll(
     page: number,
     limit: number,
@@ -296,7 +306,7 @@ export class ReviewsService extends BaseCrudService<
     status?: string,
     search?: string,
   ) {
-    // Custom filter building
+    // Xây dựng bộ lọc tùy chỉnh
     const where: any = {};
     if (rating) where.rating = rating;
     if (status) {

@@ -47,15 +47,15 @@ export class CircuitBreaker {
       if (Date.now() >= this.nextRetryTime) {
         this.state = CircuitState.HALF_OPEN;
         this.logger.warn(
-          `[${this.serviceName}] Circuit is HALF-OPEN. Testing service...`,
+          `[${this.serviceName}] Mạch đang ở trạng thái HALF-OPEN. Đang thử kết nối lại...`,
         );
       } else {
         this.logger.error(
-          `[${this.serviceName}] Circuit is OPEN. Fast failing...`,
+          `[${this.serviceName}] Mạch đang MỞ (OPEN). Từ chối thực thi nhanh (Fast Fail)...`,
         );
         if (fallbackValue !== undefined) return fallbackValue;
         throw new Error(
-          `Service ${this.serviceName} is temporarily unavailable (Circuit Open)`,
+          `Dịch vụ ${this.serviceName} tạm thời không khả dụng (Circuit Open)`,
         );
       }
     }
@@ -74,7 +74,7 @@ export class CircuitBreaker {
   private onSuccess() {
     if (this.state !== CircuitState.CLOSED) {
       this.logger.log(
-        `[${this.serviceName}] ✅ Service recovered! Circuit is now CLOSED.`,
+        `[${this.serviceName}] ✅ Dịch vụ đã hồi phục! Mạch đã ĐÓNG (CLOSED) trở lại.`,
       );
     }
     this.failureCount = 0;
@@ -85,7 +85,7 @@ export class CircuitBreaker {
     this.failureCount++;
     const message = error instanceof Error ? error.message : String(error);
     this.logger.error(
-      `[${this.serviceName}] ❌ Failure count: ${this.failureCount}. Error: ${message}`,
+      `[${this.serviceName}] ❌ Số lần lỗi: ${this.failureCount}. Lỗi: ${message}`,
     );
 
     if (
@@ -95,9 +95,9 @@ export class CircuitBreaker {
       this.state = CircuitState.OPEN;
       this.nextRetryTime = Date.now() + this.resetTimeoutMs;
       this.logger.error(
-        `[${this.serviceName}] 🚨 Circuit is now OPEN. Service will be ignored for ${
+        `[${this.serviceName}] 🚨 Mạch đã MỞ (OPEN). Dịch vụ sẽ bị vô hiệu hóa trong ${
           this.resetTimeoutMs / 1000
-        }s`,
+        } giây`,
       );
     }
   }

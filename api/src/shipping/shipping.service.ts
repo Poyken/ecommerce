@@ -82,8 +82,10 @@ export class ShippingService {
   }
 
   /**
-   * Xử lý Webhook từ GHN để tự động cập nhật trạng thái đơn hàng
-   * GHN Statuses: ready_to_pick, picking, picked, delivering, money_collect_delivering, delivered, cancel, return, returned...
+   * Xử lý Webhook từ GHN để tự động cập nhật trạng thái đơn hàng.
+   * GHN Statuses: ready_to_pick, picking, picked, delivering, delivered, cancel, return, returned...
+   *
+   * Logic: Map trạng thái GHN sang trạng thái nội bộ -> Update DB -> Gửi Noti/Email.
    */
   async handleGHNWebhook(payload: any) {
     const { OrderCode, Status } = payload;
@@ -151,10 +153,10 @@ export class ShippingService {
         });
 
         this.logger.log(
-          `Updated order ${order.id} status to ${newStatus || order.status} (GHN: ${Status}) via GHN Webhook`,
+          `Cập nhật đơn hàng ${order.id} sang trạng thái ${newStatus || order.status} (GHN: ${Status}) qua Webhook`,
         );
 
-        // ✅ Send Notification & Email
+        // ✅ Gửi Notification & Email
         if (
           [
             OrderStatus.SHIPPED,

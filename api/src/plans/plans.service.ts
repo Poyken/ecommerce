@@ -5,13 +5,13 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. JSON FIELD:
- * - `features`: Trong DB lưu là String (JSON), nhưng DTO truyền vào là Array.
- * - Service cần `JSON.stringify` khi lưu và `JSON.parse` (nếu cần xử lý thêm) khi đọc.
+ * 1. TRƯỜNG JSON (JSON Field):
+ * - `features`: Trong DB lưu là String (JSON), nhưng DTO đầu vào là Array.
+ * - Service cần dùng `JSON.stringify` khi lưu và `JSON.parse` (nếu cần xử lý thêm) khi đọc.
  *
- * 2. IDEMPOTENCY (Tính lũy đẳng):
+ * 2. TÍNH LŨY ĐẲNG (Idempotency):
  * - Các hàm update nên kiểm tra sự tồn tại của bản ghi trước khi thực hiện
- *   (Prisma `update` sẽ throw lỗi nếu ID không tồn tại, nên try-catch là cần thiết ở tầng trên).
+ *   (Prisma `update` sẽ ném lỗi nếu ID không tồn tại, nên try-catch là cần thiết ở tầng trên).
  * =====================================================================
  */
 import { Injectable } from '@nestjs/common';

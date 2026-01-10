@@ -39,13 +39,15 @@ export class InventoryService {
   ) {}
 
   /**
-   * Reserve stock for an order (Checkout).
-   * Decrements `stock` and increments `reservedStock`.
+   * Giữ tồn kho (Reserve Stock) cho đơn hàng (Khi user bấm Checkout).
+   * - Giảm `stock` (tồn kho khả dụng).
+   * - Tăng `reservedStock` (hàng đã đặt nhưng chưa giao).
+   * - Sử dụng "Atomic Update" để tránh race condition.
    */
   async reserveStock(skuId: string, quantity: number, tx?: any) {
     const prisma = tx || this.prisma;
 
-    // Atomic update
+    // Cập nhật nguyên tử: chỉ giảm nếu stock >= quantity
     const result = await prisma.sku.updateMany({
       where: {
         id: skuId,
@@ -58,7 +60,7 @@ export class InventoryService {
     });
 
     if (result.count === 0) {
-      throw new Error(`Not enough stock for SKU ${skuId}`);
+      throw new Error(`Không đủ tồn kho cho SKU ${skuId}`);
     }
 
     this.notifyStockUpdate(skuId);
@@ -66,8 +68,9 @@ export class InventoryService {
   }
 
   /**
-   * Release stock (Order Cancelled/Expired).
-   * Increments `stock` and decrements `reservedStock`.
+   * Hoàn trả tồn kho (Release Stock).
+   * - Dùng khi: Đơn hàng bị Hủy (Cancel) hoặc Hết hạn thanh toán (Expire).
+   * - Logic: Cộng lại vào `stock` và giảm `reservedStock`.
    */
   async releaseStock(skuId: string, quantity: number, tx?: any) {
     const prisma = tx || this.prisma;
@@ -84,8 +87,9 @@ export class InventoryService {
   }
 
   /**
-   * Deduct stock permanently (Order Paid/Shipped).
-   * Decrements `reservedStock`.
+   * Trừ kho vĩnh viễn (Deduct Stock).
+   * - Dùng khi: Đơn hàng đã Giao thành công (Completed) hoặc đã xuất kho.
+   * - Logic: Chỉ giảm `reservedStock`, không đụng vào `stock` (vì `stock` đã giảm lúc reserve rồi).
    */
   async deductStock(skuId: string, quantity: number, tx?: any) {
     const prisma = tx || this.prisma;
@@ -99,8 +103,11 @@ export class InventoryService {
   }
 
   /**
-   * Check for low stock and notify users who have this item in their cart.
-   * ✅ Optimized: Batch notification creation (100x faster)
+   * Kiểm tra và cảnh báo sắp hết hàng (Low Stock Alert).
+   * - Gửi thông báo cho những user đang để sản phẩm này trong giỏ hàng (Cart).
+   * - Tăng tỷ lệ chuyển đổi bằng hiệu ứng FOMO (Fear Of Missing Out).
+   *
+   * ✅ TỐI ƯU HÓA: Gửi batch notification (nhanh hơn 100x).
    */
   private async checkLowStock(skuId: string) {
     const sku = await this.prisma.sku.findUnique({
@@ -108,12 +115,13 @@ export class InventoryService {
       include: { product: true },
     });
 
+    // Ngưỡng cảnh báo: < 5 sản phẩm
     if (sku && sku.stock < 5) {
       this.logger.warn(
-        `LOW STOCK ALERT: SKU ${sku.skuCode} has only ${sku.stock} items left.`,
+        `LOW STOCK ALERT: SKU ${sku.skuCode} chỉ còn ${sku.stock} sản phẩm.`,
       );
 
-      // ✅ Single query for all affected users
+      // ✅ Query 1 lần để lấy tất cả user bị ảnh hưởng
       const carts = await this.prisma.cart.findMany({
         where: {
           items: {
@@ -127,7 +135,7 @@ export class InventoryService {
 
       if (carts.length === 0) return;
 
-      // ✅ Batch create all notifications (1 query instead of N)
+      // ✅ Batch create (Tạo hàng loạt notification) -> 1 Query thay vì N Query
       const notifications = carts.map((cart) => ({
         userId: cart.userId,
         type: 'LOW_STOCK',
@@ -141,7 +149,7 @@ export class InventoryService {
         data: notifications,
       });
 
-      // ✅ Send WebSocket notifications (fire-and-forget)
+      // ✅ Gửi WebSocket (Real-time) - Fire-and-forget
       for (const cart of carts) {
         const notification = notifications.find(
           (n) => n.userId === cart.userId,
@@ -153,9 +161,9 @@ export class InventoryService {
               notification,
             );
           } catch (error) {
-            // Don't fail if WebSocket fails
+            // Không break luồng nếu lỗi WebSocket
             this.logger.warn(
-              `Failed to send WebSocket to user ${cart.userId}`,
+              `Lỗi gửi WebSocket cho user ${cart.userId}`,
               error,
             );
           }
@@ -165,7 +173,7 @@ export class InventoryService {
   }
 
   /**
-   * Fetch current stock and notify via WebSocket
+   * Lấy tồn kho hiện tại và bắn tin qua WebSocket cho tất cả client đang xem.
    */
   private async notifyStockUpdate(skuId: string) {
     try {
@@ -179,7 +187,7 @@ export class InventoryService {
       }
     } catch (error) {
       this.logger.error(
-        `Failed to notify stock update for SKU ${skuId}: ${error.message}`,
+        `Lỗi khi thông báo cập nhật tồn kho SKU ${skuId}: ${error.message}`,
       );
     }
   }

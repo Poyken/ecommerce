@@ -64,7 +64,8 @@ export abstract class BaseCrudService<T, _CreateDto, _UpdateDto> {
     const skip = (page - 1) * limit;
 
     try {
-      // [P13 OPTIMIZATION] Support both comma-separated string or Prisma select object
+      // [P13 OPTIMIZATION] Hỗ trợ cả chuỗi phân cách dấu phẩy hoặc Prisma select object
+      // Ví dụ: "id,name" hoặc { id: true, name: true }
       const prismaSelect =
         typeof select === 'string' ? this.parseFields(select) : select;
 
@@ -101,8 +102,8 @@ export abstract class BaseCrudService<T, _CreateDto, _UpdateDto> {
   }
 
   /**
-   * Generic FindOne
-   * Supports both 'select' and 'include' via options object
+   * Hàm tìm kiếm một bản ghi (FindOne Base).
+   * Hỗ trợ tùy chọn `select` hoặc `include` thông qua options object.
    */
   async findOneBase(
     id: string,
@@ -126,8 +127,8 @@ export abstract class BaseCrudService<T, _CreateDto, _UpdateDto> {
   }
 
   /**
-   * Generic Soft Delete
-   * Requires model to have 'deletedAt' field
+   * Hàm xóa mềm (Soft Delete Base).
+   * Yêu cầu model phải có trường `deletedAt`.
    */
   async softDeleteBase(id: string): Promise<T> {
     await this.findOneBase(id); // Check existence
@@ -145,8 +146,9 @@ export abstract class BaseCrudService<T, _CreateDto, _UpdateDto> {
   }
 
   /**
-   * Parse comma-separated fields into Prisma select object
-   * Example: "id,name,category.id" -> { id: true, name: true, category: { select: { id: true } } }
+   * Phân tích chuỗi các trường ngăn cách bởi dấu phẩy thành Prisma select object.
+   * Ví dụ: "id,name,category.id" -> { id: true, name: true, category: { select: { id: true } } }
+   * Giúp Client có thể request chính xác những field cần lấy (Graph-like fetching).
    */
   private parseFields(fields: string): any {
     const result = {};

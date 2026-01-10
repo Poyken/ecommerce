@@ -49,8 +49,8 @@ export class EncryptionService {
   }
 
   /**
-   * Encrypts plain text using AES-256-GCM
-   * Returns: iv:authTag:encryptedText
+   * Mã hóa chuỗi text (AES-256-GCM).
+   * Trả về format: iv:authTag:encryptedText
    */
   encrypt(text: string): string {
     try {
@@ -70,7 +70,8 @@ export class EncryptionService {
   }
 
   /**
-   * Decrypts text encrypted with AES-256-GCM
+   * Giải mã chuỗi text đã mã hóa.
+   * Yêu cầu đúng định dạng: iv:authTag:encryptedText
    */
   decrypt(encryptedData: string): string {
     try {
@@ -98,14 +99,14 @@ export class EncryptionService {
   }
 
   /**
-   * Helper to encrypt objects (useful for JSON fields)
+   * Tiện ích mã hóa object (JSON).
    */
   encryptObject(obj: any): string {
     return this.encrypt(JSON.stringify(obj));
   }
 
   /**
-   * Helper to decrypt to objects
+   * Tiện ích giải mã object.
    */
   decryptObject<T>(encryptedData: string): T {
     const decrypted = this.decrypt(encryptedData);

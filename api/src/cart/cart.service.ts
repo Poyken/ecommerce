@@ -41,8 +41,9 @@ export class CartService {
   constructor(private readonly prisma: PrismaService) {}
 
   /**
-   * [P14 OPTIMIZATION] Automated Abandoned Cart Cleanup (Daily)
-   * Purge carts not updated for more than 30 days.
+   * [P14 TỰ ĐỘNG HÓA] Dọn dẹp giỏ hàng "bị bỏ quên" (Abandoned Cart Cleanup).
+   * - Chạy định kỳ vào 00:00 hàng ngày.
+   * - Xóa các giỏ hàng không hoạt động quá 30 ngày để giải phóng DB.
    */
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async pruneAbandonedCarts(daysOld = 30) {
@@ -58,28 +59,27 @@ export class CartService {
 
       if (result.count > 0) {
         this.logger.log(
-          `[Prune] Abandoned carts cleanup complete. Removed ${result.count} carts inactive for ${daysOld} days.`,
+          `[Prune] Đã dọn dẹp ${result.count} giỏ hàng bị bỏ quên quá ${daysOld} ngày.`,
         );
       }
     } catch (error) {
-      this.logger.error('Failed to prune abandoned carts:', error);
+      this.logger.error('Lỗi khi dọn dẹp giỏ hàng:', error);
     }
   }
 
   /**
    * Lấy giỏ hàng của người dùng.
-   * Nếu chưa có giỏ hàng, tự động tạo mới.
+   * - Nếu chưa có giỏ hàng, tự động tạo mới (Upsert).
    *
-   * ✅ PRODUCTION-SAFE: Uses atomic upsert (no race conditions)
-   * ✅ Single query (fetch cart + items together)
-   * ✅ No redundant user check (FK constraint handles it)
+   * ✅ AN TOÀN CAO: Dùng Atomic Upsert để tránh lỗi Race Condition.
+   * ✅ HIỆU NĂNG: Chỉ 1 query để lấy cả Cart và Items (Include).
    */
   async getCart(userId: string) {
     const tenant = getTenant();
     if (!tenant) throw new BadRequestException('Tenant context missing');
 
     try {
-      // Single atomic operation: create cart if not exists + load items
+      // Upsert: Tìm hoặc tạo mới trong 1 thao tác DB
       const cart = await this.prisma.cart.upsert({
         where: {
           userId_tenantId: {
@@ -87,7 +87,7 @@ export class CartService {
             tenantId: tenant.id,
           },
         },
-        update: {}, // No update needed, just fetch
+        update: {}, // Không làm gì nếu đã tồn tại
         create: {
           userId,
           tenantId: tenant.id,
@@ -137,7 +137,7 @@ export class CartService {
         },
       });
 
-      // Calculate totals
+      // Tính tổng tiền & Tổng số lượng (Client có thể tự tính, nhưng Server tính sẽ chuẩn hơn)
       let totalAmount = 0;
       let totalItems = 0;
 
@@ -166,15 +166,14 @@ export class CartService {
   /**
    * Thêm sản phẩm (SKU) vào giỏ hàng.
    *
-   * ✅ PRODUCTION-SAFE: All validation happens INSIDE transaction
-   * ✅ No TOCTOU bugs (Time-of-Check-Time-of-Use)
-   * ✅ Atomic operations (prevents race conditions)
-   * ✅ No overselling possible
+   * ✅ QUAN TRỌNG: Tất cả validation và write data đều nằm trong Transaction.
+   * ✅ TRÁNH LỖI TOCTOU (Time-of-Check-Time-of-Use): Check tồn kho và trừ kho an toàn.
+   * ✅ KHÔNG OVERSELLING: Đảm bảo không bao giờ bán quá số lượng có sẵn.
    */
   async addToCart(userId: string, dto: AddToCartDto) {
     return await this.prisma.$transaction(
       async (tx) => {
-        // 1. Validate SKU atomically (inside transaction)
+        // 1. Kiểm tra SKU (Nguyên tử trong transaction)
         const sku = await tx.sku.findUnique({
           where: { id: dto.skuId },
           select: {
@@ -199,14 +198,14 @@ export class CartService {
           `[AddToCart] SKU ${sku.skuCode}: stock=${sku.stock}, reqQty=${dto.quantity}`,
         );
 
-        // Stock check INSIDE transaction (prevents TOCTOU bug)
+        // Check tồn kho TRONG transaction (ngăn chặn bug TOCTOU)
         if (sku.stock < dto.quantity) {
           throw new BadRequestException(
             `Không đủ hàng trong kho. Còn lại: ${sku.stock}`,
           );
         }
 
-        // 2. Get or create cart (atomic upsert)
+        // 2. Lấy hoặc tạo Cart (Atomic Upsert)
         const tenant = getTenant();
         if (!tenant) throw new BadRequestException('Tenant context missing');
 
@@ -224,7 +223,7 @@ export class CartService {
           },
         });
 
-        // 3. Upsert cart item (atomic)
+        // 3. Upsert Cart Item (Cộng dồn số lượng nếu đã có)
         const cartItem = await tx.cartItem.upsert({
           where: {
             cartId_skuId: {
@@ -244,7 +243,7 @@ export class CartService {
           },
         });
 
-        // 4. Verify final quantity doesn't exceed stock
+        // 4. Kiểm tra lại lần cuối: Nếu tổng số lượng trong giỏ > Tồn kho -> Cắt xuống bằng tồn kho
         if (cartItem.quantity > sku.stock) {
           // Cap at maximum available stock
           const capped = await tx.cartItem.update({
@@ -262,17 +261,17 @@ export class CartService {
         return { ...cartItem, capped: false };
       },
       {
-        isolationLevel: 'Serializable', // Strongest isolation
-        timeout: 5000, // 5 second timeout
+        isolationLevel: 'Serializable', // Mức cô lập cao nhất để đảm bảo an toàn tuyệt đối
+        timeout: 5000,
       },
     );
   }
 
   /**
-   * Cập nhật số lượng item trong giỏ (VD: Tăng/Giảm ở trang giỏ hàng).
+   * Cập nhật số lượng item trong giỏ (VD: Tăng + / Giảm - ở trang giỏ hàng).
    */
   async updateItem(userId: string, itemId: string, dto: UpdateCartItemDto) {
-    // Check quyền sở hữu item này (thuộc giỏ của user này)
+    // 1. Check quyền sở hữu: Item này có phải của User này không?
     const item = await this.prisma.cartItem.findUnique({
       where: { id: itemId },
       include: { cart: true, sku: true },
@@ -282,9 +281,9 @@ export class CartService {
       throw new NotFoundException('Không tìm thấy sản phẩm trong giỏ');
     }
 
-    // Check tồn kho cho số lượng MỚI
+    // 2. Check tồn kho cho số lượng MỚI
     this.logger.debug(
-      `[UpdateItem] Checking SKU ${item.sku.skuCode}: stock=${item.sku.stock}, newQty=${dto.quantity}`,
+      `[UpdateItem] SKU ${item.sku.skuCode}: stock=${item.sku.stock}, newQty=${dto.quantity}`,
     );
     if (item.sku.stock < dto.quantity) {
       throw new BadRequestException({
@@ -336,13 +335,12 @@ export class CartService {
   }
 
   /**
-   * Gộp giỏ hàng guest vào cart của user trong database
-   * Được gọi khi user login - merge items từ localStorage vào DB
+   * Gộp giỏ hàng Guest (LocalStorage) vào tài khoản User khi đăng nhập.
+   * - Được gọi ngay sau khi login thành công.
    *
    * Chiến lược:
-   * - Loop qua từng item và dùng addToCart để xử lý
-   * - addToCart tự động check tồn kho và cộng dồn nếu item đã tồn tại
-   * - Trả về kết quả cho từng item (success/fail)
+   * - Loop qua từng item và dùng logic `addToCart` (upsert) để xử lý.
+   * - Trả về kết quả chi tiết cho từng item (Thành công/Thất bại/Bị giới hạn số lượng).
    */
   async mergeCart(
     userId: string,
@@ -360,7 +358,7 @@ export class CartService {
           capped?: boolean;
         }[] = [];
 
-        // 1. Get or create cart once
+        // 1. Get hoặc Create Cart một lần duy nhất
         const tenant = getTenant();
         if (!tenant) throw new Error('Tenant context missing');
 
@@ -378,7 +376,7 @@ export class CartService {
           },
         });
 
-        // 2. Fetch all SKUs in one go for validation
+        // 2. Fetch tất cả SKU một lần để tối ưu (Bulk Read)
         const skuIds = items.map((i) => i.skuId);
         const skus = await tx.sku.findMany({
           where: { id: { in: skuIds } },
@@ -392,7 +390,7 @@ export class CartService {
 
         const skuMap = new Map(skus.map((s) => [s.id, s]));
 
-        // 3. Process items
+        // 3. Xử lý từng item
         for (const item of items) {
           try {
             const sku = skuMap.get(item.skuId);
@@ -400,7 +398,7 @@ export class CartService {
             if (sku.status !== 'ACTIVE')
               throw new Error('Sản phẩm không còn được bán');
 
-            // Atomic upsert for each item within the same transaction
+            // Atomic Upsert cho item
             const cartItem = await tx.cartItem.upsert({
               where: {
                 cartId_skuId: {
@@ -418,7 +416,7 @@ export class CartService {
               },
             });
 
-            // Stock check validation
+            // Validate lại số lượng sau khi cộng dồn
             if (cartItem.quantity > sku.stock) {
               const capped = await tx.cartItem.update({
                 where: { id: cartItem.id },
@@ -428,7 +426,7 @@ export class CartService {
                 skuId: item.skuId,
                 success: true,
                 data: capped,
-                capped: true,
+                capped: true, // Đánh dấu là bị cắt giảm số lượng do hết kho
               });
             } else {
               results.push({
