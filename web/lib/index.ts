@@ -14,14 +14,11 @@
  * =====================================================================
  */
 
-"use client"; // This file should be marked as client if it exports stateful things,
-// but mostly it's utils. Next.js handles it.
-
 // Utils chung
 export { cn } from "./utils";
 
-// Format utilities
-export * from "./format";
+// Format utilities (merged into utils)
+export * from "./utils";
 
 // Constants
 export * from "./constants";

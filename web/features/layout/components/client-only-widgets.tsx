@@ -19,7 +19,7 @@ const AiChatWidget = dynamic(
 
 const PurchaseToast = dynamic(
   () =>
-    import("@/components/shared/purchase-toast").then(
+    import("@/features/marketing/components/purchase-toast").then(
       (m) => m.PurchaseToast
     ),
   { ssr: false }

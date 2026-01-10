@@ -1,4 +1,4 @@
-import { ClientOnlyWidgets } from "@/components/shared/client-only-widgets";
+import { ClientOnlyWidgets } from "@/features/layout/components/client-only-widgets";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { getCartCountAction } from "@/features/cart/actions";
 import { CartInitializer } from "@/features/cart/components/cart-initializer";

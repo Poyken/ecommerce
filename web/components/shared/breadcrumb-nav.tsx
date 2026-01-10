@@ -5,7 +5,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/shared/breadcrumb";
+} from "@/components/ui/breadcrumb";
 import { Link } from "@/i18n/routing";
 import { Home } from "lucide-react";
 import { useTranslations } from "next-intl";

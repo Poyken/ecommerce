@@ -1,15 +1,15 @@
 "use client";
 
 import { GlassCard } from "@/components/shared/glass-card";
-import { ProgressiveImage } from "@/components/shared/progressive-image";
+import { OptimizedImage } from "@/components/shared/optimized-image";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/routing";
 import {
-    fadeInLeft,
-    fadeInRight,
-    fadeInUp,
-    itemVariant,
-    staggerContainer,
+  fadeInLeft,
+  fadeInRight,
+  fadeInUp,
+  itemVariant,
+  staggerContainer,
 } from "@/lib/animations";
 import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
@@ -204,12 +204,12 @@ export function AboutPageContent() {
             viewport={{ once: true }}
             variants={fadeInRight}
           >
-            <ProgressiveImage
+            <OptimizedImage
               src="/images/about/mission.webp"
               alt="Our Mission"
               fill
               className="object-cover"
-              wrapperClassName="absolute inset-0"
+              containerClassName="absolute inset-0"
             />
           </m.div>
         </section>
@@ -308,7 +308,9 @@ export function AboutPageContent() {
             <h2 className="text-4xl font-serif font-normal tracking-tight">
               {t("meetTeam")}
             </h2>
-            <p className="text-muted-foreground font-light">{t("teamSubtitle")}</p>
+            <p className="text-muted-foreground font-light">
+              {t("teamSubtitle")}
+            </p>
           </m.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -338,12 +340,12 @@ export function AboutPageContent() {
                 variants={itemVariant}
               >
                 <div className="relative aspect-3/4 rounded-2xl overflow-hidden mb-4">
-                  <ProgressiveImage
+                  <OptimizedImage
                     src={member.image}
                     alt={member.name}
                     fill
                     className="object-cover grayscale-0 md:grayscale md:group-hover:grayscale-0 transition-all duration-500"
-                    wrapperClassName="absolute inset-0"
+                    containerClassName="absolute inset-0"
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6 z-20">
                     <div className="transform translate-y-0 md:translate-y-4 md:group-hover:translate-y-0 transition-transform duration-300">

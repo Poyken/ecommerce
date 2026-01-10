@@ -95,7 +95,7 @@ export async function generateMetadata({
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 
-import { EmptyState } from "@/components/shared/empty-state";
+import { ShopEmptyState } from "@/components/shared/shop-empty-state";
 import { AlertCircle, PackageSearch } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -123,7 +123,7 @@ async function DynamicOrderDetail({ id }: { id: string }) {
   if (error || !order) {
     return (
       <div className="container mx-auto px-4 pt-24 pb-8 max-w-4xl">
-        <EmptyState
+        <ShopEmptyState
           icon={error ? AlertCircle : PackageSearch}
           title={error ? t("orderNotFound") : t("loadingDetails")}
           description={

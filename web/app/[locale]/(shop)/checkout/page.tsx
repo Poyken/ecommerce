@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
-import { EmptyState } from "@/components/shared/empty-state";
+import { ShopEmptyState } from "@/components/shared/shop-empty-state";
 import { AlertCircle } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -63,7 +63,7 @@ async function DynamicCheckout() {
   if (error || !cart) {
     return (
       <div className="container mx-auto px-4 py-24 min-h-[60vh] flex items-center justify-center">
-        <EmptyState
+        <ShopEmptyState
           icon={AlertCircle}
           title={error ? "Error Loading Checkout" : "Cart is Empty"}
           description={

@@ -277,7 +277,7 @@ export function DataWrapper<T>({
 
   // Empty state
   if (!data || (isEmpty && isEmpty(data))) {
-    return emptyComponent || <EmptyState className={className} />;
+    return emptyComponent || <ShopEmptyState className={className} />;
   }
 
   // Success - render children với data
