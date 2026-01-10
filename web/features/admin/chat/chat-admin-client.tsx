@@ -11,19 +11,20 @@ import { ProductQuickViewDialog } from "@/features/products/components/product-q
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";
 import {
-    Image as ImageIcon,
-    Loader2,
-    MessageSquare,
-    Paperclip,
-    Search,
-    Send,
-    X,
+  Image as ImageIcon,
+  Loader2,
+  MessageSquare,
+  Paperclip,
+  Search,
+  Send,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { io, Socket } from "socket.io-client";
 import { ChatSelector } from "../../chat/components/chat-selector"; // Import selector
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface ChatMessage {
   id: string;
@@ -558,69 +559,175 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
     }
   };
 
+  const [activeTab, setActiveTab] = useState("customers");
+  const [teamMembers, setTeamMembers] = useState<UserType[]>([]);
+
+  // Fetch Team Members
+  useEffect(() => {
+    if (!accessToken || !user) return;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/users?limit=100`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.data) {
+          const admins = (data.data as any[]).filter(
+            (u) =>
+              u.id !== user.id &&
+              u.roles?.some(
+                (r: any) =>
+                  (typeof r === "string" ? r : r.name) === "ADMIN" ||
+                  (typeof r === "string" ? r : r.name) === "SUPER_ADMIN"
+              )
+          );
+          setTeamMembers(admins);
+        }
+      })
+      .catch((err) => console.error("Failed to fetch team", err));
+  }, [accessToken, user]);
+
   return (
     <div className="flex h-[calc(100vh-100px)] gap-4">
       {/* Sidebar List */}
       <div className="w-1/3 bg-background border rounded-lg flex flex-col overflow-hidden">
         <div className="p-4 border-b">
-          <h2 className="font-semibold mb-2">Conversations</h2>
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Search user..." className="pl-8" />
-          </div>
+          <h2 className="font-semibold mb-2">Messages</h2>
+          <Tabs
+            value={activeTab}
+            onValueChange={setActiveTab}
+            className="w-full"
+          >
+            <TabsList className="grid w-full grid-cols-2 mb-2">
+              <TabsTrigger value="customers">Customers</TabsTrigger>
+              <TabsTrigger value="team">Team (Internal)</TabsTrigger>
+            </TabsList>
+
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input placeholder="Search..." className="pl-8" />
+            </div>
+          </Tabs>
         </div>
+
         <ScrollArea className="flex-1">
           <div className="flex flex-col">
-            {conversations.map((conv) => (
-              <div
-                key={conv.id}
-                className={cn(
-                  "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors border-b",
-                  selectedConversation?.id === conv.id && "bg-muted"
-                )}
-                onClick={() => setSelectedConversation(conv)}
-              >
-                <Avatar>
-                  <AvatarImage src={conv.user.avatarUrl} />
-                  <AvatarFallback>{conv.user.firstName[0]}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1 overflow-hidden">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="font-medium truncate">
-                      {conv.user.firstName} {conv.user.lastName}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(conv.updatedAt).toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  </div>
-                  <div className="flex-1 overflow-hidden">
-                    <div className="flex justify-between items-center">
-                      <p className="text-sm text-muted-foreground truncate max-w-[180px]">
-                        {/* Preview content depending on type */}
-                        {conv.messages[0]?.type === "IMAGE"
-                          ? "Sent an image"
-                          : conv.messages[0]?.type === "PRODUCT"
-                          ? "Shared a product"
-                          : conv.messages[0]?.type === "ORDER"
-                          ? "Referenced an order"
-                          : conv.messages[0]?.content || "No messages yet"}
-                      </p>
-                      {conv._count.messages > 0 && (
-                        <Badge
-                          variant="destructive"
-                          className="h-5 w-5 rounded-full p-0 flex items-center justify-center text-[10px]"
-                        >
-                          {conv._count.messages}
-                        </Badge>
-                      )}
+            {activeTab === "customers" ? (
+              // CUSTOMERS LIST
+              conversations.length === 0 ? (
+                <div className="p-8 text-center text-muted-foreground text-sm">
+                  No customer conversations yet.
+                </div>
+              ) : (
+                conversations.map((conv) => (
+                  <div
+                    key={conv.id}
+                    className={cn(
+                      "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors border-b",
+                      selectedConversation?.id === conv.id && "bg-muted"
+                    )}
+                    onClick={() => setSelectedConversation(conv)}
+                  >
+                    <Avatar>
+                      <AvatarImage src={conv.user.avatarUrl} />
+                      <AvatarFallback>{conv.user.firstName[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 overflow-hidden">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-medium truncate">
+                          {conv.user.firstName} {conv.user.lastName}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(conv.updatedAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </span>
+                      </div>
+                      <div className="flex-1 overflow-hidden">
+                        <div className="flex justify-between items-center">
+                          <p className="text-sm text-muted-foreground truncate max-w-[180px]">
+                            {conv.messages[0]?.type === "IMAGE"
+                              ? "Sent an image"
+                              : conv.messages[0]?.type === "PRODUCT"
+                              ? "Shared a product"
+                              : conv.messages[0]?.type === "ORDER"
+                              ? "Referenced an order"
+                              : conv.messages[0]?.content || "No messages yet"}
+                          </p>
+                          {conv._count.messages > 0 && (
+                            <Badge
+                              variant="destructive"
+                              className="h-5 w-5 rounded-full p-0 flex items-center justify-center text-[10px]"
+                            >
+                              {conv._count.messages}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ))
+              )
+            ) : // TEAM HELPERS LIST
+            teamMembers.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground text-sm">
+                No other admins found.
               </div>
-            ))}
+            ) : (
+              teamMembers.map((member) => (
+                <div
+                  key={member.id}
+                  className={cn(
+                    "flex items-center gap-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors border-b",
+                    selectedConversation?.user.id === member.id && "bg-muted"
+                  )}
+                  onClick={() => {
+                    // Check if existing conversation exists in `conversations` list (if they chatted before using the "User" role logic)
+                    // If not, create a fake one
+                    const existing = conversations.find(
+                      (c) => c.userId === member.id
+                    );
+                    if (existing) {
+                      setSelectedConversation(existing);
+                    } else {
+                      // Create fake conversation object
+                      setSelectedConversation({
+                        id: `temp_${member.id}`,
+                        userId: member.id,
+                        updatedAt: new Date().toISOString(),
+                        user: {
+                          id: member.id,
+                          firstName: member.firstName,
+                          lastName: member.lastName,
+                          email: member.email,
+                          avatarUrl: member.avatarUrl || undefined,
+                        },
+                        messages: [],
+                        _count: { messages: 0 },
+                      });
+                    }
+                  }}
+                >
+                  <Avatar>
+                    <AvatarImage src={member.avatarUrl} />
+                    <AvatarFallback>{member.firstName[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 overflow-hidden">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-medium truncate">
+                        {member.firstName} {member.lastName}
+                      </span>
+                      <Badge variant="outline" className="text-[10px] h-5">
+                        Admin
+                      </Badge>
+                    </div>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {member.email}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </ScrollArea>
       </div>

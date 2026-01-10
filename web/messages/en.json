@@ -1327,6 +1327,9 @@
     "sidebar": {
       "overview": "OVERVIEW",
       "dashboard": "Dashboard",
+      "securityHub": "Security Hub",
+      "analytics": "Analytics",
+      "chat": "Chat",
       "notifications": "Notifications",
       "productManagement": "PRODUCT MANAGEMENT",
       "brands": "Brands",
@@ -1348,16 +1351,11 @@
       "pages": "Pages",
       "tenancy": "TENANCY",
       "tenants": "Tenants",
-      "platformSystem": "PLATFORM SYSTEM",
+      "plans": "Plans",
       "subscriptions": "Subscriptions",
-      "securityHub": "Security Hub",
-      "analytics": "Analytics",
+      "platformSystem": "PLATFORM SYSTEM",
       "settings": "Settings",
-      "brand": "Super Admin",
-      "tenantAdmin": "Tenant Admin",
-      "chatSupport": "Chat Support",
-      "platformControl": "Platform Control",
-      "billing": "Billing"
+      "tenantAdmin": "Tenant Admin"
     }
   },
   "contact": {

@@ -33,9 +33,9 @@ export default function SuperAdminDashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-50 font-sans">
+    <div className="flex min-h-screen bg-background text-foreground font-sans">
       <SuperAdminSidebar />
-      <main className="relative z-10 flex-1 flex flex-col min-w-0 bg-slate-50 text-foreground overflow-hidden">
+      <main className="relative z-10 flex-1 flex flex-col min-w-0 bg-background overflow-hidden">
         <Suspense fallback={<AdminHeaderSkeleton />}>
           <DynamicSuperAdminShell>{children}</DynamicSuperAdminShell>
         </Suspense>

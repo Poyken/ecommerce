@@ -1010,6 +1010,10 @@ model Subscription {
   id              String           @id @default(uuid())
   tenantId        String           @unique // 1 Tenant has 1 Active Subscription
   plan            TenantPlan
+  
+  planId          String?
+  subscriptionPlan SubscriptionPlan? @relation(fields: [planId], references: [id])
+
   billingFrequency BillingFrequency @default(MONTHLY)
   startDate       DateTime         @default(now())
   nextBillingDate DateTime
@@ -1055,4 +1059,29 @@ enum InvoiceStatus {
   OVERDUE
   CANCELLED
   VOID
+}
+
+model SubscriptionPlan {
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+  description String?
+  
+  priceMonthly Decimal  @db.Decimal(10, 2) @default(0)
+  priceYearly  Decimal  @db.Decimal(10, 2) @default(0)
+  currency     String   @default("USD")
+  
+  maxProducts      Int      @default(100)
+  maxStorage       Int      @default(1024) // MB
+  transactionFee   Decimal  @db.Decimal(5, 2) @default(0.0) 
+  
+  features         Json?    @default("[]") 
+
+  isActive    Boolean  @default(true)
+  isPublic    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  subscriptions Subscription[]
 }

@@ -11,6 +11,8 @@ import {
   CreditCard,
   History,
   LayoutDashboard,
+  MessageSquare,
+  Package,
   Settings,
   Shield,
   ShieldCheck,
@@ -75,6 +77,12 @@ export function SuperAdminSidebar() {
           icon: BarChart3,
           permission: "dashboard:view",
         },
+        {
+          title: t("chat") || "Chat",
+          href: "/super-admin/chat",
+          icon: MessageSquare,
+          permission: "dashboard:view",
+        },
       ],
     },
     {
@@ -84,6 +92,12 @@ export function SuperAdminSidebar() {
           title: t("tenants"),
           href: "/super-admin/tenants",
           icon: Store,
+          permission: "tenant:read",
+        },
+        {
+          title: t("plans") || "Plans",
+          href: "/super-admin/plans",
+          icon: Package,
           permission: "tenant:read",
         },
         {

@@ -40,6 +40,7 @@ import { OrdersModule } from '@/orders/orders.module';
 import { PagesModule } from '@/pages/pages.module';
 import { PaymentModule } from '@/payment/payment.module';
 import { ProductsModule } from '@/products/products.module';
+import { PlansModule } from '@/plans/plans.module';
 import { ReviewsModule } from '@/reviews/reviews.module';
 import { RolesModule } from '@/roles/roles.module';
 import { ShippingModule } from '@/shipping/shipping.module';
@@ -179,7 +180,7 @@ import { MetricsModule } from '@core/metrics/metrics.module';
     BrandsModule, // Thương hiệu
     ProductsModule, // Sản phẩm
     SkusModule, // Biến thể sản phẩm (SKU - Stock Keeping Unit)
-
+    PlansModule,
     // 9. CartModule - Giỏ hàng
     CartModule,
 
