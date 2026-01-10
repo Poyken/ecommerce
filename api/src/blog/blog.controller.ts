@@ -140,6 +140,13 @@ export class BlogController {
     return { data };
   }
 
+  @Get('category-stats')
+  @ApiOperation({ summary: 'Lấy thống kê danh mục bài viết (Alias)' })
+  async getCategoryStatsAlias() {
+    const data = await this.blogService.getCategoryStats();
+    return { data };
+  }
+
   @Get('stats')
   @ApiOperation({ summary: 'Lấy thống kê bài viết (Alias cho categories)' })
   async getStats() {

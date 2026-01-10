@@ -75,6 +75,7 @@ export function PermissionsPageClient({
       <AdminPageHeader
         title="Permissions"
         subtitle="Manage system permissions."
+        icon={<Shield className="h-5 w-5" />}
         actions={
           <GlassButton
             className="bg-primary text-primary-foreground"

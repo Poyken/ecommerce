@@ -45,7 +45,7 @@ export interface CrudDelegate<T> {
  * =====================================================================
  */
 @Injectable()
-export abstract class BaseCrudService<T, CreateDto, UpdateDto> {
+export abstract class BaseCrudService<T, _CreateDto, _UpdateDto> {
   protected abstract get model(): CrudDelegate<T>;
   protected readonly logger: Logger;
 

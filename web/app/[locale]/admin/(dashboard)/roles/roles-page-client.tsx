@@ -81,6 +81,7 @@ export function RolesPageClient({ initialRoles }: RolesPageClientProps) {
       <AdminPageHeader
         title="Roles"
         subtitle="Manage system roles."
+        icon={<Shield className="h-5 w-5" />}
         actions={
           <>
             <GlassButton

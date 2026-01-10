@@ -59,6 +59,7 @@ const SHARED_MODELS = new Set([
   'ProductTranslation',
   'BlogProduct',
   'OrderItem',
+  'SubscriptionPlan',
 ]);
 
 const MODELS_WITH_SOFT_DELETE = new Set([
@@ -86,7 +87,7 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
               // SILO MODE DETECTED
               // Trong thực tế, Application level connection manager sẽ xử lý việc connect đúng DB.
               // Ở đây ta chỉ set context RLS cho an toàn.
-              // console.log(`[Tenancy] Switching to Silo Mode for tenant: ${tenant.name}`);
+              // Silo Mode logic here if needed
             }
             await client.$executeRawUnsafe(
               `SET app.current_tenant_id = '${tenant.id}';`,

@@ -101,8 +101,6 @@ export class NotificationsGateway
       const unreadCount =
         await this.notificationsService.getUnreadCount(userId);
       client.emit('unread_count', { count: unreadCount });
-
-      // console.log(`[WS] User ${userId} connected (socket: ${client.id})`);
     } catch (error) {
       this.logger.error('[WS] Connection error:', error.message);
       client.disconnect();
@@ -123,7 +121,6 @@ export class NotificationsGateway
           this.userSockets.delete(userId);
         }
       }
-      // console.log(`[WS] User ${userId} disconnected (socket: ${client.id})`);
     }
   }
 

@@ -97,8 +97,6 @@ export class CouponsService extends BaseCrudService<
       orderBy: { endDate: 'asc' },
     });
 
-    // console.log(`[Coupons] Server Time (UTC): ${now.toISOString()}`);
-
     return candidates.filter((coupon) => {
       const start = new Date(coupon.startDate);
       const end = new Date(coupon.endDate);
@@ -109,25 +107,14 @@ export class CouponsService extends BaseCrudService<
       const bufferMs = 2 * 60 * 1000;
 
       if (start.getTime() - bufferMs > now.getTime()) {
-        // console.log(
-        //   `[Coupons] Filtered ${coupon.code}: Future Start Date (${start.toISOString()} > ${now.toISOString()})`,
-        // );
         return false;
       }
       if (end.getTime() + bufferMs < now.getTime()) {
-        // console.log(
-        //   `[Coupons] Filtered ${coupon.code}: Expired (${end.toISOString()} < ${now.toISOString()})`,
-        // );
         return false;
       }
 
       if (!coupon.usageLimit) return true;
       const invalid = coupon.usageLimit <= coupon.usedCount;
-      if (invalid) {
-        // console.log(
-        //   `[Coupons] Filtering out ${coupon.code}: Limit ${coupon.usageLimit} <= Used ${coupon.usedCount}`,
-        // );
-      }
       return !invalid;
     });
   }
@@ -212,9 +199,6 @@ export class CouponsService extends BaseCrudService<
       start.getTime() - bufferMs > now.getTime() ||
       end.getTime() + bufferMs < now.getTime()
     ) {
-      // console.log(
-      //   `[Coupons] Validation failed for ${code}: now=${now.toISOString()}, start=${start.toISOString()}, end=${end.toISOString()}`,
-      // );
       throw new BadRequestException(
         'Mã giảm giá đã hết hạn hoặc chưa đến thời gian sử dụng',
       );

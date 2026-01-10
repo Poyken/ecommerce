@@ -44,9 +44,7 @@ export class PrismaService
 
     // [P8 OPTIMIZATION] Use $extends for modern logging and performance monitoring
     // Returns the extended client which will be used as the actual singleton instance
-    const client = this.$extends(tenancyExtension);
-
-    return client.$extends({
+    return this.$extends(tenancyExtension).$extends({
       query: {
         $allModels: {
           async $allOperations({ operation, model, args, query }) {
