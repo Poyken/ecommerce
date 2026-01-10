@@ -60,11 +60,8 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
 
     const res = await deletePageAction(selectedPage.id);
     if (res.success) {
-      toast({
-        title: "Success",
-        description: "Page deleted successfully",
-      });
-      setIsDeleteOpen(false);
+      // Toast and dialog close are handled by DeleteConfirmDialog
+      // setIsDeleteOpen(false);
     }
     return res;
   };
@@ -144,20 +141,50 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
                         Build
                       </Link>
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      asChild
-                      className="h-9 w-9"
-                    >
-                      <Link
-                        href={page.slug}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </Link>
-                    </Button>
+                    {(() => {
+                      const hasBlocks =
+                        Array.isArray(page.blocks) && page.blocks.length > 0;
+                      const isDisabled = !hasBlocks || !page.isPublished;
+                      const linkHref =
+                        page.slug === "home" || page.slug === "/"
+                          ? "/"
+                          : `/${page.slug}`;
+
+                      if (isDisabled) {
+                        return (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            disabled
+                            className="h-9 w-9 opacity-50"
+                            title={
+                              !page.isPublished
+                                ? "Publish page to view properly"
+                                : "Add blocks to view"
+                            }
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </Button>
+                        );
+                      }
+
+                      return (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          asChild
+                          className="h-9 w-9"
+                        >
+                          <Link
+                            href={linkHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                      );
+                    })()}
                     <Button
                       variant="ghost"
                       size="icon"
