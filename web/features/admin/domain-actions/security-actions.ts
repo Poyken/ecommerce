@@ -1,10 +1,10 @@
 "use server";
 
 import { http } from "@/lib/http";
+import { normalizePaginationParams } from "@/lib/api-helpers";
 import { ApiResponse, ActionResult, SecurityStats } from "@/types/dtos";
 import { AuditLog } from "@/types/models";
-import { revalidatePath } from "next/cache";
-import { wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
 
 /**
  * =====================================================================
@@ -41,8 +41,8 @@ export async function toggleLockdownAction(
       method: "POST",
       body: JSON.stringify({ isEnabled }),
     });
-    revalidatePath("/super-admin/security", "page");
-    revalidatePath("/", "page");
+    REVALIDATE.superAdmin.security();
+    REVALIDATE.path("/", "page");
     return res.data;
   }, "Failed to toggle lockdown");
 }
@@ -64,7 +64,7 @@ export async function updateSuperAdminWhitelistAction(
       method: "POST",
       body: JSON.stringify({ ips }),
     });
-    revalidatePath("/super-admin/security", "page");
+    REVALIDATE.superAdmin.security();
   }, "Failed to update whitelist");
 }
 
@@ -76,8 +76,9 @@ export async function getMyIpAction(): Promise<ActionResult<{ ip: string }>> {
 }
 
 export async function getAuditLogsAction(
-  params: any = {}
+  paramsOrPage: any = {}
 ): Promise<ActionResult<AuditLog[]>> {
+  const params = normalizePaginationParams(paramsOrPage);
   return wrapServerAction(
     () => http<ApiResponse<AuditLog[]>>("/audit", { params }),
     "Failed to fetch audit logs"

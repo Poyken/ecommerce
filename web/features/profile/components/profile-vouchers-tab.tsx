@@ -41,7 +41,7 @@ export function ProfileVouchersTab() {
     const fetchCoupons = async () => {
       try {
         const res = await getAvailableCouponsAction();
-        if (res.data) {
+        if (res.success && res.data) {
           setCoupons(res.data);
         }
       } catch (error) {

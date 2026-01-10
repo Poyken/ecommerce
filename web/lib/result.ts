@@ -172,15 +172,7 @@ export function tryCatchSync<T>(fn: () => T): Result<T, Error> {
 // API RESPONSE RESULT
 // ============================================================================
 
-/**
- * Định nghĩa lỗi API chuẩn.
- */
-export interface ApiError {
-  message: string;
-  code?: string;
-  status?: number;
-  details?: Record<string, unknown>;
-}
+import { ApiError } from "./types";
 
 /**
  * Result type cho API responses.

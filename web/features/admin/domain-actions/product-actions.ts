@@ -1,6 +1,7 @@
 "use server";
 
 import { http } from "@/lib/http";
+import { normalizePaginationParams } from "@/lib/api-helpers";
 import {
   ApiResponse,
   ActionResult,
@@ -9,28 +10,9 @@ import {
   UpdateSkuDto,
 } from "@/types/dtos";
 import { Product, ProductTranslation, Sku } from "@/types/models";
-import { revalidatePath } from "next/cache";
-import { wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
 
-/**
- * =====================================================================
- * PRODUCT & SKU ACTIONS - Quản lý sản phẩm, biến thể & nội dung AI
- * =====================================================================
- */
-
-/**
- * Helper to normalize arguments for list actions
- */
-function normalizeParams(paramsOrPage?: any, limit?: number, search?: string) {
-  if (
-    typeof paramsOrPage === "object" &&
-    paramsOrPage !== null &&
-    !Array.isArray(paramsOrPage)
-  ) {
-    return paramsOrPage;
-  }
-  return { page: paramsOrPage, limit, search };
-}
+// Parameters normalization is handled by lib/api-helpers/normalizePaginationParams
 
 // --- PRODUCTS ---
 
@@ -39,7 +21,7 @@ export async function getProductsAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Product[]>> {
-  const params = normalizeParams(paramsOrPage, limit, search);
+  const params = normalizePaginationParams(paramsOrPage, limit, search);
   return wrapServerAction(
     () => http<ApiResponse<Product[]>>("/products", { params }),
     "Failed to fetch products"
@@ -54,7 +36,7 @@ export async function createProductAction(
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/products", "page");
+    REVALIDATE.admin.products();
     return res.data;
   }, "Failed to create product");
 }
@@ -68,7 +50,8 @@ export async function updateProductAction(
       method: "PATCH",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/products", "page");
+    REVALIDATE.admin.products();
+    REVALIDATE.products(id);
     return res.data;
   }, "Failed to update product");
 }
@@ -78,7 +61,7 @@ export async function deleteProductAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/products/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/products", "page");
+    REVALIDATE.admin.products();
   }, "Failed to delete product");
 }
 
@@ -91,16 +74,9 @@ export async function getSkusAction(
   search?: string,
   stockLimit?: number
 ): Promise<ActionResult<Sku[]>> {
-  let params: any = {};
-  if (
-    typeof paramsOrPage === "object" &&
-    paramsOrPage !== null &&
-    !Array.isArray(paramsOrPage)
-  ) {
-    params = paramsOrPage;
-  } else {
-    params = { page: paramsOrPage, limit, status, search, stockLimit };
-  }
+  const params = normalizePaginationParams(paramsOrPage, limit, search);
+  if (status) params.status = status;
+  if (stockLimit) params.stockLimit = stockLimit;
 
   return wrapServerAction(
     () => http<ApiResponse<Sku[]>>("/skus", { params }),
@@ -117,7 +93,7 @@ export async function updateSkuAction(
       method: "PATCH",
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
-    revalidatePath("/admin/products", "page");
+    REVALIDATE.admin.products();
     return res.data;
   }, "Failed to update SKU");
 }
@@ -148,7 +124,7 @@ export async function updateProductTranslationAction(
         body: JSON.stringify(data),
       }
     );
-    revalidatePath("/admin/products", "page");
+    REVALIDATE.admin.products();
     return res.data;
   }, "Failed to update translation");
 }

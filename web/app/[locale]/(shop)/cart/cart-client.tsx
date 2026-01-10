@@ -62,7 +62,14 @@ import {
   X,
 } from "lucide-react";
 import { useFormatter, useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 
 // Extend shared types for stricter UI requirements (we know SKU must exist here)
 interface PopulatedCartItem extends Omit<CartItem, "sku"> {
@@ -123,7 +130,7 @@ export function CartClient({ cart }: CartClientProps) {
     if (isGuest) return guestItems;
     return (cart?.items || []) as unknown as PopulatedCartItem[];
   }, [isGuest, guestItems, cart]);
-  
+
   const total = isGuest ? totalGuest : Number(cart?.totalAmount) || 0;
 
   useEffect(() => {
@@ -216,8 +223,7 @@ export function CartClient({ cart }: CartClientProps) {
               setGuestItems([]);
               setTotalGuest(0);
             }
-          } catch (_e) {
-            // console.error("Error loading guest cart", e);
+          } catch {
             setGuestItems([]);
           } finally {
             setIsInitializing(false);
@@ -389,7 +395,10 @@ export function CartClient({ cart }: CartClientProps) {
                       : item
                   )
                 );
-                await updateCartItemAction({ itemId: id, quantity: availableStock });
+                await updateCartItemAction({
+                  itemId: id,
+                  quantity: availableStock,
+                });
               } else {
                 toast({
                   title: t("updateFailed"),
@@ -405,8 +414,7 @@ export function CartClient({ cart }: CartClientProps) {
               }
             }
           }
-        } catch (_error) {
-          // console.error("Failed to update cart item", error);
+        } catch {
           setLocalItems((prev) => {
             const serverItem = items.find((i) => i.id === id);
             return prev.map((item) =>

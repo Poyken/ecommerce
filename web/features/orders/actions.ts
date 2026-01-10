@@ -1,11 +1,15 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { http } from "@/lib/http";
+import { normalizePaginationParams } from "@/lib/api-helpers";
+import {
+  REVALIDATE,
+  wrapServerAction,
+  createActionWrapper,
+} from "@/lib/safe-action-utils";
 import { protectedActionClient } from "@/lib/safe-action";
-import { createActionWrapper, REVALIDATE } from "@/lib/safe-action-utils";
 import { CheckoutSchema } from "@/lib/schemas";
-import { ApiResponse } from "@/types/dtos";
+import { ApiResponse, ActionResult } from "@/types/api";
 import { Order } from "@/types/models";
 import { z } from "zod";
 
@@ -111,8 +115,8 @@ const safeSimulatePaymentSuccess = protectedActionClient
         notify: true,
       }),
     });
-    revalidatePath(`/orders/${parsedInput.orderId}`, "page");
-    revalidatePath("/orders", "page");
+    REVALIDATE.orders();
+    REVALIDATE.path(`/orders/${parsedInput.orderId}`, "page");
     return { success: true };
   });
 
@@ -143,25 +147,25 @@ export const simulatePaymentSuccessAction = async (orderId: string) => {
 
 // --- QUERY ACTIONS ---
 
-export async function getMyOrdersAction(page = 1, limit = 10) {
-  try {
-    const res = await http<ApiResponse<Order[]>>(
-      `/orders/my-orders?page=${page}&limit=${limit}`
-    );
-    return res;
-  } catch (error: unknown) {
-    return { error: (error as Error).message };
-  }
+export async function getMyOrdersAction(
+  page = 1,
+  limit = 10
+): Promise<ActionResult<Order[]>> {
+  const params = normalizePaginationParams(page, limit);
+  return wrapServerAction(
+    () => http<ApiResponse<Order[]>>("/orders/my-orders", { params }),
+    "Failed to fetch orders"
+  );
 }
 
 /**
  * Lấy chi tiết một đơn hàng của người dùng hiện tại.
  */
-export async function getOrderDetailsAction(orderId: string) {
-  try {
-    const res = await http<ApiResponse<Order>>(`/orders/${orderId}`);
-    return { data: res.data };
-  } catch (error: unknown) {
-    return { error: (error as Error).message };
-  }
+export async function getOrderDetailsAction(
+  orderId: string
+): Promise<ActionResult<Order>> {
+  return wrapServerAction(
+    () => http<ApiResponse<Order>>(`/orders/${orderId}`),
+    "Failed to fetch order details"
+  );
 }

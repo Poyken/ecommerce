@@ -26,8 +26,9 @@ import { http } from "@/lib/http";
 import { ProfileUpdateSchema } from "@/lib/schemas";
 import { ApiResponse } from "@/types/dtos";
 import { User } from "@/types/models";
-import { revalidatePath } from "next/cache";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
 import { cache } from "react";
+import { cookies } from "next/headers";
 
 // =============================================================================
 // 📦 TYPES - Định nghĩa kiểu dữ liệu
@@ -76,43 +77,16 @@ import { cache } from "react";
  *   console.log(`Hello, ${profile.data.firstName}!`);
  * }
  */
-import { cookies } from "next/headers";
-
 export const getProfileAction = cache(async () => {
-  // Trigger dynamic access before try/catch to allow PPR to work correctly.
-  // In Next.js 16, cookies() throws a special error during static prerender.
   await cookies();
-
-  try {
-    const res = await http<ApiResponse<User>>("/auth/me", {
-      cache: "no-store",
-      skipRedirectOn401: true,
-    });
-    return { data: res.data };
-  } catch (error: unknown) {
-    const message = (error as Error).message || "Failed to fetch profile";
-
-    // Check for "User not found" specifically
-    if (
-      message.toLowerCase().includes("user") &&
-      message.toLowerCase().includes("not found")
-    ) {
-      // Session is stale (DB reset?), clear it so user is logged out
-      // await deleteSession(); // Cannot modify cookies in Server Component rendering
-      return { data: null, error: "Session expired" };
-    }
-
-    // Only log if it's not a 401 (which is expected for guest users)
-    if (
-      !message.includes("401") &&
-      !message.includes("Unauthorized") &&
-      !message.includes("Internal Server Error")
-    ) {
-      console.error("[getProfileAction] Failed to fetch profile:", message);
-      console.error("[getProfileAction] Error object:", error);
-    }
-    return { data: null, error: message };
-  }
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<User>>("/auth/me", {
+        cache: "no-store",
+        skipRedirectOn401: true,
+      }),
+    "Failed to fetch profile"
+  );
 });
 
 /**
@@ -205,25 +179,29 @@ export async function updateProfileAction(formData: FormData) {
       if (payload.newPassword) data.append("newPassword", payload.newPassword);
       data.append("image", avatar);
 
-      await http("/auth/me", {
-        method: "PATCH",
-        body: data,
-      });
+      return wrapServerAction(async () => {
+        const res = await http("/auth/me", {
+          method: "PATCH",
+          body: data,
+        });
+        REVALIDATE.profile();
+        return res;
+      }, "Không thể cập nhật profile");
     } else {
       // Ngược lại gửi JSON như cũ
-      await http("/auth/me", {
-        method: "PATCH",
-        body: JSON.stringify(payload),
-      });
+      return wrapServerAction(async () => {
+        const res = await http("/auth/me", {
+          method: "PATCH",
+          body: JSON.stringify(payload),
+        });
+        REVALIDATE.profile();
+        return res;
+      }, "Không thể cập nhật profile");
     }
-
-    // Revalidate profile page để hiển thị dữ liệu mới
-    revalidatePath("/profile", "page");
-    return { success: true };
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : "Không thể cập nhật profile";
-    return { error: message };
+    return { success: false, error: message };
   }
 }
 
@@ -232,17 +210,16 @@ export async function updateProfileAction(formData: FormData) {
  */
 export async function generateTwoFactorAction() {
   await cookies();
-  try {
-    const res = await http<ApiResponse<{ secret: string; qrCode: string }>>(
-      "/auth/2fa/generate",
-      {
-        method: "POST",
-      }
-    );
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    return { success: false, error: (error as Error).message };
-  }
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<{ secret: string; qrCode: string }>>(
+        "/auth/2fa/generate",
+        {
+          method: "POST",
+        }
+      ),
+    "Failed to generate 2FA"
+  );
 }
 
 /**
@@ -250,16 +227,14 @@ export async function generateTwoFactorAction() {
  */
 export async function enableTwoFactorAction(token: string, secret: string) {
   await cookies();
-  try {
-    await http("/auth/2fa/enable", {
+  return wrapServerAction(async () => {
+    const res = await http("/auth/2fa/enable", {
       method: "POST",
       body: JSON.stringify({ token, secret }),
     });
-    revalidatePath("/profile", "page");
-    return { success: true };
-  } catch (error: unknown) {
-    return { success: false, error: (error as Error).message };
-  }
+    REVALIDATE.profile();
+    return res;
+  }, "Failed to enable 2FA");
 }
 
 /**
@@ -267,14 +242,12 @@ export async function enableTwoFactorAction(token: string, secret: string) {
  */
 export async function disableTwoFactorAction(token: string) {
   await cookies();
-  try {
-    await http("/auth/2fa/disable", {
+  return wrapServerAction(async () => {
+    const res = await http("/auth/2fa/disable", {
       method: "POST",
       body: JSON.stringify({ token }),
     });
-    revalidatePath("/profile", "page");
-    return { success: true };
-  } catch (error: unknown) {
-    return { success: false, error: (error as Error).message };
-  }
+    REVALIDATE.profile();
+    return res;
+  }, "Failed to disable 2FA");
 }

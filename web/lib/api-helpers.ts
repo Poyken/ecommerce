@@ -19,7 +19,7 @@
  */
 
 import { API_CONFIG } from "./constants";
-import { getErrorMessage, isTimeoutError } from "./error-utils";
+import { getErrorMessage, isTimeoutError, isNetworkError } from "./error-utils";
 
 // ============================================================================
 // RETRY WITH EXPONENTIAL BACKOFF
@@ -205,6 +205,29 @@ export function buildUrl(
 }
 
 /**
+ * Chuẩn hóa tham số phân trang.
+ * Hỗ trợ cả object hoặc tham số rời rạc.
+ */
+export function normalizePaginationParams(
+  paramsOrPage?: any,
+  limit?: number,
+  search?: string
+): Record<string, any> {
+  if (
+    typeof paramsOrPage === "object" &&
+    paramsOrPage !== null &&
+    !Array.isArray(paramsOrPage)
+  ) {
+    return paramsOrPage;
+  }
+  const params: Record<string, any> = {};
+  if (paramsOrPage !== undefined) params.page = paramsOrPage;
+  if (limit !== undefined) params.limit = limit;
+  if (search !== undefined) params.search = search;
+  return params;
+}
+
+/**
  * Parse query string thành object.
  */
 export function parseQueryString(
@@ -280,12 +303,7 @@ export function throttle<T extends (...args: any[]) => any>(
 /**
  * Kiểm tra xem error có phải network error không.
  */
-export function isNetworkError(error: unknown): boolean {
-  return (
-    error instanceof TypeError &&
-    (error.message.includes("fetch") || error.message.includes("network"))
-  );
-}
+export { isNetworkError };
 
 /**
  * Kiểm tra xem error có phải timeout không.

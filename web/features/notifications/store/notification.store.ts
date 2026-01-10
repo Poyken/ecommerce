@@ -134,8 +134,12 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
         set({ notifications: listRes.data });
       }
 
-      if (typeof countRes.count === "number") {
-        set({ unreadCount: countRes.count });
+      if (
+        countRes.success &&
+        countRes.data &&
+        typeof countRes.data.count === "number"
+      ) {
+        set({ unreadCount: countRes.data.count });
       }
     } catch (e) {
       console.error("Store refresh failed", e);

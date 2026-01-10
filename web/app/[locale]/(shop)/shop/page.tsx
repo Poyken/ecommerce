@@ -1,11 +1,9 @@
 import { ShopContent } from "@/features/products/components/shop-content";
-import { http } from "@/lib/http";
 import { productService } from "@/services/product.service";
 import { getTranslations } from "next-intl/server";
 
 // Types based on API response
-import { ApiResponse } from "@/types/dtos";
-import { Brand, Product } from "@/types/models";
+import { Product } from "@/types/models";
 import { Metadata } from "next";
 
 /**
@@ -115,9 +113,9 @@ export default async function ShopPage({
     const { getWishlistAction } = await import("@/features/wishlist/actions");
     let wishlistItems: Product[] = [];
     try {
-      const items = await getWishlistAction();
-      if (items) {
-        wishlistItems = items;
+      const result = await getWishlistAction();
+      if (result.success && result.data) {
+        wishlistItems = result.data;
       }
     } catch (_error) {
       // console.error("Failed to fetch wishlist", error);

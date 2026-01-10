@@ -1,9 +1,9 @@
 "use server";
 
 import { http } from "@/lib/http";
+import { normalizePaginationParams } from "@/lib/api-helpers";
 import { ApiResponse, ActionResult } from "@/types/dtos";
-import { revalidatePath } from "next/cache";
-import { wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
 
 /**
  * =====================================================================
@@ -12,10 +12,11 @@ import { wrapServerAction } from "@/lib/safe-action-utils";
  */
 
 export async function getPagesAction(
-  params: any = {}
+  paramsOrPage: any = {}
 ): Promise<ActionResult<any[]>> {
+  const params = normalizePaginationParams(paramsOrPage);
   return wrapServerAction(
-    () => http<ApiResponse<any[]>>("/pages", { params }),
+    () => http<ApiResponse<any[]>>("/pages/admin/list", { params }),
     "Failed to fetch pages"
   );
 }
@@ -24,18 +25,18 @@ export async function getPageByIdAction(
   id: string
 ): Promise<ActionResult<any>> {
   return wrapServerAction(
-    () => http<ApiResponse<any>>(`/pages/${id}`),
+    () => http<ApiResponse<any>>(`/pages/admin/${id}`),
     "Failed to fetch page"
   );
 }
 
 export async function createPageAction(data: any): Promise<ActionResult<any>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any>>("/pages", {
+    const res = await http<ApiResponse<any>>("/pages/admin", {
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/pages", "page");
+    REVALIDATE.admin.pages();
     return res.data;
   }, "Failed to create page");
 }
@@ -45,11 +46,11 @@ export async function updatePageAction(
   data: any
 ): Promise<ActionResult<any>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any>>(`/pages/${id}`, {
-      method: "PUT",
+    const res = await http<ApiResponse<any>>(`/pages/admin/${id}`, {
+      method: "PATCH",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/pages", "page");
+    REVALIDATE.admin.pages();
     return res.data;
   }, "Failed to update page");
 }
@@ -58,7 +59,7 @@ export async function deletePageAction(
   id: string
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http(`/pages/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/pages", "page");
+    await http(`/pages/admin/${id}`, { method: "DELETE" });
+    REVALIDATE.admin.pages();
   }, "Failed to delete page");
 }

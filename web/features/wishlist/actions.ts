@@ -23,8 +23,12 @@
 
 import { http } from "@/lib/http";
 import { protectedActionClient } from "@/lib/safe-action";
-import { createActionWrapper, REVALIDATE } from "@/lib/safe-action-utils";
-import { ApiResponse } from "@/types/dtos";
+import {
+  REVALIDATE,
+  wrapServerAction,
+  createActionWrapper,
+} from "@/lib/safe-action-utils";
+import { ApiResponse, ActionResult } from "@/types/api";
 import { Product } from "@/types/models";
 import { cookies } from "next/headers";
 import { z } from "zod";
@@ -102,7 +106,6 @@ export const toggleWishlistAction = async (productId: string) => {
 
   // Map result.data.isWishlisted ra ngoài
   if (result.success && result.data) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return { success: true, isWishlisted: (result.data as any).isWishlisted };
   }
 
@@ -125,71 +128,64 @@ export const mergeGuestWishlistAction = async (productIds: string[]) => {
 /**
  * Lấy danh sách tất cả sản phẩm trong wishlist của user.
  */
-export async function getWishlistAction(): Promise<Product[]> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("accessToken");
-
-  if (!token) {
-    return [];
-  }
-
-  try {
-    const res = await http<ApiResponse<Product[]>>("/wishlist", {
-      skipRedirectOn401: true,
-    });
-    return res?.data || [];
-  } catch {
-    return [];
-  }
+export async function getWishlistAction(): Promise<ActionResult<Product[]>> {
+  await cookies();
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<Product[]>>("/wishlist", {
+        skipRedirectOn401: true,
+      }),
+    "Failed to fetch wishlist"
+  );
 }
 
 /**
  * Kiểm tra xem một sản phẩm có nằm trong wishlist của user không.
  */
-export async function checkWishlistStatusAction(productId: string) {
+export async function checkWishlistStatusAction(
+  productId: string
+): Promise<ActionResult<{ isWishlisted: boolean }>> {
   await cookies();
-  try {
-    const res = await http<ApiResponse<{ isWishlisted: boolean }>>(
-      `/wishlist/check?productId=${productId}`
-    );
-    return res.data.isWishlisted;
-  } catch {
-    return false;
-  }
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<{ isWishlisted: boolean }>>(
+        `/wishlist/check?productId=${productId}`
+      ),
+    "Failed to check wishlist status"
+  );
 }
 
 /**
  * Lấy số lượng sản phẩm trong wishlist của user (đã đăng nhập).
  */
-export async function getWishlistCountAction() {
+export async function getWishlistCountAction(): Promise<
+  ActionResult<{ count: number }>
+> {
   await cookies();
-  try {
-    const res = await http<ApiResponse<{ count: number }>>("/wishlist/count");
-    return res.data.count || 0;
-  } catch {
-    return 0;
-  }
+  return wrapServerAction(
+    () => http<ApiResponse<{ count: number }>>("/wishlist/count"),
+    "Failed to fetch wishlist count"
+  );
 }
 
 /**
  * Lấy chi tiết sản phẩm cho Guest Wishlist (dựa trên danh sách IDs).
  */
-export async function getGuestWishlistDetailsAction(productIds: string[]) {
+export async function getGuestWishlistDetailsAction(
+  productIds: string[]
+): Promise<ActionResult<Product[]>> {
   if (!productIds || productIds.length === 0)
     return { success: true, data: [] };
 
-  try {
-    const idsString = productIds.join(",");
-    const res = await http<ApiResponse<Product[]>>(
-      `/products?ids=${idsString}&includeSkus=true&limit=50`
-    );
-
-    const items = res?.data || res || [];
-    return { success: true, data: items };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch details",
-    };
-  }
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<Product[]>>("/products", {
+        params: {
+          ids: productIds.join(","),
+          includeSkus: true,
+          limit: 50,
+        },
+      }),
+    "Failed to fetch guest wishlist details"
+  );
 }

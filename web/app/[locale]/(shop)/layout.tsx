@@ -8,8 +8,8 @@ import { Footer } from "@/features/layout/components/footer";
 import { HeaderFallback } from "@/features/layout/components/header";
 import { MobileBottomNav } from "@/features/layout/components/mobile-nav";
 import {
-    getNotificationsAction,
-    getUnreadCountAction,
+  getNotificationsAction,
+  getUnreadCountAction,
 } from "@/features/notifications/actions";
 import { NotificationInitializer } from "@/features/notifications/components/notification-initializer";
 import { getProfileAction } from "@/features/profile/actions";
@@ -57,34 +57,37 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
   try {
     if (token) {
       const [
-        profile,
+        profileRes,
         cartRes,
-        wishlistItems,
+        wishlistRes,
         notificationsRes,
         unreadCountRes,
       ] = await Promise.all([
-        getProfileAction().catch(() => ({ data: null, error: null })),
-        getCartCountAction().catch(() => ({ count: 0 })),
-        getWishlistAction().catch(() => []),
-        getNotificationsAction(10).catch(() => ({ data: [] })),
-        getUnreadCountAction().catch(() => ({ count: 0 })),
+        getProfileAction(),
+        getCartCountAction(),
+        getWishlistAction(),
+        getNotificationsAction(10),
+        getUnreadCountAction(),
       ]);
 
-      user = profile.data;
+      user = profileRes.success ? profileRes.data : null;
       permissions = user ? getPermissionsFromToken(token) : [];
       initialCartCount =
-        user && cartRes && typeof cartRes.count === "number"
-          ? cartRes.count
-          : 0;
+        user && cartRes.success && cartRes.data ? cartRes.data.totalItems : 0;
       initialWishlistCount =
-        user && Array.isArray(wishlistItems) ? wishlistItems.length : 0;
-      initialNotifications = (notificationsRes?.data || []) as Notification[];
+        user && wishlistRes.success && Array.isArray(wishlistRes.data)
+          ? wishlistRes.data.length
+          : 0;
+      initialNotifications =
+        notificationsRes.success && notificationsRes.data
+          ? (notificationsRes.data as Notification[])
+          : [];
       initialUnreadCount =
-        unreadCountRes && typeof unreadCountRes.count === "number"
-          ? unreadCountRes.count
+        unreadCountRes.success && unreadCountRes.data
+          ? unreadCountRes.data.count
           : 0;
     }
-  } catch (_e) {
+  } catch {
     // Falls back to defaults
   }
 
@@ -138,12 +141,12 @@ export default async function ShopLayout({
 }) {
   return (
     <LayoutVisibilityProvider>
-        <div className="flex min-h-screen flex-col">
-          <Suspense fallback={<ShopLayoutFallback />}>
-            {/* Force Rebuild */}
-            <DynamicShopContent>{children}</DynamicShopContent>
-          </Suspense>
-        </div>
+      <div className="flex min-h-screen flex-col">
+        <Suspense fallback={<ShopLayoutFallback />}>
+          {/* Force Rebuild */}
+          <DynamicShopContent>{children}</DynamicShopContent>
+        </Suspense>
+      </div>
     </LayoutVisibilityProvider>
   );
 }

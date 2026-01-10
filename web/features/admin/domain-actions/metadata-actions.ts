@@ -1,6 +1,7 @@
 "use server";
 
 import { http } from "@/lib/http";
+import { normalizePaginationParams } from "@/lib/api-helpers";
 import {
   ApiResponse,
   ActionResult,
@@ -12,28 +13,7 @@ import {
   UpdateCouponDto,
 } from "@/types/dtos";
 import { Brand, Category, Coupon } from "@/types/models";
-import { revalidatePath } from "next/cache";
-import { wrapServerAction } from "@/lib/safe-action-utils";
-
-/**
- * =====================================================================
- * MARKETING & METADATA ACTIONS - Quản lý thương hiệu, danh mục, mã giảm giá
- * =====================================================================
- */
-
-/**
- * Helper to normalize arguments that could be either an object or positional params (page, limit, search)
- */
-function normalizeParams(paramsOrPage?: any, limit?: number, search?: string) {
-  if (
-    typeof paramsOrPage === "object" &&
-    paramsOrPage !== null &&
-    !Array.isArray(paramsOrPage)
-  ) {
-    return paramsOrPage;
-  }
-  return { page: paramsOrPage, limit, search };
-}
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
 
 // --- BRANDS ---
 
@@ -42,7 +22,7 @@ export async function getBrandsAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Brand[]>> {
-  const params = normalizeParams(paramsOrPage, limit, search);
+  const params = normalizePaginationParams(paramsOrPage, limit, search);
   return wrapServerAction(
     () => http<ApiResponse<Brand[]>>("/brands", { params }),
     "Failed to fetch brands"
@@ -57,7 +37,7 @@ export async function createBrandAction(
       method: "POST",
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
-    revalidatePath("/admin/brands", "page");
+    REVALIDATE.admin.brands();
     return res.data;
   }, "Failed to create brand");
 }
@@ -71,7 +51,7 @@ export async function updateBrandAction(
       method: "PATCH",
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
-    revalidatePath("/admin/brands", "page");
+    REVALIDATE.admin.brands();
     return res.data;
   }, "Failed to update brand");
 }
@@ -81,7 +61,7 @@ export async function deleteBrandAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/brands/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/brands", "page");
+    REVALIDATE.admin.brands();
   }, "Failed to delete brand");
 }
 
@@ -92,7 +72,7 @@ export async function getCategoriesAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Category[]>> {
-  const params = normalizeParams(paramsOrPage, limit, search);
+  const params = normalizePaginationParams(paramsOrPage, limit, search);
   return wrapServerAction(
     () => http<ApiResponse<Category[]>>("/categories", { params }),
     "Failed to fetch categories"
@@ -107,7 +87,7 @@ export async function createCategoryAction(
       method: "POST",
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
-    revalidatePath("/admin/categories", "page");
+    REVALIDATE.admin.categories();
     return res.data;
   }, "Failed to create category");
 }
@@ -121,7 +101,7 @@ export async function updateCategoryAction(
       method: "PATCH",
       body: data instanceof FormData ? data : JSON.stringify(data),
     });
-    revalidatePath("/admin/categories", "page");
+    REVALIDATE.admin.categories();
     return res.data;
   }, "Failed to update category");
 }
@@ -131,7 +111,7 @@ export async function deleteCategoryAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/categories/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/categories", "page");
+    REVALIDATE.admin.categories();
   }, "Failed to delete category");
 }
 
@@ -142,7 +122,7 @@ export async function getCouponsAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Coupon[]>> {
-  const params = normalizeParams(paramsOrPage, limit, search);
+  const params = normalizePaginationParams(paramsOrPage, limit, search);
   return wrapServerAction(
     () => http<ApiResponse<Coupon[]>>("/coupons", { params }),
     "Failed to fetch coupons"
@@ -157,7 +137,7 @@ export async function createCouponAction(
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/coupons", "page");
+    REVALIDATE.admin.coupons();
     return res.data;
   }, "Failed to create coupon");
 }
@@ -171,7 +151,7 @@ export async function updateCouponAction(
       method: "PATCH",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/coupons", "page");
+    REVALIDATE.admin.coupons();
     return res.data;
   }, "Failed to update coupon");
 }
@@ -181,6 +161,6 @@ export async function deleteCouponAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/coupons/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/coupons", "page");
+    REVALIDATE.admin.coupons();
   }, "Failed to delete coupon");
 }

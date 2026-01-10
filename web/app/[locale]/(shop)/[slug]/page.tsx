@@ -43,7 +43,7 @@ async function getPageConfig(slug: string): Promise<any | null> {
     if (!res.ok) return null;
     const json = await res.json();
     return json.data || json;
-  } catch (err) {
+  } catch {
     return null;
   }
 }

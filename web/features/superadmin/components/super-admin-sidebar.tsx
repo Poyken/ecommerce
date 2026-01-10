@@ -5,7 +5,6 @@ import { useAuth } from "@/features/auth/providers/auth-provider";
 import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
 import {
-  Activity,
   ArrowLeft,
   ArrowRight,
   BarChart3,

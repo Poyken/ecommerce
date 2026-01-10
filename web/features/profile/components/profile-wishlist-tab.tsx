@@ -39,8 +39,10 @@ export function ProfileWishlistTab() {
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
-        const data = await getWishlistAction();
-        setProducts(data);
+        const res = await getWishlistAction();
+        if (res.success && res.data) {
+          setProducts(res.data);
+        }
       } catch (error) {
         console.error("Failed to fetch wishlist", error);
       } finally {

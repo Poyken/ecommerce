@@ -26,7 +26,8 @@ import {
   MOCK_WARDS,
 } from "@/data/vn-locations";
 import { http } from "@/lib/http";
-import { ApiResponse } from "@/types/dtos";
+import { wrapServerAction } from "@/lib/safe-action-utils";
+import { ApiResponse, ActionResult } from "@/types/api";
 
 /**
  * Interface cho Tỉnh/Thành phố.
@@ -55,21 +56,17 @@ export interface Ward {
 /**
  * Lấy danh sách tất cả Tỉnh/Thành phố tại Việt Nam.
  */
-export async function getProvinces(): Promise<Province[]> {
-  try {
+export async function getProvinces(): Promise<ActionResult<Province[]>> {
+  return wrapServerAction(async () => {
     const res = await http<ApiResponse<Province[]>>("/shipping/provinces", {
       skipAuth: true,
     });
     // Fallback to mock data if API returns empty
     if (!res.data || res.data.length === 0) {
-      console.warn("Using Mock Data for Provinces");
       return MOCK_PROVINCES;
     }
-    return res.data || [];
-  } catch (error) {
-    console.error("Failed to fetch provinces, using mock data:", error);
-    return MOCK_PROVINCES;
-  }
+    return res.data;
+  }, "Using Mock Data for Provinces");
 }
 
 /**
@@ -77,9 +74,11 @@ export async function getProvinces(): Promise<Province[]> {
  *
  * @param provinceId - ID của Tỉnh/Thành phố
  */
-export async function getDistricts(provinceId: number): Promise<District[]> {
-  if (!provinceId) return [];
-  try {
+export async function getDistricts(
+  provinceId: number
+): Promise<ActionResult<District[]>> {
+  if (!provinceId) return { success: true, data: [] };
+  return wrapServerAction(async () => {
     const res = await http<ApiResponse<District[]>>(
       `/shipping/districts/${provinceId}`,
       { skipAuth: true }
@@ -87,14 +86,8 @@ export async function getDistricts(provinceId: number): Promise<District[]> {
     if (!res.data || res.data.length === 0) {
       return MOCK_DISTRICTS.filter((d) => d.ProvinceID === provinceId);
     }
-    return res.data || [];
-  } catch (error) {
-    console.error(
-      `Failed to fetch districts for province ${provinceId}, using mock data:`,
-      error
-    );
-    return MOCK_DISTRICTS.filter((d) => d.ProvinceID === provinceId);
-  }
+    return res.data;
+  }, "Failed to fetch districts");
 }
 
 /**
@@ -102,9 +95,11 @@ export async function getDistricts(provinceId: number): Promise<District[]> {
  *
  * @param districtId - ID của Quận/Huyện
  */
-export async function getWards(districtId: number): Promise<Ward[]> {
-  if (!districtId) return [];
-  try {
+export async function getWards(
+  districtId: number
+): Promise<ActionResult<Ward[]>> {
+  if (!districtId) return { success: true, data: [] };
+  return wrapServerAction(async () => {
     const res = await http<ApiResponse<Ward[]>>(
       `/shipping/wards/${districtId}`,
       { skipAuth: true }
@@ -112,14 +107,8 @@ export async function getWards(districtId: number): Promise<Ward[]> {
     if (!res.data || res.data.length === 0) {
       return MOCK_WARDS.filter((w) => w.DistrictID === districtId);
     }
-    return res.data || [];
-  } catch (error) {
-    console.error(
-      `Failed to fetch wards for district ${districtId}, using mock data:`,
-      error
-    );
-    return MOCK_WARDS.filter((w) => w.DistrictID === districtId);
-  }
+    return res.data;
+  }, "Failed to fetch wards");
 }
 
 /**
@@ -131,16 +120,13 @@ export async function getWards(districtId: number): Promise<Ward[]> {
 export async function calculateShippingFeeAction(
   districtId: number,
   wardCode: string
-): Promise<number> {
-  try {
+): Promise<ActionResult<number>> {
+  return wrapServerAction(async () => {
     const res = await http<number>("/shipping/fee", {
       method: "POST",
       body: JSON.stringify({ districtId, wardCode }),
       skipAuth: true,
     });
     return Number(res) || 0;
-  } catch (error) {
-    console.error("Failed to calculate shipping fee:", error);
-    return 30000; // Phí mặc định nếu có lỗi
-  }
+  }, "Failed to calculate shipping fee");
 }

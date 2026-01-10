@@ -58,8 +58,12 @@ export const useCartStore = create<CartState>((set) => ({
       set({ isFetching: true });
       // Attempt server fetch (will fail/return 0 if not auth, handled by implementation)
       const result = await getCartCountAction();
-      if (result.success && typeof result.count === "number") {
-        set({ count: result.count });
+      if (
+        result.success &&
+        result.data &&
+        typeof result.data.totalItems === "number"
+      ) {
+        set({ count: result.data.totalItems });
       } else {
         // Fallback to guest logic if server action implies guest?
         // Actually getCartCountAction usually returns 0 if guest.

@@ -45,7 +45,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 interface ProductDetailClientProps {
   product: Product;
   initialImages: string[];
-  isLoggedIn: boolean;
   initialReviews?: Review[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialMeta?: any;
@@ -56,7 +55,6 @@ interface ProductDetailClientProps {
 export function ProductDetailClient({
   product,
   initialImages,
-  isLoggedIn,
   initialReviews = [],
   initialMeta = null,
   initialPurchasedSkus = [],
@@ -69,16 +67,19 @@ export function ProductDetailClient({
   // Track product view for Recently Viewed feature
   useEffect(() => {
     const firstImage = initialImages[0] || "";
+    const firstSku = product.skus?.[0];
     addRecentlyViewed({
       id: product.id,
       name: product.name,
       slug: product.slug,
       imageUrl: firstImage,
-      price: Number(product.skus?.[0]?.price || 0),
-      salePrice: product.skus?.[0]?.salePrice ? Number(product.skus[0].salePrice) : undefined,
+      price: Number(firstSku?.price || 0),
+      salePrice: firstSku?.salePrice ? Number(firstSku.salePrice) : undefined,
       categoryName: product.category?.name,
       brandName: product.brand?.name,
     });
+    // Only run on initial mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [product.id]);
 
   // Initialize activeImage from URL to prevent flicker
@@ -211,10 +212,12 @@ export function ProductDetailClient({
   const isOutOfStock = currentSku ? currentSku.stock <= 0 : false;
 
   return (
-    <div className={cn(
-      "grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start",
-      isLightboxOpen && "pointer-events-none"
-    )}>
+    <div
+      className={cn(
+        "grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start",
+        isLightboxOpen && "pointer-events-none"
+      )}
+    >
       {/* Immersive Image Gallery (Sticky) */}
       <div className="lg:col-span-7">
         <ProductImageGallery

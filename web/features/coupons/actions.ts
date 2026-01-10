@@ -14,17 +14,51 @@
 "use server";
 
 import { http } from "@/lib/http";
-import { ApiResponse } from "@/types/dtos";
+import { wrapServerAction } from "@/lib/safe-action-utils";
+import { ActionResult, ApiResponse } from "@/types/api";
 import { Coupon } from "@/types/models";
 
 /**
- * Lấy danh sách các mã giảm giá đang khả dụng (chưa hết hạn, còn lượt dùng).
+ * Láy danh sách các mã giảm giá đang khả dụng (chưa hết hạn, còn lượt dùng).
  */
-export async function getAvailableCouponsAction() {
-  try {
-    const res = await http<ApiResponse<Coupon[]>>("/coupons/available");
-    return { data: res.data };
-  } catch (error: unknown) {
-    return { error: (error as Error).message };
-  }
+export async function getAvailableCouponsAction(): Promise<
+  ActionResult<Coupon[]>
+> {
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<Coupon[]>>("/coupons/available", {
+        skipAuth: true,
+      }),
+    "Không thể lấy mã giảm giá"
+  );
+}
+
+/**
+ * Kiểm tra mã giảm giá có hợp lệ không.
+ */
+export async function validateCouponAction(
+  code: string,
+  amount: number
+): Promise<
+  ActionResult<{
+    isValid: boolean;
+    discountAmount: number;
+    message?: string;
+  }>
+> {
+  return wrapServerAction(async () => {
+    const res = await http<
+      ApiResponse<{
+        isValid: boolean;
+        discountAmount: number;
+        message?: string;
+      }>
+    >(`/coupons/validate?code=${code}&amount=${amount}`);
+
+    return {
+      isValid: res.data.isValid,
+      discountAmount: res.data.discountAmount,
+      message: res.data.message,
+    };
+  }, "Mã giảm giá không hợp lệ");
 }

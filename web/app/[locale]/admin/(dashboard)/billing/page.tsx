@@ -13,7 +13,6 @@
 
 import { AdminPageHeader } from "@/features/admin/components/admin-page-components";
 import { http } from "@/lib/http";
-import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { CreditCard, Zap } from "lucide-react";
 import { getTranslations } from "next-intl/server";

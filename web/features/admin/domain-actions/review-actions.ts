@@ -1,10 +1,10 @@
 "use server";
 
 import { http } from "@/lib/http";
+import { normalizePaginationParams } from "@/lib/api-helpers";
 import { ApiResponse, ActionResult } from "@/types/dtos";
 import { Review } from "@/types/models";
-import { revalidatePath } from "next/cache";
-import { wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
 
 /**
  * =====================================================================
@@ -17,16 +17,7 @@ export async function getReviewsAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Review[]>> {
-  let params: any = {};
-  if (
-    typeof paramsOrPage === "object" &&
-    paramsOrPage !== null &&
-    !Array.isArray(paramsOrPage)
-  ) {
-    params = paramsOrPage;
-  } else {
-    params = { page: paramsOrPage, limit, search };
-  }
+  const params = normalizePaginationParams(paramsOrPage, limit, search);
 
   return wrapServerAction(
     () => http<ApiResponse<Review[]>>("/reviews", { params }),
@@ -39,7 +30,7 @@ export async function deleteReviewAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/reviews/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/reviews", "page");
+    REVALIDATE.admin.reviews();
   }, "Failed to delete review");
 }
 
@@ -52,7 +43,7 @@ export async function replyToReviewAction(
       method: "POST",
       body: JSON.stringify({ reply }),
     });
-    revalidatePath("/admin/reviews", "page");
+    REVALIDATE.admin.reviews();
     return res.data;
   }, "Failed to reply to review");
 }
@@ -66,7 +57,7 @@ export async function updateReviewStatusAction(
       method: "PATCH",
       body: JSON.stringify({ isApproved }),
     });
-    revalidatePath("/admin/reviews", "page");
+    REVALIDATE.admin.reviews();
     return res.data;
   }, "Failed to update review status");
 }
@@ -82,7 +73,7 @@ export async function analyzeReviewSentimentAction(
         body: JSON.stringify({ text }),
       }
     );
-    revalidatePath("/admin/reviews", "page");
+    REVALIDATE.admin.reviews();
     return res.data;
   }, "Failed to analyze sentiment");
 }

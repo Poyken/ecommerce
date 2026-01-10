@@ -160,7 +160,7 @@ export { ValidationPatterns, BaseSchema as CommonSchemas };
 /**
  * Tạo schema cho confirm password.
  */
-export function createConfirmPasswordSchema(passwordField = "password") {
+export function createConfirmPasswordSchema() {
   return z
     .string()
     .min(1, "Xác nhận mật khẩu là bắt buộc")

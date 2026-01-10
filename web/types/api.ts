@@ -28,7 +28,7 @@ export interface ApiResponse<T> {
 }
 
 /**
- * Wrapper cho API ERROR responses.
+ * Wrapper cho API ERROR responses (thô từ server).
  */
 export interface ApiErrorResponse {
   statusCode: number;
@@ -38,11 +38,21 @@ export interface ApiErrorResponse {
 }
 
 /**
+ * Cấu trúc lỗi API dùng trong ứng dụng.
+ */
+export interface ApiError {
+  message: string;
+  code?: string;
+  status?: number;
+  details?: Record<string, unknown>;
+}
+
+/**
  * Kết quả trả về từ Server Actions (Simplified).
  */
 export type ActionResult<T = void> =
-  | { success: true; data: T; meta?: PaginationMeta; error?: never }
-  | { success: false; error: string; data?: never; meta?: never };
+  | { success: true; data?: T; meta?: PaginationMeta; error?: never }
+  | { success?: false; error: string; data?: never; meta?: never };
 
 /**
  * Paginated data wrapper.

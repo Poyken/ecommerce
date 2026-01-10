@@ -1,10 +1,10 @@
 "use server";
 
 import { http } from "@/lib/http";
+import { normalizePaginationParams } from "@/lib/api-helpers";
 import { ApiResponse, ActionResult } from "@/types/dtos";
 import { Permission, Role } from "@/types/models";
-import { revalidatePath } from "next/cache";
-import { wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
 
 /**
  * =====================================================================
@@ -22,7 +22,7 @@ export async function createPermissionAction(
       method: "POST",
       body: JSON.stringify({ name }),
     });
-    revalidatePath("/admin/permissions", "page");
+    REVALIDATE.admin.roles();
     return res.data;
   }, "Failed to create permission");
 }
@@ -39,7 +39,7 @@ export async function updatePermissionAction(
         body: JSON.stringify({ name }),
       }
     );
-    revalidatePath("/admin/permissions", "page");
+    REVALIDATE.admin.roles();
     return res.data;
   }, "Failed to update permission");
 }
@@ -49,7 +49,7 @@ export async function deletePermissionAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/roles/permissions/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/permissions", "page");
+    REVALIDATE.admin.roles();
   }, "Failed to delete permission");
 }
 
@@ -71,7 +71,7 @@ export async function assignPermissionsAction(
       method: "POST",
       body: JSON.stringify({ permissionIds }),
     });
-    revalidatePath("/admin/roles");
+    REVALIDATE.admin.roles();
   }, "Failed to assign permissions");
 }
 
@@ -82,16 +82,7 @@ export async function getRolesAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Role[]>> {
-  let params: any = {};
-  if (
-    typeof paramsOrPage === "object" &&
-    paramsOrPage !== null &&
-    !Array.isArray(paramsOrPage)
-  ) {
-    params = paramsOrPage;
-  } else {
-    params = { page: paramsOrPage, limit, search };
-  }
+  const params = normalizePaginationParams(paramsOrPage, limit, search);
 
   return wrapServerAction(
     () => http<ApiResponse<Role[]>>("/roles", { params }),
@@ -108,7 +99,7 @@ export async function createRoleAction(data: {
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/roles", "page");
+    REVALIDATE.admin.roles();
     return res.data;
   }, "Failed to create role");
 }
@@ -122,7 +113,7 @@ export async function updateRoleAction(
       method: "PATCH",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/roles", "page");
+    REVALIDATE.admin.roles();
     return res.data;
   }, "Failed to update role");
 }
@@ -132,6 +123,6 @@ export async function deleteRoleAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/roles/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/roles", "page");
+    REVALIDATE.admin.roles();
   }, "Failed to delete role");
 }

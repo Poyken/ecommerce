@@ -51,7 +51,7 @@ export function ProfileDashboardTab({
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [ordersRes, wishlistCount, vouchersRes] = await Promise.all([
+        const [ordersRes, wishlistRes, vouchersRes] = await Promise.all([
           getMyOrdersAction(),
           getWishlistCountAction(),
           getAvailableCouponsAction(),
@@ -59,12 +59,13 @@ export function ProfileDashboardTab({
 
         setStats({
           orders:
-            ordersRes && "data" in ordersRes && ordersRes.data
-              ? ordersRes.data.length
+            ordersRes.success && ordersRes.data ? ordersRes.data.length : 0,
+          wishlist:
+            wishlistRes.success && wishlistRes.data
+              ? (wishlistRes.data as any).count
               : 0,
-          wishlist: wishlistCount || 0,
           vouchers:
-            vouchersRes && "data" in vouchersRes && vouchersRes.data
+            vouchersRes.success && vouchersRes.data
               ? vouchersRes.data.length
               : 0,
         });

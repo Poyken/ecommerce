@@ -32,7 +32,7 @@ export default async function AdminChatPage() {
     try {
       const profile = await getProfileAction();
       user = profile.data;
-    } catch (e) {
+    } catch {
       // Ignore error
     }
   }

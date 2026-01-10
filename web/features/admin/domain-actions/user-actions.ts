@@ -1,6 +1,7 @@
 "use server";
 
 import { http } from "@/lib/http";
+import { normalizePaginationParams } from "@/lib/api-helpers";
 import {
   CreateUserDto,
   UpdateUserDto,
@@ -8,8 +9,7 @@ import {
   ActionResult,
 } from "@/types/dtos";
 import { User } from "@/types/models";
-import { revalidatePath } from "next/cache";
-import { wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
 
 /**
  * =====================================================================
@@ -22,17 +22,7 @@ export async function getUsersAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<User[]>> {
-  let params: any = {};
-  if (
-    typeof paramsOrPage === "object" &&
-    paramsOrPage !== null &&
-    !Array.isArray(paramsOrPage)
-  ) {
-    params = paramsOrPage;
-  } else {
-    params = { page: paramsOrPage, limit, search };
-  }
-
+  const params = normalizePaginationParams(paramsOrPage, limit, search);
   return wrapServerAction(
     () => http<ApiResponse<User[]>>("/users", { params }),
     "Failed to fetch users"
@@ -47,7 +37,7 @@ export async function createUserAction(
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/users", "page");
+    REVALIDATE.admin.users();
     return res.data;
   }, "Failed to create user");
 }
@@ -61,7 +51,7 @@ export async function updateUserAction(
       method: "PATCH",
       body: JSON.stringify(data),
     });
-    revalidatePath("/admin/users", "page");
+    REVALIDATE.admin.users();
     return res.data;
   }, "Failed to update user");
 }
@@ -71,7 +61,7 @@ export async function deleteUserAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/users/${id}`, { method: "DELETE" });
-    revalidatePath("/admin/users", "page");
+    REVALIDATE.admin.users();
   }, "Failed to delete user");
 }
 
@@ -84,6 +74,6 @@ export async function assignRolesAction(
       method: "POST",
       body: JSON.stringify({ roleIds }),
     });
-    revalidatePath("/admin/users", "page");
+    REVALIDATE.admin.users();
   }, "Failed to assign roles");
 }

@@ -65,7 +65,7 @@ export function RetryOrderButton({ order }: RetryButtonProps) {
 
       // Redirect to cart so user can review before checkout
       router.push("/cart");
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to add items to cart. Please try again.",

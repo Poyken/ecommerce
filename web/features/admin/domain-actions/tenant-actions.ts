@@ -8,8 +8,7 @@ import {
   UpdateTenantDto,
 } from "@/types/dtos";
 import { Subscription, Tenant } from "@/types/models";
-import { revalidatePath } from "next/cache";
-import { wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
 
 /**
  * =====================================================================
@@ -41,7 +40,7 @@ export async function createTenantAction(
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/super-admin/tenants", "page");
+    REVALIDATE.superAdmin.tenants();
     return res.data;
   }, "Failed to create tenant");
 }
@@ -55,7 +54,7 @@ export async function updateTenantAction(
       method: "PUT",
       body: JSON.stringify(data),
     });
-    revalidatePath("/super-admin/tenants", "page");
+    REVALIDATE.superAdmin.tenants();
     return res.data;
   }, "Failed to update tenant");
 }
@@ -65,7 +64,7 @@ export async function deleteTenantAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/tenants/${id}`, { method: "DELETE" });
-    revalidatePath("/super-admin/tenants", "page");
+    REVALIDATE.superAdmin.tenants();
   }, "Failed to delete tenant");
 }
 
@@ -83,6 +82,6 @@ export async function cancelSubscriptionAction(
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/subscriptions/${id}/cancel`, { method: "POST" });
-    revalidatePath("/super-admin/subscriptions", "page");
+    REVALIDATE.superAdmin.subscriptions();
   }, "Failed to cancel subscription");
 }

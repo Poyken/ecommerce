@@ -23,37 +23,20 @@
 
 import { http } from "@/lib/http";
 import { protectedActionClient } from "@/lib/safe-action";
-import { createActionWrapper, REVALIDATE } from "@/lib/safe-action-utils";
+import {
+  REVALIDATE,
+  wrapServerAction,
+  createActionWrapper,
+} from "@/lib/safe-action-utils";
 import { ReviewSchema, UpdateReviewSchema } from "@/lib/schemas";
-import { ApiResponse } from "@/types/dtos";
+import { ApiResponse, ActionResult } from "@/types/api";
 import { Review } from "@/types/models";
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 import { z } from "zod";
 
 // =============================================================================
 // 📦 TYPES - Định nghĩa kiểu dữ liệu
 // =============================================================================
-
-/**
- * Dữ liệu để tạo review mới.
- * (This interface is kept for backward compatibility with existing usages if any,
- * though we prefer using z.infer<typeof ReviewSchema>)
- */
-interface CreateReviewData {
-  productId: string;
-  skuId?: string;
-  rating: number;
-  content: string;
-  images?: string[];
-}
-
-interface UpdateReviewData {
-  rating: number;
-  content: string;
-  images?: string[];
-}
-
 export interface ReviewEligibility {
   canReview: boolean;
   purchasedSkus: Array<{
@@ -139,64 +122,54 @@ export const deleteReviewAction = createActionWrapper(
 
 /**
  * Kiểm tra xem user có đủ điều kiện đánh giá sản phẩm không.
- * (Read-only action, less sensitive but still good to verify auth)
  */
-export async function checkReviewEligibilityAction(productId: string) {
-  try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("accessToken")?.value;
-
-    if (!token) {
-      return { success: true, data: { canReview: false, purchasedSkus: [] } };
-    }
-
-    const url = `/reviews/check-eligibility?productId=${productId}`;
-    const res = await http<ApiResponse<ReviewEligibility>>(url, {
-      cache: "no-store",
-    });
-
-    return { success: true, data: res.data };
-  } catch (error: unknown) {
-    console.error("checkReviewEligibilityAction error:", error);
-    return {
-      success: false,
-      error:
-        error instanceof Error ? error.message : "Không thể kiểm tra quyền",
-    };
-  }
+export async function checkReviewEligibilityAction(
+  productId: string
+): Promise<ActionResult<ReviewEligibility>> {
+  await cookies();
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<ReviewEligibility>>(
+        `/reviews/check-eligibility?productId=${productId}`,
+        { cache: "no-store" }
+      ),
+    "Không thể kiểm tra quyền đánh giá"
+  );
 }
 
 /**
  * Lấy danh sách đánh giá của sản phẩm (Supports Cursor Pagination).
  */
-export async function getReviewsAction(productId: string, cursor?: string) {
-  try {
-    const url = cursor
-      ? `/reviews/product/${productId}?cursor=${cursor}&limit=5`
-      : `/reviews/product/${productId}?limit=5`;
+export async function getReviewsAction(
+  productId: string,
+  cursor?: string
+): Promise<ActionResult<Review[]>> {
+  const url = cursor
+    ? `/reviews/product/${productId}?cursor=${cursor}&limit=5`
+    : `/reviews/product/${productId}?limit=5`;
 
-    const res = await http<ApiResponse<Review[]>>(url, {
-      next: { tags: [`reviews:${productId}`] }, // Add Cache Tag for P1
-    });
-    return { success: true, data: res.data, meta: res.meta };
-  } catch {
-    return { success: false, error: "Không thể tải đánh giá" };
-  }
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<Review[]>>(url, {
+        next: { tags: [`reviews:${productId}`] },
+      }),
+    "Không thể tải đánh giá"
+  );
 }
 
 /**
  * Upload ảnh cho đánh giá.
  * Form Data proxy action.
  */
-export async function uploadReviewImagesAction(formData: FormData) {
-  try {
-    const res = await http<{ urls: string[] }>("/reviews/upload", {
-      method: "POST",
-      body: formData,
-    });
-    return { urls: res.urls, success: true };
-  } catch (error: unknown) {
-    console.error("uploadReviewImagesAction error:", error);
-    return { error: (error as Error).message, success: false };
-  }
+export async function uploadReviewImagesAction(
+  formData: FormData
+): Promise<ActionResult<{ urls: string[] }>> {
+  return wrapServerAction(
+    () =>
+      http<{ urls: string[] }>("/reviews/upload", {
+        method: "POST",
+        body: formData,
+      }),
+    "Failed to upload images"
+  );
 }

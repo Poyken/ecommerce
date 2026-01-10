@@ -37,7 +37,7 @@ async function getPageConfig(slug: string): Promise<any | null> {
     const json = await res.json();
     // API returns { statusCode, message, data: {...} } - extract the data
     return json.data || json;
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -151,8 +151,8 @@ async function HomeDataFetcher() {
       productService.getCategories(),
       productService.getBrands(),
     ]);
-  } catch (_e) {
-    // console.error("Failed to fetch home data", _e);
+  } catch {
+    // Silently fail - will show empty state
   }
 
   return (

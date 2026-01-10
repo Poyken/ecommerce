@@ -105,7 +105,7 @@ export function AgentClient() {
           });
         }
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Lỗi",
         description: "Đã xảy ra lỗi khi kết nối với Agent",

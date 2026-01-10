@@ -53,8 +53,7 @@ export function SimulatePaymentClient({ orderId }: { orderId: string }) {
           variant: "destructive",
         });
       }
-    } catch (_error) {
-      // console.error(error);
+    } catch {
       toast({
         title: t("errorTitle"),
         description: "An unexpected error occurred.",

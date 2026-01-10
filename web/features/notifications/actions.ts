@@ -1,13 +1,15 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { http } from "@/lib/http";
+import { normalizePaginationParams } from "@/lib/api-helpers";
 import { protectedActionClient } from "@/lib/safe-action";
 import {
+  REVALIDATE,
+  wrapServerAction,
   createActionWrapper,
   createVoidActionWrapper,
 } from "@/lib/safe-action-utils";
-import { ApiResponse } from "@/types/dtos";
+import { ApiResponse, ActionResult } from "@/types/api";
 import { Notification } from "@/types/models";
 import { cookies } from "next/headers";
 import { z } from "zod";
@@ -58,14 +60,14 @@ const safeMarkAsRead = protectedActionClient
   .schema(MarkReadSchema)
   .action(async ({ parsedInput }) => {
     await http(`/notifications/${parsedInput.id}/read`, { method: "PATCH" });
-    revalidatePath("/notifications", "page");
+    REVALIDATE.admin.notifications();
     return { success: true };
   });
 
 // Đánh dấu đọc hết
 const safeMarkAllAsRead = protectedActionClient.action(async () => {
   await http("/notifications/read-all", { method: "PATCH" });
-  revalidatePath("/notifications", "page");
+  REVALIDATE.admin.notifications();
   return { success: true };
 });
 
@@ -118,38 +120,32 @@ export const sendNotificationToUserAction = createActionWrapper(
 /**
  * Lấy danh sách thông báo của người dùng hiện tại.
  */
-export async function getNotificationsAction(limit = 10) {
+export async function getNotificationsAction(
+  limit = 10
+): Promise<ActionResult<Notification[]>> {
   await cookies();
-  try {
-    const res = await http<ApiResponse<Notification[]>>(
-      `/notifications?limit=${limit}`,
-      {
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<Notification[]>>(`/notifications?limit=${limit}`, {
         skipRedirectOn401: true,
-      }
-    );
-    return {
-      data: res.data || [],
-      meta: res.meta,
-    };
-  } catch (error) {
-    return { data: [] };
-  }
+      }),
+    "Failed to fetch notifications"
+  );
 }
 
 /**
  * Lấy số lượng thông báo chưa đọc.
  */
-export async function getUnreadCountAction() {
+export async function getUnreadCountAction(): Promise<
+  ActionResult<{ count: number }>
+> {
   await cookies();
-  try {
+  return wrapServerAction(async () => {
     const res = await http<ApiResponse<number>>("/notifications/unread-count", {
       skipRedirectOn401: true,
     });
-    // Backend returns { data: number }
     return { count: typeof res.data === "number" ? res.data : 0 };
-  } catch (error) {
-    return { count: 0 };
-  }
+  }, "Failed to fetch unread count");
 }
 
 /**
@@ -160,28 +156,15 @@ export async function getAdminNotificationsAction(
   limit = 50,
   userId?: string,
   type?: string
-) {
+): Promise<ActionResult<Notification[]>> {
   await cookies();
-  try {
-    // Build query string
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-    });
-    if (userId) params.append("userId", userId);
-    if (type) params.append("type", type);
+  const params = normalizePaginationParams(page, limit);
+  if (userId) params.userId = userId;
+  if (type) params.type = type;
 
-    const res = await http<ApiResponse<Notification[]>>(
-      `/notifications/admin/all?${params.toString()}`
-    );
-    return {
-      data: res.data || [],
-      meta: res.meta,
-    };
-  } catch (error) {
-    return {
-      data: [],
-      error: error instanceof Error ? error.message : "Error",
-    };
-  }
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<Notification[]>>("/notifications/admin/all", { params }),
+    "Failed to fetch admin notifications"
+  );
 }

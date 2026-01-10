@@ -129,17 +129,23 @@ function AddAddressForm({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const list = await getProvinces();
-        setProvinces(list);
+        const res = await getProvinces();
+        if (res.success && res.data) {
+          setProvinces(res.data);
+        }
 
         // If editing an address, pre-fetch districts and wards
         if (address?.provinceId) {
-          const districtList = await getDistricts(address.provinceId);
-          setDistricts(districtList);
+          const districtRes = await getDistricts(address.provinceId);
+          if (districtRes.success && districtRes.data) {
+            setDistricts(districtRes.data);
+          }
 
           if (address?.districtId) {
-            const wardList = await getWards(address.districtId);
-            setWards(wardList);
+            const wardRes = await getWards(address.districtId);
+            if (wardRes.success && wardRes.data) {
+              setWards(wardRes.data);
+            }
           }
         }
       } catch (err) {
@@ -154,8 +160,12 @@ function AddAddressForm({
     const fetchData = async () => {
       if (formData.provinceId) {
         try {
-          const list = await getDistricts(formData.provinceId);
-          setDistricts(list);
+          const res = await getDistricts(formData.provinceId);
+          if (res.success && res.data) {
+            setDistricts(res.data);
+          } else {
+            setDistricts([]);
+          }
         } catch (err) {
           console.error(err);
           setDistricts([]);
@@ -172,8 +182,12 @@ function AddAddressForm({
     const fetchData = async () => {
       if (formData.districtId) {
         try {
-          const list = await getWards(formData.districtId);
-          setWards(list);
+          const res = await getWards(formData.districtId);
+          if (res.success && res.data) {
+            setWards(res.data);
+          } else {
+            setWards([]);
+          }
         } catch (err) {
           console.error(err);
           setWards([]);

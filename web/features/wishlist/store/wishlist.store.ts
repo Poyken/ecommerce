@@ -43,8 +43,14 @@ export const useWishlistStore = create<WishlistState>((set) => ({
   refreshWishlist: async () => {
     try {
       set({ isFetching: true });
-      const count = await getWishlistCountAction();
-      set({ count });
+      const result = await getWishlistCountAction();
+      if (
+        result.success &&
+        result.data &&
+        typeof result.data.count === "number"
+      ) {
+        set({ count: result.data.count });
+      }
     } catch (e) {
       console.error("Failed to refresh wishlist", e);
     } finally {

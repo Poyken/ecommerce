@@ -122,11 +122,11 @@ export function WishlistButton({
           title: (res as any).data?.isWishlisted ? t("added") : t("removed"),
           variant: (res as any).data?.isWishlisted ? "success" : "info",
         });
-        
+
         // Update Global Store directly (faster than waiting for window event)
-        const { updateCount, refreshWishlist } = useWishlistStore.getState();
-        refreshWishlist(); // Or simpler: updateCount(prevCount + (res.isWishlisted ? 1 : -1));
-        
+        const { refreshWishlist } = useWishlistStore.getState();
+        refreshWishlist();
+
         // Keep window event for other listeners if any (e.g. multi-tab)
         window.dispatchEvent(new Event("wishlist_updated"));
       }

@@ -1,14 +1,14 @@
 "use client";
 
 import {
-    ReviewItem,
-    ReviewItemProps,
-    ReviewListSkeleton,
+  ReviewItem,
+  ReviewItemProps,
+  ReviewListSkeleton,
 } from "@/components/molecules/review-item";
 import { Button } from "@/components/ui/button";
 import {
-    checkReviewEligibilityAction,
-    getReviewsAction,
+  checkReviewEligibilityAction,
+  getReviewsAction,
 } from "@/features/reviews/actions";
 import { ReviewFormDialog } from "@/features/reviews/components/review-form-dialog";
 import { m } from "@/lib/animations";
@@ -122,8 +122,8 @@ export function ProductReviews({
     setLoadingMore(true);
     try {
       const res = await getReviewsAction(productId, meta.nextCursor);
-      if (res.success && res.data) {
-        setReviews((prev) => [...prev, ...res.data]);
+      if (res.success && Array.isArray(res.data)) {
+        setReviews((prev) => [...prev, ...(res.data as any[])]);
         setMeta((res.meta as any) || null);
       }
     } catch (_e) {

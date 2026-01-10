@@ -36,7 +36,7 @@ async function getTenantMessages(locale: string) {
     if (!res.ok) return {};
     const json = await res.json();
     return json.data || json;
-  } catch (error) {
+  } catch {
     return null; // Fail silently to default
   }
 }

@@ -6,9 +6,10 @@ import {
   createActionWrapper,
   createVoidActionWrapper,
   REVALIDATE,
+  wrapServerAction,
 } from "@/lib/safe-action-utils";
 import { CartItemSchema } from "@/lib/schemas";
-import { ApiResponse } from "@/types/dtos";
+import { ApiResponse, ActionResult } from "@/types/api";
 import { Sku } from "@/types/models";
 import { cookies } from "next/headers";
 import { z } from "zod";
@@ -197,27 +198,27 @@ export const mergeGuestCartAction = createActionWrapper(
 /**
  * Lấy chi tiết thông tin sản phẩm cho Guest Cart.
  */
-export async function getGuestCartDetailsAction(skuIds: string[]) {
-  try {
-    const res = await http<ApiResponse<Sku[]>>("/products/skus/details", {
-      method: "POST",
-      body: JSON.stringify({ skuIds }),
-    });
-    return { success: true, data: res.data || [] };
-  } catch (error: unknown) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Không thể lấy thông tin",
-    };
-  }
+export async function getGuestCartDetailsAction(
+  skuIds: string[]
+): Promise<ActionResult<Sku[]>> {
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<Sku[]>>("/products/skus/details", {
+        method: "POST",
+        body: JSON.stringify({ skuIds }),
+      }),
+    "Không thể lấy thông tin"
+  );
 }
 
 /**
  * Lấy số lượng item trong giỏ (hiển thị badge trên icon giỏ hàng).
  */
-export async function getCartCountAction() {
+export async function getCartCountAction(): Promise<
+  ActionResult<{ totalItems: number }>
+> {
   await cookies();
-  try {
+  return wrapServerAction(async () => {
     const response = await http<
       ApiResponse<{
         items: { quantity: number }[];
@@ -229,7 +230,7 @@ export async function getCartCountAction() {
     });
 
     const cartData = response.data;
-    const count =
+    const totalItems =
       cartData.totalItems ??
       cartData.items?.reduce(
         (acc: number, item: { quantity: number }) => acc + (item.quantity || 0),
@@ -237,8 +238,6 @@ export async function getCartCountAction() {
       ) ??
       0;
 
-    return { success: true, count };
-  } catch {
-    return { success: false, count: 0 };
-  }
+    return { totalItems };
+  }, "Không thể lấy số lượng giỏ hàng");
 }

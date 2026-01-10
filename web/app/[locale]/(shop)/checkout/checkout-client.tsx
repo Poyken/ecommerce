@@ -37,7 +37,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { validateCouponAction } from "@/features/coupons/coupon-actions";
+import {
+  validateCouponAction,
+  getAvailableCouponsAction,
+} from "@/features/coupons/actions";
 import { placeOrderAction } from "@/features/orders/actions";
 import { calculateShippingFeeAction } from "@/features/shipping/actions";
 // import { AddAddressDialog } from "@/features/admin/components/add-address-dialog"; // Replaced with dynamic import
@@ -53,7 +56,6 @@ import {
 } from "@/features/checkout/components/payment-method-selector";
 import { Link, useRouter } from "@/i18n/routing";
 import { m } from "@/lib/animations";
-import { http } from "@/lib/http";
 import { formatCurrency } from "@/lib/utils";
 import { Address, Cart, CartItem, Coupon, Sku } from "@/types/models";
 import { ArrowLeft, Lock, ShieldCheck } from "lucide-react";
@@ -178,8 +180,8 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
                 setGuestItems(mappedItems);
               }
             }
-          } catch (_e) {
-            // console.error("Error loading guest cart", e);
+          } catch {
+            // Silently fail
           } finally {
             setIsInitializing(false);
           }
@@ -232,21 +234,9 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
   // Effects
   useEffect(() => {
     const fetchCoupons = async () => {
-      try {
-        const res = await http<Coupon[] | { data: Coupon[] }>(
-          "/coupons/available",
-          {
-            skipAuth: true,
-          }
-        );
-        const list = Array.isArray(res)
-          ? res
-          : res?.data && Array.isArray(res.data)
-          ? res.data
-          : [];
-        setAvailableCoupons(list);
-      } catch {
-        // console.error("Failed to fetch coupons");
+      const result = await getAvailableCouponsAction();
+      if (result.success && result.data) {
+        setAvailableCoupons(result.data);
       }
     };
     fetchCoupons();
@@ -261,11 +251,15 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
       ) {
         setIsCalculatingFee(true);
         try {
-          const fee = await calculateShippingFeeAction(
+          const result = await calculateShippingFeeAction(
             Number(selectedAddress.districtId),
             selectedAddress.wardCode
           );
-          setShippingFee(fee);
+          if (result.success && typeof result.data === "number") {
+            setShippingFee(result.data);
+          } else {
+            setShippingFee(0);
+          }
         } finally {
           setIsCalculatingFee(false);
         }
@@ -289,11 +283,11 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
       try {
         const res = await validateCouponAction(targetCode, subtotal);
 
-        if (res.success) {
-          if (res.isValid) {
+        if (res.success && res.data) {
+          if (res.data.isValid) {
             setAppliedCoupon({
               code: targetCode,
-              discount: res.discountAmount || 0,
+              discount: res.data.discountAmount || 0,
             });
             toast({
               title: t("couponApplied"),
@@ -301,14 +295,14 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
               variant: "success",
             });
           } else {
-            setCouponError(res.message || t("couponInvalid"));
+            setCouponError(res.data.message || t("couponInvalid"));
             setAppliedCoupon(null);
           }
         } else {
           setCouponError(res.error || t("couponInvalid"));
           setAppliedCoupon(null);
         }
-      } catch (_error) {
+      } catch {
         setCouponError("Failed to validate coupon");
       } finally {
         setIsValidatingCoupon(false);
@@ -354,7 +348,10 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
             id: (res.data as any)?.orderId || "",
             totalAmount: total,
             createdAt: new Date().toISOString(),
-            qrUrl: paymentMethod === "VIETQR" ? (res.data as any)?.paymentUrl : undefined,
+            qrUrl:
+              paymentMethod === "VIETQR"
+                ? (res.data as any)?.paymentUrl
+                : undefined,
           });
           setIsPaymentModalOpen(true);
           return;

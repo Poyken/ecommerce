@@ -17,7 +17,7 @@
 
 import { revalidatePath } from "next/cache";
 import { getErrorMessage } from "./error-utils";
-import { ApiResponse } from "@/types/dtos";
+import { ApiResponse, ActionResult } from "@/types/api";
 
 // =============================================================================
 // TYPES
@@ -31,13 +31,6 @@ export interface SafeActionResult<T> {
   serverError?: string;
   validationErrors?: Record<string, string[] | undefined>;
 }
-
-/**
- * Simplified action result.
- */
-export type ActionResult<T = void> =
-  | { success: true; data?: T }
-  | { success: false; error: string };
 
 // =============================================================================
 // RESULT UNWRAPPERS
@@ -171,8 +164,7 @@ export async function wrapServerAction<T>(
       return {
         success: true,
         data: apiRes.data,
-        // @ts-expect-error - Handle optional meta for paginated results
-        meta: (apiRes as any).meta,
+        meta: apiRes.meta,
       };
     }
 
@@ -226,5 +218,24 @@ export const REVALIDATE = {
     products: () => revalidatePath("/admin/products", "page"),
     orders: () => revalidatePath("/admin/orders", "page"),
     users: () => revalidatePath("/admin/users", "page"),
+    blogs: () => {
+      revalidatePath("/admin/blogs", "page");
+      revalidatePath("/blog", "page");
+    },
+    categories: () => revalidatePath("/admin/categories", "page"),
+    brands: () => revalidatePath("/admin/brands", "page"),
+    coupons: () => revalidatePath("/admin/coupons", "page"),
+    reviews: () => revalidatePath("/admin/reviews", "page"),
+    pages: () => revalidatePath("/admin/pages", "page"),
+    roles: () => revalidatePath("/admin/roles", "page"),
+    notifications: () => revalidatePath("/admin/notifications", "page"),
+    tenants: () => revalidatePath("/admin/tenants", "page"),
   },
+  superAdmin: {
+    tenants: () => revalidatePath("/super-admin/tenants", "page"),
+    subscriptions: () => revalidatePath("/super-admin/subscriptions", "page"),
+    security: () => revalidatePath("/super-admin/security", "page"),
+  },
+  path: (path: string, type: "page" | "layout" = "page") =>
+    revalidatePath(path, type),
 } as const;

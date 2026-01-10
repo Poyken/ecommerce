@@ -1,10 +1,10 @@
 "use server";
 
 import { http } from "@/lib/http";
+import { normalizePaginationParams } from "@/lib/api-helpers";
 import { ApiResponse, ActionResult } from "@/types/dtos";
 import { Order } from "@/types/models";
-import { revalidatePath } from "next/cache";
-import { wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
 
 /**
  * =====================================================================
@@ -17,16 +17,7 @@ export async function getOrdersAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Order[]>> {
-  let params: any = {};
-  if (
-    typeof paramsOrPage === "object" &&
-    paramsOrPage !== null &&
-    !Array.isArray(paramsOrPage)
-  ) {
-    params = paramsOrPage;
-  } else {
-    params = { page: paramsOrPage, limit, search };
-  }
+  const params = normalizePaginationParams(paramsOrPage, limit, search);
 
   return wrapServerAction(
     () => http<ApiResponse<Order[]>>("/orders", { params }),
@@ -58,7 +49,7 @@ export async function updateOrderStatusAction(
         cancellationReason: reason,
       }),
     });
-    revalidatePath("/admin/orders", "page");
+    REVALIDATE.admin.orders();
     return res.data;
   }, "Failed to update order status");
 }

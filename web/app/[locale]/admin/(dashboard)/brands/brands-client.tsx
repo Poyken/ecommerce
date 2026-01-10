@@ -110,9 +110,6 @@ export function BrandsPageClient({
   const currentMeta =
     brandsRes && "meta" in brandsRes ? (brandsRes as any).meta : meta;
   const total = currentMeta?.total || 0;
-  const totalPages = currentMeta
-    ? Math.ceil(currentMeta.total / currentMeta.limit)
-    : 1;
 
   const refreshData = () => {
     mutateLocalBrands();

@@ -23,13 +23,9 @@ export const metadata = {
 async function DynamicWishlist() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let wishlistItems: any[] = [];
-  try {
-    const items = await getWishlistAction();
-    if (items) {
-      wishlistItems = items;
-    }
-  } catch {
-    // Handle error or empty state
+  const result = await getWishlistAction();
+  if (result.success && result.data) {
+    wishlistItems = result.data;
   }
 
   return <WishlistClient wishlistItems={wishlistItems} />;
