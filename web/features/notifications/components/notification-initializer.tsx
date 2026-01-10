@@ -41,7 +41,7 @@ export function NotificationInitializer({
   const {
     setNotifications,
     setUnreadCount,
-    setIsLoading,
+
     addNotification,
     refresh,
   } = useNotificationStore();

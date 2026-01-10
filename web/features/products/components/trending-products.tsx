@@ -37,6 +37,7 @@ interface TrendingProductsProps {
   columns?: number;
   layout?: "grid" | "carousel";
   alignment?: "left" | "center";
+  cardStyle?: "default" | "luxury" | "minimal";
 }
 
 export function TrendingProducts({

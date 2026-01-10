@@ -12,7 +12,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link, useRouter } from "@/i18n/routing";
+import { Link } from "@/i18n/routing";
 import { Tenant } from "@/types/models";
 import { format } from "date-fns";
 import {
@@ -26,7 +26,6 @@ import {
   Globe,
   HardDrive,
   Lock,
-  Plus,
   Settings,
   Shield,
   Users,
@@ -55,7 +54,6 @@ import { useTranslations } from "next-intl";
  * =================================================================================================
  */
 export function TenantDetailClient({ tenant }: { tenant: Tenant }) {
-  const router = useRouter();
   const t = useTranslations("superAdmin.tenants.tenantDetail");
 
   // Mocked plan limits based on plan type

@@ -195,7 +195,7 @@ export function BankTransferQR({
                     variant: "destructive",
                   });
                 }
-              } catch (_error) {
+              } catch {
                 toast({
                   title: "Error",
                   description: "An unexpected error occurred",

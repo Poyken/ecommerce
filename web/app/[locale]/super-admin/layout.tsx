@@ -57,7 +57,7 @@ export default async function SuperAdminLayout({
   return (
     <AuthProvider initialPermissions={permissions}>
       <Suspense fallback={<LoadingScreen message="Initializing Platform..." />}>
-        <DynamicSuperAdminContent token={token} permissions={permissions}>
+        <DynamicSuperAdminContent token={token}>
           {children}
         </DynamicSuperAdminContent>
       </Suspense>
@@ -68,11 +68,9 @@ export default async function SuperAdminLayout({
 async function DynamicSuperAdminContent({
   children,
   token,
-  permissions,
 }: {
   children: React.ReactNode;
   token?: string;
-  permissions: string[];
 }) {
   const [profile, notificationsRes, unreadCountRes, brandsRes, categoriesRes] =
     await Promise.all([

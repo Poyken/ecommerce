@@ -15,7 +15,7 @@
 import { GlassButton } from "@/components/shared/glass-button";
 import { cn } from "@/lib/utils";
 import { m } from "@/lib/animations";
-import { Play, ArrowRight, Volume2, VolumeX } from "lucide-react";
+import { ArrowRight, Volume2, VolumeX } from "lucide-react";
 import { useState, useRef } from "react";
 import { Link } from "@/i18n/routing";
 

@@ -31,7 +31,7 @@ import { AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
-import { use, useCallback, useEffect, useState, useTransition } from "react";
+import { use, useCallback, useEffect, useState } from "react";
 
 interface ShopGridProps {
   productsPromise: Promise<{
@@ -53,7 +53,6 @@ export function ShopGrid({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [, startTransition] = useTransition();
 
   const { data: products, meta: pagination } = use(productsPromise);
   const suggestedProducts = use(suggestedProductsPromise);

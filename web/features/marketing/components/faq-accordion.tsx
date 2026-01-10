@@ -32,10 +32,11 @@ interface FAQAccordionProps {
 
 export function FAQAccordion({ items }: FAQAccordionProps) {
   const t = useTranslations("home.faq");
-  const faqs = items || (t.raw("items") as { question: string; answer: string }[]);
+  const faqs =
+    items || (t.raw("items") as { question: string; answer: string }[]);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const getColorClasses = (index: number) => {
+  const getColorClasses = () => {
     return {
       activeBg: "bg-accent/5",
       activeBorder: "border-accent/20 shadow-2xl shadow-accent/5",
@@ -48,7 +49,7 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
   return (
     <div className="space-y-5">
       {faqs.map((faq, i) => {
-        const colors = getColorClasses(i);
+        const colors = getColorClasses();
         const isOpen = openIndex === i;
 
         return (

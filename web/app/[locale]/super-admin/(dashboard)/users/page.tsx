@@ -14,7 +14,7 @@ async function getUserCounts() {
       admin: "data" in admins ? admins.meta?.total || 0 : 0,
       user: "data" in users ? users.meta?.total || 0 : 0,
     };
-  } catch (error) {
+  } catch {
     return { total: 0, admin: 0, user: 0 };
   }
 }

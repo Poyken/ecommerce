@@ -1,6 +1,6 @@
 import { ProductCard } from "@/features/products/components/product-card";
 import { Link } from "@/i18n/routing";
-import { productService } from "@/services/product.service";
+import { productService } from "@/features/products/services/product.service";
 import { getTranslations } from "next-intl/server";
 
 /**

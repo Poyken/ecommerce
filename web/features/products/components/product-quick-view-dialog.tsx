@@ -15,10 +15,9 @@ import { ProductVariantSelector } from "@/features/products/components/product-v
 import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
 import { Link } from "@/i18n/routing";
 import { cn, formatCurrency } from "@/lib/utils";
-import { productService } from "@/services/product.service";
+import { productService } from "@/features/products/services/product.service";
 import { Product, Sku } from "@/types/models";
 import { Shield, Truck } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -99,7 +98,7 @@ export function ProductQuickViewDialog({
 
     productService
       .getProduct(productId)
-      .then((data) => {
+      .then((data: Product | null) => {
         if (!isMounted) return;
 
         // Validate data has an ID (fixes issue with http.ts returning [] on error)
@@ -119,7 +118,7 @@ export function ProductQuickViewDialog({
           // Optional: onOpenChange(false) if strict
         }
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         if (!isMounted) return;
         console.error("Failed to fetch product", err);
         toast({

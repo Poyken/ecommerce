@@ -17,7 +17,7 @@
 
 import { BlockData, BlockRenderer } from "@/features/cms/components/block-renderer";
 import { HomeWrapper } from "@/features/home/components/home-wrapper";
-import { productService } from "@/services/product.service";
+import { productService } from "@/features/products/services/product.service";
 import { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";

@@ -1,10 +1,10 @@
 import { ShopContent } from "@/features/products/components/shop-content";
-import { productService } from "@/services/product.service";
 import { getTranslations } from "next-intl/server";
 
 // Types based on API response
 import { Product } from "@/types/models";
 import { Metadata } from "next";
+import { productService } from "@/features/products/services/product.service";
 
 /**
  * =====================================================================
@@ -95,15 +95,20 @@ export default async function ShopPage({
     typeof params.search === "string" ? params.search : undefined;
 
   try {
-    const productsPromise = productService.getProducts({
-      categoryId,
-      brandId,
-      search: searchQuery,
-      page: params.page ? Number(params.page) : 1,
-      limit: 12,
-      sort: typeof params.sort === "string" ? params.sort : undefined,
-      includeSkus: "true",
-    });
+    const productsPromise = productService
+      .getProducts({
+        categoryId,
+        brandId,
+        search: searchQuery,
+        page: params.page ? Number(params.page) : 1,
+        limit: 12,
+        sort: typeof params.sort === "string" ? params.sort : undefined,
+        includeSkus: "true",
+      })
+      .then((res) => ({
+        data: res.data || [],
+        meta: res.meta || { page: 1, limit: 12, total: 0, lastPage: 1 },
+      }));
 
     const categoriesPromise = productService.getCategories();
     const brandsPromise = productService.getBrands();
@@ -117,9 +122,7 @@ export default async function ShopPage({
       if (result.success && result.data) {
         wishlistItems = result.data;
       }
-    } catch (_error) {
-      // console.error("Failed to fetch wishlist", error);
-    }
+    } catch (_error) {}
 
     return (
       <ShopContent
@@ -131,7 +134,6 @@ export default async function ShopPage({
       />
     );
   } catch (_e) {
-    // console.error("Failed to fetch data", e);
     const t = await getTranslations("shop");
     return <div>{t("errorLoading")}</div>;
   }

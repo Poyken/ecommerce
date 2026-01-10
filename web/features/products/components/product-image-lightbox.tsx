@@ -63,7 +63,7 @@ export function ProductImageLightbox({
   const [current, setCurrent] = useState(1);
   const [isZoomed, setIsZoomed] = useState(false);
   const lastClickTime = useRef<number>(0);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const zoomRef = useRef<any>(null);
 
   useEffect(() => {
@@ -116,7 +116,7 @@ export function ProductImageLightbox({
   }, [isOpen, onClose, api]);
 
   // Track zoom state to disable Carousel drag
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // Track zoom state to disable Carousel drag
   const onTransformed = (ref: any) => {
     setIsZoomed(ref.instance.transformState.scale > 1);
   };
@@ -124,7 +124,6 @@ export function ProductImageLightbox({
   // Find current SKU details
   const currentSku = skus?.find((s) => s.imageUrl === activeImage);
   const skuDetails = currentSku?.optionValues
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ?.map((ov: any) => {
       const option = options?.find((o) => o.id === ov.optionValue.optionId);
       const value = option?.values.find(

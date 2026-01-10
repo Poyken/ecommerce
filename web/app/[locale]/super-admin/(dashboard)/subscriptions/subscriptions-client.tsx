@@ -15,7 +15,6 @@
 "use client";
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
-import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,10 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  cancelSubscriptionAction,
-  getSubscriptionsAction,
-} from "@/features/admin/actions";
+import { cancelSubscriptionAction } from "@/features/admin/actions";
 import {
   AdminEmptyState,
   AdminPageHeader,
@@ -43,7 +39,6 @@ import { format } from "date-fns";
 import {
   Ban,
   Calendar,
-  CheckCircle2,
   CreditCard,
   MoreHorizontal,
   Search,
@@ -70,12 +65,12 @@ export function SubscriptionsClient({
   limit: number;
 }) {
   const t = useTranslations("superAdmin.subscriptions");
-  const { toast } = useToast();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectedSub, setSelectedSub] = useState<Subscription | null>(null);
 
-  const { searchTerm, setSearchTerm, isPending, handleFilterChange } =
-    useAdminTable("/super-admin/subscriptions");
+  const { searchTerm, setSearchTerm, isPending } = useAdminTable(
+    "/super-admin/subscriptions"
+  );
 
   const openCancel = (sub: Subscription) => {
     setSelectedSub(sub);

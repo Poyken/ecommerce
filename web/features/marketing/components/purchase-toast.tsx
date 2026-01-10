@@ -78,7 +78,7 @@ export function PurchaseToast() {
   const [currentNotification, setCurrentNotification] =
     useState<PurchaseNotification | null>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [notificationIndex, setNotificationIndex] = useState(0);
+  const [, setNotificationIndex] = useState(0);
 
   const showNextNotification = useCallback(() => {
     setNotificationIndex((prev) => {

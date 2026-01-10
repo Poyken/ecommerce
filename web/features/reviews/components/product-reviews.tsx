@@ -111,7 +111,6 @@ export function ProductReviews({
         );
       }
     } catch {
-      // console.error(e);
       setError("Failed to load reviews");
     }
     setLoading(false);

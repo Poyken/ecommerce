@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
-import { useToast } from "@/components/ui/use-toast";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,7 +73,6 @@ export function TenantsClient({
   limit: number;
 }) {
   const t = useTranslations("superAdmin.tenants");
-  const { toast } = useToast();
   const { hasPermission } = useAuth();
   const [tenantDialogOpen, setTenantDialogOpen] = useState(false);
   const [dialogMode, setDialogMode] = useState<"create" | "edit" | "view">(

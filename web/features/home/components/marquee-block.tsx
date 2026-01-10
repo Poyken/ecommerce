@@ -13,14 +13,13 @@
 
 "use client";
 
-import { cn } from "@/lib/utils";
 import { m } from "@/lib/animations";
 
 interface MarqueeBlockProps {
   items?: string[];
   speed?: number;
   direction?: "left" | "right";
-  pauseOnHover?: boolean;
+
   styles?: {
     backgroundColor?: string;
     textColor?: string;
@@ -38,7 +37,7 @@ export function MarqueeBlock({
   ],
   speed = 30,
   direction = "left",
-  pauseOnHover = true,
+
   styles,
 }: MarqueeBlockProps) {
   const duration = speed;

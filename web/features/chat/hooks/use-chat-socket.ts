@@ -213,7 +213,7 @@ export function useChatSocket(
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [user?.id, accessToken, namespace]);
+  }, [user, accessToken, namespace, isConnected]);
 
   const sendMessage = useCallback(
     (
@@ -269,7 +269,7 @@ export function useChatSocket(
         );
       }
     },
-    [user, isConnected]
+    [user]
   );
 
   const markAsRead = useCallback(

@@ -16,14 +16,14 @@
 
 import { useToast } from "@/components/ui/use-toast";
 import {
-    AlertDialog,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -76,7 +76,7 @@ export function CancelOrderButton({ orderId }: CancelOrderButtonProps) {
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "An unexpected error occurred",
@@ -99,7 +99,8 @@ export function CancelOrderButton({ orderId }: CancelOrderButtonProps) {
         <AlertDialogHeader>
           <AlertDialogTitle>{t("confirmCancel")}</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. Please provide a reason for cancellation.
+            This action cannot be undone. Please provide a reason for
+            cancellation.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

@@ -45,11 +45,16 @@ export const blogService = {
   /**
    * Get list of blog posts with optional filters
    */
+  /**
+   * Get list of blog posts with optional filters
+   */
   async getBlogs(params?: {
     page?: number;
     limit?: number;
+    search?: string;
     category?: string;
     language?: string;
+    status?: "published" | "draft";
   }): Promise<ApiResponse<BlogWithProducts[]>> {
     try {
       const response = await http<ApiResponse<BlogWithProducts[]>>("/blogs", {
@@ -73,6 +78,31 @@ export const blogService = {
   },
 
   /**
+   * Get published blog posts for public viewing
+   */
+  async getPublishedBlogs(
+    limit = 10,
+    page = 1
+  ): Promise<ApiResponse<BlogWithProducts[]>> {
+    return this.getBlogs({ page, limit, status: "published" });
+  },
+
+  /**
+   * Get featured/latest blog posts
+   */
+  async getLatestBlogs(limit = 5): Promise<BlogWithProducts[]> {
+    const result = await this.getBlogs({ limit, status: "published" });
+    return result.data || [];
+  },
+
+  /**
+   * Get a single blog post by ID or slug (includes featured products)
+   */
+  async getBlog(idOrSlug: string): Promise<BlogWithProducts | null> {
+    return this.getBlogBySlug(idOrSlug);
+  },
+
+  /**
    * Get a single blog post by ID or slug (includes featured products)
    */
   async getBlogBySlug(slug: string): Promise<BlogWithProducts | null> {
@@ -90,6 +120,22 @@ export const blogService = {
       return null;
     }
   },
+
+  /**
+   * Get blog categories
+   */
+  async getCategories(): Promise<string[]> {
+    try {
+      const response = await http<ApiResponse<string[]>>("/blogs/categories", {
+        skipAuth: true,
+        next: { revalidate: 3600 },
+      });
+      return response?.data || [];
+    } catch {
+      return [];
+    }
+  },
+
   /**
    * Get list of blog IDs for static site generation
    */
@@ -112,13 +158,14 @@ export const blogService = {
           categories: { category: string; count: number }[];
           total: number;
         }>
-      >("/blogs/categories", {
+      >("/blogs/category-stats", {
         skipAuth: true,
         next: { revalidate: 900 },
       });
       return response?.data || null;
     } catch (error) {
       console.warn("Lấy thống kê danh mục thất bại:", error);
+      // Fallback
       return null;
     }
   },

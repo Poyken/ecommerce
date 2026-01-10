@@ -38,7 +38,7 @@ import { useState } from "react";
 import { NotificationItem } from "./notification-item";
 
 export function NotificationBell() {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, refresh } =
+  const { notifications, markAsRead, markAllAsRead, refresh } =
     useNotificationStore();
   const t = useTranslations("notifications");
   const [open, setOpen] = useState(false);

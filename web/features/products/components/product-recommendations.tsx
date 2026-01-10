@@ -22,7 +22,7 @@
 
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import { formatCurrency } from "@/lib/utils";
-import { productService } from "@/services/product.service";
+import { productService } from "@/features/products/services/product.service";
 import { Product } from "@/types/models";
 import { Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -66,8 +66,7 @@ export async function ProductRecommendations({
     recommendations = response.data
       .filter((p) => p.id !== currentProductId)
       .slice(0, maxItems);
-  } catch (error) {
-    console.error("Failed to fetch recommendations:", error);
+  } catch {
     return null;
   }
 

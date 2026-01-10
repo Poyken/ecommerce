@@ -7,7 +7,7 @@ import {
 import { HomeWrapper } from "@/features/home/components/home-wrapper";
 import { HeroSection } from "@/features/home/components/hero-section";
 import { HomeContent } from "@/features/products/components/home-content";
-import { productService } from "@/services/product.service";
+import { productService } from "@/features/products/services/product.service";
 import { Brand, Category, Product } from "@/types/models";
 import { Metadata } from "next";
 import { headers } from "next/headers";

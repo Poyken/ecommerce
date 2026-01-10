@@ -27,7 +27,7 @@
 
 import { http } from "@/lib/http";
 import { ApiResponse, PaginatedData } from "@/types/dtos";
-import { Category, Product } from "@/types/models";
+import { Brand, Category, Product, Sku } from "@/types/models";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
@@ -365,6 +365,86 @@ export const productService = {
       return brands.map((b) => b.id);
     } catch (error) {
       console.error("Lấy danh sách ID thương hiệu thất bại:", error);
+      return [];
+    }
+  },
+  /**
+   * Lấy danh sách sản phẩm mới về.
+   */
+  async getNewArrivals(limit = 8): Promise<Product[]> {
+    try {
+      const response = await http<ApiResponse<Product[]>>("/products", {
+        params: { limit, sort: "-createdAt" },
+        skipAuth: true,
+        next: { revalidate: 300, tags: ["products"] },
+      });
+      return response?.data || [];
+    } catch (error) {
+      console.error("Lấy sản phẩm mới thất bại:", error);
+      return [];
+    }
+  },
+
+  /**
+   * Lấy chi tiết một danh mục theo ID.
+   */
+  async getCategory(id: string): Promise<Category | null> {
+    try {
+      const response = await http<ApiResponse<Category>>(`/categories/${id}`, {
+        skipAuth: true,
+        next: { revalidate: 3600, tags: [`category-${id}`] },
+      });
+      return response?.data || null;
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Lấy chi tiết một thương hiệu theo ID.
+   */
+  async getBrand(id: string): Promise<Brand | null> {
+    try {
+      const response = await http<ApiResponse<Brand>>(`/brands/${id}`, {
+        skipAuth: true,
+        next: { revalidate: 3600, tags: [`brand-${id}`] },
+      });
+      return response?.data || null;
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Lấy chi tiết SKU.
+   */
+  async getSku(id: string): Promise<Sku | null> {
+    try {
+      const response = await http<ApiResponse<Sku>>(`/skus/${id}`, {
+        skipAuth: true,
+        next: { revalidate: 60, tags: [`sku-${id}`] },
+      });
+      return response?.data || null;
+    } catch {
+      return null;
+    }
+  },
+
+  /**
+   * Lấy các sản phẩm liên quan.
+   */
+  async getRelatedProducts(productId: string, limit = 4): Promise<Product[]> {
+    try {
+      const response = await http<ApiResponse<Product[]>>(
+        `/products/${productId}/related`,
+        {
+          params: { limit },
+          skipAuth: true,
+          next: { revalidate: 300, tags: [`product-${productId}-related`] },
+        }
+      );
+      return response?.data || [];
+    } catch {
       return [];
     }
   },

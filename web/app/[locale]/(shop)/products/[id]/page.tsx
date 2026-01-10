@@ -30,7 +30,7 @@ import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav";
 import { ProductDetailSkeleton } from "@/features/products/components/skeletons/product-detail-skeleton";
 import { ProductRecommendations } from "@/features/products/components/product-recommendations";
 import { getProfileAction } from "@/features/profile/actions";
-import { productService } from "@/services/product.service";
+import { productService } from "@/features/products/services/product.service";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ProductDetailClient } from "./product-detail-client";

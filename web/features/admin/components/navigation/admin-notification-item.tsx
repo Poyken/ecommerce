@@ -97,8 +97,8 @@ export function AdminNotificationItem({
         markAsRead(notification.id);
         onActionComplete?.();
       }
-    } catch (error) {
-      // console.error("Failed to accept order:", error);
+    } catch {
+      // Ignored
     } finally {
       setIsLoading(null);
     }
@@ -121,8 +121,8 @@ export function AdminNotificationItem({
         markAsRead(notification.id);
         onActionComplete?.();
       }
-    } catch (error) {
-      // console.error("Failed to reject order:", error);
+    } catch {
+      // Ignored
     } finally {
       setIsLoading(null);
     }

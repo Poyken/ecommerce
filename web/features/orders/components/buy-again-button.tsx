@@ -60,7 +60,7 @@ export function BuyAgainButton({ skuId }: BuyAgainButtonProps) {
             description: res.error || t("addToCartFailed"),
           });
         }
-      } catch (error) {
+      } catch {
         toast({
           variant: "destructive",
           title: tToast("error"),

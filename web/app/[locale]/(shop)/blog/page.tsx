@@ -1,4 +1,4 @@
-import { blogService } from "@/services/blog.service";
+import { blogService } from "@/features/blog/services/blog.service";
 import { Blog } from "@/types/models";
 import { Metadata } from "next";
 import { BlogPageClient } from "./blog-page-client";
