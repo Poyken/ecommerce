@@ -128,11 +128,11 @@ export function HeroSection({
               alignment === "center" ? "justify-center" : "justify-start"
             )}
           >
-            <Link href={displayCtaLink as any}>
+            <Link href={displayCtaLink as any} >
               <m.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="group h-14 px-10 rounded-full bg-primary text-primary-foreground font-bold text-sm tracking-mid uppercase transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20"
+                className="group h-14 px-10 rounded-full bg-primary text-primary-foreground font-bold text-sm tracking-mid uppercase transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 cursor-pointer"
               >
                 <span className="flex items-center gap-3">
                   {displayCtaText}
@@ -257,7 +257,7 @@ export function HeroSection({
         className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pointer-events-none"
       >
         <span className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground/60 font-bold">
-          Explore
+          Scroll
         </span>
         <m.div
           animate={{ y: [0, 10, 0], opacity: [0.3, 0.7, 0.3] }}

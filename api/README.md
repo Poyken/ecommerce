@@ -4,3 +4,4 @@ Tên chủ thẻ NGUYEN VAN A
 Ngày phát hành 07/15
 Mật khẩu OTP 123456
 C:\Windows\System32\drivers\etc\hosts
+/etc/hosts
