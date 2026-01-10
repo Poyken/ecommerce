@@ -148,13 +148,11 @@ export const OptimizedImage = memo(function OptimizedImage({
         onError={(e) => {
           if (!finalError) {
             // Lần 1: Lỗi ảnh chính -> Thử fallback
-            console.warn(
-              `Failed to load image: ${src}, switching to fallback.`
-            );
+
             setError(true);
           } else {
             // Lần 2: Lỗi cả fallback -> Chấp nhận số phận
-            console.error(`Failed to load fallback image: ${fallbackSrc}`);
+
             setFallbackError(true);
           }
           // Dù lỗi cũng coi như là "load xong" quy trình để tắt shimmer

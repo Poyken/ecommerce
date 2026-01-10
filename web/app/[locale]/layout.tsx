@@ -59,8 +59,30 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"
   ),
-  title: "Luxe | Premium E-Commerce",
-  description: "Elevate your lifestyle with our curated collection.",
+  title: {
+    default: "Luxe | Premium E-Commerce",
+    template: "%s | Luxe",
+  },
+  description:
+    "Elevate your lifestyle with our curated collection of premium products.",
+  openGraph: {
+    type: "website",
+    locale: "vi_VN",
+    url: "/",
+    siteName: "Luxe E-Commerce",
+    images: ["/og-image.jpg"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Luxe | Premium E-Commerce",
+    creator: "@luxe_store",
+  },
+  authors: [{ name: "Luxe Team" }],
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon-16x16.png",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 import { getPermissionsFromToken } from "@/lib/permission-utils";
