@@ -8,7 +8,7 @@ import {
   SalesDataPoint,
   TopProduct,
 } from "@/types/dtos";
-import { wrapServerAction } from "@/lib/safe-action-utils";
+import { wrapServerAction } from "@/lib/safe-action";
 
 /**
  * =====================================================================

@@ -1,4 +1,4 @@
-import { BrandsSkeleton } from "@/components/shared/skeletons/brands-skeleton";
+import { BrandsSkeleton } from "@/features/brands/components/skeletons/brands-skeleton";
 
 /**
  * =====================================================================

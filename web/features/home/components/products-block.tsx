@@ -14,7 +14,7 @@
 
 "use client";
 
-import { ProductsSkeleton } from "@/components/shared/skeletons/home-skeleton";
+import { ProductsSkeleton } from "@/features/home/components/skeletons/home-skeleton";
 import { NewArrivals } from "@/features/products/components/new-arrivals";
 import { TrendingProducts } from "@/features/products/components/trending-products";
 import { Product } from "@/types/models";

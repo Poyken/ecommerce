@@ -1,4 +1,4 @@
-import { BlogSkeleton } from "@/components/shared/skeletons/blog-skeleton";
+import { BlogSkeleton } from "@/features/blog/components/skeletons/blog-skeleton";
 
 /**
  * =====================================================================

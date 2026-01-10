@@ -27,7 +27,7 @@ import {
   REVALIDATE,
   wrapServerAction,
   createActionWrapper,
-} from "@/lib/safe-action-utils";
+} from "@/lib/safe-action";
 import { ApiResponse, ActionResult } from "@/types/api";
 import { Product } from "@/types/models";
 import { cookies } from "next/headers";

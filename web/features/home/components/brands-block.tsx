@@ -13,7 +13,7 @@
 
 "use client";
 
-import { BrandsSkeleton } from "@/components/shared/skeletons/home-skeleton";
+import { BrandsSkeleton } from "@/features/home/components/skeletons/home-skeleton";
 import { FeaturedBrands } from "@/features/brands/components/featured-brands";
 import { Brand } from "@/types/models";
 import { Suspense, use } from "react";

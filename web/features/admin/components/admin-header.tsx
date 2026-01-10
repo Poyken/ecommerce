@@ -1,6 +1,6 @@
 "use client";
 
-import { UserAvatar } from "@/components/molecules/user-avatar";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { Button } from "@/components/ui/button";
 import {

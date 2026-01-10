@@ -26,7 +26,7 @@ import { http } from "@/lib/http";
 import { ProfileUpdateSchema } from "@/lib/schemas";
 import { ApiResponse } from "@/types/dtos";
 import { User } from "@/types/models";
-import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 import { cache } from "react";
 import { cookies } from "next/headers";
 

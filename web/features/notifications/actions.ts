@@ -8,7 +8,7 @@ import {
   wrapServerAction,
   createActionWrapper,
   createVoidActionWrapper,
-} from "@/lib/safe-action-utils";
+} from "@/lib/safe-action";
 import { ApiResponse, ActionResult } from "@/types/api";
 import { Notification } from "@/types/models";
 import { cookies } from "next/headers";

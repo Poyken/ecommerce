@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { UserAvatar } from "@/components/molecules/user-avatar";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import { AiInsightsWidget } from "@/components/admin/ai-insights-widget";
 import { RecentChatsWidget } from "@/features/admin/components/recent-chats-widget";
 import {

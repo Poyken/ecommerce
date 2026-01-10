@@ -1,4 +1,4 @@
-import { CartSkeleton } from "@/components/shared/skeletons/cart-skeleton";
+import { CartSkeleton } from "@/features/cart/components/skeletons/cart-skeleton";
 
 /**
  * =====================================================================

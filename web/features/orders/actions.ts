@@ -6,7 +6,7 @@ import {
   REVALIDATE,
   wrapServerAction,
   createActionWrapper,
-} from "@/lib/safe-action-utils";
+} from "@/lib/safe-action";
 import { protectedActionClient } from "@/lib/safe-action";
 import { CheckoutSchema } from "@/lib/schemas";
 import { ApiResponse, ActionResult } from "@/types/api";

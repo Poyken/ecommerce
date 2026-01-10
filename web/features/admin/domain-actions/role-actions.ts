@@ -4,7 +4,7 @@ import { http } from "@/lib/http";
 import { normalizePaginationParams } from "@/lib/api-helpers";
 import { ApiResponse, ActionResult } from "@/types/dtos";
 import { Permission, Role } from "@/types/models";
-import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 
 /**
  * =====================================================================

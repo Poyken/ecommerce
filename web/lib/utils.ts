@@ -1,19 +1,16 @@
 /**
  * =====================================================================
- * UTILITY FUNCTIONS - Hàm tiện ích dùng chung
+ * UTILITY & FORMAT FUNCTIONS - Các hàm tiện ích dùng chung
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. `cn` (Class Name Utility):
- * - Đây là hàm quan trọng nhất khi làm việc với Tailwind trong React.
- * - Nó kết hợp `clsx` (để xử lý điều kiện: `isTrue && "class"`)
- *   và `tailwind-merge` (để xử lý conflict: `cn("p-4", "p-2")` -> `p-2`).
- * - Không có nó, việc override style từ props sẽ rất lỗi.
+ * - Kết hợp `clsx` và `tailwind-merge` để xử lý class Tailwind thông minh.
  *
- * 2. RE-EXPORTS:
- * - Các hàm format (formatCurrency, formatDate, toSlug) đã được chuyển sang format.ts
- * - Giữ re-export ở đây để backward compatibility
+ * 2. FORMATTING:
+ * - Tập trung các hàm format tiền, ngày tháng, text tại một nơi.
+ * - Sử dụng Intl API để hỗ trợ đa ngôn ngữ (vi-VN).
  * =====================================================================
  */
 
@@ -22,30 +19,106 @@ import { twMerge } from "tailwind-merge";
 
 /**
  * Kết hợp và merge các class names một cách thông minh.
- *
- * Sử dụng clsx để xử lý conditional classes và mảng,
- * sau đó dùng tailwind-merge để xử lý conflicts giữa Tailwind classes.
- *
- * @param inputs - Class names (strings, objects, arrays)
- * @returns String class names đã được merge
- *
- * @example
- * cn("px-2 py-1", "px-4")
- * // → "py-1 px-4" (px-4 override px-2)
- *
- * @example
- * cn("text-red-500", { "text-blue-500": isBlue })
- * // → "text-blue-500" nếu isBlue = true
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// =============================================================================
-// RE-EXPORTS (Backward Compatibility)
-// =============================================================================
-// Các hàm này đã được chuyển sang format.ts
-// Giữ re-export ở đây để code cũ vẫn hoạt động
-// Khuyến khích import trực tiếp từ @/lib/format
+// ============================================================================
+// CURRENCY FORMATTING
+// ============================================================================
 
-export { formatVND as formatCurrency, formatDate, toSlug } from "./format";
+export function formatVND(
+  amount: number,
+  options: Intl.NumberFormatOptions = {}
+): string {
+  return new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    ...options,
+  }).format(amount);
+}
+
+export function formatCurrency(
+  amount: number,
+  locale = "vi-VN",
+  currency = "VND"
+): string {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+  }).format(amount);
+}
+
+// ============================================================================
+// DATE/TIME FORMATTING
+// ============================================================================
+
+export function formatDate(date: Date | string | number): string {
+  if (!date) return "";
+  return new Intl.DateTimeFormat("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(new Date(date));
+}
+
+export function formatDateTime(date: Date | string | number): string {
+  if (!date) return "";
+  return new Intl.DateTimeFormat("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(date));
+}
+
+export function formatRelativeTime(date: Date | string | number): string {
+  if (!date) return "";
+  const now = Date.now();
+  const timestamp = new Date(date).getTime();
+  const diff = now - timestamp;
+
+  const seconds = Math.floor(diff / 1000);
+  const minutes = Math.floor(seconds / 60);
+  const hours = Math.floor(minutes / 60);
+  const days = Math.floor(hours / 24);
+
+  if (days > 0) return `${days} ngày trước`;
+  if (hours > 0) return `${hours} giờ trước`;
+  if (minutes > 0) return `${minutes} phút trước`;
+  return "Vừa xong";
+}
+
+// ============================================================================
+// TEXT & MISC
+// ============================================================================
+
+export function truncate(text: string, maxLength: number): string {
+  if (!text || text.length <= maxLength) return text;
+  return `${text.slice(0, maxLength).trim()}...`;
+}
+
+export function toSlug(str: string): string {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export function formatPhoneVN(phone: string): string {
+  if (!phone) return "";
+  const cleaned = phone.replace(/\D/g, "");
+  if (cleaned.length !== 10) return phone;
+  return `${cleaned.slice(0, 4)} ${cleaned.slice(4, 7)} ${cleaned.slice(7)}`;
+}
+
+export function formatOrderId(id: string, prefix = "ORD"): string {
+  return `${prefix}-${id.slice(0, 8).toUpperCase()}`;
+}

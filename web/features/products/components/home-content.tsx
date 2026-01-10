@@ -3,7 +3,7 @@
 import {
   CategoriesSkeleton,
   ProductsSkeleton,
-} from "@/components/shared/skeletons/home-skeleton";
+} from "@/features/home/components/skeletons/home-skeleton";
 import { FeaturedBrands } from "@/features/brands/components/featured-brands";
 import { FeaturedCategories } from "@/features/categories/components/featured-categories";
 import { DealSection } from "@/features/marketing/components/deal-section";

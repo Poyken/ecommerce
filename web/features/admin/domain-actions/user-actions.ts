@@ -9,7 +9,7 @@ import {
   ActionResult,
 } from "@/types/dtos";
 import { User } from "@/types/models";
-import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 
 /**
  * =====================================================================

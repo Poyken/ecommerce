@@ -21,7 +21,7 @@
 "use server";
 
 import { http } from "@/lib/http";
-import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 import { BlogWithProducts } from "@/types/models";
 import { getTranslations } from "next-intl/server";
 

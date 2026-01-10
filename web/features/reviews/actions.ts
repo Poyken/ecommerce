@@ -27,7 +27,7 @@ import {
   REVALIDATE,
   wrapServerAction,
   createActionWrapper,
-} from "@/lib/safe-action-utils";
+} from "@/lib/safe-action";
 import { ReviewSchema, UpdateReviewSchema } from "@/lib/schemas";
 import { ApiResponse, ActionResult } from "@/types/api";
 import { Review } from "@/types/models";

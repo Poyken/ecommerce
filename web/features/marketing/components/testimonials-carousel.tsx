@@ -1,6 +1,6 @@
 "use client";
 
-import { UserAvatar } from "@/components/molecules/user-avatar";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import useEmblaCarousel from "embla-carousel-react";

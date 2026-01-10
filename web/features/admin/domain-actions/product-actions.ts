@@ -10,7 +10,7 @@ import {
   UpdateSkuDto,
 } from "@/types/dtos";
 import { Product, ProductTranslation, Sku } from "@/types/models";
-import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 
 // Parameters normalization is handled by lib/api-helpers/normalizePaginationParams
 

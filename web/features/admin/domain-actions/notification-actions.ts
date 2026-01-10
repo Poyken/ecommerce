@@ -2,7 +2,7 @@
 
 import { http } from "@/lib/http";
 import { ApiResponse, ActionResult } from "@/types/dtos";
-import { wrapServerAction } from "@/lib/safe-action-utils";
+import { wrapServerAction } from "@/lib/safe-action";
 
 /**
  * =====================================================================

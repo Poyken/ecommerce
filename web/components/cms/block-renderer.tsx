@@ -42,7 +42,7 @@ import {
   BrandsSkeleton,
   CategoriesSkeleton,
   ProductsSkeleton,
-} from "@/components/shared/skeletons/home-skeleton";
+} from "@/features/home/components/skeletons/home-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLayoutVisibility } from "@/features/layout/providers/layout-visibility-provider";
 import { cn } from "@/lib/utils";

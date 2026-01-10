@@ -13,7 +13,7 @@ import {
   UpdateCouponDto,
 } from "@/types/dtos";
 import { Brand, Category, Coupon } from "@/types/models";
-import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 
 // --- BRANDS ---
 

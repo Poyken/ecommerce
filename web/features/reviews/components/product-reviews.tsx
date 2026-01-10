@@ -4,7 +4,7 @@ import {
   ReviewItem,
   ReviewItemProps,
   ReviewListSkeleton,
-} from "@/components/molecules/review-item";
+} from "@/features/reviews/components/review-item";
 import { Button } from "@/components/ui/button";
 import {
   checkReviewEligibilityAction,

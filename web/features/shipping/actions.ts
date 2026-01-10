@@ -26,7 +26,7 @@ import {
   MOCK_WARDS,
 } from "@/data/vn-locations";
 import { http } from "@/lib/http";
-import { wrapServerAction } from "@/lib/safe-action-utils";
+import { wrapServerAction } from "@/lib/safe-action";
 import { ApiResponse, ActionResult } from "@/types/api";
 
 /**

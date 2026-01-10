@@ -13,7 +13,7 @@
 
 "use client";
 
-import { CategoriesSkeleton } from "@/components/shared/skeletons/home-skeleton";
+import { CategoriesSkeleton } from "@/features/home/components/skeletons/home-skeleton";
 import { FeaturedCategories } from "@/features/categories/components/featured-categories";
 import { Category } from "@/types/models";
 import { Suspense, use } from "react";

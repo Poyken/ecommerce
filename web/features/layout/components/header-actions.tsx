@@ -1,6 +1,6 @@
 "use client";
 
-import { UserAvatar } from "@/components/molecules/user-avatar";
+import { UserAvatar } from "@/components/shared/user-avatar";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Button } from "@/components/ui/button";
 import {

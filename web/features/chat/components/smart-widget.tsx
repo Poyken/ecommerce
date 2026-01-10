@@ -19,7 +19,7 @@ import {
   PieChart,
 } from "lucide-react";
 import { memo, useMemo, Suspense, lazy } from "react";
-import { formatVND, formatNumber } from "@/lib/format";
+import { formatVND, formatNumber } from "@/lib/utils";
 
 /**
  * =============================================================================

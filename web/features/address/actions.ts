@@ -22,7 +22,7 @@
 "use server";
 
 import { http } from "@/lib/http";
-import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 import { ActionResult } from "@/types/api";
 
 // =============================================================================

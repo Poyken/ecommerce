@@ -1,4 +1,4 @@
-import { ProfileSkeleton } from "@/components/shared/skeletons/profile-skeleton";
+import { ProfileSkeleton } from "@/features/profile/components/skeletons/profile-skeleton";
 
 /**
  * =====================================================================

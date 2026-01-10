@@ -23,7 +23,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/shared/use-toast";
-import { SmartWidget, UISchema } from "@/components/shared/smart-widget";
+import { SmartWidget, UISchema } from "@/features/chat/components/smart-widget";
 import {
   Bot,
   Send,

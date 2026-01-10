@@ -1,4 +1,4 @@
-import { AboutSkeleton } from "@/components/shared/skeletons/about-skeleton";
+import { AboutSkeleton } from "@/features/marketing/components/skeletons/about-skeleton";
 
 /**
  * =====================================================================

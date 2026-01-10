@@ -1,4 +1,3 @@
-import { PerformanceTracker } from "@/components/shared/performance-tracker";
 import { SmoothScroll } from "@/components/shared/smooth-scroll";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -106,7 +105,6 @@ async function RootProviders({
                 <div data-quick-view-provider>
                   <QuickViewProvider />
                 </div>
-                <PerformanceTracker />
                 <SmoothScroll />
                 {children}
                 <Toaster />

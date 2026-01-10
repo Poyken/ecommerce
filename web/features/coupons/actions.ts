@@ -14,7 +14,7 @@
 "use server";
 
 import { http } from "@/lib/http";
-import { wrapServerAction } from "@/lib/safe-action-utils";
+import { wrapServerAction } from "@/lib/safe-action";
 import { ActionResult, ApiResponse } from "@/types/api";
 import { Coupon } from "@/types/models";
 

@@ -157,19 +157,6 @@ export const HTTP_STATUS = {
 } as const;
 
 // ============================================================================
-// ERROR MESSAGES
-// ============================================================================
-export const ERROR_MESSAGES = {
-  NETWORK_ERROR: "Không thể kết nối đến server. Vui lòng kiểm tra mạng.",
-  UNAUTHORIZED: "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.",
-  FORBIDDEN: "Bạn không có quyền truy cập tài nguyên này.",
-  NOT_FOUND: "Không tìm thấy dữ liệu yêu cầu.",
-  VALIDATION_ERROR: "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.",
-  SERVER_ERROR: "Có lỗi xảy ra. Vui lòng thử lại sau.",
-  TIMEOUT: "Request quá thời gian chờ. Vui lòng thử lại.",
-} as const;
-
-// ============================================================================
 // REGEX PATTERNS
 // ============================================================================
 export const PATTERNS = {

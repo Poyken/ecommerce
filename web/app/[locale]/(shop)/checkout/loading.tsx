@@ -1,4 +1,4 @@
-import { CheckoutSkeleton } from "@/components/shared/skeletons/checkout-skeleton";
+import { CheckoutSkeleton } from "@/features/checkout/components/skeletons/checkout-skeleton";
 
 /**
  * =====================================================================

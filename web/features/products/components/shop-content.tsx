@@ -1,9 +1,9 @@
 "use client";
 
-import { ShopStats } from "@/components/molecules/shop-stats";
+import { ShopStats } from "@/features/products/components/shop-stats";
 import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav";
 import { SearchInput } from "@/components/shared/search-input";
-import { ProductsSkeleton } from "@/components/shared/skeletons/home-skeleton";
+import { ProductsSkeleton } from "@/features/home/components/skeletons/home-skeleton";
 import { Button } from "@/components/ui/button";
 import {
   Select,

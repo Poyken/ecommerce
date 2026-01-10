@@ -8,7 +8,7 @@ import {
   UpdateTenantDto,
 } from "@/types/dtos";
 import { Subscription, Tenant } from "@/types/models";
-import { REVALIDATE, wrapServerAction } from "@/lib/safe-action-utils";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 
 /**
  * =====================================================================

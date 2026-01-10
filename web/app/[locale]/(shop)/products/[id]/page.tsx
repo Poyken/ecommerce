@@ -27,7 +27,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav";
-import { ProductDetailSkeleton } from "@/components/shared/skeletons/product-detail-skeleton";
+import { ProductDetailSkeleton } from "@/features/products/components/skeletons/product-detail-skeleton";
 import { ProductRecommendations } from "@/features/products/components/product-recommendations";
 import { getProfileAction } from "@/features/profile/actions";
 import { productService } from "@/services/product.service";

@@ -1,6 +1,6 @@
 "use client";
 
-import { CompactRating } from "@/components/molecules/review-preview";
+import { CompactRating } from "@/features/reviews/components/review-preview";
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import { Link } from "@/i18n/routing";
 import { m } from "@/lib/animations";

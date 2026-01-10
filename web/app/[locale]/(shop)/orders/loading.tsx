@@ -1,4 +1,4 @@
-import { OrdersSkeleton } from "@/components/shared/skeletons/orders-skeleton";
+import { OrdersSkeleton } from "@/features/orders/components/skeletons/orders-skeleton";
 
 /**
  * =====================================================================

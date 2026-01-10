@@ -1,4 +1,4 @@
-import { WishlistSkeleton } from "@/components/shared/skeletons/wishlist-skeleton";
+import { WishlistSkeleton } from "@/features/wishlist/components/skeletons/wishlist-skeleton";
 
 /**
  * =====================================================================

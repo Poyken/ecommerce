@@ -7,7 +7,7 @@ import {
   createVoidActionWrapper,
   REVALIDATE,
   wrapServerAction,
-} from "@/lib/safe-action-utils";
+} from "@/lib/safe-action";
 import { CartItemSchema } from "@/lib/schemas";
 import { ApiResponse, ActionResult } from "@/types/api";
 import { Sku } from "@/types/models";
