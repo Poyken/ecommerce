@@ -112,7 +112,6 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
       <ConditionalFooter />
       <MobileBottomNav
         initialUser={user}
-        initialCartCount={initialCartCount}
         initialWishlistCount={initialWishlistCount}
       />
       <ClientOnlyWidgets user={user} accessToken={token} />

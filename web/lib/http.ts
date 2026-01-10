@@ -129,7 +129,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   // 2. XÂY DỰNG URL ĐẦY ĐỦ
   // ========================================
   // Đảm bảo đường dẫn cơ sở được giữ nguyên khi đường dẫn bắt đầu bằng /
-  const apiUrl = env.API_URL || env.NEXT_PUBLIC_API_URL;
+  const apiUrl = env.NEXT_PUBLIC_API_URL;
   const baseUrl = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
 
   const cleanPath = path.startsWith("/") ? path.slice(1) : path;

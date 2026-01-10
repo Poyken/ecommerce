@@ -37,7 +37,7 @@ class NotificationSocketClient {
     }
 
     // WebSocket server is at port 8080 (not /api/v1)
-    const serverUrl = env.SOCKET_URL;
+    const serverUrl = env.NEXT_PUBLIC_SOCKET_URL;
 
     this.socket = io(`${serverUrl}/notifications`, {
       auth: {

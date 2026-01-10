@@ -38,8 +38,7 @@ class StockSocketClient {
     }
 
     // WebSocket server is at port 8080 (not /api/v1)
-    // WebSocket server is at port 8080 (not /api/v1)
-    const serverUrl = env.SOCKET_URL;
+    const serverUrl = env.NEXT_PUBLIC_SOCKET_URL;
 
     this.socket = io(`${serverUrl}/stock`, {
       transports: ["websocket", "polling"],
