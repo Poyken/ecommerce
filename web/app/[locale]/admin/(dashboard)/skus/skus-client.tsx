@@ -32,8 +32,8 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
-import { EditSkuDialog } from "@/features/admin/components/edit-sku-dialog";
+} from "@/features/admin/components/ui/admin-page-components";
+import { EditSkuDialog } from "@/features/admin/components/dialogs/edit-sku-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { formatCurrency } from "@/lib/utils";

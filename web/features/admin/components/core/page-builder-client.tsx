@@ -15,8 +15,8 @@ import {
   AddBlockDialog,
   AVAILABLE_BLOCKS,
   BlockType,
-} from "@/features/admin/components/add-block-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+} from "@/features/admin/components/dialogs/add-block-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
 import { PageSettingsSheet } from "@/features/admin/components/page-settings-sheet";
 import { Footer } from "@/features/layout/components/footer";
 import { Header } from "@/features/layout/components/header";
@@ -40,7 +40,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-import { BlockStyleControls } from "@/features/admin/components/block-style-controls";
+import { BlockStyleControls } from "@/features/admin/components/ui/block-style-controls";
 import { cn } from "@/lib/utils";
 import * as LucideIcons from "lucide-react";
 import Image from "next/image";

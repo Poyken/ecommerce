@@ -43,7 +43,7 @@ import {
 } from "@/features/coupons/actions";
 import { placeOrderAction } from "@/features/orders/actions";
 import { calculateShippingFeeAction } from "@/features/shipping/actions";
-// import { AddAddressDialog } from "@/features/admin/components/add-address-dialog"; // Replaced with dynamic import
+// import { AddAddressDialog } from "@/features/admin/components/dialogs/add-address-dialog"; // Replaced with dynamic import
 import { useToast } from "@/components/shared/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getGuestCartDetailsAction } from "@/features/cart/actions";
@@ -72,7 +72,7 @@ import {
 
 const AddAddressDialog = dynamic(
   () =>
-    import("@/features/admin/components/add-address-dialog").then(
+    import("@/features/admin/components/dialogs/add-address-dialog").then(
       (m) => m.AddAddressDialog
     ),
   { ssr: false }

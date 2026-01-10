@@ -1,46 +1,63 @@
-export * from "./add-address-dialog";
-export * from "./add-block-dialog";
-export * from "./admin-alerts";
-export * from "./admin-charts";
-export * from "./admin-header";
-export * from "./admin-notification-bell";
-export * from "./admin-notification-item";
-export * from "./admin-page-components";
-export * from "./admin-search-input";
-export * from "./admin-sidebar";
-export * from "./admin-stats";
-export * from "./assign-permissions-dialog";
-export * from "./assign-roles-dialog";
-export * from "./block-style-controls";
-export * from "./create-brand-dialog";
-export * from "./create-category-dialog";
-export * from "./create-coupon-dialog";
-export * from "./create-page-dialog";
-export * from "./create-permission-dialog";
-export * from "./create-product-dialog";
-export * from "./create-role-dialog";
-export * from "./create-user-dialog";
-export * from "./delete-confirm-dialog";
-export * from "./edit-brand-dialog";
-export * from "./edit-category-dialog";
-export * from "./edit-coupon-dialog";
-export * from "./edit-permission-dialog";
-export * from "./edit-product-dialog";
-export * from "./edit-role-dialog";
-export * from "./edit-sku-dialog";
-export * from "./edit-user-dialog";
-export * from "./feature-flag-initializer";
-export * from "./lazy-admin-charts";
-export * from "./media-gallery";
-export * from "./notification-center";
-export * from "./order-details-dialog";
-export * from "./page-builder-client";
+/**
+ * =====================================================================
+ * ADMIN COMPONENTS INDEX
+ * =====================================================================
+ */
+
+// Core
+export * from "./core/feature-flag-initializer";
+export * from "./core/page-builder-client";
+export * from "./core/pages-list-client";
+
+// Dialogs
+export * from "./dialogs/add-address-dialog";
+export * from "./dialogs/add-block-dialog";
+export * from "./dialogs/assign-permissions-dialog";
+export * from "./dialogs/assign-roles-dialog";
+export * from "./dialogs/create-brand-dialog";
+export * from "./dialogs/create-category-dialog";
+export * from "./dialogs/create-coupon-dialog";
+export * from "./dialogs/create-page-dialog";
+export * from "./dialogs/create-permission-dialog";
+export * from "./dialogs/create-product-dialog";
+export * from "./dialogs/create-role-dialog";
+export * from "./dialogs/create-user-dialog";
+export * from "./dialogs/delete-confirm-dialog";
+export * from "./dialogs/edit-brand-dialog";
+export * from "./dialogs/edit-category-dialog";
+export * from "./dialogs/edit-coupon-dialog";
+export * from "./dialogs/edit-permission-dialog";
+export * from "./dialogs/edit-product-dialog";
+export * from "./dialogs/edit-role-dialog";
+export * from "./dialogs/edit-sku-dialog";
+export * from "./dialogs/edit-user-dialog";
+export * from "./dialogs/order-details-dialog";
+export * from "./dialogs/product-translation-dialog";
+export * from "./dialogs/tenant-dialog";
+export * from "./dialogs/update-order-status-dialog";
+
+// Navigation
+export * from "./navigation/admin-header";
+export * from "./navigation/admin-notification-bell";
+export * from "./navigation/admin-notification-item";
+export * from "./navigation/admin-sidebar";
+export * from "./navigation/notification-center";
+
+// UI
+export * from "./ui/admin-alerts";
+export * from "./ui/admin-charts";
+export * from "./ui/admin-page-components";
+export * from "./ui/admin-search-input";
+export * from "./ui/admin-stats";
+export * from "./ui/block-style-controls";
+export * from "./ui/lazy-admin-charts";
+export * from "./ui/media-gallery";
+export * from "./ui/seo-settings";
+
+// Widgets
+export * from "./widgets/quick-actions";
+export * from "./widgets/recent-chats-widget";
+export * from "./widgets/storefront-pulse";
+
+// Other
 export * from "./page-settings-sheet";
-export * from "./pages-list-client";
-export * from "./product-translation-dialog";
-export * from "./quick-actions";
-export * from "./recent-chats-widget";
-export * from "./seo-settings";
-export * from "./storefront-pulse";
-export * from "./tenant-dialog";
-export * from "./update-order-status-dialog";

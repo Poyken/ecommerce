@@ -1,5 +1,5 @@
-import { AdminHeader } from "@/features/admin/components/admin-header";
-import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
+import { AdminHeader } from "@/features/admin/components/navigation/admin-header";
+import { AdminSidebar } from "@/features/admin/components/navigation/admin-sidebar";
 import { AuthRedirect } from "@/features/auth/components/auth-redirect";
 import { getProfileAction } from "@/features/profile/actions";
 

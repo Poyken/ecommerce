@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { AdminAlerts } from "@/features/admin/components/admin-alerts";
+import { AdminAlerts } from "@/features/admin/components/ui/admin-alerts";
 import { Link } from "@/i18n/routing";
 import { cn, formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";

@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateOrderStatusAction } from "@/features/admin/actions";
-import { AdminTableWrapper } from "@/features/admin/components/admin-page-components";
+import { AdminTableWrapper } from "@/features/admin/components/ui/admin-page-components";
 import {
   getAdminNotificationsAction,
   markAllAsReadAction,

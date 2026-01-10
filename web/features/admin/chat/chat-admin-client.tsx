@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { OrderDetailsDialog } from "@/features/admin/components/order-details-dialog";
+import { OrderDetailsDialog } from "@/features/admin/components/dialogs/order-details-dialog";
 import { ProductQuickViewDialog } from "@/features/products/components/product-quick-view-dialog";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";

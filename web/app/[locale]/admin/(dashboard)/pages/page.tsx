@@ -12,8 +12,8 @@
  */
 
 import { getPagesAction } from "@/features/admin/actions";
-import { AdminPageHeader } from "@/features/admin/components/admin-page-components";
-import { PagesListClient } from "@/features/admin/components/pages-list-client";
+import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
+import { PagesListClient } from "@/features/admin/components/core/pages-list-client";
 import { Layout } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 

@@ -24,11 +24,11 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
-import { AssignPermissionsDialog } from "@/features/admin/components/assign-permissions-dialog";
-import { CreateRoleDialog } from "@/features/admin/components/create-role-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
-import { EditRoleDialog } from "@/features/admin/components/edit-role-dialog";
+} from "@/features/admin/components/ui/admin-page-components";
+import { AssignPermissionsDialog } from "@/features/admin/components/dialogs/assign-permissions-dialog";
+import { CreateRoleDialog } from "@/features/admin/components/dialogs/create-role-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
+import { EditRoleDialog } from "@/features/admin/components/dialogs/edit-role-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { PaginationMeta } from "@/types/dtos";

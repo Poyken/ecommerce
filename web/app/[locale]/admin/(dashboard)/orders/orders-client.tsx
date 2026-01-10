@@ -16,8 +16,8 @@
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Checkbox } from "@/components/ui/checkbox";
-import { OrderDetailsDialog } from "@/features/admin/components/order-details-dialog";
-import { UpdateOrderStatusDialog } from "@/features/admin/components/update-order-status-dialog";
+import { OrderDetailsDialog } from "@/features/admin/components/dialogs/order-details-dialog";
+import { UpdateOrderStatusDialog } from "@/features/admin/components/dialogs/update-order-status-dialog";
 import {
   Check,
   Clock,
@@ -51,7 +51,7 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
+} from "@/features/admin/components/ui/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useNotificationStore } from "@/features/notifications/store/notification.store";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";

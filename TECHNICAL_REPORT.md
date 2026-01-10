@@ -53,10 +53,13 @@ Dự án được xây dựng trên mô hình **Monorepo (giả lập)** với 2
    - Hợp nhất `utils.ts` và `format.ts`.
    - Loại bỏ `PerformanceTracker` và các dependencies không dùng (`web-vitals`).
    - Chuẩn hóa Authentication routes và SEO (Favicon, Sitemap).
-2. **Giai đoạn 2: Refine Component Architecture (Đang thực hiện)**:
-   - Áp dụng Atomic Design cho `web/components`.
-   - Chuyển đổi các logic-heavy components từ `shared` sang `features`.
-3. **Giai đoạn 3: Trải nghiệm Thanh toán & Dashboards**:
+2. **Giai đoạn 2: Refine Component Architecture (HOÀN THÀNH ✅)**:
+   - Áp dụng Atomic Design cho `web/components/shared`.
+   - Di chuyển các logic-heavy components (`SmartWidget`, `ReviewItem`, `PurchaseToast`) từ `shared` sang `features`.
+   - Phân loại 47+ components của Admin Dashboard vào cấu trúc thư mục rõ ràng (`dialogs`, `ui`, `navigation`).
+   - Tối ưu hóa Skeletons bằng cách colocation vào từng feature.
+   - Loại bỏ các UI primitives dư thừa (Consolidate `ProgressiveImage` vào `OptimizedImage`).
+3. **Giai đoạn 3: Trải nghiệm Thanh toán & Dashboards (Đang thực hiện)**:
    - Loại bỏ Simulation page, tích hợp direct checkout.
    - Kết nối Real Data cho Super Admin Stats.
 4. **Giai đoạn 4: Polish & Premium Aesthetics**:

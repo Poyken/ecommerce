@@ -14,7 +14,7 @@ import { deletePageAction } from "@/features/admin/actions";
 import {
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
+} from "@/features/admin/components/ui/admin-page-components";
 import { Link } from "@/i18n/routing";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
@@ -25,7 +25,7 @@ import { useState } from "react";
 // Use dynamic imports with ssr: false to prevent flicking issues common in Next.js hydration
 const CreatePageDialog = dynamic(
   () =>
-    import("@/features/admin/components/create-page-dialog").then(
+    import("@/features/admin/components/dialogs/create-page-dialog").then(
       (mod) => mod.CreatePageDialog
     ),
   { ssr: false }
@@ -33,7 +33,7 @@ const CreatePageDialog = dynamic(
 
 const DeleteConfirmDialog = dynamic(
   () =>
-    import("@/features/admin/components/delete-confirm-dialog").then(
+    import("@/features/admin/components/dialogs/delete-confirm-dialog").then(
       (mod) => mod.DeleteConfirmDialog
     ),
   { ssr: false }

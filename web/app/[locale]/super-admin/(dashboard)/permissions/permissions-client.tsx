@@ -23,10 +23,10 @@ import { deletePermissionAction } from "@/features/admin/actions";
 import {
   AdminEmptyState,
   AdminPageHeader,
-} from "@/features/admin/components/admin-page-components";
-import { CreatePermissionDialog } from "@/features/admin/components/create-permission-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
-import { EditPermissionDialog } from "@/features/admin/components/edit-permission-dialog";
+} from "@/features/admin/components/ui/admin-page-components";
+import { CreatePermissionDialog } from "@/features/admin/components/dialogs/create-permission-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
+import { EditPermissionDialog } from "@/features/admin/components/dialogs/edit-permission-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { cn } from "@/lib/utils";
 import { Permission } from "@/types/models";

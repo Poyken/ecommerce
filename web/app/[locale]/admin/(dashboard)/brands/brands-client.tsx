@@ -28,10 +28,10 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
-import { CreateBrandDialog } from "@/features/admin/components/create-brand-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
-import { EditBrandDialog } from "@/features/admin/components/edit-brand-dialog";
+} from "@/features/admin/components/ui/admin-page-components";
+import { CreateBrandDialog } from "@/features/admin/components/dialogs/create-brand-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
+import { EditBrandDialog } from "@/features/admin/components/dialogs/edit-brand-dialog";
 import { useAdminBrands } from "@/features/admin/providers/admin-metadata-provider";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";

@@ -40,10 +40,10 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
-import { CreateCouponDialog } from "@/features/admin/components/create-coupon-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
-import { EditCouponDialog } from "@/features/admin/components/edit-coupon-dialog";
+} from "@/features/admin/components/ui/admin-page-components";
+import { CreateCouponDialog } from "@/features/admin/components/dialogs/create-coupon-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
+import { EditCouponDialog } from "@/features/admin/components/dialogs/edit-coupon-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { cn, formatCurrency } from "@/lib/utils";

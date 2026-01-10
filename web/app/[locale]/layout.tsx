@@ -1,7 +1,7 @@
 import { SmoothScroll } from "@/components/shared/smooth-scroll";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
-import { FeatureFlagInitializer } from "@/features/admin/components/feature-flag-initializer";
+import { FeatureFlagInitializer } from "@/features/admin/components/core/feature-flag-initializer";
 import { AuthProvider } from "@/features/auth/providers/auth-provider";
 import { QuickViewProvider } from "@/features/products/providers/quick-view-provider";
 import { routing } from "@/i18n/routing";

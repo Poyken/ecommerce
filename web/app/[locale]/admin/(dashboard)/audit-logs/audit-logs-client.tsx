@@ -37,7 +37,7 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
+} from "@/features/admin/components/ui/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useRouter } from "@/i18n/routing";
 import { useDebounce } from "@/lib/hooks/use-debounce";

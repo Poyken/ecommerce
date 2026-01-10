@@ -1,5 +1,5 @@
 import { ChatAdminClient } from "@/features/admin/chat/chat-admin-client";
-import { AdminPageHeader } from "@/features/admin/components/admin-page-components";
+import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
 import { getProfileAction } from "@/features/profile/actions";
 import { MessageCircle } from "lucide-react";
 import { cookies } from "next/headers";

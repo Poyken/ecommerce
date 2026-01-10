@@ -14,8 +14,8 @@ import {
   DeleteConfirmDialog,
   EditRoleDialog,
 } from "@/features/admin/components";
-import { AdminPageHeader } from "@/features/admin/components/admin-page-components";
-import { AdminSearchInput } from "@/features/admin/components/admin-search-input";
+import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
+import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { deleteRoleAction } from "@/features/admin/actions";
 import { Role } from "@/types/models";
 import { Edit2, Plus, Shield, Trash2 } from "lucide-react";

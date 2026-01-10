@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
-import { AddAddressDialog } from "@/features/admin/components/add-address-dialog";
+import { AddAddressDialog } from "@/features/admin/components/dialogs/add-address-dialog";
 import { useToast } from "@/components/shared/use-toast";
 import { cn } from "@/lib/utils";
 import { m } from "@/lib/animations";

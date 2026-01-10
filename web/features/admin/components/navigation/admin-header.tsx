@@ -15,7 +15,7 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { AdminNotificationBell } from "@/features/admin/components/admin-notification-bell";
+import { AdminNotificationBell } from "@/features/admin/components/navigation/admin-notification-bell";
 import { logoutAction } from "@/features/auth/actions";
 import { Laptop, LogOut, Moon, Palette, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";

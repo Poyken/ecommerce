@@ -18,9 +18,9 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
-import { TenantDialog } from "@/features/admin/components/tenant-dialog";
+} from "@/features/admin/components/ui/admin-page-components";
+import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
+import { TenantDialog } from "@/features/admin/components/dialogs/tenant-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { Tenant } from "@/types/models";

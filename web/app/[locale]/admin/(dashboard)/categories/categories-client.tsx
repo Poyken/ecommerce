@@ -33,10 +33,10 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
-import { CreateCategoryDialog } from "@/features/admin/components/create-category-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
-import { EditCategoryDialog } from "@/features/admin/components/edit-category-dialog";
+} from "@/features/admin/components/ui/admin-page-components";
+import { CreateCategoryDialog } from "@/features/admin/components/dialogs/create-category-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
+import { EditCategoryDialog } from "@/features/admin/components/dialogs/edit-category-dialog";
 import { useAdminCategories } from "@/features/admin/providers/admin-metadata-provider";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";

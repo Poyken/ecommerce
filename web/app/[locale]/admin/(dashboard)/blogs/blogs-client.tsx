@@ -32,8 +32,8 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+} from "@/features/admin/components/ui/admin-page-components";
+import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import {
   deleteBlogAction,

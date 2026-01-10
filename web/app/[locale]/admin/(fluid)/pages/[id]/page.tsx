@@ -11,7 +11,7 @@
  */
 
 import { getPageByIdAction } from "@/features/admin/actions";
-import { PageBuilderClient } from "@/features/admin/components/page-builder-client";
+import { PageBuilderClient } from "@/features/admin/components/core/page-builder-client";
 import { notFound, redirect } from "next/navigation";
 
 interface PageBuilderPageProps {

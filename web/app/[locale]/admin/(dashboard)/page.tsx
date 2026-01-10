@@ -6,7 +6,7 @@ import {
   getSalesDataAction,
   getTopProductsAction,
 } from "@/features/admin/actions";
-import { QuickActions } from "@/features/admin/components/quick-actions";
+import { QuickActions } from "@/features/admin/components/widgets/quick-actions";
 import { getProfileAction } from "@/features/profile/actions";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";

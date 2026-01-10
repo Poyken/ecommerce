@@ -20,7 +20,7 @@ import { formatCurrency } from "@/lib/utils";
 import {
   LazySalesTrendChart,
   LazyBestSellersChart,
-} from "@/features/admin/components/lazy-admin-charts";
+} from "@/features/admin/components/ui/lazy-admin-charts";
 
 interface BusinessTabProps {
   stats: any;

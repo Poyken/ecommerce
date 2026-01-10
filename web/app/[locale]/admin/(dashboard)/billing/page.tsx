@@ -11,7 +11,7 @@
  * =====================================================================
  */
 
-import { AdminPageHeader } from "@/features/admin/components/admin-page-components";
+import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
 import { http } from "@/lib/http";
 import { format } from "date-fns";
 import { CreditCard, Zap } from "lucide-react";

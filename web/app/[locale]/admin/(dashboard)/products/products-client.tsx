@@ -32,7 +32,7 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
+} from "@/features/admin/components/ui/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { Product } from "@/types/models";
@@ -55,28 +55,28 @@ import { useState } from "react";
 
 const CreateProductDialog = dynamic(
   () =>
-    import("@/features/admin/components/create-product-dialog").then(
+    import("@/features/admin/components/dialogs/create-product-dialog").then(
       (mod) => mod.CreateProductDialog
     ),
   { ssr: false }
 );
 const DeleteConfirmDialog = dynamic(
   () =>
-    import("@/features/admin/components/delete-confirm-dialog").then(
+    import("@/features/admin/components/dialogs/delete-confirm-dialog").then(
       (mod) => mod.DeleteConfirmDialog
     ),
   { ssr: false }
 );
 const EditProductDialog = dynamic(
   () =>
-    import("@/features/admin/components/edit-product-dialog").then(
+    import("@/features/admin/components/dialogs/edit-product-dialog").then(
       (mod) => mod.EditProductDialog
     ),
   { ssr: false }
 );
 const ProductTranslationDialog = dynamic(
   () =>
-    import("@/features/admin/components/product-translation-dialog").then(
+    import("@/features/admin/components/dialogs/product-translation-dialog").then(
       (mod) => mod.ProductTranslationDialog
     ),
   { ssr: false }
