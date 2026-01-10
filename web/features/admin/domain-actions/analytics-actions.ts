@@ -29,8 +29,7 @@ export async function getSalesDataAction(
   range: string
 ): Promise<ActionResult<SalesDataPoint[]>> {
   return wrapServerAction(
-    () =>
-      http<ApiResponse<SalesDataPoint[]>>(`/analytics/sales?range=${range}`),
+    () => http<ApiResponse<SalesDataPoint[]>>(`/analytics/sales?days=${range}`),
     "Failed to fetch sales data"
   );
 }

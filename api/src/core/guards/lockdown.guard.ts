@@ -50,11 +50,8 @@ export class LockdownGuard implements CanActivate {
           secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
         });
 
-        if (payload && Array.isArray(payload.roles)) {
-          if (
-            payload.roles.includes('ADMIN') ||
-            payload.roles.includes('SUPER_ADMIN')
-          ) {
+        if (payload && Array.isArray(payload.permissions)) {
+          if (payload.permissions.includes('superAdmin:read')) {
             return true;
           }
         }

@@ -3,7 +3,7 @@
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { useToast } from "@/components/ui/use-toast";
-import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
 import { deleteBlogAction, getMyBlogsAction } from "@/features/blog/actions";
 import { BlogFormDialog } from "@/features/blog/components/blog-form-dialog";
 import { m } from "@/lib/animations";

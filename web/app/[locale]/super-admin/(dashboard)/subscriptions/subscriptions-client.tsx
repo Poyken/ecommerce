@@ -32,7 +32,7 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
-import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog"; // Can reuse for filtering
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog"; // Can reuse for filtering
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { Subscription } from "@/types/models";
 import { format } from "date-fns";

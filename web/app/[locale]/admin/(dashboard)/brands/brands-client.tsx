@@ -29,9 +29,9 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
-import { CreateBrandDialog } from "@/features/admin/components/dialogs/create-brand-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
-import { EditBrandDialog } from "@/features/admin/components/dialogs/edit-brand-dialog";
+import { CreateBrandDialog } from "@/features/admin/components/taxonomy/create-brand-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
+import { EditBrandDialog } from "@/features/admin/components/taxonomy/edit-brand-dialog";
 import { useAdminBrands } from "@/features/admin/providers/admin-metadata-provider";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";

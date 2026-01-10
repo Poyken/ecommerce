@@ -281,137 +281,45 @@ export class AuthService {
   async login(dto: LoginDto, fingerprint?: string, ip?: string) {
     const { password } = dto;
     const email = dto.email.toLowerCase().trim();
-
     const tenant = getTenant();
+
     this.logger.log(
-      `[AUTH-DEBUG] Login attempt for email: "${email}" (normalized), Tenant Domain: ${tenant?.domain || 'Global'}`,
+      `[AUTH] Login attempt: "${email}", Tenant: ${tenant?.domain || 'Global'}`,
     );
 
-    // [GLOBAL LOGIN FIX - ULTIMATE]
-    // Step 1: Find user by email ONLY, bypassing all tenant filters
-    let user = await tenantStorage
-      .run(undefined as any, () =>
-        this.prisma.user.findFirst({
-          where: {
-            email: { equals: email, mode: 'insensitive' },
-            deletedAt: null,
-          },
-          select: this.USER_PERMISSION_SELECT,
-        }),
-      )
-      .catch((err) => {
-        this.logger.error(`[AUTH-DEBUG] Primary lookup error: ${err.message}`);
-        return null;
-      });
-
-    // FALLBACK: If user not found via Prisma (due to extension filtering), use an UNFILTERED internal method
-    if (!user) {
-      this.logger.warn(
-        `[AUTH-DEBUG] User NOT found via Prisma lookup, trying unfiltered fetch for ${email}`,
-      );
-
-      const idResult = await this.prisma.$queryRawUnsafe<{ id: string }[]>(
-        'SELECT id FROM "User" WHERE LOWER(email) = LOWER($1) AND "deletedAt" IS NULL LIMIT 1',
-        email,
-      );
-
-      if (idResult.length > 0) {
-        const userId = idResult[0].id;
-        this.logger.log(
-          `[AUTH-DEBUG] Found User ID via Raw SQL: ${userId}. Fetching full data...`,
-        );
-
-        // Use findUnique with NULL store to bypass extension
-        user = (await tenantStorage.run(undefined as any, () =>
-          this.prisma.user.findUnique({
-            where: { id: userId },
-            select: this.USER_PERMISSION_SELECT,
-          }),
-        )) as any;
-      }
-    }
+    // 1. Find user globally (bypassing tenant-id filters if any)
+    const user = await this.findUserByEmailUnfiltered(email);
 
     if (!user) {
-      this.logger.warn(
-        `[AUTH-DEBUG] User NOT found even after all fallback attempts for email: ${email}`,
-      );
+      this.logger.warn(`[AUTH] User not found: ${email}`);
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Step 2: Validate Password
-    const userData = user as any;
-    if (!userData.password) {
-      this.logger.warn(`[AUTH-DEBUG] User has no password set: ${email}`);
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    const isPasswordValid = await bcrypt.compare(password, userData.password);
+    // 2. Validate Password
+    const isPasswordValid = await bcrypt.compare(password, user.password || '');
     if (!isPasswordValid) {
-      this.logger.warn(`[AUTH-DEBUG] Password mismatch for: ${email}`);
+      this.logger.warn(`[AUTH] Password mismatch: ${email}`);
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Step 3: Determine Roles & Permissions
-    const roles = userData.roles.map((r: any) => r.role.name);
-    const isSuperAdmin = roles.includes('SUPER_ADMIN');
-    const allPermissions =
-      this.permissionService.aggregatePermissions(userData);
-
-    this.logger.log(
-      `[AUTH-FLOW] User Authorized: ${email} | ID: ${userData.id} | SuperAdmin: ${isSuperAdmin}`,
+    // 3. Aggregate Roles & Permissions
+    const roles = user.roles.map((r) => r.role.name);
+    const allPermissions = this.permissionService.aggregatePermissions(
+      user as any,
     );
 
-    // Step 4: Multi-tenancy Access Control
-    /**
-     * LOGIC CHẶT CHẼ THEO YÊU CẦU:
-     * 1. Nếu là SUPER_ADMIN -> Cho qua mọi domain (Bypass Tenant Check).
-     * 2. Nếu là USER thường:
-     *    - Nếu domain hiện tại có Tenant: Phải khớp tenantId.
-     *    - Nếu domain hiện tại KHÔNG có Tenant (Portal chung): CHỈ Super Admin được vào.
-     */
-    if (!isSuperAdmin) {
-      if (!tenant) {
-        // Đang truy cập vào portal tổng mà không phải Super Admin -> Chặn
-        this.logger.warn(
-          `[AUTH-TENANCY] Access Denied: Normal user ${email} attempted global portal login`,
-        );
-        throw new UnauthorizedException(
-          'Chỉ quản trị viên cấp cao mới có quyền truy cập trang này',
-        );
-      }
+    // 4. Security & Tenancy Checks
+    await this.validateTenancyAccess(user, tenant, roles, allPermissions);
+    this.validateIpWhitelist(user, ip);
 
-      if (user.tenantId !== tenant.id) {
-        // Sai cửa hàng -> Chặn
-        this.logger.warn(
-          `[AUTH-TENANCY] Access Denied: User ${email} (Tenant: ${user.tenantId}) belongs to another store (Current: ${tenant.id})`,
-        );
-        throw new UnauthorizedException(
-          'Tài khoản không thuộc về cửa hàng này',
-        );
-      }
-    } else {
-      this.logger.log(
-        `[AUTH-TENANCY] Super Admin bypass: Global access granted for ${email}`,
-      );
+    // 5. MFA Check
+    if (user.twoFactorEnabled) {
+      this.logger.log(`[AUTH] 2FA Required: ${email}`);
+      return { mfaRequired: true, userId: user.id };
     }
 
-    // [SECURITY] IP WHITELISTING
-    const whitelistedIps = (user as any).whitelistedIps as string[];
-    if (whitelistedIps?.length > 0 && ip && !whitelistedIps.includes(ip)) {
-      this.logger.warn(`[AUTH-SECURITY] IP Blocked: ${email} from ${ip}`);
-      throw new UnauthorizedException('Truy cập bị từ chối từ địa chỉ IP này');
-    }
-
-    // 2FA CHECK
-    if ((user as any).twoFactorEnabled) {
-      this.logger.log(`[AUTH-MFA] 2FA Required for ${email}`);
-      return {
-        mfaRequired: true,
-        userId: user.id,
-      };
-    }
-
-    // Step 5: Generate Tokens
-    const { accessToken, refreshToken } = this.tokenService.generateTokens(
+    // 6. Generate Session
+    const tokens = this.tokenService.generateTokens(
       user.id,
       allPermissions,
       roles,
@@ -420,17 +328,84 @@ export class AuthService {
 
     await this.redisService.set(
       `refreshToken:${user.id}`,
-      refreshToken,
+      tokens.refreshToken,
       'EX',
       this.tokenService.getRefreshTokenExpirationTime(),
     );
 
-    this.logger.log(`[AUTH-SUCCESS] Session created for ${email}`);
+    this.logger.log(`[AUTH] Success: ${email}`);
+    return tokens;
+  }
 
-    return {
-      accessToken,
-      refreshToken,
-    };
+  /**
+   * Finds a user by email across all tenants.
+   */
+  private async findUserByEmailUnfiltered(email: string) {
+    return tenantStorage.run(undefined as any, () =>
+      this.prisma.user.findFirst({
+        where: {
+          email: { equals: email, mode: 'insensitive' },
+          deletedAt: null,
+        },
+        select: this.USER_PERMISSION_SELECT,
+      }),
+    );
+  }
+
+  /**
+   * Validates if a user has access to the current tenant domain.
+   */
+  private async validateTenancyAccess(
+    user: any,
+    currentTenant: any,
+    roles: string[],
+    permissions: string[],
+  ) {
+    const isSuperAdmin = roles.includes('SUPER_ADMIN');
+    const hasPlatformControl = permissions.includes('superAdmin:read');
+
+    // A PLATFORM ADMIN is a Super Admin with system-level permissions.
+    // They can access any tenant and the global portal.
+    const isPlatformAdmin = isSuperAdmin && hasPlatformControl;
+
+    if (currentTenant) {
+      // Accessing a specific store domain
+      if (user.tenantId !== currentTenant.id && !isPlatformAdmin) {
+        this.logger.warn(
+          `[AUTH-TENANCY] Forbidden: User ${user.email} (Tenant: ${user.tenantId}) tried to access Tenant: ${currentTenant.id}`,
+        );
+        throw new UnauthorizedException(
+          'Tài khoản không thuộc về cửa hàng này',
+        );
+      }
+    } else {
+      // Accessing the central platform portal (global domain)
+      if (!isPlatformAdmin) {
+        this.logger.warn(
+          `[AUTH-TENANCY] Forbidden: Non-platform user ${user.email} tried to access global portal`,
+        );
+        throw new UnauthorizedException(
+          'Chỉ quản trị viên cấp cao mới có quyền truy cập trang này',
+        );
+      }
+    }
+  }
+
+  /**
+   * Validates user's IP against their whitelist.
+   */
+  private validateIpWhitelist(user: any, currentIp?: string) {
+    const whitelistedIps = user.whitelistedIps as string[];
+    if (
+      whitelistedIps?.length > 0 &&
+      currentIp &&
+      !whitelistedIps.includes(currentIp)
+    ) {
+      this.logger.warn(
+        `[AUTH-SECURITY] IP Blocked: ${user.email} from ${currentIp}`,
+      );
+      throw new UnauthorizedException('Truy cập bị từ chối từ địa chỉ IP này');
+    }
   }
 
   async verify2FALogin(userId: string, token: string, fingerprint?: string) {

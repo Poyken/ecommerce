@@ -5,14 +5,6 @@ import {
   updateAddressAction,
 } from "@/features/address/actions";
 import {
-  District,
-  Province,
-  Ward,
-  getDistricts,
-  getProvinces,
-  getWards,
-} from "@/features/shipping/actions";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -23,19 +15,13 @@ import {
 import { GlassButton } from "@/components/shared/glass-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { useToast } from "@/components/ui/use-toast";
 import { Address } from "@/types/models";
 import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
+import { LocationSelects } from "@/components/shared/location-selects";
 
 /**
  * =====================================================================
@@ -46,10 +32,9 @@ import { useEffect, useMemo, useState, useTransition } from "react";
  *
  * 1. DEPENDENT DROPDOWNS:
  * - Tỉnh/Thành -> Quận/Huyện -> Phường/Xã.
- * - Dữ liệu được fetch từ API `/shipping` thông qua Server Actions để đảm bảo tính nhất quán.
+ * - Logic fetch dữ liệu địa lý đã được tách ra component `LocationSelects` để tái sử dụng.
  *
  * 2. UX IMPROVEMENTS:
- * - Sử dụng Server Actions giúp xử lý phía server, tránh lộ API key và lỗi CORS.
  * - Framer Motion (`AnimatePresence`) giúp các thông báo lỗi xuất hiện/biến mất mượt mà.
  * =====================================================================
  */
@@ -58,7 +43,7 @@ interface AddAddressDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess?: () => void;
-  address?: Address | null; // Strict typing
+  address?: Address | null;
 }
 
 export function AddAddressDialog({
@@ -105,11 +90,6 @@ function AddAddressForm({
   const t = useTranslations();
   const { toast } = useToast();
   const [isPending, startTransition] = useTransition();
-
-  // Location Data State
-  const [provinces, setProvinces] = useState<Province[]>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
-  const [wards, setWards] = useState<Ward[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [formData, setFormData] = useState({
@@ -119,85 +99,10 @@ function AddAddressForm({
     city: address?.city || "",
     district: address?.district || "",
     ward: address?.ward || "",
-    // ID fields
-    provinceId: address?.provinceId || (undefined as number | undefined),
-    districtId: address?.districtId || (undefined as number | undefined),
-    wardCode: address?.wardCode || (undefined as string | undefined),
+    provinceId: address?.provinceId ?? undefined,
+    districtId: address?.districtId ?? undefined,
+    wardCode: address?.wardCode ?? undefined,
   });
-
-  // 1. Fetch Provinces on Mount (and Districts/Wards if editing)
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getProvinces();
-        if (res.success && res.data) {
-          setProvinces(res.data);
-        }
-
-        // If editing an address, pre-fetch districts and wards
-        if (address?.provinceId) {
-          const districtRes = await getDistricts(address.provinceId);
-          if (districtRes.success && districtRes.data) {
-            setDistricts(districtRes.data);
-          }
-
-          if (address?.districtId) {
-            const wardRes = await getWards(address.districtId);
-            if (wardRes.success && wardRes.data) {
-              setWards(wardRes.data);
-            }
-          }
-        }
-      } catch (err) {
-        console.error("Fetch provinces error:", err);
-      }
-    };
-    fetchData();
-  }, [address?.provinceId, address?.districtId]);
-
-  // 2. Fetch Districts when Province Changes
-  useEffect(() => {
-    const fetchData = async () => {
-      if (formData.provinceId) {
-        try {
-          const res = await getDistricts(formData.provinceId);
-          if (res.success && res.data) {
-            setDistricts(res.data);
-          } else {
-            setDistricts([]);
-          }
-        } catch (err) {
-          console.error(err);
-          setDistricts([]);
-        }
-      } else {
-        setDistricts([]);
-      }
-    };
-    fetchData();
-  }, [formData.provinceId]);
-
-  // 3. Fetch Wards when District Changes
-  useEffect(() => {
-    const fetchData = async () => {
-      if (formData.districtId) {
-        try {
-          const res = await getWards(formData.districtId);
-          if (res.success && res.data) {
-            setWards(res.data);
-          } else {
-            setWards([]);
-          }
-        } catch (err) {
-          console.error(err);
-          setWards([]);
-        }
-      } else {
-        setWards([]);
-      }
-    };
-    fetchData();
-  }, [formData.districtId]);
 
   const isDirty = useMemo(() => {
     return (
@@ -249,11 +154,7 @@ function AddAddressForm({
       if (formData.wardCode) form.append("wardCode", formData.wardCode);
 
       // Default logic (simplified)
-      if (!address) {
-        form.append("isDefault", "on");
-      } else if (address.isDefault) {
-        form.append("isDefault", "on");
-      }
+      form.append("isDefault", address?.isDefault ? "on" : (!address ? "on" : "off"));
 
       let res;
       if (address) {
@@ -317,110 +218,33 @@ function AddAddressForm({
       </div>
 
       {/* Location Selects */}
-      <div className="grid grid-cols-3 gap-4">
-        {/* PROVINCE */}
-        <div className="space-y-1">
-          <Label>{t("addressForm.cityLabel")}</Label>
-          <Select
-            value={formData.provinceId?.toString()}
-            onValueChange={(val) => {
-              const province = provinces.find(
-                (p) => p.ProvinceID.toString() === val
-              );
-              setFormData({
-                ...formData,
-                provinceId: Number(val),
-                city: province?.ProvinceName || "",
-                districtId: undefined, // Reset child
-                district: "",
-                wardCode: undefined, // Reset child
-                ward: "",
-              });
-              if (errors.provinceId) setErrors({ ...errors, provinceId: "" });
-            }}
-            disabled={provinces.length === 0}
-          >
-            <SelectTrigger
-              className={errors.provinceId ? "border-red-500" : ""}
-            >
-              <SelectValue placeholder={t("addressForm.selectProvince")} />
-            </SelectTrigger>
-            <SelectContent>
-              {provinces.map((p) => (
-                <SelectItem key={p.ProvinceID} value={p.ProvinceID.toString()}>
-                  {p.ProvinceName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <ErrorMessage message={errors.provinceId} />
-        </div>
-
-        {/* DISTRICT */}
-        <div className="space-y-1">
-          <Label>{t("addressForm.districtLabel")}</Label>
-          <Select
-            value={formData.districtId?.toString()}
-            disabled={!formData.provinceId}
-            onValueChange={(val) => {
-              const dist = districts.find(
-                (d) => d.DistrictID.toString() === val
-              );
-              setFormData({
-                ...formData,
-                districtId: Number(val),
-                district: dist?.DistrictName || "",
-                wardCode: undefined, // Reset child
-                ward: "",
-              });
-              if (errors.districtId) setErrors({ ...errors, districtId: "" });
-            }}
-          >
-            <SelectTrigger
-              className={errors.districtId ? "border-red-500" : ""}
-            >
-              <SelectValue placeholder={t("addressForm.selectDistrict")} />
-            </SelectTrigger>
-            <SelectContent>
-              {districts.map((d) => (
-                <SelectItem key={d.DistrictID} value={d.DistrictID.toString()}>
-                  {d.DistrictName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <ErrorMessage message={errors.districtId} />
-        </div>
-
-        {/* WARD */}
-        <div className="space-y-1">
-          <Label>{t("addressForm.wardLabel")}</Label>
-          <Select
-            value={formData.wardCode}
-            disabled={!formData.districtId}
-            onValueChange={(val) => {
-              const w = wards.find((w) => w.WardCode === val);
-              setFormData({
-                ...formData,
-                wardCode: val,
-                ward: w?.WardName || "",
-              });
-              if (errors.wardCode) setErrors({ ...errors, wardCode: "" });
-            }}
-          >
-            <SelectTrigger className={errors.wardCode ? "border-red-500" : ""}>
-              <SelectValue placeholder={t("addressForm.selectWard")} />
-            </SelectTrigger>
-            <SelectContent>
-              {wards.map((w) => (
-                <SelectItem key={w.WardCode} value={w.WardCode}>
-                  {w.WardName}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <ErrorMessage message={errors.wardCode} />
-        </div>
+      <LocationSelects 
+        provinceId={formData.provinceId}
+        districtId={formData.districtId}
+        wardCode={formData.wardCode}
+        onProvinceChange={(id, name) => setFormData({ 
+          ...formData, 
+          provinceId: id, city: name, 
+          districtId: undefined, district: "", 
+          wardCode: undefined, ward: "" 
+        })}
+        onDistrictChange={(id, name) => setFormData({ 
+          ...formData, 
+          districtId: id, district: name, 
+          wardCode: undefined, ward: "" 
+        })}
+        onWardChange={(code, name) => setFormData({ 
+          ...formData, 
+          wardCode: code, ward: name 
+        })}
+        errors={errors}
+        disabled={isPending}
+        t={t}
+      />
+      <div className="grid grid-cols-3 gap-4 -mt-3">
+        <ErrorMessage message={errors.provinceId} />
+        <ErrorMessage message={errors.districtId} />
+        <ErrorMessage message={errors.wardCode} />
       </div>
 
       {/* Street */}
@@ -442,15 +266,7 @@ function AddAddressForm({
       <DialogFooter className="mt-4">
         <GlassButton
           type="submit"
-          disabled={
-            isPending ||
-            !formData.recipientName.trim() ||
-            !formData.phoneNumber.trim() ||
-            !formData.street.trim() ||
-            !formData.provinceId ||
-            !formData.districtId ||
-            !formData.wardCode
-          }
+          disabled={isPending || !isDirty}
           className="bg-primary text-primary-foreground hover:bg-primary/90 w-full"
         >
           {address ? t("admin.save") : t("admin.create")}

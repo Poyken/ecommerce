@@ -10,9 +10,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteUserAction } from "@/features/admin/actions";
-import { AssignRolesDialog } from "@/features/admin/components/dialogs/assign-roles-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
-import { EditUserDialog } from "@/features/admin/components/dialogs/edit-user-dialog";
+import { AssignRolesDialog } from "@/features/admin/components/users/assign-roles-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
+import { EditUserDialog } from "@/features/admin/components/users/edit-user-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { MoreHorizontal } from "lucide-react";
 import { useTranslations } from "next-intl";

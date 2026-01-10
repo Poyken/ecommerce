@@ -31,7 +31,7 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
-import { CreateUserDialog } from "@/features/admin/components/dialogs/create-user-dialog";
+import { CreateUserDialog } from "@/features/admin/components/users/create-user-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { UserActions } from "@/features/layout/components/user-actions";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";

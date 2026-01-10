@@ -83,7 +83,14 @@ export class AuthController {
       req.ip || (req.headers['x-forwarded-for'] as string) || '0.0.0.0';
     const data = await this.authService.login(dto, fp, ip);
 
-    (res as Response).cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
+    if ('refreshToken' in data) {
+      (res as Response).cookie(
+        'refreshToken',
+        data.refreshToken,
+        COOKIE_OPTIONS,
+      );
+    }
+
     return { data };
   }
 

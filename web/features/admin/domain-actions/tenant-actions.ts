@@ -51,7 +51,7 @@ export async function updateTenantAction(
 ): Promise<ActionResult<Tenant>> {
   return wrapServerAction(async () => {
     const res = await http<ApiResponse<Tenant>>(`/tenants/${id}`, {
-      method: "PUT",
+      method: "PATCH",
       body: JSON.stringify(data),
     });
     REVALIDATE.superAdmin.tenants();

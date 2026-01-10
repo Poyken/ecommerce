@@ -72,7 +72,7 @@ export async function assignRolesAction(
   return wrapServerAction(async () => {
     await http(`/users/${userId}/roles`, {
       method: "POST",
-      body: JSON.stringify({ roleIds }),
+      body: JSON.stringify({ roles: roleIds }),
     });
     REVALIDATE.admin.users();
   }, "Failed to assign roles");

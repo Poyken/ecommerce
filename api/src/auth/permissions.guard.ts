@@ -50,8 +50,13 @@ export class PermissionsGuard implements CanActivate {
     // 2. Lấy User từ Request (Đã được JwtStrategy decode và gán vào)
     const { user } = context.switchToHttp().getRequest();
 
-    // [SUPER ADMIN BYPASS] Super admins have all permissions implicitly
-    if (user?.roles?.includes('SUPER_ADMIN')) {
+    // [PLATFORM ADMIN BYPASS]
+    // Only Platform Admins (Super Admins with 'superAdmin:read' permission) bypass all checks.
+    // Regular tenant admins MUST have explicit permissions in their token.
+    if (
+      user?.roles?.includes('SUPER_ADMIN') &&
+      user?.permissions?.includes('superAdmin:read')
+    ) {
       return true;
     }
 

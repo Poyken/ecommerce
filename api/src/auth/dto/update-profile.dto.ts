@@ -34,4 +34,16 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsUrl()
   avatarUrl?: string;
+
+  @ApiPropertyOptional({ example: 'oldPassword123' })
+  @IsOptional()
+  @IsString()
+  @MinLength(8)
+  password?: string;
+
+  @ApiPropertyOptional({ example: 'newPassword123' })
+  @IsOptional()
+  @IsString()
+  @MinLength(8)
+  newPassword?: string;
 }

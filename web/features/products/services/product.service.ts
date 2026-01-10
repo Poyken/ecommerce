@@ -129,7 +129,6 @@ export const productService = {
     options?: { next?: NextFetchRequestConfig }
   ): Promise<ApiResponse<Product[]>> {
     try {
-      console.log("[ProductService] Fetching products with params:", params);
       const response = await http<ApiResponse<Product[]>>("/products", {
         params: params as Record<string, string | number | boolean>,
         skipAuth: true,

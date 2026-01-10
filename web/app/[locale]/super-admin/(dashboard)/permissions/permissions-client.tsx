@@ -24,9 +24,9 @@ import {
   AdminEmptyState,
   AdminPageHeader,
 } from "@/features/admin/components/ui/admin-page-components";
-import { CreatePermissionDialog } from "@/features/admin/components/dialogs/create-permission-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
-import { EditPermissionDialog } from "@/features/admin/components/dialogs/edit-permission-dialog";
+import { CreatePermissionDialog } from "@/features/admin/components/roles/create-permission-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
+import { EditPermissionDialog } from "@/features/admin/components/roles/edit-permission-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { cn } from "@/lib/utils";
 import { Permission } from "@/types/models";

@@ -73,8 +73,8 @@ export interface CreateProductDto {
   slug?: string;
   /** Mô tả sản phẩm (optional) */
   description?: string;
-  /** ID danh mục (bắt buộc) */
-  categoryId: string;
+  /** Danh sách ID danh mục (nhiều danh mục) */
+  categoryIds: string[];
   /** ID thương hiệu (bắt buộc) */
   brandId: string;
   /** Danh sách options và values */
@@ -94,7 +94,7 @@ export interface UpdateProductDto {
   name?: string;
   slug?: string;
   description?: string;
-  categoryId?: string;
+  categoryIds?: string[];
   brandId?: string;
   options?: { name: string; values: string[] }[];
 
@@ -212,16 +212,16 @@ export interface AnalyticsStats {
 
 export interface SalesDataPoint {
   date: string;
-  revenue: number;
-  orders: number;
+  amount: number;
 }
 
 export interface TopProduct {
-  id: string;
-  name: string;
-  price: number;
-  sold: number;
+  skuId: string;
+  productName: string;
+  quantity: number;
   revenue: number;
+  variants?: string;
+  skuCode?: string;
 }
 
 // ==================== TENANT DTOs ====================

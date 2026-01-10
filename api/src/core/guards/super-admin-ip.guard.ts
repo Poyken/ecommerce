@@ -29,8 +29,8 @@ export class SuperAdminIpGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const user = request.user as any;
 
-    // 1. Chỉ áp dụng cho SUPER_ADMIN
-    if (!user || !user.roles?.includes('SUPER_ADMIN')) {
+    // 1. Chỉ áp dụng cho PLATFORM ADMIN
+    if (!user || !user.permissions?.includes('superAdmin:read')) {
       return true;
     }
 

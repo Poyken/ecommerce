@@ -65,7 +65,7 @@ export function HeroSection({
   const displayBadge = badge || t("newCollection");
 
   return (
-    <section className="relative w-full min-h-screen flex items-center bg-background overflow-hidden pt-20 lg:pt-0">
+    <section className="relative w-full min-h-screen flex items-center bg-background overflow-hidden pt-20  ">
       {/* Background Decor */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 right-0 w-[50vh] h-[50vh] bg-accent/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />

@@ -72,7 +72,7 @@ import {
 
 const AddAddressDialog = dynamic(
   () =>
-    import("@/features/admin/components/dialogs/add-address-dialog").then(
+    import("@/features/admin/components/users/add-address-dialog").then(
       (m) => m.AddAddressDialog
     ),
   { ssr: false }

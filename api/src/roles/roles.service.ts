@@ -59,12 +59,31 @@ export class RolesService {
     if (existing) {
       throw new ConflictException('Role này đã tồn tại');
     }
-    return this.prisma.role.create({
+    const role = await this.prisma.role.create({
       data: {
         name: createRoleDto.name,
         tenant: { connect: { id: tenant.id } },
       },
     });
+
+    if (createRoleDto.permissions && createRoleDto.permissions.length > 0) {
+      // Find permissions by name or ID? Usually frontend sends names in some places, IDs in others.
+      // DTO says IDs (isString). Let's assume IDs based on CreateRoleAction in web.
+      const permissions = await this.prisma.permission.findMany({
+        where: { id: { in: createRoleDto.permissions } },
+      });
+
+      if (permissions.length > 0) {
+        await this.prisma.rolePermission.createMany({
+          data: permissions.map((p) => ({
+            roleId: role.id,
+            permissionId: p.id,
+          })),
+        });
+      }
+    }
+
+    return this.findOne(role.id);
   }
 
   async findAll(search?: string, page = 1, limit = 10) {
@@ -115,9 +134,36 @@ export class RolesService {
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto) {
-    return this.prisma.role.update({
-      where: { id },
-      data: updateRoleDto,
+    const { permissions, ...updateData } = updateRoleDto;
+
+    return this.prisma.$transaction(async (tx) => {
+      const role = await tx.role.update({
+        where: { id },
+        data: updateData as any,
+      });
+
+      if (permissions) {
+        // Clear old permissions and assign new ones
+        await tx.rolePermission.deleteMany({ where: { roleId: id } });
+
+        if (permissions.length > 0) {
+          const perms = await tx.permission.findMany({
+            where: { id: { in: permissions } },
+          });
+
+          await tx.rolePermission.createMany({
+            data: perms.map((p) => ({
+              roleId: id,
+              permissionId: p.id,
+            })),
+          });
+        }
+      }
+
+      return tx.role.findUnique({
+        where: { id },
+        include: { permissions: { include: { permission: true } } },
+      });
     });
   }
 

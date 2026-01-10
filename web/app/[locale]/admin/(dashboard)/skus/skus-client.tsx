@@ -33,7 +33,7 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
-import { EditSkuDialog } from "@/features/admin/components/dialogs/edit-sku-dialog";
+import { EditSkuDialog } from "@/features/admin/components/products/edit-sku-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { formatCurrency } from "@/lib/utils";

@@ -41,9 +41,9 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
-import { CreateCouponDialog } from "@/features/admin/components/dialogs/create-coupon-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
-import { EditCouponDialog } from "@/features/admin/components/dialogs/edit-coupon-dialog";
+import { CreateCouponDialog } from "@/features/admin/components/coupons/create-coupon-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
+import { EditCouponDialog } from "@/features/admin/components/coupons/edit-coupon-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { cn, formatCurrency } from "@/lib/utils";

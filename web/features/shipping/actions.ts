@@ -118,11 +118,11 @@ export async function calculateShippingFeeAction(
   wardCode: string
 ): Promise<ActionResult<number>> {
   return wrapServerAction(async () => {
-    const res = await http<number>("/shipping/fee", {
+    const res = await http<ApiResponse<number>>("/shipping/fee", {
       method: "POST",
       body: JSON.stringify({ districtId, wardCode }),
       skipAuth: true,
     });
-    return Number(res) || 0;
+    return Number(res.data) || 0;
   }, "Failed to calculate shipping fee");
 }

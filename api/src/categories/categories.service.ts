@@ -7,7 +7,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Category } from '@prisma/client';
-import slugify from 'slugify';
+import { createSlug } from '../common/utils/string';
 import { BaseCrudService } from '../common/base-crud.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
@@ -62,9 +62,7 @@ export class CategoriesService extends BaseCrudService<
   async create(createCategoryDto: CreateCategoryDto) {
     // 1. Tạo slug (URL friendly string) từ tên danh mục
     // VD: "Điện thoại Samsung" -> "dien-thoai-samsung"
-    const slug =
-      createCategoryDto.slug ||
-      slugify(createCategoryDto.name, { lower: true, strict: true });
+    const slug = createCategoryDto.slug || createSlug(createCategoryDto.name);
 
     // 2. Kiểm tra xem danh mục đã tồn tại chưa (check cả tên và slug)
     const tenant = getTenant();

@@ -116,9 +116,9 @@ export async function updateProductTranslationAction(
 ): Promise<ActionResult<ProductTranslation>> {
   return wrapServerAction(async () => {
     const res = await http<ApiResponse<ProductTranslation>>(
-      `/product-translations/${id}`,
+      `/products/${id}/translations`,
       {
-        method: "PUT",
+        method: "POST",
         body: JSON.stringify(data),
       }
     );

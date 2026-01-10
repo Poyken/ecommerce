@@ -15,8 +15,8 @@ import {
   AddBlockDialog,
   AVAILABLE_BLOCKS,
   BlockType,
-} from "@/features/admin/components/dialogs/add-block-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/dialogs/delete-confirm-dialog";
+} from "@/features/admin/components/content/add-block-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
 import { PageSettingsSheet } from "@/features/admin/components/page-settings-sheet";
 import { Footer } from "@/features/layout/components/footer";
 import { Header } from "@/features/layout/components/header";

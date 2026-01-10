@@ -2,7 +2,7 @@ import { PrismaService } from '@core/prisma/prisma.service';
 import { getTenant } from '@core/tenant/tenant.context';
 import { Injectable } from '@nestjs/common';
 import { OptionValue, Product, ProductOption } from '@prisma/client';
-import slugify from 'slugify';
+import { createSlug } from '../common/utils/string';
 
 /**
  * =====================================================================
@@ -79,7 +79,7 @@ export class SkuManagerService {
   ): string {
     // Tạo chuỗi hậu tố từ các giá trị biến thể (slug hóa để URL-safe)
     const variantSuffix = variantValues
-      .map((v) => slugify(v.value, { lower: true }))
+      .map((v) => createSlug(v.value))
       .join('-');
     return `${productSlug}-${variantSuffix}`.toUpperCase();
   }

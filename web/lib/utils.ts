@@ -45,6 +45,13 @@ export function formatCurrency(
   }).format(amount);
 }
 
+export function formatVND(
+  amount: number,
+  options: Intl.NumberFormatOptions = {}
+): string {
+  return formatCurrency(amount, "vi-VN", "VND", options);
+}
+
 // ============================================================================
 // DATE/TIME FORMATTING
 // ============================================================================
@@ -93,6 +100,19 @@ export function formatRelativeTime(date: Date | string | number): string {
 export function truncate(text: string, maxLength: number): string {
   if (!text || text.length <= maxLength) return text;
   return `${text.slice(0, maxLength).trim()}...`;
+}
+
+export function toSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[đĐ]/g, "d")
+    .replace(/([^0-9a-z-\s])/g, "")
+    .replace(/(\s+)/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
 // ============================================================================

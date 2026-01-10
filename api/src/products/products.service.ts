@@ -45,7 +45,7 @@ import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import type { Cache } from 'cache-manager';
-import slugify from 'slugify';
+import { createSlug } from '../common/utils/string';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto, SortOption } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -91,9 +91,7 @@ export class ProductsService {
     // 1. Tạo Slug tự động từ tên
 
     // 1. Tạo Slug tự động từ tên
-    const slug =
-      productData.slug ||
-      slugify(productData.name, { lower: true, strict: true });
+    const slug = productData.slug || createSlug(productData.name);
 
     // 2. Validate khóa ngoại: Categories và Brand phải tồn tại
     const [categories, brand] = await Promise.all([

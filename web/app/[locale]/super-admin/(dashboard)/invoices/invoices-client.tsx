@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { formatCurrency } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -138,10 +139,7 @@ export function InvoicesClient({ initialData }: InvoicesClientProps) {
                   </div>
                 </TableCell>
                 <TableCell>
-                  {new Intl.NumberFormat("en-US", {
-                    style: "currency",
-                    currency: invoice.currency,
-                  }).format(Number(invoice.amount))}
+                  {formatCurrency(Number(invoice.amount), "en-US", invoice.currency)}
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">
