@@ -90,9 +90,7 @@ export function AuditLogsClient({
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [isPending, startTransition] = useTransition();
 
-  const [selectedLog, setSelectedLog] = useState<AuditLog | null>(
-    null
-  );
+  const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -110,9 +108,7 @@ export function AuditLogsClient({
         router.push(`${basePath}?${params.toString()}`);
       });
     }
-  }, [debouncedSearchTerm, router, searchParams]);
-
-  const totalPages = Math.ceil(total / limit);
+  }, [debouncedSearchTerm, router, searchParams, basePath]);
 
   const getActionVariant = (
     action: string
@@ -181,14 +177,6 @@ export function AuditLogsClient({
   const deleteCount = logs.filter((l) =>
     l.action.toLowerCase().includes("delete")
   ).length;
-
-  const goToPage = (newPage: number) => {
-    startTransition(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", newPage.toString());
-      router.push(`${basePath}?${params.toString()}`);
-    });
-  };
 
   return (
     <div className="space-y-6">

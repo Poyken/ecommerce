@@ -108,7 +108,7 @@ export function ProductsClient({
   const canDelete = hasPermission("product:delete");
   const canTranslate = hasPermission("product:update");
 
-  const { searchTerm, setSearchTerm, isPending, handleFilterChange } =
+  const { searchTerm, setSearchTerm, isPending } =
     useAdminTable("/admin/products");
 
   const [filter, setFilter] = useState<FilterType>("all");

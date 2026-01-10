@@ -19,7 +19,7 @@ import { AdminSearchInput } from "@/features/admin/components/admin-search-input
 import { deleteRoleAction } from "@/features/admin/actions";
 import { Role } from "@/types/models";
 import { Edit2, Plus, Shield, Trash2 } from "lucide-react";
-import { useTranslations } from "next-intl";
+
 import { useState, useTransition } from "react";
 import { useToast } from "@/components/shared/use-toast";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -30,12 +30,11 @@ interface RolesPageClientProps {
 }
 
 export function RolesPageClient({ initialRoles }: RolesPageClientProps) {
-  const t = useTranslations("admin");
   const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const initialSearch = searchParams.get("search") || "";
   const [searchTerm, setSearchTerm] = useState(initialSearch);

@@ -108,7 +108,6 @@ export function RolesPageClient({
         } else {
           params.delete("search");
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         router.push(`/super-admin/roles?${params.toString()}` as any);
       });
     }

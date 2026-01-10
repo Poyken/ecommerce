@@ -33,7 +33,9 @@ async function getOrderCounts() {
   try {
     // Fetch counts in parallel
     const results = await Promise.all(
-      statuses.map((status) => getOrdersAction({ page: 1, limit: 1, search: "", status }))
+      statuses.map((status) =>
+        getOrdersAction({ page: 1, limit: 1, search: "", status })
+      )
     );
 
     const counts: Record<string, number> = {};
@@ -53,8 +55,8 @@ async function getOrderCounts() {
     });
 
     return counts;
-  } catch (error) {
-    // console.error("Error fetching order counts:", error);
+  } catch {
+    // console.error("Error fetching order counts");
     return { total: 0 };
   }
 }

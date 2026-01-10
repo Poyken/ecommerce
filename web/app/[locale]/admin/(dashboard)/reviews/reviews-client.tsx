@@ -54,15 +54,7 @@ import { useRouter } from "@/i18n/routing";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import {
-  Eye,
-  EyeOff,
-  MessageSquare,
-  Search,
-  Star,
-  Trash2,
-  BrainCircuit,
-} from "lucide-react";
+import { Eye, EyeOff, MessageSquare, Search, Star, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
@@ -126,7 +118,6 @@ export function ReviewsClient({
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [analyzingId, setAnalyzingId] = useState<string | null>(null);
 
   // Reply State
   const [replyId, setReplyId] = useState<string | null>(null);
@@ -247,7 +238,6 @@ export function ReviewsClient({
   };
 
   const handleAnalyze = async (reviewId: string, content: string) => {
-    setAnalyzingId(reviewId);
     try {
       const res = await analyzeReviewSentimentAction(content);
       if (res.success) {
@@ -264,14 +254,12 @@ export function ReviewsClient({
           variant: "destructive",
         });
       }
-    } catch (e) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to analyze",
         variant: "destructive",
       });
-    } finally {
-      setAnalyzingId(null);
     }
   };
 

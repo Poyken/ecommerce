@@ -1,7 +1,7 @@
 "use client";
 
 import { GlassButton } from "@/components/shared/glass-button";
-import { Badge } from "@/components/ui/badge";
+
 import {
   Table,
   TableBody,
@@ -33,12 +33,11 @@ interface PermissionsPageClientProps {
 export function PermissionsPageClient({
   initialPermissions,
 }: PermissionsPageClientProps) {
-  const t = useTranslations("admin");
   const { toast } = useToast();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   // Search State
   const initialSearch = searchParams.get("search") || "";
@@ -46,7 +45,7 @@ export function PermissionsPageClient({
 
   const [selectedPermission, setSelectedPermission] =
     useState<Permission | null>(null);
-   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
@@ -67,34 +66,17 @@ export function PermissionsPageClient({
     handleSearch(value);
   };
 
-  const handleDelete = async () => {
-    if (!selectedPermission) return;
-    const res = await deletePermissionAction(selectedPermission.id);
-    if (res.success) {
-      toast({
-        variant: "success",
-        title: "Success",
-        description: "Permission deleted successfully",
-      });
-      router.refresh();
-      setIsDeleteOpen(false);
-    } else {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: res.error,
-      });
-    }
-  };
-
   return (
     <div className="space-y-6">
-      <CreatePermissionDialog open={isCreateOpen} onOpenChange={setIsCreateOpen} />
+      <CreatePermissionDialog
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+      />
       <AdminPageHeader
         title="Permissions"
         subtitle="Manage system permissions."
         actions={
-          <GlassButton 
+          <GlassButton
             className="bg-primary text-primary-foreground"
             onClick={() => setIsCreateOpen(true)}
           >
@@ -198,7 +180,8 @@ export function PermissionsPageClient({
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
         action={async () => {
-          if (!selectedPermission) return { success: false, error: "No permission selected" };
+          if (!selectedPermission)
+            return { success: false, error: "No permission selected" };
           return await deletePermissionAction(selectedPermission.id);
         }}
         title="Delete Permission"
