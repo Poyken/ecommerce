@@ -46,24 +46,19 @@ export class SkuManagerService {
    * @param args - Mảng chứa các mảng giá trị option
    * @returns Mảng các tổ hợp
    */
-  cartesian(args: any[][]): any[][] {
-    const r: any[][] = [];
+  cartesian<T>(args: T[][]): T[][] {
+    const r: T[][] = [];
     const max = args.length - 1;
 
-    /**
-     * Hàm đệ quy để xây dựng từng tổ hợp.
-     * Duyệt qua từng option và thêm giá trị vào mảng tạm.
-     */
-    function helper(arr: any[], i: number) {
+    function helper(arr: T[], i: number) {
       for (let j = 0, l = args[i].length; j < l; j++) {
-        const a = arr.slice(0); // Clone mảng hiện tại
-        a.push(args[i][j]); // Thêm giá trị option hiện tại
-        if (i == max)
-          r.push(a); // Nếu là option cuối cùng, lưu tổ hợp
-        else helper(a, i + 1); // Nếu không, tiếp tục với option tiếp theo
+        const a = arr.slice(0);
+        a.push(args[i][j]);
+        if (i == max) r.push(a);
+        else helper(a, i + 1);
       }
     }
-    helper([], 0);
+    if (args.length > 0) helper([], 0);
     return r;
   }
 

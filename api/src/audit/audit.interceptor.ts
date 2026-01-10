@@ -7,7 +7,7 @@ import {
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AuditService } from './audit.service';
-import { maskSensitiveData } from '@/common/utils/masking.helper';
+import { maskSensitiveData } from '@/common/utils/masking';
 
 /**
  * =====================================================================

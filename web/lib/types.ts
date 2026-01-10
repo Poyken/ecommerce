@@ -141,52 +141,8 @@ export type Email = string & { readonly __brand: "email" };
  */
 export type UUID = string & { readonly __brand: "uuid" };
 
-// ============================================================================
-// API TYPES
-// ============================================================================
-
-/**
- * Standard API response.
- */
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
-  meta?: PaginationMeta;
-}
-
-/**
- * Pagination metadata.
- */
-export interface PaginationMeta {
-  total: number;
-  page: number;
-  limit: number;
-  lastPage: number;
-  hasPrevPage?: boolean;
-  hasNextPage?: boolean;
-}
-
-/**
- * API error response.
- */
-export interface ApiError {
-  message: string;
-  code?: string;
-  status?: number;
-  details?: Record<string, unknown>;
-}
-
-/**
- * Query params type for list endpoints.
- */
-export interface ListQueryParams {
-  page?: number;
-  limit?: number;
-  search?: string;
-  sort?: string;
-  order?: "asc" | "desc";
-}
+// Re-export common API types from centralized location
+export * from "../types/api";
 
 // ============================================================================
 // COMPONENT TYPES

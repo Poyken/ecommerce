@@ -26,7 +26,6 @@ import { unstable_cache } from "next/cache";
  * Wrapper hỗ trợ cache hàm với các tags để xóa cache có chọn lọc.
  */
 export function createCachedFunction<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T extends (...args: any[]) => Promise<any>
 >(
   fn: T,
@@ -54,10 +53,7 @@ export function createCachedFunction<
  * Pattern Stale-While-Revalidate (SWR)
  * Trả về dữ liệu cũ ngay lập tức và revalidate (cập nhật) ở background.
  */
-export function createSWRCache<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends (...args: any[]) => Promise<any>
->(
+export function createSWRCache<T extends (...args: any[]) => Promise<any>>(
   fn: T,
   {
     keyPrefix,
@@ -120,11 +116,9 @@ export async function warmCache<T>(
  * 2. Next.js cache: Lưu trên server, bền vững hơn (File-system based).
  * 3. API call: Chạy khi cả 2 lớp trên đều không có dữ liệu (Cache miss).
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const memoryCache = new Map<string, { data: any; expires: number }>();
 
 export function createMultiLevelCache<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T extends (...args: any[]) => Promise<any>
 >(
   fn: T,
@@ -183,13 +177,12 @@ export function createMultiLevelCache<
  * Khử trùng lặp (Deduplication) cho các request đồng thời.
  * Nếu có nhiều request cùng gọi 1 dữ liệu tại 1 thời điểm -> Chỉ thực hiện 1 API call.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const pendingRequests = new Map<string, Promise<any>>();
 
-export function createDedupedCache<
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  T extends (...args: any[]) => Promise<any>
->(fn: T, keyPrefix: string): T {
+export function createDedupedCache<T extends (...args: any[]) => Promise<any>>(
+  fn: T,
+  keyPrefix: string
+): T {
   return (async (...args: Parameters<T>) => {
     const cacheKey = `${keyPrefix}-${JSON.stringify(args)}`;
 
@@ -234,7 +227,6 @@ export function createBatchedCache<T>(
 
     try {
       const results = await fetcher(currentBatch);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const resultMap = new Map(results.map((item: any) => [item.id, item]));
 
       currentBatch.forEach((id, index) => {

@@ -142,6 +142,8 @@ export function mapErr<T, E, F>(
  *   console.error(result.error);
  * }
  */
+import { getErrorMessage } from "./error-utils";
+
 export async function tryCatch<T>(
   fn: () => Promise<T>
 ): Promise<Result<T, Error>> {
@@ -149,7 +151,8 @@ export async function tryCatch<T>(
     const data = await fn();
     return ok(data);
   } catch (error) {
-    return err(error instanceof Error ? error : new Error(String(error)));
+    const message = getErrorMessage(error);
+    return err(new Error(message));
   }
 }
 

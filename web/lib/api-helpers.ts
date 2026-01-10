@@ -19,6 +19,7 @@
  */
 
 import { API_CONFIG } from "./constants";
+import { getErrorMessage, isTimeoutError } from "./error-utils";
 
 // ============================================================================
 // RETRY WITH EXPONENTIAL BACKOFF
@@ -289,26 +290,9 @@ export function isNetworkError(error: unknown): boolean {
 /**
  * Kiểm tra xem error có phải timeout không.
  */
-export function isTimeoutError(error: unknown): boolean {
-  return (
-    error instanceof Error &&
-    (error.name === "AbortError" ||
-      error.message.toLowerCase().includes("timeout"))
-  );
-}
+export { isTimeoutError };
 
 /**
  * Extract error message từ unknown error.
  */
-export function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message;
-  }
-  if (typeof error === "string") {
-    return error;
-  }
-  if (error && typeof error === "object" && "message" in error) {
-    return String((error as { message: unknown }).message);
-  }
-  return "An unexpected error occurred";
-}
+export { getErrorMessage };

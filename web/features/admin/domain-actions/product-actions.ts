@@ -10,7 +10,7 @@ import {
 } from "@/types/dtos";
 import { Product, ProductTranslation, Sku } from "@/types/models";
 import { revalidatePath } from "next/cache";
-import { wrapServerAction } from "@/lib/server-action-wrapper";
+import { wrapServerAction } from "@/lib/safe-action-utils";
 
 /**
  * =====================================================================

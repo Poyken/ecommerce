@@ -143,10 +143,9 @@ export class ProductsService {
         categories: {
           include: { category: true },
         },
-        // [OPTIMIZATION] Avoid over-fetching SKUs/Options in list view
-        // Only fetch minimal info needed for cards (e.g. price range, variants count)
-        // options: { include: { values: true } }, <--- REMOVED for list view
-        // skus: { select: { minPrice: true, maxPrice: true } } <--- Use aggregations if possible, or distinct payload
+        options: {
+          include: { values: true },
+        },
       },
     });
 
@@ -156,7 +155,7 @@ export class ProductsService {
     // For now, reducing payload size is the quick win.
 
     // 4. Auto-generate SKUs (Delegated to SkuManager)
-    await (this.skuManager as any).generateSkusForNewProduct(product);
+    await this.skuManager.generateSkusForNewProduct(product);
 
     // [PLAN LIMIT] Increment cache usage
     if (tenant) {
@@ -183,10 +182,13 @@ export class ProductsService {
     // Ensures ?cat=1&brand=2 and ?brand=2&cat=1 use the same cache key
     const sortedQuery = Object.keys(query)
       .sort()
-      .reduce((acc, key) => {
-        acc[key] = (query as any)[key];
-        return acc;
-      }, {} as any);
+      .reduce(
+        (acc, key) => {
+          acc[key] = (query as any)[key];
+          return acc;
+        },
+        {} as Record<string, any>,
+      );
 
     const cacheKey = `products:filter:${JSON.stringify(sortedQuery)}`;
 

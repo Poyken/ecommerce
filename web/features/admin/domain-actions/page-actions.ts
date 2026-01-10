@@ -3,7 +3,7 @@
 import { http } from "@/lib/http";
 import { ApiResponse, ActionResult } from "@/types/dtos";
 import { revalidatePath } from "next/cache";
-import { wrapServerAction } from "@/lib/server-action-wrapper";
+import { wrapServerAction } from "@/lib/safe-action-utils";
 
 /**
  * =====================================================================

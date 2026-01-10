@@ -81,10 +81,11 @@ export class CircuitBreaker {
     this.state = CircuitState.CLOSED;
   }
 
-  private onFailure(error: any) {
+  private onFailure(error: unknown) {
     this.failureCount++;
+    const message = error instanceof Error ? error.message : String(error);
     this.logger.error(
-      `[${this.serviceName}] ❌ Failure count: ${this.failureCount}. Error: ${error.message}`,
+      `[${this.serviceName}] ❌ Failure count: ${this.failureCount}. Error: ${message}`,
     );
 
     if (

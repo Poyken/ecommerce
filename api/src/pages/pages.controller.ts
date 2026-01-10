@@ -46,6 +46,13 @@ export class PagesController {
 
   // --- PUBLIC ---
 
+  @Get()
+  @ApiOperation({ summary: 'List all public pages' })
+  async findAllPublic() {
+    const result = await this.pagesService.findAll();
+    return { data: result };
+  }
+
   @Get(':slug')
   @ApiOperation({ summary: 'Get public page by slug' })
   async getPage(@Param('slug') slug: string) {
@@ -62,6 +69,15 @@ export class PagesController {
     const page = await this.pagesService.findBySlug(lookupSlug);
     if (!page) throw new NotFoundException('Page not found');
     return { data: page };
+  }
+
+  @Post()
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('page:create')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Alias for page creation' })
+  async createAlias(@Body() data: any) {
+    return this.create(data);
   }
 
   @Get('translations/:locale')

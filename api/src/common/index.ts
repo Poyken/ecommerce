@@ -26,4 +26,4 @@ export * from './helpers';
 export * from './dto/base.dto';
 
 // Utils
-export * from './utils/masking.helper';
+export * from './utils/masking';

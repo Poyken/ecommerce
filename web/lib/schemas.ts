@@ -20,6 +20,81 @@
  */
 
 import { z } from "zod";
+import { PATTERNS, VALIDATION } from "./constants";
+
+// =============================================================================
+// VALIDATION PATTERNS
+// =============================================================================
+
+export const ValidationPatterns = {
+  email: PATTERNS.EMAIL,
+  phoneVN: PATTERNS.PHONE_VN,
+  password: PATTERNS.STRONG_PASSWORD,
+  slug: PATTERNS.SLUG,
+  url: PATTERNS.URL,
+} as const;
+
+// =============================================================================
+// BASE SCHEMAS
+// =============================================================================
+
+export const BaseSchema = {
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required")
+    .email("Invalid email address"),
+  password: z
+    .string()
+    .min(
+      VALIDATION.PASSWORD_MIN_LENGTH,
+      `Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters`
+    ),
+  strongPassword: z
+    .string()
+    .min(
+      VALIDATION.PASSWORD_MIN_LENGTH,
+      `Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters`
+    )
+    .regex(
+      ValidationPatterns.password,
+      "Password must contain at least 1 uppercase, 1 lowercase and 1 number"
+    ),
+  phoneVN: z
+    .string()
+    .regex(ValidationPatterns.phoneVN, "Invalid Vietnamese phone number"),
+  name: z
+    .string()
+    .min(
+      VALIDATION.NAME_MIN_LENGTH,
+      `Name must be at least ${VALIDATION.NAME_MIN_LENGTH} characters`
+    )
+    .max(
+      VALIDATION.NAME_MAX_LENGTH,
+      `Name must be at most ${VALIDATION.NAME_MAX_LENGTH} characters`
+    ),
+  slug: z
+    .string()
+    .min(1, "Slug is required")
+    .regex(
+      ValidationPatterns.slug,
+      "Slug only contains lowercase letters, numbers and hyphens"
+    ),
+  price: z.number().min(0, "Price cannot be negative"),
+  rating: z.number().int().min(1).max(5),
+  content: z
+    .string()
+    .min(
+      VALIDATION.REVIEW_MIN_LENGTH,
+      `Content must be at least ${VALIDATION.REVIEW_MIN_LENGTH} characters`
+    ),
+  uuid: z.string().uuid("Invalid ID format"),
+  url: z.string().url("Invalid URL").optional().or(z.literal("")),
+} as const;
+
+// =============================================================================
+// FEATURE SCHEMAS
+// =============================================================================
 
 export const CartItemSchema = z.object({
   skuId: z.string().min(1, "SKU ID is required"),
@@ -58,16 +133,16 @@ export const ProfileUpdateSchema = z
   );
 
 export const ReviewSchema = z.object({
-  productId: z.string().min(1),
+  productId: BaseSchema.uuid,
   skuId: z.string().optional(),
-  rating: z.number().int().min(1).max(5),
-  content: z.string().min(10, "Review content must be at least 10 characters"),
+  rating: BaseSchema.rating,
+  content: BaseSchema.content,
   images: z.array(z.string()).optional(),
 });
 
 export const UpdateReviewSchema = z.object({
-  rating: z.number().int().min(1).max(5),
-  content: z.string().min(10, "Review content must be at least 10 characters"),
+  rating: BaseSchema.rating,
+  content: BaseSchema.content,
   images: z.array(z.string()).optional(),
 });
 
@@ -83,28 +158,26 @@ export const CheckoutSchema = z.object({
 });
 
 export const LoginSchema = z.object({
-  email: z.string().trim().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: BaseSchema.email,
+  password: BaseSchema.password,
 });
 
 export const RegisterSchema = z.object({
-  firstName: z.string().min(2, "First name is required"),
-  lastName: z.string().min(2, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  firstName: BaseSchema.name,
+  lastName: BaseSchema.name,
+  email: BaseSchema.email,
+  password: BaseSchema.password,
 });
 
 export const ForgotPasswordSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: BaseSchema.email,
 });
 
 export const ResetPasswordSchema = z
   .object({
     token: z.string().min(1, "Token is required"),
-    newPassword: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z
-      .string()
-      .min(6, "Password must be at least 6 characters"),
+    newPassword: BaseSchema.password,
+    confirmPassword: BaseSchema.password,
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",

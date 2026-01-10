@@ -59,7 +59,7 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
  * =====================================================================
  */
 @ApiTags('Admin - Blogs')
-@Controller('blogs')
+@Controller(['blogs', 'blog'])
 export class BlogController {
   constructor(
     private readonly blogService: BlogService,
@@ -136,6 +136,13 @@ export class BlogController {
   @Get('categories')
   @ApiOperation({ summary: 'Lấy thống kê danh mục bài viết' })
   async getCategoryStats() {
+    const data = await this.blogService.getCategoryStats();
+    return { data };
+  }
+
+  @Get('stats')
+  @ApiOperation({ summary: 'Lấy thống kê bài viết (Alias cho categories)' })
+  async getStats() {
     const data = await this.blogService.getCategoryStats();
     return { data };
   }

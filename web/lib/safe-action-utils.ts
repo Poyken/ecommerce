@@ -15,7 +15,9 @@
  * =====================================================================
  */
 
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
+import { getErrorMessage } from "./error-utils";
+import { ApiResponse } from "@/types/dtos";
 
 // =============================================================================
 // TYPES
@@ -56,15 +58,11 @@ export function unwrapResult<T>(
     return { success: false, error: defaultError };
   }
 
-  if (result.serverError) {
-    return { success: false, error: result.serverError };
-  }
-
-  if (result.validationErrors) {
-    const firstError = Object.values(result.validationErrors)
-      .flat()
-      .filter(Boolean)[0];
-    return { success: false, error: firstError || "Validation failed" };
+  if (hasError(result)) {
+    return {
+      success: false,
+      error: getSafeActionResultError(result, defaultError) || defaultError,
+    };
   }
 
   return { success: true, data: result.data };
@@ -80,7 +78,7 @@ export function hasError<T>(result: SafeActionResult<T> | undefined): boolean {
 /**
  * Get error message from result.
  */
-export function getErrorMessage<T>(
+export function getSafeActionResultError<T>(
   result: SafeActionResult<T> | undefined,
   defaultError = "Đã có lỗi xảy ra"
 ): string | null {
@@ -121,7 +119,6 @@ export function getErrorMessage<T>(
  * );
  */
 export function createActionWrapper<TInput, TOutput>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   safeAction: (input: TInput) => Promise<SafeActionResult<TOutput> | any>,
   defaultError = "Đã có lỗi xảy ra"
 ) {
@@ -132,7 +129,7 @@ export function createActionWrapper<TInput, TOutput>(
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : defaultError,
+        error: getErrorMessage(error) || defaultError,
       };
     }
   };
@@ -142,7 +139,6 @@ export function createActionWrapper<TInput, TOutput>(
  * Tạo wrapper không cần input.
  */
 export function createVoidActionWrapper<TOutput>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   safeAction: () => Promise<SafeActionResult<TOutput> | any>,
   defaultError = "Đã có lỗi xảy ra"
 ) {
@@ -153,10 +149,41 @@ export function createVoidActionWrapper<TOutput>(
     } catch (error) {
       return {
         success: false,
-        error: error instanceof Error ? error.message : defaultError,
+        error: getErrorMessage(error) || defaultError,
       };
     }
   };
+}
+
+/**
+ * Helper to wrap standard server action logic with try-catch and standard return format.
+ * (Moved from server-action-wrapper.ts)
+ */
+export async function wrapServerAction<T>(
+  action: () => Promise<T | ApiResponse<T>>,
+  errorMessage: string = "An unexpected error occurred"
+): Promise<ActionResult<T>> {
+  try {
+    const result = await action();
+
+    if (result && typeof result === "object" && "data" in result) {
+      const apiRes = result as ApiResponse<T>;
+      return {
+        success: true,
+        data: apiRes.data,
+        // @ts-expect-error - Handle optional meta for paginated results
+        meta: (apiRes as any).meta,
+      };
+    }
+
+    return { success: true, data: result as T };
+  } catch (error: unknown) {
+    console.error(`[Server Action Error] ${errorMessage}:`, error);
+    return {
+      success: false,
+      error: getErrorMessage(error) || errorMessage,
+    };
+  }
 }
 
 // =============================================================================
@@ -177,8 +204,7 @@ export function createVoidActionWrapper<TOutput>(
 /**
  * Các presets cho revalidation phổ biến.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const REVALIDATE: any = {
+export const REVALIDATE = {
   cart: () => revalidatePath("/cart", "page"),
   wishlist: () => revalidatePath("/wishlist", "page"),
   orders: () => {

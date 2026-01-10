@@ -37,7 +37,7 @@ type Metric = {
 export const initPerformanceMonitor = () => {
   if (typeof window === "undefined") return;
 
-  const reportValue = (metric: any) => {
+  const reportValue = (metric: Metric) => {
     const { name, value, id, rating, navigationType } = metric;
 
     // Log to console in development

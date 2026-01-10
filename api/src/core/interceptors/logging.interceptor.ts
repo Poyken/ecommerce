@@ -1,5 +1,5 @@
 import { LoggerService } from '@core/logger/logger.service';
-import { maskSensitiveData } from '@/common/utils/masking.helper';
+import { maskSensitiveData } from '@/common/utils/masking';
 import {
   CallHandler,
   ExecutionContext,

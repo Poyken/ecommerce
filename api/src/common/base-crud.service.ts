@@ -92,8 +92,10 @@ export abstract class BaseCrudService<T, CreateDto, UpdateDto> {
           lastPage: Math.ceil(total / limit),
         },
       };
-    } catch (error) {
-      this.logger.error(`Failed to findAll: ${error.message}`, error.stack);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      const stack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Failed to findAll: ${message}`, stack);
       throw new InternalServerErrorException('Could not fetch records');
     }
   }
@@ -135,8 +137,9 @@ export abstract class BaseCrudService<T, CreateDto, UpdateDto> {
         where: { id },
         data: { deletedAt: new Date() },
       });
-    } catch (error) {
-      this.logger.error(`Failed to soft delete: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to soft delete: ${message}`);
       throw new InternalServerErrorException('Could not delete record');
     }
   }

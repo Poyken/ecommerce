@@ -26,6 +26,8 @@ import {
   useForm,
 } from "react-hook-form";
 import { z } from "zod";
+import { getErrorMessage } from "./error-utils";
+import { BaseSchema, ValidationPatterns } from "./schemas";
 
 // =============================================================================
 // TYPES
@@ -106,8 +108,7 @@ export function useFormWithState<T extends FieldValues>(
           await onSubmit(data);
           setIsSuccess(true);
         } catch (err) {
-          const message =
-            err instanceof Error ? err.message : "Đã có lỗi xảy ra";
+          const message = getErrorMessage(err);
           setError(message);
         } finally {
           setIsSubmitting(false);
@@ -153,99 +154,8 @@ export function hasFormChanges<T extends FieldValues>(
   return Object.keys(form.formState.dirtyFields).length > 0;
 }
 
-// =============================================================================
-// VALIDATION HELPERS
-// =============================================================================
-
-/**
- * Các regex patterns phổ biến cho validation.
- */
-export const ValidationPatterns = {
-  email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-  phoneVN: /^(0[3|5|7|8|9])+([0-9]{8})$/,
-  password: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d@$!%*?&]{8,}$/,
-  slug: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-  url: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
-} as const;
-
-/**
- * Các Zod schemas phổ biến có thể tái sử dụng.
- */
-export const CommonSchemas = {
-  /** Email chuẩn */
-  email: z.string().min(1, "Email là bắt buộc").email("Email không hợp lệ"),
-
-  /** Password với yêu cầu độ mạnh */
-  password: z
-    .string()
-    .min(8, "Mật khẩu tối thiểu 8 ký tự")
-    .max(100, "Mật khẩu tối đa 100 ký tự"),
-
-  /** Password mạnh (có chữ hoa, thường, số) */
-  strongPassword: z
-    .string()
-    .min(8, "Mật khẩu tối thiểu 8 ký tự")
-    .regex(
-      ValidationPatterns.password,
-      "Mật khẩu phải có ít nhất 1 chữ hoa, 1 chữ thường và 1 số"
-    ),
-
-  /** Số điện thoại VN */
-  phoneVN: z
-    .string()
-    .regex(ValidationPatterns.phoneVN, "Số điện thoại không hợp lệ"),
-
-  /** Số điện thoại optional */
-  phoneVNOptional: z
-    .string()
-    .regex(ValidationPatterns.phoneVN, "Số điện thoại không hợp lệ")
-    .optional()
-    .or(z.literal("")),
-
-  /** Name field */
-  name: z
-    .string()
-    .min(2, "Tên tối thiểu 2 ký tự")
-    .max(50, "Tên tối đa 50 ký tự"),
-
-  /** Slug field */
-  slug: z
-    .string()
-    .min(1, "Slug là bắt buộc")
-    .regex(
-      ValidationPatterns.slug,
-      "Slug chỉ chứa chữ thường, số và dấu gạch ngang"
-    ),
-
-  /** Price field */
-  price: z.number().min(0, "Giá không được âm"),
-
-  /** Quantity field */
-  quantity: z
-    .number()
-    .int("Số lượng phải là số nguyên")
-    .min(1, "Số lượng tối thiểu là 1")
-    .max(99, "Số lượng tối đa là 99"),
-
-  /** Rating field */
-  rating: z
-    .number()
-    .int()
-    .min(1, "Rating tối thiểu 1 sao")
-    .max(5, "Rating tối đa 5 sao"),
-
-  /** Text content (review, comment) */
-  content: z
-    .string()
-    .min(10, "Nội dung tối thiểu 10 ký tự")
-    .max(1000, "Nội dung tối đa 1000 ký tự"),
-
-  /** UUID */
-  uuid: z.string().uuid("ID không hợp lệ"),
-
-  /** URL */
-  url: z.string().url("URL không hợp lệ").optional().or(z.literal("")),
-} as const;
+// Exported from schemas.ts for convenience
+export { ValidationPatterns, BaseSchema as CommonSchemas };
 
 /**
  * Tạo schema cho confirm password.

@@ -263,6 +263,10 @@ export class BlogService {
     };
   }
 
+  async getStats() {
+    return this.getCategoryStats();
+  }
+
   async update(
     id: string,
     updateBlogDto: UpdateBlogDto,
