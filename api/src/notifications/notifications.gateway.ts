@@ -174,7 +174,7 @@ export class NotificationsGateway
     this.server.to(`user:${userId}`).emit('new_notification', notification);
 
     // Cập nhật unread count
-    this.notificationsService.getUnreadCount(userId).then((count) => {
+    void this.notificationsService.getUnreadCount(userId).then((count) => {
       this.server.to(`user:${userId}`).emit('unread_count', { count });
     });
 

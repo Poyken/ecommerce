@@ -49,7 +49,7 @@ export class RagService {
   async answer(
     tenantId: string,
     question: string,
-    chatHistory: ChatMessage[] = [],
+    _chatHistory: ChatMessage[] = [],
   ): Promise<string> {
     this.logger.log(`RAG Query: "${question}" for tenant: ${tenantId}`);
 

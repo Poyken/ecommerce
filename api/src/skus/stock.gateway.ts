@@ -38,9 +38,9 @@ export class StockGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
-  handleConnection(client: Socket) {}
+  handleConnection(_client: Socket) {}
 
-  handleDisconnect(client: Socket) {}
+  handleDisconnect(_client: Socket) {}
 
   /**
    * Client join vào room của sản phẩm để nhận update

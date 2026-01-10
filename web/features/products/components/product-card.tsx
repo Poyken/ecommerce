@@ -19,6 +19,7 @@
 
 import { MotionButton } from "@/components/shared/motion-button";
 import { Button } from "@/components/ui/button";
+import { env } from "@/lib/env";
 import { useFeatureFlags } from "@/features/admin/hooks/use-feature-flags";
 import { useStock } from "@/features/products/hooks/use-stock";
 import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
@@ -88,8 +89,7 @@ export const ProductCard = memo(function ProductCard({
   // Khi user hover vào card, ta tải trước thông tin chi tiết
   // Giúp QuickView hoặc Navigation trang sau nhanh tức thì
   const prefetchProduct = useCallback(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-    preload(`${apiUrl}/products/${id}`, (url) =>
+    preload(`${env.NEXT_PUBLIC_API_URL}/products/${id}`, (url) =>
       fetch(url).then((res) => res.json())
     );
   }, [id]);

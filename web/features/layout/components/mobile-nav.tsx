@@ -44,13 +44,11 @@ interface NavItem {
  */
 interface MobileBottomNavProps {
   initialUser?: any;
-  initialCartCount?: number;
   initialWishlistCount?: number;
 }
 
 export function MobileBottomNav({
   initialUser,
-  initialCartCount,
   initialWishlistCount,
 }: MobileBottomNavProps) {
   const t = useTranslations("nav");

@@ -58,16 +58,16 @@ export function BankTransferQR({
   const t = useTranslations("orders");
   const router = useRouter();
   const { toast } = useToast();
-  const locale = useLocale();
+  // const locale = useLocale();
   const [mounted, setMounted] = useState(false);
-  const [origin, setOrigin] = useState("");
+  // const [origin, setOrigin] = useState("");
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
 
   // Hydration fix: Chỉ render client-side logic khi mount xong
   useEffect(() => {
     setMounted(true);
-    setOrigin(window.location.origin);
+    // setOrigin(window.location.origin);
   }, []);
 
   // Countdown Timer Logic

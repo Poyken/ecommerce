@@ -156,7 +156,7 @@ export class SkusService {
   }
 
   async update(id: string, updateSkuDto: UpdateSkuDto) {
-    const { optionValueIds, imageUrl, ...data } = updateSkuDto;
+    const { imageUrl, ...data } = updateSkuDto;
 
     const updatedSku = await this.prisma.sku.update({
       where: { id },
