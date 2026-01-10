@@ -48,7 +48,7 @@ interface ErrorStateProps extends DataStateProps {
   retryLabel?: string;
 }
 
-interface EmptyStateProps extends DataStateProps {
+interface DataEmptyStateProps extends DataStateProps {
   /** Icon component */
   icon?: ReactNode;
   /** Tiêu đề */
@@ -108,7 +108,7 @@ export const SkeletonShimmer = memo(function SkeletonShimmer({
         "relative overflow-hidden bg-muted/50 rounded-md",
         "before:absolute before:inset-0 before:-translate-x-full",
         "before:animate-[shimmer_2s_infinite]",
-        "before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent",
+        "before:bg-linear-to-r before:from-transparent before:via-white/20 before:to-transparent",
         className
       )}
     />
@@ -141,7 +141,9 @@ export const ErrorState = memo(function ErrorState({
         <div className="rounded-full bg-destructive/10 p-3">
           <AlertCircle className="h-8 w-8 text-destructive" />
         </div>
-        <h3 className="mt-4 font-semibold text-destructive">Đã có lỗi xảy ra</h3>
+        <h3 className="mt-4 font-semibold text-destructive">
+          Đã có lỗi xảy ra
+        </h3>
         <p className="mt-2 text-sm text-muted-foreground text-center max-w-md">
           {errorMessage}
         </p>
@@ -170,14 +172,14 @@ export const ErrorState = memo(function ErrorState({
  * Component hiển thị trạng thái empty.
  * Sử dụng: Khi không có data.
  */
-export const EmptyState = memo(function EmptyState({
+export const DataEmptyState = memo(function DataEmptyState({
   icon,
   title = "Không có dữ liệu",
   description,
   action,
   className,
   children,
-}: EmptyStateProps) {
+}: DataEmptyStateProps) {
   return (
     <div
       className={cn(
@@ -185,11 +187,7 @@ export const EmptyState = memo(function EmptyState({
         className
       )}
     >
-      {icon && (
-        <div className="rounded-full bg-muted p-4 mb-4">
-          {icon}
-        </div>
-      )}
+      {icon && <div className="rounded-full bg-muted p-4 mb-4">{icon}</div>}
       <h3 className="font-semibold text-lg">{title}</h3>
       {description && (
         <p className="mt-2 text-sm text-muted-foreground max-w-md">
@@ -277,7 +275,7 @@ export function DataWrapper<T>({
 
   // Empty state
   if (!data || (isEmpty && isEmpty(data))) {
-    return emptyComponent || <ShopEmptyState className={className} />;
+    return emptyComponent || <DataEmptyState className={className} />;
   }
 
   // Success - render children với data

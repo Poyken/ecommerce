@@ -24,7 +24,7 @@ import {
   MOCK_DISTRICTS,
   MOCK_PROVINCES,
   MOCK_WARDS,
-} from "@/data/vn-locations";
+} from "@/lib/constants/vn-locations";
 import { http } from "@/lib/http";
 import { wrapServerAction } from "@/lib/safe-action";
 import { ApiResponse, ActionResult } from "@/types/api";

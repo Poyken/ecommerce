@@ -249,4 +249,4 @@ export const slideInFromBottom: Variants = {
 // SKELETON SHIMMER (CSS class based)
 // ============================================
 export const shimmerClass =
-  "animate-pulse bg-gradient-to-r from-muted/30 via-muted/50 to-muted/30 bg-[length:200%_100%] animate-shimmer";
+  "animate-pulse bg-linear-to-r from-muted/30 via-muted/50 to-muted/30 bg-[length:200%_100%] animate-shimmer";
