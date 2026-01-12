@@ -1,23 +1,3 @@
-// GIẢI THÍCH CHO THỰC TẬP SINH:
-// =================================================================================================
-// PLANS LIST CLIENT COMPONENT
-// =================================================================================================
-//
-// Component hiển thị danh sách các Subscription Plans dưới dạng bảng.
-//
-// ĐIỂM CẦN LƯU Ý:
-// 1. Data Type Consistency: Interface `SubscriptionPlan` phải khớp với Prisma Model ở Backend và
-//    kiểu dữ liệu component cha truyền xuống.
-//
-// 2. State Management:
-//    - `plans`: State local để render UI. Mặc dù dữ liệu ban đầu đến từ Server Props (`initialPlans`),
-//      việc có state local cho phép ta thực hiện các thao tác filters/sort client-side sau này nếu cần.
-//    - `editingPlan`: Lưu trữ object plan đang được chọn để sửa.
-//
-// 3. Delete Flow:
-//    - Xác nhận bằng `window.confirm` đơn giản (có thể nâng cấp lên Dialog đẹp hơn sau này).
-//    - Gọi Server Action `deletePlanAction` và dùng `router.refresh()` để reload data.
-// =================================================================================================
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -44,6 +24,7 @@ import { PlanDialog } from "./plan-dialog";
 import { useToast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { AdminTableWrapper } from "@/features/admin/components/ui/admin-page-components";
+import { useTranslations } from "next-intl";
 
 // Type definition matching Prisma Model
 interface SubscriptionPlan {
@@ -66,6 +47,8 @@ interface PlansClientProps {
 }
 
 export function PlansClient({ initialPlans }: PlansClientProps) {
+  const t = useTranslations("superAdmin.plans");
+  const tDialog = useTranslations("superAdmin.planDialog");
   const [plans, setPlans] = useState<SubscriptionPlan[]>(initialPlans);
   const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -78,17 +61,17 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this plan?")) return;
+    if (!confirm(t("messages.deleteConfirm"))) return;
 
     const res = await deletePlanAction({ id });
     if (res?.success) {
-      toast({ variant: "success", title: "Plan deleted" });
+      toast({ variant: "success", title: t("messages.deleteSuccess") });
       router.refresh();
     } else {
       toast({
         title: "Failed to delete",
         variant: "destructive",
-        description: res?.error || "Failed to delete plan",
+        description: res?.error || t("messages.deleteError"),
       });
     }
   };
@@ -100,22 +83,22 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
           <TableHeader>
             <TableRow className="bg-slate-50/50 dark:bg-slate-900/50 border-b">
               <TableHead className="py-5 font-bold text-slate-900 dark:text-slate-100">
-                Plan Name
+                {t("table.name")}
               </TableHead>
               <TableHead className="py-5 font-bold text-slate-900 dark:text-slate-100">
-                Slug
+                {t("table.slug")}
               </TableHead>
               <TableHead className="py-5 font-bold text-slate-900 dark:text-slate-100">
-                Price (Month / Year)
+                {t("table.price")}
               </TableHead>
               <TableHead className="py-5 font-bold text-slate-900 dark:text-slate-100">
-                Limits
+                {t("table.limits")}
               </TableHead>
               <TableHead className="py-5 font-bold text-slate-900 dark:text-slate-100">
-                Status
+                {t("table.status")}
               </TableHead>
               <TableHead className="py-5 text-right font-bold text-slate-900 dark:text-slate-100">
-                Actions
+                {t("table.actions")}
               </TableHead>
             </TableRow>
           </TableHeader>
@@ -128,7 +111,7 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
                 >
                   <div className="flex flex-col items-center gap-2">
                     <Zap className="h-8 w-8 opacity-20" />
-                    No plans found. Create one to get started.
+                    {t("messages.noPlans") || "No plans found. Create one to get started."}
                   </div>
                 </TableCell>
               </TableRow>
@@ -174,13 +157,13 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
                       <div className="flex items-center gap-2">
                         <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                         {plan.maxProducts === -1
-                          ? "Unlimited"
+                          ? t("limits.unlimited")
                           : plan.maxProducts}{" "}
-                        Products
+                        {t("limits.products")}
                       </div>
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                        {plan.maxStorage} MB Storage
+                        {plan.maxStorage} {t("limits.storage")}
                       </div>
                     </div>
                   </TableCell>
@@ -188,14 +171,14 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
                     <div className="flex flex-wrap gap-2">
                       {plan.isActive ? (
                         <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-200 border-emerald-200/50 shadow-sm border rounded-full px-3">
-                          Active
+                          {t("status.active")}
                         </Badge>
                       ) : (
                         <Badge
                           variant="secondary"
                           className="rounded-full px-3"
                         >
-                          Inactive
+                          {t("status.inactive")}
                         </Badge>
                       )}
                       {plan.isPublic && (
@@ -203,7 +186,7 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
                           variant="outline"
                           className="border-indigo-200 text-indigo-600 bg-indigo-50/50 dark:bg-indigo-900/20 dark:text-indigo-400 dark:border-indigo-800 rounded-full px-3"
                         >
-                          Public
+                          {t("status.public")}
                         </Badge>
                       )}
                     </div>
@@ -224,7 +207,7 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
                         className="w-48 rounded-2xl p-2 shadow-2xl border-slate-200 dark:border-slate-800"
                       >
                         <DropdownMenuLabel className="text-xs font-black uppercase tracking-widest text-muted-foreground px-3 py-2">
-                          Actions
+                          {t("table.actions")}
                         </DropdownMenuLabel>
                         <DropdownMenuItem
                           onClick={() => {
@@ -234,7 +217,7 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
                           className="rounded-xl px-3 py-2.5 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-900"
                         >
                           <Pencil className="mr-3 h-4 w-4 text-amber-500" />{" "}
-                          <span className="font-semibold">Edit Plan</span>
+                          <span className="font-semibold">{tDialog("titleEdit")}</span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-600 rounded-xl px-3 py-2.5 cursor-pointer focus:bg-red-50 dark:focus:bg-red-900/20"

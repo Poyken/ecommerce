@@ -35,7 +35,7 @@ import { CodPaymentStrategy } from './strategies/cod.strategy';
 import { MockStripeStrategy } from './strategies/mock-stripe.strategy';
 import { MoMoStrategy } from './strategies/momo.strategy';
 import { VNPayStrategy } from './strategies/vnpay.strategy';
-import { VietQrStrategy } from './strategies/vietqr.strategy';
+import { VNPayStrategy } from './strategies/vnpay.strategy';
 import { WebhookPayloadDto } from './dto/webhook-payload.dto';
 
 @Injectable()
@@ -49,14 +49,12 @@ export class PaymentService {
     private readonly mockStripeStrategy: MockStripeStrategy,
     private readonly vnPayStrategy: VNPayStrategy,
     private readonly momoStrategy: MoMoStrategy,
-    private readonly vietQrStrategy: VietQrStrategy,
   ) {
     // Đăng ký các chiến lược
     this.strategies.set('COD', codStrategy);
     this.strategies.set('CREDIT_CARD', mockStripeStrategy); // Ánh xạ CREDIT_CARD sang Stripe
     this.strategies.set('VNPAY', vnPayStrategy);
     this.strategies.set('MOMO', momoStrategy);
-    this.strategies.set('VIETQR', vietQrStrategy);
   }
 
   /**

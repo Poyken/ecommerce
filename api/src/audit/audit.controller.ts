@@ -38,6 +38,7 @@ export class AuditController {
     @Query('limit') limit: string = '10',
     @Query('search') search?: string,
     @Query('roles') roles?: string,
+    @Query('filter') filter?: string,
   ) {
     const rolesArray = roles ? roles.split(',') : undefined;
     const result = await this.auditService.findAll(
@@ -45,6 +46,7 @@ export class AuditController {
       +limit,
       search,
       rolesArray,
+      filter,
     );
     return result; // Result already has { data, meta }
   }

@@ -45,6 +45,7 @@ import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 interface Invoice {
   id: string;
@@ -73,6 +74,7 @@ interface InvoicesClientProps {
 }
 
 export function InvoicesClient({ initialData }: InvoicesClientProps) {
+  const t = useTranslations("superAdmin.invoices");
   const [invoices, setInvoices] = useState(initialData.data);
   const { toast } = useToast();
   const router = useRouter();
@@ -80,7 +82,7 @@ export function InvoicesClient({ initialData }: InvoicesClientProps) {
   const handleUpdateStatus = async (id: string, status: string) => {
     const res = await updateInvoiceStatusAction({ id, status });
     if (res?.data) {
-      toast({ variant: "success", title: "Invoice status updated" });
+      toast({ variant: "success", title: t("actions.successUpdate") });
       setInvoices(
         invoices.map((inv) =>
           inv.id === id ? { ...inv, status: status as any } : inv
@@ -127,12 +129,12 @@ export function InvoicesClient({ initialData }: InvoicesClientProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Invoice ID</TableHead>
-            <TableHead>Tenant</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            <TableHead>{t("table.id")}</TableHead>
+            <TableHead>{t("table.tenant")}</TableHead>
+            <TableHead>{t("table.amount")}</TableHead>
+            <TableHead>{t("table.date")}</TableHead>
+            <TableHead>{t("table.status")}</TableHead>
+            <TableHead className="text-right">{t("table.actions")}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -180,16 +182,16 @@ export function InvoicesClient({ initialData }: InvoicesClientProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Manage Invoice</DropdownMenuLabel>
+                      <DropdownMenuLabel>{t("actions.manage")}</DropdownMenuLabel>
                       <DropdownMenuItem>
-                        <FileText className="mr-2 h-4 w-4" /> View Details
+                        <FileText className="mr-2 h-4 w-4" /> {t("actions.view")}
                       </DropdownMenuItem>
                       {invoice.status !== "PAID" && (
                         <DropdownMenuItem
                           onClick={() => handleUpdateStatus(invoice.id, "PAID")}
                         >
                           <CheckCircle className="mr-2 h-4 w-4 text-emerald-500" />{" "}
-                          Mark as Paid
+                          {t("actions.markPaid")}
                         </DropdownMenuItem>
                       )}
                       {invoice.status !== "CANCELLED" && (
@@ -198,8 +200,7 @@ export function InvoicesClient({ initialData }: InvoicesClientProps) {
                             handleUpdateStatus(invoice.id, "CANCELLED")
                           }
                         >
-                          <Ban className="mr-2 h-4 w-4 text-red-500" /> Cancel
-                          Invoice
+                          <Ban className="mr-2 h-4 w-4 text-red-500" /> {t("actions.cancel")}
                         </DropdownMenuItem>
                       )}
                     </DropdownMenuContent>

@@ -51,6 +51,8 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
+import { useRouter, usePathname } from "@/i18n/routing";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 const CreateProductDialog = dynamic(
@@ -111,26 +113,20 @@ export function ProductsClient({
   const { searchTerm, setSearchTerm, isPending } =
     useAdminTable("/admin/products");
 
-  const [filter, setFilter] = useState<FilterType>("all");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const filter = (searchParams.get("filter") as FilterType) || "all";
 
   const handleStatusChange = (status: FilterType) => {
-    setFilter(status);
-    // Note: This filter is currently client-side only based on current page data.
-    // If you want server-side filtering, you should pass it to useAdminTable.
-    // But since the original code was client-side, I'll keep it for now.
-  };
-
-  // Filter products (client-side for current page only)
-  const filteredProducts = products.filter((product) => {
-    if (filter === "all") return true;
-    if (filter === "recent") {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      return new Date(product.createdAt) > weekAgo;
+    const params = new URLSearchParams(searchParams.toString());
+    if (status === "all") {
+      params.delete("filter");
+    } else {
+      params.set("filter", status);
     }
-    if (filter === "no-category") return !product.category;
-    return true;
-  });
+    params.set("page", "1"); // Reset to page 1
+    router.push(`/admin/products?${params.toString()}`);
+  };
 
   // Stats (based on current page)
   const recentCount = products.filter((p) => {
@@ -208,7 +204,7 @@ export function ProductsClient({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <Tabs
           value={filter}
-          onValueChange={(v) => setFilter(v as FilterType)}
+          onValueChange={(v) => handleStatusChange(v as FilterType)}
           className="w-full"
         >
           <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
@@ -301,7 +297,7 @@ export function ProductsClient({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredProducts.length === 0 ? (
+            {products.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={canTranslate || canUpdate || canDelete ? 5 : 4}
@@ -324,7 +320,7 @@ export function ProductsClient({
                 </TableCell>
               </TableRow>
             ) : (
-              filteredProducts.map((product) => (
+              products.map((product) => (
                 <TableRow
                   key={product.id}
                   className="hover:bg-muted/30 transition-colors"
@@ -415,7 +411,7 @@ export function ProductsClient({
       </AdminTableWrapper>
 
       {/* Pagination with page numbers - only show when needed */}
-      {filteredProducts.length > 0 && total > limit && (
+      {products.length > 0 && total > limit && (
         <DataTablePagination page={page} total={total} limit={limit} />
       )}
 

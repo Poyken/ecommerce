@@ -25,7 +25,7 @@ import { ProductsClient } from "./products-client";
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; search?: string }>;
+  searchParams: Promise<{ page?: string; search?: string; filter?: string }>;
 }) {
   const t = await getTranslations("admin.products");
   const params = await searchParams;
@@ -34,8 +34,19 @@ export default async function ProductsPage({
   const search = params.search || "";
 
   // Fetch products only - Brands and Categories are handled by AdminMetadataProvider in Layout
+  const filter = params.filter;
+
+  // Map filters to API params
+  const apiParams: any = { page, limit, search };
+  if (filter === "recent") {
+    apiParams.sort = "newest"; 
+    // If backend supported date filtering, we'd add startDate here
+  } else if (filter === "no-category") {
+    apiParams.categoryId = "null"; // Assuming backend handles string "null" or we need to fix service
+  }
+
   const [productsRes] = await Promise.all([
-    getProductsAction({ page, limit, search }),
+    getProductsAction(apiParams),
   ]);
 
   if (!("data" in productsRes)) {

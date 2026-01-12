@@ -65,8 +65,11 @@ export class SecurityController {
   @Post('lockdown')
   @RequirePermissions('superAdmin:write')
   @ApiOperation({ summary: 'Bật/tắt chế độ khóa hệ thống khẩn cấp' })
-  async toggleLockdown(@Body() body: { isEnabled: boolean }) {
-    const result = await this.securityService.setSystemLockdown(body.isEnabled);
+  async toggleLockdown(@Req() req: any, @Body() body: { isEnabled: boolean }) {
+    const result = await this.securityService.setSystemLockdown(
+      body.isEnabled,
+      req.user.tenantId,
+    );
     return { data: result };
   }
 

@@ -73,10 +73,25 @@ export class AuditService implements OnApplicationBootstrap {
     }
   }
 
-  async findAll(page = 1, limit = 10, search?: string, roles?: string[]) {
+  async findAll(
+    page = 1,
+    limit = 10,
+    search?: string,
+    roles?: string[],
+    filter?: string,
+  ) {
     const skip = (page - 1) * limit;
 
     const where: any = {};
+    if (filter && filter !== 'all') {
+      if (filter === 'create')
+        where.action = { contains: 'CREATE', mode: 'insensitive' };
+      if (filter === 'update')
+        where.action = { contains: 'UPDATE', mode: 'insensitive' };
+      if (filter === 'delete')
+        where.action = { contains: 'DELETE', mode: 'insensitive' };
+    }
+
     if (search) {
       where.OR = [
         { action: { contains: search, mode: 'insensitive' } },

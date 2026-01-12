@@ -101,6 +101,7 @@ export interface PaginationParams {
   page?: number;
   limit?: number;
   search?: string;
+  [key: string]: any;
 }
 
 /**
@@ -118,6 +119,7 @@ export function normalizePaginationParams(
       page: paramsOrPage.page || 1,
       limit: paramsOrPage.limit || 10,
       search: paramsOrPage.search || undefined,
+      ...paramsOrPage,
     };
   }
 

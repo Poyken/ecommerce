@@ -9,24 +9,24 @@ datasource db {
 }
 
 model User {
-  id               String    @id @default(uuid()) // ID định danh duy nhất của User, tự động tạo UUID
-  email            String // Địa chỉ email dùng để đăng nhập và liên hệ
-  firstName        String? // Tên người dùng (có thể để trống)
-  lastName         String? // Họ người dùng (có thể để trống)
-  password         String?   @db.VarChar(255) // Mật khẩu đã được mã hóa (Hash), giới hạn 255 ký tự
-  createdAt        DateTime  @default(now()) // Thời điểm tạo tài khoản
-  updatedAt        DateTime  @updatedAt // Thời điểm cập nhật thông tin gần nhất
-  deletedAt        DateTime? // Thời điểm xóa mềm (Soft delete). Nếu có giá trị nghĩa là tài khoản đã bị vô hiệu hóa
-  avatarUrl        String? // Đường dẫn ảnh đại diện (URL)
-  provider         String? // Nhà cung cấp đăng nhập (Google, Facebook) nếu dùng Social Login
-  socialId         String? // ID định danh từ mạng xã hội (VD: Google User ID)
-  twoFactorEnabled Boolean   @default(false) // Cờ bật/tắt tính năng bảo mật 2 lớp (2FA)
-  twoFactorSecret  String? // Mã bí mật dùng để tạo OTP cho 2FA
-  whitelistedIps   Json?     @default("[]") // Danh sách các địa chỉ IP được phép truy cập (lớp bảo mật thêm)
-  commissionBalance Decimal   @default(0) @db.Decimal(20, 2) // Số dư hoa hồng tích lũy (cho content creator/affiliate)
-  referredByUserId  String?
-  referredByUser    User?     @relation("UserReferrals", fields: [referredByUserId], references: [id])
-  referrals         User[]    @relation("UserReferrals")
+  id                     String                  @id @default(uuid()) // ID định danh duy nhất của User, tự động tạo UUID
+  email                  String // Địa chỉ email dùng để đăng nhập và liên hệ
+  firstName              String? // Tên người dùng (có thể để trống)
+  lastName               String? // Họ người dùng (có thể để trống)
+  password               String?                 @db.VarChar(255) // Mật khẩu đã được mã hóa (Hash), giới hạn 255 ký tự
+  createdAt              DateTime                @default(now()) // Thời điểm tạo tài khoản
+  updatedAt              DateTime                @updatedAt // Thời điểm cập nhật thông tin gần nhất
+  deletedAt              DateTime? // Thời điểm xóa mềm (Soft delete). Nếu có giá trị nghĩa là tài khoản đã bị vô hiệu hóa
+  avatarUrl              String? // Đường dẫn ảnh đại diện (URL)
+  provider               String? // Nhà cung cấp đăng nhập (Google, Facebook) nếu dùng Social Login
+  socialId               String? // ID định danh từ mạng xã hội (VD: Google User ID)
+  twoFactorEnabled       Boolean                 @default(false) // Cờ bật/tắt tính năng bảo mật 2 lớp (2FA)
+  twoFactorSecret        String? // Mã bí mật dùng để tạo OTP cho 2FA
+  whitelistedIps         Json?                   @default("[]") // Danh sách các địa chỉ IP được phép truy cập (lớp bảo mật thêm)
+  commissionBalance      Decimal                 @default(0) @db.Decimal(20, 2) // Số dư hoa hồng tích lũy (cho content creator/affiliate)
+  referredByUserId       String?
+  referredByUser         User?                   @relation("UserReferrals", fields: [referredByUserId], references: [id])
+  referrals              User[]                  @relation("UserReferrals")
   commissionTransactions CommissionTransaction[]
 
   // Media Reference
@@ -40,14 +40,14 @@ model User {
   inventoryLogs  InventoryLog[] // Log kho hàng (nếu user là nhân viên kho)
   notifications  Notification[] // Các thông báo gửi đến user
   orders         Order[] // Lịch sử đơn hàng đã mua
-  reviews        Review[] // Các đánh giá sản phẩm đã viết
+  reviews        Review[] // Các đánh giá sản phẩm đã mua
   permissions    UserPermission[] // Các quyền hạn cụ thể (Granular permissions)
   roles          UserRole[] // Các vai trò của user (Admin, Staff, Customer...)
   wishlist       Wishlist[] // Danh sách sản phẩm yêu thích
   blogs          Blog[] // Bài viết blog (nếu user là content writer)
   conversations  ChatConversation[] // Các cuộc hội thoại chat support
   aiChatSessions AiChatSession[] // Lịch sử chat với AI Bot
-  ownedTenants   Tenant[]        @relation("TenantOwner")
+  ownedTenants   Tenant[]           @relation("TenantOwner")
 
   // Multi-tenancy (Đa cửa hàng)
   tenantId String // ID của cửa hàng mà User này thuộc về
@@ -598,31 +598,31 @@ model PromotionUsage {
 }
 
 model Order {
-  id                      String        @id @default(uuid()) // ID Đơn hàng
-  userId                  String // ID Người mua
-  status                  OrderStatus   @default(PENDING) // Trạng thái đơn hàng
-  totalAmount             Decimal       @db.Decimal(20, 2) // Tổng tiền
-  shippingFee             Decimal       @default(0.00) @db.Decimal(20, 2) // Phí vận chuyển
-  recipientName           String // Tên người nhận
-  phoneNumber             String // SĐT người nhận
-  shippingAddress         String? // Địa chỉ giao hàng (Text)
-  shippingCity            String? // Thành phố
-  shippingDistrict        String? // Quận/Huyện
-  shippingWard            String? // Phường/Xã
-  shippingPhone           String? // SĐT giao hàng (nếu khác)
-  shippingAddressSnapshot Json? // Snapshot địa chỉ đầy đủ lúc đặt (tránh user sửa address sau này làm sai data đơn cũ)
-  paymentMethod           String? // Phương thức thanh toán (COD, MOMO...)
-  paymentStatus           PaymentStatus @default(UNPAID) // Trạng thái thanh toán
-  transactionId           String? // Mã giao dịch (Legacy)
-  payments                Payment[] // Lịch sử thanh toán chi tiết
-  orderDate               DateTime      @default(now()) // Ngày đặt hàng
-  updatedAt               DateTime      @updatedAt // Ngày cập nhật
-  createdAt               DateTime      @default(now()) // Ngày tạo bản ghi
-  deletedAt               DateTime? // Xóa mềm
-  referredByBlogId        String? // ID bài viết giới thiệu dẫn đến đơn hàng này
-  platformFeeAmount       Decimal?      @db.Decimal(20, 2) // Số tiền phí sàn thu từ tenant cho đơn này
-  affiliateCommissionAmount Decimal?    @db.Decimal(20, 2) // Số tiền hoa hồng trả cho người viết blog
-  commissionTransactions CommissionTransaction[]
+  id                        String                  @id @default(uuid()) // ID Đơn hàng
+  userId                    String // ID Người mua
+  status                    OrderStatus             @default(PENDING) // Trạng thái đơn hàng
+  totalAmount               Decimal                 @db.Decimal(20, 2) // Tổng tiền
+  shippingFee               Decimal                 @default(0.00) @db.Decimal(20, 2) // Phí vận chuyển
+  recipientName             String // Tên người nhận
+  phoneNumber               String // SĐT người nhận
+  shippingAddress           String? // Địa chỉ giao hàng (Text)
+  shippingCity              String? // Thành phố
+  shippingDistrict          String? // Quận/Huyện
+  shippingWard              String? // Phường/Xã
+  shippingPhone             String? // SĐT giao hàng (nếu khác)
+  shippingAddressSnapshot   Json? // Snapshot địa chỉ đầy đủ lúc đặt (tránh user sửa address sau này làm sai data đơn cũ)
+  paymentMethod             String? // Phương thức thanh toán (COD, MOMO...)
+  paymentStatus             PaymentStatus           @default(UNPAID) // Trạng thái thanh toán
+  transactionId             String? // Mã giao dịch (Legacy)
+  payments                  Payment[] // Lịch sử thanh toán chi tiết
+  orderDate                 DateTime                @default(now()) // Ngày đặt hàng
+  updatedAt                 DateTime                @updatedAt // Ngày cập nhật
+  createdAt                 DateTime                @default(now()) // Ngày tạo bản ghi
+  deletedAt                 DateTime? // Xóa mềm
+  referredByBlogId          String? // ID bài viết giới thiệu dẫn đến đơn hàng này
+  platformFeeAmount         Decimal?                @db.Decimal(20, 2) // Số tiền phí sàn thu từ tenant cho đơn này
+  affiliateCommissionAmount Decimal?                @db.Decimal(20, 2) // Số tiền hoa hồng trả cho người viết blog
+  commissionTransactions    CommissionTransaction[]
 
   // Promotion (New)
   promotions PromotionUsage[] // Các khuyến mãi đã áp dụng
@@ -914,18 +914,18 @@ model Blog {
   imageId   String?
   blogMedia Media?  @relation(fields: [imageId], references: [id])
 
-  category    String        @db.VarChar(100) // Danh mục bài viết
-  author      String        @db.VarChar(100) // Tác giả
-  language    String        @default("en") @db.VarChar(5) // Ngôn ngữ
-  readTime    String?       @db.VarChar(20) // Thời gian đọc ước tính
-  publishedAt DateTime? // Ngày xuất bản
-  createdAt   DateTime      @default(now()) // Ngày tạo
-  updatedAt   DateTime      @updatedAt // Cập nhật
-  deletedAt   DateTime? // Xóa mềm
-  userId      String? // Người viết
-  user        User?         @relation(fields: [userId], references: [id])
-  products    BlogProduct[] // Các sản phẩm được nhắc đến
-  referredOrders Order[]    @relation("BlogReferrals") // Các đơn hàng được giới thiệu từ bài viết này
+  category       String        @db.VarChar(100) // Danh mục bài viết
+  author         String        @db.VarChar(100) // Tác giả
+  language       String        @default("en") @db.VarChar(5) // Ngôn ngữ
+  readTime       String?       @db.VarChar(20) // Thời gian đọc ước tính
+  publishedAt    DateTime? // Ngày xuất bản
+  createdAt      DateTime      @default(now()) // Ngày tạo
+  updatedAt      DateTime      @updatedAt // Cập nhật
+  deletedAt      DateTime? // Xóa mềm
+  userId         String? // Người viết
+  user           User?         @relation(fields: [userId], references: [id])
+  products       BlogProduct[] // Các sản phẩm được nhắc đến
+  referredOrders Order[]       @relation("BlogReferrals") // Các đơn hàng được giới thiệu từ bài viết này
 
   // Multi-tenancy
   tenantId String // ID Tenant
@@ -1159,10 +1159,10 @@ enum OutboxStatus {
 // =====================================================================
 
 model Tenant {
-  id   String @id @default(uuid()) // ID định danh Tenant (Cửa hàng)
-  name String // Tên cửa hàng
+  id      String  @id @default(uuid()) // ID định danh Tenant (Cửa hàng)
+  name    String // Tên cửa hàng
   ownerId String?
-  owner   User? @relation("TenantOwner", fields: [ownerId], references: [id])
+  owner   User?   @relation("TenantOwner", fields: [ownerId], references: [id])
 
   // Domain Management
   subdomain    String? @unique // Subdomain hệ thống (shop-a.platform.com)
@@ -1371,24 +1371,24 @@ model SubscriptionPlan {
 }
 
 model CommissionTransaction {
-  id        String   @id @default(uuid())
-  userId    String   // Người nhận hoa hồng
-  orderId   String?  // Đơn hàng liên quan (nếu có)
-  amount    Decimal  @db.Decimal(20, 2)
+  id        String           @id @default(uuid())
+  userId    String // Người nhận hoa hồng
+  orderId   String? // Đơn hàng liên quan (nếu có)
+  amount    Decimal          @db.Decimal(20, 2)
   type      CommissionType
   status    CommissionStatus @default(COMPLETED)
   note      String?
-  createdAt DateTime @default(now())
+  createdAt DateTime         @default(now())
 
   user  User   @relation(fields: [userId], references: [id])
   order Order? @relation(fields: [orderId], references: [id])
 }
 
 enum CommissionType {
-  DIRECT_REFERRAL    // Hoa hồng trực tiếp từ blog/link
-  SUBSCRIPTION_FEE   // Phí sàn từ gói thuê của tenant
-  TIER_2_REFERRAL    // Hoa hồng cấp 2
-  WITHDRAWAL        // Rút tiền
+  DIRECT_REFERRAL // Hoa hồng trực tiếp từ blog/link
+  SUBSCRIPTION_FEE // Phí sàn từ gói thuê của tenant
+  TIER_2_REFERRAL // Hoa hồng cấp 2
+  WITHDRAWAL // Rút tiền
 }
 
 enum CommissionStatus {

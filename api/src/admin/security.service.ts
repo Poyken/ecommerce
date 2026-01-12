@@ -68,14 +68,15 @@ export class SecurityService {
     };
   }
 
-  async setSystemLockdown(isEnabled: boolean) {
+  async setSystemLockdown(isEnabled: boolean, tenantId: string) {
     return this.prisma.featureFlag.upsert({
       where: { key: 'SYSTEM_LOCKDOWN' },
-      update: { isEnabled },
+      update: { isEnabled, tenantId },
       create: {
         key: 'SYSTEM_LOCKDOWN',
         isEnabled,
         description: 'Blocks all non-admin access to the platform',
+        tenantId,
       },
     });
   }

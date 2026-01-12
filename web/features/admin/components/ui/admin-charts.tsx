@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatCurrency, formatVND } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import {
+  Area,
+  AreaChart,
   Bar,
   BarChart,
   Cell,
@@ -47,15 +49,21 @@ export interface SalesTrendData {
 export function SalesTrendChart({ data }: { data: SalesTrendData[] }) {
   const t = useTranslations("admin");
   return (
-    <Card className="h-full rounded-4xl border-foreground/5">
+    <Card className="h-full rounded-4xl border-foreground/5 shadow-sm">
       <CardHeader>
         <CardTitle className="text-xl font-black tracking-tight">
           {t("salesTrends")}
         </CardTitle>
       </CardHeader>
-      <CardContent className="pl-2">
-        <ResponsiveContainer width="100%" height={350}>
-          <LineChart data={data}>
+      <CardContent className="h-[350px] pl-0">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart data={data}>
+            <defs>
+              <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.2} />
+                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <XAxis
               dataKey="name"
               stroke="hsl(var(--muted-foreground))"
@@ -86,14 +94,16 @@ export function SalesTrendChart({ data }: { data: SalesTrendData[] }) {
                 color: "hsl(var(--foreground))",
               }}
             />
-            <Line
+            <Area
               type="monotone"
               dataKey="sales"
               stroke="hsl(var(--primary))"
               strokeWidth={3}
+              fillOpacity={1}
+              fill="url(#colorSales)"
               activeDot={{ r: 6, fill: "hsl(var(--primary))" }}
             />
-          </LineChart>
+          </AreaChart>
         </ResponsiveContainer>
       </CardContent>
     </Card>
@@ -108,14 +118,14 @@ export interface BestSellerData {
 export function BestSellersChart({ data }: { data: BestSellerData[] }) {
   const t = useTranslations("admin");
   return (
-    <Card className="h-full rounded-4xl border-foreground/5">
+    <Card className="h-full rounded-4xl border-foreground/5 shadow-sm">
       <CardHeader>
         <CardTitle className="text-xl font-black tracking-tight">
           {t("bestSellers")}
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <ResponsiveContainer width="100%" height={350}>
+      <CardContent className="h-[350px]">
+        <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
             <XAxis
               dataKey="name"
@@ -133,7 +143,7 @@ export function BestSellersChart({ data }: { data: BestSellerData[] }) {
               className="font-medium"
             />
             <Tooltip
-              cursor={false}
+              cursor={{ fill: "hsl(var(--muted) / 0.2)" }}
               formatter={(value) => [`${value ?? 0} sold`, "Quantity"]}
               labelFormatter={(label) => `Product: ${label}`}
               contentStyle={{

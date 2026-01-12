@@ -1,17 +1,3 @@
-/**
- * =====================================================================
- * SUBSCRIPTIONS CLIENT - GIAO DIỆN QUẢN LÝ GÓI ĐĂNG KÝ
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Chức năng chính:
- * 1. Hiển thị danh sách đăng ký của các cửa hàng.
- * 2. Hỗ trợ tìm kiếm, phân trang và lọc theo trạng thái.
- * 3. Cho phép hủy bỏ (Cancel) các gói cước vi phạm hoặc hết hạn.
- * =====================================================================
- */
-
 "use client";
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
@@ -97,8 +83,8 @@ export function SubscriptionsClient({
   };
 
   const statusMap = {
-    true: { label: "Active", className: "bg-emerald-100 text-emerald-700" },
-    false: { label: "Inactive", className: "bg-slate-100 text-slate-700" },
+    true: { label: t("status.active"), className: "bg-emerald-100 text-emerald-700" },
+    false: { label: t("status.pastDue"), className: "bg-slate-100 text-slate-700" },
   };
 
   return (
@@ -109,7 +95,7 @@ export function SubscriptionsClient({
         icon={<CreditCard className="text-emerald-600 dark:text-emerald-400" />}
         stats={[
           {
-            label: "Active",
+            label: t("status.active"),
             value: subscriptions.filter((s) => s.isActive).length,
             variant: "success",
           },
@@ -200,7 +186,7 @@ export function SubscriptionsClient({
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => openEdit(sub)}>
                           <Edit2 className="w-4 h-4 mr-2 text-indigo-500" />
-                          Edit Subscription
+                          {t("actions.edit")}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-amber-600 focus:text-amber-600"
@@ -208,7 +194,7 @@ export function SubscriptionsClient({
                           disabled={!sub.isActive}
                         >
                           <Ban className="w-4 h-4 mr-2" />
-                          Cancel Subscription
+                          {t("actions.cancel")}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
@@ -216,7 +202,7 @@ export function SubscriptionsClient({
                           onClick={() => openDelete(sub)}
                         >
                           <Trash2 className="w-4 h-4 mr-2" />
-                          Delete Entry
+                          {t("actions.delete")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -244,21 +230,25 @@ export function SubscriptionsClient({
           <DeleteConfirmDialog
             open={cancelDialogOpen}
             onOpenChange={setCancelDialogOpen}
-            title="Cancel Subscription"
-            description={`Are you sure you want to cancel the subscription for "${selectedSub.tenant?.name}"? They will lose access at the end of the billing period.`}
+            title={t("dialog.cancelTitle")}
+            description={t("dialog.cancelDesc", {
+              name: selectedSub.tenant?.name || "Unknown Tenant",
+            })}
             action={() => cancelSubscriptionAction(selectedSub.id)}
-            successMessage="Subscription cancelled successfully"
-            confirmLabel="Yes, Cancel Subscription"
+            successMessage={t("dialog.successCancel")}
+            confirmLabel={t("dialog.confirmCancel")}
           />
 
           <DeleteConfirmDialog
             open={deleteDialogOpen}
             onOpenChange={setDeleteDialogOpen}
-            title="Delete Subscription Entry"
-            description={`DANGER: Are you sure you want to delete the subscription record for "${selectedSub.tenant?.name}"? This removes all billing linkage from the platform database.`}
+            title={t("dialog.deleteTitle")}
+            description={t("dialog.deleteDesc", {
+              name: selectedSub.tenant?.name || "Unknown Tenant",
+            })}
             action={() => deleteSubscriptionAction(selectedSub.id)}
-            successMessage="Subscription record deleted"
-            confirmLabel="Delete Permanently"
+            successMessage={t("dialog.successDelete")}
+            confirmLabel={t("dialog.confirmDelete")}
           />
         </>
       )}

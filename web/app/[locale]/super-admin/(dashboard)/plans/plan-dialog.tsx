@@ -51,6 +51,7 @@ import {
 } from "@/features/super-admin/domain-actions/plans-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -86,6 +87,7 @@ export function PlanDialog({
   onOpenChange: setControlledOpen,
   planToEdit,
 }: PlanDialogProps) {
+  const t = useTranslations("superAdmin.planDialog");
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = controlledOpen !== undefined;
   const isOpen = isControlled ? controlledOpen : internalOpen;
@@ -149,10 +151,10 @@ export function PlanDialog({
       if (res?.data) {
         toast({
           variant: "success",
-          title: "Success",
+          title: t("messages.successCreate"),
           description: planToEdit
-            ? "Plan updated successfully"
-            : "Plan created successfully",
+            ? t("messages.successUpdate")
+            : t("messages.successCreate"),
         });
         setOpen(false);
         router.refresh();
@@ -166,7 +168,7 @@ export function PlanDialog({
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to save plan",
+        description: t("messages.errorSave"),
         variant: "destructive",
       });
     }
@@ -178,11 +180,9 @@ export function PlanDialog({
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {planToEdit ? "Edit Plan" : "Create New Plan"}
+            {planToEdit ? t("titleEdit") : t("titleCreate")}
           </DialogTitle>
-          <DialogDescription>
-            Configure subscription plan details, pricing and limits.
-          </DialogDescription>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -192,9 +192,25 @@ export function PlanDialog({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Plan Name</FormLabel>
+                    <FormLabel>{t("fields.name")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Pro Plan" {...field} />
+                      <Input
+                        placeholder={t("fields.namePlaceholder")}
+                        {...field}
+                        className={form.formState.errors.name ? "border-destructive" : ""}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          if (!planToEdit) {
+                            const generatedSlug = e.target.value
+                              .toLowerCase()
+                              .replace(/\s+/g, "-")
+                              .replace(/[^a-z0-9-]/g, "");
+                            form.setValue("slug", generatedSlug, {
+                              shouldValidate: true,
+                            });
+                          }
+                        }}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -205,11 +221,12 @@ export function PlanDialog({
                 name="slug"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Slug (Code)</FormLabel>
+                    <FormLabel>{t("fields.slug")}</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="e.g. pro-plan"
+                        placeholder={t("fields.slugPlaceholder")}
                         {...field}
+                        className={form.formState.errors.slug ? "border-destructive" : ""}
                         onChange={(e) =>
                           field.onChange(
                             e.target.value.toLowerCase().replace(/\s+/g, "-")
@@ -228,9 +245,12 @@ export function PlanDialog({
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t("fields.description")}</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Plan details..." {...field} />
+                    <Textarea
+                      placeholder={t("fields.descriptionPlaceholder")}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -243,9 +263,9 @@ export function PlanDialog({
                 name="priceMonthly"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Monthly Price ($)</FormLabel>
+                    <FormLabel>{t("fields.priceMonthly")}</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input type="number" {...field} className={form.formState.errors.priceMonthly ? "border-destructive" : ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -256,9 +276,9 @@ export function PlanDialog({
                 name="priceYearly"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Yearly Price ($)</FormLabel>
+                    <FormLabel>{t("fields.priceYearly")}</FormLabel>
                     <FormControl>
-                      <Input type="number" {...field} />
+                      <Input type="number" {...field} className={form.formState.errors.priceYearly ? "border-destructive" : ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -272,11 +292,11 @@ export function PlanDialog({
                 name="maxProducts"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Max Products</FormLabel>
+                    <FormLabel>{t("fields.maxProducts")}</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
-                    <FormDescription>Set -1 for unlimited</FormDescription>
+                    <FormDescription>{t("fields.limitNote")}</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -286,7 +306,7 @@ export function PlanDialog({
                 name="maxStorage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Storage Limit (MB)</FormLabel>
+                    <FormLabel>{t("fields.limitStorage")}</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
@@ -303,9 +323,11 @@ export function PlanDialog({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Active</FormLabel>
+                      <FormLabel className="text-base">
+                        {t("fields.active")}
+                      </FormLabel>
                       <FormDescription>
-                        Available for new subscriptions
+                        {t("fields.activeDesc")}
                       </FormDescription>
                     </div>
                     <FormControl>
@@ -323,8 +345,12 @@ export function PlanDialog({
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel className="text-base">Public</FormLabel>
-                      <FormDescription>Shown on pricing page</FormDescription>
+                      <FormLabel className="text-base">
+                        {t("fields.public")}
+                      </FormLabel>
+                      <FormDescription>
+                        {t("fields.publicDesc")}
+                      </FormDescription>
                     </div>
                     <FormControl>
                       <Switch
@@ -343,13 +369,13 @@ export function PlanDialog({
                 variant="outline"
                 onClick={() => setOpen(false)}
               >
-                Cancel
+                {t("buttons.cancel")}
               </Button>
               <Button type="submit" disabled={form.formState.isSubmitting}>
                 {form.formState.isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Save Changes
+                {t("buttons.save")}
               </Button>
             </DialogFooter>
           </form>

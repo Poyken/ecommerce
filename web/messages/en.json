@@ -3,6 +3,7 @@
     "shop": "Shop",
     "about": "About",
     "contact": "Contact",
+    "chat": "Chat",
     "blog": "Blog",
     "login": "Login",
     "register": "Register",
@@ -1434,66 +1435,67 @@
       "subscriptions": "Subscriptions",
       "platformSystem": "PLATFORM SYSTEM",
       "settings": "Settings",
-      "tenantAdmin": "Tenant Admin"
+      "tenantAdmin": "Tenant Admin",
+      "platformControl": "Platform Control"
     }
   },
   "contact": {
-      "badge": "Get in Touch",
-      "title": "Get In Touch",
-      "subtitle": "Have a question or feedback? We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
-      "email": "Email",
-      "phone": "Phone",
-      "address": "Address",
-      "form": {
-        "title": "Send us a Message",
-        "name": "Your Name",
-        "email": "Email Address",
-        "subject": "Subject",
-        "message": "Message",
-        "placeholders": {
-          "name": "John Doe",
-          "email": "john@example.com",
-          "subject": "How can we help you?",
-          "message": "Tell us more about your inquiry..."
-        },
-        "submit": "Send Message",
-        "sending": "Sending...",
-        "successTitle": "Message Sent Successfully!",
-        "successDesc": "We'll get back to you within 24 hours.",
-        "errors": {
-          "name": "Please enter your name",
-          "email": "Please enter your email",
-          "emailInvalid": "Please enter a valid email address",
-          "subject": "Please enter a subject",
-          "message": "Please enter your message"
-        }
+    "badge": "Get in Touch",
+    "title": "Get In Touch",
+    "subtitle": "Have a question or feedback? We'd love to hear from you. Send us a message and we'll respond as soon as possible.",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "form": {
+      "title": "Send us a Message",
+      "name": "Your Name",
+      "email": "Email Address",
+      "subject": "Subject",
+      "message": "Message",
+      "placeholders": {
+        "name": "John Doe",
+        "email": "john@example.com",
+        "subject": "How can we help you?",
+        "message": "Tell us more about your inquiry..."
       },
-      "faq": {
-        "title": "Frequently Asked Questions",
-        "subtitle": "Find answers to common questions about our services, shipping, and policies.",
-        "q1": "What are your shipping times?",
-        "a1": "We offer global shipping. Standard delivery takes 5-7 business days, while express shipping arrives within 2-3 business days.",
-        "q2": "Do you offer international shipping?",
-        "a2": "Yes, we ship to over 100 countries worldwide. Shipping costs are calculated at checkout based on your location.",
-        "q3": "What is your return policy?",
-        "a3": "We accept returns within 30 days of purchase. Items must be unworn, unwashed, and with original tags attached.",
-        "q4": "How can I track my order?",
-        "a4": "Once your order ships, you will receive a confirmation email with a tracking number to monitor your package's journey."
-      },
-      "info": {
-        "email": "support@luxury.com",
-        "salesEmail": "sales@luxury.com",
-        "phone": "+1 (555) 123-4567",
-        "hours": "Mon-Fri, 9AM-6PM EST",
-        "address": "123 Luxury Avenue, New York, NY 10001"
-      },
-      "map": {
-        "storeName": "Luxury Store",
-        "addressLine1": "123 Luxury Ave",
-        "addressLine2": "New York, NY 10001",
-        "openNow": "Open Now: 9:00 - 18:00"
+      "submit": "Send Message",
+      "sending": "Sending...",
+      "successTitle": "Message Sent Successfully!",
+      "successDesc": "We'll get back to you within 24 hours.",
+      "errors": {
+        "name": "Please enter your name",
+        "email": "Please enter your email",
+        "emailInvalid": "Please enter a valid email address",
+        "subject": "Please enter a subject",
+        "message": "Please enter your message"
       }
     },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "subtitle": "Find answers to common questions about our services, shipping, and policies.",
+      "q1": "What are your shipping times?",
+      "a1": "We offer global shipping. Standard delivery takes 5-7 business days, while express shipping arrives within 2-3 business days.",
+      "q2": "Do you offer international shipping?",
+      "a2": "Yes, we ship to over 100 countries worldwide. Shipping costs are calculated at checkout based on your location.",
+      "q3": "What is your return policy?",
+      "a3": "We accept returns within 30 days of purchase. Items must be unworn, unwashed, and with original tags attached.",
+      "q4": "How can I track my order?",
+      "a4": "Once your order ships, you will receive a confirmation email with a tracking number to monitor your package's journey."
+    },
+    "info": {
+      "email": "support@luxury.com",
+      "salesEmail": "sales@luxury.com",
+      "phone": "+1 (555) 123-4567",
+      "hours": "Mon-Fri, 9AM-6PM EST",
+      "address": "123 Luxury Avenue, New York, NY 10001"
+    },
+    "map": {
+      "storeName": "Luxury Store",
+      "addressLine1": "123 Luxury Ave",
+      "addressLine2": "New York, NY 10001",
+      "openNow": "Open Now: 9:00 - 18:00"
+    }
+  },
   "superAdmin": {
     "brand": "Super Admin",
     "dashboard": {
@@ -1582,6 +1584,61 @@
         "deleteError": "Failed to delete plan"
       }
     },
+
+    "planDialog": {
+      "titleCreate": "Create New Plan",
+      "titleEdit": "Edit Plan",
+      "description": "Configure subscription plan details, pricing and limits.",
+      "fields": {
+        "name": "Plan Name",
+        "namePlaceholder": "e.g. Pro Plan",
+        "slug": "Slug (Code)",
+        "slugPlaceholder": "e.g. pro-plan",
+        "description": "Description",
+        "descriptionPlaceholder": "Plan details...",
+        "priceMonthly": "Monthly Price ($)",
+        "priceYearly": "Yearly Price ($)",
+        "maxProducts": "Max Products",
+        "limitNote": "Set -1 for unlimited",
+        "limitStorage": "Storage Limit (MB)",
+        "active": "Active",
+        "activeDesc": "Available for new subscriptions",
+        "public": "Public",
+        "publicDesc": "Shown on pricing page"
+      },
+      "buttons": {
+        "cancel": "Cancel",
+        "save": "Save Changes"
+      },
+      "messages": {
+        "successCreate": "Plan created successfully",
+        "successUpdate": "Plan updated successfully",
+        "errorSave": "Failed to save plan"
+      }
+    },
+    "invoices": {
+      "title": "Invoices",
+      "subtitle": "Manage billing and view payment history.",
+      "stats": {
+        "total": "Total Invoices",
+        "revenue": "Revenue"
+      },
+      "table": {
+        "id": "Invoice ID",
+        "tenant": "Tenant",
+        "amount": "Amount",
+        "status": "Status",
+        "date": "Due Date",
+        "actions": "Actions"
+      },
+      "actions": {
+        "manage": "Manage Invoice",
+        "view": "View Details",
+        "markPaid": "Mark as Paid",
+        "cancel": "Cancel Invoice",
+        "successUpdate": "Invoice status updated"
+      }
+    },
     "subscriptions": {
       "title": "Subscriptions & Billing",
       "subtitle": "Manage {total} platform subscriptions.",
@@ -1610,6 +1667,21 @@
       "empty": {
         "title": "No subscriptions found",
         "description": "There are no subscriptions matching your criteria."
+      },
+      "actions": {
+        "edit": "Edit Subscription",
+        "cancel": "Cancel Subscription",
+        "delete": "Delete Entry"
+      },
+      "dialog": {
+        "cancelTitle": "Cancel Subscription",
+        "cancelDesc": "Are you sure you want to cancel the subscription for \"{name}\"? They will lose access at the end of the billing period.",
+        "deleteTitle": "Delete Subscription Entry",
+        "deleteDesc": "DANGER: Are you sure you want to delete the subscription record for \"{name}\"? This removes all billing linkage from the platform database.",
+        "confirmCancel": "Yes, Cancel Subscription",
+        "confirmDelete": "Delete Permanently",
+        "successCancel": "Subscription cancelled successfully",
+        "successDelete": "Subscription record deleted"
       }
     },
     "settings": {

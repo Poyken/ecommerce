@@ -3,6 +3,7 @@
     "shop": "Cửa hàng",
     "about": "Giới thiệu",
     "contact": "Liên hệ",
+    "chat": "Trò chuyện",
     "blog": "Tin tức",
     "login": "Đăng nhập",
     "register": "Đăng ký",
@@ -1570,6 +1571,60 @@
         "deleteError": "Xóa gói thất bại"
       }
     },
+    "planDialog": {
+      "titleCreate": "Tạo Gói Mới",
+      "titleEdit": "Sửa Gói Dịch Vụ",
+      "description": "Cấu hình chi tiết gói, giá cả và giới hạn.",
+      "fields": {
+        "name": "Tên Gói",
+        "namePlaceholder": "VD: Gói Chuyên Nghiệp",
+        "slug": "Mã (Slug)",
+        "slugPlaceholder": "VD: pro-plan",
+        "description": "Mô tả",
+        "descriptionPlaceholder": "Chi tiết gói...",
+        "priceMonthly": "Giá Tháng ($)",
+        "priceYearly": "Giá Năm ($)",
+        "maxProducts": "Tối đa Sản phẩm",
+        "limitNote": "Đặt -1 để không giới hạn",
+        "limitStorage": "Giới hạn Lưu trữ (MB)",
+        "active": "Kích hoạt",
+        "activeDesc": "Có sẵn cho các đăng ký mới",
+        "public": "Công khai",
+        "publicDesc": "Hiển thị trên bảng giá"
+      },
+      "buttons": {
+        "cancel": "Hủy",
+        "save": "Lưu Thay Đổi"
+      },
+      "messages": {
+        "successCreate": "Tạo gói thành công",
+        "successUpdate": "Cập nhật gói thành công",
+        "errorSave": "Lưu gói thất bại"
+      }
+    },
+    "invoices": {
+      "title": "Hóa Đơn",
+      "subtitle": "Quản lý thanh toán và lịch sử giao dịch.",
+      "stats": {
+        "total": "Tổng Hóa Đơn",
+        "revenue": "Doanh Thu"
+      },
+      "table": {
+        "id": "Mã HĐ",
+        "tenant": "Cửa Hàng",
+        "amount": "Số Tiền",
+        "status": "Trạng Thái",
+        "date": "Hạn Nộp",
+        "actions": "Hành Động"
+      },
+      "actions": {
+        "manage": "Quản lý Hóa đơn",
+        "view": "Xem Chi tiết",
+        "markPaid": "Đánh dấu Đã thanh toán",
+        "cancel": "Hủy Hóa đơn",
+        "successUpdate": "Trạng thái hóa đơn đã được cập nhật"
+      }
+    },
     "subscriptions": {
       "title": "Gói cước & Thanh toán",
       "subtitle": "Quản lý {total} thuê bao trên toàn nền tảng.",
@@ -1598,6 +1653,21 @@
       "empty": {
         "title": "Không tìm thấy thuê bao nào",
         "description": "Không có thuê bao nào phù hợp với tiêu chí tìm kiếm."
+      },
+      "actions": {
+        "edit": "Sửa thuê bao",
+        "cancel": "Hủy đăng ký",
+        "delete": "Xóa bản ghi"
+      },
+      "dialog": {
+        "cancelTitle": "Hủy đăng ký",
+        "cancelDesc": "Bạn có chắc chắn muốn hủy đăng ký của \"{name}\"? Họ sẽ mất quyền truy cập vào cuối chu kỳ thanh toán.",
+        "deleteTitle": "Xóa bản ghi đăng ký",
+        "deleteDesc": "CẢNH BÁO: Bạn có chắc chắn muốn xóa bản ghi đăng ký của \"{name}\"? Việc này sẽ xóa mọi liên kết thanh toán khỏi cơ sở dữ liệu.",
+        "confirmCancel": "Vâng, Hủy đăng ký",
+        "confirmDelete": "Xóa vĩnh viễn",
+        "successCancel": "Hủy đăng ký thành công",
+        "successDelete": "Đã xóa bản ghi đăng ký"
       }
     },
     "settings": {

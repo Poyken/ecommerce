@@ -14,6 +14,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { Inter, Outfit } from "next/font/google";
 import { Suspense } from "react";
+import NextTopLoader from "nextjs-toploader";
 import "../globals.css";
 
 export function generateStaticParams() {
@@ -131,6 +132,7 @@ async function RootProviders({
                 <SmoothScroll />
                 <PwaProvider>{children}</PwaProvider>
                 <Toaster />
+                <NextTopLoader showSpinner={false} color="hsl(var(--primary))" />
               </MotionProvider>
             </ThemeProvider>
           </TenantProvider>
