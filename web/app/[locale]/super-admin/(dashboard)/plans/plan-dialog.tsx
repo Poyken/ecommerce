@@ -48,7 +48,7 @@ import { useToast } from "@/components/ui/use-toast";
 import {
   createPlanAction,
   updatePlanAction,
-} from "@/features/superadmin/domain-actions/plans-actions";
+} from "@/features/super-admin/domain-actions/plans-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";

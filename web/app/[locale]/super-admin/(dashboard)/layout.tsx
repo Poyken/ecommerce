@@ -2,7 +2,7 @@ import { LoadingScreen } from "@/components/shared/loading-screen";
 import { AdminHeader } from "@/features/admin/components/navigation/admin-header";
 import { AuthRedirect } from "@/features/auth/components/auth-redirect";
 import { getProfileAction } from "@/features/profile/actions";
-import { SuperAdminSidebar } from "@/features/superadmin/components/super-admin-sidebar";
+import { SuperAdminSidebar } from "@/features/super-admin/components/super-admin-sidebar";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 

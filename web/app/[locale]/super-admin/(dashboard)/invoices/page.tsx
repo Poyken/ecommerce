@@ -15,7 +15,7 @@
 // - Dữ liệu được truyền xuống Client Component (`InvoicesClient`) để xử lý tương tác.
 // - Page này nằm trong route group `(dashboard)` nên thừa hưởng layout chung của Admin.
 // ================================================================================================= 
-import { getInvoicesAction } from "@/features/superadmin/domain-actions/invoices-actions";
+import { getInvoicesAction } from "@/features/super-admin/domain-actions/invoices-actions";
 import { InvoicesClient } from "./invoices-client";
 
 export default async function InvoicesPage() {

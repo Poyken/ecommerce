@@ -37,7 +37,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deletePlanAction } from "@/features/superadmin/domain-actions/plans-actions";
+import { deletePlanAction } from "@/features/super-admin/domain-actions/plans-actions";
 import { MoreHorizontal, Pencil, Trash } from "lucide-react";
 import { useState } from "react";
 import { PlanDialog } from "./plan-dialog";

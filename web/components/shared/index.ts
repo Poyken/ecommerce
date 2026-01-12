@@ -58,5 +58,4 @@ export { TenantStyleProvider } from "./tenant-style-provider";
 export { ThemeProvider } from "./theme-provider";
 export { ThemeToggle } from "./theme-toggle";
 export { UserAvatar } from "./user-avatar";
-export { LocationSelects } from "./location-selects";
 export { AnimatedError } from "./animated-error";

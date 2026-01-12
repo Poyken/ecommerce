@@ -18,7 +18,7 @@
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { PlansClient } from "./plans-client";
-import { getPlansAction } from "@/features/superadmin/domain-actions/plans-actions";
+import { getPlansAction } from "@/features/super-admin/domain-actions/plans-actions";
 import { PlanDialog } from "./plan-dialog";
 
 export default async function PlansPage() {

@@ -21,7 +21,7 @@ import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
-import { LocationSelects } from "@/components/shared/location-selects";
+import { LocationSelects } from "@/features/address/components/location-selects";
 
 /**
  * =====================================================================
@@ -154,7 +154,10 @@ function AddAddressForm({
       if (formData.wardCode) form.append("wardCode", formData.wardCode);
 
       // Default logic (simplified)
-      form.append("isDefault", address?.isDefault ? "on" : (!address ? "on" : "off"));
+      form.append(
+        "isDefault",
+        address?.isDefault ? "on" : !address ? "on" : "off"
+      );
 
       let res;
       if (address) {
@@ -218,25 +221,37 @@ function AddAddressForm({
       </div>
 
       {/* Location Selects */}
-      <LocationSelects 
+      <LocationSelects
         provinceId={formData.provinceId}
         districtId={formData.districtId}
         wardCode={formData.wardCode}
-        onProvinceChange={(id, name) => setFormData({ 
-          ...formData, 
-          provinceId: id, city: name, 
-          districtId: undefined, district: "", 
-          wardCode: undefined, ward: "" 
-        })}
-        onDistrictChange={(id, name) => setFormData({ 
-          ...formData, 
-          districtId: id, district: name, 
-          wardCode: undefined, ward: "" 
-        })}
-        onWardChange={(code, name) => setFormData({ 
-          ...formData, 
-          wardCode: code, ward: name 
-        })}
+        onProvinceChange={(id, name) =>
+          setFormData({
+            ...formData,
+            provinceId: id,
+            city: name,
+            districtId: undefined,
+            district: "",
+            wardCode: undefined,
+            ward: "",
+          })
+        }
+        onDistrictChange={(id, name) =>
+          setFormData({
+            ...formData,
+            districtId: id,
+            district: name,
+            wardCode: undefined,
+            ward: "",
+          })
+        }
+        onWardChange={(code, name) =>
+          setFormData({
+            ...formData,
+            wardCode: code,
+            ward: name,
+          })
+        }
         errors={errors}
         disabled={isPending}
         t={t}

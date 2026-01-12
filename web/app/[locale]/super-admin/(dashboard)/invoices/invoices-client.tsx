@@ -39,7 +39,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { updateInvoiceStatusAction } from "@/features/superadmin/domain-actions/invoices-actions";
+import { updateInvoiceStatusAction } from "@/features/super-admin/domain-actions/invoices-actions";
 import { MoreHorizontal, Ban, CheckCircle, FileText } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";

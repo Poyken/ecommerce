@@ -34,9 +34,9 @@ import {
 } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BusinessTab } from "@/features/superadmin/components/dashboard/business-tab";
-import { TechOpsTab } from "@/features/superadmin/components/dashboard/tech-ops-tab";
-import { TenantsTab } from "@/features/superadmin/components/dashboard/tenants-tab";
+import { BusinessTab } from "@/features/super-admin/components/dashboard/business-tab";
+import { TechOpsTab } from "@/features/super-admin/components/dashboard/tech-ops-tab";
+import { TenantsTab } from "@/features/super-admin/components/dashboard/tenants-tab";
 
 /**
  * =================================================================================================

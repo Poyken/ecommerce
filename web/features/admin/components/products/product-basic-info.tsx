@@ -13,7 +13,7 @@
  * - Validate form realtime và hiển thị lỗi bằng Animation (`AnimatePresence`)
  *   giúp giao diện mượt mà, thân thiện hơn thông báo lỗi cứng nhắc.
  * =====================================================================
- */ 
+ */
 "use client";
 
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useTranslations } from "next-intl";
 import { AnimatePresence } from "framer-motion";
 import { m } from "@/lib/animations";
-import { MagicWriteButton } from "@/components/admin/magic-write-button";
+import { MagicWriteButton } from "./magic-write-button";
 
 interface ProductBasicInfoProps {
   formData: {

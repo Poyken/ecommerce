@@ -47,6 +47,7 @@ export * from "./taxonomy/edit-category-dialog";
 export * from "./products/create-product-dialog";
 export * from "./products/edit-product-dialog";
 export * from "./products/edit-sku-dialog";
+export * from "./products/magic-write-button";
 export * from "./products/product-translation-dialog";
 
 // Users
