@@ -40,7 +40,7 @@ export default function AuthLayout({
       {/* Left Side - Image */}
       <div className="hidden lg:flex flex-col justify-center items-center bg-muted relative overflow-hidden h-full">
         <OptimizedImage
-          src="/images/home/hero-luxury.jpg"
+          src="/images/auth-hero-luxury.png"
           alt="Authentication Background"
           fill
           containerClassName="w-full h-full"

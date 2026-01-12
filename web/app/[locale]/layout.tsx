@@ -79,9 +79,9 @@ export const metadata: Metadata = {
   },
   authors: [{ name: "Luxe Team" }],
   icons: {
-    icon: "/favicon.ico",
-    shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
   },
 };
 

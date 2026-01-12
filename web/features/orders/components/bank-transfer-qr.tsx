@@ -7,7 +7,7 @@ import { simulatePaymentSuccessAction } from "@/features/orders/actions";
 import { useRouter } from "@/i18n/routing";
 import { formatCurrency } from "@/lib/utils";
 import { Copy, CreditCard, ExternalLink, Loader2, QrCode } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -58,16 +58,13 @@ export function BankTransferQR({
   const t = useTranslations("orders");
   const router = useRouter();
   const { toast } = useToast();
-  // const locale = useLocale();
   const [mounted, setMounted] = useState(false);
-  // const [origin, setOrigin] = useState("");
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
 
   // Hydration fix: Chỉ render client-side logic khi mount xong
   useEffect(() => {
     setMounted(true);
-    // setOrigin(window.location.origin);
   }, []);
 
   // Countdown Timer Logic

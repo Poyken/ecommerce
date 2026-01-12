@@ -45,7 +45,7 @@ import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import type { Cache } from 'cache-manager';
-import { createSlug } from '../common/utils/string';
+import { createSlug } from '@/common/utils/string';
 import { CreateProductDto } from './dto/create-product.dto';
 import { FilterProductDto, SortOption } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';

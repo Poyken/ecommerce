@@ -2,7 +2,7 @@ import { PrismaService } from '@core/prisma/prisma.service';
 import { getTenant } from '@core/tenant/tenant.context';
 import { Injectable } from '@nestjs/common';
 import { OptionValue, Product, ProductOption } from '@prisma/client';
-import { createSlug } from '../common/utils/string';
+import { createSlug } from '@/common/utils/string';
 
 /**
  * =====================================================================

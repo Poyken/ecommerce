@@ -39,7 +39,6 @@ import { useTranslations } from "next-intl";
 interface HeaderProps {
   initialUser?: any; // Thông tin user (được truyền từ server component cha)
   permissions?: string[]; // Quyền hạn (RBAC)
-  initialCartCount?: number;
   initialWishlistCount?: number;
   isInline?: boolean;
 }
@@ -94,7 +93,6 @@ export function HeaderFallback() {
 export function Header({
   initialUser,
   permissions,
-  initialCartCount,
   initialWishlistCount,
   isInline = false,
 }: HeaderProps) {

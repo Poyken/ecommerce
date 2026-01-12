@@ -32,7 +32,6 @@ class NotificationSocketClient {
    */
   connect(token: string) {
     if (this.socket?.connected) {
-      console.log("[Socket] Already connected");
       return;
     }
 
@@ -50,13 +49,9 @@ class NotificationSocketClient {
     });
 
     // Setup event handlers
-    this.socket.on("connect", () => {
-      console.log("[Socket] Connected successfully");
-    });
+    this.socket.on("connect", () => {});
 
-    this.socket.on("disconnect", (reason) => {
-      console.log("[Socket] Disconnected:", reason);
-    });
+    this.socket.on("disconnect", (_reason) => {});
 
     this.socket.on("connect_error", (error) => {
       console.error("[Socket] Connection error:", error.message);
@@ -83,7 +78,6 @@ class NotificationSocketClient {
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
-      console.log("[Socket] Disconnected manually");
     }
   }
 

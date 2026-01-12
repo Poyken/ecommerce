@@ -50,16 +50,13 @@ class StockSocketClient {
 
     // Setup event handlers
     this.socket.on("connect", () => {
-      console.log("[StockSocket] Connected successfully");
       // Rejoin rooms after reconnect
       this.connectedRooms.forEach((productId) => {
         this.socket?.emit("join_product", { productId });
       });
     });
 
-    this.socket.on("disconnect", (reason) => {
-      console.log("[StockSocket] Disconnected:", reason);
-    });
+    this.socket.on("disconnect", (_reason) => {});
 
     this.socket.on("connect_error", (error) => {
       console.error("[StockSocket] Connection error:", error.message);
@@ -82,7 +79,6 @@ class StockSocketClient {
       this.socket.disconnect();
       this.socket = null;
       this.connectedRooms.clear();
-      console.log("[StockSocket] Disconnected manually");
     }
   }
 

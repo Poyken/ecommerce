@@ -47,7 +47,7 @@ import { useEffect, useState } from "react";
  * =================================================================================================
  */
 export function SuperAdminSidebar() {
-  // We might want specific translations for superadmin or reuse admin
+  // We might want specific translations for super-admin or reuse admin
   const t = useTranslations("admin.sidebar");
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);

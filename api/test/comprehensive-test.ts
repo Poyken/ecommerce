@@ -289,10 +289,7 @@ async function testEndpoint(
   data?: any,
 ) {
   const start = Date.now();
-  const res = await (session.axiosInstance as any)[method.toLowerCase()](
-    path,
-    data,
-  );
+  const res = await session.axiosInstance[method.toLowerCase()](path, data);
   const duration = Date.now() - start;
 
   if (res.status >= 200 && res.status < 300) {

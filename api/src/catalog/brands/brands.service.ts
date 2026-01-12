@@ -6,7 +6,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Brand } from '@prisma/client';
-import { BaseCrudService } from '../common/base-crud.service';
+import { BaseCrudService } from '@/common/base-crud.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 

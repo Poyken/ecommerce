@@ -7,8 +7,8 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Category } from '@prisma/client';
-import { createSlug } from '../common/utils/string';
-import { BaseCrudService } from '../common/base-crud.service';
+import { createSlug } from '@/common/utils/string';
+import { BaseCrudService } from '@/common/base-crud.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
