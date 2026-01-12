@@ -71,8 +71,8 @@ async function main() {
         user?: { email: string };
       };
     }>(`${API_URL}/v1/auth/login`, {
-      email: 'admin@example.com',
-      password: '123456',
+      email: 'super@platform.com',
+      password: '12345678',
     });
 
     if (loginRes.data.data?.accessToken) {
