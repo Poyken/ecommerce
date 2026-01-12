@@ -19,7 +19,7 @@ import { Module } from '@nestjs/common';
 import { RagService } from './rag.service';
 import { RagController } from './rag.controller';
 import { KnowledgeService } from './knowledge.service';
-import { AiChatModule } from '@/ai-chat/ai-chat.module';
+import { AiChatModule } from '@/ai/ai-chat/ai-chat.module';
 
 /**
  * =============================================================================

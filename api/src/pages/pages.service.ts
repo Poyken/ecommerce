@@ -113,7 +113,7 @@ export class PagesService {
 
     // If tenant context exists, enforce it.
     // If Super Admin accesses via specific tenant domain, it enforces that tenant.
-    // If accessing globally (tenant=null + superadmin), maybe allow?
+    // If accessing globally (tenant=null + super-admin), maybe allow?
     // But usually admin panel works under a tenant context.
     if (tenant) {
       where.tenantId = tenant.id;

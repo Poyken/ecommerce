@@ -23,8 +23,8 @@
  */
 
 import { Injectable, Logger } from '@nestjs/common';
-import { GeminiService } from '@/ai-chat/gemini.service';
-import { ProductsService } from '@/products/products.service';
+import { GeminiService } from '@/ai/ai-chat/gemini.service';
+import { ProductsService } from '@/catalog/products/products.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 
 /**

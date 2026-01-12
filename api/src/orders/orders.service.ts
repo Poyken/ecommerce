@@ -16,7 +16,7 @@ import { CouponsService } from '@/coupons/coupons.service';
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { ShippingService } from '@/shipping/shipping.service';
-import { InventoryService } from '@/skus/inventory.service';
+import { InventoryService } from '@/catalog/skus/inventory.service';
 import { EmailService } from '@integrations/email/email.service';
 import { Logger } from '@nestjs/common';
 

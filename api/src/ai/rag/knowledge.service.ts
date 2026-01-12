@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
-import { GeminiService } from '@/ai-chat/gemini.service';
+import { GeminiService } from '@/ai/ai-chat/gemini.service';
 import { RedisService } from '@core/redis/redis.service';
 
 /**

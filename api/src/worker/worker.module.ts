@@ -1,6 +1,6 @@
-import { BrandsModule } from '@/brands/brands.module';
-import { CategoriesModule } from '@/categories/categories.module';
-import { ProductsModule } from '@/products/products.module';
+import { BrandsModule } from '@/catalog/brands/brands.module';
+import { CategoriesModule } from '@/catalog/categories/categories.module';
+import { ProductsModule } from '@/catalog/products/products.module';
 import { BullModule, InjectQueue } from '@nestjs/bullmq';
 import { Logger, Module, OnApplicationBootstrap } from '@nestjs/common';
 import { Queue } from 'bullmq';

@@ -25,8 +25,8 @@ import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
 import { SkuManagerService } from './sku-manager.service';
 
-import { InventoryService } from '@/skus/inventory.service';
-import { StockGateway } from '@/skus/stock.gateway';
+import { InventoryService } from '@/catalog/skus/inventory.service';
+import { StockGateway } from '@/catalog/skus/stock.gateway';
 
 import { NotificationsModule } from '@/notifications/notifications.module';
 

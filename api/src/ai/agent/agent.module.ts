@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AgentService } from './agent.service';
 import { AgentController } from './agent.controller';
-import { AiChatModule } from '@/ai-chat/ai-chat.module';
-import { ProductsModule } from '@/products/products.module';
+import { AiChatModule } from '@/ai/ai-chat/ai-chat.module';
+import { ProductsModule } from '@/catalog/products/products.module';
 
 /**
  * =============================================================================

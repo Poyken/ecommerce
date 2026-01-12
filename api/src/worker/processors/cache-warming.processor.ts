@@ -1,7 +1,7 @@
-import { BrandsService } from '@/brands/brands.service';
-import { CategoriesService } from '@/categories/categories.service';
-import { SortOption } from '@/products/dto/filter-product.dto';
-import { ProductsService } from '@/products/products.service';
+import { BrandsService } from '@/catalog/brands/brands.service';
+import { CategoriesService } from '@/catalog/categories/categories.service';
+import { SortOption } from '@/catalog/products/dto/filter-product.dto';
+import { ProductsService } from '@/catalog/products/products.service';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';

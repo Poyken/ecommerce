@@ -31,7 +31,7 @@ import { UpdateSkuDto } from './dto/update-sku.dto';
  * =====================================================================
  */
 
-import { SkuManagerService } from '@/products/sku-manager.service';
+import { SkuManagerService } from '@/catalog/products/sku-manager.service';
 
 @Injectable()
 export class SkusService {

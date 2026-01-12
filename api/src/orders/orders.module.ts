@@ -21,7 +21,7 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  */
 import { CouponsModule } from '@/coupons/coupons.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
-import { ProductsModule } from '@/products/products.module';
+import { ProductsModule } from '@/catalog/products/products.module';
 import { ShippingModule } from '@/shipping/shipping.module';
 import { InvoiceService } from './invoice.service';
 import { OrdersController } from './orders.controller';
