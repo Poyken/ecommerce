@@ -62,32 +62,41 @@ export function AdminPageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6",
+        "flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 md:p-8 bg-white dark:bg-slate-950 rounded-4xl border border-white/20 shadow-sm backdrop-blur-xl mb-8 animate-in fade-in slide-in-from-top-4 duration-500",
         className
       )}
     >
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-3">
-          {icon && (
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              {icon}
+      <div className="flex flex-col md:flex-row md:items-center gap-6">
+        <div className="flex items-center gap-4">
+          {icon && React.isValidElement(icon) && (
+            <div className="flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-slate-100 dark:bg-slate-900 text-primary shadow-inner border border-slate-200/50 dark:border-slate-800/50">
+              {React.cloneElement(icon as React.ReactElement<any>, {
+                className: cn(
+                  (icon as React.ReactElement<any>).props.className,
+                  "h-7 w-7 stroke-[2.5px]"
+                ),
+              })}
             </div>
           )}
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+              {title}
+            </h1>
             {subtitle && (
-              <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
+              <p className="text-base text-muted-foreground font-medium mt-0.5">
+                {subtitle}
+              </p>
             )}
           </div>
         </div>
 
         {stats && stats.length > 0 && (
-          <div className="hidden md:flex items-center gap-2 ml-4">
+          <div className="flex items-center gap-3 ml-0 md:ml-4">
             {stats.map((stat, index) => (
               <span
                 key={index}
                 className={cn(
-                  "px-2.5 py-1 rounded-md text-sm font-medium",
+                  "px-4 py-1.5 rounded-2xl text-xs font-black uppercase tracking-widest shadow-sm border border-transparent",
                   statVariants[stat.variant || "default"]
                 )}
               >
@@ -98,7 +107,11 @@ export function AdminPageHeader({
         )}
       </div>
 
-      {actions && <div className="flex items-center gap-2">{actions}</div>}
+      {actions && (
+        <div className="flex items-center gap-3 self-end md:self-center">
+          {actions}
+        </div>
+      )}
     </div>
   );
 }
@@ -132,16 +145,22 @@ export function AdminTableWrapper({
   return (
     <div
       className={cn(
-        "rounded-xl border border-border bg-card/50 backdrop-blur-sm overflow-hidden",
+        "rounded-4xl border border-slate-200/60 dark:border-slate-800/60 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl shadow-xl shadow-slate-200/20 dark:shadow-none overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700",
         className
       )}
     >
       {(title || description || headerActions) && (
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/30">
+        <div className="flex items-center justify-between px-8 py-6 border-b border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/30">
           <div>
-            {title && <h3 className="font-semibold">{title}</h3>}
+            {title && (
+              <h3 className="text-lg font-black text-slate-900 dark:text-white">
+                {title}
+              </h3>
+            )}
             {description && (
-              <p className="text-sm text-muted-foreground">{description}</p>
+              <p className="text-sm text-muted-foreground font-medium">
+                {description}
+              </p>
             )}
           </div>
           {headerActions}
@@ -149,11 +168,14 @@ export function AdminTableWrapper({
       )}
       <div className="relative">
         {isLoading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/50 backdrop-blur-[1px]">
-            <div className="flex flex-col items-center gap-3">
-              <div className="h-8 w-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-              <span className="text-sm font-medium text-muted-foreground">
-                Loading data...
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 dark:bg-slate-950/60 backdrop-blur-[1px] transition-all duration-300">
+            <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-white/80 dark:bg-slate-900/80 shadow-2xl border border-white/20 dark:border-slate-800/50 backdrop-blur-md">
+              <div className="relative">
+                <div className="h-12 w-12 rounded-full border-[3px] border-primary/20" />
+                <div className="absolute top-0 left-0 h-12 w-12 rounded-full border-[3px] border-primary border-t-transparent animate-spin" />
+              </div>
+              <span className="text-xs font-black text-primary tracking-[0.2em] uppercase animate-pulse">
+                Synchronizing
               </span>
             </div>
           </div>

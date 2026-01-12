@@ -18,10 +18,12 @@
 // COMPONENTS:
 // - `GlassButton`: Button với hiệu ứng kính mờ (frosted glass) theo design system.
 // - `AdminPageHeader`: Component tiêu đề chuẩn hóa cho các trang quản trị.
-// ================================================================================================= 
+// =================================================================================================
 "use client";
 
 import { GlassButton } from "@/components/shared/glass-button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -39,7 +41,7 @@ import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-compo
 import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { deleteRoleAction } from "@/features/admin/actions";
 import { Role } from "@/types/models";
-import { Edit2, Plus, Shield, Trash2 } from "lucide-react";
+import { Edit2, Plus, Shield, Trash2, Search } from "lucide-react";
 
 import { useState, useTransition } from "react";
 import { useToast } from "@/components/ui/use-toast";
@@ -98,11 +100,11 @@ export function RolesPageClient({ initialRoles }: RolesPageClientProps) {
     : initialRoles;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <AdminPageHeader
         title="Roles"
         subtitle="Manage system roles."
-        icon={<Shield className="h-5 w-5" />}
+        icon={<Shield className="text-sky-500 fill-sky-500/10" />}
         actions={
           <>
             <GlassButton
@@ -119,18 +121,22 @@ export function RolesPageClient({ initialRoles }: RolesPageClientProps) {
           </>
         }
       />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+          <Input
+            placeholder="Search roles..."
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+          />
+        </div>
 
-      <div className="flex items-center justify-between gap-4 bg-background/50 p-4 rounded-xl border border-border/50 backdrop-blur-sm">
-        <AdminSearchInput
-          placeholder="Search roles..."
-          value={searchTerm}
-          onChange={onSearchChange}
-        />
-        <div className="text-sm text-muted-foreground">
-          Total:{" "}
-          <span className="font-medium text-foreground">
-            {filteredRoles.length}
-          </span>
+        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl border-none shadow-inner h-14">
+          <div className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+            <Shield className="h-3 w-3" />
+            Total Roles: {filteredRoles.length}
+          </div>
         </div>
       </div>
 
@@ -199,7 +205,6 @@ export function RolesPageClient({ initialRoles }: RolesPageClientProps) {
           </TableBody>
         </Table>
       </div>
-
       {selectedRole && (
         <EditRoleDialog
           key={selectedRole.id}
@@ -209,7 +214,6 @@ export function RolesPageClient({ initialRoles }: RolesPageClientProps) {
           currentName={selectedRole.name}
         />
       )}
-
       <DeleteConfirmDialog
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}

@@ -18,7 +18,7 @@
 // HELPER FUNCTIONS:
 // - `getStatusBadge`: Render badge màu sắc trực quan (Xanh = Paid, Vàng = Pending, Đỏ = Overdue).
 // - `formatCurrency`: Utility để hiển thị tiền tệ chuẩn format quốc tế.
-// ================================================================================================= 
+// =================================================================================================
 "use client";
 
 import { Badge } from "@/components/ui/badge";
@@ -80,7 +80,7 @@ export function InvoicesClient({ initialData }: InvoicesClientProps) {
   const handleUpdateStatus = async (id: string, status: string) => {
     const res = await updateInvoiceStatusAction({ id, status });
     if (res?.data) {
-      toast({ title: "Invoice status updated" });
+      toast({ variant: "success", title: "Invoice status updated" });
       setInvoices(
         invoices.map((inv) =>
           inv.id === id ? { ...inv, status: status as any } : inv
@@ -160,7 +160,11 @@ export function InvoicesClient({ initialData }: InvoicesClientProps) {
                   </div>
                 </TableCell>
                 <TableCell>
-                  {formatCurrency(Number(invoice.amount), "en-US", invoice.currency)}
+                  {formatCurrency(
+                    Number(invoice.amount),
+                    "en-US",
+                    invoice.currency
+                  )}
                 </TableCell>
                 <TableCell>
                   <div className="text-sm">

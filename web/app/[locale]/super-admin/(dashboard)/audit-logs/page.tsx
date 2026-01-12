@@ -16,7 +16,7 @@
 // TÁI SỬ DỤNG COMPONENT:
 // - Chúng ta tái sử dụng `AuditLogsClient` của Admin thường, vì giao diện hiển thị log là tương tự.
 // - Props `basePath` giúp điều hướng phân trang đúng về URL của Super Admin.
-// ================================================================================================= 
+// =================================================================================================
 import { AuditLogsClient } from "@/app/[locale]/admin/(dashboard)/audit-logs/audit-logs-client";
 import { getAuditLogsAction } from "@/features/admin/domain-actions/security-actions";
 import { getTranslations } from "next-intl/server";
@@ -43,6 +43,7 @@ export default async function SuperAdminAuditLogsPage({
     limit: 20,
     search,
     filter,
+    roles: ["SUPER_ADMIN", "ADMIN"],
   });
 
   if (response.error) {

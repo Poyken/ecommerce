@@ -15,6 +15,7 @@
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -138,7 +139,7 @@ export function SkusClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("skus.management")}
@@ -146,7 +147,7 @@ export function SkusClient({
           count: skus.length,
           total: totalCount,
         })}
-        icon={<Barcode className="h-5 w-5" />}
+        icon={<Barcode className="text-slate-500 fill-slate-500/10" />}
         stats={[
           { label: "total", value: totalCount, variant: "default" },
           { label: "active", value: activeCount, variant: "success" },
@@ -154,36 +155,61 @@ export function SkusClient({
           { label: "lowStock", value: lowStockCount, variant: "danger" },
         ]}
       />
-
-      {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <Tabs
           value={currentStatus}
           onValueChange={(v) => handleStatusChange(v as StatusFilterType)}
+          className="w-full"
         >
-          <TabsList>
-            <TabsTrigger value="ALL" className="gap-2" disabled={isPending}>
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
+            <TabsTrigger
+              value="ALL"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
+              disabled={isPending}
+            >
               <Package className="h-4 w-4" />
-              All ({totalCount})
+              All
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black"
+              >
+                {totalCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="ACTIVE" className="gap-2" disabled={isPending}>
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              Active ({activeCount})
+            <TabsTrigger
+              value="ACTIVE"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
+              disabled={isPending}
+            >
+              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              Active
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black"
+              >
+                {activeCount}
+              </Badge>
             </TabsTrigger>
             <TabsTrigger
               value="INACTIVE"
-              className="gap-2"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-slate-600 transition-all gap-2"
               disabled={isPending}
             >
-              <span className="h-2 w-2 rounded-full bg-gray-400" />
-              Inactive ({inactiveCount})
+              <div className="h-2 w-2 rounded-full bg-slate-400" />
+              Inactive
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-slate-100 dark:bg-slate-900/40 text-slate-600 text-[10px] font-black"
+              >
+                {inactiveCount}
+              </Badge>
             </TabsTrigger>
           </TabsList>
         </Tabs>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row items-center gap-4">
           {/* Low Stock Filter */}
-          <div className="flex items-center space-x-2 bg-background px-3 py-2 border rounded-lg">
+          <div className="flex items-center space-x-2 bg-white dark:bg-slate-900 px-4 h-12 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
             <Checkbox
               id="low-stock"
               checked={hasLowStockFilter}
@@ -191,27 +217,36 @@ export function SkusClient({
                 handleLowStockChange(checked as boolean)
               }
               disabled={isPending}
+              className="rounded-md"
             />
             <Label
               htmlFor="low-stock"
-              className="cursor-pointer whitespace-nowrap text-sm flex items-center gap-2"
+              className="cursor-pointer whitespace-nowrap text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2"
             >
               <AlertTriangle className="h-4 w-4 text-amber-500" />
-              Low Stock ({lowStockCount})
+              Low Stock
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-rose-100 dark:bg-rose-900/40 text-rose-600 text-[10px] font-black border-rose-200"
+              >
+                {lowStockCount}
+              </Badge>
             </Label>
           </div>
 
           {/* Search */}
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <div className="relative w-full md:w-80">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={t("skus.searchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
             />
             {isPending && (
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+              </div>
             )}
           </div>
         </div>
@@ -320,12 +355,10 @@ export function SkusClient({
           </TableBody>
         </Table>
       </AdminTableWrapper>
-
       {/* Pagination with page numbers - only show when needed */}
       {skus.length > 0 && total > limit && (
         <DataTablePagination page={page} total={total} limit={limit} />
       )}
-
       {selectedSku && (
         <EditSkuDialog
           key={selectedSku.id}

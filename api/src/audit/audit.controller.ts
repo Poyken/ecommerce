@@ -37,8 +37,15 @@ export class AuditController {
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
     @Query('search') search?: string,
+    @Query('roles') roles?: string,
   ) {
-    const result = await this.auditService.findAll(+page, +limit, search);
+    const rolesArray = roles ? roles.split(',') : undefined;
+    const result = await this.auditService.findAll(
+      +page,
+      +limit,
+      search,
+      rolesArray,
+    );
     return result; // Result already has { data, meta }
   }
 }

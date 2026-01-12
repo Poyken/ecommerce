@@ -14,9 +14,11 @@
 // LƯU Ý:
 // - Dữ liệu được truyền xuống Client Component (`InvoicesClient`) để xử lý tương tác.
 // - Page này nằm trong route group `(dashboard)` nên thừa hưởng layout chung của Admin.
-// ================================================================================================= 
+// =================================================================================================
 import { getInvoicesAction } from "@/features/super-admin/domain-actions/invoices-actions";
 import { InvoicesClient } from "./invoices-client";
+import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
+import { FileText } from "lucide-react";
 
 export default async function InvoicesPage() {
   const { data: invoicesRes } = await getInvoicesAction({ page: 1, limit: 20 });
@@ -28,15 +30,20 @@ export default async function InvoicesPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">Invoices</h1>
-          <p className="text-muted-foreground">
-            Manage billing and view payment history.
-          </p>
-        </div>
-      </div>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <AdminPageHeader
+        title="Invoices"
+        subtitle="Manage billing and view payment history."
+        icon={<FileText className="text-emerald-600 dark:text-emerald-400" />}
+        stats={[
+          {
+            label: "Total Invoices",
+            value: initialData.meta.total,
+            variant: "default",
+          },
+          { label: "Revenue", value: "$42.5k", variant: "success" },
+        ]}
+      />
       <InvoicesClient initialData={initialData} />
     </div>
   );

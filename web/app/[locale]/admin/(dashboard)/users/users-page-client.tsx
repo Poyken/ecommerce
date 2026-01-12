@@ -99,7 +99,7 @@ export function UsersPageClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("users.management")}
@@ -107,11 +107,11 @@ export function UsersPageClient({
           count: initialUsers.length,
           total: totalCount,
         })}
-        icon={<Users className="h-5 w-5" />}
+        icon={<Users className="text-indigo-600 fill-indigo-600/10" />}
         stats={[
-          { label: "total", value: totalCount, variant: "default" },
-          { label: "admins", value: adminCount, variant: "info" },
-          { label: "users", value: userCount, variant: "success" },
+          { label: "Total", value: totalCount, variant: "default" },
+          { label: "Admins", value: adminCount, variant: "info" },
+          { label: "Users", value: userCount, variant: "success" },
         ]}
         actions={
           <div className="flex items-center gap-2">
@@ -119,12 +119,16 @@ export function UsersPageClient({
               variant="outline"
               size="sm"
               onClick={() => alert("Export features coming soon")}
+              className="rounded-xl"
             >
               <Download className="mr-2 h-4 w-4" />
               Export CSV
             </Button>
             {canCreate && (
-              <Button onClick={() => setCreateDialogOpen(true)}>
+              <Button
+                onClick={() => setCreateDialogOpen(true)}
+                className="rounded-xl shadow-lg shadow-primary/20"
+              >
                 <Plus className="mr-2 h-4 w-4" />
                 {t("users.createNew")}
               </Button>
@@ -132,39 +136,70 @@ export function UsersPageClient({
           </div>
         }
       />
-
-      {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <Tabs
           value={currentRole === "all" ? "all" : currentRole}
           onValueChange={handleRoleChange}
+          className="w-full"
         >
-          <TabsList>
-            <TabsTrigger value="all" className="gap-2" disabled={isPending}>
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
+            <TabsTrigger
+              value="all"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
+              disabled={isPending}
+            >
               <Users className="h-4 w-4" />
-              All ({totalCount})
+              All
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black"
+              >
+                {totalCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="ADMIN" className="gap-2" disabled={isPending}>
+            <TabsTrigger
+              value="ADMIN"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-blue-600 transition-all gap-2"
+              disabled={isPending}
+            >
               <Shield className="h-4 w-4" />
-              Admins ({adminCount})
+              Admins
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 text-[10px] font-black"
+              >
+                {adminCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="USER" className="gap-2" disabled={isPending}>
+            <TabsTrigger
+              value="USER"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
+              disabled={isPending}
+            >
               <UserIcon className="h-4 w-4" />
-              Users ({userCount})
+              Users
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black"
+              >
+                {userCount}
+              </Badge>
             </TabsTrigger>
           </TabsList>
         </Tabs>
 
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t("users.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
           />
           {isPending && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            </div>
           )}
         </div>
       </div>
@@ -291,12 +326,10 @@ export function UsersPageClient({
           </TableBody>
         </Table>
       </AdminTableWrapper>
-
       {/* Pagination with page numbers - only show when needed */}
       {initialUsers.length > 0 && total > limit && (
         <DataTablePagination page={page} total={total} limit={limit} />
       )}
-
       <CreateUserDialog
         open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}

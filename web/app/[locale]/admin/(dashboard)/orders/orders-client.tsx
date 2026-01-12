@@ -15,6 +15,7 @@
  */
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { OrderDetailsDialog } from "@/features/admin/components/orders/order-details-dialog";
 import { UpdateOrderStatusDialog } from "@/features/admin/components/orders/update-order-status-dialog";
@@ -31,6 +32,7 @@ import {
   Truck,
   Upload,
   X,
+  Loader2,
 } from "lucide-react";
 
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -296,7 +298,7 @@ export function OrdersClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <input
         type="file"
         ref={fileInputRef}
@@ -311,7 +313,7 @@ export function OrdersClient({
           count: orders.length,
           total: totalCount,
         })}
-        icon={<ShoppingBag className="h-5 w-5" />}
+        icon={<ShoppingBag className="text-blue-600 fill-blue-600/10" />}
         stats={[
           { label: "total", value: totalCount, variant: "default" },
           { label: "pending", value: pendingCount, variant: "warning" },
@@ -364,50 +366,108 @@ export function OrdersClient({
       />
 
       {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <Tabs
           value={currentStatus}
           onValueChange={(v) => handleStatusChange(v as FilterType)}
+          className="w-full"
         >
-          <TabsList className="flex-wrap h-auto gap-1 p-1">
-            <TabsTrigger value="all" className="gap-2" disabled={isPending}>
-              All ({totalCount})
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
+            <TabsTrigger
+              value="all"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
+              disabled={isPending}
+            >
+              All
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black"
+              >
+                {totalCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="PENDING" className="gap-2">
-              <Clock className="h-3 w-3" />
-              Pending ({pendingCount})
+            <TabsTrigger
+              value="PENDING"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-amber-600 transition-all gap-2"
+            >
+              <Clock className="h-4 w-4" />
+              Pending
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-600 text-[10px] font-black"
+              >
+                {pendingCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="PROCESSING" className="gap-2">
-              <RefreshCw className="h-3 w-3" />
-              Processing ({processingCount})
+            <TabsTrigger
+              value="PROCESSING"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-blue-600 transition-all gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Processing
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 text-[10px] font-black"
+              >
+                {processingCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="SHIPPED" className="gap-2">
-              <Truck className="h-3 w-3" />
-              Shipped ({shippedCount})
+            <TabsTrigger
+              value="SHIPPED"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-indigo-600 transition-all gap-2"
+            >
+              <Truck className="h-4 w-4" />
+              Shipped
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 text-[10px] font-black"
+              >
+                {shippedCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="DELIVERED" className="gap-2">
-              <Check className="h-3 w-3" />
-              Delivered ({deliveredCount})
+            <TabsTrigger
+              value="DELIVERED"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
+            >
+              <Check className="h-4 w-4" />
+              Delivered
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black"
+              >
+                {deliveredCount}
+              </Badge>
             </TabsTrigger>
             {cancelledCount > 0 && (
-              <TabsTrigger value="CANCELLED" className="gap-2">
-                <X className="h-3 w-3" />
-                Cancelled ({cancelledCount})
+              <TabsTrigger
+                value="CANCELLED"
+                className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-rose-600 transition-all gap-2"
+              >
+                <X className="h-4 w-4" />
+                Cancelled
+                <Badge
+                  variant="outline"
+                  className="ml-1 h-5 px-1.5 bg-rose-100 dark:bg-rose-900/40 text-rose-600 text-[10px] font-black"
+                >
+                  {cancelledCount}
+                </Badge>
               </TabsTrigger>
             )}
           </TabsList>
         </Tabs>
 
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t("orders.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
           />
           {(isPending || isTablePending) && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            </div>
           )}
         </div>
       </div>

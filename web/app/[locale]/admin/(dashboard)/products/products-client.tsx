@@ -76,9 +76,9 @@ const EditProductDialog = dynamic(
 );
 const ProductTranslationDialog = dynamic(
   () =>
-    import("@/features/admin/components/products/product-translation-dialog").then(
-      (mod) => mod.ProductTranslationDialog
-    ),
+    import(
+      "@/features/admin/components/products/product-translation-dialog"
+    ).then((mod) => mod.ProductTranslationDialog),
   { ssr: false }
 );
 
@@ -159,7 +159,7 @@ export function ProductsClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("products.title")}
@@ -168,7 +168,7 @@ export function ProductsClient({
           total: total,
           item: t("products.title").toLowerCase(),
         })}
-        icon={<Package className="h-5 w-5" />}
+        icon={<Package className="text-blue-500 fill-blue-500/10" />}
         stats={[
           { label: "total", value: total, variant: "default" },
           { label: "recent", value: recentCount, variant: "success" },
@@ -205,36 +205,72 @@ export function ProductsClient({
       />
 
       {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
-        <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterType)}>
-          <TabsList>
-            <TabsTrigger value="all" className="gap-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <Tabs
+          value={filter}
+          onValueChange={(v) => setFilter(v as FilterType)}
+          className="w-full"
+        >
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
+            <TabsTrigger
+              value="all"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
+            >
               <Box className="h-4 w-4" />
-              All ({products.length})
+              All
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black"
+              >
+                {products.length}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="recent" className="gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              Recent ({recentCount})
+            <TabsTrigger
+              value="recent"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
+            >
+              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              Recent
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black"
+              >
+                {recentCount}
+              </Badge>
             </TabsTrigger>
             {noCategoryCount > 0 && (
-              <TabsTrigger value="no-category" className="gap-2">
-                <span className="h-2 w-2 rounded-full bg-amber-500" />
-                No Category ({noCategoryCount})
+              <TabsTrigger
+                value="no-category"
+                className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-amber-600 transition-all gap-2"
+              >
+                <div className="h-2 w-2 rounded-full bg-amber-500" />
+                No Category
+                <Badge
+                  variant="outline"
+                  className="ml-1 h-5 px-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-600 text-[10px] font-black"
+                >
+                  {noCategoryCount}
+                </Badge>
               </TabsTrigger>
             )}
           </TabsList>
         </Tabs>
 
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t("search", {
               item: t("products.title").toLowerCase(),
             })}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
           />
+          {isPending && (
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            </div>
+          )}
         </div>
       </div>
 

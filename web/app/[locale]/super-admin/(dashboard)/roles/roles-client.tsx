@@ -129,19 +129,20 @@ export function RolesPageClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* 1. Standard Admin Header */}
       <AdminPageHeader
         title={t("roles.management")}
         subtitle={`${meta?.total || 0} roles defined in system`}
-        icon={<Shield className="h-5 w-5" />}
-        stats={[
-          { label: "total", value: meta?.total || 0, variant: "default" },
-        ]}
+        icon={<Shield className="text-blue-600 dark:text-blue-400" />}
+        stats={[{ label: "total", value: meta?.total || 0, variant: "info" }]}
         actions={
           canCreate ? (
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
+            <Button
+              onClick={() => setCreateDialogOpen(true)}
+              className="rounded-2xl h-12 px-6 shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all font-bold"
+            >
+              <Plus className="mr-2 h-5 w-5 font-black" />
               {t("roles.createNew")}
             </Button>
           ) : undefined
@@ -149,14 +150,14 @@ export function RolesPageClient({
       />
 
       {/* 2. Search Bar */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="flex items-center gap-4 px-2">
+        <div className="relative flex-1 max-w-sm group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             placeholder={t("roles.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 rounded-2xl border-muted-foreground/20 focus:border-primary transition-all h-11"
           />
         </div>
       </div>

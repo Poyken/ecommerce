@@ -147,12 +147,12 @@ export function BrandsPageClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("brands.title")}
         subtitle={`${total} brands in total`}
-        icon={<Award className="h-5 w-5" />}
+        icon={<Award className="text-purple-500 fill-purple-500/10" />}
         stats={[{ label: "total", value: total, variant: "default" }]}
         actions={
           <div className="flex items-center gap-2">
@@ -184,16 +184,23 @@ export function BrandsPageClient({
         }
       />
 
-      {/* Search */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Search and Total */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t("search", { item: t("brands.title").toLowerCase() })}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
           />
+        </div>
+
+        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl border-none shadow-inner h-14">
+          <div className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+            <Award className="h-3 w-3" />
+            Total Brands: {total}
+          </div>
         </div>
       </div>
 

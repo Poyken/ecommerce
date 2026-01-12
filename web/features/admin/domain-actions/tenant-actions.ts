@@ -101,3 +101,26 @@ export async function cancelSubscriptionAction(
     REVALIDATE.superAdmin.subscriptions();
   }, "Failed to cancel subscription");
 }
+
+export async function updateSubscriptionAction(
+  id: string,
+  data: any
+): Promise<ActionResult<Subscription>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<Subscription>>(`/subscriptions/${id}`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    REVALIDATE.superAdmin.subscriptions();
+    return res.data;
+  }, "Failed to update subscription");
+}
+
+export async function deleteSubscriptionAction(
+  id: string
+): Promise<ActionResult<void>> {
+  return wrapServerAction(async () => {
+    await http(`/subscriptions/${id}`, { method: "DELETE" });
+    REVALIDATE.superAdmin.subscriptions();
+  }, "Failed to delete subscription");
+}

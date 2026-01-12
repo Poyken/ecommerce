@@ -19,7 +19,7 @@
 // 3. Form Reset Pattern:
 //    - Sử dụng `useEffect` để reset form values mỗi khi `planToEdit` thay đổi.
 //    - Đảm bảo form luôn sạch sẽ hoặc chứa đúng dữ liệu cần sửa khi mở ra.
-// ================================================================================================= 
+// =================================================================================================
 "use client";
 
 import { Button } from "@/components/ui/button";
@@ -148,6 +148,7 @@ export function PlanDialog({
 
       if (res?.data) {
         toast({
+          variant: "success",
           title: "Success",
           description: planToEdit
             ? "Plan updated successfully"
@@ -158,7 +159,7 @@ export function PlanDialog({
       } else {
         toast({
           title: "Error",
-          description: res?.serverError || "Something went wrong",
+          description: res?.error || "Something went wrong",
           variant: "destructive",
         });
       }

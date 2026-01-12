@@ -73,7 +73,7 @@ export class AuditService implements OnApplicationBootstrap {
     }
   }
 
-  async findAll(page = 1, limit = 10, search?: string) {
+  async findAll(page = 1, limit = 10, search?: string, roles?: string[]) {
     const skip = (page - 1) * limit;
 
     const where: any = {};
@@ -82,6 +82,20 @@ export class AuditService implements OnApplicationBootstrap {
         { action: { contains: search, mode: 'insensitive' } },
         { resource: { contains: search, mode: 'insensitive' } },
       ];
+    }
+
+    if (roles && roles.length > 0) {
+      where.user = {
+        roles: {
+          some: {
+            role: {
+              name: {
+                in: roles,
+              },
+            },
+          },
+        },
+      };
     }
 
     const [data, total] = await Promise.all([

@@ -17,48 +17,51 @@
  */
 "use server";
 
-import { protectedActionClient } from "@/lib/safe-action";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 import { http } from "@/lib/http";
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { ApiResponse } from "@/types/dtos";
 
-export const getPlansAction = protectedActionClient.action(async () => {
-  return http("/plans");
-});
+export async function getPlansAction() {
+  return wrapServerAction(
+    () => http<ApiResponse<any[]>>("/plans"),
+    "Failed to fetch plans"
+  );
+}
 
-export const createPlanAction = protectedActionClient
-  .schema(z.any())
-  .action(async ({ parsedInput: data }) => {
-    const res = await http("/plans", {
+export async function createPlanAction(data: any) {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<any>>("/plans", {
       method: "POST",
       body: JSON.stringify(data),
     });
-    revalidatePath("/super-admin/plans");
-    return res;
-  });
+    REVALIDATE.path("/super-admin/plans");
+    return res.data;
+  }, "Failed to create plan");
+}
 
-export const updatePlanAction = protectedActionClient
-  .schema(
-    z.object({
-      id: z.string(),
-      data: z.any(),
-    })
-  )
-  .action(async ({ parsedInput: { id, data } }) => {
-    const res = await http(`/plans/${id}`, {
+export async function updatePlanAction({
+  id,
+  data,
+}: {
+  id: string;
+  data: any;
+}) {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<any>>(`/plans/${id}`, {
       method: "PATCH",
       body: JSON.stringify(data),
     });
-    revalidatePath("/super-admin/plans");
-    return res;
-  });
+    REVALIDATE.path("/super-admin/plans");
+    return res.data;
+  }, "Failed to update plan");
+}
 
-export const deletePlanAction = protectedActionClient
-  .schema(z.object({ id: z.string() }))
-  .action(async ({ parsedInput: { id } }) => {
-    const res = await http(`/plans/${id}`, {
+export async function deletePlanAction({ id }: { id: string }) {
+  return wrapServerAction(async () => {
+    await http(`/plans/${id}`, {
       method: "DELETE",
     });
-    revalidatePath("/super-admin/plans");
-    return res;
-  });
+    REVALIDATE.path("/super-admin/plans");
+  }, "Failed to delete plan");
+}

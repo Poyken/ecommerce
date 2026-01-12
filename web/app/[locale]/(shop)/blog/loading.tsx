@@ -1,4 +1,4 @@
-import { BlogSkeleton } from "@/features/blog/components/skeletons/blog-skeleton";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 
 /**
  * =====================================================================
@@ -9,9 +9,11 @@ import { BlogSkeleton } from "@/features/blog/components/skeletons/blog-skeleton
  *
  * Trang Blog fetch dữ liệu từ API, skeleton hiển thị trong lúc
  * chờ response từ backend.
+ *
+ * UPDATE: Sử dụng LoadingScreen để đồng bộ trải nghiệm loading với Admin/Auth.
  * =====================================================================
  */
 
 export default function Loading() {
-  return <BlogSkeleton />;
+  return <LoadingScreen fullScreen={false} className="min-h-screen" />;
 }

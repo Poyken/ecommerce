@@ -12,7 +12,7 @@
  * 2. WIDGETS TÍCH HỢP:
  * - `RecentChatsWidget`: Component chat support (CSKH) nhúng vào Dashboard.
  * =====================================================================
- */ 
+ */
 "use client";
 
 import {
@@ -25,7 +25,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "@/components/shared/user-avatar";
-import { RecentChatsWidget } from "@/features/admin/components/widgets/recent-chats-widget";
 import {
   Star,
   MessageSquare,
@@ -39,9 +38,13 @@ import { Link } from "@/i18n/routing";
 
 interface CustomersTabProps {
   recentReviews: any[];
+  recentChats: React.ReactNode;
 }
 
-export function CustomersTab({ recentReviews }: CustomersTabProps) {
+export function CustomersTab({
+  recentReviews,
+  recentChats,
+}: CustomersTabProps) {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -125,7 +128,7 @@ export function CustomersTab({ recentReviews }: CustomersTabProps) {
 
         {/* Right Column: Support / Chats */}
         <div className="space-y-6">
-          <RecentChatsWidget />
+          {recentChats}
 
           {/* Simple Customer Stat */}
           <Card className="rounded-2xl bg-indigo-600 text-white shadow-lg border-0 overflow-hidden relative">

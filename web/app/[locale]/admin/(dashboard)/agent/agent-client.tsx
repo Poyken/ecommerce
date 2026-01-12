@@ -41,6 +41,7 @@ import {
   AgentExecutionResult,
   TaskResult,
 } from "./actions";
+import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
 
 export function AgentClient() {
   const [command, setCommand] = useState("");
@@ -132,33 +133,31 @@ export function AgentClient() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-4">
-        <div className="p-3 rounded-xl bg-linear-to-br from-violet-500 to-purple-600 text-white">
-          <Bot className="h-6 w-6" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            AI Agent
-            <Badge variant="outline" className="ml-2 text-xs">
-              Beta
-            </Badge>
-          </h1>
-          <p className="text-muted-foreground">
-            Ra lệnh bằng ngôn ngữ tự nhiên, Agent sẽ tự động thực thi
-          </p>
-        </div>
-      </div>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <AdminPageHeader
+        title="AI Agent"
+        subtitle="Control your store with natural language commands and generative UI."
+        icon={<Bot className="text-violet-600 fill-violet-600/10" />}
+        stats={[
+          { label: "Status", value: "Beta", variant: "info" },
+          { label: "Speed", value: "Instant", variant: "success" },
+        ]}
+      />
 
       {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full max-w-md grid-cols-2">
-          <TabsTrigger value="execute" className="gap-2">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2 bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner mb-8">
+          <TabsTrigger
+            value="execute"
+            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-violet-600 transition-all font-black uppercase tracking-widest text-xs gap-2"
+          >
             <Terminal className="h-4 w-4" />
-            Execute Commands
+            Execute
           </TabsTrigger>
-          <TabsTrigger value="ui" className="gap-2">
+          <TabsTrigger
+            value="ui"
+            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all font-black uppercase tracking-widest text-xs gap-2"
+          >
             <LayoutDashboard className="h-4 w-4" />
             Generative UI
           </TabsTrigger>

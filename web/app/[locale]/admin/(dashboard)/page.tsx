@@ -19,6 +19,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BusinessTab } from "@/features/admin/components/dashboard/business-tab";
 import { OperationsTab } from "@/features/admin/components/dashboard/operations-tab";
 import { CustomersTab } from "@/features/admin/components/dashboard/customers-tab";
+import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
+import { RecentChatsWidget } from "@/features/admin/components/widgets/recent-chats-widget";
 
 interface Order {
   id: string;
@@ -120,45 +122,34 @@ export default async function AdminDashboardPage() {
   const lowStockCount = (skusRes as any).meta?.total || lowStockSkus.length;
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700 pb-10">
-      {/* Header Area */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-4xl font-black tracking-tight text-foreground flex items-center gap-3">
-            <LayoutDashboard className="h-8 w-8 text-primary" />
-            {t("dashboard")}
-          </h1>
-          <p className="text-muted-foreground mt-1 font-medium">
-            Welcome back, {user.firstName}! Here&apos;s your store command
-            center.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Quick Actions moved to header for easy access */}
-          <QuickActions />
-        </div>
-      </div>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-10">
+      <AdminPageHeader
+        title={t("dashboard")}
+        subtitle={`Welcome back, ${user.firstName}! Here's your store command center.`}
+        icon={<LayoutDashboard className="text-primary fill-primary/10" />}
+        actions={<QuickActions />}
+      />
 
       <Tabs defaultValue="business" className="space-y-6">
         <div className="flex items-center justify-between overflow-x-auto pb-2 md:pb-0">
-          <TabsList className="bg-muted/50 p-1 rounded-xl h-12">
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner mb-2">
             <TabsTrigger
               value="business"
-              className="rounded-lg px-6 h-10 font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              className="rounded-xl px-6 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
             >
-              <TrendingUp className="w-4 h-4 mr-2" /> Business
+              <TrendingUp className="w-4 h-4" /> Business
             </TabsTrigger>
             <TabsTrigger
               value="operations"
-              className="rounded-lg px-6 h-10 font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              className="rounded-xl px-6 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
             >
-              <Package className="w-4 h-4 mr-2" /> Operations
+              <Package className="w-4 h-4" /> Operations
             </TabsTrigger>
             <TabsTrigger
               value="customers"
-              className="rounded-lg px-6 h-10 font-bold data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              className="rounded-xl px-6 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
             >
-              <Users className="w-4 h-4 mr-2" /> Customers
+              <Users className="w-4 h-4" /> Customers
             </TabsTrigger>
           </TabsList>
 
@@ -196,7 +187,10 @@ export default async function AdminDashboardPage() {
           value="customers"
           className="space-y-6 focus-visible:outline-none"
         >
-          <CustomersTab recentReviews={recentReviews} />
+          <CustomersTab
+            recentReviews={recentReviews}
+            recentChats={<RecentChatsWidget />}
+          />
         </TabsContent>
       </Tabs>
     </div>

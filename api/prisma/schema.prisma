@@ -23,6 +23,11 @@ model User {
   twoFactorEnabled Boolean   @default(false) // Cờ bật/tắt tính năng bảo mật 2 lớp (2FA)
   twoFactorSecret  String? // Mã bí mật dùng để tạo OTP cho 2FA
   whitelistedIps   Json?     @default("[]") // Danh sách các địa chỉ IP được phép truy cập (lớp bảo mật thêm)
+  commissionBalance Decimal   @default(0) @db.Decimal(20, 2) // Số dư hoa hồng tích lũy (cho content creator/affiliate)
+  referredByUserId  String?
+  referredByUser    User?     @relation("UserReferrals", fields: [referredByUserId], references: [id])
+  referrals         User[]    @relation("UserReferrals")
+  commissionTransactions CommissionTransaction[]
 
   // Media Reference
   avatarId String?
@@ -42,6 +47,7 @@ model User {
   blogs          Blog[] // Bài viết blog (nếu user là content writer)
   conversations  ChatConversation[] // Các cuộc hội thoại chat support
   aiChatSessions AiChatSession[] // Lịch sử chat với AI Bot
+  ownedTenants   Tenant[]        @relation("TenantOwner")
 
   // Multi-tenancy (Đa cửa hàng)
   tenantId String // ID của cửa hàng mà User này thuộc về
@@ -285,6 +291,7 @@ model Product {
   minPrice        Decimal?            @db.Decimal(20, 2) // Giá thấp nhất (của biến thể) - hiển thị "Từ X đ"
   avgRating       Float?              @default(0) // Điểm đánh giá trung bình
   reviewCount     Int                 @default(0) // Tổng số lượt đánh giá
+  commissionRate  Decimal             @default(0) @db.Decimal(5, 2) // Tỷ lệ hoa hồng mặc định cho sản phẩm này (%)
 
   // Vector Embedding (768 dimensions for Gemini text-embedding-004)
   // Requires pgvector extension. Enable if available.
@@ -612,6 +619,10 @@ model Order {
   updatedAt               DateTime      @updatedAt // Ngày cập nhật
   createdAt               DateTime      @default(now()) // Ngày tạo bản ghi
   deletedAt               DateTime? // Xóa mềm
+  referredByBlogId        String? // ID bài viết giới thiệu dẫn đến đơn hàng này
+  platformFeeAmount       Decimal?      @db.Decimal(20, 2) // Số tiền phí sàn thu từ tenant cho đơn này
+  affiliateCommissionAmount Decimal?    @db.Decimal(20, 2) // Số tiền hoa hồng trả cho người viết blog
+  commissionTransactions CommissionTransaction[]
 
   // Promotion (New)
   promotions PromotionUsage[] // Các khuyến mãi đã áp dụng
@@ -637,6 +648,8 @@ model Order {
   // Multi-tenancy
   tenantId String // ID Tenant
   tenant   Tenant? @relation(fields: [tenantId], references: [id])
+
+  referredByBlog Blog? @relation("BlogReferrals", fields: [referredByBlogId], references: [id])
 
   // ============================================================
   // PERFORMANCE INDEXES (Production-ready)
@@ -912,6 +925,7 @@ model Blog {
   userId      String? // Người viết
   user        User?         @relation(fields: [userId], references: [id])
   products    BlogProduct[] // Các sản phẩm được nhắc đến
+  referredOrders Order[]    @relation("BlogReferrals") // Các đơn hàng được giới thiệu từ bài viết này
 
   // Multi-tenancy
   tenantId String // ID Tenant
@@ -1147,6 +1161,8 @@ enum OutboxStatus {
 model Tenant {
   id   String @id @default(uuid()) // ID định danh Tenant (Cửa hàng)
   name String // Tên cửa hàng
+  ownerId String?
+  owner   User? @relation("TenantOwner", fields: [ownerId], references: [id])
 
   // Domain Management
   subdomain    String? @unique // Subdomain hệ thống (shop-a.platform.com)
@@ -1352,4 +1368,31 @@ model SubscriptionPlan {
   updatedAt DateTime @updatedAt
 
   subscriptions Subscription[]
+}
+
+model CommissionTransaction {
+  id        String   @id @default(uuid())
+  userId    String   // Người nhận hoa hồng
+  orderId   String?  // Đơn hàng liên quan (nếu có)
+  amount    Decimal  @db.Decimal(20, 2)
+  type      CommissionType
+  status    CommissionStatus @default(COMPLETED)
+  note      String?
+  createdAt DateTime @default(now())
+
+  user  User   @relation(fields: [userId], references: [id])
+  order Order? @relation(fields: [orderId], references: [id])
+}
+
+enum CommissionType {
+  DIRECT_REFERRAL    // Hoa hồng trực tiếp từ blog/link
+  SUBSCRIPTION_FEE   // Phí sàn từ gói thuê của tenant
+  TIER_2_REFERRAL    // Hoa hồng cấp 2
+  WITHDRAWAL        // Rút tiền
+}
+
+enum CommissionStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
 }

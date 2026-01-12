@@ -95,7 +95,11 @@ export async function getMyIpAction(): Promise<ActionResult<{ ip: string }>> {
 export async function getAuditLogsAction(
   paramsOrPage: any = {}
 ): Promise<ActionResult<AuditLog[]>> {
-  const params = normalizePaginationParams(paramsOrPage);
+  const { roles, ...rest } = paramsOrPage;
+  const params = normalizePaginationParams(rest);
+  if (roles) {
+    params.roles = Array.isArray(roles) ? roles.join(",") : roles;
+  }
   return wrapServerAction(
     () => http<ApiResponse<AuditLog[]>>("/audit", { params }),
     "Failed to fetch audit logs"

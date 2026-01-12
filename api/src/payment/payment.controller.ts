@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   Post,
   Query,
   Res,
@@ -35,29 +36,17 @@ import { VNPayUtils } from './vnpay.utils';
  * - Mọi dữ liệu đối tác gửi về đều phải được xác thực chữ ký (`vnp_SecureHash` hoặc `signature`) để đảm bảo không bị kẻ xấu giả mạo gói tin thanh toán.
  * =====================================================================
  */
+import { CommissionService } from '@/analytics/commission.service';
+
 @ApiTags('Payment')
 @Controller('payment')
 export class PaymentController {
-  /**
-   * =====================================================================
-   * PAYMENT CONTROLLER - Cổng thanh toán
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. HASH & CHECKSUM (Bảo mật):
-   * - Khi VNPay trả về kết quả (qua Return URL hoặc IPN), ta phải kiểm tra chữ ký (`vnp_SecureHash`).
-   * - Nguyên tắc: Sort params a-z -> Stringify -> Hash với Secret Key -> So sánh với Hash nhận được.
-   * - Nếu khớp -> Dữ liệu toàn vẹn (không bị hacker chỉnh sửa tiền/status).
-   *
-   * 2. IPN (Instant Payment Notification):
-   * - Đây là kênh "Server-to-Server" để VNPay báo kết quả cho Backend.
-   * - Độ tin cậy cao hơn Return URL (vì User có thể tắt browser trước khi redirect xong).
-   * =====================================================================
-   */
+  private readonly logger = new Logger(PaymentController.name);
+
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
+    private readonly commissionService: CommissionService,
   ) {}
 
   @Get('vnpay_return')
@@ -88,6 +77,14 @@ export class PaymentController {
             status: 'PROCESSING',
             paymentStatus: 'PAID',
           },
+        });
+
+        // Calculate commissions/fees
+        await this.commissionService.calculateForOrder(orderId).catch((e) => {
+          this.logger.error(
+            `Error calculating commission for order ${orderId}`,
+            e,
+          );
         });
 
         return res.redirect(
@@ -154,6 +151,15 @@ export class PaymentController {
             paymentStatus: 'PAID',
           },
         });
+
+        // Calculate commissions/fees
+        await this.commissionService.calculateForOrder(orderId).catch((e) => {
+          this.logger.error(
+            `Error calculating commission for order ${orderId}`,
+            e,
+          );
+        });
+
         return { RspCode: '00', Message: 'Success' };
       } else {
         // Payment Failed
@@ -224,6 +230,14 @@ export class PaymentController {
             paymentStatus: 'PAID',
             transactionId: transId.toString(),
           },
+        });
+
+        // Calculate commissions/fees
+        await this.commissionService.calculateForOrder(orderId).catch((e) => {
+          this.logger.error(
+            `Error calculating commission for order ${orderId}`,
+            e,
+          );
         });
       } else {
         // Failed

@@ -12,10 +12,12 @@
 // 2. Dialogs: Sử dụng các Dialog component tách biệt (`CreatePermissionDialog`, `EditPermissionDialog`)
 //    để giữ code sạch sẽ và dễ bảo trì.
 // 3. Delete Confirmation: Luôn hỏi lại trước khi xóa để tránh thao tác nhầm lẫn nguy hiểm.
-// ================================================================================================= 
+// =================================================================================================
 "use client";
 
 import { GlassButton } from "@/components/shared/glass-button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 
 import {
   Table,
@@ -34,7 +36,7 @@ import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-compo
 import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { deletePermissionAction } from "@/features/admin/actions";
 import { Permission } from "@/types/models";
-import { Edit2, Plus, Shield, Trash2 } from "lucide-react";
+import { Edit2, Plus, Shield, Trash2, Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { useToast } from "@/components/ui/use-toast";
@@ -82,7 +84,7 @@ export function PermissionsPageClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <CreatePermissionDialog
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
@@ -90,7 +92,7 @@ export function PermissionsPageClient({
       <AdminPageHeader
         title="Permissions"
         subtitle="Manage system permissions."
-        icon={<Shield className="h-5 w-5" />}
+        icon={<Shield className="text-cyan-500 fill-cyan-500/10" />}
         actions={
           <GlassButton
             className="bg-primary text-primary-foreground"
@@ -101,18 +103,22 @@ export function PermissionsPageClient({
           </GlassButton>
         }
       />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
+          <Input
+            placeholder="Search permissions..."
+            value={searchTerm}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+          />
+        </div>
 
-      <div className="flex items-center justify-between gap-4 bg-background/50 p-4 rounded-xl border border-border/50 backdrop-blur-sm">
-        <AdminSearchInput
-          placeholder="Search permissions..."
-          value={searchTerm}
-          onChange={onSearchChange}
-        />
-        <div className="text-sm text-muted-foreground">
-          Total:{" "}
-          <span className="font-medium text-foreground">
-            {initialPermissions.length}
-          </span>
+        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl border-none shadow-inner h-14">
+          <div className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+            <Shield className="h-3 w-3" />
+            Total Permissions: {initialPermissions.length}
+          </div>
         </div>
       </div>
 
@@ -181,7 +187,6 @@ export function PermissionsPageClient({
           </TableBody>
         </Table>
       </div>
-
       {selectedPermission && (
         <EditPermissionDialog
           key={selectedPermission.id}
@@ -191,7 +196,6 @@ export function PermissionsPageClient({
           currentName={selectedPermission.name}
         />
       )}
-
       <DeleteConfirmDialog
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}

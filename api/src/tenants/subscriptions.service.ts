@@ -165,4 +165,17 @@ export class SubscriptionsService {
       },
     });
   }
+
+  async update(id: string, data: any) {
+    return this.prisma.subscription.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.subscription.delete({
+      where: { id },
+    });
+  }
 }

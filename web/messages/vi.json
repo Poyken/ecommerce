@@ -1542,6 +1542,34 @@
         "description": "Chúng tôi đang tích hợp với MetaBase và PostHog để theo dõi hành vi thời gian thực."
       }
     },
+    "plans": {
+      "title": "Gói dịch vụ",
+      "subtitle": "Quản lý các gói dịch vụ có sẵn cho khách hàng.",
+      "addPlan": "Thêm Gói",
+      "table": {
+        "name": "Tên gói",
+        "slug": "Slug",
+        "price": "Giá (Tháng / Năm)",
+        "limits": "Giới hạn",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "limits": {
+        "products": "Sản phẩm",
+        "storage": "MB Lưu trữ",
+        "unlimited": "Không giới hạn"
+      },
+      "status": {
+        "active": "Hoạt động",
+        "inactive": "Ngừng hoạt động",
+        "public": "Công khai"
+      },
+      "messages": {
+        "deleteConfirm": "Bạn có chắc chắn muốn xóa gói này?",
+        "deleteSuccess": "Đã xóa gói",
+        "deleteError": "Xóa gói thất bại"
+      }
+    },
     "subscriptions": {
       "title": "Gói cước & Thanh toán",
       "subtitle": "Quản lý {total} thuê bao trên toàn nền tảng.",

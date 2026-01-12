@@ -23,6 +23,7 @@ import {
   Controller,
   Get,
   Post,
+  Delete,
   UseGuards,
   Request,
   Query,
@@ -114,6 +115,22 @@ export class SubscriptionsController {
   })
   async cancelTenantSubscription(@Param('tenantId') tenantId: string) {
     const result = await this.subscriptionsService.cancelSubscription(tenantId);
+    return { data: result };
+  }
+
+  @Post(':id')
+  @RequirePermissions('admin:update')
+  @ApiUpdateResponse('Subscription', { summary: 'Update subscription details' })
+  async updateSubscription(@Param('id') id: string, @Body() body: any) {
+    const result = await this.subscriptionsService.update(id, body);
+    return { data: result };
+  }
+
+  @Delete(':id')
+  @RequirePermissions('admin:delete')
+  @ApiUpdateResponse('Subscription', { summary: 'Delete subscription' })
+  async removeSubscription(@Param('id') id: string) {
+    const result = await this.subscriptionsService.remove(id);
     return { data: result };
   }
 }

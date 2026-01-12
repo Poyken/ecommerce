@@ -110,6 +110,7 @@ export default function SecurityHubPage() {
       if (res.success) {
         setIsLockdown(nextState);
         toast({
+          variant: "success",
           title: nextState ? t("lockdown.active") : t("lockdown.inactive"),
         });
       } else {
@@ -161,6 +162,7 @@ export default function SecurityHubPage() {
       if (res.success && res.data && res.data.ip) {
         setNewIp(res.data.ip);
         toast({
+          variant: "success",
           title: "IP Fetched",
           description: `Your IP: ${res.data.ip}`,
         });
@@ -191,7 +193,7 @@ export default function SecurityHubPage() {
     try {
       const res = await updateSuperAdminWhitelistAction(whitelist);
       if (res.success) {
-        toast({ title: t("whitelist.success") });
+        toast({ variant: "success", title: t("whitelist.success") });
       } else {
         toast({
           variant: "destructive",

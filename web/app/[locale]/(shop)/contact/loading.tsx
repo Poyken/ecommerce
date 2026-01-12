@@ -1,4 +1,4 @@
-import { ContactSkeleton } from "@/features/contact/components/skeletons/contact-skeleton";
+import { LoadingScreen } from "@/components/shared/loading-screen";
 
 /**
  * =====================================================================
@@ -11,9 +11,11 @@ import { ContactSkeleton } from "@/features/contact/components/skeletons/contact
  * - File `loading.tsx` này sẽ tự động được Next.js bọc quanh `page.tsx` bằng `<Suspense>`.
  * - Trong khi Server đang fetch dữ liệu Contact, Client sẽ hiển thị Skeleton này NGAY LẬP TỨC.
  * - Giúp giảm TTFB (Time to First Byte) và tăng trải nghiệm người dùng.
+ *
+ * UPDATE: Sử dụng LoadingScreen để đồng bộ trải nghiệm loading với Admin/Auth.
  * =====================================================================
  */
 
 export default function Loading() {
-  return <ContactSkeleton />;
+  return <LoadingScreen fullScreen={false} className="min-h-screen" />;
 }

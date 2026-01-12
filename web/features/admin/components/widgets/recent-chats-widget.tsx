@@ -45,7 +45,8 @@ export async function RecentChatsWidget() {
   // Fetch recent conversations
   // Assuming API endpoint exists. If not, this serves as the frontend implementation requirement.
   const { data: conversations } = await http<{ data: Conversation[] }>(
-    "/chat/conversations?limit=5"
+    "/chat/conversations?limit=5",
+    { skipRedirectOn401: true }
   ).catch(() => ({ data: [] }));
 
   return (

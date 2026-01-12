@@ -38,10 +38,12 @@ export default async function AdminChatPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <AdminPageHeader
         title="Customer Support Chat"
-        icon={<MessageCircle className="h-5 w-5" />}
+        icon={
+          <MessageCircle className="text-emerald-500 fill-emerald-500/10" />
+        }
         subtitle="Manage live conversations with customers"
       />
       <ChatAdminClient user={user} accessToken={token || ""} />

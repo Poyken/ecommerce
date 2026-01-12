@@ -176,12 +176,12 @@ export function BlogsClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("title") || "Blog Management"}
         subtitle={t("management") || "Manage blog posts"}
-        icon={<BookOpen className="h-5 w-5" />}
+        icon={<BookOpen className="text-orange-500 fill-orange-500/10" />}
         stats={[
           { label: "total", value: totalCount, variant: "default" },
           { label: "published", value: publishedCount, variant: "success" },
@@ -197,42 +197,70 @@ export function BlogsClient({
         }
       />
 
-      {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <Tabs
           value={currentStatus}
           onValueChange={(v) => handleFilterChange(v as FilterType)}
+          className="w-full"
         >
-          <TabsList>
-            <TabsTrigger value="all" className="gap-2" disabled={isPending}>
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
+            <TabsTrigger
+              value="all"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
+              disabled={isPending}
+            >
               <FileText className="h-4 w-4" />
-              All ({totalCount})
+              All
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black"
+              >
+                {totalCount}
+              </Badge>
             </TabsTrigger>
             <TabsTrigger
               value="published"
-              className="gap-2"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
               disabled={isPending}
             >
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              Published ({publishedCount})
+              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              Published
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black"
+              >
+                {publishedCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="draft" className="gap-2" disabled={isPending}>
-              <span className="h-2 w-2 rounded-full bg-amber-500" />
-              Drafts ({draftCount})
+            <TabsTrigger
+              value="draft"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-amber-600 transition-all gap-2"
+              disabled={isPending}
+            >
+              <div className="h-2 w-2 rounded-full bg-amber-500" />
+              Drafts
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-600 text-[10px] font-black"
+              >
+                {draftCount}
+              </Badge>
             </TabsTrigger>
           </TabsList>
         </Tabs>
 
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t("searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
           />
           {isPending && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            </div>
           )}
         </div>
       </div>

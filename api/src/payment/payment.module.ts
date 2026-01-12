@@ -27,8 +27,10 @@ import { VNPayStrategy } from './strategies/vnpay.strategy';
 import { PaymentController } from './payment.controller';
 import { PaymentWebhookController } from './payment.webhook.controller';
 import { VietQrStrategy } from './strategies/vietqr.strategy';
+import { AnalyticsModule } from '@/analytics/analytics.module';
 
 @Module({
+  imports: [AnalyticsModule],
   controllers: [PaymentController, PaymentWebhookController],
   providers: [
     PaymentService,

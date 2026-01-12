@@ -498,12 +498,92 @@ async function main() {
     });
   }
 
+  // 9. Subscription Plans
+  console.log('\n💳 Seeding Subscription Plans...');
+  const plans = [
+    {
+      name: 'Basic',
+      slug: 'basic',
+      description: 'Great for small stores',
+      priceMonthly: 0,
+      priceYearly: 0,
+      maxProducts: 50,
+      maxStorage: 512,
+    },
+    {
+      name: 'Pro',
+      slug: 'pro',
+      description: 'Advanced features for growing businesses',
+      priceMonthly: 29,
+      priceYearly: 290,
+      maxProducts: 500,
+      maxStorage: 2048,
+    },
+    {
+      name: 'Enterprise',
+      slug: 'enterprise',
+      description: 'Unlimited power for high-volume retailers',
+      priceMonthly: 99,
+      priceYearly: 990,
+      maxProducts: -1,
+      maxStorage: 10240,
+    },
+  ];
+
+  const planRecords: any[] = [];
+  for (const p of plans) {
+    const plan = await prisma.subscriptionPlan.upsert({
+      where: { slug: p.slug },
+      create: p,
+      update: p,
+    });
+    planRecords.push(plan);
+  }
+
+  // 10. Subscriptions & Invoices for existing tenants
+  const allTenants = await prisma.tenant.findMany();
+  for (const t of allTenants) {
+    const plan =
+      planRecords.find((p) => p.slug === t.plan.toLowerCase()) ||
+      planRecords[0];
+
+    const sub = await prisma.subscription.upsert({
+      where: { tenantId: t.id },
+      create: {
+        tenantId: t.id,
+        plan: t.plan,
+        planId: plan.id,
+        nextBillingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        isActive: true,
+      },
+      update: {
+        plan: t.plan,
+        planId: plan.id,
+      },
+    });
+
+    // Create a sample invoice
+    await prisma.invoice.create({
+      data: {
+        tenantId: t.id,
+        subscriptionId: sub.id,
+        amount: plan.priceMonthly,
+        status: 'PAID',
+        description: `Initial ${plan.name} subscription`,
+        dueDate: new Date(),
+        paidAt: new Date(),
+      },
+    });
+  }
+
   console.log('\n🎉 SEEDING COMPLETED!');
   console.log('   - 10 Categories');
   console.log('   - 10 Brands');
   console.log('   - 100 Products');
   console.log('   - 1000 SKUs');
   console.log('   - 20 Luxury Blogs');
+  console.log('   - 3 Subscription Plans');
+  console.log(`   - Subscriptions & Invoices for ${allTenants.length} tenants`);
 }
 
 main()

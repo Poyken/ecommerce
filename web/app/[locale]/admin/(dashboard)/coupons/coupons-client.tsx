@@ -22,6 +22,7 @@
  */
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -168,12 +169,12 @@ export function CouponsClient({ initialCoupons, meta }: CouponsClientProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("coupons.title")}
         subtitle={t("coupons.subtitle")}
-        icon={<Ticket className="h-5 w-5" />}
+        icon={<Ticket className="text-pink-500 fill-pink-500/10" />}
         stats={[
           { label: "total", value: initialCoupons.length, variant: "default" },
           { label: "active", value: activeCount, variant: "success" },
@@ -189,33 +190,68 @@ export function CouponsClient({ initialCoupons, meta }: CouponsClientProps) {
         }
       />
 
-      {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
-        <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterType)}>
-          <TabsList>
-            <TabsTrigger value="all" className="gap-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <Tabs
+          value={filter}
+          onValueChange={(v) => setFilter(v as FilterType)}
+          className="w-full"
+        >
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
+            <TabsTrigger
+              value="all"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
+            >
               <Tag className="h-4 w-4" />
-              All ({initialCoupons.length})
+              All
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black"
+              >
+                {initialCoupons.length}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="active" className="gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              Active ({activeCount})
+            <TabsTrigger
+              value="active"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
+            >
+              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              Active
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black"
+              >
+                {activeCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="expired" className="gap-2">
-              <span className="h-2 w-2 rounded-full bg-red-500" />
-              Expired ({expiredCount})
+            <TabsTrigger
+              value="expired"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-rose-600 transition-all gap-2"
+            >
+              <div className="h-2 w-2 rounded-full bg-rose-500" />
+              Expired
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-rose-100 dark:bg-rose-900/40 text-rose-600 text-[10px] font-black"
+              >
+                {expiredCount}
+              </Badge>
             </TabsTrigger>
           </TabsList>
         </Tabs>
 
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search coupon code..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
           />
+          {isPending && (
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            </div>
+          )}
         </div>
       </div>
 

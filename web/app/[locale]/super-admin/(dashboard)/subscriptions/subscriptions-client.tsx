@@ -26,13 +26,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { cancelSubscriptionAction } from "@/features/admin/actions";
+import {
+  cancelSubscriptionAction,
+  deleteSubscriptionAction,
+} from "@/features/admin/actions";
 import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
-import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog"; // Can reuse for filtering
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { Subscription } from "@/types/models";
 import { format } from "date-fns";
@@ -40,8 +43,10 @@ import {
   Ban,
   Calendar,
   CreditCard,
+  Edit2,
   MoreHorizontal,
   Search,
+  Trash2,
   Zap,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -50,8 +55,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SubscriptionDialog } from "./subscription-dialog";
 
 export function SubscriptionsClient({
   subscriptions,
@@ -66,6 +73,8 @@ export function SubscriptionsClient({
 }) {
   const t = useTranslations("superAdmin.subscriptions");
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedSub, setSelectedSub] = useState<Subscription | null>(null);
 
   const { searchTerm, setSearchTerm, isPending } = useAdminTable(
@@ -77,20 +86,30 @@ export function SubscriptionsClient({
     setCancelDialogOpen(true);
   };
 
+  const openEdit = (sub: Subscription) => {
+    setSelectedSub(sub);
+    setEditDialogOpen(true);
+  };
+
+  const openDelete = (sub: Subscription) => {
+    setSelectedSub(sub);
+    setDeleteDialogOpen(true);
+  };
+
   const statusMap = {
     true: { label: "Active", className: "bg-emerald-100 text-emerald-700" },
     false: { label: "Inactive", className: "bg-slate-100 text-slate-700" },
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <AdminPageHeader
         title={t("title")}
         subtitle={t("subtitle", { total })}
-        icon={<CreditCard className="h-5 w-5" />}
+        icon={<CreditCard className="text-emerald-600 dark:text-emerald-400" />}
         stats={[
           {
-            label: "Active Subscriptions",
+            label: "Active",
             value: subscriptions.filter((s) => s.isActive).length,
             variant: "success",
           },
@@ -179,13 +198,25 @@ export function SubscriptionsClient({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => openEdit(sub)}>
+                          <Edit2 className="w-4 h-4 mr-2 text-indigo-500" />
+                          Edit Subscription
+                        </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="text-red-600 focus:text-red-600"
+                          className="text-amber-600 focus:text-amber-600"
                           onClick={() => openCancel(sub)}
                           disabled={!sub.isActive}
                         >
                           <Ban className="w-4 h-4 mr-2" />
                           Cancel Subscription
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          className="text-red-600 focus:text-red-600"
+                          onClick={() => openDelete(sub)}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2" />
+                          Delete Entry
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -201,16 +232,35 @@ export function SubscriptionsClient({
         <DataTablePagination page={page} total={total} limit={limit} />
       )}
 
+      {/* Dialogs */}
+      <SubscriptionDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        subscription={selectedSub}
+      />
+
       {selectedSub && (
-        <DeleteConfirmDialog
-          open={cancelDialogOpen}
-          onOpenChange={setCancelDialogOpen}
-          title="Cancel Subscription"
-          description={`Are you sure you want to cancel the subscription for "${selectedSub.tenant?.name}"? They will lose access at the end of the billing period.`}
-          action={() => cancelSubscriptionAction(selectedSub.id)}
-          successMessage="Subscription cancelled successfully"
-          confirmLabel="Yes, Cancel Subscription"
-        />
+        <>
+          <DeleteConfirmDialog
+            open={cancelDialogOpen}
+            onOpenChange={setCancelDialogOpen}
+            title="Cancel Subscription"
+            description={`Are you sure you want to cancel the subscription for "${selectedSub.tenant?.name}"? They will lose access at the end of the billing period.`}
+            action={() => cancelSubscriptionAction(selectedSub.id)}
+            successMessage="Subscription cancelled successfully"
+            confirmLabel="Yes, Cancel Subscription"
+          />
+
+          <DeleteConfirmDialog
+            open={deleteDialogOpen}
+            onOpenChange={setDeleteDialogOpen}
+            title="Delete Subscription Entry"
+            description={`DANGER: Are you sure you want to delete the subscription record for "${selectedSub.tenant?.name}"? This removes all billing linkage from the platform database.`}
+            action={() => deleteSubscriptionAction(selectedSub.id)}
+            successMessage="Subscription record deleted"
+            confirmLabel="Delete Permanently"
+          />
+        </>
       )}
     </div>
   );
