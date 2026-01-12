@@ -31,6 +31,7 @@ self.addEventListener('install', (event) => {
         '/manifest',
         '/favicon.ico',
         '/offline',
+        '/images/auth-hero-luxury.png',
       ]);
     })
   );

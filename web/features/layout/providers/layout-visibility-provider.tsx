@@ -48,9 +48,9 @@ export function LayoutVisibilityProvider({
 
   // Reset visibility when navigating to a new page
   useEffect(() => {
+    // eslint-disable-next-line
     setHideHeader(false);
     setHideFooter(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return (

@@ -173,12 +173,4 @@ export abstract class BaseCrudService<T, _CreateDto, _UpdateDto> {
 
     return result;
   }
-
-  /**
-   * Generic Check Exists (Helper)
-   */
-  protected async checkExists(where: any): Promise<boolean> {
-    const count = await this.model.count({ where });
-    return count > 0;
-  }
 }

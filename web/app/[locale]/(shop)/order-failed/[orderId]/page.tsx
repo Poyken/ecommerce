@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { getOrderDetailsAction } from "@/features/orders/actions";
 import { formatCurrency } from "@/lib/utils";
 import { AlertCircle, ArrowRight, ShoppingBag, XCircle } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { RetryOrderButton } from "./retry-button";
 
@@ -51,6 +52,7 @@ export default async function OrderFailedPage({
   params: Promise<{ orderId: string; locale: string }>;
 }) {
   const { orderId } = await params;
+  const t = await getTranslations("orderStatus");
   const result = await getOrderDetailsAction(orderId);
 
   const order = result.data as Order | null;
@@ -67,20 +69,18 @@ export default async function OrderFailedPage({
 
         <div className="space-y-4">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Payment Failed
+            {t("paymentFailed")}
           </h1>
           <p className="text-lg text-zinc-500 dark:text-zinc-400 max-w-md mx-auto">
-            {order ? (
-              <>
-                Unfortunately, your payment for order{" "}
-                <span className="font-mono font-bold text-destructive">
-                  #{order.id.slice(-8).toUpperCase()}
-                </span>{" "}
-                could not be processed.
-              </>
-            ) : (
-              "Your payment could not be processed. Please try again."
-            )}
+            {order
+              ? t.rich("paymentProblem", {
+                  id: () => (
+                    <span className="font-mono font-bold text-destructive">
+                      #{order.id.slice(-8).toUpperCase()}
+                    </span>
+                  ),
+                })
+              : t("paymentProblemBrief")}
           </p>
         </div>
 
@@ -88,8 +88,7 @@ export default async function OrderFailedPage({
         <div className="flex items-center justify-center gap-3 py-4 px-6 bg-destructive/5 border border-destructive/20 rounded-xl">
           <AlertCircle className="w-5 h-5 text-destructive shrink-0" />
           <p className="text-sm text-destructive">
-            The transaction was cancelled or declined by your bank. No money has
-            been charged.
+            {t("paymentProblemDetail")}
           </p>
         </div>
 
@@ -98,7 +97,7 @@ export default async function OrderFailedPage({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-8 border-y border-zinc-100 dark:border-zinc-800 my-8">
             <div className="space-y-1 sm:text-left">
               <span className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
-                Order ID
+                {t("orderID")}
               </span>
               <p className="font-mono font-medium">
                 #{order.id.slice(-8).toUpperCase()}
@@ -106,7 +105,7 @@ export default async function OrderFailedPage({
             </div>
             <div className="space-y-1 sm:text-right">
               <span className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
-                Total Amount
+                {t("totalAmount")}
               </span>
               <p className="text-2xl font-bold text-zinc-700 dark:text-zinc-300">
                 {formatCurrency(Number(order.totalAmount))}
@@ -114,15 +113,15 @@ export default async function OrderFailedPage({
             </div>
             <div className="space-y-1 sm:text-left">
               <span className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
-                Status
+                {t("status")}
               </span>
-              <p className="font-medium text-destructive">Cancelled</p>
+              <p className="font-medium text-destructive">{t("cancelled")}</p>
             </div>
             <div className="space-y-1 sm:text-right">
               <span className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
-                Payment
+                {t("payment")}
               </span>
-              <p className="font-medium text-destructive">Failed</p>
+              <p className="font-medium text-destructive">{t("failed")}</p>
             </div>
           </div>
         )}
@@ -135,7 +134,7 @@ export default async function OrderFailedPage({
               className="w-full sm:w-auto rounded-full group px-8"
             >
               <Link href={`/orders/${order.id}`}>
-                View Order Details
+                {t("viewDetails")}
                 <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
@@ -161,13 +160,13 @@ export default async function OrderFailedPage({
             size="lg"
             className="w-full sm:w-auto rounded-full px-8"
           >
-            <Link href="/shop">Continue Shopping</Link>
+            <Link href="/shop">{t("continueShopping")}</Link>
           </Button>
         </div>
 
         <div className="pt-8 text-zinc-400 text-sm flex items-center justify-center gap-2">
           <AlertCircle className="w-4 h-4" />
-          <span>Need help? Contact our support team for assistance.</span>
+          <span>{t("needHelp")}</span>
         </div>
       </div>
     </div>

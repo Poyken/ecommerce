@@ -385,7 +385,9 @@ export function CartClient({ cart }: CartClientProps) {
               if (typeof availableStock === "number") {
                 toast({
                   title: t("updateFailed"),
-                  description: `Only ${availableStock} items available. Quantity updated to maximum.`,
+                  description: `${t("onlyAvailable", {
+                    count: availableStock,
+                  })} ${t("quantityMax")}`,
                   variant: "warning",
                 });
                 setLocalItems((prev) =>
@@ -450,7 +452,7 @@ export function CartClient({ cart }: CartClientProps) {
         >
           <div className="space-y-3">
             <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
-              Your Selection
+              {t("yourSelection")}
             </span>
             <h1 className="text-4xl md:text-5xl font-serif font-normal text-foreground tracking-tight">
               {t("title")}

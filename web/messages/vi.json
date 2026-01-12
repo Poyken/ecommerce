@@ -83,7 +83,13 @@
     "ourCollection": "Bộ sưu tập",
     "showingPosts": "Hiển thị {count} bài viết trong {category}",
     "all": "Tất cả",
-    "productsFound": "Tìm thấy {count} sản phẩm"
+    "productsFound": "Tìm thấy {count} sản phẩm",
+    "offline": {
+      "title": "Bạn đang ngoại tuyến",
+      "description": "Có vẻ như bạn đã mất kết nối. Đừng lo lắng, các lựa chọn của bạn vẫn an toàn. Chúng tôi sẽ trở lại ngay khi có kết nối.",
+      "refresh": "Thử tải lại",
+      "footer": "Luxe Premium E-Commerce • Chế độ Ngoại Tuyến"
+    }
   },
   "notifications": {
     "title": "Thông báo",
@@ -558,7 +564,9 @@
     "securePayments": "Thanh toán an toàn",
     "fastShipping": "Giao hàng nhanh hỏa tốc",
     "calculatedAtCheckout": "Tính tại bước thanh toán",
-    "checkingStock": "Đang kiểm tra kho hàng..."
+    "checkingStock": "Đang kiểm tra kho hàng...",
+    "yourSelection": "Lựa chọn của bạn",
+    "quantityMax": "Số lượng đã được cập nhật về mức tối đa."
   },
   "checkout": {
     "backToCart": "Quay lại giỏ hàng",
@@ -788,7 +796,76 @@
   "admin": {
     "refresh": "Làm mới",
     "dashboard": "Bảng điều khiển",
-    "pages": "Trang tùy chỉnh",
+    "pages": {
+      "title": "Trang",
+      "subtitle": "Quản lý các trang tĩnh và trang đích của cửa hàng",
+      "createNew": "Tạo trang mới",
+      "allPages": "Tất cả các trang",
+      "table": {
+        "title": "Tiêu đề",
+        "slug": "Đường dẫn",
+        "status": "Trạng thái",
+        "lastUpdated": "Cập nhật lần cuối",
+        "actions": "Thao tác",
+        "homeBadge": "Trang chủ",
+        "noPages": "Không tìm thấy trang nào. Hãy bắt đầu bằng cách tạo một trang mới."
+      },
+      "status": {
+        "published": "Đã xuất bản",
+        "draft": "Bản nháp"
+      },
+      "actions": {
+        "build": "Xây dựng",
+        "view": "Xem",
+        "publishToView": "Xuất bản trang để xem nội dung",
+        "addBlocksToView": "Thêm các khối để xem nội dung"
+      },
+      "delete": {
+        "title": "Xóa trang",
+        "description": "Bạn có chắc chắn muốn xóa trang \"{title}\"? Hành động này không thể hoàn tác.",
+        "confirm": "Xóa trang",
+        "cancel": "Hủy",
+        "success": "Xóa trang thành công",
+        "error": "Xóa trang thất bại"
+      },
+      "create": {
+        "title": "Tạo trang mới",
+        "description": "Nhập tiêu đề và URL cho trang mới của bạn. Bạn có thể thêm các khối nội dung sau.",
+        "pageTitle": "Tiêu đề trang",
+        "pageTitlePlaceholder": "VD: Bộ sưu tập mùa hè",
+        "urlSlug": "Đường dẫn URL",
+        "homepageBadge": "Trang chủ",
+        "slugHelp": "PHẢI BẮT ĐẦU BẰNG / (Dùng / cho Trang chủ)",
+        "cancel": "Hủy",
+        "submit": "Tạo trang",
+        "creating": "Đang tạo...",
+        "success": "Đã tạo trang",
+        "successDesc": "Tạo thành công trang \"{title}\"",
+        "error": "Lỗi",
+        "errorDefault": "Tạo trang thất bại"
+      },
+      "settings": {
+        "title": "Cấu hình trang",
+        "description": "Cấu hình siêu dữ liệu trang và các tùy chọn xuất bản",
+        "basicInfo": "Thông tin cơ bản",
+        "pageTitle": "Tiêu đề trang",
+        "pageTitlePlaceholder": "Nhập tiêu đề trang",
+        "urlSlug": "Đường dẫn URL",
+        "urlSlugPlaceholder": "/duong-dan-trang",
+        "urlSlugHelp": "Đường dẫn URL nơi trang này có thể truy cập",
+        "seo": "SEO",
+        "metaDescription": "Mô tả Meta",
+        "metaDescriptionPlaceholder": "Mô tả ngắn gọn cho các công cụ tìm kiếm...",
+        "charCount": "Khuyên dùng {count}/160 ký tự",
+        "publishing": "Xuất bản",
+        "publishPage": "Xuất bản trang",
+        "publishedStatus": "Trang đang hiển thị công khai",
+        "draftStatus": "Trang đang ở chế độ nháp",
+        "save": "Lưu cấu hình",
+        "saving": "Đang lưu...",
+        "delete": "Xóa trang"
+      }
+    },
     "product": "Sản phẩm",
     "openMenu": "Mở menu",
     "overview": "Tổng quan về hoạt động của cửa hàng",
@@ -1736,6 +1813,81 @@
         "pathWin": "C:\\Windows\\System32\\drivers\\etc\\hosts",
         "pathUnix": "/etc/hosts"
       }
+    },
+    "chat": {
+      "title": "Trợ lý Chat",
+      "aiAssistant": "Trợ lý AI",
+      "humanSupport": "Hỗ trợ viên",
+      "loginToChat": "Đăng nhập để Chat",
+      "supportChat": "Hỗ trợ trực tuyến",
+      "signInToChat": "Đăng nhập để chat",
+      "supportHelpDesc": "Kết nối với đội ngũ hỗ trợ của chúng tôi để được giúp đỡ về đơn hàng (Dành cho thành viên).",
+      "loginToSupport": "Đăng nhập ngay",
+      "aiHelpGuest": "Bạn có thể hỏi Trợ lý AI khi tham quan với tư cách khách!",
+      "aiWelcome": "Xin chào! 👋",
+      "aiDescription": "Tôi là Trợ lý AI của Luxe Shop.\nHãy hỏi tôi về sản phẩm hoặc các chính sách!",
+      "placeholder": "Bạn muốn hỏi gì...",
+      "supportPlaceholder": "Nhập tin nhắn...",
+      "unknownWidget": "Loại widget không xác định",
+      "invalidFileType": "Loại tập tin không hợp lệ",
+      "uploadImageDesc": "Vui lòng chọn một tập tin hình ảnh",
+      "uploadFailed": "Tải lên thất bại",
+      "uploadFailedDesc": "Không thể tải ảnh. Vui lòng thử lại.",
+      "sharedProduct": "Đã chia sẻ sản phẩm: {name}",
+      "referencedOrder": "Đã đính kèm đơn hàng: #{id}",
+      "orderItems": "{count} sản phẩm",
+      "orderDetails": "Chi tiết đơn hàng →",
+      "image": "Hình ảnh",
+      "uploading": "Đang tải...",
+      "product": "Sản phẩm",
+      "order": "Đơn hàng",
+      "read": "Đã xem",
+      "supportWelcome": "Chào {name}! Chúng tôi có thể giúp gì cho bạn?",
+      "selector": {
+        "tabs": {
+          "products": "Sản phẩm",
+          "orders": "Đơn hàng"
+        },
+        "searchProducts": "Tìm sản phẩm gần đây...",
+        "searchOrders": "Tìm đơn hàng của bạn...",
+        "noProducts": "Không tìm thấy sản phẩm nào",
+        "noOrders": "Không tìm thấy đơn hàng nào"
+      }
+    },
+    "productDetail": {
+      "selectOptions": "Vui lòng chọn phân loại",
+      "selectOptionsDesc": "Bạn cần chọn đầy đủ các tùy chọn (Size, Màu sắc) trước khi thêm vào giỏ hàng.",
+      "outOfStock": "Hết hàng",
+      "outOfStockDesc": "Sản phẩm này hiện đang hết hàng.",
+      "verifiedReviews": "({count} Đánh giá đã xác minh)",
+      "freeGlobalShipping": "Giao hàng quốc tế miễn phí",
+      "warranty": "Bảo hành 2 năm",
+      "authenticityVerified": "Xác thực chính hãng",
+      "customerReviews": "Đánh giá của khách hàng",
+      "recentlyViewed": "Đã xem gần đây"
+    },
+    "orderStatus": {
+      "confirmed": "Đơn hàng đã được xác nhận!",
+      "thankYou": "Cảm ơn bạn đã mua hàng. Đơn hàng <id></id> của bạn đã được đặt thành công.",
+      "recipient": "Người nhận",
+      "totalAmount": "Tổng tiền",
+      "paymentStatus": "Trạng thái thanh toán",
+      "shippingTo": "Giao đến",
+      "viewDetails": "Xem chi tiết đơn hàng",
+      "continueShopping": "Tiếp tục mua sắm",
+      "emailNotice": "Chúng tôi sẽ gửi email kèm thông tin theo dõi ngay khi đơn hàng được gửi đi.",
+      "orderFailed": "Đặt hàng thất bại",
+      "paymentFailed": "Thanh toán thất bại",
+      "paymentProblem": "Rất tiếc, thanh toán cho đơn hàng <id></id> của bạn không thể thực hiện.",
+      "paymentProblemBrief": "Thanh toán của bạn không thể thực hiện. Vui lòng thử lại.",
+      "paymentProblemDetail": "Giao dịch đã bị hủy hoặc bị từ chối bởi ngân hàng của bạn. Không có khoản tiền nào bị trừ.",
+      "orderID": "Mã đơn hàng",
+      "status": "Trạng thái",
+      "payment": "Thanh toán",
+      "cancelled": "Đã hủy",
+      "failed": "Thất bại",
+      "tryAgain": "Thử lại",
+      "needHelp": "Cần hỗ trợ? Liên hệ với đội ngũ CSKH của chúng tôi để được giúp đỡ."
     }
   }
 }

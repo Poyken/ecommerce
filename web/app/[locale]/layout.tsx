@@ -8,6 +8,7 @@ import { routing } from "@/i18n/routing";
 import { MotionProvider } from "@/providers/motion-provider";
 import { SWRProvider } from "@/providers/swr-provider";
 import { TenantProvider } from "@/providers/tenant-provider";
+import { PwaProvider } from "@/providers/pwa-provider";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
@@ -128,7 +129,7 @@ async function RootProviders({
                   <QuickViewProvider />
                 </div>
                 <SmoothScroll />
-                {children}
+                <PwaProvider>{children}</PwaProvider>
                 <Toaster />
               </MotionProvider>
             </ThemeProvider>

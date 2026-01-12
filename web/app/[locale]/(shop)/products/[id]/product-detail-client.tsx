@@ -12,6 +12,7 @@ import { ProductReviews } from "@/features/reviews/components/product-reviews";
 import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
 import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
+import { useTranslations } from "next-intl";
 import { Product, Review, Sku } from "@/types/models";
 import { Check, Shield, Truck } from "lucide-react";
 import { useSearchParams } from "next/navigation";
@@ -59,6 +60,7 @@ export function ProductDetailClient({
   initialMeta = null,
   initialPurchasedSkus = [],
 }: ProductDetailClientProps) {
+  const t = useTranslations("productDetail");
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const { addToCart, isAdding } = useCart(product.name);
@@ -180,9 +182,8 @@ export function ProductDetailClient({
   const handleAddToCart = async () => {
     if (!currentSkuId) {
       toast({
-        title: "Please select options",
-        description:
-          "You must select all options (Size, Color) before adding to cart.",
+        title: t("selectOptions"),
+        description: t("selectOptionsDesc"),
         variant: "destructive",
       });
       return;
@@ -192,8 +193,8 @@ export function ProductDetailClient({
     const selectedSku = product.skus?.find((s) => s.id === currentSkuId);
     if (!selectedSku || selectedSku.stock <= 0) {
       toast({
-        title: "Out of Stock",
-        description: "This item is currently out of stock.",
+        title: t("outOfStock"),
+        description: t("outOfStockDesc"),
         variant: "destructive",
       });
       return;
@@ -277,7 +278,7 @@ export function ProductDetailClient({
               ))}
             </div>
             <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
-              ({reviewCount} Verified Reviews)
+              {t("verifiedReviews", { count: reviewCount })}
             </span>
           </div>
 
@@ -302,15 +303,15 @@ export function ProductDetailClient({
             <div className="grid grid-cols-2 gap-y-4 gap-x-2 pt-6 border-t border-white/5">
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Truck className="h-5 w-5 text-primary stroke-[1.5]" />
-                <span>Free Global Shipping</span>
+                <span>{t("freeGlobalShipping")}</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Shield className="h-5 w-5 text-primary stroke-[1.5]" />
-                <span>2-Year Warranty</span>
+                <span>{t("warranty")}</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <Check className="h-5 w-5 text-primary stroke-[1.5]" />
-                <span>Authenticity Verified</span>
+                <span>{t("authenticityVerified")}</span>
               </div>
             </div>
           </GlassCard>
@@ -319,7 +320,7 @@ export function ProductDetailClient({
         <div className="pt-8 border-t border-white/5">
           <div className="flex items-center justify-between mb-8">
             <h3 className="text-2xl font-bold tracking-tight">
-              Customer Reviews
+              {t("customerReviews")}
             </h3>
           </div>
           <ProductReviews
@@ -335,7 +336,7 @@ export function ProductDetailClient({
           <RecentlyViewedSection
             currentProductId={product.id}
             maxDisplay={6}
-            title="Đã xem gần đây"
+            title={t("recentlyViewed")}
           />
         </div>
       </div>

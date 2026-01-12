@@ -101,9 +101,4 @@ export class CircuitBreaker {
       );
     }
   }
-
-  // Helper to check current state
-  getState() {
-    return CircuitState[this.state];
-  }
 }

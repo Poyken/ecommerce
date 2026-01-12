@@ -85,7 +85,13 @@
     "all": "All",
     "productsFound": "{count} products found",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "offline": {
+      "title": "You're Offline",
+      "description": "It seems like you've lost your connection. Don't worry, your selections are safe. We'll be back as soon as you're online.",
+      "refresh": "Try Refreshing",
+      "footer": "Luxe Premium E-Commerce • Offline Mode"
+    }
   },
   "notifications": {
     "title": "Notifications",
@@ -564,7 +570,9 @@
     "onlyAvailable": "Only {count} items available.",
     "calculatedAtCheckout": "Calculated at checkout",
     "fastShipping": "Fast Shipping",
-    "checkingStock": "Checking stock..."
+    "checkingStock": "Checking stock...",
+    "yourSelection": "Your Selection",
+    "quantityMax": "Quantity updated to maximum."
   },
   "checkout": {
     "backToCart": "Back to Cart",
@@ -795,7 +803,76 @@
     "refresh": "Refresh",
     "adminPanel": "Admin Panel",
     "dashboard": "Dashboard",
-    "pages": "Pages",
+    "pages": {
+      "title": "Pages",
+      "subtitle": "Manage your store's static pages and landing pages",
+      "createNew": "Create New Page",
+      "allPages": "All Pages",
+      "table": {
+        "title": "Title",
+        "slug": "Slug",
+        "status": "Status",
+        "lastUpdated": "Last Updated",
+        "actions": "Actions",
+        "homeBadge": "Home",
+        "noPages": "No pages found. Start by creating one."
+      },
+      "status": {
+        "published": "Published",
+        "draft": "Draft"
+      },
+      "actions": {
+        "build": "Build",
+        "view": "View",
+        "publishToView": "Publish page to view properly",
+        "addBlocksToView": "Add blocks to view"
+      },
+      "delete": {
+        "title": "Delete Page",
+        "description": "Are you sure you want to delete the page \"{title}\"? This action cannot be undone.",
+        "confirm": "Delete Page",
+        "cancel": "Cancel",
+        "success": "Page deleted successfully",
+        "error": "Failed to delete page"
+      },
+      "create": {
+        "title": "Create New Page",
+        "description": "Enter the title and URL for your new page. You can add content blocks later.",
+        "pageTitle": "Page Title",
+        "pageTitlePlaceholder": "e.g., Summer Collection",
+        "urlSlug": "URL Slug (Path)",
+        "homepageBadge": "Homepage",
+        "slugHelp": "MUST START WITH / (Use / for Homepage)",
+        "cancel": "Cancel",
+        "submit": "Create Page",
+        "creating": "Creating...",
+        "success": "Page created",
+        "successDesc": "Successfully created page \"{title}\"",
+        "error": "Error",
+        "errorDefault": "Failed to create page"
+      },
+      "settings": {
+        "title": "Page Settings",
+        "description": "Configure page metadata and publishing options",
+        "basicInfo": "Basic Information",
+        "pageTitle": "Page Title",
+        "pageTitlePlaceholder": "Enter page title",
+        "urlSlug": "URL Slug",
+        "urlSlugPlaceholder": "/page-url",
+        "urlSlugHelp": "The URL path where this page will be accessible",
+        "seo": "SEO",
+        "metaDescription": "Meta Description",
+        "metaDescriptionPlaceholder": "Brief description for search engines...",
+        "charCount": "{count}/160 characters recommended",
+        "publishing": "Publishing",
+        "publishPage": "Publish Page",
+        "publishedStatus": "Page is visible to the public",
+        "draftStatus": "Page is in draft mode",
+        "save": "Save Settings",
+        "saving": "Saving...",
+        "delete": "Delete Page"
+      }
+    },
     "product": "Product",
     "openMenu": "Open menu",
     "overview": "Overview of your store's performance",
@@ -1747,6 +1824,81 @@
         "pathWin": "C:\\Windows\\System32\\drivers\\etc\\hosts",
         "pathUnix": "/etc/hosts"
       }
+    },
+    "chat": {
+      "title": "Chat Assistant",
+      "aiAssistant": "AI Assistant",
+      "humanSupport": "Human Support",
+      "loginToChat": "Login to Chat",
+      "supportChat": "Support Chat",
+      "signInToChat": "Sign in to chat",
+      "supportHelpDesc": "Connect with our support team to get help with your orders (User Only).",
+      "loginToSupport": "Login to Support",
+      "aiHelpGuest": "Ask our AI Assistant for help while browsing as a guest!",
+      "aiWelcome": "Hello! 👋",
+      "aiDescription": "I am the Luxe Shop AI Assistant.\nAsk me about products or policies!",
+      "placeholder": "Ask anything...",
+      "supportPlaceholder": "Type a message...",
+      "unknownWidget": "Unknown widget type",
+      "invalidFileType": "Invalid file type",
+      "uploadImageDesc": "Please upload an image file",
+      "uploadFailed": "Upload failed",
+      "uploadFailedDesc": "Failed to upload image. Please try again.",
+      "sharedProduct": "Shared a product: {name}",
+      "referencedOrder": "Referenced an order: #{id}",
+      "orderItems": "{count} items",
+      "orderDetails": "Order Details →",
+      "image": "Image",
+      "uploading": "Uploading...",
+      "product": "Product",
+      "order": "Order",
+      "read": "Read",
+      "supportWelcome": "Hello {name}! How can we help you today?",
+      "selector": {
+        "tabs": {
+          "products": "Products",
+          "orders": "Orders"
+        },
+        "searchProducts": "Search recent products...",
+        "searchOrders": "Search your orders...",
+        "noProducts": "No products found",
+        "noOrders": "No orders found"
+      }
+    },
+    "productDetail": {
+      "selectOptions": "Please select options",
+      "selectOptionsDesc": "You must select all options (Size, Color) before adding to cart.",
+      "outOfStock": "Out of Stock",
+      "outOfStockDesc": "This item is currently out of stock.",
+      "verifiedReviews": "({count} Verified Reviews)",
+      "freeGlobalShipping": "Free Global Shipping",
+      "warranty": "2-Year Warranty",
+      "authenticityVerified": "Authenticity Verified",
+      "customerReviews": "Customer Reviews",
+      "recentlyViewed": "Recently Viewed"
+    },
+    "orderStatus": {
+      "confirmed": "Order Confirmed!",
+      "thankYou": "Thank you for your purchase. Your order <id></id> has been placed successfully.",
+      "recipient": "Recipient",
+      "totalAmount": "Total Amount",
+      "paymentStatus": "Payment Status",
+      "shippingTo": "Shipping to",
+      "viewDetails": "View Order Details",
+      "continueShopping": "Continue Shopping",
+      "emailNotice": "We'll send you an email with tracking details as soon as it ships.",
+      "orderFailed": "Order Failed",
+      "paymentFailed": "Payment Failed",
+      "paymentProblem": "Unfortunately, your payment for order <id></id> could not be processed.",
+      "paymentProblemBrief": "Your payment could not be processed. Please try again.",
+      "paymentProblemDetail": "The transaction was cancelled or declined by your bank. No money has been charged.",
+      "orderID": "Order ID",
+      "status": "Status",
+      "payment": "Payment",
+      "cancelled": "Cancelled",
+      "failed": "Failed",
+      "tryAgain": "Try Again",
+      "needHelp": "Need help? Contact our support team for assistance."
     }
   }
 }

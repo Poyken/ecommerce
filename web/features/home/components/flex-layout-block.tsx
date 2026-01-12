@@ -14,7 +14,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { ArrowRight, LucideIcon } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import Image from "next/image";
 import { Link } from "@/i18n/routing";

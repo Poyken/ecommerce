@@ -12,13 +12,14 @@ import { Link } from "@/i18n/routing";
 import { uploadToCloudinary } from "@/lib/cloudinary";
 import { cn } from "@/lib/utils";
 import {
-    Image as ImageIcon,
-    Loader2,
-    Paperclip,
-    Send,
-    ShoppingBag,
-    X,
+  Image as ImageIcon,
+  Loader2,
+  Paperclip,
+  Send,
+  ShoppingBag,
+  X,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -43,22 +44,7 @@ export function SupportChatContent({
   active,
   onUnreadChange,
 }: SupportChatContentProps) {
-/**
- * =====================================================================
- * SUPPORT CHAT CONTENT - Giao diện Chat với Nhân viên Support
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RICH MESSAGE RENDERING:
- * - Tin nhắn không chỉ là Text. Có thể là: IMAGE, PRODUCT card, ORDER status.
- * - Hàm `renderMessageContent` sẽ switch-case `msg.type` để hiển thị UI phù hợp.
- *
- * 2. IMAGE ZOOM:
- * - Khi click vào ảnh, ta dùng Portal để hiển thị Lightbox phóng to full màn hình.
- * - `e.stopPropagation()` rất quan trọng để tránh đóng modal chat khi thao tác zoom.
- * =====================================================================
- */
+  const t = useTranslations("chat");
   const [input, setInput] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
@@ -172,8 +158,8 @@ export function SupportChatContent({
     if (!file.type.startsWith("image/")) {
       toast({
         variant: "destructive",
-        title: "Invalid file type",
-        description: "Please upload an image file",
+        title: t("invalidFileType"),
+        description: t("uploadImageDesc"),
       });
       return;
     }
@@ -191,8 +177,8 @@ export function SupportChatContent({
       console.error("Upload failed:", error);
       toast({
         variant: "destructive",
-        title: "Upload failed",
-        description: "Failed to upload image. Please try again.",
+        title: t("uploadFailed"),
+        description: t("uploadFailedDesc"),
       });
     } finally {
       setIsUploading(false);
@@ -201,9 +187,19 @@ export function SupportChatContent({
 
   const handleSelectContent = (type: "PRODUCT" | "ORDER", data: any) => {
     if (type === "PRODUCT") {
-      sendMessage(`Shared a product: ${data.name}`, undefined, "PRODUCT", data);
+      sendMessage(
+        t("sharedProduct", { name: data.name }),
+        undefined,
+        "PRODUCT",
+        data
+      );
     } else {
-      sendMessage(`Referenced an order: #${data.id}`, undefined, "ORDER", data);
+      sendMessage(
+        t("referencedOrder", { id: data.id }),
+        undefined,
+        "ORDER",
+        data
+      );
     }
   };
 
@@ -242,10 +238,10 @@ export function SupportChatContent({
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold truncate">
-                {metadata?.name || "Product"}
+                {metadata?.name || t("product")}
               </p>
               <p className="text-xs text-primary font-bold">
-                {metadata?.price ? `$${metadata.price}` : "View Details"}
+                {metadata?.price ? `$${metadata.price}` : t("orderDetails")}
               </p>
             </div>
           </button>
@@ -260,7 +256,7 @@ export function SupportChatContent({
               </Badge>
             </div>
             <div className="flex justify-between text-[10px] text-muted-foreground">
-              <span>{metadata?.itemCount} items</span>
+              <span>{t("orderItems", { count: metadata?.itemCount })}</span>
               <span className="font-bold text-foreground">
                 ${metadata?.total}
               </span>
@@ -269,7 +265,7 @@ export function SupportChatContent({
               href={`/orders/${metadata?.id}`}
               className="text-[10px] text-primary hover:underline mt-1 font-bold"
             >
-              Order Details →
+              {t("orderDetails")}
             </Link>
           </div>
         );
@@ -300,7 +296,7 @@ export function SupportChatContent({
             {/* Introduction/Welcome */}
             <div className="flex justify-start">
               <div className="bg-white border px-3 py-2 rounded-2xl rounded-tl-none max-w-[85%] text-sm shadow-sm">
-                Hello {user?.firstName}! How can we help you today?
+                {t("supportWelcome", { name: user?.firstName || "" })}
               </div>
             </div>
 
@@ -341,7 +337,7 @@ export function SupportChatContent({
                           isRich || !isMe ? "text-gray-400" : "text-white"
                         )}
                       >
-                        Read
+                        {t("read")}
                       </div>
                     )}
                   </div>
@@ -435,7 +431,7 @@ export function SupportChatContent({
             onClick={handleImageClick}
             disabled={isUploading}
           >
-            <ImageIcon size={12} /> {isUploading ? "Uploading..." : "Image"}
+            <ImageIcon size={12} /> {isUploading ? t("uploading") : t("image")}
           </Button>
           <Button
             variant="outline"
@@ -443,7 +439,7 @@ export function SupportChatContent({
             className="h-7 text-xs gap-1"
             onClick={() => setIsSelectorOpen(true)}
           >
-            <ShoppingBag size={12} /> Product
+            <ShoppingBag size={12} /> {t("product")}
           </Button>
           <Button
             variant="outline"
@@ -451,14 +447,14 @@ export function SupportChatContent({
             className="h-7 text-xs gap-1"
             onClick={() => setIsSelectorOpen(true)}
           >
-            <Paperclip size={12} /> Order
+            <Paperclip size={12} /> {t("order")}
           </Button>
         </div>
 
         <div className="flex gap-2 w-full">
           <Input
             className="resize-none focus-visible:ring-1"
-            placeholder="Type a message..."
+            placeholder={t("supportPlaceholder")}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}

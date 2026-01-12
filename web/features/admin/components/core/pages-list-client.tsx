@@ -18,9 +18,8 @@
  * - Component này chạy ở Client (`use client`) nhưng nhận dữ liệu ban đầu từ Server (`initialPages`).
  * - Kết hợp `useAdminTable` hook để xử lý search/filter client-side nhanh.
  * =====================================================================
- */ 
+ */
 "use client";
-import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,14 +31,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { deletePageAction } from "@/features/admin/actions";
-import {
-  AdminPageHeader,
-  AdminTableWrapper,
-} from "@/features/admin/components/ui/admin-page-components";
+import { AdminTableWrapper } from "@/features/admin/components/ui/admin-page-components";
 import { Link } from "@/i18n/routing";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { Edit, ExternalLink, Plus, Trash2 } from "lucide-react";
 import { format } from "date-fns";
+import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 
@@ -68,10 +65,8 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [selectedPage, setSelectedPage] = useState<any>(null);
-  const { toast } = useToast();
-
-  const { searchTerm, setSearchTerm, isPending } =
-    useAdminTable("/admin/pages");
+  const t = useTranslations("admin.pages");
+  const { isPending } = useAdminTable("/admin/pages");
 
   // Local filter for search term if needed, or rely on server-side
   const pages = initialPages;
@@ -100,19 +95,19 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
           className="rounded-full px-6 shadow-xl shadow-primary/20"
         >
           <Plus className="mr-2 h-4 w-4" />
-          Create New Page
+          {t("createNew")}
         </Button>
       </div>
 
-      <AdminTableWrapper title="All Pages" isLoading={isPending}>
+      <AdminTableWrapper title={t("allPages")} isLoading={isPending}>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Last Updated</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>{t("table.title")}</TableHead>
+              <TableHead>{t("table.slug")}</TableHead>
+              <TableHead>{t("table.status")}</TableHead>
+              <TableHead>{t("table.lastUpdated")}</TableHead>
+              <TableHead className="text-right">{t("table.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -134,7 +129,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
                         variant="outline"
                         className="text-[10px] uppercase tracking-tighter bg-emerald-500/5 text-emerald-600 border-emerald-500/20"
                       >
-                        Home
+                        {t("table.homeBadge")}
                       </Badge>
                     )}
                   </div>
@@ -148,7 +143,9 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
                         : ""
                     }
                   >
-                    {page.isPublished ? "Published" : "Draft"}
+                    {page.isPublished
+                      ? t("status.published")
+                      : t("status.draft")}
                   </Badge>
                 </TableCell>
                 <TableCell className="text-muted-foreground text-sm">
@@ -159,7 +156,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
                     <Button variant="outline" size="sm" asChild className="h-9">
                       <Link href={`/admin/pages/${page.id}`}>
                         <Edit className="mr-2 h-4 w-4" />
-                        Build
+                        {t("actions.build")}
                       </Link>
                     </Button>
                     {(() => {
@@ -180,8 +177,8 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
                             className="h-9 w-9 opacity-50"
                             title={
                               !page.isPublished
-                                ? "Publish page to view properly"
-                                : "Add blocks to view"
+                                ? t("actions.publishToView")
+                                : t("actions.addBlocksToView")
                             }
                           >
                             <ExternalLink className="h-4 w-4" />
@@ -226,7 +223,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
                 >
                   <div className="flex flex-col items-center gap-2">
                     <Edit className="h-8 w-8 opacity-20" />
-                    <p>No pages found. Start by creating one.</p>
+                    <p>{t("table.noPages")}</p>
                   </div>
                 </TableCell>
               </TableRow>
@@ -241,10 +238,10 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
         <DeleteConfirmDialog
           open={isDeleteOpen}
           onOpenChange={setIsDeleteOpen}
-          title="Delete Page"
-          description={`Are you sure you want to delete the page "${selectedPage.title}"? This action cannot be undone.`}
+          title={t("delete.title")}
+          description={t("delete.description", { title: selectedPage.title })}
           action={handleDelete}
-          confirmLabel="Delete Page"
+          confirmLabel={t("delete.confirm")}
         />
       )}
     </div>

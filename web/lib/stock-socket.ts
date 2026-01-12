@@ -56,7 +56,7 @@ class StockSocketClient {
       });
     });
 
-    this.socket.on("disconnect", (_reason) => {});
+    this.socket.on("disconnect", () => {});
 
     this.socket.on("connect_error", (error) => {
       console.error("[StockSocket] Connection error:", error.message);

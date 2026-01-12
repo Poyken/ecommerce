@@ -51,7 +51,7 @@ class NotificationSocketClient {
     // Setup event handlers
     this.socket.on("connect", () => {});
 
-    this.socket.on("disconnect", (_reason) => {});
+    this.socket.on("disconnect", () => {});
 
     this.socket.on("connect_error", (error) => {
       console.error("[Socket] Connection error:", error.message);

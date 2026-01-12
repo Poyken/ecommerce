@@ -17,7 +17,7 @@
  * 3. CUSTOMIZATION:
  * - Props linh hoạt (`HeroSectionProps`) cho phép tái sử dụng ở các trang khác hoặc A/B Testing.
  * =====================================================================
- */ 
+ */
 "use client";
 
 import { GlassButton } from "@/components/shared/glass-button";
@@ -148,7 +148,7 @@ export function HeroSection({
               alignment === "center" ? "justify-center" : "justify-start"
             )}
           >
-            <Link href={displayCtaLink as any} >
+            <Link href={displayCtaLink as any}>
               <m.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -161,7 +161,7 @@ export function HeroSection({
               </m.button>
             </Link>
 
-            <Link href="/about">
+            <Link href={(secondaryCtaLink || "/about") as any}>
               <GlassButton
                 variant="outline"
                 size="lg"

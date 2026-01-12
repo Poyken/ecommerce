@@ -253,8 +253,6 @@ export function PageBuilderClient({
   };
 
   const renderBlockEditor = (block: Block) => {
-    const blockInfo = getBlockTypeInfo(block.type);
-
     switch (block.type) {
       case "Hero":
         return (

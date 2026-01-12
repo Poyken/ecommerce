@@ -105,14 +105,7 @@ export function FooterBlock({
   };
 
   // Determine styles based on theme or custom override
-  const bgStyle =
-    styles?.backgroundColor ||
-    (theme === "minimal"
-      ? undefined
-      : theme === "brushed"
-      ? undefined
-      : "#0A0A0A");
-  const textStyle = styles?.textColor;
+  // Determine styles based on theme or custom override
 
   return (
     <footer

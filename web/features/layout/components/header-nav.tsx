@@ -42,14 +42,10 @@ interface HeaderNavProps {
 
 import { useTranslations } from "next-intl";
 
-export function HeaderNav({
-  initialUser,
-  permissions: propsPermissions,
-}: HeaderNavProps) {
+export function HeaderNav({ permissions: propsPermissions }: HeaderNavProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
-  // Use initialUser directly from props (already fetched by layout)
-  const user = initialUser;
+
   const { hasPermission: contextHasPermission } = useAuth();
 
   // Use permissions from props if available (for PPR stability), otherwise fallback to context

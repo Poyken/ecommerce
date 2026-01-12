@@ -2,12 +2,18 @@
 
 import { useEffect } from "react";
 
+declare global {
+  interface Window {
+    workbox: any;
+  }
+}
+
 export function PwaProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (
       typeof window !== "undefined" &&
       "serviceWorker" in navigator &&
-      window.workbox === undefined // Avoid double registration if using workbox
+      !window.workbox
     ) {
       window.addEventListener("load", () => {
         navigator.serviceWorker

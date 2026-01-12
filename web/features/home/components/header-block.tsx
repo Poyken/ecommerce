@@ -103,7 +103,6 @@ export function HeaderBlock({
   links,
   styles,
   transparent,
-  logoText,
   height = "h-20",
   customHeight,
   alignment = "right",

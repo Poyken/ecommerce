@@ -23,8 +23,6 @@ export const API_CONFIG = {
   DEFAULT_TIMEOUT: 10000,
   /** Timeout cho upload file (ms) */
   UPLOAD_TIMEOUT: 60000,
-  /** Số lần retry tối đa khi request thất bại */
-  MAX_RETRIES: 3,
   /** Delay giữa các lần retry (ms) */
   RETRY_DELAY: 1000,
 } as const;
@@ -57,8 +55,7 @@ export const UI_CONFIG = {
   PRODUCTS_PER_PAGE: 12,
   /** Số lượng sản phẩm hiển thị mobile */
   PRODUCTS_PER_PAGE_MOBILE: 8,
-  /** Threshold cho slow request warning (ms) */
-  SLOW_REQUEST_THRESHOLD: 500,
+
   /** Animation durations (ms) */
   ANIMATION: {
     FAST: 150,

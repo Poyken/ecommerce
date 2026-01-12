@@ -76,31 +76,9 @@ export function formatDateTime(date: Date | string | number): string {
   }).format(new Date(date));
 }
 
-export function formatRelativeTime(date: Date | string | number): string {
-  if (!date) return "";
-  const now = Date.now();
-  const timestamp = new Date(date).getTime();
-  const diff = now - timestamp;
-
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-
-  if (days > 0) return `${days} ngày trước`;
-  if (hours > 0) return `${hours} giờ trước`;
-  if (minutes > 0) return `${minutes} phút trước`;
-  return "Vừa xong";
-}
-
 // ============================================================================
 // TEXT & MISC
 // ============================================================================
-
-export function truncate(text: string, maxLength: number): string {
-  if (!text || text.length <= maxLength) return text;
-  return `${text.slice(0, maxLength).trim()}...`;
-}
 
 export function toSlug(text: string): string {
   return text

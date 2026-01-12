@@ -13,7 +13,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { createPageAction } from "@/features/admin/actions";
+import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { toSlug } from "@/lib/utils";
 import { useState, useTransition } from "react";
 
 interface CreatePageDialogProps {
@@ -41,6 +43,7 @@ export function CreatePageDialog({
   open,
   onOpenChange,
 }: CreatePageDialogProps) {
+  const t = useTranslations("admin.pages.create");
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -55,14 +58,7 @@ export function CreatePageDialog({
     if (val.toLowerCase() === "home" || val === "/") {
       setSlug("/");
     } else {
-      const autoSlug =
-        "/" +
-        val
-          .toLowerCase()
-          .trim()
-          .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "");
-      setSlug(autoSlug);
+      setSlug("/" + toSlug(val));
     }
   };
 
@@ -83,8 +79,8 @@ export function CreatePageDialog({
 
       if (res.success && res.data) {
         toast({
-          title: "Page created",
-          description: `Successfully created page "${title}"`,
+          title: t("success"),
+          description: t("successDesc", { title }),
         });
         onOpenChange(false);
         setTitle("");
@@ -93,8 +89,8 @@ export function CreatePageDialog({
         router.refresh();
       } else {
         toast({
-          title: "Error",
-          description: res.error || "Failed to create page",
+          title: t("error"),
+          description: res.error || t("errorDefault"),
           variant: "destructive",
         });
       }
@@ -107,31 +103,28 @@ export function CreatePageDialog({
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle className="text-xl font-serif">
-              Create New Page
+              {t("title")}
             </DialogTitle>
-            <DialogDescription>
-              Enter the title and URL for your new page. You can add content
-              blocks later.
-            </DialogDescription>
+            <DialogDescription>{t("description")}</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-6">
             <div className="space-y-2">
-              <Label htmlFor="title">Page Title</Label>
+              <Label htmlFor="title">{t("pageTitle")}</Label>
               <Input
                 id="title"
                 value={title}
                 onChange={handleTitleChange}
-                placeholder="e.g., Summer Collection"
+                placeholder={t("pageTitlePlaceholder")}
                 disabled={isPending}
                 required
               />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="slug">URL Slug (Path)</Label>
+                <Label htmlFor="slug">{t("urlSlug")}</Label>
                 {slug === "/" && (
                   <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 uppercase tracking-tighter">
-                    Homepage
+                    {t("homepageBadge")}
                   </span>
                 )}
               </div>
@@ -145,7 +138,7 @@ export function CreatePageDialog({
                 className="font-mono text-sm"
               />
               <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
-                MUST START WITH / (Use / for Homepage)
+                {t("slugHelp")}
               </p>
             </div>
           </div>
@@ -156,10 +149,10 @@ export function CreatePageDialog({
               onClick={() => onOpenChange(false)}
               disabled={isPending}
             >
-              Cancel
+              {t("cancel")}
             </Button>
             <Button type="submit" disabled={isPending || !title || !slug}>
-              {isPending ? "Creating..." : "Create Page"}
+              {isPending ? t("creating") : t("submit")}
             </Button>
           </DialogFooter>
         </form>
