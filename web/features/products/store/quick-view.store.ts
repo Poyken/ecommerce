@@ -14,7 +14,8 @@
  * - Modal QuickView sẽ subscribe vào store này để biết khi nào cần hiện và hiện sản phẩm gì.
  * - Tránh việc phải prop-drill `isOpen/onOpen` qua quá nhiều tầng components. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Quản lý state toàn cục (Global State) hoặc cung cấp dependency injection cho cây component.
+ * - Conversion Rate: Cho phép khách hành xem chi tiết và thêm vào giỏ hàng ngay tại trang danh sách, giảm số bước click và tăng tỷ lệ mua hàng.
+ * - Seamless Browsing: Người dùng có thể xem nhanh hàng chục sản phẩm mà không cần chuyển trang (back/forward), mang lại trải nghiệm mua sắm liền mạch.
 
  * =====================================================================
  */

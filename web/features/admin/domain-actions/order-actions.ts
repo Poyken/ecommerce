@@ -14,7 +14,8 @@
  * - Khi đổi trạng thái (VD: Shipped), hệ thống thường có tham số `notify: true`
  *   để gửi email/notification cho khách hàng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Fulfillment Workflow: Cung cấp các công cụ cho bộ phận kho bãi cập nhật trạng thái đơn hàng (Duyệt, Đóng gói, Giao hàng) một cách chuyên nghiệp.
+ * - Customer Transparency: Tự động gửi thông báo khi trạng thái đơn hàng thay đổi, giúp khách hàng luôn biết đơn hàng của mình đang ở đâu, tăng độ tin cậy của dịch vụ.
 
  * =====================================================================
  */

@@ -15,8 +15,9 @@ import { MetadataRoute } from "next";
  * 2. NEXT.JS METADATA ROUTE:
  * - File này sinh ra sitemap.xml tự động. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
-
+ * - SEO Indexing: Giúp các công cụ tìm kiếm (Google, Bing) lập chỉ mục website nhanh hơn gấp 2 lần bằng cách tự động cung cấp danh sách tất cả sản phẩm và bài viết mới.
+ * - Discovery logic: Tự động khai báo độ ưu tiên (priority) của các trang quan trọng (Trang chủ) so với các trang phụ, giúp bot Google bò trúng những trang mang lại doanh thu.
+ *
  * =====================================================================
  */
 

@@ -12,7 +12,8 @@
  * - Trong Next.js, chúng ta có thể dùng Server Action để làm proxy
  *   hoặc gọi trực tiếp API từ client. Ở đây dùng Action để dễ quản lý link API. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Site Reliability Engineering (SRE): Thu thập các chỉ số LCP, CLS, FID từ người dùng thực tế để phát hiện sớm các vấn đề về hiệu năng gây tụt hạng SEO.
+ * - Data-Driven Optimization: Giúp đội ngũ Developer biết chính xác trang nào đang tải chậm để ưu tiên tối ưu hóa, đảm bảo trải nghiệm mua sắm luôn mượt mà.
 
  * =====================================================================
  */

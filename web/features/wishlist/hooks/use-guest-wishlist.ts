@@ -22,7 +22,8 @@
  * - useCallback cho tất cả functions để stabilize references
  * - Tránh re-render các components consumer *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
+ * - No-Login Retention: Cho phép khách mua tiềm năng lưu sản phẩm họ yêu thích ngay cả khi chưa muốn đăng nhập, giảm rào cản tương tác.
+ * - Tab Sync: Đảm bảo khi khách hàng "Thả tim" ở Tab A, danh sách yêu thích ở Tab B cũng tự động cập nhật, tạo trải nghiệm ứng dụng web ổn định và chuyên nghiệp.
 
  * =====================================================================
  */

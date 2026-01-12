@@ -16,7 +16,8 @@
  * 3. REFRESH LOGIC:
  * - Cung cấp hàm `refresh` để đồng bộ dữ liệu thủ công hoặc khi user quay lại app (visibility change). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Quản lý state toàn cục (Global State) hoặc cung cấp dependency injection cho cây component.
+ * - Real-time Engagement: Đảm bảo khách hàng nhận được tin vui (vd: "Đơn hàng đã được xác nhận") ngay giây phút Backend xử lý xong, tăng tính tương tác.
+ * - Instant Feedback: Cập nhật trạng thái "đã đọc" trên giao diện ngay lập tức khi user click (Optimistic Update), mang lại trải nghiệm mượt mà không độ trễ.
 
  * =====================================================================
  */

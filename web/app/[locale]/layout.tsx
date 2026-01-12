@@ -43,7 +43,8 @@ export function generateStaticParams() {
  * - Nó lấy trước `accessToken` và `permissions` từ server -> Truyền xuống Client Provider.
  * - Kỹ thuật này giúp tránh hiện tượng "FOUC" (Flash of Unauthenticated Content). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Visual Consistency: Đảm bảo toàn bộ hệ thống (Shopping & Admin) có một bộ khung đồng nhất về Font chữ, màu sắc (Theme) và các thành phần giao diện cơ bản.
+ * - Global State Orchestration: Khởi tạo tất cả các "bộ não" của ứng dụng (Auth, SWR, Tenant) tại một nơi duy nhất, giúp dữ liệu luôn sẵn sàng ở bất kỳ trang nào.
 
  * =====================================================================
  */

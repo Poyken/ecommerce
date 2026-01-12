@@ -24,7 +24,8 @@ import { notFound } from "next/navigation";
  * 3. DYNAMIC UI ELEMENTS:
  *    - `#order.id.slice(-8).toUpperCase()`: Rút gọn ID cho thân thiện với người dùng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Post-purchase Gratification: Tăng cường sự hài lòng của khách hàng bằng việc xác nhận đặt hàng thành công ngay lập tức với các hiệu ứng hình ảnh chúc mừng chuyên nghiệp.
+ * - Immediate Order Confirmation: Cung cấp bản tóm tắt nhanh về đơn hàng vừa đặt, giúp khách hàng yên tâm rằng thông tin của họ đã được hệ thống ghi nhận chính xác.
 
  * =================================================================================================
  */

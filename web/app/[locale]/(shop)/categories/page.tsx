@@ -50,7 +50,8 @@ function getCategoryImage(
  * 3. SEO & UX:
  *    - Sử dụng `pt-24` để dành chỗ cho Header (Sticky Header) không đè lên nội dung. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Intuitive Catalog Navigation: Giúp khách hàng bao quát toàn bộ hệ thống sản phẩm theo các nhóm chức năng, dễ dàng bắt đầu hành trình mua sắm từ danh mục họ quan tâm.
+ * - Visual Category Discovery: Tăng cường trải nghiệm thị giác bằng cách sử dụng hình ảnh minh họa sống động, giúp người dùng nhận diện nhóm sản phẩm nhanh hơn so với đọc văn bản thuần túy.
 
  * =================================================================================================
  */

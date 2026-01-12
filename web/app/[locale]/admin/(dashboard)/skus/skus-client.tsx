@@ -11,7 +11,8 @@
  * - Filter tabs (Active/Inactive), Low Stock filter checkbox
  * - DataTablePagination with page numbers *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Granular Variant Control: Cho phép quản lý chi tiết từng biến thể sản phẩm (SKU) về giá cả và trạng thái hoạt động, hỗ trợ các chiến dịch kinh doanh linh hoạt cho từng mẫu mã cụ thể.
+ * - Proactive Stock Replenishment: Cung cấp bộ lọc "Low Stock" thông minh để Admin nhanh chóng nhận diện các mặt hàng sắp hết, giúp tối ưu hóa kế hoạch nhập hàng và tránh gián đoạn chuỗi cung ứng.
 
  * =====================================================================
  */

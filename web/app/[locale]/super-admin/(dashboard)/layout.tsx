@@ -26,7 +26,8 @@ import { Suspense } from "react";
  *    - `bg-slate-950`: Sử dụng tông màu tối (Dark mode đặc trưng) cho Super Admin để phân biệt
  *      với giao diện Admin thường. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Platform-level Control: Cung cấp giao diện quản trị tối cao dành cho đội ngũ vận hành nền tảng (Platform Owners), cho phép giám sát tất cả các Store đang hoạt động.
+ * - SaaS Multi-tenant Command Hub: Tách biệt hoàn toàn luồng quản trị hệ thống khỏi quản trị bán lẻ thông thường, đảm bảo các cài đặt hạ tầng được bảo vệ nghiêm ngặt.
 
  * =================================================================================================
  */

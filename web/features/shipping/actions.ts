@@ -16,7 +16,8 @@
  *
  * ⚠️ LƯU Ý: Dữ liệu này thường được lấy từ các đơn vị vận chuyển (như GHN). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Location Intelligence: Tự động hiển thị danh sách Quận/Huyện, Phường/Xã chính xác dựa trên Tỉnh thành giúp khách hàng nhập địa chỉ nhận hàng nhanh chóng và không sai sót.
+ * - Dynamic Shipping Calculation: Tính toán phí vận chuyển tự động trong thời gian thực, giúp minh bạch hóa chi phí ngay tại trang Checkout.
 
  * =====================================================================
  */

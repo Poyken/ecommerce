@@ -8,7 +8,8 @@
  * Trang này hiển thị tất cả các sản phẩm mà người dùng đã nhấn "Yêu thích".
  * Sử dụng `WishlistClient` để xử lý việc hiển thị và tương tác. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Abandoned Cart Recovery: Đóng vai trò như một "giỏ hàng chờ", nơi khách hàng lưu giữ các món đồ yêu thích để cân nhắc mua sau, giúp giảm tỷ lệ thoát trang và tăng doanh thu tiềm năng.
+ * - Personalized Favorites: Tạo ra không gian mua sắm cá nhân hóa, giúp khách hàng quay lại website thường xuyên hơn để kiểm tra tình trạng hàng hóa hoặc giảm giá của các món đồ họ đang quan tâm.
 
  * =====================================================================
  */

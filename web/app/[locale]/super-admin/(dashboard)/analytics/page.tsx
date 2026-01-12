@@ -11,7 +11,8 @@
  * - Tỷ lệ rời bỏ (Churn Rate).
  * - Doanh thu từ phí thuê nền tảng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Platform-wide BI: Tổng hợp các chỉ số kinh doanh từ hàng nghìn cửa hàng thành một bức tranh thống nhất, giúp ban lãnh đạo đưa ra các quyết định chiến lược về phát triển nền tảng.
+ * - Aggregate Performance Insights: Theo dõi sức khỏe tài chính và mức độ tăng trưởng của mô hình SaaS thông qua các chỉ số đặc thù như Churn Rate và ARPU (Average Revenue Per User).
 
  * =====================================================================
  */

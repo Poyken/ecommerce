@@ -12,7 +12,8 @@
  * - Filter tabs
  * - Stats header *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Enterprise Catalog Management: Cung cấp giao diện quản trị mạnh mẽ để kiểm soát hàng nghìn SKU sản phẩm, từ việc thiết lập thuộc tính đến quản lý phân loại và thương hiệu một cách khoa học.
+ * - Multi-dimensional Product Insights: Giúp Admin nhanh chóng nhận diện các sản phẩm mới nhập (Recent) hoặc các sản phẩm chưa được phân loại (No Category) để kịp thời tối ưu hóa luồng hiển thị trên Storefront.
 
  * =====================================================================
  */

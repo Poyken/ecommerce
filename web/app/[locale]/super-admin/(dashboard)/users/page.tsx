@@ -37,7 +37,8 @@ async function getUserCounts() {
  * 3. SHARED CLIENT LOGIC:
  *    - Sử dụng `UsersPageClient` chung với Admin thường nhưng cung cấp `basePath` khác nhau. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Global Identity Governance: Cung cấp cái nhìn toàn cảnh về toàn bộ người dùng trên tất cả các cửa hàng, giúp Super Admin dễ dàng quản lý định danh và xử lý các vấn đề tài khoản ở mức độ nền tảng.
+ * - Critical Access Auditing: Cho phép rà soát và kiểm soát quyền hạn của các Admin cấp dưới, đảm bảo tính bảo mật và tuân thủ các quy tắc truy cập dữ liệu của hệ thống SaaS.
 
  * =================================================================================================
  */

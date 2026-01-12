@@ -10,7 +10,8 @@
  * - Yêu cầu xác thực Email.
  * - Chế độ bảo trì hệ thống. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Global Configuration Hub: Nơi tập trung các "công tắc tổng" của hệ thống, cho phép thay đổi hành vi của toàn bộ nền tảng SaaS chỉ với một vài thao tác đơn giản.
+ * - System-wide Feature Toggles: Hỗ trợ triển khai các tính năng mới một cách an toàn (Canary Release) hoặc nhanh chóng kích hoạt Chế độ bảo trì khi hệ thống cần nâng cấp hạ tầng quan trọng.
 
  * =====================================================================
  */

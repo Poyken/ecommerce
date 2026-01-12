@@ -16,7 +16,8 @@ import { http } from "@/lib/http";
  * 3. ERROR RESILIENCE:
  * - Nếu fetch flag lỗi, store sẽ mặc định trả về mảng rỗng (tắt tính năng lạ) để App không bị crash. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Quản lý state toàn cục (Global State) hoặc cung cấp dependency injection cho cây component.
+ * - Safe Deployment: Thử nghiệm tính năng mới cho 5% người dùng trước khi ra mắt chính thức (Canary Release), giúp giảm thiểu rủi ro khi có lỗi.
+ * - Seasonal Features: Bật banner "Chúc mừng năm mới" hoặc "Sale 12.12" đúng giờ G mà không cần Developer phải trực đêm để deploy.
 
  * =====================================================================
  */

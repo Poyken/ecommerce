@@ -14,7 +14,8 @@
  * - Lý do: Nếu có upload ảnh -> phải dùng `FormData` (multipart). Nếu chỉ text -> dùng JSON.
  * - Hàm tự động check `data instanceof FormData` để gửi request đúng định dạng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Data Centralization: Quản lý tập trung toàn bộ "xương sống" của cửa hàng điện tử bao gồm Danh mục, Thương hiệu và các mã giảm giá một cách có hệ thống.
+ * - Inventory & Brand Control: Đảm bảo tính nhất quán về dữ liệu sản phẩm, giúp việc quản lý kho và phân loại hàng hóa diễn ra mượt mà và chính xác.
 
  * =====================================================================
  */

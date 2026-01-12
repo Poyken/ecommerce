@@ -10,7 +10,8 @@
  * 2. IP WHITELIST: Chỉ cho phép các IP tin tưởng được truy cập Super Admin.
  * 3. THREAT DETECTION: Theo dõi số lần login sai toàn hệ thống. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Infrastructural Perimeter Defense: Thiết lập lớp phòng thủ vòng ngoài bằng cách Whitelist IP, ngăn chặn tối đa các truy cập trái phép vào khu vực điều hành cấp cao.
+ * - Cyber Threat Response: Cung cấp công cụ phản ứng nhanh (Emergency Lockdown) giúp cô lập hệ thống ngay lập tức khi phát hiện có dấu hiệu bị thâm nhập hoặc tấn công từ chối dịch vụ (DDoS).
 
  * =====================================================================
  */

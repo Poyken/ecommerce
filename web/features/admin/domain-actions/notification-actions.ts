@@ -14,7 +14,8 @@
  * 2. REAL-TIME:
  * - Backend sau khi nhận request sẽ đẩy qua WebSocket (Socket.IO) tới client đang online. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Real-time Communication: Gửi thông báo tức thời tới hàng nghìn khách hàng về các sự kiện quan trọng (bảo trì, khuyến mãi) mà không cần khách phải tải lại trang.
+ * - Operational Efficiency: Tự động hóa việc thông báo trạng thái đơn hàng cho khách, giảm bớt khối lượng công việc cho bộ phận CSKH.
 
  * =====================================================================
  */

@@ -17,7 +17,8 @@
  * 3. EMPTY STATE:
  * - Nếu không có đơn hàng, hiển thị thông báo thân thiện và nút "Bắt đầu mua sắm" để dẫn dắt người dùng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Order Lifecycle Visibility: Cung cấp cho khách hàng cái nhìn tổng quan về lịch sử mua sắm, giúp họ dễ dàng theo dõi trạng thái từ lúc đặt hàng cho tới khi nhận được hàng thành công.
+ * - Self-service Fulfillment Actions: Trao quyền cho người dùng chủ động thực hiện các hành động như Hủy đơn hàng hoặc Đặt lại sản phẩm, giúp giảm tải khối lượng công việc cho bộ phận CSKH.
 
  * =====================================================================
  */

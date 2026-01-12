@@ -22,7 +22,8 @@ import { cookies } from "next/headers";
  * 3. UI CONSISTENCY:
  *    - Sử dụng `AdminPageHeader` để giữ vững phong cách thiết kế của khu vực Dashboard. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Cross-tenant Support: Cho phép Super Admin tham gia hỗ trợ trực tiếp các vấn đề kỹ thuật phức tạp của khách hàng từ mọi Tenant mà không cần chuyển đổi tài khoản.
+ * - Enterprise Helpdesk Hub: Xây dựng trung tâm điều hành hỗ trợ tập trung, giúp tối ưu hóa hiệu suất của đội ngũ CSKH khi phải quản lý cùng lúc nhiều cửa hàng khác nhau.
 
  * =================================================================================================
  */

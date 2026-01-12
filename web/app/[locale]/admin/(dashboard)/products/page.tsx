@@ -20,7 +20,8 @@ import { ProductsClient } from "./products-client";
  * 3. PAGINATION:
  * - Sử dụng URL search params để quản lý trang hiện tại. Điều này giúp Admin có thể copy URL và gửi cho người khác mà vẫn giữ đúng trang đang xem. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Catalog Management: Quản lý hàng nghìn sản phẩm một cách khoa học thông qua hệ thống lọc và tìm kiếm mạnh mẽ, giúp tối ưu hóa luồng làm việc của bộ phận Quản lý sản phẩm.
+ * - Inventory Visibility: Giúp Admin theo dõi nhanh tình trạng bao phủ của sản phẩm (theo Category/Brand) để đưa ra các điều chỉnh về chiến lược bán hàng phù hợp.
 
  * =====================================================================
  */

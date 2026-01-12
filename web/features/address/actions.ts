@@ -17,7 +17,8 @@
  * - Chỉ 1 địa chỉ được đánh dấu mặc định (isDefault = true)
  * - Khi checkout, hệ thống ưu tiên dùng địa chỉ mặc định *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Frictionless Checkout: Giúp khách hàng hoàn tất việc mua hàng nhanh hơn bằng cách tự động áp dụng địa chỉ mặc định đã lưu, giảm bớt công đoạn nhập liệu thủ công.
+ * - Logistics Accuracy: Đảm bảo dữ liệu nhận hàng luôn chính xác và đầy đủ qua hệ thống quản lý địa chỉ có chiều sâu (Tỉnh -> Huyện -> Xã).
 
  * =====================================================================
  */

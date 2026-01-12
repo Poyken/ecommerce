@@ -12,7 +12,8 @@
  * - Search theo product hoặc comment
  * - Quick actions: Reply, Toggle Publish, Delete *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Brand Reputation Management: Kiểm soát uy tín thương hiệu thông qua việc kiểm duyệt các đánh giá (Publish/Hide), giúp xây dựng niềm tin cho khách hàng mới khi truy cập vào Store.
+ * - Customer Feedback Loop: Thiết lập kênh phản hồi hai chiều bằng cách cho phép Admin trả lời trực tiếp các nhận xét, giúp xử lý các khiếu nại kịp thời và tăng cường mối quan hệ với người tiêu dùng.
 
  * =====================================================================
  */

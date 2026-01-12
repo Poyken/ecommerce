@@ -20,7 +20,8 @@ import { ReviewsClient } from "./reviews-client";
  * - Hỗ trợ lọc đánh giá theo trạng thái thông qua URL parameter `status`.
  * - Server-side filtering đảm bảo hiệu năng tốt ngay cả khi có hàng nghìn đánh giá. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Brand Feedback Moderation: Xây dựng uy tín thương hiệu bằng cách kiểm duyệt và phản hồi các đánh giá của khách hàng, đảm bảo nội dung hiển thị trên Storefront luôn tích cực và hữu ích.
+ * - AI Sentiment Tracking: Tích hợp AI để phân tích xu hướng cảm xúc của khách hàng qua hàng nghìn đánh giá, giúp doanh nghiệp cải thiện sản phẩm dựa trên phản hổi thực tế.
 
  * =====================================================================
  */

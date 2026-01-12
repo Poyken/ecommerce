@@ -35,8 +35,9 @@ import { z } from "zod";
  * 3. SIMULATION ACTION:
  * - `simulatePaymentSuccessAction`: Chỉ dùng cho môi trường Dev/Test để giả lập việc thanh toán thành công mà không cần qua cổng thanh toán thật. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
-
+ * - Order Lifecycle: Quản lý toàn bộ vòng đời của một đơn hàng từ khi khách "Đặt hàng" (Place Order) cho đến khi "Thanh toán" (Payment) hoặc "Hủy đơn" (Cancel).
+ * - Immediate Feedback: Sử dụng Revalidation để đảm bảo sau khi đặt hàng thành công, giỏ hàng sẽ trống rỗng và danh sách đơn hàng xuất hiện đơn mới ngay lập tức.
+ *
  * =====================================================================
  */
 

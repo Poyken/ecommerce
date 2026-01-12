@@ -23,7 +23,8 @@ import { Metadata } from "next";
  * 3. SECURITY:
  * - Dữ liệu nhạy cảm được fetch ở Server, đảm bảo an toàn hơn so với việc fetch ở Client. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Self-service Identity: Trao quyền cho khách hàng tự quản lý thông tin cá nhân, địa chỉ và mật khẩu, giảm tải khối lượng công việc cho bộ phận chăm sóc khách hàng.
+ * - Account Personalization: Tạo nền tảng để hệ thống đưa ra các gợi ý mua sắm hoặc chương trình ưu đãi riêng biệt dựa trên thông tin và hành vi của từng người dùng.
 
  * =====================================================================
  */

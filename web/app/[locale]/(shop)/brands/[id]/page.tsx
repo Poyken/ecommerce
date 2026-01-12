@@ -60,7 +60,8 @@ export async function generateMetadata({
  * 3. FALLBACK UI:
  *    - Hiển thị màn hình "No Products Found" chuyên nghiệp khi một thương hiệu mới chưa có sản phẩm. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Brand-specific Shopping Experience: Tạo ra không gian mua sắm chuyên biệt cho từng thương hiệu, giúp người dùng cảm thấy như đang mua sắm trực tiếp tại showroom của hãng.
+ * - Curated Brand Collections: Tự động tổng hợp và hiển thị các bộ sưu tập theo nhà sản xuất, hỗ trợ các chiến dịch Co-branding và Marketing liên kết giữa Store và các thương hiệu đối tác.
 
  * =================================================================================================
  */

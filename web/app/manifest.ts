@@ -17,7 +17,8 @@ import { MetadataRoute } from "next";
  * - "fullscreen": Toàn màn hình
  * - "minimal-ui": Có một ít thanh điều khiển trình duyệt *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Mobile User Experience: Biến website thành một ứng dụng thực thụ trên điện thoại, cho phép người dùng "Install to Home Screen" với icon chuyên nghiệp.
+ * - Brand Identity: Tùy chỉnh màu sắc thanh trạng thái (Theme Color) và màn hình chờ (Splash Screen) để website trông như app hàng nghìn đô, tăng độ uy tín với khách hàng.
 
  * =====================================================================
  */

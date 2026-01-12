@@ -8,7 +8,8 @@
  * Hiển thị toàn bộ thông tin về một Tenant cụ thể: Cấu hình domain,
  * thông tin chủ shop, lịch sử gói cước và tình trạng hệ thống. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Individual Tenant Oversight: Cung cấp khả năng "soi chi tiết" vào từng cửa hàng cụ thể để hỗ trợ kỹ thuật, xử lý khiếu nại hoặc kiểm tra tính hợp lệ của việc sử dụng dịch vụ.
+ * - Specialized Store Management: Cho phép Super Admin cấu hình các cài đặt đặc thù cho từng chủ shop (như giới hạn băng thông, gói cước tùy chỉnh) mà bản thân Admin của shop đó không thể tự thực hiện.
 
  * =====================================================================
  */

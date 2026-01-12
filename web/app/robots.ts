@@ -17,7 +17,8 @@ import { MetadataRoute } from "next";
  * 3. SITEMAP LINK:
  * - Khai báo đường dẫn đến file `sitemap.xml` để bot dễ dàng tìm thấy tất cả các trang trên website. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - SEO Protection: Ngăn chặn bot tìm kiếm truy cập vào những trang nhạy cảm (Giỏ hàng, Tài khoản cá nhân), tránh việc lộ thông tin hoặc rác trên kết quả tìm kiếm Google.
+ * - Crawl Budget Optimization: Tiết kiệm tài nguyên cho bot Google, tập trung toàn bộ "sức mạnh" để quét các trang sản phẩm và danh mục nhằm tăng thứ hạng SEO.
 
  * =====================================================================
  */

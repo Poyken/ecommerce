@@ -9,7 +9,8 @@
  * Khác với `coupon.ts` (dùng để validate), file này tập trung vào việc
  * hiển thị các mã giảm giá có sẵn cho người dùng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Conversion Rate: Khuyến khích khách hàng chốt đơn nhanh hơn bằng cách hiển thị các mã giảm giá hấp dẫn ngay tại giỏ hàng.
+ * - Loyalty Marketing: Tích hợp logic kiểm tra mã giảm giá (Validate) để đảm bảo chỉ những khách hàng thân thiết hoặc đạt điều kiện mới được hưởng ưu đãi.
 
  * =====================================================================
  */

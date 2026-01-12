@@ -12,7 +12,8 @@
  * 2. Dynamic Messages:
  * - Sử dụng dynamic import để chỉ load file ngôn ngữ cần thiết, giúp giảm memory và tăng tốc độ. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Dynamic Localization: Tự động chuyển đổi toàn bộ nội dung website (menu, nút, nhãn) sang ngôn ngữ người dùng yêu thích ngay khi trang vừa tải xong.
+ * - White-labeling ready: Cho phép ghi đè (override) các bản dịch mặc định của hệ thống bằng các bản dịch riêng cho từng Tenant (khách hàng doanh nghiệp) từ Database.
 
  * =====================================================================
  */

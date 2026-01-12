@@ -56,7 +56,8 @@ import { TenantsTab } from "@/features/super-admin/components/dashboard/tenants-
  * 3. TENANT MANAGEMENT:
  *    - Cung cấp lối tắt "Launch New Tenant" để nhanh chóng provisioning một cửa hàng mới. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - System Health Dashboard: Cung cấp cái nhìn nhanh về tình trạng hoạt động của toàn bộ hạ tầng (Server, DB, Workers) để đội ngũ DevOps kịp thời xử lý khi có sự cố.
+ * - SaaS Vital Statistics: Theo dõi mức độ tăng trưởng của nền tảng thông qua số lượng Store (Tenants) mới và tổng doanh thu hợp nhất từ tất cả các cửa hàng.
 
  * =================================================================================================
  */

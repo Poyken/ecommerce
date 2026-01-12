@@ -22,7 +22,8 @@ import { cookies } from "next/headers";
  * 3. UI CONSISTENCY:
  *    - Sử dụng `AdminPageHeader` để giữ vững phong cách thiết kế của khu vực Dashboard. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Direct Customer Support: Thiết lập kênh giao tiếp trực tiếp 1:1 với khách hàng, giúp giải đáp thắc mắc về sản phẩm và tư vấn mua hàng ngay lập tức, gia tăng tỷ lệ chốt đơn.
+ * - Real-time Sales Assistance: Hỗ trợ nhân viên bán hàng nắm bắt nhu cầu khách hàng theo thời gian thực và cung cấp các giải pháp mua sắm cá nhân hóa, nâng cao trải nghiệm khách hàng tổng thể.
 
  * =================================================================================================
  */

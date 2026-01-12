@@ -13,7 +13,8 @@
  * - Các actions này chỉ dành cho SuperAdmin. Tenant Admin bình thường không được gọi.
  * - `REVALIDATE.superAdmin.tenants()`: Cache key riêng biệt cho khu vực SuperAdmin. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Multi-tenant SaaS Management: Cung cấp các công cụ cho SuperAdmin để quản trị toàn bộ các khách hàng doanh nghiệp (Tenant) thuê nền tảng, đảm bảo tính biệt lập về dữ liệu.
+ * - Subscription Lifecycle: Quản lý vòng đời đăng ký dịch vụ (Subscription) của từng doanh nghiệp, bao gồm việc gia hạn, nâng cấp hoặc hủy gói dịch vụ linh hoạt.
 
  * =====================================================================
  */

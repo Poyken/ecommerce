@@ -35,7 +35,8 @@ export const metadata: Metadata = {
  * - Giảm thời gian chờ đợi (Waterfall problem).
  * - `force-dynamic`: Trang này luôn cần dữ liệu mới nhất, không cache tĩnh. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Frictionless Shopping Bag: Cho phép khách hàng xem lại, điều chỉnh số lượng và quản lý các mặt hàng đã chọn một cách trực quan trước khi tiến tới bước thanh toán.
+ * - Persisted Cart Logic: Đồng bộ giỏ hàng giữa các thiết bị thông qua tài khoản người dùng, đảm bảo hành trình mua sắm không bị gián đoạn giữa Web và Mobile.
 
  * =====================================================================
  */

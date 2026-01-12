@@ -17,7 +17,8 @@
  * 3. DYNAMIC STYLING:
  * - `getTypeIcon` và `getTypeStyles`: Tự động thay đổi icon và màu sắc dựa trên loại thông báo (Order, Promo, System...). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Real-time Engagement Loop: Duy trì kết nối liên tục giữa nền tảng và người dùng, đảm bảo khách hàng nhận được các thông tin quan trọng về đơn hàng và khuyến mãi ngay lập tức qua WebSocket.
+ * - Contextual Feedback System: Chuyển đổi các sự kiện hệ thống khô khan thành những thông báo có tính tương tác cao, giúp điều hướng người dùng tới các khu vực chức năng liên quan một cách tự nhiên.
 
  * =====================================================================
  */

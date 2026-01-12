@@ -25,7 +25,8 @@
  * - Khi `selectedAddress` thay đổi -> Trigger `useEffect` gọi shipping API.
  * - Cập nhật phí ship realtime dựa trên Quận/Huyện. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Interactive Payment Orchestration: Điều phối luồng thanh toán đa bước một cách thông minh, từ khâu chọn địa chỉ đến việc tính toán phí vận chuyển và áp dụng mã giảm giá theo thời gian thực.
+ * - Real-time Order Validation: Đảm bảo mọi thông tin đơn hàng đều hợp lệ trước khi gửi về Server, giúp giảm thiểu sai sót dữ liệu và cung cấp phản hồi tức thì về tình trạng kho hàng hoặc tính hợp lệ của Coupon.
 
  * =====================================================================
  */

@@ -27,7 +27,8 @@ export const metadata: Metadata = {
  * - Fetch Addresses (Profile) để user chọn địa chỉ giao hàng.
  * - Truyền tất cả xuống `CheckoutClient` để render form. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - High-Conversion Checkout: Tối ưu hóa luồng thanh toán một trang (One-page Checkout) để giảm thiểu tỷ lệ bỏ rơi giỏ hàng và tăng tốc độ hoành thành đơn hàng cho khách.
+ * - Multi-Gateway Payment: Cung cấp nhiều lựa chọn thanh toán linh hoạt cho khách hàng, từ COD truyền thống đến chuyển khoản ngân hàng qua mã QR tự động.
 
  * =====================================================================
  */

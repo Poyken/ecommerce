@@ -18,7 +18,8 @@
  *    - Luôn kiểm tra `accessToken` từ Cookie.
  *    - Xử lý các case 401 (Unauthorized) để tự động force logout nếu phiên làm việc hết hạn. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Personalization: Quản lý toàn bộ thông tin cá nhân của khách hàng như ảnh đại diện (avatar), tên hiển thị và mật khẩu một cách an toàn.
+ * - Multi-factor Security: Tăng cường bảo mật tài khoản bằng cách cung cấp các action để thiết lập xác thực 2 lớp (2FA), giúp bảo vệ triệt để dữ liệu khách hàng.
 
  * =====================================================================
  */

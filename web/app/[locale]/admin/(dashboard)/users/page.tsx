@@ -20,7 +20,8 @@ import { UsersPageClient } from "./users-page-client";
  * - Tìm kiếm theo tên hoặc email người dùng.
  * - Phân trang để xử lý hiệu quả khi có hàng nghìn người dùng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Access Governance: Thiết lập hệ thống quản trị nhân sự chặt chẽ, cho phép Admin kiểm soát ai có quyền can thiệp vào dữ liệu shop dựa trên vai trò (Roles) cụ thể.
+ * - Personnel Auditing: Giám sát danh sách nhân viên và khách hàng tập trung, giúp việc khóa tài khoản hoặc thay đổi quyền hạn diễn ra tức thì khi có yêu cầu bảo mật.
 
  * =====================================================================
  */

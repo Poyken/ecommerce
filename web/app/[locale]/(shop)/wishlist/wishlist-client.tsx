@@ -17,7 +17,8 @@
  * 3. EMPTY STATE:
  * - Hiển thị thông báo khi danh sách trống để khuyến khích người dùng khám phá cửa hàng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Client-side State Management: Đảm bảo danh sách yêu thích luôn được cập nhật tức thì trên trình duyệt mà không cần tải lại trang, ngay cả đối với người dùng chưa đăng nhập thông qua LocalStorage.
+ * - Fluid Favorites Interaction: Tạo ra trải nghiệm tương tác mượt mà, giúp khách hàng dễ dàng lưu lại các sản phẩm yêu thích và quay lại mua sắm sau này, góp phần tăng tỷ lệ chuyển đổi.
 
  * =====================================================================
  */

@@ -11,7 +11,8 @@
  * - Stats fetched from server
  * - Pagination optimized *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Multi-role Community Monitoring: Giúp Admin theo dõi và phân loại nhanh chóng số lượng quản trị viên (Admins) và khách hàng (Users), cung cấp cái nhìn tổng quan về sự phát triển của cộng đồng người dùng trên Store.
+ * - Scalable Access Auditing: Hỗ trợ kiểm soát và rà soát quyền truy cập của từng tài khoản, đảm bảo rằng việc phân bổ vai trò (Roles) luôn tuân thủ các quy tắc bảo mật của hệ thống.
 
  * =====================================================================
  */

@@ -13,7 +13,8 @@
  * - Dữ liệu trả về (`SalesDataPoint[]`, `TopProduct[]`) được format sẵn
  *   để ném thẳng vào các thư viện biểu đồ như `Recharts` mà không cần xử lý thêm nhiều ở Client. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Business Intelligence (BI): Cung cấp cái nhìn toàn cảnh về hiệu quả kinh doanh qua các báo cáo doanh thu, sản phẩm bán chạy, giúp chủ doanh nghiệp đưa ra quyết định nhập hàng chính xác.
+ * - Performance Dashboards: Format dữ liệu tối ưu để hiển thị tức thì trên các biểu đồ (Charts), giúp Admin theo dõi sức khỏe hệ thống theo thời gian thực (Real-time monitoring).
 
  * =====================================================================
  */

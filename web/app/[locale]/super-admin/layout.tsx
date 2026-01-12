@@ -37,7 +37,8 @@ import { Suspense } from "react";
  * 3. INITIALIZATION LOOP:
  *    - `NotificationInitializer`: Khởi tạo hệ thống Socket/Thông báo ngay khi vào khu vực quản trị. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Multi-Level Security: Thiết lập lớp bảo vệ cao nhất cho hệ thống SaaS, đảm bảo chỉ những tài khoản "Super" mới có quyền can thiệp vào cấu trúc hệ thống và dữ liệu của các Tenant khác.
+ * - Aggregated Data Bootstrapping: Tự động chuẩn bị sẵn sàng dữ liệu nền (Profile, Notifications, Metadata) ngay khi Admin đăng nhập, giúp các trang con bên trong Dashboard chuyển đổi mượt mà không bị trễ.
 
  * =================================================================================================
  */

@@ -19,7 +19,8 @@
  * - Cho phép user chọn từng món để thanh toán (`selectedItems`).
  * - Tự động tính toán lại tổng tiền dựa trên các món đã chọn. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Dynamic Cart Orchestration: Quản lý tập trung toàn bộ logic giỏ hàng ở phía Client, cho phép xử lý đồng thời cả giỏ hàng định danh (Login) và giỏ hàng ẩn danh (Guest) một cách nhất quán.
+ * - Optimistic Quantity Adjustments: Tăng tốc độ phản hồi của giao diện bằng cách cập nhật ngay lập tức số lượng sản phẩm và tổng tiền, sau đó mới đồng bộ với database qua cơ chế Debouncing thông minh.
 
  * =====================================================================
  */

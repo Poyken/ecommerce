@@ -14,7 +14,8 @@
  * - Chúng ta chia nhỏ actions theo domain (product, order, user...) để dễ quản lý (Separation of Concerns).
  * - Nhưng ở đây ta gom lại (re-export) để dễ sử dụng (Developer Experience). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Architecture Maintainability: Tạo ra một "siêu cổng" (Entry Point) giúp quy hoạch hàng trăm Server Action quản trị một cách ngăn nắp, giúp thành viên mới trong team dễ dàng tìm thấy hàm cần dùng.
+ * - Module Federation: Cho phép các tính năng Admin phát triển độc lập trong các folder riêng nhưng vẫn có thể kết nối với nhau qua một giao diện import duy nhất, giảm thiểu xung đột code.
 
  * =====================================================================
  */

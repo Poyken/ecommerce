@@ -36,7 +36,8 @@ const LayoutVisibilityContext = createContext<
  *    - Khi User chuyển trang, Header/Footer sẽ tự động hiện lại (Reset về false).
  *    - Điều này tránh tình trạng trang trước ẩn Header làm trang sau cũng bị ẩn theo. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Quản lý state toàn cục (Global State) hoặc cung cấp dependency injection cho cây component.
+ * - Immersive Experience: Ẩn Header/Footer trong các trang xem video toàn màn hình hoặc landing page khuyến mãi để người dùng tập trung tối đa vào nội dung.
+ * - Clean Checkout: Tối ưu trang thanh toán bằng cách ẩn bớt các thành phần gây xao nhãng (Menu, Footer Link), giúp khách hàng nhanh chóng hoàn tất đơn hàng.
 
  * =================================================================================================
  */

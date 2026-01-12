@@ -16,7 +16,8 @@
  * 3. LAYOUT MATCHING:
  * - Skeleton nên có cấu trúc tương đồng với trang thật (Sidebar, Grid, Hero) để tránh hiện tượng nhảy bố cục (Layout Shift) khi dữ liệu thật xuất hiện. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Perceived Performance: Tăng "tốc độ cảm nhận" của người dùng. Dù dữ liệu thật chưa tải xong, khách hàng vẫn cảm thấy website đang hoạt động mượt mà nhờ UI chờ chuyên nghiệp.
+ * - Zero-Flicker Experience: Loại bỏ hiện tượng nháy trang khó chịu khi chuyển đổi giữa các menu, giúp trải nghiệm mua sắm trở nên liền mạch như một ứng dụng di động.
 
  * =====================================================================
  */

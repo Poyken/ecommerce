@@ -58,7 +58,8 @@ interface Order {
  * 4. LAZY LOADING CHARTS:
  * - Các biểu đồ (Charts) được load bằng `dynamic import` (Lazy Loading) để giảm kích thước file JavaScript ban đầu. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Business Intelligence (BI) Dashboard: Cung cấp trung tâm chỉ huy cho chủ doanh nghiệp, nơi mọi chỉ số kinh doanh quan trọng được tổng hợp và hiển thị trực quan dưới dạng biểu đồ.
+ * - Operational Command Center: Giúp Admin phát hiện nhanh các đơn hàng cần xử lý (Pending) hoặc sản phẩm sắp hết hàng (Low Stock) để phản ứng kịp thời trong chuỗi cung ứng.
 
  * =====================================================================
  */

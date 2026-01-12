@@ -19,7 +19,8 @@ import { RolesPageClient } from "./roles-client";
  * 3. SECURITY:
  * - Việc quản lý vai trò là cực kỳ quan trọng, chỉ những user có quyền cao nhất mới được truy cập trang này. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Platform RBAC Definition: Thiết lập các nhóm quyền chuẩn hóa cho toàn bộ hệ thống, giúp việc phân quyền cho nhân viên mới diễn ra nhanh chóng và chính xác theo vị trí công việc.
+ * - Scalable Permissioning: Cho phép mở rộng hệ thống bằng cách tạo thêm các mô hình quản trị mới (VD: Manager cấp vùng) mà không cần thay đổi cấu trúc mã nguồn.
 
  * =====================================================================
  */

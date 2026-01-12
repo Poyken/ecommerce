@@ -8,7 +8,8 @@
  * Trang này hiển thị danh sách tất cả thông báo của người dùng.
  * Sử dụng `NotificationsClient` để xử lý việc hiển thị và tương tác. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Customer Engagement Loop: Duy trì kết nối liên tục với khách hàng thông qua các thông báo về đơn hàng, khuyến mãi hoặc cập nhật hệ thống, giúp tăng tỷ lệ quay lại của người dùng.
+ * - Real-time Retention: Thông báo tức thì giúp khách hàng không bỏ lỡ các ưu đãi chớp nhoáng (Flash Sale) hoặc thông tin vận chuyển quan trọng, nâng cao sự hài lòng đối với dịch vụ.
 
  * =====================================================================
  */

@@ -19,7 +19,8 @@ import { TenantsClient } from "./tenants-client";
  * 3. ERROR RESILIENCE:
  *    - Có cơ chế hiển thị lỗi ngay tại trang nếu API fetch danh sách tenants thất bại. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Tenant Lifecycle Management: Kiểm soát toàn bộ vòng đời của một cửa hàng từ lúc đăng ký (Provisioning) đến khi gia hạn hoặc tạm dừng dịch vụ trên nền tảng SaaS.
+ * - B2B Relationship Hub: Quản lý danh sách đối tác doanh nghiệp sử dụng nền tảng, giúp bộ phận kinh doanh dễ dàng theo dõi và hỗ trợ từng chủ Store riêng biệt.
 
  * =================================================================================================
  */

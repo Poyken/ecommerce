@@ -17,7 +17,8 @@ import { getTranslations } from "next-intl/server";
  * - `generateMetadata`: Định nghĩa tiêu đề và mô tả cho trang này sử dụng i18n.
  * - Giúp trang hiển thị đẹp hơn trên Google Search và khi share link qua mạng xã hội. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Brand Storytelling: Truyền tải tầm nhìn, sứ mệnh và các giá trị cốt lõi của doanh nghiệp, giúp khách hàng thấu hiểu và gắn kết hơn với thương hiệu.
+ * - Corporate Identity: Tạo dựng một hồ sơ doanh nghiệp chuyên nghiệp trên không gian số, góp phần nâng cao uy tín và tạo lợi thế cạnh tranh trên thị trường thương mại điện tử.
 
  * =====================================================================
  */

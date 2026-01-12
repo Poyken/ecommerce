@@ -59,7 +59,8 @@ export async function generateMetadata({
  * 3. DYNAMIC METADATA:
  *    - `generateMetadata` lấy tên danh mục từ sản phẩm đầu tiên của mảng để gán vào thẻ `<title>`. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Niche Targeted Browsing: Cho phép khách hàng tập trung vào một phân khúc sản phẩm cụ thể, giúp giảm sự nhiễu loạn thông tin và tăng đáng kể khả năng chốt đơn hàng.
+ * - SEO-optimized Category Landing: Xây dựng các trang đích (Landing Page) chuẩn SEO cho từng loại mặt hàng, thu hút lượng truy cập tự nhiên cho các từ khóa ngách trên công cụ tìm kiếm.
 
  * =================================================================================================
  */

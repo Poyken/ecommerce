@@ -16,7 +16,8 @@
  *
  * ⚠️ LƯU Ý: Các action này thường được gọi từ Admin Dashboard. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Content Marketing: Cung cấp các công cụ cho bộ phận Marketing biên tập và xuất bản bài viết, giúp tăng lượng truy cập tự nhiên (Organic Traffic) vào website.
+ * - Dynamic SEO: Tự động cập nhật cache bài viết mới nhất lên giao diện người dùng (Revalidate), đảm bảo khách hàng và bot tìm kiếm luôn thấy nội dung mới nhất.
 
  * =====================================================================
  */

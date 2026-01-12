@@ -14,7 +14,8 @@
  * - `revalidatePath` (thông qua `REVALIDATE`) cực quan trọng ở đây để khi Admin sửa xong,
  *   User ngoài trang chủ thấy content mới ngay lập tức (Next.js ISR/On-demand Revalidation). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Marketing Agility: Cho phép đội ngũ Marketing tự do thiết kế các trang Landing Page cho chiến dịch Sale mà không cần phụ thuộc vào đội ngũ Kỹ thuật.
+ * - Dynamic CMS: Quản lý nội dung website linh hoạt qua hệ thống Blocks JSON, cho phép cập nhật giao diện ngay lập tức nhờ cơ chế On-demand Revalidation của Next.js.
 
  * =====================================================================
  */

@@ -19,7 +19,8 @@ import { OrdersClient } from "./orders-client";
  * 3. PHÂN TRANG (Pagination):
  * - Chỉ load một lượng nhỏ đơn hàng mỗi trang để đảm bảo tốc độ phản hồi nhanh, ngay cả khi database có hàng triệu bản ghi. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+ * - Order Lifecycle Management: Cung cấp công cụ quản lý toàn diện vòng đời của một đơn hàng, từ khâu xác nhận đơn đến khi giao hàng thành công, giúp tối ưu hóa quy trình vận hành của shop.
+ * - Logistics Orchestration: Hỗ trợ Admin theo dõi và điều phối các đơn hàng theo trạng thái vận chuyển, đảm bảo hàng hóa được giao đúng hẹn và giảm thiểu tỷ lệ hoàn hàng.
 
  * =====================================================================
  */
