@@ -219,102 +219,107 @@ export class OrdersService {
         }
 
         // 5. Kiểm tra và Áp dụng Mã giảm giá (Coupon)
+        // 5. Kiểm tra và Áp dụng Mã giảm giá (Coupon)
         let couponId: string | null = null;
         let discountAmount = 0;
 
+        // [MIGRATION TODO]: Migrate this logic to use PromotionsService.validatePromotion()
         if (createOrderDto.couponCode) {
-          // Lấy thông tin coupon ngay trong transaction để đảm bảo dữ liệu đúng nhất
-          const coupon = await tx.coupon.findUnique({
-            where: {
-              tenantId_code: {
-                code: createOrderDto.couponCode,
-                tenantId: tenant.id,
-              },
-            } as any,
-            select: {
-              id: true,
-              code: true,
-              discountType: true,
-              discountValue: true,
-              minOrderAmount: true,
-              maxDiscountAmount: true,
-              usageLimit: true,
-              usedCount: true,
-              startDate: true,
-              endDate: true,
-            },
-          });
+          this.logger.warn(
+            'Coupon code usage temporarily disabled during migration to Promotion Engine',
+          );
+          // // Lấy thông tin coupon ngay trong transaction để đảm bảo dữ liệu đúng nhất
+          // const coupon = await tx.coupon.findUnique({
+          //   where: {
+          //     tenantId_code: {
+          //       code: createOrderDto.couponCode,
+          //       tenantId: tenant.id,
+          //     },
+          //   } as any,
+          //   select: {
+          //     id: true,
+          //     code: true,
+          //     discountType: true,
+          //     discountValue: true,
+          //     minOrderAmount: true,
+          //     maxDiscountAmount: true,
+          //     usageLimit: true,
+          //     usedCount: true,
+          //     startDate: true,
+          //     endDate: true,
+          //   },
+          // });
 
-          if (!coupon) {
-            throw new BadRequestException('Mã giảm giá không tồn tại');
-          }
+          // if (!coupon) {
+          //   throw new BadRequestException('Mã giảm giá không tồn tại');
+          // }
 
-          // 🔒 BẢO MẬT: Chặn dùng trộm mã WELCOME của người khác
-          if (coupon.code.startsWith('WELCOME-')) {
-            const ownerNotification = await tx.notification.findFirst({
-              where: {
-                userId,
-                type: 'SYSTEM',
-                message: { contains: coupon.code },
-              },
-            });
+          // // 🔒 BẢO MẬT: Chặn dùng trộm mã WELCOME của người khác
+          // if (coupon.code.startsWith('WELCOME-')) {
+          //   const ownerNotification = await tx.notification.findFirst({
+          //     where: {
+          //       userId,
+          //       type: 'SYSTEM',
+          //       message: { contains: coupon.code },
+          //     },
+          //   });
 
-            if (!ownerNotification) {
-              throw new BadRequestException(
-                'Mã giảm giá này không thuộc về tài khoản của bạn',
-              );
-            }
-          }
+          //   if (!ownerNotification) {
+          //     throw new BadRequestException(
+          //       'Mã giảm giá này không thuộc về tài khoản của bạn',
+          //     );
+          //   }
+          // }
 
-          const now = new Date();
-          if (coupon.startDate && now < new Date(coupon.startDate)) {
-            throw new BadRequestException(
-              'Mã giảm giá chưa đến thời gian hiệu lực',
-            );
-          }
+          // const now = new Date();
+          // if (coupon.startDate && now < new Date(coupon.startDate)) {
+          //   throw new BadRequestException(
+          //     'Mã giảm giá chưa đến thời gian hiệu lực',
+          //   );
+          // }
 
-          if (coupon.endDate && now > new Date(coupon.endDate)) {
-            throw new BadRequestException('Mã giảm giá đã hết hạn');
-          }
+          // if (coupon.endDate && now > new Date(coupon.endDate)) {
+          //   throw new BadRequestException('Mã giảm giá đã hết hạn');
+          // }
 
-          // ✅ Atomic Check Limit: Đảm bảo không bị vượt quá số lượt sử dụng
-          if (
-            coupon.usageLimit !== null &&
-            coupon.usedCount >= coupon.usageLimit
-          ) {
-            throw new BadRequestException('Mã giảm giá đã hết lượt sử dụng');
-          }
+          // // ✅ Atomic Check Limit: Đảm bảo không bị vượt quá số lượt sử dụng
+          // if (
+          //   coupon.usageLimit !== null &&
+          //   coupon.usedCount >= coupon.usageLimit
+          // ) {
+          //   throw new BadRequestException('Mã giảm giá đã hết lượt sử dụng');
+          // }
 
-          if (
-            coupon.minOrderAmount &&
-            totalAmount < Number(coupon.minOrderAmount)
-          ) {
-            throw new BadRequestException(
-              `Đơn hàng cần tối thiểu ${Number(coupon.minOrderAmount)}đ để sử dụng mã này`,
-            );
-          }
+          // if (
+          //   coupon.minOrderAmount &&
+          //   totalAmount < Number(coupon.minOrderAmount)
+          // ) {
+          //   throw new BadRequestException(
+          //     `Đơn hàng cần tối thiểu ${Number(coupon.minOrderAmount)}đ để sử dụng mã này`,
+          //   );
+          // }
 
-          // Tính toán số tiền giảm
-          if (coupon.discountType === 'PERCENTAGE') {
-            discountAmount = (totalAmount * Number(coupon.discountValue)) / 100;
-            if (coupon.maxDiscountAmount) {
-              discountAmount = Math.min(
-                discountAmount,
-                Number(coupon.maxDiscountAmount),
-              );
-            }
-          } else {
-            discountAmount = Number(coupon.discountValue);
-          }
+          // // Tính toán số tiền giảm
+          // if (coupon.discountType === 'PERCENTAGE') {
+          //   discountAmount = (totalAmount * Number(coupon.discountValue)) / 100;
+          //   if (coupon.maxDiscountAmount) {
+          //     discountAmount = Math.min(
+          //       discountAmount,
+          //       Number(coupon.maxDiscountAmount),
+          //     );
+          //   }
+          // } else {
+          //   discountAmount = Number(coupon.discountValue);
+          // }
 
-          couponId = coupon.id;
-          totalAmount = Math.max(0, totalAmount - discountAmount);
+          // couponId = coupon.id;
+          // totalAmount = Math.max(0, totalAmount - discountAmount);
 
-          // ✅ Tăng biến đếm số lần sử dụng (Atomic Increment)
-          await tx.coupon.update({
-            where: { id: couponId },
-            data: { usedCount: { increment: 1 } },
-          });
+          // // ✅ Tăng biến đếm số lần sử dụng (Atomic Increment)
+          // await tx.coupon.update({
+          //   where: { id: couponId },
+          //   data: { usedCount: { increment: 1 } },
+          // });
         }
 
         // 6. Tính phí vận chuyển (Shipping Fee)

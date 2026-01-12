@@ -691,14 +691,15 @@ export class AuthService {
   private async grantWelcomeVoucher(userId: string) {
     // Kiểm tra user đã nhận quà chưa (chống spam nhận quà)
     // 1. Check xem đã dùng coupon WELCOME nào chưa
-    const existingWelcomeCoupon = await this.prisma.coupon.findFirst({
-      where: {
-        code: { startsWith: 'WELCOME-' },
-        orders: {
-          some: { userId },
-        },
-      },
-    });
+    // [MIGRATION TODO]: Rewrite this using Promotion Engine
+    // const existingWelcomeCoupon = await this.prisma.coupon.findFirst({
+    //   where: {
+    //     code: { startsWith: 'WELCOME-' },
+    //     orders: {
+    //       some: { userId },
+    //     },
+    //   },
+    // });
 
     // 2. Check xem đã được hệ thống gửi thông báo tặng quà chưa
     const existingNotification = await this.prisma.notification.findFirst({
@@ -708,7 +709,8 @@ export class AuthService {
       },
     });
 
-    if (existingWelcomeCoupon || existingNotification) {
+    // existingWelcomeCoupon ||
+    if (existingNotification) {
       this.logger.log(`User ${userId} đã nhận quà chào mừng rồi, bỏ qua...`);
       return null;
     }
@@ -721,25 +723,33 @@ export class AuthService {
     const couponCode = `WELCOME-${randomSuffix}`;
 
     const tenant = getTenant();
-    const coupon = await this.prisma.coupon.create({
-      data: {
-        code: couponCode,
-        discountType: 'FIXED_AMOUNT',
-        discountValue: 50000,
-        description: 'Voucher chào mừng thành viên mới',
-        startDate: now,
-        endDate: endDate,
-        usageLimit: 1,
-        isActive: true,
-        tenantId: tenant!.id,
-      },
-    });
+    // const coupon = await this.prisma.coupon.create({
+    //   data: {
+    //     code: couponCode,
+    //     discountType: 'FIXED_AMOUNT',
+    //     discountValue: 50000,
+    //     description: 'Voucher chào mừng thành viên mới',
+    //     startDate: now,
+    //     endDate: endDate,
+    //     usageLimit: 1,
+    //     isActive: true,
+    //     tenantId: tenant!.id,
+    //   },
+    // });
+
+    // Fake coupon object for now to avoid errors, or just don't return it
+    const coupon = null;
+
+    // TODO: Create a Promotion record instead
+    this.logger.warn(
+      'Skipping Welcome Coupon creation - Promotion Engine migration pending',
+    );
 
     const notification = await this.notificationsService.create({
       userId,
       type: 'SYSTEM',
       title: 'Quà tặng chào mừng thành viên mới! 🎁',
-      message: `Chào mừng bạn! Tặng bạn mã giảm giá ${couponCode} trị giá 50.000đ. Hạn sử dụng trong 1 tuần. Hãy mua sắm ngay!`,
+      message: `Chào mừng bạn! Tính năng quà tặng đang được nâng cấp, bạn sẽ nhận được ưu đãi sớm nhất!`,
       link: '/profile',
     });
 

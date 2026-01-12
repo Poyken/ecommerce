@@ -65,7 +65,7 @@ export class InvoiceService {
       where: { id: orderId },
       include: {
         user: true,
-        coupon: true, // Include coupon for discount calculation
+        // coupon: true, // [MIGRATION] Coupon relation removed
         items: {
           include: {
             sku: {
@@ -110,17 +110,18 @@ export class InvoiceService {
 
     // Calculate discount from coupon
     let discount = 0;
-    if (order.coupon) {
-      if (order.coupon.discountType === 'PERCENTAGE') {
-        discount = subtotal * (Number(order.coupon.discountValue) / 100);
-        // Apply max discount limit if specified
-        if (order.coupon.maxDiscountAmount) {
-          discount = Math.min(discount, Number(order.coupon.maxDiscountAmount));
-        }
-      } else if (order.coupon.discountType === 'FIXED_AMOUNT') {
-        discount = Number(order.coupon.discountValue);
-      }
-    }
+    // [MIGRATION TODO]: Use PromotionUsage relation instead of coupon relation
+    // if (order.coupon) {
+    //   if (order.coupon.discountType === 'PERCENTAGE') {
+    //     discount = subtotal * (Number(order.coupon.discountValue) / 100);
+    //     // Apply max discount limit if specified
+    //     if (order.coupon.maxDiscountAmount) {
+    //       discount = Math.min(discount, Number(order.coupon.maxDiscountAmount));
+    //     }
+    //   } else if (order.coupon.discountType === 'FIXED_AMOUNT') {
+    //     discount = Number(order.coupon.discountValue);
+    //   }
+    // }
 
     const total = Number(order.totalAmount);
 

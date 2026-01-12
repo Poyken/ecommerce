@@ -6,7 +6,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Coupon } from '@prisma/client';
+// import { Coupon } from '@prisma/client';
+type Coupon = any; // Dummy type
 import { BaseCrudService } from '../common/base-crud.service';
 import { CreateCouponDto } from './dto/create-coupon.dto';
 import { UpdateCouponDto } from './dto/update-coupon.dto';
@@ -41,7 +42,8 @@ export class CouponsService extends BaseCrudService<
   }
 
   protected get model() {
-    return this.prisma.coupon;
+    // return this.prisma.coupon;
+    return null as any;
   }
 
   /**

@@ -35,6 +35,11 @@ import { CategoriesModule } from '@/catalog/categories/categories.module';
 import { CommonModule } from '@/common/common.module';
 import { FeatureFlagsModule } from '@/common/feature-flags/feature-flags.module';
 import { CouponsModule } from '@/coupons/coupons.module';
+import { PromotionsModule } from '@/promotions/promotions.module';
+import { RmaModule } from '@/rma/rma.module';
+import { InventoryModule } from '@/inventory/inventory.module';
+import { MediaModule } from '@/media/media.module';
+import { CustomerGroupsModule } from '@/customer-groups/customer-groups.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { OrdersModule } from '@/orders/orders.module';
 import { PagesModule } from '@/pages/pages.module';
@@ -240,6 +245,11 @@ import { SuperAdminModule } from '@/super-admin/super-admin.module';
     SentryModule, // Error Tracking & Performance Monitoring
     DataLoaderModule, // N+1 Query Prevention
     MetricsModule, // Prometheus Metrics
+    PromotionsModule,
+    RmaModule,
+    InventoryModule,
+    MediaModule,
+    CustomerGroupsModule,
   ],
   controllers: [HealthController],
   providers: [

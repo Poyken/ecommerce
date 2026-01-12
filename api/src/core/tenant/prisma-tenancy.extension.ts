@@ -60,6 +60,12 @@ const SHARED_MODELS = new Set([
   'BlogProduct',
   'OrderItem',
   'SubscriptionPlan',
+  'InventoryItem',
+  'ReturnItem',
+  'PromotionRule',
+  'PromotionAction',
+  'PromotionUsage',
+  'PriceListItem',
 ]);
 
 const MODELS_WITH_SOFT_DELETE = new Set([
