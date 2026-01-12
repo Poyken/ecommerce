@@ -21,7 +21,10 @@ import Image from "next/image";
  *
  * 3. UI OPTIMIZATION:
  * - `line-clamp-2`: Giới hạn nội dung review tối đa 2 dòng để không làm vỡ layout của Product Card.
- * - `CompactRating`: Một phiên bản rút gọn dùng cho các không gian hẹp.
+ * - `CompactRating`: Một phiên bản rút gọn dùng cho các không gian hẹp. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 interface ReviewPreviewProps {

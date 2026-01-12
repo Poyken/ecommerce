@@ -18,7 +18,10 @@ import { useMemo, useState, useTransition } from "react";
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. PERSISTENCE:
- * - Cập nhật tên quyền hạn hiện có. Lưu ý: Việc đổi tên quyền hạn có thể ảnh hưởng đến logic check quyền ở code, nên cần cẩn trọng.
+ * - Cập nhật tên quyền hạn hiện có. Lưu ý: Việc đổi tên quyền hạn có thể ảnh hưởng đến logic check quyền ở code, nên cần cẩn trọng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

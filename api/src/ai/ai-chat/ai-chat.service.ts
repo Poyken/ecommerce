@@ -36,7 +36,10 @@ import { GeminiService } from './gemini.service';
  *    C. CONTEXT WINDOW (CỬA SỔ NGỮ CẢNH):
  *       - AI có giới hạn bộ nhớ (Token limit). Ta chỉ nên gửi kèm 10-20 tin nhắn gần nhất
  *         để tiết kiệm chi phí và đảm bảo tốc độ.
- *
+ * *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =================================================================================================
  */
 

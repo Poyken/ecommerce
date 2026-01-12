@@ -13,7 +13,10 @@
  * - Sau khi thêm thành công, bắn ra event `cart_updated` để đồng bộ số lượng trên Header Badge.
  *
  * 3. NAVIGATION:
- * - Tự động chuyển hướng người dùng đến trang giỏ hàng (`/cart`) sau khi thêm thành công.
+ * - Tự động chuyển hướng người dùng đến trang giỏ hàng (`/cart`) sau khi thêm thành công. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

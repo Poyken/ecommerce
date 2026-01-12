@@ -35,7 +35,10 @@ import { Suspense } from "react";
  *      form trong Super Admin không phải fetch đi fetch lại nhiều lần.
  *
  * 3. INITIALIZATION LOOP:
- *    - `NotificationInitializer`: Khởi tạo hệ thống Socket/Thông báo ngay khi vào khu vực quản trị.
+ *    - `NotificationInitializer`: Khởi tạo hệ thống Socket/Thông báo ngay khi vào khu vực quản trị. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default async function SuperAdminLayout({

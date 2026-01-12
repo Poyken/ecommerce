@@ -9,7 +9,10 @@
  * - Sử dụng iframe để nhúng bản đồ Google Maps trực tiếp vào trang liên hệ.
  *
  * 2. FLOATING LOCATION CARD:
- * - Hiển thị một thẻ thông tin nổi trên bản đồ chứa địa chỉ và trạng thái "Open Now" để tăng tính tương tác.
+ * - Hiển thị một thẻ thông tin nổi trên bản đồ chứa địa chỉ và trạng thái "Open Now" để tăng tính tương tác. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

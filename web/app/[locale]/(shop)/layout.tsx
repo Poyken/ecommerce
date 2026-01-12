@@ -37,7 +37,10 @@ import Loading from "./loading";
  * DATA FETCHING OPTIMIZATION:
  * - Tất cả dynamic data (user, permissions) được fetch MỘT LẦN trong DynamicShopContent.
  * - Sau đó pass xuống các component con (Header, MobileNav).
- * - Tránh gọi API nhiều lần từ các Suspense boundaries khác nhau.
+ * - Tránh gọi API nhiều lần từ các Suspense boundaries khác nhau. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

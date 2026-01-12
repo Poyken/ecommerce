@@ -14,7 +14,10 @@
  *    - Trả về response cho client
  *
  * 2. CÁC ENDPOINT:
- *    - [Liệt kê các endpoint]
+ *    - [Liệt kê các endpoint] *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

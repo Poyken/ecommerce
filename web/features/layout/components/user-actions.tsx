@@ -36,7 +36,10 @@ import { User } from "@/types/models";
  * - Cách tiếp cận này giúp tách biệt logic xử lý của từng tính năng.
  *
  * 3. ACCESSIBILITY:
- * - Sử dụng `sr-only` cho text "Open menu" để hỗ trợ các thiết bị đọc màn hình (Screen Readers).
+ * - Sử dụng `sr-only` cho text "Open menu" để hỗ trợ các thiết bị đọc màn hình (Screen Readers). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

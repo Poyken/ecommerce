@@ -11,7 +11,10 @@
  *
  * 2. BULK IMPORT:
  * - Hỗ trợ nhập liệu từ Excel. Có chế độ `dryRun` (chạy thử) để validate dữ liệu
- *   trước khi ghi thật vào DB.
+ *   trước khi ghi thật vào DB. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { RequirePermissions } from '@/common/decorators/crud.decorators';

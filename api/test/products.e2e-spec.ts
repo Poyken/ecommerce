@@ -11,7 +11,10 @@
  *
  * 2. TEST CASES:
  * - GET /products: Phải trả về mảng dữ liệu.
- * - Error Handling: Request ID rác (non-existent-id) phải trả về 404 Not Found.
+ * - Error Handling: Request ID rác (non-existent-id) phải trả về 404 Not Found. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { INestApplication, ValidationPipe } from '@nestjs/common';

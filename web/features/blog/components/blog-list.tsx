@@ -29,7 +29,10 @@ import Link from "next/link";
  *
  * 4. LOAD MORE:
  * - Sử dụng client-side pagination đơn giản với `visibleCount`.
- * - Hiển thị nút "Load More" nếu còn bài viết chưa hiển thị.
+ * - Hiển thị nút "Load More" nếu còn bài viết chưa hiển thị. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

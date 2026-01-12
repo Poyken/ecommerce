@@ -18,7 +18,10 @@
  * 3. LƯU Ý KHI SỬ DỤNG:
  *    - Luôn kiểm tra quyền (Permission) trước khi thực hiện các task nhạy cảm như Update/Delete.
  *    - Kết quả của bước trước có thể là input của bước sau (Chaining).
- *    - Xử lý lỗi (Error Handling) phải chặt chẽ để Agent không "chết" giữa chừng khi đang chạy chuỗi task.
+ *    - Xử lý lỗi (Error Handling) phải chặt chẽ để Agent không "chết" giữa chừng khi đang chạy chuỗi task. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

@@ -17,7 +17,10 @@
 "use client";
 
 /**
- * Social callback client component - handles OAuth redirect
+ * Social callback client component - handles OAuth redirect *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  */
 import { LoadingScreen } from "@/components/shared/loading-screen";
 import { useRouter, useSearchParams } from "next/navigation";

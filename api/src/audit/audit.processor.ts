@@ -17,7 +17,10 @@ import { Job } from 'bullmq';
  *
  * 2. CÁC LOẠI JOB:
  * - `create-log`: Lưu nhật ký mới.
- * - `cleanup`: Xóa các nhật ký cũ (Job này thường được schedule chạy tự động hàng ngày).
+ * - `cleanup`: Xóa các nhật ký cũ (Job này thường được schedule chạy tự động hàng ngày). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Processor('audit')

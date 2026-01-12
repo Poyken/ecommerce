@@ -29,7 +29,10 @@ import { cn } from "@/lib/utils";
  * - Hỗ trợ điều khiển bằng phím mũi tên trái/phải (`handleKeyDown`) để tăng trải nghiệm người dùng.
  *
  * 4. ACCESSIBILITY:
- * - `role="region"` & `aria-roledescription="carousel"`: Giúp trình đọc màn hình hiểu đây là một vùng trình chiếu.
+ * - `role="region"` & `aria-roledescription="carousel"`: Giúp trình đọc màn hình hiểu đây là một vùng trình chiếu. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -31,7 +31,10 @@
  *    - Page Builder (sidebar + canvas)
  *    - Code editor layouts
  *    - Email client (folders + list + preview)
- *    - Admin dashboards
+ *    - Admin dashboards *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

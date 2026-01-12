@@ -22,7 +22,10 @@ import { Server, Socket } from 'socket.io';
  * 2. ROOM-BASED UPDATES (Optimized):
  * - Thay vì gửi cho tất cả mọi người, ta có thể chia room theo productId.
  * - Client vào trang sản phẩm sẽ join room `product:id`.
- * - Tiết kiệm băng thông cho client không quan tâm sản phẩm đó.
+ * - Tiết kiệm băng thông cho client không quan tâm sản phẩm đó. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @WebSocketGateway({

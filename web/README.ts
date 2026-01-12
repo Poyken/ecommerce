@@ -87,7 +87,10 @@
  * npm run type-check - Run TypeScript compiler
  *
  * =====================================================================
- * © 2024-2026 E-Commerce Platform. All rights reserved.
+ * © 2024-2026 E-Commerce Platform. All rights reserved. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

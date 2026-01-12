@@ -21,7 +21,10 @@ import { Metadata } from "next";
  * - Nếu không có session hoặc lỗi -> Hiển thị UI "Session Expired" thay vì crash trang.
  *
  * 3. SECURITY:
- * - Dữ liệu nhạy cảm được fetch ở Server, đảm bảo an toàn hơn so với việc fetch ở Client.
+ * - Dữ liệu nhạy cảm được fetch ở Server, đảm bảo an toàn hơn so với việc fetch ở Client. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

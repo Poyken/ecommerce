@@ -19,7 +19,10 @@ import { getTenant } from '@core/tenant/tenant.context';
  * - Có cơ chế validate và báo lỗi từng dòng nếu không hợp lệ.
  *
  * 3. BULK UPDATE:
- * - Cập nhật giá/tồn kho hàng loạt theo phần trăm hoặc số cố định.
+ * - Cập nhật giá/tồn kho hàng loạt theo phần trăm hoặc số cố định. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

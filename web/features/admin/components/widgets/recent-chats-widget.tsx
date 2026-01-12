@@ -38,7 +38,10 @@ interface Conversation {
  * 2. GRACEFUL DEGRADATION (Lỗi mềm):
  * - Dòng `.catch(() => ({ data: [] }))` rất quan trọng.
  * - Nếu API chat bị lỗi (ví dụ: Chat Service sập), Widget này sẽ hiển thị "No active conversations" thay vì làm crashed toàn bộ trang Admin Dashboard.
- * - Đây là tư duy "Fail Safe" trong thiết kế hệ thống.
+ * - Đây là tư duy "Fail Safe" trong thiết kế hệ thống. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 export async function RecentChatsWidget() {

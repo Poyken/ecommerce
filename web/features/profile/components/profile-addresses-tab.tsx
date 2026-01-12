@@ -13,7 +13,10 @@
  * - Địa chỉ mặc định được làm nổi bật bằng màu nền `primary` và hiệu ứng đổ bóng đặc biệt.
  *
  * 3. CONFIRMATION DIALOG:
- * - Sử dụng `AlertDialog` để xác nhận trước khi xóa địa chỉ, tránh việc người dùng lỡ tay xóa nhầm.
+ * - Sử dụng `AlertDialog` để xác nhận trước khi xóa địa chỉ, tránh việc người dùng lỡ tay xóa nhầm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

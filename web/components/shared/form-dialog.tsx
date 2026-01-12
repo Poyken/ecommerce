@@ -16,7 +16,10 @@
  * 3. ENHANCED UI:
  * - Icon support in header
  * - Better styling for form sections
- * - Improved footer with consistent button styling
+ * - Improved footer with consistent button styling *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

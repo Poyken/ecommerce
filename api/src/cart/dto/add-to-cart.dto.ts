@@ -15,7 +15,10 @@ import { IsNumber, IsUUID, Max, Min } from 'class-validator';
  * 2. CÁC LUẬT (RULES):
  * - `IsUUID('4')`: Đảm bảo `skuId` phải là mã định danh hợp lệ (UUID v4).
  * - `Min(1)`: Không ai mua 0 hoặc âm sản phẩm cả.
- * - `Max(999)`: Giới hạn số lượng một lần mua để tránh lỗi hiển thị UI hoặc Spam đơn hàng.
+ * - `Max(999)`: Giới hạn số lượng một lần mua để tránh lỗi hiển thị UI hoặc Spam đơn hàng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class AddToCartDto {

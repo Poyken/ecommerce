@@ -40,7 +40,10 @@ import { GHNService } from './ghn.service';
  *
  * 3. FEE CALCULATION:
  * - Phí vận chuyển được tính dựa trên DistrictID và WardCode.
- * - Mặc định tính theo gói 1kg để có giá dự kiến nhanh nhất cho khách.
+ * - Mặc định tính theo gói 1kg để có giá dự kiến nhanh nhất cho khách. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

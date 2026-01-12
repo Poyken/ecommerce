@@ -18,7 +18,10 @@ import { notFound } from "next/navigation";
  * - `generateMetadata`: Lấy tiêu đề và mô tả của chính bài viết đó để làm SEO.
  *
  * 3. ERROR HANDLING:
- * - `notFound()`: Nếu slug không tồn tại, Next.js sẽ tự động chuyển hướng sang trang 404.
+ * - `notFound()`: Nếu slug không tồn tại, Next.js sẽ tự động chuyển hướng sang trang 404. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

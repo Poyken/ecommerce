@@ -26,7 +26,10 @@ export function ShopEmptyState({
    *
    * 1. REUSABILITY:
    * - Dùng chung cho Cart rỗng, Wishlist rỗng, Search không kết quả...
-   * - Icon mặc định là `PackageOpen` nhưng có thể pass icon khác vào qua prop.
+   * - Icon mặc định là `PackageOpen` nhưng có thể pass icon khác vào qua prop. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
    * =====================================================================
    */
   return (

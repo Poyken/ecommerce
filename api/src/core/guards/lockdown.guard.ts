@@ -11,7 +11,12 @@
  *    - [Mô tả các chức năng chính]
  *
  * 2. CÁCH SỬ DỤNG:
- *    - [Hướng dẫn sử dụng]
+ *    - [Hướng dẫn sử dụng] *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Emergency Response: Kích hoạt chế độ "Bảo trì khẩn cấp" khi hệ thống bị tấn công hoặc lỗi nghiêm trọng.
+ * - VIP Access: Vẫn cho phép Super Admin truy cập để sửa lỗi trong khi chặn toàn bộ user thường.
+ * - Feature Flagging Integration: Tích hợp với hệ thống cờ tính năng để bật/tắt nóng mà không cần deploy lại code.
+
  * =====================================================================
  */
 

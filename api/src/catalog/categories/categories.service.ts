@@ -32,7 +32,10 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
  *
  * 4. SAFETY CONSTRAINTS:
  * - Ngăn chặn việc xóa danh mục nếu nó vẫn còn chứa sản phẩm hoặc danh mục con.
- * - Đảm bảo tính nhất quán của dữ liệu (Data Integrity).
+ * - Đảm bảo tính nhất quán của dữ liệu (Data Integrity). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

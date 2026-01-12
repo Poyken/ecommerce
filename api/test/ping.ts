@@ -13,7 +13,10 @@
  *
  * 2. CÁCH CHẠY:
  * - Dùng `ts-node` hoặc `bun` để chạy file này từ terminal.
- * - Hữu ích khi deploy xong hoặc trước khi chạy E2E tests.
+ * - Hữu ích khi deploy xong hoặc trước khi chạy E2E tests. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import axios from 'axios';

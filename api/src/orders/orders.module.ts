@@ -16,7 +16,10 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  *   - `NotificationsModule`: Gửi email/thông báo cho khách hàng.
  *
  * 2. CENTRALIZED LOGIC:
- * - Gom nhóm tất cả logic liên quan đến vòng đời của một đơn hàng (từ lúc tạo đến lúc giao thành công).
+ * - Gom nhóm tất cả logic liên quan đến vòng đời của một đơn hàng (từ lúc tạo đến lúc giao thành công). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { CouponsModule } from '@/coupons/coupons.module';

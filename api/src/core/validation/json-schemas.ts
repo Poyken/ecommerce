@@ -13,7 +13,11 @@ import { z } from 'zod';
  *
  * 2. LỢI ÍCH:
  *    - Runtime Validation: Đảm bảo dữ liệu trong DB không bị rác (VD: màu phải là hex code).
- *    - Type Inference: Tự động suy diễn kiểu TypeScript từ Schema (`z.infer<typeof Schema>`).
+ *    - Type Inference: Tự động suy diễn kiểu TypeScript từ Schema (`z.infer<typeof Schema>`). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Flexible Config: Cho phép lưu theme config (màu sắc, font) vào DB dưới dạng JSON nhưng vẫn đảm bảo đúng format màu (Hex).
+ * - Page Builder: Hỗ trợ kéo thả giao diện (Page Builder) bằng cách định nghĩa cấu trúc Block động (Hero, Banner) mà không cần tạo bảng riêng.
+
  * =================================================================================================
  */
 

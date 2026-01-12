@@ -18,7 +18,10 @@ import { ProductsClient } from "./products-client";
  * - Tuy nhiên, các dữ liệu bổ trợ như "Brands" và "Categories" (thường dùng ở nhiều nơi) đã được `AdminLayout` chuẩn bị sẵn để tối ưu bộ nhớ.
  *
  * 3. PAGINATION:
- * - Sử dụng URL search params để quản lý trang hiện tại. Điều này giúp Admin có thể copy URL và gửi cho người khác mà vẫn giữ đúng trang đang xem.
+ * - Sử dụng URL search params để quản lý trang hiện tại. Điều này giúp Admin có thể copy URL và gửi cho người khác mà vẫn giữ đúng trang đang xem. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

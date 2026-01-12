@@ -18,7 +18,10 @@ import { ReviewsClient } from "./reviews-client";
  *
  * 3. STATUS FILTER:
  * - Hỗ trợ lọc đánh giá theo trạng thái thông qua URL parameter `status`.
- * - Server-side filtering đảm bảo hiệu năng tốt ngay cả khi có hàng nghìn đánh giá.
+ * - Server-side filtering đảm bảo hiệu năng tốt ngay cả khi có hàng nghìn đánh giá. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

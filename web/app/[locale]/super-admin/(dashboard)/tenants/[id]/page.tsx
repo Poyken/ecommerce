@@ -6,7 +6,10 @@
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * Hiển thị toàn bộ thông tin về một Tenant cụ thể: Cấu hình domain,
- * thông tin chủ shop, lịch sử gói cước và tình trạng hệ thống.
+ * thông tin chủ shop, lịch sử gói cước và tình trạng hệ thống. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

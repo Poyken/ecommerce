@@ -16,7 +16,10 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
  * - Thông báo lỗi tiếng Việt giúp cải thiện trải nghiệm người dùng ngay từ bước nhập liệu.
  *
  * 3. PROCESS FLOW:
- * - Sau khi nhận được email hợp lệ, server sẽ tạo một Token và gửi vào email này để người dùng có thể thực hiện bước `reset-password`.
+ * - Sau khi nhận được email hợp lệ, server sẽ tạo một Token và gửi vào email này để người dùng có thể thực hiện bước `reset-password`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

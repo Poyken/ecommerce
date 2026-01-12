@@ -15,7 +15,10 @@
  * - Đảm bảo truyền đúng các props như `initialIsWishlisted={true}` để icon trái tim hiển thị đúng trạng thái.
  *
  * 3. EMPTY STATE:
- * - Hiển thị thông báo khi danh sách trống để khuyến khích người dùng khám phá cửa hàng.
+ * - Hiển thị thông báo khi danh sách trống để khuyến khích người dùng khám phá cửa hàng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

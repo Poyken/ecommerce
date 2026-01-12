@@ -12,7 +12,10 @@ import * as crypto from 'crypto';
  * - Nếu sai thứ tự, chữ ký tạo ra sẽ không khớp với chữ ký của VNPay.
  *
  * 2. HMAC-SHA512:
- * - Đây là thuật toán băm dùng để tạo Chữ ký số (Secure Hash). Thuật toán này sử dụng một Secret Key (chỉ có ta và VNPay biết) để đảm bảo tính toàn vẹn của dữ liệu.
+ * - Đây là thuật toán băm dùng để tạo Chữ ký số (Secure Hash). Thuật toán này sử dụng một Secret Key (chỉ có ta và VNPay biết) để đảm bảo tính toàn vẹn của dữ liệu. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Cung cấp các hàm tiện ích dùng chung, giúp code gọn gàng và tái sử dụng hiệu quả.
+
  * =====================================================================
  */
 export class VNPayUtils {

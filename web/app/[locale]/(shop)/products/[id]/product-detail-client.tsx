@@ -39,7 +39,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
  * - `ProductVariantSelector`: Xử lý việc chọn Size, Color... và tìm SKU tương ứng.
  *   - [REFACTOR]: Logic thêm vào giỏ hàng (`handleAddToCart`) đã được đưa lên Client Component này
  *     để tái sử dụng cho cả VariantSelector và MobileStickyCart (Clean Architecture).
- * - `MobileStickyCart`: Thanh mua hàng luôn dính ở dưới màn hình mobile.
+ * - `MobileStickyCart`: Thanh mua hàng luôn dính ở dưới màn hình mobile. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

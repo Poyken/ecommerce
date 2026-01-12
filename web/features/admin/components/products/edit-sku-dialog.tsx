@@ -26,7 +26,10 @@ import { useMemo, useState, useTransition } from "react";
  * - Đây là nơi Admin cập nhật giá bán và số lượng tồn kho thực tế cho từng biến thể.
  *
  * 3. SKU-SPECIFIC IMAGE:
- * - Mỗi SKU có thể có ảnh riêng (VD: Áo màu Đỏ thì hiện ảnh áo Đỏ).
+ * - Mỗi SKU có thể có ảnh riêng (VD: Áo màu Đỏ thì hiện ảnh áo Đỏ). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

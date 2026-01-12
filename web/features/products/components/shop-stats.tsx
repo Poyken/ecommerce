@@ -8,7 +8,10 @@
  * 1. REACT SERVER COMPONENTS (RSC) & PROMISES:
  * - Nhận một `Promise` (`productsPromise`) từ component cha.
  * - Sử dụng hook `use()` (React 19/Next.js 15) để "mở" promise ngay trong component.
- * - Giúp hiển thị số lượng kết quả tìm kiếm một cách mượt mà.
+ * - Giúp hiển thị số lượng kết quả tìm kiếm một cách mượt mà. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

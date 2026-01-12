@@ -13,7 +13,10 @@ import { IsInt, Min } from 'class-validator';
  * - `@Min(1)`: Đảm bảo số lượng luôn lớn hơn hoặc bằng 1. Nếu muốn xóa sản phẩm, user nên dùng API Delete thay vì chỉnh số lượng về 0.
  *
  * 2. TYPE SAFETY:
- * - `@IsInt()`: Đảm bảo số lượng phải là số nguyên, không chấp nhận số thập phân.
+ * - `@IsInt()`: Đảm bảo số lượng phải là số nguyên, không chấp nhận số thập phân. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

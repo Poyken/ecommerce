@@ -26,7 +26,10 @@ import { ChatService } from './chat.service';
  * - Admin sẽ vào phòng `admin-room` để nhận tất cả tin nhắn từ mọi khách hàng.
  *
  * 3. SURGICAL EMITS:
- * - Thay vì gửi nguyên object DB cồng kềnh, ta chỉ gửi những field cần thiết (Sanitization) qua socket để tiết kiệm băng thông.
+ * - Thay vì gửi nguyên object DB cồng kềnh, ta chỉ gửi những field cần thiết (Sanitization) qua socket để tiết kiệm băng thông. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @WebSocketGateway({

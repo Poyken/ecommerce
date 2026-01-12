@@ -11,7 +11,10 @@
  *
  * 2. TÍNH LŨY ĐẲNG (Idempotency):
  * - Các hàm update nên kiểm tra sự tồn tại của bản ghi trước khi thực hiện
- *   (Prisma `update` sẽ ném lỗi nếu ID không tồn tại, nên try-catch là cần thiết ở tầng trên).
+ *   (Prisma `update` sẽ ném lỗi nếu ID không tồn tại, nên try-catch là cần thiết ở tầng trên). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { Injectable } from '@nestjs/common';

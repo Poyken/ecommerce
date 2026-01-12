@@ -20,7 +20,10 @@
  *     { label: "Pending", value: 5, variant: "warning" },
  *   ]}
  *   actions={<Button>Create New</Button>}
- * />
+ * /> *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

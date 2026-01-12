@@ -20,7 +20,10 @@ import { useTranslations } from "next-intl";
  *
  * 2. CLIENT COMPONENT ("use client"):
  * - Vì trang này có Animation (`framer-motion`) và tương tác (Button back),
- *   nó phải là Client Component.
+ *   nó phải là Client Component. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 export default function NotFound() {

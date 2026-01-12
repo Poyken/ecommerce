@@ -25,7 +25,10 @@ import { useEffect } from "react";
  *    - Hiển thị 8 ký tự cuối mã đơn hàng để User dễ đối soát nhưng vẫn giữ bảo mật.
  *
  * 3. CALL TO ACTIONS (CTA):
- *    - Cung cấp 2 lựa chọn: Xem chi tiết đơn hàng vừa đặt hoặc tiếp tục mua sắm.
+ *    - Cung cấp 2 lựa chọn: Xem chi tiết đơn hàng vừa đặt hoặc tiếp tục mua sắm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default function CheckoutSuccessPage() {

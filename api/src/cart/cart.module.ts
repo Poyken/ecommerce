@@ -15,7 +15,10 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  * - `PrismaModule` được import để `CartService` có thể truy cập vào database.
  *
  * 3. ARCHITECTURE:
- * - Tuân thủ kiến trúc Modular của NestJS, giúp code dễ bảo trì và mở rộng.
+ * - Tuân thủ kiến trúc Modular của NestJS, giúp code dễ bảo trì và mở rộng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { CartController } from './cart.controller';

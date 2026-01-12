@@ -29,7 +29,10 @@ import { useEffect, useState } from "react";
  * - Giúp giữ nguyên trạng thái hiển thị khi user reload trnag hoặc chia sẻ link.
  *
  * 3. ANNOUNCE CHANGES (A11y):
- * - Cần chú ý về Accessibility khi thay đổi layout động, tuy nhiên ở mức độ cơ bản này ta tập trung vào Visual UX.
+ * - Cần chú ý về Accessibility khi thay đổi layout động, tuy nhiên ở mức độ cơ bản này ta tập trung vào Visual UX. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 interface ProductGridViewProps {

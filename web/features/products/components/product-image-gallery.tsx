@@ -14,7 +14,10 @@
  * - Click vào ảnh chính sẽ mở `ProductImageLightbox` để xem toàn màn hình.
  *
  * 3. SYNC WITH SKUS:
- * - Khi người dùng chọn một biến thể (màu sắc), gallery sẽ tự động chuyển đến ảnh tương ứng của biến thể đó.
+ * - Khi người dùng chọn một biến thể (màu sắc), gallery sẽ tự động chuyển đến ảnh tương ứng của biến thể đó. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

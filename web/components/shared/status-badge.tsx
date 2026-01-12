@@ -15,7 +15,10 @@ import { cn } from "@/lib/utils";
  *
  * 2. FLEXIBILITY:
  * - Hỗ trợ cả `label` (nếu muốn hiển thị text tùy chỉnh) hoặc mặc định dùng chính `status`.
- * - Có thể override `variant` nếu cần thiết cho các trường hợp đặc biệt.
+ * - Có thể override `variant` nếu cần thiết cho các trường hợp đặc biệt. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

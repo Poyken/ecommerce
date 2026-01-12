@@ -9,7 +9,10 @@
  * - Hiển thị các câu hỏi thường gặp dưới dạng lưới 2 cột trên desktop, giúp tiết kiệm không gian và dễ theo dõi.
  *
  * 2. INTERACTIVE CARDS:
- * - Mỗi câu hỏi được đặt trong một `GlassCard` với hiệu ứng hover và số thứ tự nổi bật.
+ * - Mỗi câu hỏi được đặt trong một `GlassCard` với hiệu ứng hover và số thứ tự nổi bật. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -14,7 +14,10 @@ import { Skeleton } from "@/components/ui/skeleton";
  * - Phần tóm tắt đơn hàng bên phải cũng được giả lập với thuộc tính `sticky` để khớp với giao diện thật.
  *
  * 3. SECURITY REASSURANCE:
- * - Giữ lại các placeholder cho icon bảo mật và thông tin tin cậy để người dùng cảm thấy an tâm khi chờ đợi.
+ * - Giữ lại các placeholder cho icon bảo mật và thông tin tin cậy để người dùng cảm thấy an tâm khi chờ đợi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -35,7 +35,10 @@ import { LocationSelects } from "@/features/address/components/location-selects"
  * - Logic fetch dữ liệu địa lý đã được tách ra component `LocationSelects` để tái sử dụng.
  *
  * 2. UX IMPROVEMENTS:
- * - Framer Motion (`AnimatePresence`) giúp các thông báo lỗi xuất hiện/biến mất mượt mà.
+ * - Framer Motion (`AnimatePresence`) giúp các thông báo lỗi xuất hiện/biến mất mượt mà. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

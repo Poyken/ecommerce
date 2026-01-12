@@ -15,7 +15,10 @@ import { ArrayNotEmpty, IsArray, IsString } from 'class-validator';
  *
  * 2. ROLE IDENTIFICATION:
  * - Mảng `roles` chứa danh sách các tên Role (VD: `['ADMIN', 'EDITOR']`).
- * - Backend sẽ dựa vào danh sách này để cập nhật bảng liên kết trong Database.
+ * - Backend sẽ dựa vào danh sách này để cập nhật bảng liên kết trong Database. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

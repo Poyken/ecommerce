@@ -12,7 +12,11 @@
  *
  * 2. TYPE SAFETY:
  * - Input (data từ form) được ép kiểu chặt chẽ. Nếu sai format, action sẽ không chạy
- *   và trả về lỗi validation chi tiết cho Client.
+ *   và trả về lỗi validation chi tiết cho Client. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Recurring Revenue: Quản lý các gói đăng ký thuê phần mềm (SaaS), tự động hóa việc gia hạn và tính phí cho các chủ shop.
+ * - Access Control: Đảm bảo chỉ những chủ shop đã thanh toán gói "Enterprise" mới được dùng các tính năng cao cấp (vd: Analytics nâng cao).
+
  * =====================================================================
  */
 "use server";

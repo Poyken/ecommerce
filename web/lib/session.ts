@@ -16,7 +16,11 @@
  * - Khi Logout -> Xóa Cookies.
  *
  * 3. SERVER-ONLY:
- * - File này được đánh dấu `"server-only"` để đảm bảo không bao giờ bị bundle nhầm xuống Client (gây lộ logic bảo mật).
+ * - File này được đánh dấu `"server-only"` để đảm bảo không bao giờ bị bundle nhầm xuống Client (gây lộ logic bảo mật). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - XSS Prevention: Bảo vệ tài khoản người dùng khỏi bị đánh cắp Session bằng cách sử dụng HttpOnly Cookie - hacker dùng JS không thể đọc được Token.
+ * - Seamless Experience: Tự động ghi nhớ trạng thái đăng nhập của người dùng qua các phiên làm việc mà không cần bắt họ đăng nhập lại mỗi khi mở tab mới.
+
  * =====================================================================
  */
 

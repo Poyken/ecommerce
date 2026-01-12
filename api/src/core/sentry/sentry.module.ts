@@ -17,7 +17,11 @@
  *
  * 3. MANUAL CAPTURE:
  *    - Sử dụng SentryService để capture error thủ công
- *    - Hữu ích cho async errors, background jobs
+ *    - Hữu ích cho async errors, background jobs *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Crash Reporting: Tự động báo cáo khi server có lỗi 500 (Internal Server Error) để team xử lý trước khi khách hàng phàn nàn.
+ * - Full Stack Trace: Cung cấp đầy đủ dấu vết lỗi (từ dòng code nào, biến số là gì) để fix bug nhanh chóng.
+
  * =====================================================================
  */
 

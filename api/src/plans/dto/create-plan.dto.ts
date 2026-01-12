@@ -11,7 +11,10 @@
  *   thay vì dùng ID (UUID khó nhớ).
  *
  * 2. CLASS VALIDATOR:
- * - Thư viện này tự động kiểm tra dữ liệu đầu vào trước khi đến Controller.
+ * - Thư viện này tự động kiểm tra dữ liệu đầu vào trước khi đến Controller. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import {

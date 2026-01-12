@@ -23,7 +23,10 @@ import { CommissionService } from './commission.service';
  *
  * 2. RESPONSIBILITY:
  * - Chịu trách nhiệm cung cấp số liệu cho Dashboard Admin (Doanh thu, Đơn hàng mới...).
- * - Tách biệt hoàn toàn với logic xử lý đơn hàng hay sản phẩm.
+ * - Tách biệt hoàn toàn với logic xử lý đơn hàng hay sản phẩm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class AnalyticsModule {}

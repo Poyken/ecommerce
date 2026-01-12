@@ -19,7 +19,10 @@ import {
  * - Cho phép Admin chỉ cập nhật một vài thông tin (VD: chỉ đổi tên sản phẩm) mà không cần gửi lại toàn bộ dữ liệu.
  *
  * 2. OPTIONS OVERRIDE:
- * - Ta định nghĩa lại trường `options` ở đây để đảm bảo nó vẫn được validate đúng kiểu `CreateOptionDto` khi cập nhật.
+ * - Ta định nghĩa lại trường `options` ở đây để đảm bảo nó vẫn được validate đúng kiểu `CreateOptionDto` khi cập nhật. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

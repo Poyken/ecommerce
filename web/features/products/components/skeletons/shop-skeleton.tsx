@@ -12,7 +12,10 @@
  * - Hiển thị thanh công cụ giả bao gồm thanh tìm kiếm, bộ chọn sắp xếp và tổng số sản phẩm.
  *
  * 3. PRODUCT GRID INTEGRATION:
- * - Tái sử dụng `ProductsSkeleton` để hiển thị lưới 12 sản phẩm giả lập.
+ * - Tái sử dụng `ProductsSkeleton` để hiển thị lưới 12 sản phẩm giả lập. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

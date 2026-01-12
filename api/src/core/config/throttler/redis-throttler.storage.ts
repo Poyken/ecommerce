@@ -15,7 +15,11 @@ import { ThrottlerStorage } from '@nestjs/throttler';
  *
  * 2. ATOMIC OPERATIONS (Thao tác nguyên tử):
  * - Dùng `multi`, `incr`, `ttl` của Redis để đảm bảo việc đếm số lần gọi chính xác tuyệt đối ngay cả khi có hàng ngàn request cùng lúc.
- * - `ttl` giúp tự động reset số lần đếm sau một khoảng thời gian (VD: Sau 1 phút được gọi lại tiếp).
+ * - `ttl` giúp tự động reset số lần đếm sau một khoảng thời gian (VD: Sau 1 phút được gọi lại tiếp). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Distributed Protection: Bảo vệ API khỏi DDoS khi chạy trên nhiều server (Scale Out) nhờ sử dụng Redis làm bộ đếm trung gian.
+ * - Cost Saving: Ngăn chặn bot scan API quá mức, giúp giảm chi phí server và băng thông.
+
  * =====================================================================
  */
 

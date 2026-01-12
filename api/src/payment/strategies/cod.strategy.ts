@@ -16,7 +16,10 @@ import { Injectable } from '@nestjs/common';
  * - Ta chỉ cần tạo một `transactionId` giả để ghi nhận ý định thanh toán và trả về `success: true`.
  *
  * 3. ASYNCHRONOUS:
- * - Mặc dù không xử lý gì phức tạp, hàm vẫn trả về `Promise` để tương thích với các chiến lược thanh toán online (như Stripe) cần gọi mạng.
+ * - Mặc dù không xử lý gì phức tạp, hàm vẫn trả về `Promise` để tương thích với các chiến lược thanh toán online (như Stripe) cần gọi mạng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import {

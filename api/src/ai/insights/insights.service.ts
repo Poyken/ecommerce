@@ -8,7 +8,10 @@
  *      dùng Redis (CACHE_MANAGER).
  *
  * 3. LƯU Ý KHI SỬ DỤNG:
- *    - Khi có thay đổi lớn (VD: Đơn hàng mới, Nhập hàng), có thể gọi refreshInsights().
+ *    - Khi có thay đổi lớn (VD: Đơn hàng mới, Nhập hàng), có thể gọi refreshInsights(). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

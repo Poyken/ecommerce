@@ -19,7 +19,10 @@ import { ProductsModule } from '@/catalog/products/products.module';
  * 2. AgentService phân tích lệnh bằng AI → Tạo ra TaskPlan
  * 3. Thực thi từng Task theo thứ tự
  * 4. Trả kết quả về cho Admin
- *
+ * *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =============================================================================
  */
 @Module({

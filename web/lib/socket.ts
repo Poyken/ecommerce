@@ -19,7 +19,12 @@ import { env } from "./env";
  * 3. AUTHENTICATION (Xác thực):
  * - SocketIO cũng cần bảo mật như API.
  * - Ta gửi JWT token qua `auth: { token }` khi connect.
- * - Server sẽ verify token này trong Middleware "Handshake".
+ * - Server sẽ verify token này trong Middleware "Handshake". *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Real-time Notifications: Nhận thông báo "Đơn hàng mới", "Hết hàng" ngay lập tức mà không cần refresh trang.
+ * - Live Chat Support: Hỗ trợ tính năng chat trực tuyến giữa Admin và Customer.
+ * - Sync Status: Cập nhật trạng thái online/offline của user trong thời gian thực.
+
  * =====================================================================
  */
 

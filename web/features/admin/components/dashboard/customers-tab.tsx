@@ -10,7 +10,10 @@
  * - "Reply to Reviews": Tip tăng trưởng quan trọng (Engagement).
  *
  * 2. WIDGETS TÍCH HỢP:
- * - `RecentChatsWidget`: Component chat support (CSKH) nhúng vào Dashboard.
+ * - `RecentChatsWidget`: Component chat support (CSKH) nhúng vào Dashboard. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 "use client";

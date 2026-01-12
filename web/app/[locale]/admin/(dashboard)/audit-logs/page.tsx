@@ -18,7 +18,10 @@ import { AuditLogsClient } from "./audit-logs-client";
  *
  * 3. PHÂN TRANG & TÌM KIẾM:
  * - Dữ liệu nhật ký có thể rất lớn, do đó bắt buộc phải sử dụng phân trang (Pagination) ở server.
- * - Chỉ lấy 10-20 bản ghi mỗi lần gọi API để tối ưu tốc độ.
+ * - Chỉ lấy 10-20 bản ghi mỗi lần gọi API để tối ưu tốc độ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

@@ -41,7 +41,10 @@ export interface CrudDelegate<T> {
  * - Giảm tải cho database và băng thông mạng (Network Payload).
  *
  * 3. STANDARDIZED PAGINATION:
- * - Tự động tính toán `skip`, `take` và trả về metadata (total, lastPage) theo một format nhất định cho mọi API.
+ * - Tự động tính toán `skip`, `take` và trả về metadata (total, lastPage) theo một format nhất định cho mọi API. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

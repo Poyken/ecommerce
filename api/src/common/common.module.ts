@@ -21,7 +21,10 @@ import { EncryptionService } from '@core/security/encryption.service';
  * - Tập trung các dịch vụ hạ tầng (Infrastructure) như Logging và Caching vào một nơi duy nhất để dễ quản lý và cấu hình.
  *
  * 3. REUSABILITY:
- * - Giúp code tuân thủ nguyên lý DRY (Don't Repeat Yourself), tránh việc khởi tạo lại các dịch vụ cơ bản ở nhiều nơi.
+ * - Giúp code tuân thủ nguyên lý DRY (Don't Repeat Yourself), tránh việc khởi tạo lại các dịch vụ cơ bản ở nhiều nơi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Global()

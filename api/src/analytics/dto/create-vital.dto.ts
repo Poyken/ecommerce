@@ -13,7 +13,10 @@
  * - INP (Interaction to Next Paint): Độ phản hồi.
  *
  * 2. DATA COLLECTION:
- * - DTO này định nghĩa cấu trúc dữ liệu mà Frontend gửi về để Server lưu trữ.
+ * - DTO này định nghĩa cấu trúc dữ liệu mà Frontend gửi về để Server lưu trữ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { ApiProperty } from '@nestjs/swagger';

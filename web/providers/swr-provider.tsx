@@ -18,7 +18,12 @@ import { SWRConfig } from "swr";
  *
  * 2. CUSTOM FETCHER:
  * - Sử dụng `http` utility được tối ưu (có gộp request song song) làm fetcher mặc định.
- * - Giúp code ở các hook ngắn gọn hơn: chỉ cần `useSWR('/api/data')`.
+ * - Giúp code ở các hook ngắn gọn hơn: chỉ cần `useSWR('/api/data')`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tối ưu trải nghiệm người dùng (User Experience): Giữ dữ liệu hiển thị tức thì (Stale-while-revalidate) giúp app cảm giác "nhanh như chớp".
+ * - Tiết kiệm băng thông & Server Load: Cơ chế Deduping ngăn chặn việc gọi 10 API giống nhau cùng lúc (ví dụ khi render 1 list component giống nhau).
+ * - Quản lý Cache phía Client: Tự động clear cache hoặc re-fetch khi có sự kiện window focus/network reconnect (tùy config).
+
  * =====================================================================
  */
 export function SWRProvider({ children }: { children: React.ReactNode }) {

@@ -80,7 +80,10 @@ interface ChatAdminClientProps {
  *
  * 3. RICH MESSAGES:
  * - Admin có thể gửi: Text, Image, Product Card, Order Quickview.
- * - Metadata của tin nhắn chứa thông tin chi tiết (JSON stringified).
+ * - Metadata của tin nhắn chứa thông tin chi tiết (JSON stringified). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

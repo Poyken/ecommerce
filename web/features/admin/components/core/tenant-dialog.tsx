@@ -66,7 +66,10 @@ interface TenantDialogProps {
  *
  * 3. TẠO ADMIN (AUTO-PROVISIONING):
  *    - Khi tạo Tenant mới, ta đồng thời tạo luôn 1 tài khoản Admin cho Tenant đó.
- *    - Backend sẽ sử dụng Transaction để đảm bảo cả 2 việc này thành công hoặc cùng thất bại (Atomic).
+ *    - Backend sẽ sử dụng Transaction để đảm bảo cả 2 việc này thành công hoặc cùng thất bại (Atomic). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 

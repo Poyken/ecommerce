@@ -48,7 +48,10 @@ import { useEffect, useMemo, useState, useTransition } from "react";
  * - Giúp giảm tải cho Server và phản hồi tức thì cho User (Better UX).
  *
  * 4. DYNAMIC SELECTS:
- * - Categories và Products được fetch ngay khi mở Dialog (`useEffect`) để đảm bảo dữ liệu mới nhất.
+ * - Categories và Products được fetch ngay khi mở Dialog (`useEffect`) để đảm bảo dữ liệu mới nhất. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 interface BlogFormDialogProps {

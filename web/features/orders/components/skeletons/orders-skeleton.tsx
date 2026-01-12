@@ -14,7 +14,10 @@ import { Skeleton } from "@/components/ui/skeleton";
  * - Mỗi đơn hàng giả lập bao gồm: Mã đơn hàng, Trạng thái (badge), Ngày đặt, Tổng tiền và các nút hành động.
  *
  * 3. CONSISTENT STYLING:
- * - Sử dụng cùng một hệ thống đổ bóng và bo góc như component `OrderCard` thật.
+ * - Sử dụng cùng một hệ thống đổ bóng và bo góc như component `OrderCard` thật. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

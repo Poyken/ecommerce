@@ -15,7 +15,10 @@ import { SetMetadata } from '@nestjs/common';
  * - Thông tin này sau đó sẽ được `PermissionsGuard` đọc ra để quyết định xem người dùng có được phép thực hiện hành động đó hay không.
  *
  * 3. USAGE:
- * - Ví dụ: `@Permissions('product:create')` gắn vào một API sẽ báo hiệu rằng chỉ ai có quyền tạo sản phẩm mới được vào.
+ * - Ví dụ: `@Permissions('product:create')` gắn vào một API sẽ báo hiệu rằng chỉ ai có quyền tạo sản phẩm mới được vào. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

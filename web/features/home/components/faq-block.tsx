@@ -46,7 +46,10 @@ interface FAQBlockProps {
  *
  * 2. ANIMATION VARIANTS:
  *    - Sử dụng `fadeInUp` từ `lib/animations` để tạo hiệu ứng trồi lên thống nhất.
- *    - `staggerChildren`: Giúp các item bên trong xuất hiện lần lượt (nếu có config).
+ *    - `staggerChildren`: Giúp các item bên trong xuất hiện lần lượt (nếu có config). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function FAQBlock({ title, subtitle, items, styles }: FAQBlockProps) {

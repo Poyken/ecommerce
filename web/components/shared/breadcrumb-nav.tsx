@@ -27,7 +27,10 @@ import { useTranslations } from "next-intl";
  *
  * 3. CONDITIONAL RENDERING:
  * - Nếu item có `href`: Render `BreadcrumbLink` (có thể click).
- * - Nếu không có `href`: Render `BreadcrumbPage` (trang hiện tại, không click được).
+ * - Nếu không có `href`: Render `BreadcrumbPage` (trang hiện tại, không click được). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

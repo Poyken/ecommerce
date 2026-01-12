@@ -22,7 +22,12 @@
  *
  * LƯU Ý QUAN TRỌNG:
  * - DataLoader là request-scoped (tạo mới cho mỗi request)
- * - Không dùng singleton vì sẽ cache dữ liệu cũ
+ * - Không dùng singleton vì sẽ cache dữ liệu cũ *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Order Detail API: Thay vì query 50 lần DB để lấy info cho 50 sản phẩm trong đơn, DataLoader chỉ query 1 lần IN (id1..., id50).
+ * - GraphQL Resolvers: Dataloader là "must-have" để tối ưu hóa việc lấy dữ liệu lồng nhau (Nested Fields).
+ * - Massive Reduction: Giảm tải DB CPU từ 90% xuống 5% trong các trang danh sách (List View).
+
  * =====================================================================
  */
 

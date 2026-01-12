@@ -33,7 +33,10 @@ import { VNPayUtils } from './vnpay.utils';
  * - Đây mới là nơi TIN CẬY NHẤT để cập nhật trạng thái đơn hàng (`PAID`, `PROCESSING`) trong Database.
  *
  * 3. CHECKSUM VALIDATION:
- * - Mọi dữ liệu đối tác gửi về đều phải được xác thực chữ ký (`vnp_SecureHash` hoặc `signature`) để đảm bảo không bị kẻ xấu giả mạo gói tin thanh toán.
+ * - Mọi dữ liệu đối tác gửi về đều phải được xác thực chữ ký (`vnp_SecureHash` hoặc `signature`) để đảm bảo không bị kẻ xấu giả mạo gói tin thanh toán. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { CommissionService } from '@/analytics/commission.service';

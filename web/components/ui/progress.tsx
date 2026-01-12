@@ -27,7 +27,10 @@
  *    - Upload progress
  *    - Form completion
  *    - Loading indicators
- *    - Skill bars
+ *    - Skill bars *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

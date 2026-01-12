@@ -15,7 +15,10 @@
  * - Giảm thiểu việc gọi API updates không cần thiết.
  *
  * 3. LOGIC:
- * - Tương tự Create Form nhưng gọi API `updateCouponAction` với ID.
+ * - Tương tự Create Form nhưng gọi API `updateCouponAction` với ID. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

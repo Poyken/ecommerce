@@ -18,7 +18,12 @@
  * - cache:invalidate:product => Invalidate product cache
  * - cache:invalidate:category => Invalidate category cache
  * - cache:invalidate:order => Invalidate order cache
- * - cache:invalidate:all => Clear all cache (emergency)
+ * - cache:invalidate:all => Clear all cache (emergency) *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Horizontal Scaling Support: Cho phép chạy nhiều server cùng lúc (Load Balancing) mà không lo user A thấy giá cũ, user B thấy giá mới.
+ * - Real-time Cache Clearing: Admin bấm "Cập nhật giá" -> Ngay lập tức cache biến mất trên tất cả server để hiển thị giá mới.
+ * - Event Driven Architecture: Làm nền tảng để xây dựng các tính năng đồng bộ khác trong tương lai.
+
  * =====================================================================
  */
 

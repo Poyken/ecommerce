@@ -13,7 +13,10 @@
  * - Sử dụng `AnimatePresence` và `m.div` để tạo hiệu ứng trượt khi chuyển đổi giữa các tab.
  *
  * 3. COMPONENT COMPOSITION:
- * - Mỗi tab là một component riêng biệt (ví dụ: `ProfileAccountTab`, `ProfileOrdersTab`) giúp code dễ bảo trì và mở rộng.
+ * - Mỗi tab là một component riêng biệt (ví dụ: `ProfileAccountTab`, `ProfileOrdersTab`) giúp code dễ bảo trì và mở rộng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

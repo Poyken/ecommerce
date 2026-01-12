@@ -9,7 +9,10 @@
  * - Dùng khi người dùng chỉ được phép chọn duy nhất một lựa chọn trong danh sách (VD: Phương thức thanh toán, Đơn vị vận chuyển).
  *
  * 2. ACCESSIBILITY:
- * - Tự động quản lý focus và phím mũi tên để di chuyển giữa các lựa chọn trong nhóm.
+ * - Tự động quản lý focus và phím mũi tên để di chuyển giữa các lựa chọn trong nhóm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

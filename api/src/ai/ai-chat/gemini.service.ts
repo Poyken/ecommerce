@@ -42,7 +42,10 @@ import { ConfigService } from '@nestjs/config';
  *    - `temperature` (0.0 - 2.0): Độ "phiêu" của AI. Thấp (0.2) thì trả lời chính xác, máy móc. Cao (0.9) thì sáng tạo, văn hoa.
  *    - `topP` (0.0 - 1.0): Độ đa dạng từ vựng.
  *    - `maxOutputTokens`: Giới hạn độ dài câu trả lời để tránh spam hoặc tốn tiền.
- *
+ * *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =================================================================================================
  */
 

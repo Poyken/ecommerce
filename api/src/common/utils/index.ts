@@ -14,7 +14,10 @@
 // =================================================================================================
 /**
  * =====================================================================
- * UTILS BARREL FILE - Export all utility functions
+ * UTILS BARREL FILE - Export all utility functions *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Cung cấp các hàm tiện ích dùng chung, giúp code gọn gàng và tái sử dụng hiệu quả.
+
  * =====================================================================
  */
 

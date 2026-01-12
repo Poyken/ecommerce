@@ -14,7 +14,10 @@
  *
  * 3. SESSION PINNING:
  * - Kiểm tra cơ chế chống trộm Token. Token bị đánh cắp nhưng dùng trên
- *   User-Agent (Trình duyệt) khác thì phải bị chặn ngay (Status 401).
+ *   User-Agent (Trình duyệt) khác thì phải bị chặn ngay (Status 401). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import axios from 'axios';

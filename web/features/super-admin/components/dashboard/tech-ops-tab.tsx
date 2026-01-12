@@ -14,7 +14,10 @@
  * - Nếu `waiting` tăng cao đột biến -> Hệ thống đang bị tắc nghẽn (Bottleneck).
  *
  * 3. ERROR LOGS:
- * - Feed lỗi thời gian thực (giả lập) để phát hiện sự cố nhanh.
+ * - Feed lỗi thời gian thực (giả lập) để phát hiện sự cố nhanh. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

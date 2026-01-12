@@ -17,7 +17,10 @@ import { EmailService } from './email.service';
  * - Giúp decouple logic gửi mail ra khỏi business logic chính.
  *
  * 2. EXPORTS:
- * - Các module khác (Auth, Order) chỉ cần import `EmailModule` và gọi `emailService.send(...)`.
+ * - Các module khác (Auth, Order) chỉ cần import `EmailModule` và gọi `emailService.send(...)`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class EmailModule {}

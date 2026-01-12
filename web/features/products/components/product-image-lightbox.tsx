@@ -53,7 +53,10 @@ export function ProductImageLightbox({
    *
    * 2. SYNC LOGIC:
    * - Khi slide carousel thay đổi -> Cập nhật `activeImage` state ở component cha.
-   * - Khi user chọn thumbnail -> Scroll carousel tới slide tương ứng.
+   * - Khi user chọn thumbnail -> Scroll carousel tới slide tương ứng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
    * =====================================================================
    */
   // ... (keeping existing comments and hooks)

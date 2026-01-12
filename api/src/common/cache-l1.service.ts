@@ -17,7 +17,10 @@ import { Injectable } from '@nestjs/common';
  * - L1 giúp giảm tải 100% network cho các check lặp lại trong thời gian ngắn.
  *
  * 3. SHORT TTL:
- * - Dữ liệu ở L1 chỉ nên sống rất ngắn (vd: 10-30s) để đảm bảo không bị "lệch" quá lâu so với L2.
+ * - Dữ liệu ở L1 chỉ nên sống rất ngắn (vd: 10-30s) để đảm bảo không bị "lệch" quá lâu so với L2. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

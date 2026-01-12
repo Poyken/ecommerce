@@ -16,7 +16,10 @@ import { RedisService } from '@core/redis/redis.service';
  * 3. Index FAQ - Câu hỏi thường gặp
  *
  * Mỗi tenant có knowledge riêng biệt (Multi-tenancy)
- *
+ * *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =============================================================================
  */
 

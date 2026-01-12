@@ -18,7 +18,10 @@ import { CloudinaryService } from '@/integrations/cloudinary/cloudinary.service'
  *
  * Lưu ý: Tính năng xóa phông cần @imgly/background-removal-node
  * npm install @imgly/background-removal-node
- *
+ * *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =============================================================================
  */
 

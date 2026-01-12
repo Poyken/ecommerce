@@ -16,7 +16,11 @@
  *
  * 3. ƯU TIÊN BIẾN MÔI TRƯỜNG (.ENV):
  * - Các giá trị mặc định ở đây có thể bị ghi đè bởi biến môi trường.
- * - Điều này giúp DevOps tune hệ thống trên Production mà không cần build lại code.
+ * - Điều này giúp DevOps tune hệ thống trên Production mà không cần build lại code. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Single Source of Truth: Là "Cuốn từ điển" chứa toàn bộ thông số kỹ thuật (Timeout, Limits). Dev backend và DevOps chỉ cần nhìn vào đây là hiểu cấu hình hệ thống.
+ * - Environment Flexibility: Hỗ trợ chuyển đổi mượt mà giữa Dev (Local), Staging (Test) và Production (Live) mà không cần sửa code.
+
  * =====================================================================
  */
 

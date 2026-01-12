@@ -14,7 +14,10 @@
  *    - [Liệt kê các method chính]
  *
  * 3. LƯU Ý KHI SỬ DỤNG:
- *    - [Các lưu ý quan trọng]
+ *    - [Các lưu ý quan trọng] *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

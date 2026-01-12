@@ -16,7 +16,10 @@
  * 3. FUTURE IMPROVEMENTS:
  * - AI-powered recommendations (based on purchase history)
  * - Collaborative filtering (users who bought X also bought Y)
- * - Real-time personalization
+ * - Real-time personalization *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

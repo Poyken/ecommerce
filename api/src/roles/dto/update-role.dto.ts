@@ -13,7 +13,10 @@ import { CreateRoleDto } from './create-role.dto';
  * - Giúp code ngắn gọn và dễ bảo trì: Khi `CreateRoleDto` thay đổi, `UpdateRoleDto` sẽ tự động cập nhật theo.
  *
  * 2. OPTIONAL FIELDS:
- * - Tất cả các trường kế thừa đều trở thành tùy chọn, cho phép cập nhật từng phần (Patch) thông tin vai trò.
+ * - Tất cả các trường kế thừa đều trở thành tùy chọn, cho phép cập nhật từng phần (Patch) thông tin vai trò. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

@@ -26,7 +26,10 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
  * - Dữ liệu trả về từ hàm này sẽ được NestJS tự động gán vào `request.user`.
  *
  * 4. PAYLOAD MAPPING:
- * - Ta trích xuất `userId` và `permissions` từ payload để các Guard và Controller phía sau có thể sử dụng thông tin này mà không cần truy vấn lại Database.
+ * - Ta trích xuất `userId` và `permissions` từ payload để các Guard và Controller phía sau có thể sử dụng thông tin này mà không cần truy vấn lại Database. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

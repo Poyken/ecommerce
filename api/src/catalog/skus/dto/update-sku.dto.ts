@@ -12,7 +12,10 @@ import { CreateSkuDto } from './create-sku.dto';
  * - Sử dụng `PartialType` để cho phép cập nhật lẻ tẻ các trường (VD: Chỉ cập nhật giá, hoặc chỉ cập nhật số lượng tồn kho).
  *
  * 2. DATA CONSISTENCY:
- * - Kế thừa các quy tắc validation từ `CreateSkuDto` để đảm bảo dữ liệu cập nhật vẫn luôn hợp lệ (VD: Giá không được âm).
+ * - Kế thừa các quy tắc validation từ `CreateSkuDto` để đảm bảo dữ liệu cập nhật vẫn luôn hợp lệ (VD: Giá không được âm). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

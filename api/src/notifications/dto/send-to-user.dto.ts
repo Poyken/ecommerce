@@ -18,7 +18,10 @@ export class SendToUserDto {
    *
    * USE CASE:
    * - Gửi thông báo cho 1 USER CỤ THỂ (VD: "Đơn hàng của bạn đã được giao").
-   * - `userId`: Bắt buộc phải có ID người nhận.
+   * - `userId`: Bắt buộc phải có ID người nhận. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
    * =====================================================================
    */
   @IsString()

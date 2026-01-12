@@ -35,7 +35,10 @@ import { useEffect, useState } from "react";
  *
  * 3. HERO LOADING STATE:
  * - Hero section có loading state riêng - hiển thị shimmer cho đến khi ảnh load xong.
- * - Content chỉ fade in sau khi ảnh đã sẵn sàng.
+ * - Content chỉ fade in sau khi ảnh đã sẵn sàng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

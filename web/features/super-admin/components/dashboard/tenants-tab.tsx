@@ -11,7 +11,10 @@
  *
  * 2. IMPERSONATION ENTRY POINT:
  * - Nút "Log in as Owner" (khi được implement) sẽ gọi API `impersonate`
- *   để truy cập vào dashboard của tenant đó.
+ *   để truy cập vào dashboard của tenant đó. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

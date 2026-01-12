@@ -14,7 +14,10 @@ import { Skeleton } from "@/components/ui/skeleton";
  * - Hiển thị 4 khối skeleton cho phần Câu hỏi thường gặp ở bên dưới.
  *
  * 3. RESPONSIVE LAYOUT:
- * - Sử dụng grid tương tự như trang thật để đảm bảo skeleton hiển thị đúng trên cả mobile và desktop.
+ * - Sử dụng grid tương tự như trang thật để đảm bảo skeleton hiển thị đúng trên cả mobile và desktop. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

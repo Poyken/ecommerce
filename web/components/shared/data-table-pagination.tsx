@@ -11,7 +11,10 @@
  *
  * 2. DYNAMIC PAGE NUMBERS:
  * - Tự động tính toán và hiển thị các số trang xung quanh trang hiện tại.
- * - Hỗ trợ nút Previous/Next để điều hướng nhanh.
+ * - Hỗ trợ nút Previous/Next để điều hướng nhanh. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

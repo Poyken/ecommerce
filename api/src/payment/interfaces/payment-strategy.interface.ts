@@ -14,7 +14,10 @@
  * - `PaymentResult`: Định nghĩa cấu trúc kết quả trả về, giúp frontend xử lý đồng nhất (VD: hiển thị thông báo hoặc chuyển hướng URL).
  *
  * 3. ABSTRACTION:
- * - `PaymentStrategy`: Interface chính chứa hàm `processPayment`. Đây là cốt lõi của Strategy Pattern, cho phép ta gọi hàm thanh toán mà không cần biết cụ thể nó là loại nào.
+ * - `PaymentStrategy`: Interface chính chứa hàm `processPayment`. Đây là cốt lõi của Strategy Pattern, cho phép ta gọi hàm thanh toán mà không cần biết cụ thể nó là loại nào. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export interface CreatePaymentDto {

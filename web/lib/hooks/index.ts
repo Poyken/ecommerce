@@ -12,7 +12,11 @@
  *
  * 2. LỢI ÍCH:
  * - Code gọn gàng hơn (1 dòng import thay vì 10 dòng).
- * - Dễ dàng refactor (di chuyển file con mà không ảnh hưởng nơi import).
+ * - Dễ dàng refactor (di chuyển file con mà không ảnh hưởng nơi import). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Modular Logic: Tách biệt logic xử lý (vd: debounce, fetch data) ra khỏi UI, giúp component chỉ tập trung vào việc render.
+ * - Single Entry Point: Giúp Team dev dễ dàng nắm bắt toàn bộ các "siêu năng lực" (hooks) mà dự án đang hỗ trợ một cách nhanh nhất.
+
  * =====================================================================
  */
 export * from "./use-debounce";

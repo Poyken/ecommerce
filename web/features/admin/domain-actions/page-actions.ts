@@ -12,7 +12,10 @@
  * 2. CRUD:
  * - Tạo, Sửa (JSON Blocks), Xóa page.
  * - `revalidatePath` (thông qua `REVALIDATE`) cực quan trọng ở đây để khi Admin sửa xong,
- *   User ngoài trang chủ thấy content mới ngay lập tức (Next.js ISR/On-demand Revalidation).
+ *   User ngoài trang chủ thấy content mới ngay lập tức (Next.js ISR/On-demand Revalidation). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 "use server";

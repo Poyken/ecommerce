@@ -16,7 +16,12 @@
  * QUY ƯỚC ĐẶT TÊN:
  * - `CreateXxxDto`: Dữ liệu để tạo mới (thường bắt buộc nhiều field).
  * - `UpdateXxxDto`: Dữ liệu để cập nhật (thường optional `?` tất cả).
- * - `XxxResponse`: Cấu trúc dữ liệu trả về từ API (thường bọc trong `ApiResponse`).
+ * - `XxxResponse`: Cấu trúc dữ liệu trả về từ API (thường bọc trong `ApiResponse`). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Contract giữa FE & BE: Đảm bảo hai bên hiểu nhau chính xác về dữ liệu gửi/nhận, giảm thiểu bug do sai tên trường hay sai kiểu dữ liệu.
+ * - Auto-Completion & Intellisense: Giúp Developer code nhanh hơn trên VSCode nhờ gợi ý code thông minh.
+ * - Form Handling: Dùng làm Schema cho React Hook Form để validate form đăng ký, login, checkout...
+
  * =====================================================================
  */
 

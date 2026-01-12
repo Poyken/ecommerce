@@ -19,7 +19,13 @@ import Redis from 'ioredis';
  *
  * 3. PUB/SUB (Thông báo phân tán):
  * - Khi dữ liệu ở Server A thay đổi, nó sẽ `Publish` một tin nhắn.
- * - Server B (nếu đang chạy song song) sẽ `Subscribe` để biết đường xóa Cache cũ của mình đi.
+ * - Server B (nếu đang chạy song song) sẽ `Subscribe` để biết đường xóa Cache cũ của mình đi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tăng tốc độ phản hồi API (Low Latency): Giúp các API đọc dữ liệu tĩnh (như danh mục, cấu hình, sản phẩm hot) trả về < 10ms.
+ * - Bảo vệ Database (Database Protection): Giảm tải cho DB chính trong những đợt cao điểm nhờ cơ chế Cache-Aside.
+ * - Đồng bộ dữ liệu phân tán (Distributed Event Bus): Dùng Pub/Sub để xóa cache đồng loạt trên tất cả các instance server khi dữ liệu gốc thay đổi.
+ * - Resiliency (Khả năng phục hồi): Circuit Breaker giúp hệ thống vẫn hoạt động (chậm hơn chút) ngay cả khi Redis chết, thay vì sập toàn bộ.
+
  * =====================================================================
  */
 

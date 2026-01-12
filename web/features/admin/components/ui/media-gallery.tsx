@@ -41,7 +41,10 @@ interface MediaGalleryProps {
  * - UX tốt: User thấy ngay ảnh mình vừa chọn.
  *
  * 3. ACCESSIBILITY (ALT TEXT):
- * - Rất quan trọng cho SEO. Cho phép Admin nhập mô tả ảnh ngay lúc upload.
+ * - Rất quan trọng cho SEO. Cho phép Admin nhập mô tả ảnh ngay lúc upload. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

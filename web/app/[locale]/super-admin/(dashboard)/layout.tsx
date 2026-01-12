@@ -24,7 +24,10 @@ import { Suspense } from "react";
  *
  * 3. SPECIFIC STYLING:
  *    - `bg-slate-950`: Sử dụng tông màu tối (Dark mode đặc trưng) cho Super Admin để phân biệt
- *      với giao diện Admin thường.
+ *      với giao diện Admin thường. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default function SuperAdminDashboardLayout({

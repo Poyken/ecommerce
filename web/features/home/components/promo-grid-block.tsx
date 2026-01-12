@@ -40,7 +40,10 @@ interface PromoGridBlockProps {
  *    - `sizes` giúp trình duyệt tải kích thước ảnh phù hợp (Responsive Images).
  *
  * 3. HOVER TRANSLATIONS:
- *    - Hiệu ứng `scale-110` kết hợp `duration-700` tạo cảm giác chuyển động mượt mà.
+ *    - Hiệu ứng `scale-110` kết hợp `duration-700` tạo cảm giác chuyển động mượt mà. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function PromoGridBlock({ items, styles }: PromoGridBlockProps) {

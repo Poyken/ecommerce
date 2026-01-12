@@ -22,7 +22,10 @@ import { cn } from "@/lib/utils";
  * - Giúp tránh lỗi `z-index` và `overflow: hidden` của container cha.
  *
  * 3. ANIMATION:
- * - Sử dụng `tailwindcss-animate` với các class `animate-in`, `fade-in`, `zoom-in`.
+ * - Sử dụng `tailwindcss-animate` với các class `animate-in`, `fade-in`, `zoom-in`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

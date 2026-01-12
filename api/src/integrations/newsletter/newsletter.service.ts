@@ -21,7 +21,10 @@ import { getTenant } from '@core/tenant/tenant.context';
  * - Nếu server gửi mail bị lỗi, BullMQ có thể tự động thử lại (Retry) sau một khoảng thời gian.
  *
  * 3. LOGGING:
- * - Sử dụng `Logger` của NestJS để ghi lại các sự kiện quan trọng, giúp theo dõi hoạt động của hệ thống trong môi trường Production.
+ * - Sử dụng `Logger` của NestJS để ghi lại các sự kiện quan trọng, giúp theo dõi hoạt động của hệ thống trong môi trường Production. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

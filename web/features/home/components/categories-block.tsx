@@ -7,7 +7,10 @@
  *
  * Block này giúp khách hàng dễ dàng điều hướng đến các nhóm sản phẩm.
  * - CardStyle: Cho phép chọn giao diện Minimal, Luxury hoặc Default.
- * - Layout: Hỗ trợ Grid, Carousel hoặc Masonry.
+ * - Layout: Hỗ trợ Grid, Carousel hoặc Masonry. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

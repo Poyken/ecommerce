@@ -8,7 +8,10 @@
  * Đây là "nút bấm khẩn cấp" của hệ thống SaaS:
  * 1. EMERGENCY LOCKDOWN: Khóa toàn bộ nền tảng nếu phát hiện tấn công.
  * 2. IP WHITELIST: Chỉ cho phép các IP tin tưởng được truy cập Super Admin.
- * 3. THREAT DETECTION: Theo dõi số lần login sai toàn hệ thống.
+ * 3. THREAT DETECTION: Theo dõi số lần login sai toàn hệ thống. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

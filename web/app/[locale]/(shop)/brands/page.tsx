@@ -46,7 +46,10 @@ function getBrandImage(brandName: string, imageUrl?: string | null): string {
  *
  * 3. RESPONSIVE GRID:
  *    - Grid tự thay đổi số cột từ 2 (mobile) lên tới 5 (màn hình cực lớn).
- *    - Hiệu ứng `translate-y-1` và `shadow-xl` khi hover tạo trải nghiệm tương tác mượt mà.
+ *    - Hiệu ứng `translate-y-1` và `shadow-xl` khi hover tạo trải nghiệm tương tác mượt mà. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default async function BrandsPage() {

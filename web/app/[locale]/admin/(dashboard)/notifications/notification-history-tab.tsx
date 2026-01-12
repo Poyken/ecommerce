@@ -15,7 +15,10 @@
  * - Chỉ hiển thị với notification loại ORDER chưa xử lý.
  *
  * 3. BULK ACTIONS:
- * - Đánh dấu tất cả đã đọc.
+ * - Đánh dấu tất cả đã đọc. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

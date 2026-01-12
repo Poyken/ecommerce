@@ -28,7 +28,10 @@ import * as streamifier from 'streamifier';
  * - `generateSignature`: Dùng để cho phép Client tự upload thẳng lên Cloudinary mà không cần qua Backend (Tiết kiệm băng thông server).
  *
  * 3. FOLDERS:
- * - Ảnh được phân loại vào các folder: `ecommerce-skus`, `ecommerce-products`, `ecommerce-reviews` để dễ quản lý.
+ * - Ảnh được phân loại vào các folder: `ecommerce-skus`, `ecommerce-products`, `ecommerce-reviews` để dễ quản lý. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

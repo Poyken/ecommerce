@@ -11,7 +11,10 @@
  *
  * 2. SLUG EDITING:
  * - Khác với lúc tạo (Auto-slug), khi sửa ta cho phép sửa Slug thủ công.
- * - Lý do: Đôi khi User muốn tối ưu lại URL cho chuẩn SEO mà không muốn đổi tên hiển thị.
+ * - Lý do: Đôi khi User muốn tối ưu lại URL cho chuẩn SEO mà không muốn đổi tên hiển thị. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

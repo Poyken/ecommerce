@@ -19,7 +19,10 @@
  *
  * 3. USE TRANSITION:
  * - `useTransition`: Đánh dấu việc gọi Server Action là "non-blocking transition".
- * - Giúp React ưu tiên các update UI khác quan trọng hơn trong khi chờ action hoàn tất.
+ * - Giúp React ưu tiên các update UI khác quan trọng hơn trong khi chờ action hoàn tất. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 import { MotionButton } from "@/components/shared/motion-button";

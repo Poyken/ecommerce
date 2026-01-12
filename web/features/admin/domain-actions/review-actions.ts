@@ -12,7 +12,10 @@
  *
  * 2. MODERATION FLOW:
  * - `updateReviewStatusAction`: Duyệt (Approve) hoặc Ẩn (Hide) review.
- * - Chỉ review đã duyệt mới được hiện ngoài Storefront.
+ * - Chỉ review đã duyệt mới được hiện ngoài Storefront. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 "use server";

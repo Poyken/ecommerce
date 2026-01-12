@@ -7,7 +7,10 @@
  *
  * Đây là nơi quản lý tất cả các trang CMS được tạo bởi Page Builder.
  * 1. SERVER ACTION: Sử dụng getPagesAction() để fetch danh sách trang ngay trên server.
- * 2. CLIENT INTERACTION: Truyền dữ liệu vào PagesListClient để handle việc lọc/tìm kiếm.
+ * 2. CLIENT INTERACTION: Truyền dữ liệu vào PagesListClient để handle việc lọc/tìm kiếm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

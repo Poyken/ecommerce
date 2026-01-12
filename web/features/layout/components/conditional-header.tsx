@@ -22,7 +22,10 @@
  *    - initialUser: Thông tin user đã đăng nhập (hoặc undefined)
  *    - permissions: Danh sách quyền của user
  *    - initialCartCount: Số lượng item trong giỏ hàng
- *    - initialWishlistCount: Số lượng item trong wishlist
+ *    - initialWishlistCount: Số lượng item trong wishlist *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

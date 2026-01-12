@@ -97,7 +97,10 @@
  * │   └── delete-confirm-dialog.tsx  # Reusable confirm
  * └── ui/
  *     └── ...                         # Admin-specific UI
- *
+ * *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

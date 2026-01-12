@@ -42,7 +42,10 @@ import { getTenant } from '@core/tenant/tenant.context';
  * 2. KIẾN TRÚC SAAS (SOFTWARE AS A SERVICE):
  *    - Đây là nơi quản lý "Khách hàng" của hệ thống Platform.
  *    - Một "Tenant" tương ứng với một "Cửa hàng" độc lập.
- *    - Controller này không xử lý logic bán hàng, mà chỉ xử lý việc Cấp phép (Provisioning) cửa hàng mới.
+ *    - Controller này không xử lý logic bán hàng, mà chỉ xử lý việc Cấp phép (Provisioning) cửa hàng mới. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =================================================================================================
  */
 export class TenantsController {

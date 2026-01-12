@@ -14,7 +14,10 @@
  * - Điều này giúp người dùng hình dung được bố cục trang web sắp hiện ra, tạo cảm giác tốc độ tải nhanh hơn.
  *
  * 3. LAYOUT MATCHING:
- * - Skeleton nên có cấu trúc tương đồng với trang thật (Sidebar, Grid, Hero) để tránh hiện tượng nhảy bố cục (Layout Shift) khi dữ liệu thật xuất hiện.
+ * - Skeleton nên có cấu trúc tương đồng với trang thật (Sidebar, Grid, Hero) để tránh hiện tượng nhảy bố cục (Layout Shift) khi dữ liệu thật xuất hiện. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

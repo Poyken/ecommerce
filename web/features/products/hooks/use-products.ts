@@ -14,7 +14,10 @@
  *   SWR chỉ fetch 1 lần và share kết quả
  *
  * 3. CACHE KEY:
- * - Key được tạo từ params để cache riêng biệt cho từng filter
+ * - Key được tạo từ params để cache riêng biệt cho từng filter *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
+
  * =====================================================================
  */
 

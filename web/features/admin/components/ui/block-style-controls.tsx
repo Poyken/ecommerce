@@ -13,7 +13,10 @@
  * 2. CSS MAPPING:
  * - Các giá trị input (VD: "20px") sẽ được map trực tiếp vào `style` prop
  *   của React Element khi render.
- * - Hỗ trợ cả các thuộc tính nâng cao như `zIndex`, `boxShadow`, `animation`.
+ * - Hỗ trợ cả các thuộc tính nâng cao như `zIndex`, `boxShadow`, `animation`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 /**

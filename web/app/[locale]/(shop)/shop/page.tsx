@@ -22,7 +22,10 @@ import { productService } from "@/features/products/services/product.service";
  * - Tối ưu hóa hiệu năng bằng cách không bắt các request phải chờ đợi nhau.
  *
  * 3. PAGINATION:
- * - Dữ liệu phân trang được lấy từ `productsRes.meta` và truyền xuống Client để hiển thị thanh phân trang.
+ * - Dữ liệu phân trang được lấy từ `productsRes.meta` và truyền xuống Client để hiển thị thanh phân trang. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

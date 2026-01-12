@@ -16,7 +16,10 @@
  *
  * 2. SESSION VALIDATION:
  *    - Luôn kiểm tra `accessToken` từ Cookie.
- *    - Xử lý các case 401 (Unauthorized) để tự động force logout nếu phiên làm việc hết hạn.
+ *    - Xử lý các case 401 (Unauthorized) để tự động force logout nếu phiên làm việc hết hạn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

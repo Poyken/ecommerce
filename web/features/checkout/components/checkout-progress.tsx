@@ -21,7 +21,10 @@ import { Check, CreditCard, Package, ShoppingBag, Truck } from "lucide-react";
  * - Đường kẻ nối giữa các bước cũng đổi màu tương ứng.
  *
  * 3. ACCESSIBILITY:
- * - Sử dụng thẻ `<nav>` và `<ol>` để cấu trúc hóa danh sách các bước, tốt cho trình đọc màn hình.
+ * - Sử dụng thẻ `<nav>` và `<ol>` để cấu trúc hóa danh sách các bước, tốt cho trình đọc màn hình. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

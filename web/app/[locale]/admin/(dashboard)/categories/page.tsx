@@ -17,7 +17,10 @@ import { CategoriesPageClient } from "./categories-client";
  * - Tận dụng khả năng xử lý bất đồng bộ của Next.js 15 với `searchParams`.
  *
  * 3. COMPONENT COMPOSITION:
- * - Trang này đóng vai trò là "Data Fetcher", sau đó truyền dữ liệu vào `CategoriesPageClient` để xử lý UI và tương tác.
+ * - Trang này đóng vai trò là "Data Fetcher", sau đó truyền dữ liệu vào `CategoriesPageClient` để xử lý UI và tương tác. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

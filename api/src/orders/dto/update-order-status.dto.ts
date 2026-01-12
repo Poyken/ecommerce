@@ -16,7 +16,10 @@ import { IsBoolean, IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
  * - `@IsEnum(OrderStatus)`: Đảm bảo admin chỉ có thể chuyển đơn hàng sang các trạng thái hợp lệ đã được định nghĩa trước.
  *
  * 3. SWAGGER INTEGRATION:
- * - `enum: OrderStatus` trong `@ApiProperty` giúp Swagger hiển thị một danh sách chọn (Dropdown) các trạng thái trên giao diện tài liệu API.
+ * - `enum: OrderStatus` trong `@ApiProperty` giúp Swagger hiển thị một danh sách chọn (Dropdown) các trạng thái trên giao diện tài liệu API. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

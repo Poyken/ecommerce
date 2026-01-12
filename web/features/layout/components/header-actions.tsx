@@ -53,7 +53,10 @@ import { useState } from "react";
  *
  * 4. LOGOUT LOGIC:
  * - Khi logout, ta cần xóa `guest_cart` trong localStorage để tránh xung đột dữ liệu cũ.
- * - Dispatch event `cart_clear` để các component khác cập nhật UI ngay lập tức.
+ * - Dispatch event `cart_clear` để các component khác cập nhật UI ngay lập tức. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -53,7 +53,10 @@ import { formatVND, formatNumber } from "@/lib/utils";
  * 4. VÍ DỤ:
  *    User: "So sánh doanh thu 3 tháng gần nhất"
  *    AI Response: { type: "bar_chart", title: "Doanh thu Q4", data: {...} }
- *    -> SmartWidget render biểu đồ thanh đẹp mắt
+ *    -> SmartWidget render biểu đồ thanh đẹp mắt *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =============================================================================
  */
 

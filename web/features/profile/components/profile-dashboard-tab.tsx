@@ -14,7 +14,10 @@
  * - Giúp giảm thời gian chờ đợi và tăng hiệu năng.
  *
  * 3. PERSONALIZED WELCOME:
- * - Hiển thị lời chào cá nhân hóa kèm theo tóm tắt thông tin cơ bản của tài khoản.
+ * - Hiển thị lời chào cá nhân hóa kèm theo tóm tắt thông tin cơ bản của tài khoản. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

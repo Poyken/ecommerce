@@ -16,7 +16,10 @@
  *
  * 3. HÌNH ẢNH (`ImageUpload`):
  * - Component upload ảnh được tách riêng để tái sử dụng.
- * - Xử lý preview ảnh và upload file (multipart/form-data).
+ * - Xử lý preview ảnh và upload file (multipart/form-data). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

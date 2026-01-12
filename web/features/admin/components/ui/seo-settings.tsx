@@ -38,7 +38,10 @@ interface SeoSettingsProps {
  *
  * 3. META KEYWORDS:
  * - Các từ khóa liên quan đến sản phẩm, phân cách bởi dấu phẩy.
- * - Ít quan trọng hơn với Google hiện đại, nhưng vẫn hữu ích cho nội bộ.
+ * - Ít quan trọng hơn với Google hiện đại, nhưng vẫn hữu ích cho nội bộ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

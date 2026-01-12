@@ -20,7 +20,10 @@
  *
  * 4. PERFORMANCE OPTIMIZATIONS:
  * - useCallback cho tất cả functions để stabilize references
- * - Tránh re-render các components consumer
+ * - Tránh re-render các components consumer *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
+
  * =====================================================================
  */
 

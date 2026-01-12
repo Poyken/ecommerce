@@ -17,7 +17,10 @@ import { CouponsClient } from "./coupons-client";
  * - `getCouponsAction` được gọi để lấy dữ liệu. Đây là cách làm chuẩn trong Next.js 15 để fetch data bảo mật.
  *
  * 3. I18N (Internationalization):
- * - Sử dụng `getTranslations` (Server Side) để lấy các chuỗi từ khóa đa ngôn ngữ, giúp trang hỗ trợ cả tiếng Anh và tiếng Việt.
+ * - Sử dụng `getTranslations` (Server Side) để lấy các chuỗi từ khóa đa ngôn ngữ, giúp trang hỗ trợ cả tiếng Anh và tiếng Việt. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

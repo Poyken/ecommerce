@@ -18,7 +18,10 @@
  *
  * 3. LOADING STATE UX:
  * - Khi phí Ship đang tính (gọi API), ta dùng Skeleton (loading placeholder) thay vì hiện số 0.
- * - Tránh gây hiểu lầm là Miễn phí vận chuyển.
+ * - Tránh gây hiểu lầm là Miễn phí vận chuyển. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

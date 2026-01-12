@@ -33,7 +33,10 @@ import { getTenant } from '@core/tenant/tenant.context';
  * - Luôn kiểm tra trùng tên (`findFirst`) trước khi tạo Role hoặc Permission mới để đảm bảo tính duy nhất trong hệ thống (Unique Constraint).
  *
  * 4. XÓA LAN TRUYỀN (Cascade Delete):
- * - Khi xóa một Role hoặc Permission, các liên kết trong bảng `RolePermission` cũng cần được xử lý (thường là DB tự động xóa nhờ `ON DELETE CASCADE`).
+ * - Khi xóa một Role hoặc Permission, các liên kết trong bảng `RolePermission` cũng cần được xử lý (thường là DB tự động xóa nhờ `ON DELETE CASCADE`). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

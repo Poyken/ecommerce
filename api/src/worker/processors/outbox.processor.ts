@@ -25,7 +25,10 @@ import { Queue } from 'bullmq';
  * 3. TRIGGER & POLLING:
  * - Worker này (`handleOutboxEvents`) sẽ chạy định kỳ (mỗi giây) để quét các Event chưa xử lý.
  * - Nó lấy Event từ DB -> Đẩy vào BullMQ thật sự -> Đánh dấu là COMPLETED.
- * - Cơ chế này đảm bảo "At-least-once delivery" (Gửi ít nhất 1 lần).
+ * - Cơ chế này đảm bảo "At-least-once delivery" (Gửi ít nhất 1 lần). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

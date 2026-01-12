@@ -13,7 +13,10 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
  * - Cho phép cả khách vãng lai để lại email để nhận thông tin khuyến mãi.
  *
  * 2. HTTP STATUS CODES:
- * - `@HttpCode(HttpStatus.OK)`: Mặc định POST trả về 201 (Created), nhưng ở đây ta dùng 200 (OK) vì hành động này giống như một yêu cầu xử lý hơn là tạo mới một tài nguyên phức tạp.
+ * - `@HttpCode(HttpStatus.OK)`: Mặc định POST trả về 201 (Created), nhưng ở đây ta dùng 200 (OK) vì hành động này giống như một yêu cầu xử lý hơn là tạo mới một tài nguyên phức tạp. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { SubscribeDto } from './dto/subscribe.dto';

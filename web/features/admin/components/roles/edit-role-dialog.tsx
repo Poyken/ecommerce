@@ -18,7 +18,10 @@ import { useMemo, useState, useTransition } from "react";
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. SIMPLE UPDATE:
- * - Cho phép đổi tên vai trò. Tương tự Permission, việc đổi tên vai trò cần được thực hiện cẩn thận.
+ * - Cho phép đổi tên vai trò. Tương tự Permission, việc đổi tên vai trò cần được thực hiện cẩn thận. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

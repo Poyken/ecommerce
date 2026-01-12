@@ -25,7 +25,10 @@ import { maskSensitiveData } from '@/common/utils/masking';
  * - Các hành động xem dữ liệu (GET) thường được bỏ qua để tránh làm rác log.
  *
  * 3. RESOURCE EXTRACTION:
- * - Logic trong hàm `intercept` tự động bóc tách URL để biết User đang tương tác với tài nguyên nào (Sản phẩm, Đơn hàng, Người dùng...) và lưu lại kèm theo Body của request.
+ * - Logic trong hàm `intercept` tự động bóc tách URL để biết User đang tương tác với tài nguyên nào (Sản phẩm, Đơn hàng, Người dùng...) và lưu lại kèm theo Body của request. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

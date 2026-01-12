@@ -9,7 +9,10 @@
  *
  * - Server-side filtering via URL params (status, search)
  * - Pagination based on actual filtered results
- * - Consistent styling with other admin pages
+ * - Consistent styling with other admin pages *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

@@ -23,7 +23,10 @@ import { FeatureFlagsService } from './feature-flags.service';
  *
  * 3. OPTIONAL AUTH GUARD:
  * - Dùng `OptionalJwtAuthGuard` vì user có thể chưa login (Guest).
- * - Nếu Guest -> userId = undefined -> Vẫn trả về các cờ mặc định cho Guest.
+ * - Nếu Guest -> userId = undefined -> Vẫn trả về các cờ mặc định cho Guest. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @ApiTags('FeatureFlags')

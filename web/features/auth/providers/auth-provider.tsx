@@ -16,7 +16,10 @@
  *
  * 3. SECURITY NOTE:
  * - Việc check permission ở Client (`hasPermission`) chỉ là để ẩn hiện UI (UX).
- * - BẮT BUỘC phải check lại ở Backend/API để đảm bảo an toàn thực sự.
+ * - BẮT BUỘC phải check lại ở Backend/API để đảm bảo an toàn thực sự. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Quản lý state toàn cục (Global State) hoặc cung cấp dependency injection cho cây component.
+
  * =====================================================================
  */
 

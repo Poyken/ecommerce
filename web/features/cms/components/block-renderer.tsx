@@ -34,7 +34,10 @@
  *
  * 5. SUSPENSE + SKELETON:
  *    - Mỗi block có Skeleton riêng hiển thị khi đang load
- *    - UX mượt mà, không bị layout shift
+ *    - UX mượt mà, không bị layout shift *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

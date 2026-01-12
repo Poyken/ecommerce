@@ -78,7 +78,10 @@
  * - Database Schema: prisma/schema.prisma
  *
  * =====================================================================
- * © 2024-2026 E-Commerce Platform. All rights reserved.
+ * © 2024-2026 E-Commerce Platform. All rights reserved. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

@@ -15,7 +15,11 @@
  * 3. Kiểm tra trạng thái yêu thích của một sản phẩm.
  * 4. Merge Guest Wishlist vào DB sau khi user đăng nhập.
  *
- * ⚠️ LƯU Ý: Khi user đăng nhập, hệ thống sẽ tự động gọi `mergeGuestWishlistAction`.
+ * ⚠️ LƯU Ý: Khi user đăng nhập, hệ thống sẽ tự động gọi `mergeGuestWishlistAction`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Abandoned Cart Recovery (Wishlist variant): Lưu lại các sản phẩm khách hàng thích nhưng chưa mua, dùng làm dữ liệu để gửi email khuyến mãi cá nhân hóa.
+ * - Seamless Transition: Cho phép người dùng lưu sản phẩm khi đang là khách (Guest) và tự động đồng bộ vào tài khoản sau khi đăng nhập.
+
  * =====================================================================
  */
 

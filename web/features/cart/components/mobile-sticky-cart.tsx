@@ -23,7 +23,10 @@ import { useState } from "react";
  * - Trên các thiết bị di động hiện đại (như iPhone có tai thỏ/nút home ảo), ta cần chừa khoảng trống ở dưới cùng để không bị che mất nội dung.
  *
  * 3. SPRING ANIMATION:
- * - Sử dụng `type: "spring"` để thanh trượt lên một cách tự nhiên và có độ nảy nhẹ.
+ * - Sử dụng `type: "spring"` để thanh trượt lên một cách tự nhiên và có độ nảy nhẹ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -10,7 +10,10 @@
  *
  * Tại sao dùng "sendBeacon" hoặc "fetch" trực tiếp?
  * - Trong Next.js, chúng ta có thể dùng Server Action để làm proxy
- *   hoặc gọi trực tiếp API từ client. Ở đây dùng Action để dễ quản lý link API.
+ *   hoặc gọi trực tiếp API từ client. Ở đây dùng Action để dễ quản lý link API. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

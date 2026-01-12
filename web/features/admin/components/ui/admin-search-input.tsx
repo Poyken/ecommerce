@@ -16,7 +16,10 @@ import { Search } from "lucide-react";
  *
  * 2. UI/UX:
  * - Sử dụng icon `Search` từ `lucide-react` đặt tuyệt đối (`absolute`) bên trong input.
- * - `pl-10` tạo khoảng trống bên trái để icon không đè lên chữ.
+ * - `pl-10` tạo khoảng trống bên trái để icon không đè lên chữ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

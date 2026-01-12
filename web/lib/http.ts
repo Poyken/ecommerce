@@ -19,7 +19,12 @@ import { env } from "./env";
  *
  * 3. CENTRALIZED ERROR HANDLING:
  * - Tự động check `res.ok`. Nếu lỗi (4xx, 5xx), tự động parse JSON body để lấy message lỗi chi tiết.
- * - Xử lý đặc biệt cho lỗi 401 (Unauthorized) -> Redirect về login.
+ * - Xử lý đặc biệt cho lỗi 401 (Unauthorized) -> Redirect về login. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Server Components Fetching: Dùng trong các trang Server (`page.tsx`) để lấy dữ liệu mà vẫn giữ được Auth Context.
+ * - Static Site Generation (SSG) Optimization: Tự động phát hiện khi nào nên cache (public API) và khi nào cần dữ liệu tươi (private API) để build trang siêu tốc.
+ * - Security Headers: Tự động đính kèm CSRF Token và Forward IP để vượt qua các tường lửa bảo mật của Backend.
+
  * =====================================================================
  */
 

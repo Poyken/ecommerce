@@ -30,7 +30,10 @@ import { useEffect, useMemo, useState, useTransition } from "react";
  * - Tiết kiệm thời gian khi cần gán toàn bộ quyền của một module cho một vai trò.
  *
  * 3. UI LAYOUT:
- * - Sử dụng Grid Layout (`grid-cols-5`) để hiển thị nhiều nhóm quyền trên một màn hình rộng, tối ưu cho Admin Dashboard.
+ * - Sử dụng Grid Layout (`grid-cols-5`) để hiển thị nhiều nhóm quyền trên một màn hình rộng, tối ưu cho Admin Dashboard. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

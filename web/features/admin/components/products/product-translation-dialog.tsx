@@ -48,7 +48,10 @@ import {
  *
  * 2. DYNAMIC LOADING:
  * - Khi chọn một ngôn ngữ, hệ thống sẽ fetch bản dịch tương ứng từ database.
- * - Nếu chưa có bản dịch, sẽ hiển thị trống hoặc lấy dữ liệu mặc định.
+ * - Nếu chưa có bản dịch, sẽ hiển thị trống hoặc lấy dữ liệu mặc định. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

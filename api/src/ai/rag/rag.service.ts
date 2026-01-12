@@ -24,7 +24,10 @@ import { PrismaService } from '@core/prisma/prisma.service';
  *
  * 3. CÁC MODULE LIÊN QUAN:
  *    - KnowledgeService: Chịu trách nhiệm Vectorize và Search (dùng pgvector).
- *    - GeminiService: Chịu trách nhiệm giao tiếp với Google AI.
+ *    - GeminiService: Chịu trách nhiệm giao tiếp với Google AI. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =============================================================================
  */
 

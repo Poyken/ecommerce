@@ -14,7 +14,10 @@
  *
  * 3. PERFORMANCE:
  * - React.memo để prevent unnecessary re-renders
- * - useCallback để stabilize event handlers
+ * - useCallback để stabilize event handlers *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

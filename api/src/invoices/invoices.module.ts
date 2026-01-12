@@ -12,7 +12,10 @@
  *
  * 2. CẤU TRÚC:
  * - Export `InvoicesService` để các module khác (như `WebhookModule` của Stripe)
- *   có thể gọi hàm tạo hóa đơn khi thanh toán thành công.
+ *   có thể gọi hàm tạo hóa đơn khi thanh toán thành công. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { Module } from '@nestjs/common';

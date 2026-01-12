@@ -24,7 +24,10 @@ interface TextBlockSectionProps {
  *
  * 2. TYPOGRAPHY FOCUS:
  *    - Sử dụng `font-serif` (phông chữ có chân) cho tiêu đề để tạo cảm giác sang trọng, tạp chí.
- *    - Sử dụng lớp `prose` (Tailwind Typography) để tự động fomat các thẻ HTML bên trong nếu có.
+ *    - Sử dụng lớp `prose` (Tailwind Typography) để tự động fomat các thẻ HTML bên trong nếu có. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function TextBlockSection({

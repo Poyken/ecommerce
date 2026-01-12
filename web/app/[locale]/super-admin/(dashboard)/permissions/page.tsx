@@ -19,7 +19,10 @@ import { PermissionsPageClient } from "./permissions-client";
  * - Danh sách này thường không quá lớn nên có thể fetch toàn bộ mà không cần phân trang phức tạp.
  *
  * 3. BẢO MẬT:
- * - Chỉ những tài khoản có quyền `permission:read` mới có thể truy cập và xem danh sách này.
+ * - Chỉ những tài khoản có quyền `permission:read` mới có thể truy cập và xem danh sách này. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

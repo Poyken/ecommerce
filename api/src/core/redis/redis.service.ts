@@ -26,7 +26,12 @@ import Redis, { Cluster } from 'ioredis';
  * - Luôn dùng `SCAN` để duyệt key theo từng đợt nhỏ (Batching), đảm bảo không gây nghẽn hệ thống.
  *
  * 4. RETRY STRATEGY:
- * - Khi mất kết nối, hệ thống tự động thử lại (Retry) với độ trễ tăng dần để tránh làm quá tải server khi nó vừa sống dậy.
+ * - Khi mất kết nối, hệ thống tự động thử lại (Retry) với độ trễ tăng dần để tránh làm quá tải server khi nó vừa sống dậy. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Session Management: Lưu trạng thái đăng nhập của user (JWT blacklist) để logout tức thì trên mọi thiết bị.
+ * - API Rate Limiting: Đếm số lần request từ 1 IP để chặn các cuộc tấn công DDoS.
+ * - Leaderboard: Dùng Redis Sorted Set để xếp hạng game thủ/người mua nhiều nhất theo thời gian thực (Real-time).
+
  * =====================================================================
  */
 @Injectable()

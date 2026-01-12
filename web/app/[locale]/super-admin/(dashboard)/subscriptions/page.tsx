@@ -5,7 +5,10 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * Trang này giúp Super Admin kiểm soát dòng tiền và trạng thái gói của các Tenant.
+ * Trang này giúp Super Admin kiểm soát dòng tiền và trạng thái gói của các Tenant. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

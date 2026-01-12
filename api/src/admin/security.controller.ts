@@ -28,7 +28,10 @@
  *
  * 2. GUARDS BẢO VỆ:
  *    - JwtAuthGuard: Kiểm tra access token hợp lệ
- *    - PermissionsGuard + @Permissions(): Kiểm tra quyền superAdmin
+ *    - PermissionsGuard + @Permissions(): Kiểm tra quyền superAdmin *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

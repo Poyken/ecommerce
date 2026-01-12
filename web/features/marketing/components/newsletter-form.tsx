@@ -22,7 +22,10 @@ import { useState } from "react";
  * - Hiển thị `Loader2` (spinner) khi đang gửi request để báo hiệu cho người dùng.
  *
  * 3. SUCCESS STATE:
- * - Khi đăng ký thành công, ẩn form và hiển thị thông báo cảm ơn với hiệu ứng `animate-in`.
+ * - Khi đăng ký thành công, ẩn form và hiển thị thông báo cảm ơn với hiệu ứng `animate-in`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

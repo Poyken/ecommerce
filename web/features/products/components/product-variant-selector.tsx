@@ -21,7 +21,10 @@
  * 3. VISUAL FEEDBACK:
  * - Badge "Outline": Chưa chọn.
  * - Badge "Solid" (Primary): Đang chọn.
- * - Badge "Opacity-50 + Line-through": Hết hàng hoặc không tồn tại.
+ * - Badge "Opacity-50 + Line-through": Hết hàng hoặc không tồn tại. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

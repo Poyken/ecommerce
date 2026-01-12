@@ -51,7 +51,10 @@ interface ProductQuickViewDialogProps {
  *
  * 3. SMART IMAGE SORTING (`useMemo`):
  * - Logic phức tạp để sắp xếp ảnh: Ảnh của tùy chọn chính (VD: Màu sắc) lên đầu, tiếp theo là các ảnh chung.
- * - Giúp user thấy đúng ảnh màu áo mình đang chọn ngay lập tức.
+ * - Giúp user thấy đúng ảnh màu áo mình đang chọn ngay lập tức. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 export function ProductQuickViewDialog({

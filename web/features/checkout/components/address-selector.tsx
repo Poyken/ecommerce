@@ -16,7 +16,10 @@
  * - Cho phép thêm địa chỉ mới hoặc chỉnh sửa địa chỉ hiện có trực tiếp trong quy trình thanh toán.
  *
  * 4. PERFORMANCE:
- * - React.memo để prevent unnecessary re-renders
+ * - React.memo để prevent unnecessary re-renders *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

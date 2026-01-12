@@ -10,7 +10,12 @@
  * - File này tạo các composite decorators để giảm boilerplate.
  *
  * 2. API DOCUMENTATION:
- * - Tự động thêm Swagger decorators cho documentation.
+ * - Tự động thêm Swagger decorators cho documentation. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Documentation Standardization: Đảm bảo 100% API có docs trên Swagger mà không cần dev phải thuộc lòng từng mã lỗi (201, 400, 401, 403).
+ * - Code Consistency: Dev chỉ cần gõ `@ApiCreateResponse` là xong, thay vì copy-paste 10 dòng code decorator mỗi khi tạo API mới.
+ * - QA Testing: Tester nhìn vào Swagger biết ngay API này cần quyền gì, trả về cái gì để viết Test Case.
+ *
  * =====================================================================
  */
 
@@ -29,6 +34,8 @@ import {
   ApiResponse,
   ApiQuery,
   ApiBearerAuth,
+  ApiUnauthorizedResponse,
+  ApiForbiddenResponse,
 } from '@nestjs/swagger';
 
 // =============================================================================
@@ -94,6 +101,8 @@ export function ApiCreateResponse(
       status: 400,
       description: 'Dữ liệu không hợp lệ',
     }),
+    ApiUnauthorizedResponse({ description: 'Chưa đăng nhập' }),
+    ApiForbiddenResponse({ description: 'Không có quyền truy cập' }),
   );
 }
 
@@ -115,6 +124,8 @@ export function ApiUpdateResponse(
       status: 404,
       description: `${entityName} không tồn tại`,
     }),
+    ApiUnauthorizedResponse({ description: 'Chưa đăng nhập' }),
+    ApiForbiddenResponse({ description: 'Không có quyền truy cập' }),
   );
 }
 
@@ -136,6 +147,8 @@ export function ApiDeleteResponse(
       status: 404,
       description: `${entityName} không tồn tại`,
     }),
+    ApiUnauthorizedResponse({ description: 'Chưa đăng nhập' }),
+    ApiForbiddenResponse({ description: 'Không có quyền truy cập' }),
   );
 }
 

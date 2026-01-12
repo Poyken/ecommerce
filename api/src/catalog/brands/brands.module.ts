@@ -14,7 +14,10 @@ import { Module } from '@nestjs/common';
  * - Module này cung cấp các API CRUD cơ bản để Admin quản lý danh sách thương hiệu (Apple, Samsung, Nike, v.v.).
  *
  * 2. PRISMA INTEGRATION:
- * - Sử dụng `PrismaModule` để tương tác với bảng `Brand` trong Database.
+ * - Sử dụng `PrismaModule` để tương tác với bảng `Brand` trong Database. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { BrandsController } from './brands.controller';

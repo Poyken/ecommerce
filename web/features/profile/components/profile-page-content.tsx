@@ -21,7 +21,10 @@ import { m } from "@/lib/animations";
  * - Giúp code sạch hơn và dễ maintain hơn.
  *
  * 3. COMPONENT COMPOSITION:
- * - Wrap `ProfileForm` bên trong một container có `max-w-4xl` để đảm bảo form không bị quá rộng trên màn hình lớn.
+ * - Wrap `ProfileForm` bên trong một container có `max-w-4xl` để đảm bảo form không bị quá rộng trên màn hình lớn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

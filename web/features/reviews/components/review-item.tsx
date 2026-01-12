@@ -16,7 +16,10 @@
  *
  * 3. COMPONENT CO-LOCATION:
  * - Ta đặt cả `ReviewItem` và `ReviewItemSkeleton` trong cùng 1 file.
- * - Vì chúng có cấu trúc HTML tương tự nhau, khi sửa layout item thật, ta dễ nhớ sửa luôn skeleton.
+ * - Vì chúng có cấu trúc HTML tương tự nhau, khi sửa layout item thật, ta dễ nhớ sửa luôn skeleton. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

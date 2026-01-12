@@ -25,7 +25,10 @@ import { cn } from "@/lib/utils";
  *
  * 3. ACCESSIBILITY:
  * - Tự động quản lý focus (Focus Trap) khi mở ngăn kéo.
- * - Nhấn `ESC` hoặc click ra ngoài để đóng.
+ * - Nhấn `ESC` hoặc click ra ngoài để đóng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -20,7 +20,10 @@ import Redis from 'ioredis';
  *
  * 3. [Layer 3] NEXT.JS BUILD CACHE (.next folder):
  * - Cache file tĩnh và compiled code.
- * - Chỉ xóa khi ở môi trường Dev (`npm run dev`), không xóa ở Production.
+ * - Chỉ xóa khi ở môi trường Dev (`npm run dev`), không xóa ở Production. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

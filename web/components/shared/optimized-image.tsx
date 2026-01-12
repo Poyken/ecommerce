@@ -23,7 +23,10 @@ import { memo, useState } from "react";
  *
  * 3. SHIMMER EFFECT (Hiệu ứng lấp lánh):
  * - Trong khi chờ (`isLoading`), hiển thị vệt sáng chạy ngang (`animate-shimmer`).
- * - Tạo cảm giác "đang tải" (Perceived Performance) tốt hơn là xoay vòng tròn.
+ * - Tạo cảm giác "đang tải" (Perceived Performance) tốt hơn là xoay vòng tròn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -13,7 +13,10 @@
  *
  * 2. MEDIA UPLOAD:
  * - Endpoint `upload` cho phép upload ảnh/video đính kèm review.
- * - Sử dụng `FilesInterceptor` để xử lý multipart/form-data.
+ * - Sử dụng `FilesInterceptor` để xử lý multipart/form-data. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';

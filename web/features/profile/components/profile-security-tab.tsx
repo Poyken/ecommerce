@@ -12,7 +12,10 @@
  *
  * 2. ANIMATED TRANSITIONS:
  * - `AnimatePresence` + `mode="wait"`: Đảm bảo UI cũ biến mất hẳn rồi UI mới mới hiện ra.
- * - Tránh giật layout (Layout Shift).
+ * - Tránh giật layout (Layout Shift). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

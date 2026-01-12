@@ -13,7 +13,10 @@
  * - Tích hợp nút Copy nhanh mã giảm giá để người dùng có thể sử dụng ngay khi thanh toán.
  *
  * 3. DECORATIVE ELEMENTS:
- * - Sử dụng các lớp gradient và blur để tạo hiệu ứng thẻ voucher cao cấp và thu hút.
+ * - Sử dụng các lớp gradient và blur để tạo hiệu ứng thẻ voucher cao cấp và thu hút. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

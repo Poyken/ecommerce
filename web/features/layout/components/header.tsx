@@ -32,7 +32,10 @@ import { useTranslations } from "next-intl";
  *
  * 3. FALLBACK & SKELETON:
  * - `HeaderFallback`: Hiển thị khung xương khi component động đang load.
- * - Ngăn chặn Layout Shift (CLS) - hiện tượng giao diện bị giật cục khi load.
+ * - Ngăn chặn Layout Shift (CLS) - hiện tượng giao diện bị giật cục khi load. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

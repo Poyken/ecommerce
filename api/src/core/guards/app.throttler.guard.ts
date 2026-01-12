@@ -20,7 +20,12 @@ export class AppThrottlerGuard extends ThrottlerGuard {
    *
    * 3. WHY HIGH LIMIT?
    * - Next.js khi build (SSG - Static Site Generation) sẽ bắn hàng nghìn request cùng lúc để lấy dữ liệu build trang.
-   * - Nếu để limit thấp (vd: 20 req/phút), quá trình build sẽ bị lỗi 429 Too Many Requests.
+   * - Nếu để limit thấp (vd: 20 req/phút), quá trình build sẽ bị lỗi 429 Too Many Requests. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Hỗ trợ Next.js SSG: Cho phép build static pages nhanh chóng mà không bị chặn bởi rate limit.
+ * - Layered Protection: Hoạt động như lớp bảo vệ đầu tiên trước khi request đi sâu vào xử lý nghiệp vụ.
+ * - WebSocket Limit: Giới hạn riêng cho socket connection để tránh full connection pool.
+
    * =====================================================================
    */
 

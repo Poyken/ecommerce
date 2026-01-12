@@ -29,7 +29,10 @@ import { ProductOptionsManager } from "./product-options-manager";
  *
  * 2. DYNAMIC FORM (Form động):
  * - Sản phẩm có thể có N tùy chọn (Màu, Size, Chất liệu...).
- * - Ta sử dụng `ProductOptionsManager` để quản lý việc thêm/xóa các tùy chọn này.
+ * - Ta sử dụng `ProductOptionsManager` để quản lý việc thêm/xóa các tùy chọn này. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

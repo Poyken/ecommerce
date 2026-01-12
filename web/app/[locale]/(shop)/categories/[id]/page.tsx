@@ -57,7 +57,10 @@ export async function generateMetadata({
  *    - Fallback về ảnh SKU nếu ảnh sản phẩm chính bị thiếu.
  *
  * 3. DYNAMIC METADATA:
- *    - `generateMetadata` lấy tên danh mục từ sản phẩm đầu tiên của mảng để gán vào thẻ `<title>`.
+ *    - `generateMetadata` lấy tên danh mục từ sản phẩm đầu tiên của mảng để gán vào thẻ `<title>`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default async function CategoryProductsPage({

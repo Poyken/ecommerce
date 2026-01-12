@@ -17,7 +17,10 @@ import { GeminiService } from './gemini.service';
  * - AiChatService: Business logic (RAG, session, history)
  * - AiChatController: REST API endpoints
  *
- * Để sử dụng, import module này vào AppModule.
+ * Để sử dụng, import module này vào AppModule. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

@@ -22,7 +22,10 @@ import { useEffect } from "react";
  * - Thường dùng khi lỗi xảy ra do mất kết nối mạng tạm thời hoặc lỗi ngẫu nhiên.
  *
  * 3. LOGGING:
- * - `useEffect` được dùng để log lỗi ra console (hoặc gửi lên các dịch vụ như Sentry) để lập trình viên theo dõi.
+ * - `useEffect` được dùng để log lỗi ra console (hoặc gửi lên các dịch vụ như Sentry) để lập trình viên theo dõi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

@@ -15,7 +15,10 @@ import { Module } from '@nestjs/common';
  * - `PaymentService` sẽ sử dụng các Strategy này để xử lý thanh toán dựa trên lựa chọn của người dùng.
  *
  * 3. EXPORTS:
- * - `PaymentService` được export để các module khác (như OrderModule) có thể sử dụng để thực hiện thanh toán.
+ * - `PaymentService` được export để các module khác (như OrderModule) có thể sử dụng để thực hiện thanh toán. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { PaymentService } from './payment.service';

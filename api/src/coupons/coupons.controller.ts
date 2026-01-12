@@ -38,7 +38,10 @@ import { UpdateCouponDto } from './dto/update-coupon.dto';
  *
  * 2. PUBLIC vs PRIVATE:
  * - `available`: Trả về danh sách mã giảm giá công khai mà ai cũng thấy. Được CACHE 5 phút để tối ưu hiệu năng.
- * - Các hàm CRUD khác: Chỉ Admin mới có quyền thực hiện.
+ * - Các hàm CRUD khác: Chỉ Admin mới có quyền thực hiện. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @ApiTags('Coupons')

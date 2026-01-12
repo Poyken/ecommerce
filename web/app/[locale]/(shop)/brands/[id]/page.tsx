@@ -58,7 +58,10 @@ export async function generateMetadata({
  *    - `t("productsFound", { count: ... })`: Sử dụng biến truyền vào i18n để hiển thị đúng số lượng.
  *
  * 3. FALLBACK UI:
- *    - Hiển thị màn hình "No Products Found" chuyên nghiệp khi một thương hiệu mới chưa có sản phẩm.
+ *    - Hiển thị màn hình "No Products Found" chuyên nghiệp khi một thương hiệu mới chưa có sản phẩm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default async function BrandProductsPage({

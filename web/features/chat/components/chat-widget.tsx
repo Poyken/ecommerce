@@ -57,7 +57,10 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
    *
    * 2. AUTO SCROLL:
    * - Khi có tin nhắn mới -> scroll xuống đáy.
-   * - `scrollIntoView({ behavior: "smooth" })` tạo hiệu ứng mượt mà.
+   * - `scrollIntoView({ behavior: "smooth" })` tạo hiệu ứng mượt mà. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
    * =====================================================================
    */
   const [isOpen, setIsOpen] = useState(false);

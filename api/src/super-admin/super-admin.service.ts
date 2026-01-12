@@ -14,7 +14,10 @@
  * - Tính năng cực mạnh cho CS/Support.
  * - Cho phép SuperAdmin đăng nhập tức thì vào tài khoản Owner của bất kỳ Tenant nào
  *   mà không cần mật khẩu.
- * - Cơ chế: Tạo ra một Token thật nhưng với Session Type đặc biệt.
+ * - Cơ chế: Tạo ra một Token thật nhưng với Session Type đặc biệt. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { Injectable, NotFoundException } from '@nestjs/common';

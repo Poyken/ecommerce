@@ -13,7 +13,10 @@
  * - Hiển thị nhanh ảnh đại diện (hoặc chữ cái đầu), tên và email của người dùng.
  *
  * 3. LOGOUT INTEGRATION:
- * - Tích hợp nút đăng xuất ở cuối menu, xử lý việc xóa session và chuyển hướng về trang login.
+ * - Tích hợp nút đăng xuất ở cuối menu, xử lý việc xóa session và chuyển hướng về trang login. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

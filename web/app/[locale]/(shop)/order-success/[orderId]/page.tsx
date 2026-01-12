@@ -22,7 +22,10 @@ import { notFound } from "next/navigation";
  *      (kết hợp plugin tailwind-animate) để tạo hiệu ứng xuất hiện mềm mại.
  *
  * 3. DYNAMIC UI ELEMENTS:
- *    - `#order.id.slice(-8).toUpperCase()`: Rút gọn ID cho thân thiện với người dùng.
+ *    - `#order.id.slice(-8).toUpperCase()`: Rút gọn ID cho thân thiện với người dùng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default async function OrderSuccessPage({

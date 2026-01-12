@@ -22,7 +22,10 @@ import { cn } from "@/lib/utils";
  * - `role="presentation"` & `aria-hidden="true"`: Ẩn các icon trang trí (như dấu mũi tên) khỏi trình đọc màn hình để tránh gây nhiễu.
  *
  * 3. RADIX SLOT:
- * - `BreadcrumbLink` sử dụng `Slot` để cho phép "truyền" thuộc tính sang component con (thường là `next/link`).
+ * - `BreadcrumbLink` sử dụng `Slot` để cho phép "truyền" thuộc tính sang component con (thường là `next/link`). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

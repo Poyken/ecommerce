@@ -11,7 +11,10 @@
  *
  * 2. Link component (từ @/i18n/routing):
  * - Khi chuyển ngôn ngữ, ta dùng chính `pathname` hiện tại nhưng truyền `locale` mới.
- * - Link sẽ tự động điều hướng sang /{new-locale}/{pathname}.
+ * - Link sẽ tự động điều hướng sang /{new-locale}/{pathname}. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

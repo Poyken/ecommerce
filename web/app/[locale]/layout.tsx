@@ -41,7 +41,10 @@ export function generateStaticParams() {
  * 3. SERVER-SIDE PRE-FETCHING:
  * - `RootProviders` là một Server Component (async).
  * - Nó lấy trước `accessToken` và `permissions` từ server -> Truyền xuống Client Provider.
- * - Kỹ thuật này giúp tránh hiện tượng "FOUC" (Flash of Unauthenticated Content).
+ * - Kỹ thuật này giúp tránh hiện tượng "FOUC" (Flash of Unauthenticated Content). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

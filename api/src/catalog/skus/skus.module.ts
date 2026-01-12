@@ -15,7 +15,10 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  * - Import `CloudinaryModule` vì mỗi SKU có thể có hình ảnh riêng (VD: iPhone màu đỏ có ảnh khác iPhone màu xanh).
  *
  * 3. ARCHITECTURE:
- * - Tách biệt SKU giúp hệ thống dễ dàng quản lý tồn kho (Stock) và giá (Price) cho từng biến thể một cách chính xác.
+ * - Tách biệt SKU giúp hệ thống dễ dàng quản lý tồn kho (Stock) và giá (Price) cho từng biến thể một cách chính xác. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { SkusController } from './skus.controller';

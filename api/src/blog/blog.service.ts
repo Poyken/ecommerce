@@ -20,7 +20,10 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
  * - Chỉ khi Admin phê duyệt và bấm Publish thì bài viết mới hiển thị ra ngoài web.
  *
  * 3. SEO-FRIENDLY SLUG:
- * - Hệ thống sử dụng `slug` thay vì `id` trên URL (VD: `/blog/huong-dan-chon-giay`) để tối ưu SEO.
+ * - Hệ thống sử dụng `slug` thay vì `id` trên URL (VD: `/blog/huong-dan-chon-giay`) để tối ưu SEO. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

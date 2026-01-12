@@ -12,7 +12,10 @@
  * 2. POLYMORPHISM (Đa hình) trong API Call:
  * - Hàm `createBrandAction`, `updateBrandAction`... nhận vào `CreateBrandDto` (JSON) HOẶC `FormData`.
  * - Lý do: Nếu có upload ảnh -> phải dùng `FormData` (multipart). Nếu chỉ text -> dùng JSON.
- * - Hàm tự động check `data instanceof FormData` để gửi request đúng định dạng.
+ * - Hàm tự động check `data instanceof FormData` để gửi request đúng định dạng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 "use server";

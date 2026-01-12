@@ -15,7 +15,10 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  * - `UsersService` được export để các module khác (như Auth hoặc Order) có thể sử dụng để tìm kiếm hoặc kiểm tra thông tin người dùng.
  *
  * 3. PRISMA INTEGRATION:
- * - Sử dụng `PrismaModule` để thực hiện các truy vấn CRUD trên bảng `User`.
+ * - Sử dụng `PrismaModule` để thực hiện các truy vấn CRUD trên bảng `User`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { UsersController } from './users.controller';

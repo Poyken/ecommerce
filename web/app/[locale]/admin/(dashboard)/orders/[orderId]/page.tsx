@@ -31,7 +31,10 @@ import { notFound } from "next/navigation";
  *
  * 3. ERROR HANDLING:
  * - Nếu đơn hàng không tồn tại, gọi `notFound()` để hiển thị 404 page.
- * - Nếu có lỗi khác, hiển thị thông báo lỗi rõ ràng.
+ * - Nếu có lỗi khác, hiển thị thông báo lỗi rõ ràng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

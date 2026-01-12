@@ -17,7 +17,10 @@ import { v2 as cloudinary } from 'cloudinary';
  * - Giúp bảo mật thông tin và dễ dàng thay đổi cấu hình giữa các môi trường (Dev, Staging, Prod).
  *
  * 3. DEPENDENCY INJECTION:
- * - `inject: [ConfigService]` báo cho NestJS biết rằng factory này cần `ConfigService` để hoạt động.
+ * - `inject: [ConfigService]` báo cho NestJS biết rằng factory này cần `ConfigService` để hoạt động. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Quản lý state toàn cục (Global State) hoặc cung cấp dependency injection cho cây component.
+
  * =====================================================================
  */
 

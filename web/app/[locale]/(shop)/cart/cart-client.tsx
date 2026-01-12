@@ -17,7 +17,10 @@
  *
  * 3. SELECTION SYSTEM:
  * - Cho phép user chọn từng món để thanh toán (`selectedItems`).
- * - Tự động tính toán lại tổng tiền dựa trên các món đã chọn.
+ * - Tự động tính toán lại tổng tiền dựa trên các món đã chọn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

@@ -15,7 +15,10 @@
  * - Hỗ trợ "Đánh dấu tất cả là đã đọc" để cải thiện trải nghiệm người dùng.
  *
  * 3. DYNAMIC STYLING:
- * - `getTypeIcon` và `getTypeStyles`: Tự động thay đổi icon và màu sắc dựa trên loại thông báo (Order, Promo, System...).
+ * - `getTypeIcon` và `getTypeStyles`: Tự động thay đổi icon và màu sắc dựa trên loại thông báo (Order, Promo, System...). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

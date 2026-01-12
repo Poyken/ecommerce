@@ -47,7 +47,10 @@ import { NotificationsService } from './notifications.service';
  * - POST /admin/broadcast : Gửi thông báo cho tất cả users
  * - POST /admin/send : Gửi thông báo cho user cụ thể
  * - GET /admin : Xem tất cả thông báo (với filters)
- * - GET /admin/:id : Xem chi tiết thông báo
+ * - GET /admin/:id : Xem chi tiết thông báo *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

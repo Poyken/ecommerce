@@ -14,7 +14,10 @@
  * - Tránh layout shift và cải thiện perceived performance.
  *
  * 3. SSR:
- * - Recharts hỗ trợ SSR, nhưng lazy load vẫn giúp giảm bundle.
+ * - Recharts hỗ trợ SSR, nhưng lazy load vẫn giúp giảm bundle. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

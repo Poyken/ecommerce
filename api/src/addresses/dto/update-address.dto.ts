@@ -13,7 +13,10 @@ import { CreateAddressDto } from './create-address.dto';
  * - `PartialType` sẽ biến tất cả các trường trong `CreateAddressDto` thành tùy chọn (`optional`).
  *
  * 2. FLEXIBILITY:
- * - Cho phép người dùng chỉ cập nhật một vài thông tin (VD: chỉ đổi số điện thoại) mà không cần gửi lại toàn bộ địa chỉ.
+ * - Cho phép người dùng chỉ cập nhật một vài thông tin (VD: chỉ đổi số điện thoại) mà không cần gửi lại toàn bộ địa chỉ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

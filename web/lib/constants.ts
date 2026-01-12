@@ -11,7 +11,11 @@
  *
  * 2. CONFIGURATION:
  * - Tập trung tất cả cấu hình tại một nơi -> Dễ thay đổi, dễ tìm kiếm.
- * - Khi cần sửa timeout từ 5s -> 10s, chỉ cần sửa một chỗ.
+ * - Khi cần sửa timeout từ 5s -> 10s, chỉ cần sửa một chỗ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Single Source of Truth: Thay đổi timeout hay URL API tại một nơi duy nhất cho toàn bộ ứng dụng, tránh lỗi "sửa chỗ này quên chỗ kia".
+ * - Environment Scalability: Giúp hệ thống dễ dàng thích nghi với các cấu hình khác nhau giữa Local, Staging và Production thông qua các hằng số.
+
  * =====================================================================
  */
 

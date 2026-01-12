@@ -22,7 +22,10 @@ import { useTranslations } from "next-intl";
  *
  * 1. COMPONENT REUSE:
  * - Tách các trường form ra thành component riêng để dùng chung cho cả Create và Edit dialog.
- * - Giảm code duplication và đảm bảo tính đồng nhất giữa các form.
+ * - Giảm code duplication và đảm bảo tính đồng nhất giữa các form. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

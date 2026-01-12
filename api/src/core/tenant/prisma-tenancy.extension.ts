@@ -30,7 +30,12 @@ import { getTenant } from './tenant.context';
  * 4. LƯU Ý QUAN TRỌNG (BẢO MẬT):
  *    - Các model như User, Page, Cart BẮT BUỘC phải được lọc theo tenantId (không để trong SHARED_MODELS).
  *    - Điều này đảm bảo User của Tenant A không bao giờ có thể thấy dữ liệu của Tenant B.
- *    - Nếu bạn đang viết API cho Super Admin (người quản lý toàn sàn), tenantId sẽ là null/undefined -> Extension sẽ bỏ qua bộ lọc này (đúng mong muốn).
+ *    - Nếu bạn đang viết API cho Super Admin (người quản lý toàn sàn), tenantId sẽ là null/undefined -> Extension sẽ bỏ qua bộ lọc này (đúng mong muốn). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Data Isolation: "Bức tường lửa" ngăn chặn việc lộ dữ liệu giữa các cửa hàng khác nhau (Tenant Leakage).
+ * - Developer Productivity: Dev không cần nhớ viết `where: { tenantId }` trong mỗi câu query, giảm thiểu bug do quên sót.
+ * - Compliance: Đáp ứng tiêu chuẩn bảo mật doanh nghiệp (Enterprise Grade Security).
+
  * =================================================================================================
  */
 

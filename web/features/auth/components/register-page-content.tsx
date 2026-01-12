@@ -36,7 +36,10 @@ import { useActionState, useEffect, useRef, useState } from "react";
  * - Sử dụng chung bộ `GlassCard` và `GlassButton` để đảm bảo tính thẩm mỹ đồng nhất với trang Login.
  *
  * 4. SYNC GUEST DATA:
- * - Sau khi đăng ký thành công, tự động sync Cart và Wishlist từ localStorage lên Server.
+ * - Sau khi đăng ký thành công, tự động sync Cart và Wishlist từ localStorage lên Server. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

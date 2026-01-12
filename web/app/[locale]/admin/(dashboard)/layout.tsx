@@ -20,7 +20,10 @@ import { getProfileAction } from "@/features/profile/actions";
  *
  * 3. THEME & STYLING:
  *    - `bg-muted/40`: Sử dụng màu nền xám nhẹ để làm nổi bật các Card chứa dữ liệu.
- *    - `font-sans`: Đảm bảo phông chữ đồng bộ cho toàn bộ khu vực Dashboard.
+ *    - `font-sans`: Đảm bảo phông chữ đồng bộ cho toàn bộ khu vực Dashboard. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default async function DashboardLayout({

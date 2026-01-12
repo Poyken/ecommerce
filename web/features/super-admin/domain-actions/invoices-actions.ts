@@ -15,7 +15,11 @@
  *
  * 3. REVALIDATE:
  * - Sau khi update trạng thái hóa đơn (VD: Paid -> Cancelled), cần clear cache
- *   để trang danh sách hiển thị đúng ngay lập tức.
+ *   để trang danh sách hiển thị đúng ngay lập tức. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Revenue Tracking: Giúp Super Admin theo dõi dòng tiền đổ về từ hàng nghìn shop trên hệ thống theo thời gian thực.
+ * - Automated Billing: Làm cơ sở để xuất hóa đơn VAT và gửi email thông báo nhắc nợ tự động cho các khách hàng quá hạn.
+ *
  * =====================================================================
  */
 "use server";

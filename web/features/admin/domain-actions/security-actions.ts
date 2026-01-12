@@ -12,7 +12,10 @@
  *
  * 2. IP WHITELIST:
  * - Danh sách IP được phép truy cập Dashboard (Admin/SuperAdmin) để tăng bảo mật.
- * - `getMyIpAction`: Tiện ích giúp Admin lấy IP hiện tại để add nhanh vào whitelist.
+ * - `getMyIpAction`: Tiện ích giúp Admin lấy IP hiện tại để add nhanh vào whitelist. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 "use server";

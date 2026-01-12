@@ -13,7 +13,10 @@
  * - Hỗ trợ tùy chỉnh số lượng item hiển thị thông qua prop `count`.
  *
  * 3. CATEGORY GRID MOCK:
- * - Giả lập các ô danh mục sản phẩm với tỷ lệ khung hình `aspect-[4/5]`.
+ * - Giả lập các ô danh mục sản phẩm với tỷ lệ khung hình `aspect-[4/5]`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

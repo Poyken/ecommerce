@@ -30,7 +30,12 @@ import { RedisService } from '@core/redis/redis.service';
  *
  * 3. PHẠM VI ÁP DỤNG:
  * - Chỉ áp dụng cho các phương thức thay đổi dữ liệu (POST, PATCH).
- * - GET và DELETE mặc định nên là Idempotent (theo spec của HTTP).
+ * - GET và DELETE mặc định nên là Idempotent (theo spec của HTTP). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - An toàn giao dịch (Transaction Safety): Ngăn chặn việc trừ tiền 2 lần khi thanh toán online.
+ * - Ổn định mạng (Network Instability): Xử lý các trường hợp mạng chập chờn khiến client gửi request nhiều lần mà không biết server đã xử lý chưa.
+ * - UX Reassurance: Người dùng không cần lo lắng khi ấn nút "Thanh toán" nhiều lần.
+
  * =====================================================================
  */
 

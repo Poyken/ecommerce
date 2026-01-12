@@ -11,7 +11,10 @@
  * - Giảm tải DB đáng kể vì API này được gọi ở mọi trang Product Filter.
  *
  * 2. MULTIPART UPLOAD:
- * - Hỗ trợ upload Logo thương hiệu qua `FileInterceptor`.
+ * - Hỗ trợ upload Logo thương hiệu qua `FileInterceptor`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import {

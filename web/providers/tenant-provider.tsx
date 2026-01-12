@@ -26,7 +26,11 @@
  *
  * 4. FALLBACK:
  *    - Nếu không có themeConfig -> Dùng theme mặc định
- *    - Nếu API lỗi -> Tiếp tục render bình thường
+ *    - Nếu API lỗi -> Tiếp tục render bình thường *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - White-labeling: Cho phép chạy hàng nghìn cửa hàng với giao diện tùy biến (màu sắc, font chữ) chỉ từ 1 codebase duy nhất.
+ * - Performance: Tối ưu LCP (Largest Contentful Paint) bằng cách inject CSS trực tiếp trên Server, tránh tình trạng giao diện bị "giật" màu (FOUC).
+
  * =====================================================================
  */
 

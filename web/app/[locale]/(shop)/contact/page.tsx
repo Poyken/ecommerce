@@ -12,7 +12,10 @@ import { getTranslations } from "next-intl/server";
  * 1. UI SEPARATION:
  * - `page.tsx` (Server Component): Chỉ đóng vai trò định nghĩa metadata và render component chính.
  * - `ContactPageContent` (Client Component): Chứa toàn bộ logic form, bản đồ, và tương tác người dùng.
- * - Việc tách biệt này giúp trang load nhanh hơn và dễ bảo trì hơn.
+ * - Việc tách biệt này giúp trang load nhanh hơn và dễ bảo trì hơn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

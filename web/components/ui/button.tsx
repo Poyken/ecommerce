@@ -22,7 +22,10 @@ import { cn } from "@/lib/utils";
  * - Khi `asChild=true`, Button nhường quyền render cho phần tử con trực tiếp của nó,
  *   nhưng vẫn ép styles của Button lên con đó.
  * - Ứng dụng: Biến thẻ `<a>` (Link) thành hình dạng Button.
- *   `<Button asChild><Link href="/">Home</Link></Button>`
+ *   `<Button asChild><Link href="/">Home</Link></Button>` *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -11,7 +11,10 @@
  *
  * 2. createNavigation:
  * - Tạo ra các bản sao của Link, useRouter, usePathname... nhưng có hiểu biết về locale.
- * - Khi dùng Link từ đây, bạn không cần truyền /vi/ vào href, nó sẽ tự động thêm dựa trên ngôn ngữ hiện tại.
+ * - Khi dùng Link từ đây, bạn không cần truyền /vi/ vào href, nó sẽ tự động thêm dựa trên ngôn ngữ hiện tại. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

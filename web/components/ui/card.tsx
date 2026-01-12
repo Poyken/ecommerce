@@ -15,7 +15,10 @@ import { cn } from "@/lib/utils";
  *
  * 2. STYLING (Tailwind):
  * - `bg-card text-card-foreground`: Sử dụng CSS Variables để hỗ trợ Dark Mode tự động.
- * - `shadow-sm`: Đổ bóng nhẹ tạo độ nổi.
+ * - `shadow-sm`: Đổ bóng nhẹ tạo độ nổi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

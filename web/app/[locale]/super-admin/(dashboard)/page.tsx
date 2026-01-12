@@ -54,7 +54,10 @@ import { TenantsTab } from "@/features/super-admin/components/dashboard/tenants-
  *    - Trong thực tế, các chỉ số này sẽ được lấy từ Prometheus hoặc AWS CloudWatch.
  *
  * 3. TENANT MANAGEMENT:
- *    - Cung cấp lối tắt "Launch New Tenant" để nhanh chóng provisioning một cửa hàng mới.
+ *    - Cung cấp lối tắt "Launch New Tenant" để nhanh chóng provisioning một cửa hàng mới. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default async function SuperAdminDashboardPage() {

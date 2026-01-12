@@ -28,7 +28,10 @@
  *    - Dark mode toggle
  *    - Feature flags (bật/tắt tính năng)
  *    - Email preferences (nhận/không nhận thông báo)
- *    - Settings forms
+ *    - Settings forms *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

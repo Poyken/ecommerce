@@ -8,7 +8,10 @@
  * 1. HIERARCHY DATA:
  * - Danh mục thường có cấu trúc cây (Cha - Con).
  * - Controller này cung cấp API CRUD cơ bản.
- * - API `findAll` có cache vì danh mục ít thay đổi.
+ * - API `findAll` có cache vì danh mục ít thay đổi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import {

@@ -96,7 +96,10 @@ const FlexibleIcon = ({
  *
  * 3. RESPONSIVE DESIGN:
  *    - Tự động ẩn menu chính trên Mobile và hiện nút `Menu` (Hamburger).
- *    - `isTransparent` sync với `styles.transparent` để thay đổi giao diện động.
+ *    - `isTransparent` sync với `styles.transparent` để thay đổi giao diện động. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function HeaderBlock({

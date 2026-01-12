@@ -20,7 +20,10 @@ import { SkuManagerService } from './sku-manager.service';
  * - Ta group các dòng này lại theo `productId` hoặc `slug` để chỉ thực hiện `upsert` sản phẩm 1 lần duy nhất, sau đó mới xử lý các SKU bên dưới.
  *
  * 3. UPSERT (Update or Insert):
- * - Dùng `upsert` giúp code ngắn gọn: Nếu sản phẩm đã tồn tại -> Cập nhật thông tin; Nếu chưa có -> Tạo mới.
+ * - Dùng `upsert` giúp code ngắn gọn: Nếu sản phẩm đã tồn tại -> Cập nhật thông tin; Nếu chưa có -> Tạo mới. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

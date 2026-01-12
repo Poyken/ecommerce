@@ -9,7 +9,10 @@
  *
  * - Filter theo role (Server-side via URL)
  * - Stats fetched from server
- * - Pagination optimized
+ * - Pagination optimized *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

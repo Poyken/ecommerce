@@ -24,7 +24,10 @@ import { useCallback, useEffect, useState } from "react";
  * - Dùng cặp `setTimeout` lồng nhau:
  *   + Timer 1: Show toast -> Chờ 5s -> Hide toast.
  *   + Timer 2: Sau khi hide -> Chờ random 15-25s -> Gọi lại hàm showNext.
- * - Tạo ra một vòng lặp vô tận nhưng có khoảng nghỉ ngẫu nhiên để trông tự nhiên.
+ * - Tạo ra một vòng lặp vô tận nhưng có khoảng nghỉ ngẫu nhiên để trông tự nhiên. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 interface PurchaseNotification {

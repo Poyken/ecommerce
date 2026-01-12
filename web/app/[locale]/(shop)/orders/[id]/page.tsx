@@ -30,7 +30,10 @@ import Image from "next/image";
  * - Hàm `generateMetadata` cho phép ta thay đổi tiêu đề trang dựa trên dữ liệu thực tế (VD: "Order #12345 | Luxe").
  *
  * 4. PRICE SNAPSHOT:
- * - `priceAtPurchase`: Đây là giá tại thời điểm mua. Ta KHÔNG dùng giá hiện tại của sản phẩm vì giá có thể thay đổi theo thời gian, nhưng hóa đơn thì phải giữ nguyên giá cũ.
+ * - `priceAtPurchase`: Đây là giá tại thời điểm mua. Ta KHÔNG dùng giá hiện tại của sản phẩm vì giá có thể thay đổi theo thời gian, nhưng hóa đơn thì phải giữ nguyên giá cũ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

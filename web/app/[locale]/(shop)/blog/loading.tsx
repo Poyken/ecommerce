@@ -10,7 +10,10 @@ import { LoadingScreen } from "@/components/shared/loading-screen";
  * Trang Blog fetch dữ liệu từ API, skeleton hiển thị trong lúc
  * chờ response từ backend.
  *
- * UPDATE: Sử dụng LoadingScreen để đồng bộ trải nghiệm loading với Admin/Auth.
+ * UPDATE: Sử dụng LoadingScreen để đồng bộ trải nghiệm loading với Admin/Auth. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

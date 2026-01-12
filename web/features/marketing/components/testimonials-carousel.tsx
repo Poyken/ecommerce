@@ -25,7 +25,10 @@ import { useCallback, useEffect } from "react";
  *
  * 3. VISUAL POLISH (Gradient Masks):
  * - Hai lớp overlay mờ dần ở 2 cạnh trái phải (`bg-linear-to-r`).
- * - Tạo cảm giác "Vô tận" (Infinity), che đi điểm cắt đột ngột của các card ở mép màn hình.
+ * - Tạo cảm giác "Vô tận" (Infinity), che đi điểm cắt đột ngột của các card ở mép màn hình. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

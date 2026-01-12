@@ -18,7 +18,10 @@ import * as nodemailer from 'nodemailer';
  * - Nội dung được viết dưới dạng HTML template đơn giản để đảm bảo hiển thị tốt trên mọi thiết bị (Outlook, Gmail).
  *
  * 3. ASYNC NOTIFICATION:
- * - Việc gửi email có độ trễ (latency). Thường ta nên gọi qua BullMQ Queue (như trong OrdersService) để tránh treo request của user.
+ * - Việc gửi email có độ trễ (latency). Thường ta nên gọi qua BullMQ Queue (như trong OrdersService) để tránh treo request của user. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

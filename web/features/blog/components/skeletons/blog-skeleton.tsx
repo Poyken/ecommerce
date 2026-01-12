@@ -9,7 +9,10 @@
  * - Hiển thị một khối lớn ở trên cùng để mô phỏng bài viết nổi bật (Featured Post).
  *
  * 2. BLOG GRID SKELETON:
- * - Sử dụng vòng lặp để tạo ra 6 thẻ bài viết giả lập, mỗi thẻ bao gồm ảnh bìa, tiêu đề và mô tả ngắn.
+ * - Sử dụng vòng lặp để tạo ra 6 thẻ bài viết giả lập, mỗi thẻ bao gồm ảnh bìa, tiêu đề và mô tả ngắn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

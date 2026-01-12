@@ -43,7 +43,10 @@ import { useEffect, useState } from "react";
  *
  * 3. RESPONSIVE (COLLAPSIBLE):
  *    - Sidebar có thể thu gọn (`isCollapsed`) để tiết kiệm diện tích trên màn hình nhỏ.
- *    - Khi thu gọn, chỉ hiện Icon, ẩn Text.
+ *    - Khi thu gọn, chỉ hiện Icon, ẩn Text. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function SuperAdminSidebar() {

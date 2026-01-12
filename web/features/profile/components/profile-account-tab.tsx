@@ -14,7 +14,10 @@
  * - Giúp tránh việc gọi API không cần thiết.
  *
  * 3. SERVER ACTIONS:
- * - Sử dụng `updateProfileAction` để cập nhật thông tin lên server một cách an toàn.
+ * - Sử dụng `updateProfileAction` để cập nhật thông tin lên server một cách an toàn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

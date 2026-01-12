@@ -61,7 +61,10 @@ import { useEffect, useState, useTransition } from "react";
  *
  * 2. PERMISSION CHECKING:
  * - `canCreate`, `canUpdate`... được check qua `useAuth().hasPermission`.
- * - Ẩn/Hiện nút bấm dựa trên quyền của Admin đang login.
+ * - Ẩn/Hiện nút bấm dựa trên quyền của Admin đang login. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 export function RolesPageClient({

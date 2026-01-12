@@ -16,7 +16,10 @@
  * 3. KIẾN TRÚC:
  * - Controller này nhận request HTTP -> Gọi xuống `FeatureFlagsService` để xử lý logic -> Trả về kết quả.
  * - Sử dụng các Decorators tùy chỉnh (`@RequirePermissions`, `@ApiListResponse`...) để chuẩn hóa code.
- *
+ * *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import {

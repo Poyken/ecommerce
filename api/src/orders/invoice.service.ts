@@ -14,7 +14,10 @@ import { PrismaService } from '@core/prisma/prisma.service';
  * - Trả về dữ liệu JSON để frontend render hoặc tạo PDF.
  *
  * 2. INVOICE NUMBER:
- * - Tự động sinh mã hóa đơn dạng INV-YYYYMMDD-XXXXX.
+ * - Tự động sinh mã hóa đơn dạng INV-YYYYMMDD-XXXXX. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

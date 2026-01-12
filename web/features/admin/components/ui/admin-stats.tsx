@@ -44,7 +44,10 @@ export interface AdminStatsProps {
  *
  * 2. DATA FLOW:
  *    - Component này nhận `stats` từ `page.tsx` (Server Component).
- *    - Nó chỉ có nhiệm vụ hiển thị (Presentational), không gọi API.
+ *    - Nó chỉ có nhiệm vụ hiển thị (Presentational), không gọi API. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function AdminStats({ stats }: AdminStatsProps) {

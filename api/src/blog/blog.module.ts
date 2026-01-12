@@ -23,7 +23,10 @@ import { BlogService } from './blog.service';
  *
  * 2. STRUCTURE:
  * - Chỉ tập trung vào việc CRUD bài viết.
- * - Phần Comment của bài viết có thể nằm ở đây hoặc tách ra module riêng (tùy độ phức tạp).
+ * - Phần Comment của bài viết có thể nằm ở đây hoặc tách ra module riêng (tùy độ phức tạp). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class BlogModule {}

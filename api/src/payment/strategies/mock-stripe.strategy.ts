@@ -15,7 +15,10 @@ import { Injectable, Logger } from '@nestjs/common';
  * - Sử dụng `Logger` của NestJS để ghi lại quá trình xử lý, giúp việc debug dễ dàng hơn mà không cần dùng `console.log`.
  *
  * 3. PROMISE WRAPPER:
- * - Việc bọc trong `new Promise` cho phép ta kiểm soát chính xác khi nào kết quả được trả về, mô phỏng đúng hành vi bất đồng bộ của các cổng thanh toán online.
+ * - Việc bọc trong `new Promise` cho phép ta kiểm soát chính xác khi nào kết quả được trả về, mô phỏng đúng hành vi bất đồng bộ của các cổng thanh toán online. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import {

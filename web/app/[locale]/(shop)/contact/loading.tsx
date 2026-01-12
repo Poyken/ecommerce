@@ -12,7 +12,10 @@ import { LoadingScreen } from "@/components/shared/loading-screen";
  * - Trong khi Server đang fetch dữ liệu Contact, Client sẽ hiển thị Skeleton này NGAY LẬP TỨC.
  * - Giúp giảm TTFB (Time to First Byte) và tăng trải nghiệm người dùng.
  *
- * UPDATE: Sử dụng LoadingScreen để đồng bộ trải nghiệm loading với Admin/Auth.
+ * UPDATE: Sử dụng LoadingScreen để đồng bộ trải nghiệm loading với Admin/Auth. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

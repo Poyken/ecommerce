@@ -14,7 +14,10 @@
  * - Controller này tuân thủ chuẩn REST cơ bản:
  *   + GET /: Lấy list
  *   + GET /:id: Lấy chi tiết
- *   + POST /: Tạo mới
+ *   + POST /: Tạo mới *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import {

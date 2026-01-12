@@ -17,7 +17,10 @@
  *
  * 3. TRẠNG THÁI LOADING (isPending):
  * - Sử dụng `useTransition` để theo dõi trạng thái chuyển trang/lọc dữ liệu.
- * - `isPending` được truyền vào `AdminTableWrapper` để hiển thị lớp phủ mờ (blur overlay) khi đang tải.
+ * - `isPending` được truyền vào `AdminTableWrapper` để hiển thị lớp phủ mờ (blur overlay) khi đang tải. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

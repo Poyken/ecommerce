@@ -21,7 +21,10 @@ import { useTransition } from "react";
  * - `window.dispatchEvent(new Event("cart_updated"))`: Thông báo cho các component khác (như Header) biết giỏ hàng đã thay đổi để cập nhật số lượng hiển thị.
  *
  * 3. TOAST FEEDBACK:
- * - Sử dụng `useToast` để hiển thị thông báo thành công/thất bại ngay lập tức, giúp người dùng biết thao tác đã được thực hiện.
+ * - Sử dụng `useToast` để hiển thị thông báo thành công/thất bại ngay lập tức, giúp người dùng biết thao tác đã được thực hiện. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

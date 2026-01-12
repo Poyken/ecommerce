@@ -14,7 +14,10 @@
  * - `create`: Tạo đơn hàng (Checkout).
  * - `updateStatus`: Admin cập nhật trạng thái (Duyệt, Giao, Hủy).
  * - `cancelMyOrder`: User tự hủy đơn (nếu đơn chưa được xử lý).
- * - `getInvoice`: Xuất dữ liệu hóa đơn.
+ * - `getInvoice`: Xuất dữ liệu hóa đơn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { PermissionsGuard } from '@/auth/permissions.guard';

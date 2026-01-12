@@ -16,7 +16,10 @@ import { HomeSkeleton } from "@/features/home/components/skeletons/home-skeleton
  * - Giúp người dùng hình dung được cấu trúc trang sắp hiện ra -> Cảm giác trang load nhanh hơn (Perceived performance).
  *
  * 3. LAYOUT MATCHING:
- * - Cấu trúc của `loading.tsx` nên khớp tối đa với `page.tsx` (Hero, Categories, Products).
+ * - Cấu trúc của `loading.tsx` nên khớp tối đa với `page.tsx` (Hero, Categories, Products). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

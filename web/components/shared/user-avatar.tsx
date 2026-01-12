@@ -25,7 +25,10 @@ interface UserAvatarProps {
  *
  * 2. MEMOIZATION:
  * - `memo` giúp tránh render lại không cần thiết khi parent re-render,
- *   vì Avatar thường nằm trong Header/List item tĩnh.
+ *   vì Avatar thường nằm trong Header/List item tĩnh. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 export const UserAvatar = memo(function UserAvatar({

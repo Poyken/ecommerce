@@ -14,7 +14,10 @@
  * - `fetch`: Chặn mọi request mạng.
  *    - Nếu có trong Cache -> Trả về ngay (Siêu nhanh ⚡).
  *    - Nếu không -> Gọi ra Internet.
- *    - Nếu mất mạng -> Trả về trang "Offline" custom.
+ *    - Nếu mất mạng -> Trả về trang "Offline" custom. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */ 
 // Service Worker for PWA offline support

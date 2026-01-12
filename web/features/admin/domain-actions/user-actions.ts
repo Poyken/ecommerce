@@ -12,7 +12,10 @@
  * 2. CHỨC NĂNG:
  * - CRUD Users: Lấy danh sách, tạo mới (nhân viên), cập nhật role, xóa/khóa user.
  * - Assign Roles: Gán quyền cho user quản trị.
- * - Tất cả đều wrap trong `wrapServerAction` để xử lý lỗi và format trả về chuẩn.
+ * - Tất cả đều wrap trong `wrapServerAction` để xử lý lỗi và format trả về chuẩn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 "use server";

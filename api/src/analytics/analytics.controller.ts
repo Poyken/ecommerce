@@ -11,7 +11,10 @@
  *
  * 2. WEB VITALS (`postVitals`):
  * - Endpoint nhận metrics hiệu năng (LCP, CLS, INP) từ trình duyệt người dùng
- *   gửi về để giám sát trải nghiệm người dùng thực tế (RUM - Real User Monitoring).
+ *   gửi về để giám sát trải nghiệm người dùng thực tế (RUM - Real User Monitoring). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import {

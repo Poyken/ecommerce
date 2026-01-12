@@ -19,7 +19,10 @@ export interface DistrictData {
  * 1. WHY MOCK DATA?
  * - Trong thực tế, dữ liệu Tỉnh/Thành cố định và ít thay đổi.
  * - Để giảm tải cho DB, ta có thể hard-code hoặc load từ JSON file tĩnh.
- * - File này chứa data mẫu (Hà Nội, HCM, Đà Nẵng) phục vụ tính năng Địa chỉ.
+ * - File này chứa data mẫu (Hà Nội, HCM, Đà Nẵng) phục vụ tính năng Địa chỉ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 export interface WardData {

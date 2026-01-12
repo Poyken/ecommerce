@@ -14,7 +14,10 @@ import { Skeleton } from "@/components/ui/skeleton";
  * - Mỗi thẻ sản phẩm giả lập bao gồm: Ảnh, Tên, Giá và nút "Add to Cart".
  *
  * 3. THEME CONSISTENCY:
- * - Sử dụng các khối gradient nền đặc trưng của trang Wishlist để tạo cảm giác liền mạch khi tải trang.
+ * - Sử dụng các khối gradient nền đặc trưng của trang Wishlist để tạo cảm giác liền mạch khi tải trang. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

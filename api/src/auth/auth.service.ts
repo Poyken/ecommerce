@@ -43,7 +43,10 @@ import { TwoFactorService } from './two-factor.service';
  *
  * 3. SECURITY:
  * - Mật khẩu LUÔN được hash bằng `bcrypt` trước khi lưu DB.
- * - Refresh Token cũng được quản lý chặt chẽ kèm Fingerprint thiết bị.
+ * - Refresh Token cũng được quản lý chặt chẽ kèm Fingerprint thiết bị. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

@@ -12,7 +12,10 @@
  *
  * 2. GHN API:
  * - Dữ liệu Tỉnh/Huyện/Xã thường được lấy từ API của đơn vị vận chuyển (Giao Hàng Nhanh)
- *   để đảm bảo đồng bộ ID khi tính phí ship.
+ *   để đảm bảo đồng bộ ID khi tính phí ship. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

@@ -46,7 +46,10 @@ import { useEffect, useState } from "react";
  *
  * 3. PERMISSION-BASED RENDERING:
  * - `hasPermission`: Chỉ hiển thị các menu mà tài khoản Admin hiện tại có quyền truy cập.
- * - Đây là tính năng bảo mật quan trọng (RBAC).
+ * - Đây là tính năng bảo mật quan trọng (RBAC). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -28,7 +28,12 @@ import { NextFunction, Request, Response } from 'express';
  * 4. BEST PRACTICES (2024):
  * - Dùng UUID v4 để đảm bảo uniqueness
  * - Luôn log correlation ID trong mọi log entry
- * - Truyền qua HTTP headers khi call service khác
+ * - Truyền qua HTTP headers khi call service khác *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Distributed Tracing: Theo dõi hành trình của một request đi qua nhiều Microservices hoặc layers (Gateway -> Auth -> Product -> Database).
+ * - Faster Debugging: Khi khách hàng báo lỗi, chỉ cần xin `correlationId` (thường hiện ở popup lỗi) là dev truy ra ngay log liên quan.
+ *.Support Desk: Giúp team CSKH có mã tham chiếu để báo lại cho team kỹ thuật.
+
  * =====================================================================
  */
 

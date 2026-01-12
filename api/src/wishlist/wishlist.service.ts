@@ -17,7 +17,10 @@ import { getTenant } from '@core/tenant/tenant.context';
  *
  * 2. COMPOSITE KEY:
  * - Trong DB, `userId` và `productId` tạo thành một Unique Constraint.
- * - Điều này ngăn chặn việc một User thêm trùng 1 sản phẩm vào Wishlist nhiều lần.
+ * - Điều này ngăn chặn việc một User thêm trùng 1 sản phẩm vào Wishlist nhiều lần. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

@@ -14,7 +14,10 @@ import { http } from "@/lib/http";
  * - Thay thế Provider cũ bằng Zustand để bất kỳ component nào cũng có thể check flag nhanh chóng (`isEnabled`).
  *
  * 3. ERROR RESILIENCE:
- * - Nếu fetch flag lỗi, store sẽ mặc định trả về mảng rỗng (tắt tính năng lạ) để App không bị crash.
+ * - Nếu fetch flag lỗi, store sẽ mặc định trả về mảng rỗng (tắt tính năng lạ) để App không bị crash. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Quản lý state toàn cục (Global State) hoặc cung cấp dependency injection cho cây component.
+
  * =====================================================================
  */
 

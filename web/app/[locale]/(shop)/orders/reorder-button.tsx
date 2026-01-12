@@ -24,7 +24,10 @@ import { useTransition } from "react";
  * - `isPending` giúp ta hiển thị trạng thái "Adding..." trên nút bấm, ngăn user click nhiều lần.
  *
  * 3. NAVIGATION AFTER ACTION:
- * - Sau khi thêm thành công, ta dùng `router.push("/cart")` để đưa người dùng đến trang giỏ hàng ngay lập tức.
+ * - Sau khi thêm thành công, ta dùng `router.push("/cart")` để đưa người dùng đến trang giỏ hàng ngay lập tức. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

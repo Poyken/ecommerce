@@ -16,7 +16,10 @@
  *
  * 3. HYDRATION:
  * - Component này chạy ở Client (`use client`) nhưng nhận dữ liệu ban đầu từ Server (`initialPages`).
- * - Kết hợp `useAdminTable` hook để xử lý search/filter client-side nhanh.
+ * - Kết hợp `useAdminTable` hook để xử lý search/filter client-side nhanh. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 "use client";

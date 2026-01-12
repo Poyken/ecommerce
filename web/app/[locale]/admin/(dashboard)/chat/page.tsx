@@ -20,7 +20,10 @@ import { cookies } from "next/headers";
  *      khởi tạo giao diện Chat.
  *
  * 3. UI CONSISTENCY:
- *    - Sử dụng `AdminPageHeader` để giữ vững phong cách thiết kế của khu vực Dashboard.
+ *    - Sử dụng `AdminPageHeader` để giữ vững phong cách thiết kế của khu vực Dashboard. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default async function AdminChatPage() {

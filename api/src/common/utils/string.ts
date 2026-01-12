@@ -13,7 +13,10 @@
  * - `createSlug`: Biến "Tiếng Việt có dấu" thành "tieng-viet-co-dau" (dùng cho URL sản phẩm).
  *
  * ⚠️ LƯU Ý:
- * - Ưu tiên dùng các thư viện đã được test kỹ (như `slugify`) thay vì tự regex nếu phức tạp.
+ * - Ưu tiên dùng các thư viện đã được test kỹ (như `slugify`) thay vì tự regex nếu phức tạp. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Cung cấp các hàm tiện ích dùng chung, giúp code gọn gàng và tái sử dụng hiệu quả.
+
  * =====================================================================
  */
 import slugify from 'slugify';

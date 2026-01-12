@@ -38,7 +38,10 @@ import { useEffect, useState } from "react";
  *
  * 4. FEATURED PRODUCTS:
  * - Hiển thị sản phẩm liên quan được gắn với bài blog.
- * - Giúp tăng conversion và trải nghiệm người dùng.
+ * - Giúp tăng conversion và trải nghiệm người dùng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

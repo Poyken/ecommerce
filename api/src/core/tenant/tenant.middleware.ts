@@ -30,7 +30,12 @@ import { tenantStorage } from './tenant.context';
  * 4. CONTEXT (ASYNC LOCAL STORAGE):
  *    - Sau khi tìm được Tenant, ta cần truyền nó cho các lớp bên trong (Service, Repo) dùng.
  *    - Thay vì truyền tham suố `function(tenantId)` qua hàng chục hàm, ta dùng `tenantStorage.run()`.
- *    - Nó giống như một "biến toàn cục" nhưng chỉ tồn tại trong vòng đời của 1 request duy nhất (Thread-safe).
+ *    - Nó giống như một "biến toàn cục" nhưng chỉ tồn tại trong vòng đời của 1 request duy nhất (Thread-safe). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - SaaS Multi-tenancy: Cho phép một source code phục vụ hàng nghìn cửa hàng (tenants) khác nhau, mỗi cửa hàng có dữ liệu riêng biệt.
+ * - Performance Optimization: Nhờ caching tầng Middleware, việc xác định cửa hàng tốn < 1ms, không làm chậm request chính.
+ * - Thread Safety: Đảm bảo request của User A (Store X) không bao giờ nhìn thấy dữ liệu của User B (Store Y) nhờ `AsyncLocalStorage`.
+
  * =================================================================================================
  */
 export class TenantMiddleware implements NestMiddleware {

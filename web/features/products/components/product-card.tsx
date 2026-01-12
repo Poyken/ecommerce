@@ -11,7 +11,10 @@
  * - Giúp dễ dàng reuse UI ở các chỗ khác (VD: trong Storybook hoặc Admin Preview).
  *
  * 2. COMPOSITION:
- * - Các nút bấm (QuickView, Wishlist) được truyền vào `ProductCardBase` qua prop `actions`.
+ * - Các nút bấm (QuickView, Wishlist) được truyền vào `ProductCardBase` qua prop `actions`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -13,7 +13,10 @@ import { MetadataRoute } from "next";
  * - Giúp Google luôn nhận được các bài viết mới nhất ngay khi crawl.
  *
  * 2. NEXT.JS METADATA ROUTE:
- * - File này sinh ra sitemap.xml tự động.
+ * - File này sinh ra sitemap.xml tự động. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

@@ -26,7 +26,10 @@ import { UpdateReviewDto } from './dto/update-review.dto';
  * - Dữ liệu này được lưu trực tiếp vào bảng `Product` để hiển thị nhanh ở trang danh sách mà không cần đếm lại từ đầu.
  *
  * 3. CACHE INVALIDATION:
- * - Sau khi cập nhật rating, ta phải xóa cache của sản phẩm đó (`/api/products/:id`) và các danh sách listing liên quan để khách hàng thấy thông tin mới nhất.
+ * - Sau khi cập nhật rating, ta phải xóa cache của sản phẩm đó (`/api/products/:id`) và các danh sách listing liên quan để khách hàng thấy thông tin mới nhất. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

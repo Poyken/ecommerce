@@ -14,7 +14,10 @@ import { NextRequest, NextResponse } from "next/server";
  * - Vì đây là public API, cần có `token` bí mật để tránh người lạ spam làm sập cache server.
  *
  * Cách sử dụng:
- * GET /api/revalidate?tag=products&token=MY_SECRET_TOKEN
+ * GET /api/revalidate?tag=products&token=MY_SECRET_TOKEN *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  */
 export async function GET(request: NextRequest) {
   // 1. Lấy tham số 'tag' và 'token' từ URL Query String

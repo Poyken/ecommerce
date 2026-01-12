@@ -15,7 +15,10 @@
  * - Luôn có nút "Xem chi tiết" để chuyển hướng sang trang chi tiết đơn hàng.
  *
  * 3. EMPTY STATE:
- * - Nếu không có đơn hàng, hiển thị thông báo thân thiện và nút "Bắt đầu mua sắm" để dẫn dắt người dùng.
+ * - Nếu không có đơn hàng, hiển thị thông báo thân thiện và nút "Bắt đầu mua sắm" để dẫn dắt người dùng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

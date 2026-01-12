@@ -50,7 +50,10 @@ import { useTranslations } from "next-intl";
  *
  * 3. LOCAL DOMAIN CONFIG:
  *    - Giải thích cách cấu hình file `hosts` để lập trình viên có thể truy cập Store cục bộ
- *      qua tên miền tùy chỉnh (VD: store1.localhost).
+ *      qua tên miền tùy chỉnh (VD: store1.localhost). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export function TenantDetailClient({ tenant }: { tenant: Tenant }) {

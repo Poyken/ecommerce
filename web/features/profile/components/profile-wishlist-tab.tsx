@@ -13,7 +13,10 @@
  * - Dữ liệu được fetch trực tiếp từ API khi tab được mở, đảm bảo danh sách luôn mới nhất.
  *
  * 3. EMPTY STATE:
- * - Nếu chưa có sản phẩm nào, hiển thị nút "Browse Shop" để khuyến khích người dùng khám phá sản phẩm.
+ * - Nếu chưa có sản phẩm nào, hiển thị nút "Browse Shop" để khuyến khích người dùng khám phá sản phẩm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

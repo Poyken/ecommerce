@@ -40,7 +40,10 @@ const ORDER_ID = 'a77ca22a-73a4-4219-8672-dfb52fae9459';
  * - Gọi API `shipping-order/create` của GHN.
  * - Nếu thành công: Cập nhật `shippingCode` (mã vận đơn) vào DB.
  *
- * ⚠️ LƯU Ý: Thay đổi `ORDER_ID` ở trên thành ID đơn hàng bạn muốn test.
+ * ⚠️ LƯU Ý: Thay đổi `ORDER_ID` ở trên thành ID đơn hàng bạn muốn test. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

@@ -14,7 +14,10 @@
  * - Store tự động slice list thông báo để giữ bộ nhớ nhẹ (tối đa 10 cái mới nhất).
  *
  * 3. REFRESH LOGIC:
- * - Cung cấp hàm `refresh` để đồng bộ dữ liệu thủ công hoặc khi user quay lại app (visibility change).
+ * - Cung cấp hàm `refresh` để đồng bộ dữ liệu thủ công hoặc khi user quay lại app (visibility change). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Quản lý state toàn cục (Global State) hoặc cung cấp dependency injection cho cây component.
+
  * =====================================================================
  */
 

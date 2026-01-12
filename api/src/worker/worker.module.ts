@@ -39,7 +39,10 @@ import { OutboxProcessor } from './processors/outbox.processor';
  *
  * 2. CRON SCHEDULE:
  * - Sử dụng BullMQ để lên lịch chạy định kỳ (VD: mỗi 15 phút update sản phẩm trang chủ).
- * - `onApplicationBootstrap`: Hook chạy ngay khi App khởi động để đăng ký lịch.
+ * - `onApplicationBootstrap`: Hook chạy ngay khi App khởi động để đăng ký lịch. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class WorkerModule implements OnApplicationBootstrap {

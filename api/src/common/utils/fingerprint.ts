@@ -14,7 +14,10 @@ import { Request } from 'express';
  * - Nếu Token bị dùng ở một thiết bị có IP/UA khác -> Hệ thống sẽ từ chối.
  *
  * 2. SHA-256 HASHING:
- * - Ta không lưu trực tiếp thông tin thô mà băm (Hash) nó thành một chuỗi ký tự duy nhất để bảo mật thông tin người dùng.
+ * - Ta không lưu trực tiếp thông tin thô mà băm (Hash) nó thành một chuỗi ký tự duy nhất để bảo mật thông tin người dùng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Cung cấp các hàm tiện ích dùng chung, giúp code gọn gàng và tái sử dụng hiệu quả.
+
  * =====================================================================
  */
 export function getFingerprint(req: Request): string {

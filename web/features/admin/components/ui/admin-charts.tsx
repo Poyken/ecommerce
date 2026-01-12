@@ -37,7 +37,10 @@ import {
  *
  * 3. DATA FORMATTING (Định dạng số liệu):
  * - Trục Y và Tooltip dùng `Intl.NumberFormat` để format tiền tệ (VND).
- * - `notation: "compact"`: Biến số 1.500.000 thành "1.5Tr" -> Giúp biểu đồ thoáng và dễ đọc hơn.
+ * - `notation: "compact"`: Biến số 1.500.000 thành "1.5Tr" -> Giúp biểu đồ thoáng và dễ đọc hơn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -26,7 +26,13 @@ import { MetricsService } from '@core/metrics/metrics.service';
  * - Điều này giúp các hệ thống như ELK (Elasticsearch, Logstash, Kibana) hoặc Grafana Loki có thể parse và vẽ biểu đồ giám sát.
  *
  * 3. SLOW REQUEST ALERT:
- * - Nếu một request tốn hơn 500ms, hệ thống sẽ tự động in ra Warning kèm icon 🐢 để thu hút sự chú ý của developer.
+ * - Nếu một request tốn hơn 500ms, hệ thống sẽ tự động in ra Warning kèm icon 🐢 để thu hút sự chú ý của developer. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Giám sát sức khỏe hệ thống (System Health Monitoring): Phát hiện API chậm thông qua cảnh báo "Slow Request".
+ * - Debugging & Tracing: Khi có lỗi xảy ra, developer có thể tra cứu log dựa trên `correlationId` để biết chính xác luồng chạy của request.
+ * - Audit Log: Lưu trữ lịch sử truy cập (ai, làm gì, khi nào) để phục vụ tra soát bảo mật.
+ * - Performance Tuning: Dữ liệu thời gian phản hồi (duration) được dùng để vẽ biểu đồ Latency trên Grafana/CloudWatch.
+
  * =====================================================================
  */
 @Injectable()

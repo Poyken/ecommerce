@@ -15,7 +15,10 @@
  *
  * 2. TẠI SAO CẦN?
  * - Chạy trong CI/CD pipeline để đảm bảo code mới không làm sập hệ thống.
- * - Chạy sau khi deploy để smoke test.
+ * - Chạy sau khi deploy để smoke test. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import axios from 'axios';

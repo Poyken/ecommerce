@@ -20,7 +20,10 @@ export class CreateCouponDto {
    * VALIDATION RULES:
    * - `minOrderAmount`: Giá trị đơn hàng tối thiểu để áp dụng (VD: 100k).
    * - `maxDiscountAmount`: Giảm tối đa (VD: Giảm 10% nhưng không quá 50k).
-   * - `usageLimit`: Giới hạn số lần dùng chung cho toàn hệ thống.
+   * - `usageLimit`: Giới hạn số lần dùng chung cho toàn hệ thống. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
    * =====================================================================
    */
   @IsString()

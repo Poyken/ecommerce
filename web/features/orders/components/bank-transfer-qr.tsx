@@ -30,7 +30,10 @@ import { useEffect, useState } from "react";
  *
  * 3. DEV SIMULATION MODE:
  * - Vì môi trường dev không thể kết nối ngân hàng thật, ta có nút "Simulation".
- * - Gọi Server Action `simulatePaymentSuccessAction` để giả lập sự kiện Webhook thành công.
+ * - Gọi Server Action `simulatePaymentSuccessAction` để giả lập sự kiện Webhook thành công. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

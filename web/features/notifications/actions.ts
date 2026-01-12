@@ -30,7 +30,10 @@ import { z } from "zod";
  * - Việc này giúp đồng bộ số lượng tin chưa đọc (Unread Count) chính xác.
  *
  * 3. ADMIN BROADCAST:
- * - Admin có quyền gửi thông báo tới tất cả người dùng (Broadcast) hoặc một người dùng cụ thể.
+ * - Admin có quyền gửi thông báo tới tất cả người dùng (Broadcast) hoặc một người dùng cụ thể. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

@@ -11,7 +11,10 @@
  *
  * 2. PAGINATION:
  * - API List luôn cần phân trang (`page`, `limit`) để tránh load hàng nghìn hóa đơn cùng lúc
- *   gây sập DB.
+ *   gây sập DB. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { Controller, Get, Param, Patch, Query, Body } from '@nestjs/common';

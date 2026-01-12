@@ -8,7 +8,10 @@
  * Nơi điều chỉnh các quy tắc chung của toàn nền tảng:
  * - Cho phép/Tắt đăng ký cửa hàng mới.
  * - Yêu cầu xác thực Email.
- * - Chế độ bảo trì hệ thống.
+ * - Chế độ bảo trì hệ thống. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

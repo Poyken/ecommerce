@@ -23,7 +23,12 @@ import { ApiResponse, ActionResult } from "@/types/api";
  * - Nếu chưa, nó sẽ throw lỗi "Unauthorized" ngay lập tức, giúp action chính luôn an toàn.
  *
  * 3. HỢP NHẤT UTILITIES:
- * - Cung cấp unwrapResult, createActionWrapper để giảm boilerplate ở frontend.
+ * - Cung cấp unwrapResult, createActionWrapper để giảm boilerplate ở frontend. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Server Actions Integration: Thay thế hoàn toàn API Routes truyền thống cho các tác vụ Form Submission (Login, Đặt hàng).
+ * - Robust Validation: Đảm bảo dữ liệu gửi lên server luôn sạch (đã qua Zod validate), giảm thiểu lỗi 500 do sai data type.
+ * - Framework agnostic logic: Tách biệt logic xử lý lỗi ra khỏi Logic nghiệp vụ, giúp func chính (`useAction`) chỉ tập trung vào happy path.
+
  * =====================================================================
  */
 

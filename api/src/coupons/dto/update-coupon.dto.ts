@@ -10,7 +10,10 @@ export class UpdateCouponDto extends PartialType(CreateCouponDto) {
    *
    * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
    * - `PartialType`: Biến tất cả các field của `CreateCouponDto` thành Optional.
-   * - `isActive`: Field riêng chỉ Update mới có (Create mặc định là true hoặc logic khác).
+   * - `isActive`: Field riêng chỉ Update mới có (Create mặc định là true hoặc logic khác). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
    * =====================================================================
    */
   @IsBoolean()

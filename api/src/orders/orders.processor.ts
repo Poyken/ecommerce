@@ -28,7 +28,10 @@ import { Job } from 'bullmq';
  * - `order-created-post-process`:
  *     + Chạy ngay sau khi đơn tạo thành công.
  *     + Gửi email xác nhận cho khách.
- *     + Bắn thông báo (Notification) cho khách và Admin.
+ *     + Bắn thông báo (Notification) cho khách và Admin. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

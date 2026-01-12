@@ -9,7 +9,10 @@
  * Khác với Business Analytics của riêng từng Shop, đây là chỉ số tổng quát:
  * - Tổng số Tenant (Cửa hàng) đang hoạt động.
  * - Tỷ lệ rời bỏ (Churn Rate).
- * - Doanh thu từ phí thuê nền tảng.
+ * - Doanh thu từ phí thuê nền tảng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

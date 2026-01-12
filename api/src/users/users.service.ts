@@ -34,7 +34,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
  * - Điều này kích hoạt các Decorator của `class-transformer` để ẩn mật khẩu và làm phẳng (Flatten) các quan hệ phức tạp.
  *
  * 4. ERROR HANDLING:
- * - Sử dụng các Exception chuẩn của NestJS (`ConflictException`, `NotFoundException`) để trả về mã lỗi HTTP và thông báo rõ ràng cho Client.
+ * - Sử dụng các Exception chuẩn của NestJS (`ConflictException`, `NotFoundException`) để trả về mã lỗi HTTP và thông báo rõ ràng cho Client. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

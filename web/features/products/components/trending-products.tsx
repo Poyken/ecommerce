@@ -18,7 +18,10 @@
  *
  * 3. VIEWPORT ANIMATION:
  * - `viewport={{ once: true }}`: Animation chỉ chạy 1 lần khi user cuộn tới.
- * - Tránh việc animation chạy lại gây rối mắt khi user cuộn lên xuống.
+ * - Tránh việc animation chạy lại gây rối mắt khi user cuộn lên xuống. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 import { ProductCard } from "@/features/products/components/product-card";

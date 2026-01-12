@@ -10,7 +10,10 @@
  * - Khác với Tooltip (hiển thị khi hover), Popover thường chứa nội dung tương tác được (VD: Form nhỏ, Menu chọn).
  *
  * 2. RADIX UI:
- * - Xây dựng trên `@radix-ui/react-popover`, tự động xử lý vị trí và đóng khi click ra ngoài.
+ * - Xây dựng trên `@radix-ui/react-popover`, tự động xử lý vị trí và đóng khi click ra ngoài. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

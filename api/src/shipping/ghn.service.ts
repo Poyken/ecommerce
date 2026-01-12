@@ -19,7 +19,10 @@ import { CircuitBreaker } from '@/common/utils/circuit-breaker';
  * - Ta dùng `Promise.race` để set timeout 5 giây. Nếu GHN không phản hồi kịp -> Hệ thống tự động dùng mức phí ship mặc định (30,000đ) để không làm gián đoạn việc đặt hàng của khách.
  *
  * 3. TOKEN & SHOP ID:
- * - Mọi request gửi lên GHN đều phải kèm `Token` định danh và `ShopId` để GHN biết đơn hàng thuộc về shop nào.
+ * - Mọi request gửi lên GHN đều phải kèm `Token` định danh và `ShopId` để GHN biết đơn hàng thuộc về shop nào. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

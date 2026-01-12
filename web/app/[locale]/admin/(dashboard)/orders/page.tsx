@@ -17,7 +17,10 @@ import { OrdersClient } from "./orders-client";
  * - `getOrderCounts` (dòng 21) sử dụng `Promise.all` để đếm số lượng đơn hàng ở mỗi trạng thái, giúp hiển thị các Badge/Tabs thống kê chính xác.
  *
  * 3. PHÂN TRANG (Pagination):
- * - Chỉ load một lượng nhỏ đơn hàng mỗi trang để đảm bảo tốc độ phản hồi nhanh, ngay cả khi database có hàng triệu bản ghi.
+ * - Chỉ load một lượng nhỏ đơn hàng mỗi trang để đảm bảo tốc độ phản hồi nhanh, ngay cả khi database có hàng triệu bản ghi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

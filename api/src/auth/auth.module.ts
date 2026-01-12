@@ -19,7 +19,10 @@ import { JwtModule } from '@nestjs/jwt';
  * - Import `NotificationsModule` để có thể gửi email xác nhận hoặc đặt lại mật khẩu ngay trong quá trình xác thực.
  *
  * 4. TOKEN MANAGEMENT:
- * - `TokenService` được tách riêng để quản lý logic phức tạp về Access/Refresh Token, giúp `AuthService` tập trung vào logic nghiệp vụ chính.
+ * - `TokenService` được tách riêng để quản lý logic phức tạp về Access/Refresh Token, giúp `AuthService` tập trung vào logic nghiệp vụ chính. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { NotificationsModule } from '@/notifications/notifications.module';

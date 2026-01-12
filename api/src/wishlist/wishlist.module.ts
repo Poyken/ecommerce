@@ -22,7 +22,10 @@ import { WishlistService } from './wishlist.service';
  *
  * 2. REUSABILITY:
  * - Nhờ `exports: [WishlistService]`, các module khác (như Product) có thể
- *   inject `WishlistService` để check xem user đã like sản phẩm chưa.
+ *   inject `WishlistService` để check xem user đã like sản phẩm chưa. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class WishlistModule {}

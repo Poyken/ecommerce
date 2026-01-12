@@ -23,7 +23,10 @@ import { useTranslations } from "next-intl";
  *      để quay lại trang chủ một cách dễ dàng.
  *
  * 3. I18N (INTERNATIONALIZATION):
- *    - `useTranslations("auth.login")`: Load bản dịch cho các nhãn chữ trong trang.
+ *    - `useTranslations("auth.login")`: Load bản dịch cho các nhãn chữ trong trang. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default function AuthLayout({

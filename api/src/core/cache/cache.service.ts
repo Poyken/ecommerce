@@ -20,7 +20,12 @@ import * as zlib from 'zlib';
  * - Mỗi dữ liệu trong cache đều có thời gian sống (`DEFAULT_TTL`). Sau thời gian này, dữ liệu tự động bị xóa để đảm bảo tính cập nhật.
  *
  * 4. CACHE INVALIDATION:
- * - `invalidatePattern`: Dùng để xóa hàng loạt cache khi dữ liệu gốc thay đổi (VD: Khi cập nhật sản phẩm, ta xóa toàn bộ cache liên quan đến sản phẩm đó).
+ * - `invalidatePattern`: Dùng để xóa hàng loạt cache khi dữ liệu gốc thay đổi (VD: Khi cập nhật sản phẩm, ta xóa toàn bộ cache liên quan đến sản phẩm đó). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - High Traffic Handling: Chịu tải hàng chục nghìn request/giây nhờ cơ chế L1 (RAM) cực nhanh.
+ * - Database Cost Optimization: Thay vì tốn tiền nâng cấp DB server, ta dùng cache để trả kết quả có sẵn.
+ * - Cache Stampede Prevention: Kỹ thuật Jitter giúp tránh việc 1000 user cùng chọc vào DB đúng giây cache hết hạn.
+
  * =====================================================================
  */
 @Injectable()

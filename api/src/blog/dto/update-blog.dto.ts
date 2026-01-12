@@ -12,7 +12,10 @@ import { CreateBlogDto } from './create-blog.dto';
  * - Thay vì copy lại toàn bộ các trường từ `CreateBlogDto` và thêm `?` (optional) vào từng cái,
  *   NestJS cung cấp `PartialType`.
  * - Nó tự động tạo ra một class mới kế thừa từ class cũ, nhưng biến TẤT CẢ các trường thành Optional.
- * - Rất tiện lợi và giúp code không bị lặp lại (DRY - Don't Repeat Yourself).
+ * - Rất tiện lợi và giúp code không bị lặp lại (DRY - Don't Repeat Yourself). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class UpdateBlogDto extends PartialType(CreateBlogDto) {}

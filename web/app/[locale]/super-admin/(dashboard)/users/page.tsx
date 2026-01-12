@@ -35,7 +35,10 @@ async function getUserCounts() {
  *      nếu có vấn đề về tài khoản.
  *
  * 3. SHARED CLIENT LOGIC:
- *    - Sử dụng `UsersPageClient` chung với Admin thường nhưng cung cấp `basePath` khác nhau.
+ *    - Sử dụng `UsersPageClient` chung với Admin thường nhưng cung cấp `basePath` khác nhau. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default async function SuperAdminUsersPage({

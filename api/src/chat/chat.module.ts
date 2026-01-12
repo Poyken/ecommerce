@@ -32,7 +32,10 @@ import { ChatService } from './chat.service';
  *
  * 2. JWT AUTH IN SOCKET:
  * - Socket cũng cần bảo mật (Biết ai đang chat).
- * - Cần import `JwtModule` để verify token gửi kèm trong handshake của Socket kết nối.
+ * - Cần import `JwtModule` để verify token gửi kèm trong handshake của Socket kết nối. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class ChatModule {}

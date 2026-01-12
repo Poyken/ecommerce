@@ -11,7 +11,11 @@
  *
  * 2. WHY USE THESE?
  * - Giúp code type-safe hơn.
- * - Giảm boilerplate khi định nghĩa types.
+ * - Giảm boilerplate khi định nghĩa types. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Type Flexibility: Tạo ra các kiểu dữ liệu biến linh hoạt (vd: làm một object có tất cả các field đều có thể null) giúp xử lý data từ DB dễ dàng hơn.
+ * - DX (Developer Experience): Giảm bớt lượng code thủ công (boilerplate) khi định nghĩa các props phức tạp cho React Component.
+ *
  * =====================================================================
  */
 

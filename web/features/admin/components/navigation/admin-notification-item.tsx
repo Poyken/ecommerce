@@ -13,7 +13,10 @@
  *
  * 2. ORDER DETECTION:
  * - Parse link để lấy orderId nếu notification có link đến /orders/[id].
- * - Nếu type là ORDER và status là PENDING thì hiển thị quick actions.
+ * - Nếu type là ORDER và status là PENDING thì hiển thị quick actions. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

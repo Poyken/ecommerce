@@ -14,7 +14,10 @@
  * - Lợi ích: User không bị chuyển trang, giữ context hiện tại, UX tốt hơn.
  *
  * 3. EXPORT STRATEGY:
- * - Re-export tất cả tại đây giúp việc import ở các page clean hơn rất nhiều.
+ * - Re-export tất cả tại đây giúp việc import ở các page clean hơn rất nhiều. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 /**

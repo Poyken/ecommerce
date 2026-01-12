@@ -11,7 +11,10 @@
  *
  * 2. SỬ DỤNG:
  * - Gọi hook này trong ProductDetail component với thông tin sản phẩm.
- * - Hook sẽ tự động lưu vào Zustand store (persist to localStorage).
+ * - Hook sẽ tự động lưu vào Zustand store (persist to localStorage). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
+
  * =====================================================================
  */
 

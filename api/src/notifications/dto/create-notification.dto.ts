@@ -26,7 +26,10 @@ export enum NotificationType {
  *
  * 2. NOTIFICATION TYPE:
  * - Enum giúp code dễ đọc hơn string cứng ('ORDER' vs 'PROMOTION').
- * - Frontend dùng type này để hiện icon tương ứng (vd: Xe tải cho ORDER_SHIPPED).
+ * - Frontend dùng type này để hiện icon tương ứng (vd: Xe tải cho ORDER_SHIPPED). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class CreateNotificationDto {

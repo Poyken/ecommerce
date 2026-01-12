@@ -14,7 +14,10 @@ import { BlogWithProducts } from "@/types/models";
  * 1. SERVER ACTION FOR CLIENT COMPONENTS:
  * - Dùng để fetch data cho Client Component (VD: Load More button).
  * - `skipAuth: true`: Cho phép gọi API mà không cần Login (Public).
- * - `revalidate: 60`: Cache kết quả trong 60s để giảm tải Server.
+ * - `revalidate: 60`: Cache kết quả trong 60s để giảm tải Server. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 export async function getBlogsAction(

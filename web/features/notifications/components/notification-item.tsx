@@ -14,7 +14,10 @@
  *   b. Mở hộp thoại chi tiết (`Dialog`) để xem toàn bộ nội dung.
  *
  * 3. LOCALIZATION:
- * - Sử dụng `formatDistanceToNow` kết hợp với `locale` để hiển thị thời gian thân thiện (VD: "2 phút trước").
+ * - Sử dụng `formatDistanceToNow` kết hợp với `locale` để hiển thị thời gian thân thiện (VD: "2 phút trước"). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

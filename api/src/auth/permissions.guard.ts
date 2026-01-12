@@ -25,7 +25,10 @@ import {
  * - Điều này giúp hệ thống phản hồi cực nhanh và giảm tải cho Database.
  *
  * 4. FORBIDDEN EXCEPTION:
- * - Nếu không đủ quyền, ta ném ra `ForbiddenException` (HTTP 403), khác với `UnauthorizedException` (HTTP 401 - chưa đăng nhập).
+ * - Nếu không đủ quyền, ta ném ra `ForbiddenException` (HTTP 403), khác với `UnauthorizedException` (HTTP 401 - chưa đăng nhập). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { Reflector } from '@nestjs/core';

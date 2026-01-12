@@ -18,7 +18,10 @@
  *   + Percentage (%) Rollout: Bật cho 10% người dùng ngẫu nhiên để thử nghiệm (Canary Release).
  *
  * 3. FALLBACK (Cơ chế dự phòng):
- * - Nếu hệ thống cache/DB lỗi, mặc định sẽ trả về `false` (Disabled) để đảm bảo an toàn.
+ * - Nếu hệ thống cache/DB lỗi, mặc định sẽ trả về `false` (Disabled) để đảm bảo an toàn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { PrismaService } from '@core/prisma/prisma.service';

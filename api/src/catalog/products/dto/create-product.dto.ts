@@ -25,7 +25,10 @@ import {
  * - Đây là bước chuẩn bị dữ liệu để sau này tạo ra các SKU (Biến thể) tương ứng.
  *
  * 3. RELATIONSHIPS:
- * - `categoryId` và `brandId`: Sử dụng `@IsUUID()` để đảm bảo sản phẩm luôn được gắn vào một danh mục và thương hiệu hợp lệ.
+ * - `categoryId` và `brandId`: Sử dụng `@IsUUID()` để đảm bảo sản phẩm luôn được gắn vào một danh mục và thương hiệu hợp lệ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

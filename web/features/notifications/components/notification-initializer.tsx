@@ -14,7 +14,10 @@
  * - Fallback Polling (mỗi 120s) và Visibility Check để đảm bảo data không bị "stale" nếu mất kết nối socket.
  *
  * 3. AUTH SYNC:
- * - Tự động connect socket khi có `accessToken` và dọn dẹp (cleanup) khi User logout.
+ * - Tự động connect socket khi có `accessToken` và dọn dẹp (cleanup) khi User logout. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

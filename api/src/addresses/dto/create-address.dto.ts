@@ -16,7 +16,10 @@ import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
  * - `@IsOptional()`: Một số trường như `ward` (phường/xã) hoặc `postalCode` có thể không bắt buộc tùy theo khu vực.
  *
  * 3. DEFAULT ADDRESS LOGIC:
- * - `isDefault`: Cho phép người dùng đánh dấu địa chỉ này là địa chỉ mặc định để tự động chọn khi thanh toán.
+ * - `isDefault`: Cho phép người dùng đánh dấu địa chỉ này là địa chỉ mặc định để tự động chọn khi thanh toán. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

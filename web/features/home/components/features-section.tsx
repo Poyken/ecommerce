@@ -31,7 +31,10 @@ interface FeaturesSectionProps {
  *
  * 2. UI/UX DESIGN:
  *    - Sử dụng `backdrop-blur` và `border` mỏng để tạo cảm giác hiện đại (Glassmorphism).
- *    - Hover effect: Thay đổi màu background và shadow để tăng tính tương tác.
+ *    - Hover effect: Thay đổi màu background và shadow để tăng tính tương tác. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function FeaturesSection({

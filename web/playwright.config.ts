@@ -13,7 +13,10 @@
  * - `testDir`: Thư mục chứa file test (`./e2e`).
  * - `webServer`: Tự động bật server Next.js (`npm run start`) trước khi chạy test.
  * - `projects`: Chạy test trên nhiều browser (Chromium, Firefox, Safari) để đảm bảo tương thích.
- * - `trace: 'on-first-retry'`: Nếu test fail, sẽ lưu lại video/trace để debug.
+ * - `trace: 'on-first-retry'`: Nếu test fail, sẽ lưu lại video/trace để debug. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Lưu trữ các cấu hình tĩnh và hằng số hệ thống, giúp dễ dàng thay đổi giá trị tại một nơi.
+
  * =====================================================================
  */
 import { defineConfig, devices } from "@playwright/test";

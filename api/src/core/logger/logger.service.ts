@@ -23,7 +23,12 @@ import * as winston from 'winston';
  * - `debug`: Thông tin chi tiết phục vụ việc gỡ lỗi (chỉ hiện ở môi trường Dev).
  *
  * 4. PERSISTENCE:
- * - Ở môi trường Production, log được ghi vào file (`logs/error.log`, `logs/combined.log`) để lưu trữ lâu dài.
+ * - Ở môi trường Production, log được ghi vào file (`logs/error.log`, `logs/combined.log`) để lưu trữ lâu dài. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Post-mortem Analysis: Khi hệ thống sập vào 3h sáng, log file là thứ duy nhất giúp team biết chuyện gì đã xảy ra.
+ * - Compliance Audit: Lưu vết mọi hành động nhạy cảm (Xóa user, Refund tiền) để phục vụ kiểm toán.
+ * - Developer Experience: Log có màu sắc giúp dev dễ dàng debug flow chạy của chương trình dưới local.
+
  * =====================================================================
  */
 @Injectable()

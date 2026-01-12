@@ -21,7 +21,10 @@ import { useTranslations } from "next-intl";
  * - Sử dụng `border-dashed` (viền đứt đoạn) tạo cảm giác nhẹ nhàng, không bị nặng nề như viền liền.
  *
  * 3. INTERACTIVE EFFECTS:
- * - `group-hover:scale-110`: Khi di chuột vào card, icon sẽ phóng to nhẹ, tạo phản hồi thị giác tốt.
+ * - `group-hover:scale-110`: Khi di chuột vào card, icon sẽ phóng to nhẹ, tạo phản hồi thị giác tốt. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

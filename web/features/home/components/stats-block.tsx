@@ -30,7 +30,10 @@ interface StatsBlockProps {
  * 2. DATA TRANSLATION LOGIC:
  *    - {stat.label.includes(" ") ? stat.label : t(stat.label)}:
  *    - Nếu nhãn là text tự do (từ Admin) -> Hiện trực tiếp.
- *    - Nếu nhãn là key (VD: "happyCustomers") -> Dùng `next-intl` để dịch đa ngôn ngữ.
+ *    - Nếu nhãn là key (VD: "happyCustomers") -> Dùng `next-intl` để dịch đa ngôn ngữ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function StatsBlock({ stats, styles }: StatsBlockProps) {

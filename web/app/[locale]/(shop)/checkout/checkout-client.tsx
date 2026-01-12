@@ -23,7 +23,10 @@
  *
  * 4. DYNAMIC FEE CALCULATION:
  * - Khi `selectedAddress` thay đổi -> Trigger `useEffect` gọi shipping API.
- * - Cập nhật phí ship realtime dựa trên Quận/Huyện.
+ * - Cập nhật phí ship realtime dựa trên Quận/Huyện. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

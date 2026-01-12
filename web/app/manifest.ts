@@ -15,7 +15,10 @@ import { MetadataRoute } from "next";
  * 2. DISPLAY MODE:
  * - "standalone": Ứng dụng nạy như native app (không có thanh URL)
  * - "fullscreen": Toàn màn hình
- * - "minimal-ui": Có một ít thanh điều khiển trình duyệt
+ * - "minimal-ui": Có một ít thanh điều khiển trình duyệt *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 export default function manifest(): MetadataRoute.Manifest {

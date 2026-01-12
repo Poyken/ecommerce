@@ -11,7 +11,10 @@
  * 1. DYNAMIC ROUTING: Sử dụng [slug] để bắt mọi đường dẫn tùy chỉnh.
  * 2. DATA FECHING: Fetch cấu hình các "Blocks" của trang từ API.
  * 3. COMPONENT MAPPING: Dùng BlockRenderer để biến JSON data thành React Components.
- * 4. PERFORMANCE: Sử dụng Next.js revalidate (ISR) để cache trang 60s.
+ * 4. PERFORMANCE: Sử dụng Next.js revalidate (ISR) để cache trang 60s. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

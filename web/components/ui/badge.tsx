@@ -19,7 +19,10 @@ import { cn } from "@/lib/utils";
  * - Đảm bảo mọi nhãn trạng thái trên website đều có chung padding, font-size và độ bo góc.
  *
  * 3. AS CHILD PATTERN:
- * - Cho phép chuyển đổi thẻ `span` mặc định thành bất kỳ thẻ nào khác (như `a` hoặc `Link`) mà vẫn giữ nguyên style của Badge.
+ * - Cho phép chuyển đổi thẻ `span` mặc định thành bất kỳ thẻ nào khác (như `a` hoặc `Link`) mà vẫn giữ nguyên style của Badge. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

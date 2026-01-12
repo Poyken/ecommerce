@@ -6,7 +6,10 @@
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * Trang này hiển thị tất cả các sản phẩm mà người dùng đã nhấn "Yêu thích".
- * Sử dụng `WishlistClient` để xử lý việc hiển thị và tương tác.
+ * Sử dụng `WishlistClient` để xử lý việc hiển thị và tương tác. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

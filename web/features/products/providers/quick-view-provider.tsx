@@ -22,7 +22,10 @@ const ProductQuickViewDialog = dynamic(() =>
  * - Dùng Zustand Store để trigger mở modal và truyền data.
  *
  * 2. DYNAMIC IMPORT:
- * - Modal này khá nặng, nên chỉ tải code (JS chunk) khi thực sự cần dùng.
+ * - Modal này khá nặng, nên chỉ tải code (JS chunk) khi thực sự cần dùng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Quản lý state toàn cục (Global State) hoặc cung cấp dependency injection cho cây component.
+
  * =====================================================================
  */
 export function QuickViewProvider() {

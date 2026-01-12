@@ -14,7 +14,10 @@
  * 3. Xóa bài viết.
  * 4. Revalidate cache để cập nhật giao diện ngay lập tức.
  *
- * ⚠️ LƯU Ý: Các action này thường được gọi từ Admin Dashboard.
+ * ⚠️ LƯU Ý: Các action này thường được gọi từ Admin Dashboard. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

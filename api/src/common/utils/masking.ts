@@ -16,7 +16,10 @@
  * - Nếu gặp các key nằm trong "Blacklist" (như password, accessToken), nó sẽ thay thế giá trị bằng chuỗi '********'.
  *
  * 3. IMMUTABILITY (Tính bất biến):
- * - Chúng ta luôn clone object gốc trước khi mask để không làm hỏng dữ liệu đang xử lý trong ứng dụng.
+ * - Chúng ta luôn clone object gốc trước khi mask để không làm hỏng dữ liệu đang xử lý trong ứng dụng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Cung cấp các hàm tiện ích dùng chung, giúp code gọn gàng và tái sử dụng hiệu quả.
+
  * =====================================================================
  */
 

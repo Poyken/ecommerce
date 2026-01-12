@@ -24,7 +24,10 @@ import { useEffect, useMemo, useState, useTransition } from "react";
  *
  * 3. CHECKBOX LOGIC:
  * - `toggleRole`: Thêm hoặc xóa tên vai trò khỏi danh sách `selectedRoleNames` khi click vào checkbox.
- * - `currentRoles`: Dùng để check mặc định các vai trò mà user đang có.
+ * - `currentRoles`: Dùng để check mặc định các vai trò mà user đang có. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -13,7 +13,10 @@
  *
  * 2. CÁC KHÁI NIỆM LIÊN QUAN:
  *    - BullMQ Processor: Một hàm lắng nghe Job từ hàng đợi (Queue).
- *    - Cron Job: Tác vụ chạy định kỳ (VD: 12h đêm hàng ngày).
+ *    - Cron Job: Tác vụ chạy định kỳ (VD: 12h đêm hàng ngày). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

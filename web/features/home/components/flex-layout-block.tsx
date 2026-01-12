@@ -7,7 +7,10 @@
  *
  * Block đa năng nhất trong Page Builder. Cho phép Admin tự chia cột
  * (1, 1-1, 1-2, 2-1...) và đặt nội dung vào từng cột.
- * Phù hợp làm section Features, Giới thiệu hoặc Banner đôi.
+ * Phù hợp làm section Features, Giới thiệu hoặc Banner đôi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

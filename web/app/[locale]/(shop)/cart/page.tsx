@@ -33,7 +33,10 @@ export const metadata: Metadata = {
  * DATA FETCHING PATTERN:
  * - Sử dụng `Promise.all` để fetch song song Cart và Profile.
  * - Giảm thời gian chờ đợi (Waterfall problem).
- * - `force-dynamic`: Trang này luôn cần dữ liệu mới nhất, không cache tĩnh.
+ * - `force-dynamic`: Trang này luôn cần dữ liệu mới nhất, không cache tĩnh. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 async function DynamicCart() {

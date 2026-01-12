@@ -16,7 +16,10 @@
  *
  * 3. LOADING SKELETON:
  * - Trong lúc chờ tải file JS của Editor, ta hiển thị một `Skeleton` để giữ chỗ (Placeholder).
- * - Giúp tránh hiện tượng layout bị giật (Cumulative Layout Shift - CLS).
+ * - Giúp tránh hiện tượng layout bị giật (Cumulative Layout Shift - CLS). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

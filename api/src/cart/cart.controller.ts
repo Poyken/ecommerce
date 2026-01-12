@@ -20,7 +20,10 @@
  * 5. Xóa toàn bộ giỏ hàng (DELETE /cart)
  * 6. Gộp giỏ hàng guest vào tài khoản (POST /cart/merge)
  *
- * ⚠️ LƯU Ý: Tất cả các endpoint đều yêu cầu đăng nhập (JwtAuthGuard)
+ * ⚠️ LƯU Ý: Tất cả các endpoint đều yêu cầu đăng nhập (JwtAuthGuard) *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

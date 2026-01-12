@@ -16,7 +16,10 @@
  *
  * 3. SECURITY:
  * - Password được gửi qua API (`createUserAction`) và sẽ được hash (mã hóa) ở Backend.
- * - Không bao giờ lưu plain-text password.
+ * - Không bao giờ lưu plain-text password. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

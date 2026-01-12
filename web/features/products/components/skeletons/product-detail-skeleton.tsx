@@ -12,7 +12,10 @@
  * - Giả lập các nút chọn Size, Color bằng các hình tròn/bo góc nhỏ để người dùng hình dung được giao diện.
  *
  * 3. BREADCRUMB MOCK:
- * - Hiển thị đường dẫn phân cấp giả ở trên cùng để duy trì cấu trúc trang.
+ * - Hiển thị đường dẫn phân cấp giả ở trên cùng để duy trì cấu trúc trang. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

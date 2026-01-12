@@ -16,7 +16,10 @@
  *
  * 2. CSRF & AUTH:
  * - Script xử lý tự động việc lấy Cookie và Header `x-csrf-token`.
- * - Tự động gắn Bearer Token vào header sau khi login thành công.
+ * - Tự động gắn Bearer Token vào header sau khi login thành công. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import axios from 'axios';

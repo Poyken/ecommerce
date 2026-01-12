@@ -10,7 +10,10 @@
  * 1. TRẢI NGHIỆM "MAGIC": Người dùng nhập câu hỏi hoặc yêu cầu bằng tiếng Việt.
  * 2. CHẾ ĐỘ THỰC THI (EXECUTE): Agent phân tích và chạy các script (VD: cập nhật giá).
  * 3. CHẾ ĐỘ HIỂN THỊ (GENUI): AI tự chọn loại Chart/Table phù hợp nhất để trả lời.
- * 4. FEEDBACK: Hiển thị minh bạch các bước xử lý của AI thông qua TaskResult.
+ * 4. FEEDBACK: Hiển thị minh bạch các bước xử lý của AI thông qua TaskResult. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

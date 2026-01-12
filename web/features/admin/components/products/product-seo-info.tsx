@@ -12,7 +12,10 @@
  *
  * 2. BEST PRACTICES:
  * - Component này nên gợi ý độ dài text (VD: Title < 60 ký tự, Desc < 160 ký tự)
- *   để content không bị cắt bớt (ellipsis) trên trang kết quả tìm kiếm.
+ *   để content không bị cắt bớt (ellipsis) trên trang kết quả tìm kiếm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

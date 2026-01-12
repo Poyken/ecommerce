@@ -10,7 +10,10 @@
  * - Controller này giúp Admin tra cứu lại lịch sử để truy vết lỗi hoặc hành vi gian lận.
  *
  * 2. PERMISSIONS:
- * - Chỉ user có quyền `auditLog:read` mới được xem.
+ * - Chỉ user có quyền `auditLog:read` mới được xem. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import {

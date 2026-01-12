@@ -13,7 +13,10 @@
  *
  * 2. ORDER DETAIL DIALOG:
  * - Khi click vào notification, mở dialog chi tiết đơn hàng.
- * - Admin có thể xem thông tin và xử lý ngay tại dialog.
+ * - Admin có thể xem thông tin và xử lý ngay tại dialog. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

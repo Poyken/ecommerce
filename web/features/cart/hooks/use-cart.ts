@@ -21,7 +21,10 @@ import { useCallback, useState } from "react";
  * - Không chờ Server trả về (Latency). Tạo cảm giác app cực nhanh.
  *
  * 3. EVENT DISPATCH:
- * - Khi lưu vào LocalStorage, phải bắn event `guest_cart_updated` để `CartProvider` biết mà cập nhật lại state chung.
+ * - Khi lưu vào LocalStorage, phải bắn event `guest_cart_updated` để `CartProvider` biết mà cập nhật lại state chung. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
+
  * =====================================================================
  */
 

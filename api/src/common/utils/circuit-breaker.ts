@@ -20,7 +20,10 @@ import { Logger } from '@nestjs/common';
  *
  * 3. THÔNG SỐ:
  * - failureThreshold: Số lỗi tối đa trước khi ngắt mạch (VD: 5 lỗi).
- * - resetTimeout: Thời gian chờ trước khi thử lại (VD: 30 giây).
+ * - resetTimeout: Thời gian chờ trước khi thử lại (VD: 30 giây). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Cung cấp các hàm tiện ích dùng chung, giúp code gọn gàng và tái sử dụng hiệu quả.
+
  * =====================================================================
  */
 

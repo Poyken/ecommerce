@@ -12,7 +12,10 @@
  * 2. KHI NÀO DÙNG?
  * - Khi user bấm nút "Mắt" trên thẻ sản phẩm ở trang danh sách.
  * - Modal QuickView sẽ subscribe vào store này để biết khi nào cần hiện và hiện sản phẩm gì.
- * - Tránh việc phải prop-drill `isOpen/onOpen` qua quá nhiều tầng components.
+ * - Tránh việc phải prop-drill `isOpen/onOpen` qua quá nhiều tầng components. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Quản lý state toàn cục (Global State) hoặc cung cấp dependency injection cho cây component.
+
  * =====================================================================
  */
 import { create } from "zustand";

@@ -19,7 +19,10 @@ import { Cron, CronExpression } from '@nestjs/schedule';
  * - Sử dụng `aggregate`, `groupBy` và `Raw SQL` của Prisma để tính toán trực tiếp trên database, tránh kéo hàng vạn bản ghi về RAM.
  *
  * 3. INVENTORY ANALYSIS (Phân tích tồn kho):
- * - Phân tích giúp chủ shop biết: Hàng nào hết, hàng nào sắp hết (Low Stock), hàng nào tồn nhiều để xả kho.
+ * - Phân tích giúp chủ shop biết: Hàng nào hết, hàng nào sắp hết (Low Stock), hàng nào tồn nhiều để xả kho. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

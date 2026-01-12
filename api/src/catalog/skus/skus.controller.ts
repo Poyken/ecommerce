@@ -12,7 +12,10 @@
  *
  * 2. IMAGE HANDLING:
  * - Mỗi SKU có thể có ảnh riêng (VD: click chọn màu Đỏ -> ảnh áo đỏ hiện ra).
- * - Controller này xử lý upload ảnh lên Cloudinary ngay khi tạo/sửa SKU.
+ * - Controller này xử lý upload ảnh lên Cloudinary ngay khi tạo/sửa SKU. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import {

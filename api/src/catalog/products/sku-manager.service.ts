@@ -24,7 +24,10 @@ import { createSlug } from '@/common/utils/string';
  *
  * Mỗi SKU có giá và tồn kho riêng biệt.
  *
- * Service này xử lý việc tự động sinh SKUs khi tạo/cập nhật sản phẩm.
+ * Service này xử lý việc tự động sinh SKUs khi tạo/cập nhật sản phẩm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

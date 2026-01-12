@@ -50,7 +50,10 @@ interface FooterBlockProps {
  *
  * 2. CONDITIONAL STYLING:
  *    - Sử dụng `cn()` (clsx + tailwind-merge) để xử lý logic class phức tạp.
- *    - Ưu tiên `styles.backgroundColor` (User custom) > `theme` (Preset).
+ *    - Ưu tiên `styles.backgroundColor` (User custom) > `theme` (Preset). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function FooterBlock({

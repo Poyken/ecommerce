@@ -22,7 +22,10 @@ import { cn } from "@/lib/utils";
  * - Sử dụng `data-[state=active]` để tự động áp dụng style cho tab đang được chọn mà không cần quản lý biến `isActive` thủ công.
  *
  * 3. ACCESSIBILITY:
- * - Hỗ trợ chuyển tab bằng phím mũi tên (Arrow keys) - một tiêu chuẩn quan trọng của WAI-ARIA.
+ * - Hỗ trợ chuyển tab bằng phím mũi tên (Arrow keys) - một tiêu chuẩn quan trọng của WAI-ARIA. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

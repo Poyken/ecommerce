@@ -21,7 +21,10 @@ import { cn } from "@/lib/utils";
  * - Sử dụng `data-[orientation]` attributes để áp dụng CSS tương ứng một cách linh hoạt.
  *
  * 3. STYLING:
- * - `shrink-0`: Đảm bảo đường kẻ không bị co lại khi nằm trong Flexbox.
+ * - `shrink-0`: Đảm bảo đường kẻ không bị co lại khi nằm trong Flexbox. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

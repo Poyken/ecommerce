@@ -30,7 +30,10 @@ import { AiChatService } from './ai-chat.service';
  *
  * 3. DTO VALIDATION:
  * - `SendMessageDto`: Validate tin nhắn từ client
- * - Sử dụng class-validator để đảm bảo data hợp lệ
+ * - Sử dụng class-validator để đảm bảo data hợp lệ *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

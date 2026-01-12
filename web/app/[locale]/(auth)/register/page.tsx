@@ -16,7 +16,10 @@ import { Metadata } from "next";
  * - `metadata`: Định nghĩa tiêu đề "Create Account" giúp trang trông chuyên nghiệp hơn trên tab trình duyệt và kết quả tìm kiếm.
  *
  * 3. CLEAN ARCHITECTURE:
- * - Tách biệt hoàn toàn phần định nghĩa trang (Server Component) và phần xử lý logic/UI (Client Component).
+ * - Tách biệt hoàn toàn phần định nghĩa trang (Server Component) và phần xử lý logic/UI (Client Component). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

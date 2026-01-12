@@ -14,7 +14,10 @@
  * - Giúp UI không bị đơ (freeze) khi đang submit form.
  *
  * 3. LOGIC:
- * - Khi submit thành công -> Reset form -> Đóng dialog -> Hiển thị Toast Success.
+ * - Khi submit thành công -> Reset form -> Đóng dialog -> Hiển thị Toast Success. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

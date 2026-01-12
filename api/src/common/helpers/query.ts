@@ -13,7 +13,10 @@
  * - Các helper để tạo pagination options cho Prisma một cách nhất quán.
  *
  * 3. SORT HELPERS:
- * - Parse sort string từ query params thành Prisma orderBy format.
+ * - Parse sort string từ query params thành Prisma orderBy format. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

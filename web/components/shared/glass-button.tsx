@@ -22,7 +22,10 @@ import { forwardRef } from "react";
  * - Border cũng có độ trong suốt (`border-white/10`) để tạo cảm giác cạnh kính sắc nét.
  *
  * 3. FORWARD REF:
- * - Sử dụng `forwardRef` để các thư viện khác (như Radix UI hoặc Tooltip) có thể truy cập trực tiếp vào DOM element.
+ * - Sử dụng `forwardRef` để các thư viện khác (như Radix UI hoặc Tooltip) có thể truy cập trực tiếp vào DOM element. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

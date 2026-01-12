@@ -14,7 +14,11 @@
  * - Giúp tăng tốc độ tải trang và giảm tải cho Backend API.
  *
  * 3. SLUG-BASED RETRIEVAL:
- * - `getBlogBySlug` cho phép lấy chi tiết bài viết dựa trên đường dẫn thân thiện (slug) thay vì ID.
+ * - `getBlogBySlug` cho phép lấy chi tiết bài viết dựa trên đường dẫn thân thiện (slug) thay vì ID. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Content Marketing: Hỗ trợ xây dựng trang Blog chuẩn SEO để thu hút traffic tự nhiên từ Google.
+ * - Performance: Static Generation (SSG) cho các bài viết, giúp người đọc truy cập ngay lập tức mà không cần chờ DB query.
+
  * =====================================================================
  */
 import { http } from "@/lib/http";

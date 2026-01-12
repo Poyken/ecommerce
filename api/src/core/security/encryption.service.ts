@@ -26,7 +26,12 @@
  *    - encrypt(text): Mã hóa chuỗi text
  *    - decrypt(text): Giải mã chuỗi đã mã hóa
  *    - encryptObject(obj): Mã hóa JSON object
- *    - decryptObject<T>(text): Giải mã về lại object
+ *    - decryptObject<T>(text): Giải mã về lại object *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Bảo vệ dữ liệu nhạy cảm (PII): Mã hóa số CCCD, tài khoản ngân hàng của user trong Database để tuân thủ luật GDPR/PDPA.
+ * - API Key Management: Lưu trữ key của đối tác (GHN, Payment Gateway) an toàn, tránh bị lộ khi database dump bị đánh cắp.
+ * - Secure Tokens: Tạo các token dùng một lần (như token reset password, invite link) mà không thể bị giả mạo.
+
  * =====================================================================
  */
 

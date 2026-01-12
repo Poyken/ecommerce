@@ -7,7 +7,10 @@
  *
  * Khác với Dashboard Layout thông thường, Fluid Layout tận dụng tối đa
  * diện tích màn hình (không có padding lề).
- * Thường dùng cho các tính năng cần không gian lớn như Page Builder.
+ * Thường dùng cho các tính năng cần không gian lớn như Page Builder. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

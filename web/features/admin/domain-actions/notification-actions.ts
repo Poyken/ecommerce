@@ -12,7 +12,10 @@
  *   VD: "Đơn hàng #123 của bạn đã được giao".
  *
  * 2. REAL-TIME:
- * - Backend sau khi nhận request sẽ đẩy qua WebSocket (Socket.IO) tới client đang online.
+ * - Backend sau khi nhận request sẽ đẩy qua WebSocket (Socket.IO) tới client đang online. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 "use server";

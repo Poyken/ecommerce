@@ -15,7 +15,10 @@
  *
  * 3. BADGE LOGIC:
  * - Chỉ hiện badge đỏ nếu `unreadCount > 0`.
- * - Nếu > 99 thì hiện "99+" để tránh vỡ layout nếu user có quá nhiều thông báo.
+ * - Nếu > 99 thì hiện "99+" để tránh vỡ layout nếu user có quá nhiều thông báo. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

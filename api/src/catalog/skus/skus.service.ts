@@ -27,7 +27,10 @@ import { UpdateSkuDto } from './dto/update-sku.dto';
  * - Hàm `findAll` hỗ trợ lọc theo `stockLimit`. Giúp Admin dễ dàng tìm ra các mặt hàng sắp hết hàng để kịp thời nhập thêm.
  *
  * 4. SEARCHING:
- * - Hỗ trợ tìm kiếm theo cả mã SKU và tên sản phẩm gốc, giúp việc quản lý trở nên linh hoạt và nhanh chóng.
+ * - Hỗ trợ tìm kiếm theo cả mã SKU và tên sản phẩm gốc, giúp việc quản lý trở nên linh hoạt và nhanh chóng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

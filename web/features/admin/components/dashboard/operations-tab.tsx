@@ -11,7 +11,10 @@
  *
  * 2. `getStatusStyle`:
  * - Helper function để tô màu Badge trạng thái đơn hàng.
- * - UX Design: Màu sắc giúp nhận diện nhanh (Xanh lá = OK, Cam = Chờ, Đỏ = Hủy).
+ * - UX Design: Màu sắc giúp nhận diện nhanh (Xanh lá = OK, Cam = Chờ, Đỏ = Hủy). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

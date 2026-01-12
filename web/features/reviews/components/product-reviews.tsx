@@ -37,7 +37,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * - Hiệu quả hơn với các bảng dữ liệu lớn (Big Data) vì database không phải scan/offset lại từ đầu.
  *
  * 4. STRICT MODE HANDLING:
- * - `useRef(hasFetched)`: Ngăn chặn việc React 18 Strict Mode gọi API 2 lần khi dev, tiết kiệm tài nguyên.
+ * - `useRef(hasFetched)`: Ngăn chặn việc React 18 Strict Mode gọi API 2 lần khi dev, tiết kiệm tài nguyên. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

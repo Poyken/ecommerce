@@ -14,7 +14,10 @@
  * - Hiển thị trạng thái "Sending..." khi đang xử lý.
  *
  * 3. SUCCESS STATE:
- * - Sau khi gửi thành công, hiển thị thông báo cảm ơn và tự động reset form sau vài giây.
+ * - Sau khi gửi thành công, hiển thị thông báo cảm ơn và tự động reset form sau vài giây. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

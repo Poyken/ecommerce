@@ -33,7 +33,10 @@
  *    - findAll(): Listing với filter, search, sort, pagination
  *    - findOne(): Chi tiết product + tất cả SKUs
  *    - update(): Smart migration SKUs khi đổi options
- *    - getRelatedProducts(): Sản phẩm liên quan cùng category
+ *    - getRelatedProducts(): Sản phẩm liên quan cùng category *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

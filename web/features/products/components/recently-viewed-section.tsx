@@ -15,7 +15,10 @@
  *
  * 3. PERSONALIZATION STRATEGY:
  * - Loại bỏ sản phẩm đang xem khỏi danh sách.
- * - Hiển thị tối đa 8 sản phẩm để không làm loãng focus.
+ * - Hiển thị tối đa 8 sản phẩm để không làm loãng focus. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

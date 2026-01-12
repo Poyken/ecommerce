@@ -11,7 +11,10 @@
  *
  * 2. STATE MANAGEMENT:
  * - Script lưu giữ state (ID của các object vừa tạo) để dùng cho step sau.
- *   VD: Tạo Category xong lấy ID đó để tạo Product.
+ *   VD: Tạo Category xong lấy ID đó để tạo Product. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import axios from 'axios';

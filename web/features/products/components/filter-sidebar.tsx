@@ -29,7 +29,10 @@ import { memo, useCallback, useState } from "react";
  *
  * 3. PERFORMANCE (`React.memo`):
  * - Sidebar này nhận list category/brand ít thay đổi.
- * - Dùng `memo` để nó không bị render lại vô nghĩa khi Parent Component (ProductList) re-render do data thay đổi.
+ * - Dùng `memo` để nó không bị render lại vô nghĩa khi Parent Component (ProductList) re-render do data thay đổi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

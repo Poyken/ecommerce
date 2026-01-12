@@ -13,7 +13,10 @@ import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
  * - Nên dùng chữ hoa (Uppercase) cho tên vai trò để dễ phân biệt với các dữ liệu khác.
  *
  * 2. VALIDATION:
- * - `@IsNotEmpty()`: Đảm bảo không tạo ra một vai trò không có tên.
+ * - `@IsNotEmpty()`: Đảm bảo không tạo ra một vai trò không có tên. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

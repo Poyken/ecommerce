@@ -11,7 +11,12 @@
  *    - [Mô tả các chức năng chính]
  *
  * 2. CÁCH SỬ DỤNG:
- *    - [Hướng dẫn sử dụng]
+ *    - [Hướng dẫn sử dụng] *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Zero Trust Security: Không tin ai cả, ngay cả khi đã có password admin -> Cần đúng IP công ty mới vào được.
+ * - Compliance: Đáp ứng các yêu cầu bảo mật khắt khe (ISO 27001, PCI DSS) về việc giới hạn truy cập vùng Admin.
+ * - VPN Integration: Buộc admin phải dùng VPN công ty mới có thể truy cập hệ thống quản trị.
+
  * =====================================================================
  */
 

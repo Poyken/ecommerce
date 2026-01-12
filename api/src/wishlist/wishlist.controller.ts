@@ -30,7 +30,10 @@ import { WishlistService } from './wishlist.service';
  * - Giúp frontend xử lý UI nút "Tim" đơn giản hơn.
  *
  * 2. MERGE WISHLIST (Hợp nhất dữ liệu):
- * - Khi khách hàng vãng lai (Guest) đăng nhập, ta gọi API `merge` để đưa các sản phẩm họ đã thích ở Client vào tài khoản chính thức trong DB.
+ * - Khi khách hàng vãng lai (Guest) đăng nhập, ta gọi API `merge` để đưa các sản phẩm họ đã thích ở Client vào tài khoản chính thức trong DB. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @ApiTags('Wishlist')

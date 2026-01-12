@@ -6,7 +6,10 @@
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * Dùng để tạo sự cấp bách (Urgency) cho các chương trình Sale.
- * Logic đếm ngược được tính toán mỗi giây trong useEffect.
+ * Logic đếm ngược được tính toán mỗi giây trong useEffect. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

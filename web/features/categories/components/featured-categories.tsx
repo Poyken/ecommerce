@@ -17,7 +17,10 @@
  *
  * 3. REUSABLE COMPONENT:
  * - Sử dụng `CategoryCard` để hiển thị từng item.
- * - Đảm bảo tính nhất quán về giao diện giữa các trang.
+ * - Đảm bảo tính nhất quán về giao diện giữa các trang. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 import { CategoryCard } from "@/features/categories/components/category-card";

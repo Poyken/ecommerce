@@ -30,7 +30,11 @@ import { z } from "zod";
  * - Helper `createActionWrapper` tự động unwrap result thành `{ success, data, error }`.
  *
  * 3. REVALIDATION:
- * - Sử dụng `REVALIDATE.cart()` để consistency.
+ * - Sử dụng `REVALIDATE.cart()` để consistency. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Data Integrity: Đảm bảo khách hàng không thể tự ý sửa giá sản phẩm bằng cách gửi request qua JS Console nhờ cơ chế validate nghiêm ngặt ở phía Server.
+ * - User Persistence: Tự động giữ lại các sản phẩm mà khách hàng đã chọn khi họ chuyển đổi từ máy tính (Guest) sang điện thoại (LoggedIn).
+
  * =====================================================================
  */
 

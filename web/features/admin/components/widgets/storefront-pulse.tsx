@@ -32,7 +32,10 @@ interface StorefrontPulseProps {
  * - Component này cung cấp lối tắt nhanh đến các phần thay đổi nội dung mặt tiền.
  *
  * 2. LIVE PREVIEW:
- * - Cho phép Admin nhảy nhanh ra trang chủ để kiểm tra thay đổi vừa thực hiện.
+ * - Cho phép Admin nhảy nhanh ra trang chủ để kiểm tra thay đổi vừa thực hiện. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  */
 export function StorefrontPulse({
   pagesCount,

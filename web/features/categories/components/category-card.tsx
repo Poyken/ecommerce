@@ -16,7 +16,10 @@
  * - `group-hover:scale-110`: Hiệu ứng zoom ảnh mượt mà.
  *
  * 3. INTERACTIVE UI:
- * - `ArrowRight` indicator chỉ xuất hiện và trượt vào khi hover (`opacity-0` -> `opacity-100`).
+ * - `ArrowRight` indicator chỉ xuất hiện và trượt vào khi hover (`opacity-0` -> `opacity-100`). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

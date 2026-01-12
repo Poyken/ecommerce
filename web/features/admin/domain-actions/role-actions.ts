@@ -13,7 +13,10 @@
  * 2. ACTIONS:
  * - `createRole`, `updateRole`, `deleteRole`: CRUD Roles.
  * - `assignPermissionsAction`: Quan trọng nhất. Quy định Role này làm được gì.
- *   (VD: Role "Editor" được `create:product`, `update:product`...).
+ *   (VD: Role "Editor" được `create:product`, `update:product`...). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 "use server";

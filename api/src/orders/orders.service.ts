@@ -45,7 +45,10 @@ import { Logger } from '@nestjs/common';
  * - Transactional Outbox: Thay vì đẩy job vào Queue trực tiếp, ta lưu Event vào DB trong transaction
  *   để đảm bảo không bao giờ mất job (Zero Data Loss).
  * - Denormalization: Thông tin Product Name, Image được lưu cứng vào `OrderItem` ngay lúc mua.
- *   -> Giúp xem lại lịch sử siêu nhanh mà không cần JOIN 5-6 bảng.
+ *   -> Giúp xem lại lịch sử siêu nhanh mà không cần JOIN 5-6 bảng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

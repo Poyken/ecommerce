@@ -68,7 +68,10 @@ import Image from "next/image";
  *
  * 4. OPTIMIZATION:
  *    - Sử dụng `useTransition` khi Save để không làm đơ UI.
- *    - Tách biệt `BlockStyleControls` để tái sử dụng logic chỉnh màu/padding.
+ *    - Tách biệt `BlockStyleControls` để tái sử dụng logic chỉnh màu/padding. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 

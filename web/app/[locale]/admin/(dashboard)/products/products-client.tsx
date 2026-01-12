@@ -10,7 +10,10 @@
  * - Removed virtual scrolling for simpler pagination
  * - Using DataTablePagination with page numbers
  * - Filter tabs
- * - Stats header
+ * - Stats header *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

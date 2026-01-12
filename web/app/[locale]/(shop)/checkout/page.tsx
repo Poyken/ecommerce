@@ -25,7 +25,10 @@ export const metadata: Metadata = {
  * DATA PREPARATION:
  * - Fetch Cart để hiển thị lại lần cuối trước khi đặt hàng.
  * - Fetch Addresses (Profile) để user chọn địa chỉ giao hàng.
- * - Truyền tất cả xuống `CheckoutClient` để render form.
+ * - Truyền tất cả xuống `CheckoutClient` để render form. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 import { getTranslations } from "next-intl/server";

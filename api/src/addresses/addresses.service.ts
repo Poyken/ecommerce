@@ -22,7 +22,10 @@ import { UpdateAddressDto } from './dto/update-address.dto';
  * - Mục đích để tránh lỗ hổng bảo mật IDOR (Insecure Direct Object References), nơi hacker đổi ID để xóa địa chỉ của người khác.
  *
  * 3. HỨNG DỮ LIỆU (Data Ordering):
- * - Luôn đưa địa chỉ mặc định lên đầu danh sách (`orderBy: { isDefault: 'desc' }`) để khi vào trang Checkout user thấy ngay.
+ * - Luôn đưa địa chỉ mặc định lên đầu danh sách (`orderBy: { isDefault: 'desc' }`) để khi vào trang Checkout user thấy ngay. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

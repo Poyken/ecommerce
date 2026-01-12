@@ -15,7 +15,10 @@
  * 2. DECORATORS SỬ DỤNG:
  *    - @IsString(), @IsNumber()...: Validate kiểu dữ liệu
  *    - @IsOptional(): Field không bắt buộc
- *    - @ApiProperty(): Tài liệu Swagger
+ *    - @ApiProperty(): Tài liệu Swagger *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

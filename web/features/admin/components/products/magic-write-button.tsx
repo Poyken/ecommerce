@@ -21,7 +21,10 @@ import { generateProductContentAction } from "@/features/admin/actions";
  * - productName: Tên sản phẩm để AI hiểu context
  * - category: Danh mục sản phẩm
  * - brand: Thương hiệu (optional)
- * - onApply: Callback khi có kết quả từ AI
+ * - onApply: Callback khi có kết quả từ AI *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

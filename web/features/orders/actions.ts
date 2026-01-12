@@ -33,7 +33,10 @@ import { z } from "zod";
  * - Mục đích: Xóa cache cũ của Next.js để UI cập nhật ngay lập tức (vd: giỏ hàng về 0, danh sách đơn hàng có thêm đơn mới).
  *
  * 3. SIMULATION ACTION:
- * - `simulatePaymentSuccessAction`: Chỉ dùng cho môi trường Dev/Test để giả lập việc thanh toán thành công mà không cần qua cổng thanh toán thật.
+ * - `simulatePaymentSuccessAction`: Chỉ dùng cho môi trường Dev/Test để giả lập việc thanh toán thành công mà không cần qua cổng thanh toán thật. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

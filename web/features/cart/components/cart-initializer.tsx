@@ -12,7 +12,10 @@
  * - Lắng nghe event `storage` để khi User mở tab mới và add cart, tab hiện tại cũng tự nhảy số.
  *
  * 3. GUEST CART INTEGRATION:
- * - Trực tiếp đọc `localStorage` nếu chưa login, đảm bảo trải nghiệm mua hàng không bị gián đoạn.
+ * - Trực tiếp đọc `localStorage` nếu chưa login, đảm bảo trải nghiệm mua hàng không bị gián đoạn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

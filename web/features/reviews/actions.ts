@@ -15,7 +15,10 @@
  * QUY TẮC NGHIỆP VỤ:
  * - Chỉ user đã mua sản phẩm mới được đánh giá
  * - Mỗi user chỉ được đánh giá 1 lần cho mỗi SKU đã mua
- * - Rating từ 1-5 sao
+ * - Rating từ 1-5 sao *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

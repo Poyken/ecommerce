@@ -42,7 +42,10 @@ import {
  * - Nếu có, gọi `mergeGuestCartAction` để đồng bộ sản phẩm vào tài khoản user.
  *
  * 3. ANIMATED ERRORS:
- * - Sử dụng `AnimatePresence` và `m.p` để thông báo lỗi xuất hiện mượt mà, không làm "nhảy" layout đột ngột.
+ * - Sử dụng `AnimatePresence` và `m.p` để thông báo lỗi xuất hiện mượt mà, không làm "nhảy" layout đột ngột. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 export function LoginPageContent() {

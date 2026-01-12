@@ -19,7 +19,10 @@ import { Job } from 'bullmq';
  *
  * 2. TẠI SAO PHẢI LÀM?
  * - Giảm thời gian phản hồi (TTFB) cho những trang quan trọng nhất.
- * - Tránh việc DB bị quá tải đột ngột khi vừa mới khởi động lại server.
+ * - Tránh việc DB bị quá tải đột ngột khi vừa mới khởi động lại server. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Processor('cache-warming')

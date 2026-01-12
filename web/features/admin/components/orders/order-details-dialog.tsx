@@ -42,7 +42,10 @@ import { useEffect, useState } from "react";
  *
  * 3. UI COMPONENTS:
  * - Sử dụng `Table` để hiển thị danh sách sản phẩm một cách ngăn nắp.
- * - `Badge` giúp làm nổi bật trạng thái đơn hàng.
+ * - `Badge` giúp làm nổi bật trạng thái đơn hàng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

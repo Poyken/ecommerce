@@ -26,7 +26,10 @@ interface DealBlockProps {
  *
  * 2. SCALE ANIMATION:
  *    - Sử dụng hiệu ứng `scale` (phóng to từ 0.95 lên 1) khi cuộn tới.
- *    - Giúp khối deal nổi bật hơn so với các section khác.
+ *    - Giúp khối deal nổi bật hơn so với các section khác. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function DealBlock({

@@ -16,7 +16,10 @@
  *
  * 3. AUTO-DISMISS (Tự động tắt):
  * - Sử dụng `setTimeout` 5s để bắn action `REMOVE_TOAST`.
- * - Dùng `Map` để quản lý các timeout này, tránh memory leak khi toast bị tắt thủ công trước hạn.
+ * - Dùng `Map` để quản lý các timeout này, tránh memory leak khi toast bị tắt thủ công trước hạn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

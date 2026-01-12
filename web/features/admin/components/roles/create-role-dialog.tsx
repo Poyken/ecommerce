@@ -22,7 +22,10 @@ import { useState, useTransition } from "react";
  * - Hệ thống tự động gọi `toUpperCase()` khi Admin nhập liệu.
  *
  * 2. SERVER ACTION:
- * - `createRoleAction` xử lý việc lưu vai trò mới vào database.
+ * - `createRoleAction` xử lý việc lưu vai trò mới vào database. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

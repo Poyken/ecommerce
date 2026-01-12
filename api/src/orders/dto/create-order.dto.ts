@@ -17,7 +17,10 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
  * - Nếu `itemIds` trống, hệ thống sẽ mặc định thanh toán tất cả các món trong giỏ.
  *
  * 3. PAYMENT METHOD:
- * - Mặc định là `COD` nếu người dùng không chọn phương thức khác.
+ * - Mặc định là `COD` nếu người dùng không chọn phương thức khác. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

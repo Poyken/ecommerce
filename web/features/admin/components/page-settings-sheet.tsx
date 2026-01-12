@@ -49,7 +49,10 @@ interface PageSettingsSheetProps {
  *    - `isPublished`: Cờ (Flag) quyết định trang có được hiển thị cho khách hay không.
  *    - Draft (Nháp): Chỉ Admin thấy.
  *    - Published (Công khai): Mọi người đều thấy.
- *    - Khi sửa xong -> Save -> DB cập nhật -> Next.js revalidate cache (ISR).
+ *    - Khi sửa xong -> Save -> DB cập nhật -> Next.js revalidate cache (ISR). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function PageSettingsSheet({

@@ -21,7 +21,10 @@ import { Job } from 'bullmq';
  * - `job.data` chứa toàn bộ thông tin cần thiết để gửi email: Địa chỉ người nhận, loại email (Reset Password, Order Confirm), và các biến dữ liệu (Token, Order ID).
  *
  * 4. SIMULATION:
- * - Trong code này, ta sử dụng `setTimeout` để mô phỏng độ trễ của việc gửi email thật qua các dịch vụ như AWS SES hay SendGrid.
+ * - Trong code này, ta sử dụng `setTimeout` để mô phỏng độ trễ của việc gửi email thật qua các dịch vụ như AWS SES hay SendGrid. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

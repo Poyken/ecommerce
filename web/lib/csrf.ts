@@ -21,7 +21,11 @@ import { cookies, headers } from "next/headers";
  *
  * 3. TẠI SAO HTTPONLY = FALSE?
  * - Cookie này KHÔNG ĐƯỢC để HttpOnly, vì Javascript bên Client CẦN ĐỌC nó để gắn vào Header.
- * - (Khác với Session Cookie phải để HttpOnly).
+ * - (Khác với Session Cookie phải để HttpOnly). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Banking-grade Security: Áp dụng cơ chế bảo mật tiêu chuẩn (Double Submit Cookie) để ngăn chặn các cuộc tấn công chiếm quyền điều khiển request.
+ * - User Safety: Đảm bảo các hành động quan trọng như "Đổi mật khẩu" hay "Thanh toán" chỉ được thực hiện từ chính website của hệ thống.
+
  * =====================================================================
  */
 

@@ -54,7 +54,10 @@ interface AdminHeaderProps {
  *
  * STYLING:
  * - `sticky top-0`: Giữ header luôn ở trên cùng khi scroll.
- * - `backdrop-blur-md`: Tạo hiệu ứng mờ nền (Glassmorphism).
+ * - `backdrop-blur-md`: Tạo hiệu ứng mờ nền (Glassmorphism). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 export function AdminHeader({ user, title }: AdminHeaderProps) {

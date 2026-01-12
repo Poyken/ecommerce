@@ -15,7 +15,10 @@
  *
  * 3. PROP DRILLING:
  * - Nhận `options` và `setOptions` từ component cha (`CreateProductDialog`).
- * - Thay đổi ở đây sẽ cập nhật trực tiếp state của cha (Lifted State Up).
+ * - Thay đổi ở đây sẽ cập nhật trực tiếp state của cha (Lifted State Up). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

@@ -62,7 +62,10 @@ export const revalidate = 3600;
  *      các Blocks. Block nào cần dữ liệu sẽ tự `use(promise)` để hiển thị khi có kết quả.
  *
  * 3. SEO & METADATA:
- *    - Cấu hình Meta tiêu chuẩn của Next.js để tối ưu tìm kiếm Google.
+ *    - Cấu hình Meta tiêu chuẩn của Next.js để tối ưu tìm kiếm Google. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default async function Home() {

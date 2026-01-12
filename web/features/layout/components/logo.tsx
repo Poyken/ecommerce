@@ -10,7 +10,10 @@
  * - Sử dụng `m.div` để tạo hiệu ứng xoay nhẹ khi hover, tăng tính sinh động.
  *
  * 2. VARIANTS & SIZES:
- * - Hỗ trợ nhiều kích thước (sm, md, lg) và biến thể màu sắc (light, dark) để linh hoạt sử dụng ở Header, Footer hoặc Sidebar.
+ * - Hỗ trợ nhiều kích thước (sm, md, lg) và biến thể màu sắc (light, dark) để linh hoạt sử dụng ở Header, Footer hoặc Sidebar. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

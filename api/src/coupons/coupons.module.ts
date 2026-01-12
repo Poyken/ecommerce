@@ -22,7 +22,10 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  *
  * 2. EXPORTS:
  * - Export `CouponsService` để module `Cart` hoặc `Checkout` có thể gọi hàm validation
- *   mà không cần duplicate logic.
+ *   mà không cần duplicate logic. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class CouponsModule {}

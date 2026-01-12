@@ -48,7 +48,10 @@ function getCategoryImage(
  *    - Việc này giúp User biết mỗi danh mục có bao nhiêu item trước khi click vào.
  *
  * 3. SEO & UX:
- *    - Sử dụng `pt-24` để dành chỗ cho Header (Sticky Header) không đè lên nội dung.
+ *    - Sử dụng `pt-24` để dành chỗ cho Header (Sticky Header) không đè lên nội dung. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default async function CategoriesPage() {

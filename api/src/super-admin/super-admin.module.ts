@@ -11,7 +11,10 @@
  *
  * 2. DEPENDENCIES:
  * - Import `AuthModule` để tái sử dụng `TokenService` và `PermissionService`
- *   cho tính năng Impersonate (Đăng nhập thay).
+ *   cho tính năng Impersonate (Đăng nhập thay). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { Module } from '@nestjs/common';

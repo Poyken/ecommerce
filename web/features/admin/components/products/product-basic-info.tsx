@@ -11,7 +11,10 @@
  *
  * 2. UX:
  * - Validate form realtime và hiển thị lỗi bằng Animation (`AnimatePresence`)
- *   giúp giao diện mượt mà, thân thiện hơn thông báo lỗi cứng nhắc.
+ *   giúp giao diện mượt mà, thân thiện hơn thông báo lỗi cứng nhắc. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 "use client";

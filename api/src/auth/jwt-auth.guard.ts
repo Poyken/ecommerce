@@ -13,7 +13,10 @@
  *   + Nếu token invalid/expired -> Trả về 401 Unauthorized ngay lập tức.
  *
  * 2. SỬ DỤNG:
- * - Hầu hết các API private đều phải có guard này.
+ * - Hầu hết các API private đều phải có guard này. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { Injectable } from '@nestjs/common';

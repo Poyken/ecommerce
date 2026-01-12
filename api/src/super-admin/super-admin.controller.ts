@@ -8,7 +8,10 @@
  * 1. SECURITY CAO CẤP:
  * - `@Permissions('SUPER_ADMIN')`: Chỉ user có quyền tối thượng mới truy cập được.
  * - Endpoint này cực kỳ nhạy cảm vì chứa số liệu tài chính toàn hệ thống
- *   và quyền truy cập vào bất kỳ tenant nào.
+ *   và quyền truy cập vào bất kỳ tenant nào. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { Controller, Get, Post, Param, UseGuards } from '@nestjs/common';

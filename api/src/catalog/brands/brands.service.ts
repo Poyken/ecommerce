@@ -22,7 +22,10 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
  *
  * 2. BUSINESS CONSTRAINTS (Ràng buộc nghiệp vụ):
  * - Trước khi tạo mới: Kiểm tra trùng tên thương hiệu (Conflict check).
- * - Trước khi xóa: Phải kiểm tra xem thương hiệu đó có đang chứa sản phẩm nào không. Nếu có -> KHÔNG được xóa để đảm bảo toàn vẹn dữ liệu (Integrity).
+ * - Trước khi xóa: Phải kiểm tra xem thương hiệu đó có đang chứa sản phẩm nào không. Nếu có -> KHÔNG được xóa để đảm bảo toàn vẹn dữ liệu (Integrity). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

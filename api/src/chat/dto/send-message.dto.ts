@@ -14,7 +14,10 @@ export class SendMessageDto {
    * - `metadata`: Chứa thông tin bổ sung (VD: ID đơn hàng, URL ảnh).
    *
    * 2. CLIENT TEMP ID:
-   * - Dùng để Optimistic UI (Hiển thị tin nhắn ngay lập tức trước khi Server phản hồi).
+   * - Dùng để Optimistic UI (Hiển thị tin nhắn ngay lập tức trước khi Server phản hồi). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
    * =====================================================================
    */
   @IsString()

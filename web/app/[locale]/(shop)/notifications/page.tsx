@@ -6,7 +6,10 @@
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * Trang này hiển thị danh sách tất cả thông báo của người dùng.
- * Sử dụng `NotificationsClient` để xử lý việc hiển thị và tương tác.
+ * Sử dụng `NotificationsClient` để xử lý việc hiển thị và tương tác. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

@@ -12,7 +12,10 @@
  *
  * 2. CẤU TRÚC:
  * - Chúng ta chia nhỏ actions theo domain (product, order, user...) để dễ quản lý (Separation of Concerns).
- * - Nhưng ở đây ta gom lại (re-export) để dễ sử dụng (Developer Experience).
+ * - Nhưng ở đây ta gom lại (re-export) để dễ sử dụng (Developer Experience). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 // "use server";

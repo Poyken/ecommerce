@@ -42,7 +42,10 @@ interface TenantStyleProviderProps {
  *
  * 4. SO SÁNH VỚI TenantProvider (Server-side):
  *    - TenantProvider: SSR, SEO-friendly, initial load
- *    - TenantStyleProvider: CSR, động, preview mode
+ *    - TenantStyleProvider: CSR, động, preview mode *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 export function TenantStyleProvider({

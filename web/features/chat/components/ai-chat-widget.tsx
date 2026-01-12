@@ -44,7 +44,10 @@ import ReactMarkdown from "react-markdown";
  *
  * 3. FLOATING WIDGET:
  * - Sử dụng Portal để render ngoài DOM tree chính
- * - Fixed position ở góc dưới phải màn hình
+ * - Fixed position ở góc dưới phải màn hình *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

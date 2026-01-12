@@ -14,7 +14,11 @@ import { RedisService } from './redis.service';
  *
  * 2. PROVIDERS & EXPORTS:
  * - `RedisService` được khai báo trong `providers` để NestJS quản lý vòng đời.
- * - `exports` giúp các module khác có thể "tiêm" (Inject) `RedisService` vào để sử dụng.
+ * - `exports` giúp các module khác có thể "tiêm" (Inject) `RedisService` vào để sử dụng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Centralized Connection: Quản lý pool kết nối Redis tập trung, tự động reconnect khi mạng chập chờn.
+ * - Cache & Queue Support: Làm nền tảng cho Cache, Session và BullMQ (xử lý job nền) hoạt động.
+
  * =====================================================================
  */
 

@@ -16,7 +16,10 @@
  *
  * 3. ANIMATION:
  * - Sử dụng `fadeInRight` cho header để tạo cảm giác chuyển động từ phải sang trái.
- * - Grid sản phẩm vẫn dùng `staggerChildren` để hiện lần lượt.
+ * - Grid sản phẩm vẫn dùng `staggerChildren` để hiện lần lượt. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 import { ProductCard } from "@/features/products/components/product-card";

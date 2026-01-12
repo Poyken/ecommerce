@@ -10,7 +10,10 @@
  * - Các chỉ số KPI (Key Performance Indicators): Doanh thu, Đơn hàng, Khách hàng, Sản phẩm.
  *
  * 2. UX:
- * - Các thẻ Card có hiệu ứng hover border màu (`border-l-4`) để phân biệt nhanh các nhóm chỉ số.
+ * - Các thẻ Card có hiệu ứng hover border màu (`border-l-4`) để phân biệt nhanh các nhóm chỉ số. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

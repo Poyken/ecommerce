@@ -27,7 +27,10 @@ import {
  * - `@IsUUID('4', { each: true })`: Kiểm tra từng phần tử trong mảng phải là một UUID hợp lệ.
  *
  * 4. IMAGE HANDLING:
- * - `imageUrl`: Mặc dù trong Swagger ta khai báo là `binary` (để hiện nút upload file), nhưng trong DTO nó sẽ được gán URL sau khi upload thành công lên Cloudinary.
+ * - `imageUrl`: Mặc dù trong Swagger ta khai báo là `binary` (để hiện nút upload file), nhưng trong DTO nó sẽ được gán URL sau khi upload thành công lên Cloudinary. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

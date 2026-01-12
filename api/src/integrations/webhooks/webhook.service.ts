@@ -17,7 +17,10 @@
  * 1. Retry với exponential backoff (1s, 2s, 4s, 8s...)
  * 2. Signature verification (HMAC-SHA256)
  * 3. Event logging cho audit
- * 4. Rate limiting để tránh spam endpoints
+ * 4. Rate limiting để tránh spam endpoints *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
+
  * =====================================================================
  */
 

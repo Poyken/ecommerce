@@ -12,7 +12,11 @@
  * 2. GIẢI PHÁP:
  * - `getErrorMessage(err)`: Hàm chuẩn hóa để LUÔN trả về string dễ đọc cho user.
  * - Các hàm kiểm tra loại lỗi (`isNetworkError`, `isUnauthorizedError`) để UI phản ứng phù hợp
- *   (VD: Mất mạng -> Show Toast báo kiểm tra kết nối; 401 -> Redirect login).
+ *   (VD: Mất mạng -> Show Toast báo kiểm tra kết nối; 401 -> Redirect login). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - User Friendly: Chuyển các mã lỗi khô khan của server (401, 500) thành thông báo tiếng Việt dễ hiểu cho khách hàng.
+ * - Resilience: Giúp ứng dụng hoạt động ổn định bằng cách bắt hết các trường hợp lỗi ngoại lệ (unknown error) và đưa ra hướng xử lý an toàn.
+
  * =====================================================================
  */
 /**

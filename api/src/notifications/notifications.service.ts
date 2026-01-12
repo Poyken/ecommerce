@@ -20,7 +20,10 @@ import { Cron, CronExpression } from '@nestjs/schedule';
  *
  * 3. DỌN DẸP DỮ LIỆU (Cleanup):
  * - `deleteOldReadNotifications`: Một Cron-job chạy ngầm mỗi đêm.
- * - Nhiệm vụ: Xóa các thông báo đã đọc và cũ hơn 30 ngày để giảm tải cho DB.
+ * - Nhiệm vụ: Xóa các thông báo đã đọc và cũ hơn 30 ngày để giảm tải cho DB. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

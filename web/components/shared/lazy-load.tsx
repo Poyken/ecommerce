@@ -16,7 +16,10 @@ import { ReactNode, memo, useEffect, useRef, useState } from "react";
  * 2. PERFORMANCE BENEFITS:
  * - Giảm initial render cost.
  * - Giảm memory usage.
- * - Cải thiện FCP và LCP metrics.
+ * - Cải thiện FCP và LCP metrics. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

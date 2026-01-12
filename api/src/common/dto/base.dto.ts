@@ -12,7 +12,10 @@
  * 2. COMMON PATTERNS:
  * - Pagination DTOs
  * - Filter DTOs
- * - Sort DTOs
+ * - Sort DTOs *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

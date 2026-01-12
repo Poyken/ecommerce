@@ -12,7 +12,10 @@
  * QUY TRÌNH XỬ LÝ:
  * 1. Nhận FormData chứa các file ảnh.
  * 2. Gửi đến endpoint `/reviews/upload`.
- * 3. Nhận về danh sách URLs của các ảnh đã được lưu trữ trên server/cloud.
+ * 3. Nhận về danh sách URLs của các ảnh đã được lưu trữ trên server/cloud. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

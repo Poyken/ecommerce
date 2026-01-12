@@ -30,7 +30,10 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
  *
  * 4. CART MERGING:
  * - Hỗ trợ gộp giỏ hàng từ khách (Guest Cart - lưu ở LocalStorage) vào tài khoản khi họ đăng nhập.
- * - Logic gộp được xử lý từng item một để đảm bảo validation tồn kho cho từng sản phẩm.
+ * - Logic gộp được xử lý từng item một để đảm bảo validation tồn kho cho từng sản phẩm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

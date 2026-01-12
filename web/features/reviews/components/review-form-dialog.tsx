@@ -50,7 +50,10 @@ import * as z from "zod";
  * - Giúp tái sử dụng 1 Dialog cho cả 2 mục đích.
  *
  * 3. INTERACTIVE RATING:
- * - Các ngôi sao có thể click được. Khi click, giá trị `rating` trong form sẽ được cập nhật.
+ * - Các ngôi sao có thể click được. Khi click, giá trị `rating` trong form sẽ được cập nhật. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

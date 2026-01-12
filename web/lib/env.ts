@@ -15,7 +15,11 @@
  *
  * ⚠️ LƯU Ý:
  * - Chỉ các biến bắt đầu bằng `NEXT_PUBLIC_` mới lộ ra phía Client (Browser).
- * - Đừng để lộ API Key bí mật ở đây!
+ * - Đừng để lộ API Key bí mật ở đây! *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Configuration Management: Giúp quản trị viên dễ dàng chuyển đổi URL API từ môi trường Local sang Staging hoặc Production chỉ qua file `.env`.
+ * - Error Prevention: Ngăn chặn lỗi runtime do quên cấu hình nhờ cơ chế fallback (giá trị mặc định) thông minh.
+
  * =====================================================================
  */
 /**

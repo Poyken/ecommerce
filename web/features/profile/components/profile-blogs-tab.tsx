@@ -32,7 +32,10 @@ import { useCallback, useEffect, useState } from "react";
  *
  * 3. STATE MANAGEMENT:
  * - `selectedBlog`: Lưu bài viết đang được chọn để Edit. Nếu null -> Mode Create.
- * - `itemToDelete`: Lưu item đang chờ xóa để hiện Confirm Dialog.
+ * - `itemToDelete`: Lưu item đang chờ xóa để hiện Confirm Dialog. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 export function ProfileBlogsTab() {

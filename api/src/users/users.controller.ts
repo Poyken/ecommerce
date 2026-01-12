@@ -45,7 +45,10 @@ import { UsersService } from './users.service';
  * - API `:id/roles` cho phép Admin gán các vai trò (Role) cho người dùng, từ đó thay đổi quyền hạn của họ trong hệ thống.
  *
  * 4. PAGINATION & SEARCH:
- * - Hỗ trợ phân trang và tìm kiếm để Admin dễ dàng quản lý khi số lượng người dùng lên đến hàng ngàn.
+ * - Hỗ trợ phân trang và tìm kiếm để Admin dễ dàng quản lý khi số lượng người dùng lên đến hàng ngàn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

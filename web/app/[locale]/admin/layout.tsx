@@ -36,7 +36,10 @@ import { Suspense } from "react";
  * - Điều này giúp UI hiển thị ngay lập tức (SEO tốt và trải nghiệm mượt mà) mà không cần chờ Client gọi API.
  *
  * 4. BẢO MẬT & ĐIỀU HƯỚNG:
- * - Kiểm tra profile người dùng trên Server. Nếu chưa đăng nhập hoặc không đủ quyền, thực hiện `redirect("/login")` ngay lập tức.
+ * - Kiểm tra profile người dùng trên Server. Nếu chưa đăng nhập hoặc không đủ quyền, thực hiện `redirect("/login")` ngay lập tức. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

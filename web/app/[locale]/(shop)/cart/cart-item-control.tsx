@@ -21,7 +21,10 @@ import { useState, useTransition } from "react";
  * - User: Gọi Server Action `updateCartItemAction` để lưu vào database.
  *
  * 3. UX ENHANCEMENT:
- * - Sử dụng `useTransition` (`isPending`) để disable các nút bấm khi đang xử lý API, tránh việc user click quá nhanh gây lỗi race condition.
+ * - Sử dụng `useTransition` (`isPending`) để disable các nút bấm khi đang xử lý API, tránh việc user click quá nhanh gây lỗi race condition. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

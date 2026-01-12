@@ -15,7 +15,11 @@
  * - `ApiError`: Cấu trúc lỗi chuẩn để hiển thị thông báo lỗi đồng nhất.
  *
  * 3. LƯU Ý:
- * - Luôn sử dụng `ApiResponse<MyDataType>` khi define kiểu trả về của hook hoặc service gọi API.
+ * - Luôn sử dụng `ApiResponse<MyDataType>` khi define kiểu trả về của hook hoặc service gọi API. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Standardization: Tạo ra một "ngôn ngữ chung" cho toàn bộ Services và Hooks trong Web, giúp việc xử lý lỗi và phân trang trở nên đồng nhất.
+ * - DX (Developer Experience): Giúp lập trình viên biết ngay cấu trúc Meta (total, page) để code UI phân trang chỉ trong vài giây.
+
  * =====================================================================
  */
 /**

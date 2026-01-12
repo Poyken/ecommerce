@@ -33,7 +33,10 @@ import { ProductOptionsManager } from "./product-options-manager";
  * - Sử dụng `useMemo` để chuyển đổi cấu trúc dữ liệu từ model sang cấu trúc UI.
  *
  * 3. DEEP DIRTY CHECK:
- * - Kiểm tra thay đổi sâu (`JSON.stringify`) cho mảng `options` để biết khi nào cần cho phép lưu.
+ * - Kiểm tra thay đổi sâu (`JSON.stringify`) cho mảng `options` để biết khi nào cần cho phép lưu. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

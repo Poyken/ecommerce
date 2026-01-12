@@ -26,7 +26,10 @@ import {
  * - Thông báo thành công/thông tin thường chỉ cần 3s để không làm phiền user.
  *
  * 3. VIEWPORT:
- * - `ToastViewport`: Nơi các thông báo thực sự xuất hiện trên màn hình (thường là góc dưới bên phải).
+ * - `ToastViewport`: Nơi các thông báo thực sự xuất hiện trên màn hình (thường là góc dưới bên phải). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

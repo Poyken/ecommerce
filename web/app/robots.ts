@@ -15,7 +15,10 @@ import { MetadataRoute } from "next";
  * - Điều này giúp bảo mật thông tin và tập trung "ngân sách thu thập dữ liệu" (Crawl Budget) vào các trang sản phẩm quan trọng.
  *
  * 3. SITEMAP LINK:
- * - Khai báo đường dẫn đến file `sitemap.xml` để bot dễ dàng tìm thấy tất cả các trang trên website.
+ * - Khai báo đường dẫn đến file `sitemap.xml` để bot dễ dàng tìm thấy tất cả các trang trên website. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

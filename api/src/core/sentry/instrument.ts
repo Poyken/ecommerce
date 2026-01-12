@@ -23,7 +23,12 @@
  *
  * 4. ENVIRONMENT CONFIG:
  *    - SENTRY_DSN: Data Source Name - URL để gửi data
- *    - sampleRate: % request được monitor (production nên < 100%)
+ *    - sampleRate: % request được monitor (production nên < 100%) *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Centralized Monitoring: Dashboard duy nhất để theo dõi sức khỏe của toàn bộ hệ thống (API, Worker, DB).
+ * - Performance Baseline: Giúp dev biết được "Bình thường" API chạy mất bao lâu, từ đó phát hiện sự cố "Tự nhiên chậm" (Regression).
+ * - Security Auditing: Tự động lọc bỏ mật khẩu, token khỏi log trước khi gửi đi để tránh lộ thông tin người dùng.
+
  * =====================================================================
  */
 

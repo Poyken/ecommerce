@@ -22,7 +22,10 @@ import { useEffect, useRef, useState } from "react";
  *
  * 2. HYBRID FETCHING STRATEGY:
  * - Dữ liệu ban đầu (`initialPosts`) được fetch từ Server (SSR) để tốt cho SEO.
- * - Khi user chọn Category, ta fetch lại từ API (`getBlogsAction`) ở phía Client.
+ * - Khi user chọn Category, ta fetch lại từ API (`getBlogsAction`) ở phía Client. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

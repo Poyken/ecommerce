@@ -27,7 +27,10 @@ export class FilterProductDto {
    *
    * 3. FILTER LOGIC:
    * - Hỗ trợ tìm kiếm, lọc theo Category/Brand, và khoảng giá (Min/Max).
-   * - `includeSkus`: Tùy chọn để lấy luôn danh sách biến thể (Màu/Size) hay không.
+   * - `includeSkus`: Tùy chọn để lấy luôn danh sách biến thể (Màu/Size) hay không. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
    * =====================================================================
    */
   @ApiPropertyOptional({ description: 'Tìm theo tên hoặc mô tả' })

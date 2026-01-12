@@ -34,7 +34,10 @@ import { useTransition } from "react";
  *
  * 4. ENHANCED UI:
  * - Icon warning để làm rõ đây là hành động nguy hiểm
- * - Better styling cho buttons
+ * - Better styling cho buttons *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

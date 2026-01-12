@@ -18,7 +18,10 @@ import { UsersPageClient } from "./users-page-client";
  *
  * 3. SEARCH & PAGINATION:
  * - Tìm kiếm theo tên hoặc email người dùng.
- * - Phân trang để xử lý hiệu quả khi có hàng nghìn người dùng.
+ * - Phân trang để xử lý hiệu quả khi có hàng nghìn người dùng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

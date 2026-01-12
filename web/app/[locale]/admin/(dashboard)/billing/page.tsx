@@ -7,7 +7,10 @@
  *
  * Trang này cho phép Tenant (chủ cửa hàng) xem gói đăng ký hiện tại.
  * 1. SUBSCRIPTION DATA: Fetch thông tin gói từ backend API /subscriptions/current.
- * 2. PLAN STATUS: Hiển thị các giới hạn (Usage limits) dựa trên gói (Basic/Pro/Enterprise).
+ * 2. PLAN STATUS: Hiển thị các giới hạn (Usage limits) dựa trên gói (Basic/Pro/Enterprise). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

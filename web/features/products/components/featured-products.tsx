@@ -10,7 +10,10 @@
  * - Giúp tăng khả năng bán hàng (Cross-selling) ngay khi người dùng đang đọc tin tức.
  *
  * 2. STAGGERED GRID:
- * - Sử dụng Framer Motion để tạo hiệu ứng xuất hiện lần lượt cho các thẻ sản phẩm.
+ * - Sử dụng Framer Motion để tạo hiệu ứng xuất hiện lần lượt cho các thẻ sản phẩm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

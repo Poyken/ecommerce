@@ -28,7 +28,10 @@ import { UpdateCouponDto } from './dto/update-coupon.dto';
  * - Hệ thống thêm một buffer nhỏ (2 phút) khi so sánh thời gian để tránh lỗi lệch múi giờ giữa client và server (Clock Skew).
  *
  * 3. USAGE COUNTER (Biến đếm):
- * - Mỗi khi đơn hàng hoàn tất, `usedCount` sẽ tăng lên. Khi đạt `usageLimit`, mã sẽ không còn hiệu lực.
+ * - Mỗi khi đơn hàng hoàn tất, `usedCount` sẽ tăng lên. Khi đạt `usageLimit`, mã sẽ không còn hiệu lực. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

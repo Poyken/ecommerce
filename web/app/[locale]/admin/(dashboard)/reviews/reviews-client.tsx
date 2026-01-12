@@ -10,7 +10,10 @@
  * - Filter theo status (Server-side via URL)
  * - Stats fetched from server
  * - Search theo product hoặc comment
- * - Quick actions: Reply, Toggle Publish, Delete
+ * - Quick actions: Reply, Toggle Publish, Delete *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

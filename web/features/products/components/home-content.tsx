@@ -77,7 +77,10 @@ export function HomeContent({
    *
    * 2. VIEWPORT ANIMATIONS:
    * - `whileInView="visible"` + `viewport={{ once: true }}`: Chỉ chạy animation
-   *   khi user scroll tới vị trí đó (Scroll Trigger).
+   *   khi user scroll tới vị trí đó (Scroll Trigger). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
    * =====================================================================
    */
   const t = useTranslations("home");

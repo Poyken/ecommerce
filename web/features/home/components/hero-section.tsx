@@ -15,7 +15,10 @@
  * - Dùng `sizes` prop để browser tải đúng kích thước ảnh theo thiết bị (Mobile/Desktop).
  *
  * 3. CUSTOMIZATION:
- * - Props linh hoạt (`HeroSectionProps`) cho phép tái sử dụng ở các trang khác hoặc A/B Testing.
+ * - Props linh hoạt (`HeroSectionProps`) cho phép tái sử dụng ở các trang khác hoặc A/B Testing. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 "use client";

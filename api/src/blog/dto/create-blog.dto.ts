@@ -24,7 +24,10 @@ import {
  *
  * 3. RELATIONS:
  * - `productIds`: Bài viết có thể "gắn" (tag) các sản phẩm liên quan để User click mua ngay.
- *   Dùng mảng UUID string.
+ *   Dùng mảng UUID string. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class CreateBlogDto {

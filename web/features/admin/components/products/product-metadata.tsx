@@ -11,7 +11,10 @@
  *
  * 2. DATA SOURCE:
  * - List `categories` và `brands` được fetch từ Server Component cha và truyền xuống,
- *   tránh việc component con phải tự fetch lại gây chậm (Waterfall requests).
+ *   tránh việc component con phải tự fetch lại gây chậm (Waterfall requests). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */ 
 "use client";

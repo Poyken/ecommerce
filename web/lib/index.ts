@@ -10,13 +10,15 @@
  * - Giúp code gọn gàng: `import { cn, formatVND } from "@/lib"`
  *
  * 2. TREE SHAKING:
- * - Bundler (webpack, turbopack) sẽ tự động loại bỏ code không dùng.
+ * - Bundler (webpack, turbopack) sẽ tự động loại bỏ code không dùng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Fast Development: Giúp Developer không phải mất thời gian tìm kiếm function trong hàng chục file lẻ, chỉ cần `import from "@/lib"`.
+ * - DX (Developer Experience): Tận dụng tối đa sức mạnh của Auto-import trong IDE, giúp tốc độ gõ code tăng lên đáng kể.
+ *
  * =====================================================================
  */
 
 // Utils chung
-
-// Format utilities (merged into utils)
 export * from "./utils";
 
 // Constants

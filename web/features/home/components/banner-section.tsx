@@ -29,7 +29,10 @@ interface BannerSectionProps {
  *
  * 2. STYLE INJECTION:
  *    - `styles` prop chứa cấu hình màu sắc (background, text color).
- *    - Ta dùng `style={{ ... }}` inline để áp dụng các màu động này (vì Tailwind không hỗ trợ class động kiểu `bg-[userColor]`).
+ *    - Ta dùng `style={{ ... }}` inline để áp dụng các màu động này (vì Tailwind không hỗ trợ class động kiểu `bg-[userColor]`). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function BannerSection({

@@ -17,7 +17,10 @@ import { TenantsClient } from "./tenants-client";
  *    - Việc tách nhỏ giúp Logic Client-side (search, filter) không làm nặng Server component.
  *
  * 3. ERROR RESILIENCE:
- *    - Có cơ chế hiển thị lỗi ngay tại trang nếu API fetch danh sách tenants thất bại.
+ *    - Có cơ chế hiển thị lỗi ngay tại trang nếu API fetch danh sách tenants thất bại. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default async function TenantsPage() {

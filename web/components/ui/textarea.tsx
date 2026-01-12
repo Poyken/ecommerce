@@ -17,7 +17,10 @@ import { cn } from "@/lib/utils";
  * - `focus-visible`: Chỉ hiển thị viền focus khi user tương tác bằng bàn phím (Accessibility).
  *
  * 3. FLEXIBILITY:
- * - Kế thừa toàn bộ `React.TextareaHTMLAttributes`, giúp nó hoạt động giống hệt thẻ `textarea` chuẩn của HTML.
+ * - Kế thừa toàn bộ `React.TextareaHTMLAttributes`, giúp nó hoạt động giống hệt thẻ `textarea` chuẩn của HTML. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

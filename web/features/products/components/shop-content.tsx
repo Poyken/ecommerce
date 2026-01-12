@@ -57,7 +57,10 @@ import {
  *
  * 3. DATA STREAMING:
  * - Nhận các `Promise` từ Server Component và sử dụng `Suspense` để hiển thị Skeleton.
- * - `ShopGrid` sẽ unwrap `productsPromise` để hiển thị danh sách sản phẩm.
+ * - `ShopGrid` sẽ unwrap `productsPromise` để hiển thị danh sách sản phẩm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

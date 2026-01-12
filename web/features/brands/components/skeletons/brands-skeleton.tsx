@@ -20,7 +20,10 @@ import { Skeleton } from "@/components/ui/skeleton";
  *
  * 1. VISUAL CONSISTENCY:
  * - Quan trọng: Cấu trúc HTML của Skeleton PHẢI KHỚP với cấu trúc của Page thật.
- * - Giúp tránh CLS (Content Layout Shift) khi data load xong.
+ * - Giúp tránh CLS (Content Layout Shift) khi data load xong. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 export function BrandsSkeleton() {

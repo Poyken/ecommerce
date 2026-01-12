@@ -25,7 +25,10 @@ import Link from "next/link";
  *
  * 3. UI POLISH:
  * - Sử dụng `blur-3xl` cho các đốm màu nền (`bg-red-500/5`, `bg-blue-500/5`) tạo cảm giác chiều sâu và hiện đại.
- * - `group-hover/item`: Kỹ thuật CSS lồng nhau để thay đổi style của số thứ tự khi hover vào dòng tương ứng.
+ * - `group-hover/item`: Kỹ thuật CSS lồng nhau để thay đổi style của số thứ tự khi hover vào dòng tương ứng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

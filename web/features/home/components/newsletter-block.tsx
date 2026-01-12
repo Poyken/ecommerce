@@ -26,7 +26,10 @@ interface NewsletterBlockProps {
  *
  * 2. REUSABLE FORM:
  *    - Tách logic form vào `NewsletterForm` để xử lý validation (Zod) và gọi API.
- *    - Header này chỉ quan tâm tới visual và thông điệp truyền tải.
+ *    - Header này chỉ quan tâm tới visual và thông điệp truyền tải. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function NewsletterBlock({

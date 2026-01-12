@@ -36,7 +36,10 @@ const AdminMetadataContext = createContext<
  * - Loại bỏ việc prop-drilling (truyền props qua nhiều tầng) vốn gây khó bảo trì.
  *
  * 3. SERVER ACTION INTEGRATION:
- * - Kết hợp mượt mà với Server Actions (`getBrandsAction`, `getCategoriesAction`).
+ * - Kết hợp mượt mà với Server Actions (`getBrandsAction`, `getCategoriesAction`). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Quản lý state toàn cục (Global State) hoặc cung cấp dependency injection cho cây component.
+
  * =====================================================================
  */
 

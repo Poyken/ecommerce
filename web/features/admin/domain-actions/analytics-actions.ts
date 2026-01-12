@@ -11,7 +11,10 @@
  *
  * 2. VISUALIZATION READY:
  * - Dữ liệu trả về (`SalesDataPoint[]`, `TopProduct[]`) được format sẵn
- *   để ném thẳng vào các thư viện biểu đồ như `Recharts` mà không cần xử lý thêm nhiều ở Client.
+ *   để ném thẳng vào các thư viện biểu đồ như `Recharts` mà không cần xử lý thêm nhiều ở Client. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 "use server";

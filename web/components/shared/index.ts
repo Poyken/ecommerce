@@ -20,7 +20,10 @@
  * =====================================================================
  *
  * Export tất cả shared components từ một điểm duy nhất.
- * Import: import { OptimizedImage, ShopEmptyState } from "@/components/shared"
+ * Import: import { OptimizedImage, ShopEmptyState } from "@/components/shared" *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  */
 
 // Data states (loading, error, empty)

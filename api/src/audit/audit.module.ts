@@ -31,7 +31,10 @@ import { AuditService } from './audit.service';
  * - Audit log là tác vụ "phụ" (không ảnh hưởng trực tiếp đến user).
  * - Sử dụng Queue (`audit`) để xử lý bất đồng bộ (Async).
  * - User bấm nút -> API trả về ngay -> Worker âm thầm ghi log sau.
- * -> Giúp API phản hồi nhanh hơn.
+ * -> Giúp API phản hồi nhanh hơn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class AuditModule {}

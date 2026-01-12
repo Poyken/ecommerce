@@ -59,7 +59,10 @@ interface NotificationCenterProps {
  * 3. QUICK ACTIONS:
  * - Mark as Read: Đánh dấu đã đọc từng thông báo.
  * - Mark All Read: Đánh dấu tất cả đã đọc.
- * - Navigate: Click vào thông báo để đi đến trang liên quan.
+ * - Navigate: Click vào thông báo để đi đến trang liên quan. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

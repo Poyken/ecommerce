@@ -28,7 +28,10 @@ import { useState } from "react";
  *
  * 3. PORTAL & OVERLAY:
  * - Menu mở rộng ("More") sử dụng `AnimatePresence` để animate lúc mount/unmount.
- * - `safe-area-pb`: Class utility (custom) để tránh bị che bởi thanh Home Indicator của iPhone X+.
+ * - `safe-area-pb`: Class utility (custom) để tránh bị che bởi thanh Home Indicator của iPhone X+. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

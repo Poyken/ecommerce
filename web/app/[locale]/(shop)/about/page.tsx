@@ -15,7 +15,10 @@ import { getTranslations } from "next-intl/server";
  *
  * 2. METADATA API:
  * - `generateMetadata`: Định nghĩa tiêu đề và mô tả cho trang này sử dụng i18n.
- * - Giúp trang hiển thị đẹp hơn trên Google Search và khi share link qua mạng xã hội.
+ * - Giúp trang hiển thị đẹp hơn trên Google Search và khi share link qua mạng xã hội. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

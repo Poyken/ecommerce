@@ -14,7 +14,10 @@ import { CreateBrandDto } from './create-brand.dto';
  *
  * 2. OPTIONAL FIELDS:
  * - `PartialType` tự động biến tất cả các trường thành tùy chọn (`optional`).
- * - Phù hợp cho hành động PATCH, nơi ta chỉ muốn cập nhật một vài thông tin cụ thể.
+ * - Phù hợp cho hành động PATCH, nơi ta chỉ muốn cập nhật một vài thông tin cụ thể. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

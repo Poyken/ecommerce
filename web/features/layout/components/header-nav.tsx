@@ -29,7 +29,10 @@ import {
  * - `Admin`: Chỉ hiển thị nếu user có quyền `admin:read`.
  *
  * 3. HYBRID REFACTOR WARNING:
- * - `hasPermission` lấy dữ liệu từ `AuthProvider`. Nếu user đăng nhập ở client, context này cần được cập nhật để hiển thị đúng các link quyền hạn.
+ * - `hasPermission` lấy dữ liệu từ `AuthProvider`. Nếu user đăng nhập ở client, context này cần được cập nhật để hiển thị đúng các link quyền hạn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

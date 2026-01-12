@@ -11,7 +11,10 @@
  *
  * 2. TEST FLOW (Luồng kiểm thử):
  * - Auth -> Tạo MetaData (Cat/Brand) -> Tạo Product -> Mua hàng (Order) -> Admin duyệt.
- * - Nếu script chạy từ đầu đến cuối không lỗi (xanh lè) -> Core luồng chính hoạt động tốt.
+ * - Nếu script chạy từ đầu đến cuối không lỗi (xanh lè) -> Core luồng chính hoạt động tốt. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import axios from 'axios';

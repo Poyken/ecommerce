@@ -13,7 +13,11 @@
  * - Các phương thức chưa hỗ trợ (như Credit Card trực tiếp) được làm mờ và gắn nhãn "Coming Soon".
  *
  * 3. INTERACTIVE FEEDBACK:
- * - Phương thức được chọn sẽ có viền màu `primary` và dấu `Check` xác nhận.
+ * - Phương thức được chọn sẽ có viền màu `primary` và dấu `Check` xác nhận. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - User Experience: Cho phép người dùng chuyển đổi linh hoạt giữa các phương thức thanh toán phổ biến tại Việt Nam (VNPay, Momo, Chuyển khoản).
+ * - Revenue Conversion: Việc tích hợp đa dạng cổng thanh toán giúp giảm tỷ lệ bỏ giỏ hàng (Cart Abandonment) do khách hàng không tìm thấy phương thức phù hợp.
+ *
  * =====================================================================
  */
 
@@ -25,7 +29,13 @@ import { Label } from "@radix-ui/react-label";
 import { Check, CreditCard, Landmark, Truck } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-export type PaymentMethodType = "COD" | "CARD" | "BANKING" | "VNPAY";
+export type PaymentMethodType =
+  | "COD"
+  | "CARD"
+  | "BANKING"
+  | "VNPAY"
+  | "MOMO"
+  | "VIETQR";
 
 interface PaymentMethodSelectorProps {
   method: PaymentMethodType;
@@ -92,8 +102,6 @@ export function PaymentMethodSelector({
           }
           checked={method === "VNPAY"}
         />
-
-
 
         {/* Credit Card Option (Disabled) */}
         <div className="p-5 rounded-2xl border-2 border-foreground/5 opacity-50 cursor-not-allowed flex items-center gap-4 relative overflow-hidden grayscale bg-foreground/2">

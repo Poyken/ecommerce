@@ -10,7 +10,10 @@
  * Component này cho phép user hủy đơn hàng PENDING với lý do.
  * - Sử dụng AlertDialog để xác nhận trước khi hủy
  * - Bắt buộc nhập lý do hủy đơn
- * - Gọi cancelOrderAction và refresh trang
+ * - Gọi cancelOrderAction và refresh trang *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

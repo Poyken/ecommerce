@@ -25,7 +25,12 @@ import { Request } from 'express';
  *
  * TẠI SAO AN TOÀN?
  * - Hacker có thể khiến trình duyệt gửi Cookie đi (tự động), nhưng Hacker
- *   KHÔNG THỂ đọc được Cookie (do cùng chính sách Same-Origin) để đưa vào Header.
+ *   KHÔNG THỂ đọc được Cookie (do cùng chính sách Same-Origin) để đưa vào Header. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Bảo mật giao dịch: Ngăn chặn hacker lừa user click link lạ để chuyển tiền/đổi mật khẩu ngầm.
+ * - Tuân thủ tiêu chuẩn OWASP: Đáp ứng yêu cầu bảo mật tối thiểu cho các ứng dụng Enterprise.
+ * - Stateless Security: Bảo vệ API mà không cần lưu session state trên server (phù hợp mô hình Microservices).
+
  * =====================================================================
  */
 @Injectable()

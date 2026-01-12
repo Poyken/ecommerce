@@ -14,7 +14,10 @@ import { Module } from '@nestjs/common';
  * - Module này đóng gói toàn bộ logic liên quan đến việc tạo, sửa, xóa và hiển thị danh mục.
  *
  * 2. PRISMA INTEGRATION:
- * - Import `PrismaModule` để có thể truy cập Database thông qua `PrismaService`.
+ * - Import `PrismaModule` để có thể truy cập Database thông qua `PrismaService`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { CategoriesController } from './categories.controller';

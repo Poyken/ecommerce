@@ -18,7 +18,11 @@ import { env } from "./env";
  *
  * 3. STOCK UPDATE FLOW:
  * - Khi có đơn hàng mới -> Backend emit `stock_update` event với skuId và newStock.
- * - Client nhận event và cập nhật UI tức thì (không cần refresh).
+ * - Client nhận event và cập nhật UI tức thì (không cần refresh). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Real-time Inventory: Khách hàng thấy ngay số lượng tồn kho thay đổi khi có người khác vừa mua xong, tránh tình trạng "đặt hụt" (Out of stock).
+ * - Bandwidth Efficiency: Nhờ cơ chế Room-based, người dùng chỉ nhận thông báo cho sản phẩm họ đang xem, giúp tiết kiệm data 4G cho khách hàng.
+
  * =====================================================================
  */
 

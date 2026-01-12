@@ -22,7 +22,10 @@ import { useState, useTransition } from "react";
  * - Hệ thống tự động chuyển text sang `lowercase` để đảm bảo tính nhất quán.
  *
  * 2. FEEDBACK:
- * - Sử dụng `AnimatePresence` để hiển thị lỗi validation một cách mượt mà.
+ * - Sử dụng `AnimatePresence` để hiển thị lỗi validation một cách mượt mà. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

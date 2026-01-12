@@ -21,7 +21,10 @@ import { Injectable, Logger } from '@nestjs/common';
  * 3. PERMISSION AGGREGATION:
  * - Gộp quyền từ 2 nguồn: Direct Permissions + Role Permissions.
  * - Loại bỏ trùng lặp bằng Set.
- * - Trả về mảng string dễ sử dụng trong Guards.
+ * - Trả về mảng string dễ sử dụng trong Guards. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

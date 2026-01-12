@@ -35,7 +35,10 @@ import { NotificationsService } from './notifications.service';
  * - Thông báo đơn hàng mới
  * - Thông báo trạng thái đơn hàng thay đổi
  * - Thông báo khuyến mãi
- * - Chat support (nếu mở rộng)
+ * - Chat support (nếu mở rộng) *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

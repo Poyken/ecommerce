@@ -34,7 +34,10 @@ const LayoutVisibilityContext = createContext<
  * 2. AUTOMATIC RESET:
  *    - `useEffect` lắng nghe sự thay đổi của `pathname`.
  *    - Khi User chuyển trang, Header/Footer sẽ tự động hiện lại (Reset về false).
- *    - Điều này tránh tình trạng trang trước ẩn Header làm trang sau cũng bị ẩn theo.
+ *    - Điều này tránh tình trạng trang trước ẩn Header làm trang sau cũng bị ẩn theo. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Quản lý state toàn cục (Global State) hoặc cung cấp dependency injection cho cây component.
+
  * =================================================================================================
  */
 export function LayoutVisibilityProvider({

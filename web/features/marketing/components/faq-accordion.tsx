@@ -22,7 +22,10 @@ import { useState } from "react";
  * - Kết hợp với `transition-all` để có hiệu ứng mượt mà mà không cần JS tính toán height.
  *
  * 3. STYLING:
- * - Sử dụng `GlassCard` để tạo hiệu ứng kính mờ đồng bộ với toàn app.
+ * - Sử dụng `GlassCard` để tạo hiệu ứng kính mờ đồng bộ với toàn app. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

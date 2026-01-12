@@ -16,7 +16,10 @@ import { Skeleton } from "@/components/ui/skeleton";
  * - Mặc định `Skeleton` có hiệu ứng pulse (nhấp nháy nhẹ) để báo hiệu nội dung đang được tải.
  *
  * 3. RESPONSIVENESS:
- * - `grid-cols-1 lg:grid-cols-2`: Chuyển từ 1 cột (mobile) sang 2 cột (desktop) giống hệt trang thật.
+ * - `grid-cols-1 lg:grid-cols-2`: Chuyển từ 1 cột (mobile) sang 2 cột (desktop) giống hệt trang thật. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

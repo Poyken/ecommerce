@@ -11,7 +11,10 @@
  *
  * 2. MANUAL STATUS UPDATE:
  * - Trong trường hợp Tenant chuyển khoản ngân hàng (Bank Transfer) thay vì
- *   cổng thanh toán tự động, Admin cần nút bấm để "Duyệt" (Mark as Paid).
+ *   cổng thanh toán tự động, Admin cần nút bấm để "Duyệt" (Mark as Paid). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { Injectable } from '@nestjs/common';

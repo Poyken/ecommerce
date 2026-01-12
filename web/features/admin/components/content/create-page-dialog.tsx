@@ -36,7 +36,10 @@ interface CreatePageDialogProps {
  *
  * 2. SERVER ACTIONS (`createPageAction`):
  *    - Thay vì gọi API `/api/pages`, ta dùng Server Action của Next.js (chạy trực tiếp trên Server).
- *    - `useTransition`: Giúp UI không bị đơ (freezing) khi đang chờ Server xử lý.
+ *    - `useTransition`: Giúp UI không bị đơ (freezing) khi đang chờ Server xử lý. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function CreatePageDialog({

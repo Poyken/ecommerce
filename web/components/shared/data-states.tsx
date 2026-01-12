@@ -19,7 +19,10 @@ import { Card, CardContent } from "@/components/ui/card";
  *
  * 2. CONSISTENT UX:
  * - Tất cả các trang có cùng style loading, error, empty.
- * - User có trải nghiệm nhất quán xuyên suốt ứng dụng.
+ * - User có trải nghiệm nhất quán xuyên suốt ứng dụng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

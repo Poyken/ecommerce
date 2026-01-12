@@ -28,7 +28,12 @@ import * as Sentry from '@sentry/nestjs';
  * - Chỉ những lỗi 500 mới được ghi vào `logger.error` kèm theo `stack trace`. Giúp chúng ta biết chính xác dòng code nào bị lỗi để sửa.
  *
  * 4. SECURITY:
- * - Tránh việc để lộ thông tin nhạy cảm của server (như lỗi Database thô) ra ngoài Client bằng cách chuẩn hóa thông điệp lỗi.
+ * - Tránh việc để lộ thông tin nhạy cảm của server (như lỗi Database thô) ra ngoài Client bằng cách chuẩn hóa thông điệp lỗi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Error Standardization: Client luôn nhận được format lỗi nhất quán `{ success: false, error: { message, code } }`.
+ * - Security: Ẩn các thông tin nhạy cảm (như tên bảng DB, câu query SQL) khỏi response trả về client.
+ * - Monitoring: Tự động bắn lỗi 500 lên Sentry để team Dev nhận email cảnh báo và fix nóng.
+
  * =====================================================================
  */
 
