@@ -135,8 +135,6 @@ async function bootstrap() {
         process.env.FRONTEND_URL,
         'http://localhost:3000',
         'http://localhost:8080',
-        'https://web-okfy.onrender.com',
-        'https://web-faxqzimea-poykens-projects.vercel.app',
         'https://web-five-gilt-79.vercel.app', // Production Domain
       ].filter(Boolean); // Lọc bỏ giá trị undefined/null
 

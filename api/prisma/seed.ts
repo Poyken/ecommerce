@@ -109,7 +109,7 @@ const ALL_PERMISSIONS = [
 ];
 
 const TENANT_NAME = 'Luxe Home';
-const TENANT_DOMAIN = 'localhost';
+const TENANT_DOMAIN = process.env.FRONTEND_URL || 'localhost';
 
 // Real Images from web/public/images
 const IMAGES = {
