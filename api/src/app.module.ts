@@ -97,6 +97,10 @@ import { DataLoaderModule } from '@core/dataloader/dataloader.module';
 import { MetricsModule } from '@core/metrics/metrics.module';
 import { SuperAdminModule } from '@/super-admin/super-admin.module';
 import { ReturnRequestsModule } from './return-requests/return-requests.module';
+import { ProcurementModule } from './procurement/procurement.module';
+import { FulfillmentModule } from './fulfillment/fulfillment.module';
+import { TaxModule } from './tax/tax.module';
+import { LoyaltyModule } from './loyalty/loyalty.module';
 
 @Module({
   imports: [
@@ -255,6 +259,10 @@ import { ReturnRequestsModule } from './return-requests/return-requests.module';
     MediaModule,
     CustomerGroupsModule,
     ReturnRequestsModule,
+    ProcurementModule,
+    FulfillmentModule,
+    TaxModule,
+    LoyaltyModule,
   ],
   controllers: [HealthController],
   providers: [
