@@ -279,12 +279,13 @@ export function ProductsClient({
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50 hover:bg-muted/50">
-              <TableHead className="w-[35%]">
+              <TableHead className="w-[30%]">
                 <div className="flex items-center gap-2">
                   <Package className="h-4 w-4" />
                   {t("name")}
                 </div>
               </TableHead>
+              <TableHead>Slug</TableHead>
               <TableHead>
                 <div className="flex items-center gap-2">
                   <Tag className="h-4 w-4" />
@@ -292,6 +293,7 @@ export function ProductsClient({
                 </div>
               </TableHead>
               <TableHead>{t("brand")}</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>{t("created")}</TableHead>
               {(canTranslate || canUpdate || canDelete) && (
                 <TableHead className="text-right w-[150px]">
@@ -304,7 +306,7 @@ export function ProductsClient({
             {products.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={canTranslate || canUpdate || canDelete ? 5 : 4}
+                  colSpan={canTranslate || canUpdate || canDelete ? 7 : 6}
                 >
                   <AdminEmptyState
                     icon={Package}
@@ -343,6 +345,11 @@ export function ProductsClient({
                     </div>
                   </TableCell>
                   <TableCell>
+                    <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">
+                      {product.slug}
+                    </code>
+                  </TableCell>
+                  <TableCell>
                     {product.category ? (
                       <Badge
                         variant="secondary"
@@ -366,6 +373,13 @@ export function ProductsClient({
                         N/A
                       </span>
                     )}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={product.deletedAt ? "destructive" : "success"}
+                    >
+                      {product.deletedAt ? "Inactive" : "Active"}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {format(new Date(product.createdAt), "dd/MM/yyyy")}

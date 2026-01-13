@@ -59,10 +59,20 @@ import { TwoFactorService } from './two-factor.service';
  * =====================================================================
  */
 
+/**
+ * 🌐 CẤU HÌNH COOKIE CHO PRODUCTION (VERCEL + RENDER)
+ * 📚 TẠI SAO CẦN SameSite: 'none' VÀ Secure: true?
+ * 1. Vì Web (Vercel) và API (Render) nằm trên 2 domain khác nhau hoàn toàn.
+ * 2. Trình duyệt mặc định sẽ CHẶN cookie của API gửi về Web (Cross-site).
+ * 3. 'none' cho phép gửi xuyên domain, và 'none' BẮT BUỘC phải đi kèm 'secure: true'.
+ *
+ * ⚠️ LƯU Ý: Không được đổi về 'lax' hay 'strict' khi deploy thực tế,
+ * nếu không User sẽ không thể đăng nhập hoặc duy trì phiên làm việc.
+ */
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
+  secure: true, // Bắt buộc phải có để SameSite 'none' hoạt động
+  sameSite: 'none' as const,
   path: '/',
   maxAge: 7 * 24 * 60 * 60 * 1000,
 };

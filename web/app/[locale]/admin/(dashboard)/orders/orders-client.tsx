@@ -100,7 +100,6 @@ export function OrdersClient({
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { notifications } = useNotificationStore();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const lastProcessedNotiId = useRef<string | null>(null);
   const [loadingOrderId, setLoadingOrderId] = useState<string | null>(null);
   const { exportOrders } = useOrdersExport();
@@ -217,73 +216,11 @@ export function OrdersClient({
   };
 
   const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Mimic API Call for import
-      toast({
-        title: "Importing...",
-        description: `Processing file: ${file.name}`,
-      });
-
-      setTimeout(() => {
-        toast({
-          title: "Success",
-          description: `Successfully imported orders from ${file.name}`,
-          variant: "default",
-        });
-        startTransition(() => {
-          router.refresh();
-        });
-      }, 1500);
-
-      // Reset input
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
-
-  const handleExport = () => {
-    const ordersToExport = orders.filter((o) => selectedRows.has(o.id));
-    if (ordersToExport.length === 0) return;
-
-    const headers = [
-      t("orders.idLabel"),
-      t("orders.emailLabel"),
-      t("orders.totalLabel"),
-      t("orders.statusLabel"),
-      t("created"),
-    ];
-
-    const rows = ordersToExport.map((order) => [
-      order.id,
-      order.user?.email || t("unknownUser"),
-      order.totalAmount,
-      order.status,
-      new Date(order.createdAt).toISOString(),
-    ]);
-
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute(
-        "download",
-        `orders_export_${new Date().toISOString().split("T")[0]}.csv`
-      );
-      link.style.visibility = "hidden";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+    toast({
+      title: "Feature coming soon",
+      description:
+        "Order import is not yet implemented based on business rules.",
+    });
   };
 
   const getStatusIcon = (status: OrderStatus) => {
@@ -305,13 +242,6 @@ export function OrdersClient({
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        className="hidden"
-        accept=".csv,.xlsx"
-      />
       {/* Page Header */}
       <AdminPageHeader
         title={t("orders.management")}
@@ -485,7 +415,12 @@ export function OrdersClient({
                 />
               </TableHead>
               <TableHead className="w-[150px]">{t("orders.idLabel")}</TableHead>
-              <TableHead>{t("sidebar.users")}</TableHead>
+              <TableHead>
+                {t("orders.recipientNameLabel") || "Recipient"}
+              </TableHead>
+              <TableHead>
+                {t("orders.paymentMethodLabel") || "Payment"}
+              </TableHead>
               <TableHead>{t("orders.totalLabel")}</TableHead>
               <TableHead>{t("orders.statusLabel")}</TableHead>
               <TableHead>{t("orders.paymentStatusLabel")}</TableHead>
@@ -500,7 +435,7 @@ export function OrdersClient({
           <TableBody>
             {orders.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={canRead || canUpdate ? 8 : 7}>
+                <TableCell colSpan={canRead || canUpdate ? 9 : 8}>
                   <AdminEmptyState
                     icon={ShoppingBag}
                     title={t("orders.noFound")}
@@ -539,14 +474,20 @@ export function OrdersClient({
                   <TableCell>
                     <div className="flex flex-col">
                       <span className="text-sm font-medium">
-                        {order.user
-                          ? `${order.user.firstName} ${order.user.lastName}`
-                          : t("unknownUser")}
+                        {order.recipientName}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {order.user?.email}
+                        {order.phoneNumber}
                       </span>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className="font-medium bg-slate-50"
+                    >
+                      {order.paymentMethod || "N/A"}
+                    </Badge>
                   </TableCell>
                   <TableCell className="font-medium">
                     {formatCurrency(Number(order.totalAmount))}

@@ -47,6 +47,11 @@ type FetchOptions = RequestInit & {
 };
 
 /**
+ * Variable toàn cục để deduplicate việc refresh token trên Client
+ */
+let refreshTokenPromise: Promise<boolean> | null = null;
+
+/**
  * HTTP client utility cho Server Components/Actions.
  *
  * @template T - Kiểu dữ liệu response mong đợi
@@ -256,12 +261,69 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     }
 
     // ========================================
-    // 5. XỬ LÝ LỖI
+    // 5. XỬ LÝ LỖI & SILENT REFRESH (LỚP PHÒNG THỦ 2)
     // ========================================
+    // 📚 GIẢI THÍCH: Lớp này xử lý khi User đang thao tác trên 1 trang quá lâu
+    // dẫn đến Access Token hết hạn giữa chừng (AJAX call).
     if (!res.ok) {
+      // 401 Unauthorized → Thử Silent Refresh trên Client trước khi đá User ra ngoài
+      if (
+        res.status === HTTP_STATUS.UNAUTHORIZED &&
+        !options.skipRedirectOn401
+      ) {
+        if (typeof window !== "undefined") {
+          /**
+           * 🛡️ LOGIC HỒI SINH (REVENT LOGOUT):
+           * 1. Nếu có nhiều request cùng bị 401, chỉ cho phép 1 cái gọi Refresh (Deduplication).
+           * 2. Nếu Refresh thành công, tất cả các request đang chờ sẽ tự động Retry.
+           * 3. User hoàn toàn không biết token vừa được thay mới, trải nghiệm không bị ngắt quãng.
+           */
+          if (!refreshTokenPromise) {
+            refreshTokenPromise = fetch(`${baseUrl}auth/refresh`, {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": csrfToken || "",
+              },
+            })
+              .then((r) => r.ok)
+              .catch(() => false)
+              .finally(() => {
+                refreshTokenPromise = null; // Reset để lần sau có thể refresh tiếp
+              });
+          }
+
+          const isRefreshed = await refreshTokenPromise;
+
+          if (isRefreshed) {
+            // Refresh thành công! Thử lại yêu cầu gốc đúng 1 lần.
+            if (process.env.NODE_ENV === "development") {
+              console.debug(
+                `[HTTP] Silent Refresh Successful. Retrying ${url}...`
+              );
+            }
+            // SkipRedirectOn401 để tránh vòng lặp vô tận nếu Refresh Token cũng hết hạn
+            return await http<T>(path, {
+              ...options,
+              skipRedirectOn401: true,
+            });
+          }
+
+          // Nếu thực sự không thể refresh (Refresh Token hết hạn 7 ngày) -> Logout
+          console.warn(
+            `[HTTP 401] Session truly expired. Redirecting to /login.`
+          );
+          window.location.href = "/login";
+          return new Promise<T>(() => {}); // Dừng mọi logic phía sau
+        } else {
+          // Server-side: Đã có Middleware xử lý, nếu vẫn lọt vào đây thì redirect.
+          redirect("/login");
+        }
+      }
+
       let errorMessage = `API Error: ${res.status} ${res.statusText}`;
       let errorBody: unknown = null;
-
       try {
         errorBody = await res.json();
         if (errorBody && typeof errorBody === "object") {
@@ -287,23 +349,6 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
         }
       } catch {
         // Keep default message if JSON parsing fails
-      }
-
-      // 401 Unauthorized → Chuyển về trang login
-      if (
-        res.status === HTTP_STATUS.UNAUTHORIZED &&
-        !options.skipRedirectOn401
-      ) {
-        console.warn(
-          `[HTTP ${res.status}] Unauthorized request to: ${url}. Redirecting to /login.`
-        );
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
-          // Stop execution
-          return new Promise<T>(() => {});
-        } else {
-          redirect("/login");
-        }
       }
 
       const error = new Error(errorMessage) as Error & {
