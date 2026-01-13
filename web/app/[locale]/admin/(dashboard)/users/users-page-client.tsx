@@ -48,6 +48,7 @@ import {
   Plus,
   Search,
   Shield,
+  Upload,
   User as UserIcon,
   Users,
 } from "lucide-react";
@@ -78,6 +79,7 @@ export function UsersPageClient({
 }) {
   const t = useTranslations("admin");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const { searchTerm, setSearchTerm, isPending, handleFilterChange } =
     useAdminTable(basePath);
 
@@ -125,8 +127,19 @@ export function UsersPageClient({
         ]}
         actions={
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={() => setImportDialogOpen(true)}
+            >
+              <Upload className="h-4 w-4" />
+              {t("import")}
+            </Button>
             <ImportDialog
-              entityName={t("users.title")}
+              title={`${t("import")} ${t("users.title")}`}
+              open={importDialogOpen}
+              onOpenChange={setImportDialogOpen}
               onImport={importUsers}
               onPreview={previewUsers}
               onDownloadTemplate={downloadTemplate}

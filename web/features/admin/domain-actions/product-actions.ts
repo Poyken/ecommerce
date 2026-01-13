@@ -173,15 +173,64 @@ export async function translateTextAction(data: {
   text: string;
   targetLocale: string;
 }): Promise<ActionResult<{ text: string; locale: string }>> {
-  return wrapServerAction(
-    () =>
-      http<ApiResponse<{ text: string; locale: string }>>(
-        "/ai-automation/translate",
-        {
-          method: "POST",
-          body: JSON.stringify(data),
-        }
-      ),
-    "Failed to translate text"
+  return wrapServerAction(() =>
+    http<ApiResponse<{ text: string; locale: string }>>(
+      "/ai-automation/translate",
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      }
+    )
   );
+}
+
+// --- IMPORT & EXPORT ---
+
+export async function exportProductsAction(): Promise<
+  ActionResult<{ base64: string; filename: string }>
+> {
+  return wrapServerAction(async () => {
+    const res = await http<any>("/products/export/excel");
+    return {
+      base64: res.base64,
+      filename: res.filename || "products_export.xlsx",
+    };
+  }, "Failed to export products");
+}
+
+export async function importProductsAction(
+  formData: FormData
+): Promise<ActionResult<any>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<any>>("/products/import/excel", {
+      method: "POST",
+      body: formData,
+    });
+    REVALIDATE.admin.products();
+    return res.data;
+  }, "Failed to import products");
+}
+
+export async function previewProductsImportAction(
+  formData: FormData
+): Promise<ActionResult<any[]>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<any[]>>("/products/import/preview", {
+      method: "POST",
+      body: formData,
+    });
+    return res.data;
+  }, "Failed to preview product import");
+}
+
+export async function downloadProductTemplateAction(): Promise<
+  ActionResult<{ base64: string; filename: string }>
+> {
+  return wrapServerAction(async () => {
+    const res = await http<any>("/products/import/template");
+    return {
+      base64: res.base64,
+      filename: res.filename || "product_import_template.xlsx",
+    };
+  }, "Failed to download template");
 }

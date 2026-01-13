@@ -185,3 +185,105 @@ export async function deleteCouponAction(
     REVALIDATE.admin.coupons();
   }, "Failed to delete coupon");
 }
+
+// --- IMPORT & EXPORT (CATEGORIES) ---
+
+export async function exportCategoriesAction(): Promise<
+  ActionResult<{ base64: string; filename: string }>
+> {
+  return wrapServerAction(async () => {
+    const res = await http<any>("/categories/export/excel");
+    return {
+      base64: res.base64,
+      filename: res.filename || "categories_export.xlsx",
+    };
+  }, "Failed to export categories");
+}
+
+export async function importCategoriesAction(
+  formData: FormData
+): Promise<ActionResult<any>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<any>>("/categories/import/excel", {
+      method: "POST",
+      body: formData,
+    });
+    REVALIDATE.admin.categories();
+    return res.data;
+  }, "Failed to import categories");
+}
+
+export async function previewCategoriesImportAction(
+  formData: FormData
+): Promise<ActionResult<any[]>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<any[]>>("/categories/import/preview", {
+      method: "POST",
+      body: formData,
+    });
+    return res.data;
+  }, "Failed to preview categories import");
+}
+
+export async function downloadCategoryTemplateAction(): Promise<
+  ActionResult<{ base64: string; filename: string }>
+> {
+  return wrapServerAction(async () => {
+    const res = await http<any>("/categories/import/template");
+    return {
+      base64: res.base64,
+      filename: res.filename || "categories_import_template.xlsx",
+    };
+  }, "Failed to download template");
+}
+
+// --- IMPORT & EXPORT (BRANDS) ---
+
+export async function exportBrandsAction(): Promise<
+  ActionResult<{ base64: string; filename: string }>
+> {
+  return wrapServerAction(async () => {
+    const res = await http<any>("/brands/export/excel");
+    return {
+      base64: res.base64,
+      filename: res.filename || "brands_export.xlsx",
+    };
+  }, "Failed to export brands");
+}
+
+export async function importBrandsAction(
+  formData: FormData
+): Promise<ActionResult<any>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<any>>("/brands/import/excel", {
+      method: "POST",
+      body: formData,
+    });
+    REVALIDATE.admin.brands();
+    return res.data;
+  }, "Failed to import brands");
+}
+
+export async function previewBrandsImportAction(
+  formData: FormData
+): Promise<ActionResult<any[]>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<any[]>>("/brands/import/preview", {
+      method: "POST",
+      body: formData,
+    });
+    return res.data;
+  }, "Failed to preview brands import");
+}
+
+export async function downloadBrandTemplateAction(): Promise<
+  ActionResult<{ base64: string; filename: string }>
+> {
+  return wrapServerAction(async () => {
+    const res = await http<any>("/brands/import/template");
+    return {
+      base64: res.base64,
+      filename: res.filename || "brands_import_template.xlsx",
+    };
+  }, "Failed to download template");
+}

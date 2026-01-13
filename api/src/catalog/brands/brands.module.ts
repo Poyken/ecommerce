@@ -22,11 +22,13 @@ import { Module } from '@nestjs/common';
  */
 import { BrandsController } from './brands.controller';
 import { BrandsService } from './brands.service';
+import { BrandsExportService } from './brands-export.service';
+import { BrandsImportService } from './brands-import.service';
 
 @Module({
   imports: [PrismaModule, CloudinaryModule],
   controllers: [BrandsController],
-  providers: [BrandsService],
+  providers: [BrandsService, BrandsExportService, BrandsImportService],
   exports: [BrandsService],
 })
 export class BrandsModule {}

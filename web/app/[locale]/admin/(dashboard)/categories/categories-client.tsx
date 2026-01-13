@@ -45,8 +45,11 @@ import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { PaginationMeta } from "@/types/dtos";
 import { Category } from "@/types/models";
+import { useCategoriesImportExport } from "@/features/admin/hooks/use-categories-import-export";
+import { ImportDialog } from "@/components/shared/data-table/import-dialog";
 import { format } from "date-fns";
 import {
+  Download,
   Edit,
   Folder,
   FolderTree,
@@ -54,6 +57,7 @@ import {
   Plus,
   Search,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -72,9 +76,18 @@ export function CategoriesPageClient({
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
+
+  const {
+    downloadTemplate,
+    exportCategories,
+    importCategories,
+    previewCategories,
+    loading: importExportLoading,
+  } = useCategoriesImportExport();
 
   const canCreate = hasPermission("category:create");
   const canUpdate = hasPermission("category:update");
@@ -179,12 +192,34 @@ export function CategoriesPageClient({
           { label: "children", value: childCount, variant: "success" },
         ]}
         actions={
-          canCreate ? (
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              {t("categories.createNew")}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportCategories}
+              disabled={importExportLoading}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {t("export")}
             </Button>
-          ) : undefined
+            {canCreate && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setImportDialogOpen(true)}
+                  disabled={importExportLoading}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  {t("import")}
+                </Button>
+                <Button onClick={() => setCreateDialogOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("categories.createNew")}
+                </Button>
+              </>
+            )}
+          </div>
         }
       />
       {/* Search and Filters */}
@@ -394,6 +429,14 @@ export function CategoriesPageClient({
           />
         </>
       )}
+      <ImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImport={importCategories}
+        onPreview={previewCategories}
+        onDownloadTemplate={downloadTemplate}
+        title={`${t("import")} ${t("categories.title")}`}
+      />
     </div>
   );
 }

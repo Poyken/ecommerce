@@ -22,11 +22,17 @@ import { Module } from '@nestjs/common';
  */
 import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
+import { CategoriesExportService } from './categories-export.service';
+import { CategoriesImportService } from './categories-import.service';
 
 @Module({
   imports: [PrismaModule, CloudinaryModule],
   controllers: [CategoriesController],
-  providers: [CategoriesService],
+  providers: [
+    CategoriesService,
+    CategoriesExportService,
+    CategoriesImportService,
+  ],
   exports: [CategoriesService],
 })
 export class CategoriesModule {}

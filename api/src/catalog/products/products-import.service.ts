@@ -181,6 +181,75 @@ export class ProductsImportService {
     return results;
   }
 
+  async previewFromExcel(file: Express.Multer.File) {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(file.buffer as any);
+    const worksheet = workbook.getWorksheet(1);
+
+    if (!worksheet) {
+      throw new BadRequestException('File Excel không hợp lệ');
+    }
+
+    const previewData: any[] = [];
+    const [allCategories, allBrands] = await Promise.all([
+      this.prisma.category.findMany({ select: { id: true, name: true } }),
+      this.prisma.brand.findMany({ select: { id: true, name: true } }),
+    ]);
+
+    const categoryNames = new Set(
+      allCategories.map((c) => c.name.toLowerCase()),
+    );
+    const brandNames = new Set(allBrands.map((b) => b.name.toLowerCase()));
+
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return; // Skip header
+
+      const getString = (val: ExcelJS.CellValue) => {
+        if (val === null || val === undefined) return '';
+        return typeof val === 'object' ? JSON.stringify(val) : String(val);
+      };
+
+      const productRow = {
+        productName: getString(row.getCell(2).value),
+        productSlug: getString(row.getCell(3).value),
+        categoryName: getString(row.getCell(4).value),
+        brandName: getString(row.getCell(5).value),
+        skuCode: getString(row.getCell(7).value),
+        price: Number(row.getCell(8).value),
+        stock: Number(row.getCell(10).value),
+        status: getString(row.getCell(12).value) || 'ACTIVE',
+      };
+
+      const errors: string[] = [];
+      if (!productRow.productName) errors.push('Thiếu tên sản phẩm');
+      if (!productRow.skuCode) errors.push('Thiếu mã SKU');
+      if (isNaN(productRow.price)) errors.push('Giá không hợp lệ');
+      if (isNaN(productRow.stock)) errors.push('Số lượng không hợp lệ');
+
+      if (
+        productRow.categoryName &&
+        !categoryNames.has(productRow.categoryName.toLowerCase())
+      ) {
+        errors.push(`Danh mục "${productRow.categoryName}" không tồn tại`);
+      }
+      if (
+        productRow.brandName &&
+        !brandNames.has(productRow.brandName.toLowerCase())
+      ) {
+        errors.push(`Thương hiệu "${productRow.brandName}" không tồn tại`);
+      }
+
+      previewData.push({
+        ...productRow,
+        rowNumber,
+        isValid: errors.length === 0,
+        errors,
+      });
+    });
+
+    return previewData;
+  }
+
   async generateTemplate(res: any) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Template');

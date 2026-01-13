@@ -36,16 +36,19 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import { BrandsService } from './brands.service';
+import { BrandsExportService } from './brands-export.service';
+import { BrandsImportService } from './brands-import.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 
@@ -55,6 +58,8 @@ export class BrandsController {
   constructor(
     private readonly brandsService: BrandsService,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly exportService: BrandsExportService,
+    private readonly importService: BrandsImportService,
   ) {}
 
   @Post()
@@ -84,6 +89,42 @@ export class BrandsController {
     @Query('limit') limit = 10,
   ) {
     return this.brandsService.findAll(search, Number(page), Number(limit));
+  }
+
+  @Get('export/excel')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('brand:read')
+  @ApiOperation({ summary: 'Export Brands to Excel' })
+  async export(@Res() res: any) {
+    return this.exportService.exportToExcel(res);
+  }
+
+  @Post('import/excel')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('brand:create')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Import Brands from Excel' })
+  async import(@UploadedFile() file: Express.Multer.File) {
+    const data = await this.importService.importFromExcel(file);
+    return { data };
+  }
+
+  @Post('import/preview')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('brand:create')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Preview Brands import' })
+  async preview(@UploadedFile() file: Express.Multer.File) {
+    const data = await this.importService.previewFromExcel(file);
+    return { data };
+  }
+
+  @Get('import/template')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('brand:create')
+  @ApiOperation({ summary: 'Download Brand Import Template' })
+  async downloadTemplate(@Res() res: any) {
+    return this.importService.generateTemplate(res);
   }
 
   @Get(':id')

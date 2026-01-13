@@ -242,6 +242,19 @@ export class ProductsController {
   }
 
   /**
+   * Xem trước dữ liệu import.
+   */
+  @Post('import/preview')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('product:create')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Preview Products import from Excel' })
+  async preview(@UploadedFile() file: Express.Multer.File) {
+    const data = await this.importService.previewFromExcel(file);
+    return { data };
+  }
+
+  /**
    * Tải xuống mẫu file Excel import.
    */
   @Get('import/template')

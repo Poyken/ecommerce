@@ -3,33 +3,21 @@
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import {
-  downloadUserTemplateAction,
-  exportUsersAction,
-  importUsersAction,
-  previewUsersImportAction,
-} from "../actions";
+  downloadBrandTemplateAction,
+  exportBrandsAction,
+  importBrandsAction,
+  previewBrandsImportAction,
+} from "../domain-actions/metadata-actions";
 
-export interface UsersService {
-  onImport: (file: File) => Promise<any>;
-  onPreview: (file: File) => Promise<any>;
-  onDownloadTemplate: () => Promise<void>;
-  onExport: () => Promise<void>;
-}
-
-export const useUsersImportExport = () => {
+export const useBrandsImportExport = () => {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
   const downloadFile = (base64Data: string, filename: string) => {
     try {
       if (!base64Data) throw new Error("No data received");
-
       let cleanData = base64Data.replace(/[\s\r\n]+/g, "");
-      // Fix padding
-      while (cleanData.length % 4 !== 0) {
-        cleanData += "=";
-      }
-
+      while (cleanData.length % 4 !== 0) cleanData += "=";
       const byteCharacters = atob(cleanData);
       const byteNumbers = new Array(byteCharacters.length);
       for (let i = 0; i < byteCharacters.length; i++) {
@@ -39,7 +27,6 @@ export const useUsersImportExport = () => {
       const blob = new Blob([byteArray], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
-
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
@@ -49,8 +36,6 @@ export const useUsersImportExport = () => {
       link.parentNode?.removeChild(link);
     } catch (e: any) {
       console.error("Download error:", e);
-      console.log("Base64 Preview:", base64Data?.substring(0, 50));
-
       // Fallback
       try {
         const link = document.createElement("a");
@@ -72,7 +57,7 @@ export const useUsersImportExport = () => {
   const downloadTemplate = async () => {
     try {
       setLoading(true);
-      const res = await downloadUserTemplateAction();
+      const res = await downloadBrandTemplateAction();
       if (res.success && res.data) {
         downloadFile(res.data.base64, res.data.filename);
       } else {
@@ -84,16 +69,15 @@ export const useUsersImportExport = () => {
         description: error.message || "Vui lòng thử lại sau.",
         variant: "destructive",
       });
-      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const exportUsers = async () => {
+  const exportBrands = async () => {
     try {
       setLoading(true);
-      const res = await exportUsersAction();
+      const res = await exportBrandsAction();
       if (res.success && res.data) {
         downloadFile(res.data.base64, res.data.filename);
       } else {
@@ -105,32 +89,21 @@ export const useUsersImportExport = () => {
         description: error.message || "Vui lòng thử lại sau.",
         variant: "destructive",
       });
-      console.error(error);
     } finally {
       setLoading(false);
     }
   };
 
-  const importUsers = async (file: File) => {
+  const importBrands = async (file: File) => {
     try {
       setLoading(true);
       const formData = new FormData();
       formData.append("file", file);
-
-      // Use Server Action to proxy the import (authentication handled by server)
-      const res = await importUsersAction(formData);
-
-      if (!res.success) {
-        throw new Error(res.error || "Import failed");
-      }
-
-      toast({
-        title: "Thành công",
-        description: "Import dữ liệu thành công.",
-      });
+      const res = await importBrandsAction(formData);
+      if (!res.success) throw new Error(res.error || "Import failed");
+      toast({ title: "Thành công", description: "Import dữ liệu thành công." });
       return true;
     } catch (error: any) {
-      console.error(error);
       toast({
         title: "Import thất bại",
         description: error.message || "Vui lòng kiểm tra lại file và thử lại.",
@@ -142,22 +115,15 @@ export const useUsersImportExport = () => {
     }
   };
 
-  const previewUsers = async (file: File): Promise<any[]> => {
+  const previewBrands = async (file: File): Promise<any[]> => {
     try {
       setLoading(true);
       const formData = new FormData();
       formData.append("file", file);
-
-      const res = await previewUsersImportAction(formData);
-
-      if (!res.success) {
-        throw new Error(res.error || "Preview failed");
-      }
-
-      // Backend returns { rows: [...] }
-      return (res.data as any)?.rows || [];
+      const res = await previewBrandsImportAction(formData);
+      if (!res.success) throw new Error(res.error || "Preview failed");
+      return res.data || [];
     } catch (error: any) {
-      console.error(error);
       toast({
         title: "Lỗi xem trước",
         description: error.message || "Không thể tải bản xem trước.",
@@ -171,9 +137,9 @@ export const useUsersImportExport = () => {
 
   return {
     downloadTemplate,
-    exportUsers,
-    importUsers,
-    previewUsers,
+    exportBrands,
+    importBrands,
+    previewBrands,
     loading,
   };
 };

@@ -96,8 +96,8 @@
     "showMore": "Xem thêm",
     "showLess": "Thu gọn",
     "resetAllFilters": "Đặt lại bộ lọc",
-    "backToHome": "Quay lại trang chủ",
-    "backToCategories": "Quay lại danh mục",
+    "backToHome": "Về Trang chủ",
+    "backToCategories": "Về trang Danh mục",
     "backToBrands": "Quay lại thương hiệu",
     "browseCategories": "Duyệt danh mục",
     "browseBrands": "Duyệt theo thương hiệu",
@@ -829,6 +829,15 @@
     }
   },
   "admin": {
+    "import": "Nhập dữ liệu",
+    "export": "Xuất dữ liệu",
+    "exportExcel": "Xuất ra Excel (.xlsx)",
+    "exportCsv": "Xuất ra CSV (Sắp có)",
+    "exportProcessing": "Đang xử lý xuất dữ liệu",
+    "exportFileWillDownload": "File sẽ tự động tải xuống khi hoàn tất.",
+    "exportError": "Lỗi xuất dữ liệu",
+    "exportErrorDesc": "Không thể xuất dữ liệu lúc này.",
+    "downloadTemplate": "Tải file mẫu",
     "refresh": "Làm mới",
     "dashboard": "Bảng điều khiển",
     "pages": {

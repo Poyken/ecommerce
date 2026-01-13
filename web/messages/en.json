@@ -835,6 +835,15 @@
     }
   },
   "admin": {
+    "import": "Import",
+    "export": "Export",
+    "exportExcel": "Export to Excel (.xlsx)",
+    "exportCsv": "Export to CSV (Coming soon)",
+    "exportProcessing": "Export is being processed",
+    "exportFileWillDownload": "File will download automatically when ready.",
+    "exportError": "Export failed",
+    "exportErrorDesc": "Could not export data at this time.",
+    "downloadTemplate": "Download Template",
     "refresh": "Refresh",
     "adminPanel": "Admin Panel",
     "dashboard": "Dashboard",
@@ -1615,7 +1624,8 @@
       "messages": {
         "deleteConfirm": "Are you sure you want to delete this plan?",
         "deleteSuccess": "Plan deleted",
-        "deleteError": "Failed to delete plan"
+        "deleteError": "Failed to delete plan",
+        "noPlans": "No plans found. Please seed the database."
       }
     },
 
@@ -1912,11 +1922,6 @@
         "updateSuccess": "Store updated successfully",
         "deleteSuccess": "Store deleted successfully",
         "error": "Operation failed"
-      }
-    },
-    "plans": {
-      "messages": {
-        "noPlans": "No plans found. Please seed the database."
       }
     },
     "security": {

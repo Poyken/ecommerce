@@ -36,41 +36,32 @@ import {
 import { useState } from "react";
 
 interface ImportDialogProps {
-  entityName: string;
+  title?: string;
   onImport: (file: File) => Promise<any>;
-  onPreview?: (file: File) => Promise<any>;
+  onPreview?: (file: File) => Promise<any[]>;
   onDownloadTemplate: () => void;
-}
-
-interface PreviewRow {
-  email: string;
-  firstName: string;
-  lastName: string;
-  roles: string;
-  status: string;
-  isValid: boolean;
-  errors: string[];
-}
-
-interface PreviewData {
-  total: number;
-  valid: number;
-  invalid: number;
-  rows: PreviewRow[];
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function ImportDialog({
-  entityName,
+  title = "Import Data",
   onImport,
   onPreview,
   onDownloadTemplate,
+  open: externalOpen,
+  onOpenChange: externalOnOpenChange,
 }: ImportDialogProps) {
-  const [open, setOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen =
+    externalOnOpenChange !== undefined ? externalOnOpenChange : setInternalOpen;
+
   const [step, setStep] = useState<"upload" | "preview" | "importing">(
     "upload"
   );
   const [file, setFile] = useState<File | null>(null);
-  const [previewData, setPreviewData] = useState<PreviewData | null>(null);
+  const [previewData, setPreviewData] = useState<any[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
@@ -99,7 +90,10 @@ export function ImportDialog({
     setIsLoading(true);
     try {
       const data = await onPreview(file);
-      setPreviewData(data);
+      // Backend for Users returns { total, valid, rows... }, others might return just rows
+      // We normalize it here
+      const rows = Array.isArray(data) ? data : (data as any).rows || [];
+      setPreviewData(rows);
       setStep("preview");
     } catch (error) {
       // Toast handled in hook
@@ -123,17 +117,24 @@ export function ImportDialog({
     }
   };
 
+  const total = previewData?.length || 0;
+  const invalidRows = previewData?.filter((r) => !r.isValid) || [];
+  const invalidCount = invalidRows.length;
+  const validCount = total - invalidCount;
+
+  // Get dynamic headers from first row
+  const previewHeaders =
+    previewData && previewData.length > 0
+      ? Object.keys(previewData[0]).filter(
+          (k) => !["isValid", "errors", "rowNumber"].includes(k)
+        )
+      : [];
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button variant="outline" className="gap-2">
-          <FileUp className="h-4 w-4" />
-          Import
-        </Button>
-      </DialogTrigger>
       <DialogContent className="sm:max-w-7xl gap-6">
         <DialogHeader>
-          <DialogTitle>Import {entityName}</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
             {step === "upload"
               ? "Tải lên file Excel để nhập dữ liệu. Hãy tải mẫu trước để điền đúng định dạng."
@@ -225,7 +226,7 @@ export function ImportDialog({
                 <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
                   Tổng số dòng
                 </p>
-                <p className="text-2xl font-black mt-1">{previewData.total}</p>
+                <p className="text-2xl font-black mt-1">{total}</p>
               </div>
               <div className="bg-green-50 dark:bg-green-900/10 p-4 rounded-xl border border-green-100 dark:border-green-900/30">
                 <p className="text-xs text-green-600 dark:text-green-400 uppercase font-bold tracking-wider">
@@ -233,7 +234,7 @@ export function ImportDialog({
                 </p>
                 <div className="flex items-center gap-2 mt-1">
                   <p className="text-2xl font-black text-green-700 dark:text-green-400">
-                    {previewData.valid}
+                    {validCount}
                   </p>
                   <CheckCircle2 className="h-4 w-4 text-green-600" />
                 </div>
@@ -244,71 +245,55 @@ export function ImportDialog({
                 </p>
                 <div className="flex items-center gap-2 mt-1">
                   <p className="text-2xl font-black text-red-700 dark:text-red-400">
-                    {previewData.invalid}
+                    {invalidCount}
                   </p>
-                  {previewData.invalid > 0 && (
+                  {invalidCount > 0 && (
                     <XCircle className="h-4 w-4 text-red-600" />
                   )}
                 </div>
               </div>
             </div>
 
-            {previewData.invalid > 0 && (
+            {invalidCount > 0 && (
               <Alert variant="destructive">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertTitle>Cảnh báo dữ liệu</AlertTitle>
                 <AlertDescription>
-                  Có {previewData.invalid} dòng bị lỗi (Dòng:{" "}
-                  {previewData.rows
-                    .map((r, idx) => (!r.isValid ? idx + 1 : null))
-                    .filter((n) => n !== null)
+                  Có {invalidCount} dòng bị lỗi (Dòng:{" "}
+                  {invalidRows
+                    .map((r) => r.rowNumber)
                     .slice(0, 20)
                     .join(", ")}
-                  {previewData.invalid > 20 ? "..." : ""}). Những dòng này sẽ bị
-                  bỏ qua khi import.
+                  {invalidCount > 20 ? "..." : ""}). Những dòng này sẽ bị bỏ qua
+                  khi import.
                 </AlertDescription>
               </Alert>
             )}
 
             <div className="border rounded-xl bg-white dark:bg-slate-900 overflow-hidden">
-              <ScrollArea className="h-[300px]">
+              <ScrollArea className="h-[400px]">
                 <Table>
                   <TableHeader className="bg-slate-50 dark:bg-slate-900/50 sticky top-0 z-10">
                     <TableRow>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Tên</TableHead>
-                      <TableHead>Roles</TableHead>
-                      <TableHead>Trạng thái</TableHead>
+                      {previewHeaders.map((header) => (
+                        <TableHead key={header} className="capitalize">
+                          {header}
+                        </TableHead>
+                      ))}
                       <TableHead className="text-right">Kết quả</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {previewData.rows.map((row, i) => (
+                    {previewData.map((row, i) => (
                       <TableRow
                         key={i}
                         className={!row.isValid ? "bg-red-50/50" : ""}
                       >
-                        <TableCell className="font-medium">
-                          {row.email}
-                        </TableCell>
-                        <TableCell>
-                          {row.firstName} {row.lastName}
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline" className="text-[10px]">
-                            {row.roles}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              row.status === "Update" ? "secondary" : "default"
-                            }
-                            className="text-[10px]"
-                          >
-                            {row.status}
-                          </Badge>
-                        </TableCell>
+                        {previewHeaders.map((header) => (
+                          <TableCell key={header}>
+                            {row[header]?.toString() || ""}
+                          </TableCell>
+                        ))}
                         <TableCell className="text-right">
                           {row.isValid ? (
                             <Badge
@@ -319,7 +304,7 @@ export function ImportDialog({
                             </Badge>
                           ) : (
                             <div className="flex flex-col items-end gap-1">
-                              {row.errors.map((e, idx) => (
+                              {row.errors.map((e: string, idx: number) => (
                                 <Badge
                                   key={idx}
                                   variant="destructive"
@@ -365,11 +350,11 @@ export function ImportDialog({
               </Button>
               <Button
                 onClick={handleImport}
-                disabled={!previewData || previewData.valid === 0 || isLoading}
+                disabled={!previewData || validCount === 0 || isLoading}
                 className="bg-green-600 hover:bg-green-700 text-white"
               >
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Xác nhận Import ({previewData?.valid} dòng)
+                Xác nhận Import ({validCount} dòng)
               </Button>
             </>
           )}

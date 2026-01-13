@@ -33,33 +33,38 @@ import {
   Patch,
   Post,
   Query,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger'; // Added ApiOperation
 
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import { CategoriesService } from './categories.service';
+import { CategoriesExportService } from './categories-export.service'; // Added
+import { CategoriesImportService } from './categories-import.service'; // Added
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
-@ApiTags('Product Categories')
+@ApiTags('Categories') // Changed tag
 @Controller('categories')
 export class CategoriesController {
   constructor(
     private readonly categoriesService: CategoriesService,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly exportService: CategoriesExportService, // Added
+    private readonly importService: CategoriesImportService, // Added
   ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('category:create')
+  @RequirePermissions('product:create') // Changed permission
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
-  @ApiCreateResponse('Category', { summary: 'Create new category' })
+  @ApiCreateResponse('Category', { summary: 'Tạo danh mục mới (Admin)' }) // Changed summary
   async create(
     @Body() createCategoryDto: CreateCategoryDto,
     @UploadedFile() file: Express.Multer.File,
@@ -83,6 +88,42 @@ export class CategoriesController {
     @Query('limit') limit = 100,
   ) {
     return this.categoriesService.findAll(search, Number(page), Number(limit));
+  }
+
+  @Get('export/excel')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('product:read')
+  @ApiOperation({ summary: 'Export Categories to Excel' })
+  async export(@Res() res: any) {
+    return this.exportService.exportToExcel(res);
+  }
+
+  @Post('import/excel')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('product:create')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Import Categories from Excel' })
+  async import(@UploadedFile() file: Express.Multer.File) {
+    const data = await this.importService.importFromExcel(file);
+    return { data };
+  }
+
+  @Post('import/preview')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('product:create')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({ summary: 'Preview Categories import' })
+  async preview(@UploadedFile() file: Express.Multer.File) {
+    const data = await this.importService.previewFromExcel(file);
+    return { data };
+  }
+
+  @Get('import/template')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('product:create')
+  @ApiOperation({ summary: 'Download Category Import Template' })
+  async downloadTemplate(@Res() res: any) {
+    return this.importService.generateTemplate(res);
   }
 
   @Get(':id')

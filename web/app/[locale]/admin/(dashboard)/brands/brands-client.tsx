@@ -40,6 +40,8 @@ import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { PaginationMeta } from "@/types/dtos";
 import { Brand } from "@/types/models";
+import { useBrandsImportExport } from "@/features/admin/hooks/use-brands-import-export";
+import { ImportDialog } from "@/components/shared/data-table/import-dialog";
 import { format } from "date-fns";
 import {
   Award,
@@ -67,7 +69,16 @@ export function BrandsPageClient({
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
+
+  const {
+    downloadTemplate,
+    exportBrands,
+    importBrands,
+    previewBrands,
+    loading: importExportLoading,
+  } = useBrandsImportExport();
 
   const canCreate = hasPermission("brand:create");
   const canUpdate = hasPermission("brand:update");
@@ -162,20 +173,22 @@ export function BrandsPageClient({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => alert("Export features coming soon")}
+              onClick={exportBrands}
+              disabled={importExportLoading}
             >
               <Download className="mr-2 h-4 w-4" />
-              Export
+              {t("export")}
             </Button>
             {canCreate && (
               <>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => alert("Import features coming soon")}
+                  onClick={() => setImportDialogOpen(true)}
+                  disabled={importExportLoading}
                 >
                   <Upload className="mr-2 h-4 w-4" />
-                  Import
+                  {t("import")}
                 </Button>
                 <Button onClick={() => setCreateDialogOpen(true)}>
                   <Plus className="mr-2 h-4 w-4" />
@@ -345,6 +358,14 @@ export function BrandsPageClient({
           />
         </>
       )}
+      <ImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImport={importBrands}
+        onPreview={previewBrands}
+        onDownloadTemplate={downloadTemplate}
+        title={`${t("import")} ${t("brands.title")}`}
+      />
     </div>
   );
 }
