@@ -180,4 +180,59 @@ export class ProductsImportService {
 
     return results;
   }
+
+  async generateTemplate(res: any) {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Template');
+
+    worksheet.columns = [
+      {
+        header: 'Product ID (Leave Empty for New)',
+        key: 'productId',
+        width: 30,
+      },
+      { header: 'Product Name (*)', key: 'productName', width: 30 },
+      { header: 'Product Slug (Optional)', key: 'productSlug', width: 30 },
+      { header: 'Category Name (*)', key: 'categoryName', width: 20 },
+      { header: 'Brand Name (*)', key: 'brandName', width: 20 },
+      { header: 'SKU ID (Leave Empty for New)', key: 'skuId', width: 30 },
+      { header: 'SKU Code (*)', key: 'skuCode', width: 20 },
+      { header: 'Price (*)', key: 'price', width: 15 },
+      { header: 'Sale Price', key: 'salePrice', width: 15 },
+      { header: 'Stock (*)', key: 'stock', width: 10 },
+      { header: 'Attributes (Ignored)', key: 'attributes', width: 30 },
+      { header: 'Status (ACTIVE/INACTIVE)', key: 'status', width: 20 },
+    ];
+
+    // Add example row
+    worksheet.addRow({
+      productName: 'Example iPhone 15',
+      categoryName: 'Smartphones',
+      brandName: 'Apple',
+      skuCode: 'IPHONE-15-RED',
+      price: 20000000,
+      stock: 100,
+      status: 'ACTIVE',
+    });
+
+    // Style header
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFE0E0E0' },
+    };
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=product_import_template.xlsx',
+    );
+
+    await workbook.xlsx.write(res);
+    res.end();
+  }
 }

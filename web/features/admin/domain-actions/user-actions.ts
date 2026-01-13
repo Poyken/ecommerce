@@ -98,3 +98,58 @@ export async function assignRolesAction(
     REVALIDATE.admin.users();
   }, "Failed to assign roles");
 }
+
+export async function exportUsersAction(): Promise<
+  ActionResult<{ base64: string; filename: string }>
+> {
+  return wrapServerAction(async () => {
+    const buffer = await http<ArrayBuffer>("/users/export/excel", {
+      responseType: "arraybuffer",
+    });
+    console.log(
+      "Export Buffer Length:",
+      (buffer as any).byteLength || (buffer as any).length
+    );
+    const base64 = Buffer.from(buffer).toString("base64");
+    return { base64, filename: `users_export_${Date.now()}.xlsx` };
+  }, "Failed to export users");
+}
+
+export async function downloadUserTemplateAction(): Promise<
+  ActionResult<{ base64: string; filename: string }>
+> {
+  return wrapServerAction(async () => {
+    const buffer = await http<ArrayBuffer>("/users/import/template", {
+      responseType: "arraybuffer",
+    });
+    console.log(
+      "Template Buffer Length:",
+      (buffer as any).byteLength || (buffer as any).length
+    );
+    const base64 = Buffer.from(buffer).toString("base64");
+    return { base64, filename: "users_import_template.xlsx" };
+  }, "Failed to download template");
+}
+
+export async function importUsersAction(
+  formData: FormData
+): Promise<ActionResult<void>> {
+  return wrapServerAction(async () => {
+    await http("/users/import/excel", {
+      method: "POST",
+      body: formData,
+    });
+    REVALIDATE.admin.users();
+  }, "Failed to import users");
+}
+
+export async function previewUsersImportAction(
+  formData: FormData
+): Promise<ActionResult<any>> {
+  return wrapServerAction(async () => {
+    return await http("/users/import/preview", {
+      method: "POST",
+      body: formData,
+    });
+  }, "Failed to preview import");
+}

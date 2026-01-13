@@ -50,14 +50,43 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         (request: any) => {
           // Fallback to cookie
           if (request && request.headers && request.headers.cookie) {
+            if (
+              request.url?.includes('import') ||
+              request.url?.includes('export')
+            ) {
+              console.log(
+                `[JwtStrategy] Debug ${request.url} - Cookie len: ${request.headers.cookie.length}`,
+              );
+            }
             const cookies = request.headers.cookie
               .split(';')
               .reduce((acc: any, cookie: string) => {
-                const [key, value] = cookie.trim().split('=');
+                const parts = cookie.trim().split('=');
+                const key = parts[0];
+                const value = parts.slice(1).join('=');
                 acc[key] = value;
                 return acc;
               }, {});
+
+            if (
+              request.url?.includes('import') ||
+              request.url?.includes('export')
+            ) {
+              console.log(
+                `[JwtStrategy] Debug ${request.url} - Token found: ${!!cookies[
+                  'accessToken'
+                ]}`,
+              );
+            }
             return cookies['accessToken'];
+          }
+          if (
+            request &&
+            (request.url?.includes('import') || request.url?.includes('export'))
+          ) {
+            console.log(
+              `[JwtStrategy] Debug ${request.url} - No Cookie Header`,
+            );
           }
           return null;
         },
@@ -89,9 +118,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     // 1. Check for Revoked Token (Blacklist) via JTI
     const isRevoked = await this.redisService.get(`jwt:revoked:${jti}`);
-    this.logger.debug(
-      `[JwtStrategy] Validating JTI: ${jti}, Revoked status: ${isRevoked}`,
-    );
+    // this.logger.debug(
+    //   `[JwtStrategy] Validating JTI: ${jti}, Revoked status: ${isRevoked}`,
+    // );
     // if (isRevoked) {
     //   throw new UnauthorizedException('Token revoked');
     // }
@@ -117,7 +146,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           'Device fingerprint mismatch. Please login again.',
         );
       } else {
-        this.logger.debug(`[JWT] Fingerprint verified for user ${userId}`);
+        // this.logger.debug(`[JWT] Fingerprint verified for user ${userId}`);
       }
     }
 

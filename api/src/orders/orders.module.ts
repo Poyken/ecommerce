@@ -33,6 +33,8 @@ import { OrdersService } from './orders.service';
 import { BullModule } from '@nestjs/bullmq';
 import { OrdersProcessor } from './orders.processor';
 
+import { OrdersExportService } from './orders-export.service';
+
 @Module({
   imports: [
     PrismaModule,
@@ -46,7 +48,12 @@ import { OrdersProcessor } from './orders.processor';
     }),
   ],
   controllers: [OrdersController],
-  providers: [OrdersService, InvoiceService, OrdersProcessor],
+  providers: [
+    OrdersService,
+    InvoiceService,
+    OrdersProcessor,
+    OrdersExportService,
+  ],
   exports: [InvoiceService, BullModule],
 })
 export class OrdersModule {}

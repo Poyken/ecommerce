@@ -1,26 +1,22 @@
-/**
- * =====================================================================
- * JWT AUTH GUARD - Bảo vệ Route bằng JWT Token
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CƠ CHẾ HOẠT ĐỘNG:
- * - Đây là "người gác cổng" (Guard) mặc định của NestJS Passport.
- * - Khi gắn `@UseGuards(JwtAuthGuard)` lên controller hoặc method:
- *   + Nó sẽ check Header `Authorization: Bearer <token>`.
- *   + Nếu token valid -> Cho qua & gán `req.user`.
- *   + Nếu token invalid/expired -> Trả về 401 Unauthorized ngay lập tức.
- *
- * 2. SỬ DỤNG:
- * - Hầu hết các API private đều phải có guard này. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
-
- * =====================================================================
- */
-import { Injectable } from '@nestjs/common';
+import { ExecutionContext, Injectable } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
+import { IS_PUBLIC_KEY } from '@/common/decorators/crud.decorators';
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {}
+export class JwtAuthGuard extends AuthGuard('jwt') {
+  constructor(private reflector: Reflector) {
+    super();
+  }
+
+  canActivate(context: ExecutionContext) {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (isPublic) {
+      return true;
+    }
+    return super.canActivate(context);
+  }
+}

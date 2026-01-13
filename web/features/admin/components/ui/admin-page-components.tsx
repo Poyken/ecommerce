@@ -65,7 +65,7 @@ export function AdminPageHeader({
   return (
     <div
       className={cn(
-        "flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 md:p-8 bg-white dark:bg-slate-950 rounded-4xl border border-white/20 shadow-sm backdrop-blur-xl mb-8 animate-in fade-in slide-in-from-top-4 duration-500",
+        "flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 md:p-8 bg-white dark:bg-slate-950 rounded-2xl border border-white/20 shadow-sm backdrop-blur-xl mb-8 animate-in fade-in slide-in-from-top-4 duration-500",
         className
       )}
     >
@@ -148,7 +148,7 @@ export function AdminTableWrapper({
   return (
     <div
       className={cn(
-        "rounded-4xl border border-slate-200/60 dark:border-slate-800/60 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl shadow-xl shadow-slate-200/20 dark:shadow-none overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700",
+        "rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl shadow-xl shadow-slate-200/20 dark:shadow-none overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700",
         className
       )}
     >

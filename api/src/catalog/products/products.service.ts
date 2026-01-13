@@ -683,6 +683,49 @@ export class ProductsService {
     return freshProduct;
   }
 
+  /**
+   * Cập nhật hàng loạt SKUs cho một sản phẩm.
+   */
+  async bulkUpdateSkus(
+    productId: string,
+    skus: { id: string; price?: number; salePrice?: number; stock?: number }[],
+  ) {
+    // Validate: Ensure all SKUs belong to this product
+    const skuIds = skus.map((s) => s.id);
+    const existingSkus = await this.prisma.sku.findMany({
+      where: {
+        id: { in: skuIds },
+        productId: productId,
+      },
+      select: { id: true },
+    });
+
+    if (existingSkus.length !== skus.length) {
+      throw new NotFoundException(
+        'Một hoặc nhiều SKU không thuộc về sản phẩm này',
+      );
+    }
+
+    await this.prisma.$transaction(
+      skus.map((sku) =>
+        this.prisma.sku.update({
+          where: { id: sku.id },
+          data: {
+            price: sku.price,
+            salePrice: sku.salePrice,
+            stock: sku.stock,
+          },
+        }),
+      ),
+    );
+
+    // Re-calculate min/max price for parent product
+    await this.skuManager.updateProductPriceRange(productId);
+    await this.invalidateProductCache(productId);
+
+    return { success: true, count: skus.length };
+  }
+
   async remove(id: string) {
     const result = await this.prisma.$transaction(async (tx) => {
       const product = await tx.product.update({

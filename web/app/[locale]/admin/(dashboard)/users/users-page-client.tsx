@@ -53,6 +53,9 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { ImportDialog } from "@/components/shared/data-table/import-dialog";
+import { ExportButton } from "@/components/shared/data-table/export-button";
+import { useUsersImportExport } from "@/features/admin/hooks/use-users-import-export";
 
 type FilterType = "all" | "ADMIN" | "USER";
 
@@ -83,6 +86,9 @@ export function UsersPageClient({
   const canDelete = hasPermission("user:delete");
   const canCreate = hasPermission("user:create");
   const canAssignRoles = hasPermission("user:update");
+
+  const { importUsers, exportUsers, downloadTemplate, previewUsers } =
+    useUsersImportExport();
 
   // Server Stats
   const adminCount = counts?.admin || 0;
@@ -119,15 +125,13 @@ export function UsersPageClient({
         ]}
         actions={
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => alert("Export features coming soon")}
-              className="rounded-xl"
-            >
-              <Download className="mr-2 h-4 w-4" />
-              Export CSV
-            </Button>
+            <ImportDialog
+              entityName={t("users.title")}
+              onImport={importUsers}
+              onPreview={previewUsers}
+              onDownloadTemplate={downloadTemplate}
+            />
+            <ExportButton onExport={exportUsers} />
             {canCreate && (
               <Button
                 onClick={() => setCreateDialogOpen(true)}
@@ -213,15 +217,16 @@ export function UsersPageClient({
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
-              <TableHead className="w-[300px]">
+              <TableHead className="w-[250px]">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4" />
                   {t("users.emailLabel")}
                 </div>
               </TableHead>
-              <TableHead>{t("name")}</TableHead>
+              <TableHead>First Name</TableHead>
+              <TableHead>Last Name</TableHead>
               <TableHead>{t("sidebar.roles")}</TableHead>
-              <TableHead>{t("created")}</TableHead>
+              <TableHead>Status</TableHead>
               {(canUpdate || canDelete || canAssignRoles) && (
                 <TableHead className="text-right w-[100px]">
                   {t("actions")}
@@ -233,7 +238,7 @@ export function UsersPageClient({
             {initialUsers.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={canUpdate || canDelete || canAssignRoles ? 5 : 4}
+                  colSpan={canUpdate || canDelete || canAssignRoles ? 6 : 5}
                 >
                   <AdminEmptyState
                     icon={Users}
@@ -271,17 +276,11 @@ export function UsersPageClient({
                       </div>
                       <div>
                         <p className="font-medium">{user.email}</p>
-                        <p className="text-xs text-muted-foreground">
-                          ID: {user.id.slice(0, 8)}...
-                        </p>
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>
-                    <span className="font-medium">
-                      {user.firstName} {user.lastName}
-                    </span>
-                  </TableCell>
+                  <TableCell>{user.firstName}</TableCell>
+                  <TableCell>{user.lastName}</TableCell>
                   <TableCell>
                     <div className="flex flex-wrap gap-1">
                       {Array.isArray(user.roles) && user.roles.length > 0 ? (
@@ -316,8 +315,19 @@ export function UsersPageClient({
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {format(new Date(user.createdAt), "dd/MM/yyyy")}
+                  <TableCell>
+                    <Badge
+                      variant={
+                        (user as any).deletedAt ? "destructive" : "default"
+                      }
+                      className={cn(
+                        (user as any).deletedAt
+                          ? "bg-red-100 text-red-600 hover:bg-red-100/80"
+                          : "bg-green-100 text-green-600 hover:bg-green-100/80"
+                      )}
+                    >
+                      {(user as any).deletedAt ? "Inactive" : "Active"}
+                    </Badge>
                   </TableCell>
                   {(canUpdate || canDelete || canAssignRoles) && (
                     <TableCell className="text-right">

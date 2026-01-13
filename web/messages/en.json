@@ -1914,6 +1914,11 @@
         "error": "Operation failed"
       }
     },
+    "plans": {
+      "messages": {
+        "noPlans": "No plans found. Please seed the database."
+      }
+    },
     "security": {
       "title": "Security Hub",
       "subtitle": "System-wide threat monitoring and security stance.",

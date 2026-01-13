@@ -147,7 +147,7 @@ export function AssignPermissionsDialog({
       maxWidth="!max-w-6xl"
       disabled={isPending || !isDirty}
     >
-      <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto pr-2">
+      <div className="space-y-4 py-4 pr-1">
         {isPending && permissions.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
             {t("permissions.loading")}

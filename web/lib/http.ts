@@ -42,6 +42,8 @@ type FetchOptions = RequestInit & {
   skipRedirectOn401?: boolean;
   /** Timeout request (ms) */
   timeout?: number;
+  /** Response type (json, blob, text, etc.) */
+  responseType?: "json" | "blob" | "text" | "arraybuffer";
 };
 
 /**
@@ -339,6 +341,23 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
       return null as T;
     }
 
+    const type = options.responseType || "json";
+
+    if (type === "json") {
+      const data = await res.json();
+      return data as T;
+    } else if (type === "blob") {
+      const data = await res.blob();
+      return data as unknown as T;
+    } else if (type === "text") {
+      const data = await res.text();
+      return data as unknown as T;
+    } else if (type === "arraybuffer") {
+      const data = await res.arrayBuffer();
+      return data as unknown as T;
+    }
+
+    // Default to json
     const data = await res.json();
     return data as T;
   };

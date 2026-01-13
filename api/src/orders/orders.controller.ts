@@ -52,6 +52,9 @@ import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { InvoiceService } from './invoice.service';
 import { OrdersService } from './orders.service';
 
+import { Res } from '@nestjs/common';
+import { OrdersExportService } from './orders-export.service';
+
 @ApiTags('Orders')
 @Controller('orders')
 @UseGuards(JwtAuthGuard)
@@ -60,7 +63,16 @@ export class OrdersController {
   constructor(
     private readonly ordersService: OrdersService,
     private readonly invoiceService: InvoiceService,
+    private readonly exportService: OrdersExportService,
   ) {}
+
+  @Get('export/excel')
+  @UseGuards(PermissionsGuard)
+  @RequirePermissions('order:read')
+  @ApiOperation({ summary: 'Export Orders to Excel' })
+  async export(@Res() res: any) {
+    return this.exportService.exportToExcel(res);
+  }
 
   @Post()
   @ApiCreateResponse('Order', { summary: 'Thanh toán / Tạo đơn hàng' })

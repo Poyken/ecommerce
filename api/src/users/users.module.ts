@@ -26,10 +26,13 @@ import { UsersService } from './users.service';
 
 import { TenantsModule } from '@/tenants/tenants.module';
 
+import { UsersExportService } from './users-export.service';
+import { UsersImportService } from './users-import.service';
+
 @Module({
   imports: [PrismaModule, TenantsModule],
   controllers: [UsersController],
-  providers: [UsersService],
+  providers: [UsersService, UsersExportService, UsersImportService],
   exports: [UsersService],
 })
 export class UsersModule {}

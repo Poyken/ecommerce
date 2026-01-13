@@ -6,6 +6,7 @@ import {
   ApiGetOneResponse,
   ApiListResponse,
   ApiUpdateResponse,
+  Public,
   RequirePermissions,
 } from '@/common/decorators/crud.decorators';
 import {
@@ -52,12 +53,53 @@ import { UsersService } from './users.service';
  * =====================================================================
  */
 
+import { Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiOperation } from '@nestjs/swagger';
+import { UsersExportService } from './users-export.service';
+import { UsersImportService } from './users-import.service';
+
 @ApiTags('Users (Admin)')
 @Controller('users')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @ApiBearerAuth()
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly exportService: UsersExportService,
+    private readonly importService: UsersImportService,
+  ) {}
+
+  @Get('export/excel')
+  @RequirePermissions('user:read')
+  @ApiOperation({ summary: 'Export Users to Excel' })
+  async export(@Res() res: any) {
+    return this.exportService.exportToExcel(res);
+  }
+
+  @Get('import/template')
+  @RequirePermissions('user:create')
+  @ApiOperation({ summary: 'Download User Import Template' })
+  async downloadTemplate(@Res() res: any) {
+    return this.importService.generateTemplate(res);
+  }
+
+  @Post('import/preview')
+  @RequirePermissions('user:create')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiCreateResponse('any', { summary: 'Preview Import Users from Excel' })
+  async preview(@UploadedFile() file: Express.Multer.File) {
+    return this.importService.previewFromExcel(file);
+  }
+
+  @Post('import/excel')
+  @RequirePermissions('user:create')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiCreateResponse('any', { summary: 'Import Users from Excel' })
+  async import(@UploadedFile() file: Express.Multer.File) {
+    const data = await this.importService.importFromExcel(file);
+    return { data };
+  }
 
   @Post()
   @RequirePermissions('user:create')

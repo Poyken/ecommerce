@@ -35,6 +35,7 @@ import {
   ApiListResponse,
   ApiUpdateResponse,
   Cached,
+  Public,
   RequirePermissions,
 } from '@/common/decorators/crud.decorators';
 import {
@@ -156,6 +157,21 @@ export class ProductsController {
   }
 
   /**
+   * Cập nhật đồng thời nhiều SKUs của sản phẩm.
+   */
+  @Patch(':id/skus/bulk')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('product:update')
+  @ApiUpdateResponse('any', { summary: 'Cập nhật hàng loạt SKU (Admin)' })
+  async bulkUpdateSkus(
+    @Param('id') id: string,
+    @Body() body: import('./dto/bulk-update-skus.dto').BulkUpdateSkusDto,
+  ) {
+    const data = await this.productsService.bulkUpdateSkus(id, body.skus);
+    return { data };
+  }
+
+  /**
    * Xóa sản phẩm (Soft Delete).
    */
   @Delete(':id')
@@ -223,5 +239,16 @@ export class ProductsController {
   async import(@UploadedFile() file: Express.Multer.File) {
     const data = await this.importService.importFromExcel(file);
     return { data };
+  }
+
+  /**
+   * Tải xuống mẫu file Excel import.
+   */
+  @Get('import/template')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('product:create')
+  @ApiOperation({ summary: 'Download Import Template' })
+  async downloadTemplate(@Res() res: any) {
+    return this.importService.generateTemplate(res);
   }
 }

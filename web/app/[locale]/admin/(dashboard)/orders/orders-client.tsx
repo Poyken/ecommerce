@@ -65,6 +65,8 @@ import { Order, OrderStatus } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
+import { ExportButton } from "@/components/shared/data-table/export-button";
+import { useOrdersExport } from "@/features/admin/hooks/use-orders-export";
 
 type FilterType =
   | "all"
@@ -101,6 +103,7 @@ export function OrdersClient({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const lastProcessedNotiId = useRef<string | null>(null);
   const [loadingOrderId, setLoadingOrderId] = useState<string | null>(null);
+  const { exportOrders } = useOrdersExport();
 
   // Track processed orderId to prevent infinite loop/re-processing
   const processedOrderIdRef = useRef<string | null>(null);
@@ -331,17 +334,9 @@ export function OrdersClient({
                   {t("orders.selectedCount", { count: selectedRows.size })}
                 </span>
                 <div className="h-4 w-px bg-primary/20 mx-2" />
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 hover:bg-primary/10"
-                  onClick={handleExport}
-                >
-                  <Download size={16} className="mr-2" />
-                  {t("orders.exportLabel")}
-                </Button>
               </div>
             )}
+            <ExportButton onExport={exportOrders} />
 
             <Button
               variant="outline"

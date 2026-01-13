@@ -39,7 +39,7 @@ export class LoggerService implements NestLoggerService {
     const isProduction = process.env.NODE_ENV === 'production';
 
     this.logger = winston.createLogger({
-      level: isProduction ? 'info' : 'debug',
+      level: isProduction ? 'info' : process.env.LOG_LEVEL || 'info',
       format: winston.format.combine(
         winston.format.timestamp(),
         winston.format.errors({ stack: true }),

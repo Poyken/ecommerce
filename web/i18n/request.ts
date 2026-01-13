@@ -24,7 +24,9 @@ import { getRequestConfig } from "next-intl/server";
 import { headers } from "next/headers";
 import { routing } from "./routing";
 
-async function getTenantMessages(locale: string) {
+import { cache } from "react";
+
+const getTenantMessages = cache(async (locale: string) => {
   try {
     const headersList = await headers();
     const host = headersList.get("host") || "localhost";
@@ -43,7 +45,7 @@ async function getTenantMessages(locale: string) {
   } catch {
     return null; // Fail silently to default
   }
-}
+});
 
 export default getRequestConfig(async ({ requestLocale }) => {
   let locale = await requestLocale;

@@ -128,34 +128,39 @@ export const productService = {
    *   sort: "-price" // Giá giảm dần
    * });
    */
-  async getProducts(
-    params?: GetProductsParams,
-    options?: { next?: NextFetchRequestConfig }
-  ): Promise<ApiResponse<Product[]>> {
-    try {
-      const response = await http<ApiResponse<Product[]>>("/products", {
-        params: params as Record<string, string | number | boolean>,
-        skipAuth: true,
-        next: {
-          revalidate: 60, // Cache 60 giây - cân bằng giữa fresh data và performance
-          tags: ["products"],
-          ...options?.next,
-        },
-      });
-      return (
-        response || {
+  getProducts: cache(
+    async (
+      params?: GetProductsParams,
+      options?: { next?: NextFetchRequestConfig }
+    ): Promise<ApiResponse<Product[]>> => {
+      try {
+        // Create a unique cache key based on params
+        const cacheKey = JSON.stringify(params || {});
+
+        const response = await http<ApiResponse<Product[]>>("/products", {
+          params: params as Record<string, string | number | boolean>,
+          skipAuth: true,
+          next: {
+            revalidate: 60,
+            tags: ["products", `products-${cacheKey}`],
+            ...options?.next,
+          },
+        });
+        return (
+          response || {
+            data: [],
+            meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
+          }
+        );
+      } catch (error) {
+        console.error("Lấy sản phẩm thất bại:", error);
+        return {
           data: [],
           meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
-        }
-      );
-    } catch (error) {
-      console.error("Lấy sản phẩm thất bại:", error);
-      return {
-        data: [],
-        meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
-      } as unknown as ApiResponse<Product[]>;
+        } as unknown as ApiResponse<Product[]>;
+      }
     }
-  },
+  ),
 
   /**
    * Lấy sản phẩm nổi bật cho trang chủ.
@@ -193,113 +198,117 @@ export const productService = {
    * // Trong FilterSidebar component
    * const categories = await productService.getCategories();
    */
-  async getCategories(options?: {
-    next?: NextFetchRequestConfig;
-    limit?: number;
-    page?: number;
-  }): Promise<Category[]> {
-    const { limit, page, next } = options || {};
-    const params = { limit, page };
+  getCategories: cache(
+    async (options?: {
+      next?: NextFetchRequestConfig;
+      limit?: number;
+      page?: number;
+    }): Promise<Category[]> => {
+      const { limit, page, next } = options || {};
+      const params = { limit, page };
 
-    const fetcher = unstable_cache(
-      async () => {
-        try {
-          const response = await http<
-            ApiResponse<Category[]> | ApiResponse<PaginatedData<Category>>
-          >("/categories", {
-            params: params as Record<string, string | number | boolean>,
-            skipAuth: true,
-            next: {
-              revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - categories change very rarely
-              tags: ["categories"],
-              ...next,
-            },
-          });
+      const fetcher = unstable_cache(
+        async () => {
+          try {
+            const response = await http<
+              ApiResponse<Category[]> | ApiResponse<PaginatedData<Category>>
+            >("/categories", {
+              params: params as Record<string, string | number | boolean>,
+              skipAuth: true,
+              next: {
+                revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - categories change very rarely
+                tags: ["categories"],
+                ...next,
+              },
+            });
 
-          // Handle direct array in data
-          if (Array.isArray(response?.data)) {
-            return response.data;
+            // Handle direct array in data
+            if (Array.isArray(response?.data)) {
+              return response.data;
+            }
+            // Handle nested data in paginated response
+            if (
+              response?.data &&
+              "data" in response.data &&
+              Array.isArray(response.data.data)
+            ) {
+              return response.data.data;
+            }
+            return [];
+          } catch (error) {
+            console.error("Lấy danh mục thất bại:", error);
+            return [];
           }
-          // Handle nested data in paginated response
-          if (
-            response?.data &&
-            "data" in response.data &&
-            Array.isArray(response.data.data)
-          ) {
-            return response.data.data;
-          }
-          return [];
-        } catch (error) {
-          console.error("Lấy danh mục thất bại:", error);
-          return [];
+        },
+        ["categories-all", JSON.stringify(params)],
+        {
+          revalidate: 86400,
+          tags: ["categories"],
         }
-      },
-      ["categories-all", JSON.stringify(params)],
-      {
-        revalidate: 86400,
-        tags: ["categories"],
-      }
-    );
+      );
 
-    return fetcher();
-  },
+      return fetcher();
+    }
+  ),
 
   /**
    * Lấy danh sách tất cả thương hiệu.
    *
    * @returns Mảng thương hiệu, hoặc mảng rỗng nếu lỗi
    */
-  async getBrands(options?: {
-    next?: NextFetchRequestConfig;
-    limit?: number;
-    page?: number;
-  }): Promise<import("@/types/models").Brand[]> {
-    const { limit, page, next } = options || {};
-    const params = { limit, page };
+  getBrands: cache(
+    async (options?: {
+      next?: NextFetchRequestConfig;
+      limit?: number;
+      page?: number;
+    }): Promise<import("@/types/models").Brand[]> => {
+      const { limit, page, next } = options || {};
+      const params = { limit, page };
 
-    const fetcher = unstable_cache(
-      async () => {
-        try {
-          const response = await http<
-            | ApiResponse<import("@/types/models").Brand[]>
-            | ApiResponse<PaginatedData<import("@/types/models").Brand>>
-          >("/brands", {
-            params: params as Record<string, string | number | boolean>,
-            skipAuth: true,
-            next: {
-              revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - brands change very rarely
-              tags: ["brands"],
-              ...next,
-            },
-          });
+      const fetcher = unstable_cache(
+        async () => {
+          try {
+            const response = await http<
+              | ApiResponse<import("@/types/models").Brand[]>
+              | ApiResponse<PaginatedData<import("@/types/models").Brand>>
+            >("/brands", {
+              params: params as Record<string, string | number | boolean>,
+              skipAuth: true,
+              next: {
+                revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - brands change very rarely
+                tags: ["brands"],
+                ...next,
+              },
+            });
 
-          // Handle direct array in data
-          if (Array.isArray(response?.data)) {
-            return response.data;
+            // Handle direct array in data
+            if (Array.isArray(response?.data)) {
+              return response.data;
+            }
+            // Handle nested data in paginated response
+            if (
+              response?.data &&
+              "data" in response.data &&
+              Array.isArray(response.data.data)
+            ) {
+              return response.data.data;
+            }
+            return [];
+          } catch (error) {
+            console.error("Lấy thương hiệu thất bại:", error);
+            return [];
           }
-          // Handle nested data in paginated response
-          if (
-            response?.data &&
-            "data" in response.data &&
-            Array.isArray(response.data.data)
-          ) {
-            return response.data.data;
-          }
-          return [];
-        } catch (error) {
-          console.error("Lấy thương hiệu thất bại:", error);
-          return [];
+        },
+        ["brands-all", JSON.stringify(params)],
+        {
+          revalidate: 86400,
+          tags: ["brands"],
         }
-      },
-      ["brands-all", JSON.stringify(params)],
-      {
-        revalidate: 86400,
-        tags: ["brands"],
-      }
-    );
+      );
 
-    return fetcher();
-  },
+      return fetcher();
+    }
+  ),
 
   /**
    * Lấy chi tiết một sản phẩm theo ID.
@@ -450,5 +459,73 @@ export const productService = {
     } catch {
       return [];
     }
+  },
+
+  /**
+   * Export dữ liệu sản phẩm ra file Excel.
+   * Dùng `window.open` hoặc `fetch` blob để tải file.
+   */
+  async exportToExcel(): Promise<void> {
+    try {
+      const response = await http<Blob>("/products/export/excel", {
+        skipAuth: false, // Cần quyền Admin
+        responseType: "blob",
+      });
+
+      // Tạo link download ảo
+      const url = window.URL.createObjectURL(new Blob([response as any]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute(
+        "download",
+        `products_export_${new Date().getTime()}.xlsx`
+      );
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    } catch (error) {
+      console.error("Export thất bại:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Tải Template nhập liệu mẫu.
+   */
+  async downloadTemplate(): Promise<void> {
+    try {
+      const response = await http<Blob>("/products/import/template", {
+        skipAuth: false,
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response as any]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "product_import_template.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    } catch (error) {
+      console.error("Tải template thất bại:", error);
+      throw error;
+    }
+  },
+
+  /**
+   * Import dữ liệu từ file Excel.
+   */
+  async importFromExcel(file: File): Promise<any> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return http("/products/import/excel", {
+      method: "POST",
+      body: formData,
+      skipAuth: false,
+      headers: {
+        // Content-Type được browser tự động set khi dùng FormData
+      },
+    });
   },
 };

@@ -31,18 +31,22 @@ export class ProductsExportService {
 
     // Define columns
     worksheet.columns = [
-      { header: 'Product ID', key: 'productId', width: 40 },
-      { header: 'Product Name', key: 'productName', width: 30 },
-      { header: 'Product Slug', key: 'productSlug', width: 30 },
-      { header: 'Category', key: 'category', width: 20 },
-      { header: 'Brand', key: 'brand', width: 20 },
-      { header: 'SKU ID', key: 'skuId', width: 40 },
-      { header: 'SKU Code', key: 'skuCode', width: 20 },
-      { header: 'Price', key: 'price', width: 15 },
+      {
+        header: 'Product ID (Leave Empty for New)',
+        key: 'productId',
+        width: 40,
+      },
+      { header: 'Product Name (*)', key: 'productName', width: 30 },
+      { header: 'Product Slug (Optional)', key: 'productSlug', width: 30 },
+      { header: 'Category Name (*)', key: 'category', width: 20 },
+      { header: 'Brand Name (*)', key: 'brand', width: 20 },
+      { header: 'SKU ID (Leave Empty for New)', key: 'skuId', width: 40 },
+      { header: 'SKU Code (*)', key: 'skuCode', width: 20 },
+      { header: 'Price (*)', key: 'price', width: 15 },
       { header: 'Sale Price', key: 'salePrice', width: 15 },
-      { header: 'Stock', key: 'stock', width: 10 },
-      { header: 'Attributes', key: 'attributes', width: 40 },
-      { header: 'Status', key: 'status', width: 15 },
+      { header: 'Stock (*)', key: 'stock', width: 10 },
+      { header: 'Attributes (Ignored)', key: 'attributes', width: 40 },
+      { header: 'Status (ACTIVE/INACTIVE)', key: 'status', width: 15 },
     ];
 
     // Style header
