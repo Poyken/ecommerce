@@ -23,6 +23,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChatSelector } from "./chat-selector";
 
 interface SupportChatContentProps {
@@ -300,50 +301,56 @@ export function SupportChatContent({
               </div>
             </div>
 
-            {messages.map((msg, index) => {
-              const isMe =
-                msg.senderType === "USER" && msg.senderId === user?.id;
-              const isRich =
-                msg.type === "IMAGE" ||
-                msg.type === "PRODUCT" ||
-                msg.type === "ORDER";
-              const showBubble = !isRich;
+            <AnimatePresence initial={false}>
+              {messages.map((msg, index) => {
+                const isMe =
+                  msg.senderType === "USER" && msg.senderId === user?.id;
+                const isRich =
+                  msg.type === "IMAGE" ||
+                  msg.type === "PRODUCT" ||
+                  msg.type === "ORDER";
+                const showBubble = !isRich;
 
-              return (
-                <div
-                  key={index}
-                  className={cn(
-                    "flex w-full",
-                    isMe ? "justify-end" : "justify-start"
-                  )}
-                >
-                  <div
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.2 }}
                     className={cn(
-                      "text-sm max-w-[85%]",
-                      showBubble &&
-                        isMe &&
-                        "bg-blue-600 text-white rounded-2xl rounded-tr-none px-3 py-2 shadow-sm",
-                      showBubble &&
-                        !isMe &&
-                        "bg-white border text-foreground rounded-2xl rounded-tl-none px-3 py-2 shadow-sm",
-                      isRich && "px-0 py-0 bg-transparent shadow-none"
+                      "flex w-full",
+                      isMe ? "justify-end" : "justify-start"
                     )}
                   >
-                    {renderMessageContent(msg)}
-                    {msg.isRead && isMe && (
-                      <div
-                        className={cn(
-                          "text-[10px] opacity-70 text-right mt-1",
-                          isRich || !isMe ? "text-gray-400" : "text-white"
-                        )}
-                      >
-                        {t("read")}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                    <div
+                      className={cn(
+                        "text-sm max-w-[85%]",
+                        showBubble &&
+                          isMe &&
+                          "bg-blue-600 text-white rounded-2xl rounded-tr-none px-3 py-2 shadow-sm",
+                        showBubble &&
+                          !isMe &&
+                          "bg-white border text-foreground rounded-2xl rounded-tl-none px-3 py-2 shadow-sm",
+                        isRich && "px-0 py-0 bg-transparent shadow-none"
+                      )}
+                    >
+                      {renderMessageContent(msg)}
+                      {msg.isRead && isMe && (
+                        <div
+                          className={cn(
+                            "text-[10px] opacity-70 text-right mt-1",
+                            isRich || !isMe ? "text-gray-400" : "text-white"
+                          )}
+                        >
+                          {t("read")}
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
             <div ref={scrollRef} />
           </div>
         </ScrollArea>

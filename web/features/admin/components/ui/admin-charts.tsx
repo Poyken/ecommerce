@@ -18,6 +18,7 @@ import {
   Tooltip,
   XAxis,
   YAxis,
+  CartesianGrid,
 } from "recharts";
 
 /**
@@ -63,8 +64,16 @@ export function SalesTrendChart({ data }: { data: SalesTrendData[] }) {
           <AreaChart data={data}>
             <defs>
               <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                <stop
+                  offset="5%"
+                  stopColor="hsl(var(--primary))"
+                  stopOpacity={0.2}
+                />
+                <stop
+                  offset="95%"
+                  stopColor="hsl(var(--primary))"
+                  stopOpacity={0}
+                />
               </linearGradient>
             </defs>
             <XAxis
@@ -130,6 +139,25 @@ export function BestSellersChart({ data }: { data: BestSellerData[] }) {
       <CardContent className="h-[350px]">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
+            <defs>
+              <linearGradient id="colorBestSellers" x1="0" y1="0" x2="0" y2="1">
+                <stop
+                  offset="0%"
+                  stopColor="hsl(var(--primary))"
+                  stopOpacity={1}
+                />
+                <stop
+                  offset="100%"
+                  stopColor="hsl(var(--primary))"
+                  stopOpacity={0.6}
+                />
+              </linearGradient>
+            </defs>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="hsl(var(--muted-foreground) / 0.1)"
+            />
             <XAxis
               dataKey="name"
               stroke="hsl(var(--muted-foreground))"
@@ -137,6 +165,8 @@ export function BestSellersChart({ data }: { data: BestSellerData[] }) {
               tickLine={false}
               axisLine={false}
               className="font-medium"
+              tick={{ fill: "hsl(var(--muted-foreground))" }}
+              dy={10}
             />
             <YAxis
               stroke="hsl(var(--muted-foreground))"
@@ -144,9 +174,10 @@ export function BestSellersChart({ data }: { data: BestSellerData[] }) {
               tickLine={false}
               axisLine={false}
               className="font-medium"
+              tick={{ fill: "hsl(var(--muted-foreground))" }}
             />
             <Tooltip
-              cursor={{ fill: "hsl(var(--muted) / 0.2)" }}
+              cursor={{ fill: "transparent" }}
               formatter={(value) => [`${value ?? 0} sold`, "Quantity"]}
               labelFormatter={(label) => `Product: ${label}`}
               contentStyle={{
@@ -154,12 +185,13 @@ export function BestSellersChart({ data }: { data: BestSellerData[] }) {
                 border: "1px solid hsl(var(--foreground) / 0.1)",
                 backgroundColor: "hsl(var(--background))",
                 color: "hsl(var(--foreground))",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
               }}
             />
             <Bar
               dataKey="sales"
-              fill="hsl(var(--primary))"
-              radius={[8, 8, 0, 0]}
+              fill="url(#colorBestSellers)"
+              radius={[8, 8, 8, 8]}
             />
           </BarChart>
         </ResponsiveContainer>

@@ -1,4 +1,4 @@
-import { CategoriesSkeleton } from "@/features/categories/components/skeletons/categories-skeleton";
+import { CategoriesSkeleton } from "@/features/home/components/skeletons/home-skeleton";
 
 /**
  * =====================================================================

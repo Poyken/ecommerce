@@ -3,6 +3,7 @@
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { PasswordInput } from "@/components/shared/password-input";
+import { AnimatedError } from "@/components/shared/animated-error";
 import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -95,11 +96,17 @@ export function LoginPageContent() {
         // We should ideally run sync logic.
         // PRIORITY REDIRECT after 2FA
         const permissions = (res as any).permissions || [];
-        const isSuperAdmin = permissions.includes("superAdmin:read") || permissions.includes("dashboard:view");
+        const isSuperAdmin =
+          permissions.includes("superAdmin:read") ||
+          permissions.includes("dashboard:view");
         const isAdmin = permissions.includes("admin:read");
 
-        let targetUrl = isSuperAdmin ? "/super-admin" : (isAdmin ? "/admin" : (callbackUrl || "/"));
-        
+        let targetUrl = isSuperAdmin
+          ? "/super-admin"
+          : isAdmin
+          ? "/admin"
+          : callbackUrl || "/";
+
         try {
           const url = new URL(targetUrl, window.location.origin);
           if (url.origin === window.location.origin) {
@@ -110,9 +117,7 @@ export function LoginPageContent() {
         }
         const localePrefix = `/${locale}`;
         if (!targetUrl.startsWith(localePrefix)) {
-          targetUrl = `${localePrefix}${
-            targetUrl === "/" ? "" : targetUrl
-          }`;
+          targetUrl = `${localePrefix}${targetUrl === "/" ? "" : targetUrl}`;
         }
         router.refresh();
         window.location.href = targetUrl;
@@ -230,10 +235,16 @@ export function LoginPageContent() {
           } finally {
             // Priority-based navigation
             const permissions = state.permissions || [];
-            const isSuperAdmin = permissions.includes("superAdmin:read") || permissions.includes("dashboard:view");
+            const isSuperAdmin =
+              permissions.includes("superAdmin:read") ||
+              permissions.includes("dashboard:view");
             const isAdmin = permissions.includes("admin:read");
-            
-            let targetUrl = isSuperAdmin ? "/super-admin" : (isAdmin ? "/admin" : (callbackUrl || "/"));
+
+            let targetUrl = isSuperAdmin
+              ? "/super-admin"
+              : isAdmin
+              ? "/admin"
+              : callbackUrl || "/";
             try {
               const url = new URL(targetUrl, window.location.origin);
               if (url.origin === window.location.origin) {
@@ -376,21 +387,7 @@ export function LoginPageContent() {
                     }
                   }}
                 />
-                <AnimatePresence initial={false}>
-                  {localErrors.email && (
-                    <m.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <p className="text-red-500 text-sm mt-1">
-                        {localErrors.email[0]}
-                      </p>
-                    </m.div>
-                  )}
-                </AnimatePresence>
+                <AnimatedError message={localErrors.email?.[0]} />
               </div>
 
               <div className="space-y-2">
@@ -433,21 +430,7 @@ export function LoginPageContent() {
                     }
                   }}
                 />
-                <AnimatePresence initial={false}>
-                  {localErrors.password && (
-                    <m.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <p className="text-red-500 text-sm mt-1">
-                        {localErrors.password[0]}
-                      </p>
-                    </m.div>
-                  )}
-                </AnimatePresence>
+                <AnimatedError message={localErrors.password?.[0]} />
               </div>
 
               <GlassButton

@@ -1,4 +1,7 @@
-import { BlockData, BlockRenderer } from "@/features/cms/components/block-renderer";
+import {
+  BlockData,
+  BlockRenderer,
+} from "@/features/cms/components/block-renderer";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import {
   CategoriesSkeleton,
@@ -127,14 +130,7 @@ function HomeContentSkeleton() {
   return (
     <div className="space-y-16 pb-16">
       <div className="container mx-auto px-4 mt-8">
-        <CategoriesSkeleton />
-      </div>
-
-      {/* Brands Placeholder - Minimal height to prevent shift */}
-      <div className="container mx-auto px-4 h-20 bg-foreground/5 rounded-lg animate-pulse" />
-
-      <div className="container mx-auto px-4">
-        <ProductsSkeleton count={4} />
+        <ProductsSkeleton count={8} />
       </div>
     </div>
   );

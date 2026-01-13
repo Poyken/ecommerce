@@ -75,7 +75,7 @@ export default async function SuperAdminDashboardPage() {
   // const securityRes = await getSecurityStatsAction();
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700 pb-10">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-10">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-4xl font-black tracking-tight text-foreground">

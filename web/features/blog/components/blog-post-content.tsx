@@ -11,6 +11,7 @@ import { format } from "date-fns";
 import DOMPurify from "isomorphic-dompurify";
 import { ArrowLeft, Calendar, Clock, Share2, User } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { AnimatedError } from "@/components/shared/animated-error";
 import Image from "next/image";
 
 import { useToast } from "@/components/ui/use-toast";
@@ -326,11 +327,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                         emailError ? "border-destructive ring-destructive" : ""
                       }`}
                     />
-                    {emailError && (
-                      <p className="text-xs text-destructive px-1">
-                        {emailError}
-                      </p>
-                    )}
+                    <AnimatedError message={emailError} />
                   </div>
                   <GlassButton
                     className="w-full bg-primary text-primary-foreground"

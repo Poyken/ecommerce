@@ -105,13 +105,13 @@ export default async function ShopPage({
         brandId,
         search: searchQuery,
         page: params.page ? Number(params.page) : 1,
-        limit: 12,
+        limit: 20,
         sort: typeof params.sort === "string" ? params.sort : undefined,
         includeSkus: "true",
       })
       .then((res) => ({
         data: res.data || [],
-        meta: res.meta || { page: 1, limit: 12, total: 0, lastPage: 1 },
+        meta: res.meta || { page: 1, limit: 20, total: 0, lastPage: 1 },
       }));
 
     const categoriesPromise = productService.getCategories();

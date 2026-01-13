@@ -93,15 +93,26 @@ export function ProductCardBase({
       : 0;
 
   return (
-    <div
+    <m.div
+      layout="position"
       className={cn(
-        "group relative bg-white dark:bg-card rounded-3xl overflow-hidden border border-neutral-100 dark:border-white/5 transition-all duration-300",
+        "group relative bg-white dark:bg-card rounded-3xl overflow-hidden border border-neutral-100 dark:border-white/5",
         "hover:shadow-xl hover:shadow-accent/5 dark:hover:shadow-accent/10",
         "hover:border-accent/30 dark:hover:border-accent/20",
-        !isCompact && "hover:-translate-y-2",
         className
       )}
       onMouseEnter={handleMouseEnter}
+      whileHover={!isCompact ? { y: -8 } : {}}
+      transition={{
+        type: "spring",
+        stiffness: 400,
+        damping: 30,
+        layout: {
+          type: "spring",
+          stiffness: 260,
+          damping: 35,
+        },
+      }}
     >
       {/* A. IMAGE CONTAINER */}
       <div className="relative aspect-4/5 overflow-hidden bg-neutral-50 dark:bg-neutral-900">
@@ -261,6 +272,6 @@ export function ProductCardBase({
         {/* Additional Actions (below price) */}
         {actions?.addToCart && <div className="pt-2">{actions.addToCart}</div>}
       </div>
-    </div>
+    </m.div>
   );
 }

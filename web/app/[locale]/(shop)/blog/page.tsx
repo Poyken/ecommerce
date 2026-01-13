@@ -26,7 +26,7 @@ import { BlogPageClient } from "./blog-page-client";
  */
 
 export const metadata: Metadata = {
-  title: "Journal | Luxe",
+  title: "Journal",
   description: "Stories, style guides, and news from the world of fashion.",
 };
 

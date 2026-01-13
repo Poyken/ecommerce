@@ -3,6 +3,7 @@
 import { resetPasswordAction } from "@/features/auth/actions";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
+import { AnimatedError } from "@/components/shared/animated-error";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/shared/password-input";
 import { useToast } from "@/components/ui/use-toast";
@@ -150,12 +151,7 @@ export function ResetPasswordPageContent() {
             </Link>
           </div>
         ) : (
-          <m.form
-            layout
-            action={handleAction}
-            className="space-y-6"
-            noValidate
-          >
+          <m.form layout action={handleAction} className="space-y-6" noValidate>
             <input type="hidden" name="token" value={token} />
 
             <div className="space-y-2">
@@ -190,21 +186,7 @@ export function ResetPasswordPageContent() {
                   }
                 }}
               />
-              <AnimatePresence initial={false}>
-                {localErrors.newPassword && (
-                  <m.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <p className="text-red-500 text-sm mt-1">
-                      {localErrors.newPassword[0]}
-                    </p>
-                  </m.div>
-                )}
-              </AnimatePresence>
+              <AnimatedError message={localErrors.newPassword?.[0]} />
             </div>
 
             <div className="space-y-2">
@@ -241,21 +223,7 @@ export function ResetPasswordPageContent() {
                   }
                 }}
               />
-              <AnimatePresence initial={false}>
-                {localErrors.confirmPassword && (
-                  <m.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <p className="text-red-500 text-sm mt-1">
-                      {localErrors.confirmPassword[0]}
-                    </p>
-                  </m.div>
-                )}
-              </AnimatePresence>
+              <AnimatedError message={localErrors.confirmPassword?.[0]} />
             </div>
 
             <GlassButton

@@ -629,7 +629,7 @@ model Order {
 
   // Legacy Coupon (Keep for backward compatibility during migration)
   couponId String? // Mã giảm giá đã dùng
-  // coupon                  Coupon?       @relation(fields: [couponId], references: [id]) // Coupon removed, manual handle or remove this line
+  coupon   Coupon? @relation(fields: [couponId], references: [id])
 
   addressId            String? // ID địa chỉ đã chọn
   shippingCode         String? // Mã vận đơn
@@ -1163,6 +1163,7 @@ model Tenant {
   name    String // Tên cửa hàng
   ownerId String?
   owner   User?   @relation("TenantOwner", fields: [ownerId], references: [id])
+  coupons Coupon[]
 
   // Domain Management
   subdomain    String? @unique // Subdomain hệ thống (shop-a.platform.com)
@@ -1395,4 +1396,27 @@ enum CommissionStatus {
   PENDING
   COMPLETED
   CANCELLED
+}
+
+model Coupon {
+  id                String       @id @default(uuid())
+  code              String
+  description       String?
+  discountType      DiscountType
+  discountValue     Decimal      @db.Decimal(20, 2)
+  minOrderAmount    Decimal?     @db.Decimal(20, 2)
+  maxDiscountAmount Decimal?     @db.Decimal(20, 2)
+  startDate         DateTime
+  endDate           DateTime
+  usageLimit        Int?
+  usedCount         Int          @default(0)
+  isActive          Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  tenantId          String
+  tenant            Tenant       @relation(fields: [tenantId], references: [id])
+  orders            Order[]
+
+  @@unique([code, tenantId])
+  @@index([tenantId])
 }

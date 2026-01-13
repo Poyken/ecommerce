@@ -1,4 +1,31 @@
 {
+  "chat": {
+    "title": "Trò chuyện",
+    "aiAssistant": "Trợ lý AI",
+    "humanSupport": "Hỗ trợ",
+    "loginToChat": "Đăng nhập để chat",
+    "supportHelpDesc": "Nói chuyện với đội ngũ của chúng tôi để được tư vấn.",
+    "loginToSupport": "Đăng nhập hỗ trợ",
+    "aiHelpGuest": "Bạn có thể dùng trợ lý AI với tư cách khách.",
+    "aiWelcome": "Xin chào! Tôi có thể giúp gì cho bạn?",
+    "aiDescription": "Tôi là trợ lý mua sắm AI của bạn.",
+    "placeholder": "Nhập tin nhắn...",
+    "supportWelcome": "Chào mừng! Chúng tôi có thể giúp gì cho bạn?",
+    "image": "Hình ảnh",
+    "product": "Sản phẩm",
+    "order": "Đơn hàng",
+    "supportPlaceholder": "Nhập tin nhắn cho bộ phận hỗ trợ...",
+    "selector": {
+      "title": "Chọn mục để chia sẻ",
+      "tabs": {
+        "products": "Sản phẩm",
+        "orders": "Đơn hàng"
+      },
+      "searchProducts": "Tìm kiếm sản phẩm...",
+      "noProducts": "Không tìm thấy sản phẩm.",
+      "noOrders": "Không tìm thấy đơn hàng."
+    }
+  },
   "common": {
     "shop": "Cửa hàng",
     "about": "Giới thiệu",
@@ -75,6 +102,7 @@
     "browseCategories": "Duyệt danh mục",
     "browseBrands": "Duyệt theo thương hiệu",
     "browseAllProducts": "Xem tất cả sản phẩm",
+    "curatedForYou": "Gợi ý cho bạn",
     "noProductsFound": "Không tìm thấy sản phẩm",
     "noProductsFoundDesc": "Chưa có sản phẩm nào trong bộ sưu tập này.",
     "noCategoriesAvailable": "Không có danh mục nào",
@@ -510,6 +538,10 @@
     "contactUs": "Liên hệ"
   },
   "shop": {
+    "shop": {
+      "showing": "Đang hiển thị {from}-{to} trên {total} sản phẩm"
+    },
+    "loading": "Đang tải sản phẩm...",
     "title": "Danh mục sản phẩm",
     "subtitle": "Khám phá những sản phẩm cao cấp được tuyển chọn kỹ lưỡng.",
     "filters": "Bộ lọc",
@@ -531,7 +563,9 @@
     "page": "Trang",
     "errorLoading": "Lỗi khi tải cửa hàng",
     "metaDescription": "Khám phá bộ sưu tập các mặt hàng thời trang cao cấp của chúng tôi.",
-    "searchResults": "Kết quả tìm kiếm cho \"{query}\""
+    "searchResults": "Kết quả tìm kiếm cho \"{query}\"",
+    "browseAllProducts": "Xem tất cả sản phẩm",
+    "curatedForYou": "Gợi ý cho bạn"
   },
   "cart": {
     "title": "Giỏ hàng",

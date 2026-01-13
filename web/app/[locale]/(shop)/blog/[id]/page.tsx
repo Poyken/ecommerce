@@ -49,16 +49,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const post = await blogService.getBlogBySlug(id);
 
     if (!post) {
-      return { title: "Post Not Found | Luxe" };
+      return { title: "Post Not Found" };
     }
 
     return {
-      title: `${post.title} | Luxe Journal`,
+      title: `${post.title} | Journal`,
       description: post.excerpt,
     };
   } catch {
     return {
-      title: "Post Not Found | Luxe",
+      title: "Post Not Found",
     };
   }
 }

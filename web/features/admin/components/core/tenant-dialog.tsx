@@ -1,6 +1,7 @@
 "use client";
 
 import { useToast } from "@/components/ui/use-toast";
+import { AnimatedError } from "@/components/shared/animated-error";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -196,11 +197,9 @@ export function TenantDialog({
                 disabled={isView}
                 {...register("name", { required: true })}
               />
-              {errors.name && (
-                <p className="text-xs text-red-500 font-medium">
-                  {t("validation.required")}
-                </p>
-              )}
+              <AnimatedError
+                message={errors.name && t("validation.required")}
+              />
             </div>
           </div>
 
@@ -223,11 +222,9 @@ export function TenantDialog({
                 .local
               </div>
             </div>
-            {errors.domain && (
-              <p className="text-xs text-red-500 font-medium">
-                {t("validation.required")}
-              </p>
-            )}
+            <AnimatedError
+              message={errors.domain && t("validation.required")}
+            />
             {!isView && (
               <p className="text-[10px] text-slate-400 italic">
                 {t("hints.domain")}

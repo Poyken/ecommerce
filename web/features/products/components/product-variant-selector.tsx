@@ -30,6 +30,7 @@
 
 "use client";
 import { GlassButton } from "@/components/shared/glass-button";
+import { AnimatedError } from "@/components/shared/animated-error";
 import { Badge } from "@/components/ui/badge";
 import { cn, formatCurrency } from "@/lib/utils";
 import { ProductOption, Sku } from "@/types/models";
@@ -385,12 +386,12 @@ export function ProductVariantSelector({
         )}
       </div>
 
-      {selectedSku && isOutOfStock && (
-        <p className="text-destructive text-sm font-medium flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-destructive animate-pulse"></span>
-          Item is currently out of stock
-        </p>
-      )}
+      <AnimatedError
+        message={
+          selectedSku && isOutOfStock ? "Item is currently out of stock" : ""
+        }
+        className="font-medium flex items-center gap-2"
+      />
     </div>
   );
 }

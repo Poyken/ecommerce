@@ -122,8 +122,8 @@ export function WishlistButton({
       } else {
         dismiss(); // Dismiss previous toasts
         toast({
-          title: (res as any).data?.isWishlisted ? t("added") : t("removed"),
-          variant: (res as any).data?.isWishlisted ? "success" : "info",
+          title: (res as any).isWishlisted ? t("added") : t("removed"),
+          variant: (res as any).isWishlisted ? "success" : "info",
         });
 
         // Update Global Store directly (faster than waiting for window event)

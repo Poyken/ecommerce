@@ -237,15 +237,21 @@ export class ProductsService {
             }
           : {},
         // 2. Filter theo Category (Quan hệ Many-to-Many)
-        categoryId
+        categoryId === 'null'
           ? {
               categories: {
-                some: {
-                  categoryId,
-                },
+                none: {},
               },
             }
-          : {},
+          : categoryId
+            ? {
+                categories: {
+                  some: {
+                    categoryId,
+                  },
+                },
+              }
+            : {},
         // 3. Filter theo Brand
         brandId ? { brandId } : {},
         // 4. Filter theo khoảng giá (Tối ưu bằng cột minPrice/maxPrice cache sẵn trong bảng Product)
@@ -261,24 +267,25 @@ export class ProductsService {
     };
 
     // Xây dựng Order By (Sắp xếp)
-    let orderBy: Prisma.ProductOrderByWithRelationInput = { createdAt: 'desc' }; // Mặc định: Mới nhất
+    // Xây dựng Order By (Sắp xếp) - Thêm id: 'desc' để đảm bảo sort stable khi trùng createdAt
+    let orderBy: any = [{ createdAt: 'desc' }, { id: 'desc' }];
 
     if (sort) {
       switch (sort) {
         case SortOption.NEWEST:
-          orderBy = { createdAt: 'desc' };
+          orderBy = [{ createdAt: 'desc' }, { id: 'desc' }];
           break;
         case SortOption.OLDEST:
-          orderBy = { createdAt: 'asc' };
+          orderBy = [{ createdAt: 'asc' }, { id: 'asc' }];
           break;
         case SortOption.PRICE_ASC:
-          orderBy = { minPrice: 'asc' };
+          orderBy = [{ minPrice: 'asc' }, { id: 'asc' }];
           break;
         case SortOption.PRICE_DESC:
-          orderBy = { minPrice: 'desc' }; // Or maxPrice desc? Usually minPrice is clearer for users.
+          orderBy = [{ minPrice: 'desc' }, { id: 'desc' }];
           break;
         case SortOption.RATING_DESC:
-          orderBy = { avgRating: 'desc' };
+          orderBy = [{ avgRating: 'desc' }, { id: 'desc' }];
           break;
       }
     }

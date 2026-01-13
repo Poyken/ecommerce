@@ -45,8 +45,7 @@ export class CouponsService extends BaseCrudService<
   }
 
   protected get model() {
-    // return this.prisma.coupon;
-    return null as any;
+    return this.prisma.coupon;
   }
 
   /**
@@ -84,7 +83,10 @@ export class CouponsService extends BaseCrudService<
     }
 
     return this.model.create({
-      data: createCouponDto,
+      data: {
+        ...createCouponDto,
+        tenantId: tenant!.id,
+      },
     });
   }
 

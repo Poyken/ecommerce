@@ -35,12 +35,14 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { EncryptionService } from '@core/security/encryption.service';
+import { AuditService } from '@/audit/audit.service';
 
 @Injectable()
 export class SecurityService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly encryptionService: EncryptionService,
+    private readonly auditService: AuditService,
   ) {}
 
   async getSecurityStats() {
@@ -71,8 +73,12 @@ export class SecurityService {
     };
   }
 
-  async setSystemLockdown(isEnabled: boolean, tenantId: string) {
-    return this.prisma.featureFlag.upsert({
+  async setSystemLockdown(
+    isEnabled: boolean,
+    tenantId: string,
+    userId?: string,
+  ) {
+    const result = await this.prisma.featureFlag.upsert({
       where: { key: 'SYSTEM_LOCKDOWN' },
       update: { isEnabled, tenantId },
       create: {
@@ -82,6 +88,16 @@ export class SecurityService {
         tenantId,
       },
     });
+
+    // Audit Log for Lockdown Toggle
+    await this.auditService.create({
+      userId: userId,
+      action: 'UPDATE_SYSTEM_LOCKDOWN',
+      resource: 'Security',
+      payload: { isEnabled },
+    });
+
+    return result;
   }
 
   async getLockdownStatus() {

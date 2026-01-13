@@ -1,4 +1,31 @@
 {
+  "chat": {
+    "title": "Chat",
+    "aiAssistant": "AI Assistant",
+    "humanSupport": "Support",
+    "loginToChat": "Sign in to chat",
+    "supportHelpDesc": "Talk to our team for personalized help.",
+    "loginToSupport": "Login to Support",
+    "aiHelpGuest": "You can still use AI assistant as guest.",
+    "aiWelcome": "Hello! How can I help you?",
+    "aiDescription": "I'm your AI shopping assistant.",
+    "placeholder": "Type a message...",
+    "supportWelcome": "Welcome! How can we help you today?",
+    "image": "Image",
+    "product": "Product",
+    "order": "Order",
+    "supportPlaceholder": "Type your message to support...",
+    "selector": {
+      "title": "Select items to share",
+      "tabs": {
+        "products": "Products",
+        "orders": "Orders"
+      },
+      "searchProducts": "Search products...",
+      "noProducts": "No products found.",
+      "noOrders": "No orders found."
+    }
+  },
   "common": {
     "shop": "Shop",
     "about": "About",
@@ -75,6 +102,7 @@
     "browseCategories": "Browse Categories",
     "browseBrands": "Browse by Brands",
     "browseAllProducts": "Browse all products",
+    "curatedForYou": "Curated For You",
     "noProductsFound": "No products found",
     "noProductsFoundDesc": "There are no products in this collection yet.",
     "noCategoriesAvailable": "No categories available",
@@ -516,6 +544,10 @@
     "contactUs": "Contact Us"
   },
   "shop": {
+    "shop": {
+      "showing": "Showing {from}-{to} of {total} products"
+    },
+    "loading": "Loading products...",
     "title": "Shop Collection",
     "subtitle": "Discover our hand-picked premium items.",
     "filters": "Filters",
@@ -537,7 +569,9 @@
     "page": "Page",
     "errorLoading": "Error loading shop",
     "metaDescription": "Explore our collection of premium fashion items.",
-    "searchResults": "Search results for \"{query}\""
+    "searchResults": "Search results for \"{query}\"",
+    "browseAllProducts": "Browse all products",
+    "curatedForYou": "Curated For You"
   },
   "cart": {
     "title": "Shopping Cart",

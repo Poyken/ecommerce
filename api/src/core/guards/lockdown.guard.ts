@@ -56,7 +56,10 @@ export class LockdownGuard implements CanActivate {
         });
 
         if (payload && Array.isArray(payload.permissions)) {
-          if (payload.permissions.includes('superAdmin:read')) {
+          if (
+            payload.permissions.includes('superAdmin:read') ||
+            payload.permissions.includes('superAdmin:write')
+          ) {
             return true;
           }
         }

@@ -144,9 +144,6 @@ export const FilterSidebar = memo(function FilterSidebar({
               {t("filters")}
             </h2>
           </div>
-          {isPending && (
-            <Loader2 className="w-5 h-5 animate-spin text-primary" />
-          )}
         </div>
       )}
 

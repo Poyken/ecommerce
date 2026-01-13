@@ -4,6 +4,7 @@ import { ShopStats } from "@/features/products/components/shop-stats";
 import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav";
 import { SearchInput } from "@/components/shared/search-input";
 import { ProductsSkeleton } from "@/features/home/components/skeletons/home-skeleton";
+import { LoadingState } from "@/components/shared/data-states";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -86,32 +87,31 @@ export function ShopContent({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const [isFilterPending, startFilterTransition] = useTransition();
 
   // Persist columns in URL
   const columnsParam = searchParams.get("columns");
   const initialColumns = (Number(columnsParam) || 4) as 3 | 4 | 5;
   const [columns, setColumnsState] = useState<3 | 4 | 5>(initialColumns);
 
-  // Sync state with URL
+  // Sync state with URL only when the URL parameter changes (e.g., back/forward)
   useEffect(() => {
     if (columnsParam) {
       const val = Number(columnsParam);
-      if (val === 3 || val === 4 || (val === 5 && val !== columns)) {
-        setTimeout(() => {
+      if (val === 3 || val === 4 || val === 5) {
+        if (val !== columns) {
           setColumnsState(val as 3 | 4 | 5);
-        }, 0);
+        }
       }
     }
-  }, [columnsParam, columns]);
+  }, [columnsParam]); // Removed 'columns' from dependencies
 
   const setColumns = (newCols: 3 | 4 | 5) => {
     setColumnsState(newCols);
-    startTransition(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("columns", newCols.toString());
-      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-    });
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("columns", newCols.toString());
+    const newUrl = `${pathname}?${params.toString()}`;
+    window.history.replaceState(null, "", newUrl);
   };
 
   // Unwrap categories and brands for sidebar and active filters
@@ -160,7 +160,7 @@ export function ShopContent({
       // Avoid redundant navigation if value hasn't changed
       if (searchParams.get(type) === value) return;
 
-      startTransition(() => {
+      startFilterTransition(() => {
         const queryString = createQueryString(type, value);
         router.replace(`${pathname}?${queryString}`, { scroll: false });
       });
@@ -170,7 +170,7 @@ export function ShopContent({
 
   const handleSortChange = useCallback(
     (value: string) => {
-      startTransition(() => {
+      startFilterTransition(() => {
         router.replace(`${pathname}?${createQueryString("sort", value)}`, {
           scroll: false,
         });
@@ -181,7 +181,7 @@ export function ShopContent({
 
   const handleRemoveFilter = useCallback(
     (key: string) => {
-      startTransition(() => {
+      startFilterTransition(() => {
         router.replace(`${pathname}?${createQueryString(key, null)}`, {
           scroll: false,
         });
@@ -191,7 +191,7 @@ export function ShopContent({
   );
 
   const handleClearAllFilters = useCallback(() => {
-    startTransition(() => {
+    startFilterTransition(() => {
       const params = new URLSearchParams(searchParams.toString());
       params.delete("categoryId");
       params.delete("brandId");
@@ -207,6 +207,8 @@ export function ShopContent({
       });
     });
   }, [searchParams, router, pathname]);
+
+  const isAnyPending = isFilterPending;
 
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-accent/30">
@@ -255,7 +257,7 @@ export function ShopContent({
                         brands={brands}
                         hideTitle
                         onFilterChange={handleFilter}
-                        isPending={isPending}
+                        isPending={isFilterPending}
                         onClearAll={handleClearAllFilters}
                       />
                     </SheetContent>
@@ -331,7 +333,7 @@ export function ShopContent({
               brands={brands}
               className="hidden lg:block lg:col-span-1 sticky top-24 h-fit"
               onFilterChange={handleFilter}
-              isPending={isPending}
+              isPending={isFilterPending}
               onClearAll={handleClearAllFilters}
             />
 
@@ -343,34 +345,62 @@ export function ShopContent({
                   <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground mr-2 hidden sm:inline-block">
                     View
                   </span>
-                  <div className="flex bg-muted/50 p-1 rounded-lg">
-                    {[3, 4, 5].map((col) => (
-                      <button
-                        key={col}
-                        onClick={() => setColumns(col as 3 | 4 | 5)}
-                        className={cn(
-                          "p-2 rounded-md transition-all duration-200 hover:bg-background/80 hover:text-foreground hover:shadow-sm",
-                          columns === col
-                            ? "bg-background text-primary shadow-sm ring-1 ring-black/5 dark:ring-white/10"
-                            : "text-muted-foreground"
-                        )}
-                        title={`${col} Columns`}
-                      >
-                        <div className="flex gap-0.5">
-                          {Array.from({ length: Math.min(col, 3) }).map(
-                            (_, i) => (
+                  <div className="flex bg-muted/30 p-1.5 rounded-2xl border border-foreground/5 relative">
+                    {[3, 4, 5].map((col) => {
+                      const isActive = columns === col;
+                      return (
+                        <button
+                          key={col}
+                          onClick={() => setColumns(col as 3 | 4 | 5)}
+                          disabled={isAnyPending}
+                          className={cn(
+                            "relative px-4 py-2 rounded-xl transition-colors duration-300 z-10",
+                            isActive
+                              ? "text-foreground"
+                              : "text-muted-foreground hover:text-foreground/70",
+                            isAnyPending && "opacity-50 cursor-wait"
+                          )}
+                          title={`${col} Columns`}
+                        >
+                          {isActive && (
+                            <m.div
+                              layoutId="activeLayoutGrid"
+                              className="absolute inset-0 bg-background shadow-xl shadow-black/5 rounded-xl z-0"
+                              transition={{
+                                type: "spring",
+                                stiffness: 380,
+                                damping: 30,
+                              }}
+                            />
+                          )}
+                          <div className="relative z-10 flex gap-0.5 items-center justify-center">
+                            {Array.from({ length: Math.min(col, 3) }).map(
+                              (_, i) => (
+                                <div
+                                  key={i}
+                                  className={cn(
+                                    "w-1 h-3 rounded-full transition-all duration-300",
+                                    isActive
+                                      ? "bg-primary"
+                                      : "bg-current opacity-40"
+                                  )}
+                                />
+                              )
+                            )}
+                            {col > 3 && (
                               <div
-                                key={i}
-                                className="w-1 h-3 bg-current rounded-full"
+                                className={cn(
+                                  "w-0.5 h-3 rounded-full transition-all duration-300",
+                                  isActive
+                                    ? "bg-primary"
+                                    : "bg-current opacity-40"
+                                )}
                               />
-                            )
-                          )}
-                          {col > 3 && (
-                            <div className="w-0.5 h-3 bg-current rounded-full" />
-                          )}
-                        </div>
-                      </button>
-                    ))}
+                            )}
+                          </div>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -383,31 +413,37 @@ export function ShopContent({
 
               <div
                 className={cn(
-                  "transition-opacity duration-300",
-                  "transition-all duration-300 relative",
-                  isPending && "opacity-60 pointer-events-none scale-[0.99] blur-[1px]"
+                  "relative min-h-[400px]",
+                  isAnyPending && "cursor-wait"
                 )}
               >
-                {isPending && (
-                  <div className="absolute inset-0 z-50 flex items-start justify-center pt-32 h-full">
-                    <div className="bg-background/80 backdrop-blur-md p-4 rounded-full shadow-lg border border-border">
-                       <svg className="animate-spin h-6 w-6 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                       </svg>
-                    </div>
+                {/* Loading feedback handled by content dimming/blur */}
+
+                <div
+                  className={cn(
+                    "transition-all duration-300",
+                    isAnyPending
+                      ? "opacity-30 scale-[0.99] blur-[2px] pointer-events-none"
+                      : "opacity-100 scale-100 blur-0"
+                  )}
+                >
+                  <Suspense
+                    fallback={<ProductsSkeleton count={12} columns={columns} />}
+                  >
+                    <ShopGrid
+                      productsPromise={productsPromise}
+                      suggestedProductsPromise={suggestedProductsPromise}
+                      wishlistItems={wishlistItems}
+                      columns={columns}
+                    />
+                  </Suspense>
+                </div>
+
+                {isAnyPending && (
+                  <div className="absolute inset-0 z-10 animate-in fade-in duration-300">
+                    <ProductsSkeleton count={12} columns={columns} />
                   </div>
                 )}
-                <Suspense
-                  fallback={<ProductsSkeleton count={12} columns={columns} />}
-                >
-                  <ShopGrid
-                    productsPromise={productsPromise}
-                    suggestedProductsPromise={suggestedProductsPromise}
-                    wishlistItems={wishlistItems}
-                    columns={columns}
-                  />
-                </Suspense>
               </div>
             </div>
           </div>

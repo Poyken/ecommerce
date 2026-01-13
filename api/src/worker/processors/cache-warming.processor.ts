@@ -21,7 +21,9 @@ import { Job } from 'bullmq';
  * - Giảm thời gian phản hồi (TTFB) cho những trang quan trọng nhất.
  * - Tránh việc DB bị quá tải đột ngột khi vừa mới khởi động lại server. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tự động hóa việc nạp lại Cache định kỳ hoặc ngay sau khi hệ thống khởi động.
+ * - Cải thiện trải nghiệm người dùng (UX) bằng cách đảm bảo dữ liệu luôn sẵn sàng trong RAM.
+ * - Giảm tải áp lực truy vấn trực tiếp lên Database vào giờ cao điểm.
 
  * =====================================================================
  */
@@ -62,15 +64,12 @@ export class CacheWarmingProcessor extends WorkerHost {
     this.logger.log('Warming Core Product Lists for Homepage...');
 
     try {
-      // 1. Newest Products (Homepage Grid)
+      // 1. Newest Products (Homepage Grid & Featured)
       await this.productsService.findAll({
         limit: 12,
         page: 1,
         sort: SortOption.NEWEST,
       });
-
-      // 2. Default Featured List
-      await this.productsService.findAll({ limit: 12, page: 1 });
 
       this.logger.log('HomePage Product Lists Warmed Successfully');
     } catch (error) {

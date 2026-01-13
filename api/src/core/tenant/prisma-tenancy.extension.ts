@@ -82,6 +82,7 @@ const MODELS_WITH_SOFT_DELETE = new Set([
   'Brand',
   'Order',
   'Review',
+  'Media',
 ]);
 
 export const tenancyExtension = Prisma.defineExtension((client) => {
@@ -151,7 +152,7 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
             }
           }
 
-          // 2. Soft Delete Filter
+          // 2. Soft Delete Filter (Auto-hide deleted items)
           if (
             MODELS_WITH_SOFT_DELETE.has(model as string) &&
             [
@@ -171,6 +172,28 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
                 ...anyArgs.where,
                 deletedAt: null,
               };
+            }
+          }
+
+          // 3. Intercept Delete Operations for Soft Delete
+          if (
+            MODELS_WITH_SOFT_DELETE.has(model as string) &&
+            (operation === 'delete' || operation === 'deleteMany')
+          ) {
+            const anyArgs = args as any;
+            // Transforming delete into update
+            const newOperation =
+              operation === 'delete' ? 'update' : 'updateMany';
+
+            // Ensure we don't accidentally update everything if where is empty (though Prisma guards against this)
+            if (anyArgs.where) {
+              return (client as any)[model][newOperation]({
+                ...anyArgs,
+                data: {
+                  ...anyArgs.data, // Should be empty for delete actually
+                  deletedAt: new Date(),
+                },
+              });
             }
           }
 

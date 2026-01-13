@@ -219,7 +219,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
               </TableRow>
             ))}
             {pages.length === 0 && (
-              <TableRow>
+              <TableRow className="hover:bg-transparent">
                 <TableCell
                   colSpan={5}
                   className="text-center py-20 text-muted-foreground"

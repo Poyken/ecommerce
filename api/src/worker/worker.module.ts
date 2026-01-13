@@ -41,7 +41,8 @@ import { OutboxProcessor } from './processors/outbox.processor';
  * - Sử dụng BullMQ để lên lịch chạy định kỳ (VD: mỗi 15 phút update sản phẩm trang chủ).
  * - `onApplicationBootstrap`: Hook chạy ngay khi App khởi động để đăng ký lịch. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tự động hóa các tác vụ lặp đi lặp lại như làm nóng cache, tính toán hoa hồng.
+ * - Đảm bảo hệ thống luôn mượt mà bằng cách xử lý các logic nặng ở Background.
 
  * =====================================================================
  */
@@ -60,7 +61,7 @@ export class WorkerModule implements OnApplicationBootstrap {
       {},
       {
         repeat: {
-          every: 15 * 60 * 1000, // 15 minutes
+          every: 60 * 60 * 1000, // 60 minutes
         },
         jobId: 'warm-home-products-cron-v1',
         removeOnComplete: 3,

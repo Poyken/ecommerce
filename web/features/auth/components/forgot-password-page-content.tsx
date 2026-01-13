@@ -3,6 +3,7 @@
 import { forgotPasswordAction } from "@/features/auth/actions";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
+import { AnimatedError } from "@/components/shared/animated-error";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
@@ -115,12 +116,7 @@ export function ForgotPasswordPageContent() {
             </Link>
           </div>
         ) : (
-          <m.form
-            layout
-            action={handleAction}
-            className="space-y-6"
-            noValidate
-          >
+          <m.form layout action={handleAction} className="space-y-6" noValidate>
             <div className="space-y-2">
               <Label htmlFor="email" className="text-foreground/80 font-bold">
                 {t("emailLabel")}
@@ -151,21 +147,7 @@ export function ForgotPasswordPageContent() {
                   }
                 }}
               />
-              <AnimatePresence initial={false}>
-                {localErrors.email && (
-                  <m.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <p className="text-red-500 text-sm mt-1">
-                      {localErrors.email[0]}
-                    </p>
-                  </m.div>
-                )}
-              </AnimatePresence>
+              <AnimatedError message={localErrors.email?.[0]} />
             </div>
 
             <GlassButton

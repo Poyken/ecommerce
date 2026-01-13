@@ -2,6 +2,7 @@
 
 import {
   CategoriesSkeleton,
+  BrandsSkeleton,
   ProductsSkeleton,
 } from "@/features/home/components/skeletons/home-skeleton";
 import { FeaturedBrands } from "@/features/brands/components/featured-brands";
@@ -94,7 +95,7 @@ export function HomeContent({
       </div>
 
       <div className="container mx-auto px-4">
-        <Suspense fallback={null}>
+        <Suspense fallback={<BrandsSkeleton />}>
           <FeaturedBrands brands={brands} />
         </Suspense>
       </div>

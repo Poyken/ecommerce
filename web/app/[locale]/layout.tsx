@@ -15,6 +15,7 @@ import { getMessages } from "next-intl/server";
 import { Inter, Outfit } from "next/font/google";
 import { Suspense } from "react";
 import NextTopLoader from "nextjs-toploader";
+import { NetworkStatus } from "@/components/shared/network-status";
 import "../globals.css";
 
 export function generateStaticParams() {
@@ -133,10 +134,14 @@ async function RootProviders({
                 <div data-quick-view-provider>
                   <QuickViewProvider />
                 </div>
+                <NetworkStatus />
                 <SmoothScroll />
                 <PwaProvider>{children}</PwaProvider>
                 <Toaster />
-                <NextTopLoader showSpinner={false} color="hsl(var(--primary))" />
+                <NextTopLoader
+                  showSpinner={false}
+                  color="hsl(var(--primary))"
+                />
               </MotionProvider>
             </ThemeProvider>
           </TenantProvider>

@@ -77,7 +77,7 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
   };
 
   return (
-    <>
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700 space-y-8">
       <AdminTableWrapper>
         <Table>
           <TableHeader>
@@ -111,7 +111,8 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
                 >
                   <div className="flex flex-col items-center gap-2">
                     <Zap className="h-8 w-8 opacity-20" />
-                    {t("messages.noPlans") || "No plans found. Create one to get started."}
+                    {t("messages.noPlans") ||
+                      "No plans found. Create one to get started."}
                   </div>
                 </TableCell>
               </TableRow>
@@ -217,7 +218,9 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
                           className="rounded-xl px-3 py-2.5 cursor-pointer focus:bg-slate-100 dark:focus:bg-slate-900"
                         >
                           <Pencil className="mr-3 h-4 w-4 text-amber-500" />{" "}
-                          <span className="font-semibold">{tDialog("titleEdit")}</span>
+                          <span className="font-semibold">
+                            {tDialog("titleEdit")}
+                          </span>
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-red-600 rounded-xl px-3 py-2.5 cursor-pointer focus:bg-red-50 dark:focus:bg-red-900/20"
@@ -244,6 +247,6 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
         }}
         planToEdit={editingPlan}
       />
-    </>
+    </div>
   );
 }

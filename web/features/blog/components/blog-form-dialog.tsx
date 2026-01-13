@@ -3,6 +3,7 @@
 import { FormDialog } from "@/components/shared/form-dialog";
 import { ImageUpload } from "@/components/shared/image-upload";
 import { LazyRichTextEditor as RichTextEditor } from "@/components/shared/lazy-rich-text-editor";
+import { AnimatedError } from "@/components/shared/animated-error";
 import { useToast } from "@/components/ui/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -309,18 +310,7 @@ export function BlogFormDialog({
               disabled={isPending}
               className={errors.title ? "border-destructive" : ""}
             />
-            <AnimatePresence>
-              {errors.title && (
-                <m.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="text-xs text-destructive"
-                >
-                  {errors.title}
-                </m.p>
-              )}
-            </AnimatePresence>
+            <AnimatedError message={errors.title} />
           </div>
 
           <div className="space-y-2">
@@ -336,18 +326,7 @@ export function BlogFormDialog({
               placeholder="auto-generated-from-title"
               className={errors.slug ? "border-destructive" : ""}
             />
-            <AnimatePresence>
-              {errors.slug && (
-                <m.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="text-xs text-destructive"
-                >
-                  {errors.slug}
-                </m.p>
-              )}
-            </AnimatePresence>
+            <AnimatedError message={errors.slug} />
           </div>
         </div>
 
@@ -366,18 +345,7 @@ export function BlogFormDialog({
             placeholder={t("placeholders.excerpt")}
             className={errors.excerpt ? "border-destructive" : ""}
           />
-          <AnimatePresence>
-            {errors.excerpt && (
-              <m.p
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="text-xs text-destructive"
-              >
-                {errors.excerpt}
-              </m.p>
-            )}
-          </AnimatePresence>
+          <AnimatedError message={errors.excerpt} />
         </div>
 
         <div className="space-y-2">
@@ -391,18 +359,7 @@ export function BlogFormDialog({
             }}
             placeholder={t("placeholders.content")}
           />
-          <AnimatePresence>
-            {errors.content && (
-              <m.p
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="text-xs text-destructive"
-              >
-                {errors.content}
-              </m.p>
-            )}
-          </AnimatePresence>
+          <AnimatedError message={errors.content} />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -431,18 +388,7 @@ export function BlogFormDialog({
                   ))}
               </SelectContent>
             </Select>
-            <AnimatePresence>
-              {errors.category && (
-                <m.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="text-xs text-destructive"
-                >
-                  {errors.category}
-                </m.p>
-              )}
-            </AnimatePresence>
+            <AnimatedError message={errors.category} />
           </div>
 
           <div className="space-y-2">
@@ -481,23 +427,12 @@ export function BlogFormDialog({
               placeholder="John Doe"
               className={errors.author ? "border-destructive" : ""}
             />
-            <AnimatePresence>
-              {errors.author && (
-                <m.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="text-xs text-destructive"
-                >
-                  {errors.author}
-                </m.p>
-              )}
-              {isUserMode && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Author name will be automatically set to your name.
-                </p>
-              )}
-            </AnimatePresence>
+            <AnimatedError message={errors.author} />
+            {isUserMode && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Author name will be automatically set to your name.
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">

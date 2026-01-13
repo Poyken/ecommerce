@@ -72,6 +72,7 @@ export class SecurityController {
     const result = await this.securityService.setSystemLockdown(
       body.isEnabled,
       req.user.tenantId,
+      req.user.id,
     );
     return { data: result };
   }

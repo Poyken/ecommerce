@@ -125,7 +125,7 @@ export function InvoicesClient({ initialData }: InvoicesClientProps) {
   };
 
   return (
-    <div className="border rounded-lg">
+    <div className="border rounded-lg animate-in fade-in slide-in-from-bottom-4 duration-700">
       <Table>
         <TableHeader>
           <TableRow>
@@ -182,9 +182,12 @@ export function InvoicesClient({ initialData }: InvoicesClientProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>{t("actions.manage")}</DropdownMenuLabel>
+                      <DropdownMenuLabel>
+                        {t("actions.manage")}
+                      </DropdownMenuLabel>
                       <DropdownMenuItem>
-                        <FileText className="mr-2 h-4 w-4" /> {t("actions.view")}
+                        <FileText className="mr-2 h-4 w-4" />{" "}
+                        {t("actions.view")}
                       </DropdownMenuItem>
                       {invoice.status !== "PAID" && (
                         <DropdownMenuItem
@@ -200,7 +203,8 @@ export function InvoicesClient({ initialData }: InvoicesClientProps) {
                             handleUpdateStatus(invoice.id, "CANCELLED")
                           }
                         >
-                          <Ban className="mr-2 h-4 w-4 text-red-500" /> {t("actions.cancel")}
+                          <Ban className="mr-2 h-4 w-4 text-red-500" />{" "}
+                          {t("actions.cancel")}
                         </DropdownMenuItem>
                       )}
                     </DropdownMenuContent>

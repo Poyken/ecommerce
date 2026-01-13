@@ -123,7 +123,24 @@ const IMAGES = {
     outdoor: '/images/categories/outdoor.jpg',
     table: '/images/categories/table.jpg',
     chair: '/images/categories/chair.jpg',
+    // New Images
+    office: '/images/categories/office.png',
+    kitchen: '/images/categories/kitchen.png',
+    bathroom: '/images/categories/bathroom.png',
+    // Generated Extras
+    modernSofa: '/images/extra/modern_sofa_design.png',
+    luxuryBedroom: '/images/extra/luxury_bedroom_interior.png',
   },
+  products: [
+    '/images/products/sofa_modern.png',
+    '/images/products/bed_luxury.png',
+    '/images/products/dining_table.png',
+    '/images/products/armchair_velvet.png',
+    '/images/products/bookshelf_wood.png',
+    // New Extras
+    '/images/extra/modern_sofa_design.png',
+    '/images/extra/luxury_bedroom_interior.png',
+  ],
   brands: [
     '/images/brands/herman_miller.jpg',
     '/images/brands/cassina.jpg',
@@ -134,6 +151,10 @@ const IMAGES = {
     '/images/brands/brand2.jpg',
     '/images/brands/brand3.jpg',
     '/images/brands/brand4.jpg',
+    // New Images
+    '/images/brands/luxury.png',
+    '/images/brands/modern.png',
+    '/images/brands/artisan.png',
   ],
   blogs: [
     '/images/blog/blog1.jpg',
@@ -148,6 +169,13 @@ const IMAGES = {
     '/images/blog/blog10.jpg',
     '/images/blog/blog11.jpg',
     '/images/blog/blog12.jpg',
+    // New Images
+    '/images/blog/office.png',
+    '/images/blog/kitchen.png',
+    '/images/blog/bathroom.png',
+    // New Extras
+    '/images/extra/minimalist_office_setup.png',
+    '/images/extra/cozy_reading_nook.png',
   ],
 };
 
@@ -266,7 +294,7 @@ async function main() {
   // 6. Master Data
   console.log('🗂 Seeding Brands & Categories...');
 
-  // Brands
+  // Brands - Updated to use all images including new ones
   const brandNames = [
     'Herman Miller',
     'Cassina',
@@ -277,6 +305,10 @@ async function main() {
     'Minotti',
     'Kartell',
     'Knoll',
+    // New Brands
+    'Aurum & Co.',
+    'Vexa',
+    'Wood & Wool',
   ];
   const brandIds: string[] = [];
 
@@ -290,7 +322,6 @@ async function main() {
         name,
         tenantId: tenant.id,
         imageUrl: img,
-        // Description removed as per schema limitations
       },
       update: { imageUrl: img },
     });
@@ -303,7 +334,7 @@ async function main() {
       name: 'Living Room',
       img: IMAGES.categories.living,
       subs: [
-        { name: 'Sofas', img: IMAGES.categories.living }, // Mapped to living/sofa.jpg
+        { name: 'Sofas', img: IMAGES.categories.living },
         { name: 'Armchairs', img: IMAGES.categories.chair },
         { name: 'Coffee Tables', img: IMAGES.categories.table },
         { name: 'TV Stands', img: IMAGES.categories.storage },
@@ -350,9 +381,34 @@ async function main() {
         { name: 'Patio Sets', img: IMAGES.categories.table },
       ],
     },
+    // New Categories
+    {
+      name: 'Office',
+      img: IMAGES.categories.office,
+      subs: [
+        { name: 'Desks', img: IMAGES.categories.office },
+        { name: 'Office Chairs', img: IMAGES.categories.chair },
+      ],
+    },
+    {
+      name: 'Kitchen',
+      img: IMAGES.categories.kitchen,
+      subs: [
+        { name: 'Kitchen Islands', img: IMAGES.categories.kitchen },
+        { name: 'Bar Stools', img: IMAGES.categories.chair },
+      ],
+    },
+    {
+      name: 'Bathroom',
+      img: IMAGES.categories.bathroom,
+      subs: [
+        { name: 'Vanities', img: IMAGES.categories.bathroom },
+        { name: 'Mirrors', img: IMAGES.categories.decor },
+      ],
+    },
   ];
 
-  const categoryIds: string[] = []; // Stores IDs of SUB-categories for products
+  const categoryIds: string[] = [];
 
   for (const group of categoryStructure) {
     const parent = await prisma.category.upsert({
@@ -362,7 +418,6 @@ async function main() {
         slug: group.name.toLowerCase().replace(/\s+/g, '-'),
         tenantId: tenant.id,
         imageUrl: group.img,
-        // description removed
       },
       update: { imageUrl: group.img },
     });
@@ -429,9 +484,13 @@ async function main() {
     'Desk',
   ];
 
-  const productImagesPool = Object.values(IMAGES.categories); // Reuse category images as product images for variety
+  const productImagesPool = [
+    ...Object.values(IMAGES.categories),
+    ...IMAGES.products,
+  ];
 
-  for (let i = 0; i < 40; i++) {
+  // INCREASED LOOP TO 100
+  for (let i = 0; i < 100; i++) {
     const adj = getRandomItem(adjectives);
     const noun = getRandomItem(nouns);
     const name = `${adj} ${noun} ${String.fromCharCode(65 + (i % 26))}${i}`;
@@ -556,15 +615,16 @@ async function main() {
     { t: 'Caring for Velvet Furniture', c: 'Maintenance' },
   ];
 
-  for (let i = 0; i < IMAGES.blogs.length; i++) {
+  // INCREASED LOOP TO 30
+  for (let i = 0; i < 30; i++) {
     const topic = blogTopics[i % blogTopics.length];
-    const img = IMAGES.blogs[i];
+    const img = IMAGES.blogs[i % IMAGES.blogs.length];
 
     await prisma.blog.create({
       data: {
-        title: topic.t,
+        title: `${topic.t} ${i > 11 ? `Vol. ${i}` : ''}`,
         slug: topic.t.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + i,
-        excerpt: `Discover the secrets of ${topic.t} and transform your living space.`,
+        excerpt: `Discover the secrets of ${topic.t} and transform your living space with our expert guide.`,
         content: `
           <h2>Introduction to ${topic.t}</h2>
           <p>Creating a beautiful home requires attention to detail. In this article, we explore ${topic.t}...</p>

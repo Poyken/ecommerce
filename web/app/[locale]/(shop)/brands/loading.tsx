@@ -1,14 +1,9 @@
-import { LoadingScreen } from "@/components/shared/loading-screen";
-
-/**
- * =====================================================================
- * LOADING UI - Giao diện chờ cho trang Brands
- * =====================================================================
- *
- * UPDATE: Sử dụng LoadingScreen để đồng bộ trải nghiệm loading với Admin/Auth.
- * =====================================================================
- */
+import { BrandsSkeleton } from "@/features/home/components/skeletons/home-skeleton";
 
 export default function Loading() {
-  return <LoadingScreen fullScreen={false} className="min-h-screen" />;
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <BrandsSkeleton />
+    </div>
+  );
 }

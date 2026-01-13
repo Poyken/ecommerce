@@ -28,9 +28,19 @@ export function CategoriesSkeleton() {
       {[...Array(4)].map((_, i) => (
         <div
           key={i}
-          className="relative aspect-4/5 rounded-2xl overflow-hidden"
+          className="flex items-center p-5 gap-5 rounded-4xl bg-background border border-foreground/5 overflow-hidden"
         >
-          <Skeleton className="h-full w-full" />
+          {/* Image Skeleton */}
+          <Skeleton className="w-20 h-20 rounded-2xl shrink-0" />
+
+          {/* Text Content Skeleton */}
+          <div className="flex-1 space-y-3">
+            <Skeleton className="h-6 w-3/4 rounded-lg" />
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-1 w-1 rounded-full" />
+              <Skeleton className="h-3 w-1/3 rounded-full" />
+            </div>
+          </div>
         </div>
       ))}
     </div>
@@ -39,9 +49,18 @@ export function CategoriesSkeleton() {
 
 export function BrandsSkeleton() {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-8 opacity-40 grayscale">
-      {[...Array(6)].map((_, i) => (
-        <Skeleton key={i} className="h-10 w-28 rounded-lg" />
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+      {[...Array(4)].map((_, i) => (
+        <div
+          key={i}
+          className="flex items-center p-5 gap-5 rounded-2xl bg-card/50 border border-border/40 overflow-hidden"
+        >
+          <Skeleton className="w-16 h-16 rounded-xl shrink-0" />
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-5 w-3/4 rounded-lg" />
+            <Skeleton className="h-3 w-1/2 rounded-full" />
+          </div>
+        </div>
       ))}
     </div>
   );
@@ -67,38 +86,25 @@ export function ProductsSkeleton({
       }`}
     >
       {[...Array(count)].map((_, i) => (
-        <div key={i} className="space-y-4">
-          <Skeleton className="aspect-3/4 rounded-xl" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
+        <div key={i} className="space-y-4 group">
+          <div className="relative aspect-4/5 rounded-3xl overflow-hidden bg-muted/20 border border-foreground/5">
+            <Skeleton className="h-full w-full" />
+            <div className="absolute top-4 left-4">
+              <Skeleton className="h-6 w-12 rounded-full opacity-50" />
+            </div>
+          </div>
+          <div className="space-y-3 px-1">
+            <div className="space-y-2">
+              <Skeleton className="h-3 w-1/4 rounded-full opacity-30" />
+              <Skeleton className="h-5 w-full rounded-lg" />
+            </div>
+            <div className="flex justify-between items-center">
+              <Skeleton className="h-6 w-1/3 rounded-full" />
+              <Skeleton className="h-4 w-12 rounded-full opacity-20" />
+            </div>
           </div>
         </div>
       ))}
-    </div>
-  );
-}
-
-export function HomeSkeleton() {
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Skeleton - Full viewport */}
-      <section className="h-screen w-full relative flex items-center justify-center">
-        <Skeleton className="absolute inset-0" />
-        <div className="container relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center px-4 md:px-8">
-          <div className="space-y-8">
-            <Skeleton className="h-8 w-48 rounded-full" />
-            <Skeleton className="h-16 w-full" />
-            <Skeleton className="h-12 w-3/4" />
-            <Skeleton className="h-6 w-full" />
-            <div className="flex gap-4">
-              <Skeleton className="h-12 w-40 rounded-full" />
-              <Skeleton className="h-12 w-32 rounded-full" />
-            </div>
-          </div>
-          <Skeleton className="hidden lg:block h-[500px] rounded-3xl" />
-        </div>
-      </section>
     </div>
   );
 }

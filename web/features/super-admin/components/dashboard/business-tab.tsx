@@ -16,7 +16,7 @@
 //    - Churn Rate: Tỉ lệ rời bỏ của khách hàng theo tuần.
 //
 // LƯU Ý: Hiện tại data đồ thị đang là Mock Data (cứng), cần được thay thế bằng API thật trong tương lai.
-// ================================================================================================= 
+// =================================================================================================
 "use client";
 
 import {
@@ -65,9 +65,9 @@ export function BusinessTab({ stats }: { stats: any }) {
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* High Level KPI *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
- */}
+       * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+       * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+       */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card className="rounded-2xl shadow-sm border-l-4 border-l-emerald-500">
           <CardHeader className="pb-2">

@@ -36,7 +36,7 @@ export default function PlatformSettingsPage() {
   const t = useTranslations("superAdmin.settings");
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div>
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">
           {t("title")}
