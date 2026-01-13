@@ -344,7 +344,8 @@
     "copied": "Đã sao chép",
     "shippingCode": "Mã vận đơn",
     "trackOrder": "Theo dõi hành trình",
-    "checkOrderId": "Vui lòng kiểm tra lại mã đơn hàng và thử lại."
+    "checkOrderId": "Vui lòng kiểm tra lại mã đơn hàng và thử lại.",
+    "requestReturn": "Yêu cầu trả hàng"
   },
   "home": {
     "viewAll": "Xem tất cả",
@@ -1308,7 +1309,9 @@
         "PROCESSING": "Đang xử lý",
         "SHIPPED": "Đã giao đơn vị vận chuyển",
         "DELIVERED": "Đã giao hàng",
-        "CANCELLED": "Đã hủy"
+        "CANCELLED": "Đã hủy",
+        "RETURNED": "Đã trả hàng",
+        "COMPLETED": "Hoàn thành"
       },
       "paymentStatusMapping": {
         "UNPAID": "Chưa thanh toán",
@@ -1316,6 +1319,35 @@
         "PAID": "Đã thanh toán",
         "FAILED": "Thất bại",
         "REFUNDED": "Đã hoàn tiền"
+      }
+    },
+    "returns": {
+      "title": "Trả hàng",
+      "management": "Quản lý trả hàng",
+      "searchPlaceholder": "Tìm theo mã yêu cầu hoặc mã đơn hàng...",
+      "noFound": "Không tìm thấy yêu cầu trả hàng nào",
+      "details": "Chi tiết yêu cầu trả hàng",
+      "updateStatus": "Cập nhật trạng thái",
+      "idLabel": "Mã RMA",
+      "orderIdLabel": "Đơn hàng",
+      "customerLabel": "Khách hàng",
+      "typeLabel": "Loại",
+      "methodLabel": "Phương thức",
+      "statusLabel": "Trạng thái",
+      "dateLabel": "Ngày tạo",
+      "inspectionNotes": "Ghi chú kiểm hàng",
+      "rejectedReason": "Lý do từ chối",
+      "successUpdate": "Cập nhật yêu cầu trả hàng thành công",
+      "statusMapping": {
+        "PENDING": "Đang chờ duyệt",
+        "APPROVED": "Đã chấp thuận",
+        "WAITING_FOR_RETURN": "Chờ gửi hàng",
+        "IN_TRANSIT": "Đang vận chuyển",
+        "RECEIVED": "Đã nhận hàng",
+        "INSPECTING": "Đang kiểm tra",
+        "REFUNDED": "Đã hoàn tiền",
+        "REJECTED": "Từ chối",
+        "CANCELLED": "Đã hủy"
       }
     },
     "skus": {
@@ -1382,6 +1414,7 @@
       "permissions": "Quyền hạn",
       "sales": "BÁN HÀNG",
       "orders": "Đơn hàng",
+      "returns": "Trả hàng",
       "coupons": "Mã giảm giá",
       "reviews": "Đánh giá",
       "auditLogs": "Audit Logs",
@@ -2029,6 +2062,32 @@
       "failed": "Thất bại",
       "tryAgain": "Thử lại",
       "needHelp": "Cần hỗ trợ? Liên hệ với đội ngũ CSKH của chúng tôi để được giúp đỡ."
+    }
+  },
+  "returns": {
+    "title": "Yêu cầu trả hàng",
+    "subtitle": "Quản lý các yêu cầu trả hàng và theo dõi trạng thái.",
+    "noReturns": "Chưa có yêu cầu trả hàng nào",
+    "noReturnsDesc": "Bạn chưa thực hiện yêu cầu trả hàng nào. Nếu bạn cần trả lại sản phẩm, hãy vào trang Đơn hàng và chọn đơn hàng tương ứng.",
+    "checkOrders": "Kiểm tra đơn hàng",
+    "viewDetails": "Xem chi tiết",
+    "viewProgress": "Xem tiến độ",
+    "reason": "Lý do",
+    "status": {
+      "PENDING": "Đang chờ duyệt",
+      "APPROVED": "Đã chấp thuận",
+      "WAITING_FOR_RETURN": "Chờ gửi hàng",
+      "IN_TRANSIT": "Đang vận chuyển",
+      "RECEIVED": "Đã nhận hàng",
+      "INSPECTING": "Đang kiểm tra",
+      "REFUNDED": "Đã hoàn tiền",
+      "REJECTED": "Từ chối",
+      "CANCELLED": "Đã hủy"
+    },
+    "type": {
+      "REFUND_ONLY": "Chỉ hoàn tiền",
+      "RETURN_AND_REFUND": "Trả hàng & Hoàn tiền",
+      "EXCHANGE": "Đổi hàng"
     }
   }
 }

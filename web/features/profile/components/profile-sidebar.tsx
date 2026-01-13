@@ -16,7 +16,7 @@
  * - Tích hợp nút đăng xuất ở cuối menu, xử lý việc xóa session và chuyển hướng về trang login. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
  * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
+ *
  * =====================================================================
  */
 
@@ -32,6 +32,7 @@ import {
   LayoutDashboard,
   LogOut,
   MapPin,
+  RotateCcw,
   Shield,
   ShoppingBag,
   Ticket,
@@ -76,6 +77,11 @@ export function ProfileSidebar({
       icon: ShoppingBag,
     },
     {
+      id: "returns",
+      label: "My Returns",
+      icon: RotateCcw,
+    },
+    {
       id: "blogs",
       label: t("blogs"),
       icon: FileText,
@@ -102,7 +108,7 @@ export function ProfileSidebar({
     },
     {
       id: "security",
-      label: t("security"), // Will need to ensure translation key exists or use fallback
+      label: t("security"),
       icon: Shield,
     },
   ];

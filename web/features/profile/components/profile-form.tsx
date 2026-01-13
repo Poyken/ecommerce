@@ -32,6 +32,7 @@ import { ProfileSecurityTab } from "@/features/profile/components/profile-securi
 import { ProfileSidebar } from "@/features/profile/components/profile-sidebar";
 import { ProfileVouchersTab } from "@/features/profile/components/profile-vouchers-tab";
 import { ProfileWishlistTab } from "@/features/profile/components/profile-wishlist-tab";
+import { ProfileReturnsTab } from "@/features/profile/components/profile-returns-tab";
 import { User } from "@/types/models";
 import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
@@ -48,6 +49,8 @@ export function ProfileForm({ user }: { user: User }) {
         return <ProfileAccountTab user={user} />;
       case "orders":
         return <ProfileOrdersTab />;
+      case "returns":
+        return <ProfileReturnsTab />;
       case "wishlist":
         return <ProfileWishlistTab />;
       case "addresses":

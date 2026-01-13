@@ -96,6 +96,7 @@ import { SentryModule } from '@core/sentry/sentry.module';
 import { DataLoaderModule } from '@core/dataloader/dataloader.module';
 import { MetricsModule } from '@core/metrics/metrics.module';
 import { SuperAdminModule } from '@/super-admin/super-admin.module';
+import { ReturnRequestsModule } from './return-requests/return-requests.module';
 
 @Module({
   imports: [
@@ -253,6 +254,7 @@ import { SuperAdminModule } from '@/super-admin/super-admin.module';
     InventoryModule,
     MediaModule,
     CustomerGroupsModule,
+    ReturnRequestsModule,
   ],
   controllers: [HealthController],
   providers: [

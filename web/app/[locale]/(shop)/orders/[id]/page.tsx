@@ -4,6 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { BankTransferQR } from "@/features/orders/components/bank-transfer-qr";
 import { BuyAgainButton } from "@/features/orders/components/buy-again-button";
 import { CancelOrderButton } from "@/features/orders/components/cancel-order-button";
+import { RequestReturnButton } from "@/features/orders/components/request-return-button";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";
 import { formatCurrency } from "@/lib/utils";
@@ -151,6 +152,9 @@ async function DynamicOrderDetail({ id }: { id: string }) {
         <div className="flex items-center gap-4">
           {order.status === "PENDING" && (
             <CancelOrderButton orderId={order.id} />
+          )}
+          {(order.status === "DELIVERED" || order.status === "COMPLETED") && (
+            <RequestReturnButton orderId={order.id} />
           )}
           <Link href="/orders" className="text-primary hover:underline">
             &larr; {t("backToOrders")}

@@ -41,7 +41,8 @@ export type OrderStatus =
   | "SHIPPED" // Đã giao cho shipper
   | "DELIVERED" // Đã giao thành công
   | "CANCELLED" // Đã hủy
-  | "RETURNED"; // Đã hoàn trả
+  | "RETURNED" // Đã trả hàng
+  | "COMPLETED"; // Hoàn thành
 
 /**
  * Trạng thái thanh toán.
@@ -730,4 +731,74 @@ export interface Invoice {
   dueDate: string;
   createdAt: string;
   updatedAt: string;
+}
+// =============================================================================
+// 🔄 RMA - Return Merchandise Authorization
+// =============================================================================
+
+export type ReturnType = "REFUND_ONLY" | "RETURN_AND_REFUND" | "EXCHANGE";
+
+export type ReturnMethod = "AT_COUNTER" | "PICKUP" | "SELF_SHIP";
+
+export type RefundMethod = "ORIGINAL_PAYMENT" | "BANK_TRANSFER" | "WALLET";
+
+export type ReturnStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "WAITING_FOR_RETURN"
+  | "IN_TRANSIT"
+  | "RECEIVED"
+  | "INSPECTING"
+  | "REFUNDED"
+  | "REJECTED"
+  | "CANCELLED";
+
+/**
+ * Yêu cầu trả hàng/hoàn tiền.
+ */
+export interface ReturnRequest {
+  id: string;
+  orderId: string;
+  userId: string;
+  status: ReturnStatus;
+  type: ReturnType;
+  reason: string;
+  description?: string | null;
+  images?: string[];
+
+  // Return shipping details
+  returnMethod?: ReturnMethod | null;
+  trackingCode?: string | null;
+  carrier?: string | null;
+  pickupAddress?: any; // Json
+
+  // Refund details
+  refundMethod: RefundMethod;
+  bankAccount?: any; // Json
+
+  // Admin fields
+  inspectionNotes?: string | null;
+  rejectedReason?: string | null;
+
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  order?: Order;
+  user?: User;
+  items?: ReturnItem[];
+}
+
+/**
+ * Item cụ thể trong yêu cầu trả hàng.
+ */
+export interface ReturnItem {
+  id: string;
+  returnRequestId: string;
+  orderItemId: string;
+  quantity: number;
+
+  // Relations
+  returnRequest?: ReturnRequest;
+  orderItem?: OrderItem;
 }

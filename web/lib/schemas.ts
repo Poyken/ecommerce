@@ -193,3 +193,27 @@ export const loginSchema = LoginSchema;
 export const registerSchema = RegisterSchema;
 export const forgotPasswordSchema = ForgotPasswordSchema;
 export const resetPasswordSchema = ResetPasswordSchema;
+export const ReturnRequestSchema = z.object({
+  orderId: z.string().min(1, "Order ID is required"),
+  type: z.enum(["REFUND_ONLY", "RETURN_AND_REFUND", "EXCHANGE"]),
+  reason: z.string().min(1, "Reason is required"),
+  description: z.string().optional(),
+  items: z
+    .array(
+      z.object({
+        orderItemId: z.string().min(1, "Order Item ID is required"),
+        quantity: z.number().int().min(1, "Quantity must be at least 1"),
+      })
+    )
+    .min(1, "At least one item must be returned"),
+  returnMethod: z.enum(["PICKUP", "SELF_SHIP", "AT_COUNTER"]),
+  refundMethod: z.enum(["ORIGINAL_PAYMENT", "BANK_TRANSFER", "WALLET"]),
+  bankAccount: z
+    .object({
+      bankName: z.string().min(1, "Bank name is required"),
+      accountNumber: z.string().min(1, "Account number is required"),
+      accountHolder: z.string().min(1, "Account holder name is required"),
+    })
+    .optional(),
+  images: z.array(z.string()).optional(),
+});

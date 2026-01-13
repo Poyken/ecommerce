@@ -689,6 +689,23 @@ model ReturnRequest {
   refundAmount Decimal?     @db.Decimal(20, 2) // Số tiền hoàn lại dự kiến
   images       String[] // Danh sách ảnh bằng chứng
 
+  // 1. Classification
+  type            ReturnType   @default(RETURN_AND_REFUND)
+  
+  // 2. Logistics (How the item gets back)
+  returnMethod    ReturnMethod @default(SELF_SHIP)
+  trackingCode    String?      // Mã vận đơn user gửi trả
+  carrier         String?      // Đơn vị vận chuyển (GHN, GHTK)
+  pickupAddress   Json?        // Địa chỉ lấy hàng (nếu Shop đến lấy)
+
+  // 3. Finance
+  refundMethod    RefundMethod @default(ORIGINAL_PAYMENT)
+  bankAccount     Json?        // { bankName, number, owner } if refunding via Bank Transfer
+  
+  // 4. Processing
+  inspectionNotes String?      // Ghi chú kiểm hàng của Admin
+  rejectedReason  String?      // Lý do từ chối (nếu có)
+  
   tenantId String
   tenant   Tenant       @relation(fields: [tenantId], references: [id])
   order    Order        @relation(fields: [orderId], references: [id])
@@ -710,19 +727,40 @@ model ReturnItem {
   orderItemId     String
   quantity        Int
 
-  returnRequest ReturnRequest @relation(fields: [returnRequestId], references: [id], onDelete: Cascade)
-  // Link to order item if needed, mainly logical
+  returnRequest   ReturnRequest @relation(fields: [returnRequestId], references: [id], onDelete: Cascade)
+  orderItem       OrderItem     @relation(fields: [orderItemId], references: [id])
 
-  @@index([returnRequestId]) // Index Foreign Key
+  @@index([returnRequestId])
 }
 
 enum ReturnStatus {
-  PENDING
-  APPROVED
-  RECEIVED
-  REFUNDED
-  REJECTED
-  CANCELLED
+  PENDING             // Chờ duyệt
+  APPROVED            // Đã duyệt (Chờ khách gửi)
+  WAITING_FOR_RETURN  // Đang đợi hàng về
+  IN_TRANSIT          // Đang vận chuyển về
+  RECEIVED            // Shop đã nhận
+  INSPECTING          // Đang kiểm hàng
+  REFUNDED            // Đã hoàn tiền
+  REJECTED            // Từ chối
+  CANCELLED           // Khách hủy
+}
+
+enum ReturnType {
+  REFUND_ONLY       // Hoàn tiền không cần trả hàng
+  RETURN_AND_REFUND // Trả hàng rồi hoàn tiền
+  EXCHANGE          // Đổi hàng (Future)
+}
+
+enum ReturnMethod {
+  AT_COUNTER        // Mang ra cửa hàng
+  PICKUP            // Shipper đến lấy
+  SELF_SHIP         // Tự gửi bưu điện
+}
+
+enum RefundMethod {
+  ORIGINAL_PAYMENT  // Về thẻ/Ví ban đầu
+  BANK_TRANSFER     // Chuyển khoản (cho đơn COD)
+  WALLET            // Hoàn về ví tích điểm
 }
 
 model OrderItem {
@@ -742,6 +780,8 @@ model OrderItem {
 
   @@unique([orderId, skuId]) // Một SKU chỉ xuất hiện 1 lần trong đơn
   @@index([skuId]) // Tham chiếu
+
+  returnItems ReturnItem[]
 }
 
 model Review {
@@ -979,6 +1019,7 @@ enum OrderStatus {
   DELIVERED // Đã giao hàng
   CANCELLED // Đã hủy
   RETURNED // Đã trả hàng
+  COMPLETED // Hoàn thành (Sau khi đã giao và hết hạn đổi trả)
 }
 
 enum PaymentStatus {

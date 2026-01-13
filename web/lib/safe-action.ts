@@ -169,6 +169,10 @@ export const REVALIDATE = {
     if (productId) revalidatePath(`/products/${productId}`, "page");
   },
   profile: () => revalidatePath("/profile", "page"),
+  returns: () => {
+    revalidatePath("/profile", "page");
+    revalidatePath("/admin/returns", "page");
+  },
   wishlist: () => revalidatePath("/wishlist", "page"),
   admin: {
     products: () => revalidatePath("/admin/products", "page"),

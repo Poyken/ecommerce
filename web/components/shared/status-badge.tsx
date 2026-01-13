@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
  * - Có thể override `variant` nếu cần thiết cho các trường hợp đặc biệt. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
  * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
+ *
  * =====================================================================
  */
 
@@ -53,7 +53,6 @@ const statusMap: Record<string, StatusVariant> = {
   UNPAID: "secondary",
   PAID: "success",
   FAILED: "error",
-  REFUNDED: "info", // Refund -> Blue/Info
 
   // Stock/Product Statuses
   ACTIVE: "success",
@@ -64,6 +63,14 @@ const statusMap: Record<string, StatusVariant> = {
   PUBLISHED: "success",
   HIDDEN: "secondary",
   REJECTED: "error",
+
+  // Return Statuses
+  APPROVED: "success",
+  WAITING_FOR_RETURN: "warning",
+  IN_TRANSIT: "purple",
+  RECEIVED: "info",
+  INSPECTING: "info",
+  REFUNDED: "success",
 };
 
 const variantStyles: Record<StatusVariant, string> = {
