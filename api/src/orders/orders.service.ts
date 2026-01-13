@@ -223,8 +223,8 @@ export class OrdersService {
 
         // 5. Kiểm tra và Áp dụng Mã giảm giá (Coupon)
         // 5. Kiểm tra và Áp dụng Mã giảm giá (Coupon)
-        let couponId: string | null = null;
-        let discountAmount = 0;
+        const couponId: string | null = null;
+        const discountAmount = 0;
 
         // [MIGRATION TODO]: Migrate this logic to use PromotionsService.validatePromotion()
         if (createOrderDto.couponCode) {

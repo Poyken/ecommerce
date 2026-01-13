@@ -90,8 +90,10 @@ export class TenantsService {
     });
   }
 
-  async findAll() {
+  async findAll(includeDeleted = false) {
+    const whereClause = includeDeleted ? {} : { deletedAt: null };
     return this.prisma.tenant.findMany({
+      where: whereClause,
       include: {
         _count: {
           select: {
@@ -118,12 +120,23 @@ export class TenantsService {
         },
       },
     });
+    // Nếu tenant không tồn tại hoặc đã bị xóa mềm -> Trả về lỗi
+    if (!tenant || tenant.deletedAt)
+      throw new NotFoundException('Tenant not found');
+    return tenant;
+  }
+
+  // Phương thức tìm kiếm dành cho SuperAdmin (bao gồm cả tenant đã xóa)
+  async findOneAdmin(id: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id },
+    });
     if (!tenant) throw new NotFoundException('Tenant not found');
     return tenant;
   }
 
   async update(id: string, updateTenantDto: UpdateTenantDto) {
-    // Kiểm tra sự tồn tại
+    // Kiểm tra sự tồn tại (bao gồm cả check deletedAt)
     await this.findOne(id);
 
     return this.prisma.tenant.update({
@@ -132,10 +145,35 @@ export class TenantsService {
     });
   }
 
+  // Xóa mềm (Soft Delete) - Mặc định khi gọi API xóa
   async remove(id: string) {
-    // Kiểm tra các ràng buộc (Cascade Delete?)
-    // Prisma schema thường handle việc cascade, nhưng xóa Tenant là hành động nguy hiểm.
-    // Hiện tại cho phép xóa trực tiếp. Cần cẩn trọng!
+    await this.findOne(id); // Check exists
+
+    return this.prisma.tenant.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+  }
+
+  // Khôi phục Tenant đã xóa (Undo Soft Delete)
+  async restore(id: string) {
+    const tenant = await this.findOneAdmin(id); // Tìm cả tenant đã xóa
+    if (!tenant.deletedAt) {
+      return tenant; // Đã active thì không cần restore
+    }
+
+    return this.prisma.tenant.update({
+      where: { id },
+      data: { deletedAt: null },
+    });
+  }
+
+  // Xóa cứng (Hard Delete) - Chỉ SuperAdmin dùng, xóa vĩnh viễn khỏi DB
+  async hardDelete(id: string) {
+    const tenant = await this.findOneAdmin(id);
+
+    // Thêm logic kiểm tra an toàn nếu cần (VD: Yêu cầu xác nhận lần 2)
+
     return this.prisma.tenant.delete({
       where: { id },
     });

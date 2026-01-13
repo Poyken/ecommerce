@@ -109,9 +109,31 @@ export class TenantsController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('tenant:delete')
-  @ApiDeleteResponse('Tenant', { summary: 'Delete a Tenant' })
+  @ApiDeleteResponse('Tenant', {
+    summary: 'Soft Delete a Tenant (Move to Trash)',
+  })
   async remove(@Param('id') id: string) {
     const data = await this.tenantsService.remove(id);
+    return { data };
+  }
+
+  @Post(':id/restore')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('tenant:delete') // Reuse delete permission or add 'tenant:restore'
+  @ApiUpdateResponse('Tenant', { summary: 'Restore a deleted Tenant' })
+  async restore(@Param('id') id: string) {
+    const data = await this.tenantsService.restore(id);
+    return { data };
+  }
+
+  @Delete(':id/hard')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('tenant:hard-delete') // New specific permission
+  @ApiDeleteResponse('Tenant', {
+    summary: 'Permanently Delete a Tenant (Cannot be undone)',
+  })
+  async hardDelete(@Param('id') id: string) {
+    const data = await this.tenantsService.hardDelete(id);
     return { data };
   }
 

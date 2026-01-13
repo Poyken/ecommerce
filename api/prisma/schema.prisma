@@ -1190,6 +1190,7 @@ model Tenant {
   isActive         Boolean    @default(true) // Trạng thái hoạt động
   suspendedAt      DateTime? // Thời điểm bị treo
   suspensionReason String? // Lý do treo (nợ cước, vi phạm...)
+  deletedAt        DateTime? // Thời điểm xóa mềm (Soft delete). Chỉ SuperAdmin mới có quyền xóa cứng.
 
   // Infrastructure
   dbUrl String? // URL Database riêng (Chế độ Silo)
@@ -1230,6 +1231,8 @@ model Tenant {
   // Billing
   subscription Subscription?
   invoices     Invoice[]
+
+  @@index([deletedAt]) // Index giúp lọc nhanh các tenant chưa bị xóa
 }
 
 model StoreMetrics {

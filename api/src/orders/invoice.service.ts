@@ -112,7 +112,7 @@ export class InvoiceService {
     const shipping = Number(order.shippingFee || 0);
 
     // Calculate discount from coupon
-    let discount = 0;
+    const discount = 0;
     // [MIGRATION TODO]: Use PromotionUsage relation instead of coupon relation
     // if (order.coupon) {
     //   if (order.coupon.discountType === 'PERCENTAGE') {
