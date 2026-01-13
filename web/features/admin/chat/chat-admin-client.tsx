@@ -581,7 +581,7 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
               u.roles?.some(
                 (r: any) =>
                   (typeof r === "string" ? r : r.name) === "ADMIN" ||
-                  (typeof r === "string" ? r : r.name) === "SUPER_ADMIN"
+                  (typeof r === "string" ? r : r.name) === "SUPERADMIN"
               )
           );
           setTeamMembers(admins);

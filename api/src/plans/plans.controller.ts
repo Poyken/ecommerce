@@ -34,7 +34,7 @@ import { PlansService } from './plans.service';
 import { CreatePlanDto } from './dto/create-plan.dto';
 // Import guards if needed, typically AdminGuard or SuperAdminGuard
 // For simplicity assuming global guard or public for now during dev,
-// but correctly should use @Roles('SUPER_ADMIN')
+// but correctly should use @Roles('SUPERADMIN')
 
 @Controller('plans')
 export class PlansController {

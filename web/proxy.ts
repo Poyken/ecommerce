@@ -191,7 +191,9 @@ export default async function proxy(request: NextRequest) {
 
   // 4. Bảo vệ Route Admin
   const isAdminPath =
-    pathname.match(/^\/([a-z]{2})\/admin/) || pathname.startsWith("/admin");
+    pathname.match(/^\/([a-z]{2})\/(admin|super-admin)/) ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/super-admin");
 
   if (isAdminPath) {
     if (!accessToken) {

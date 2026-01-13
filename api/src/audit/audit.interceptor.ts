@@ -46,6 +46,9 @@ export class AuditInterceptor implements NestInterceptor {
     const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
     const isAdminRoute =
       url.includes('/admin') ||
+      url.includes('/super-admin') ||
+      url.includes('/tenants') ||
+      url.includes('/plans') ||
       url.includes('/users') ||
       url.includes('/roles') ||
       url.includes('/products') ||
@@ -56,7 +59,17 @@ export class AuditInterceptor implements NestInterceptor {
       url.includes('/reviews') ||
       url.includes('/orders') ||
       url.includes('/skus') ||
-      url.includes('/permissions');
+      url.includes('/permissions') ||
+      url.includes('/invoices') ||
+      url.includes('/settings') ||
+      url.includes('/promotions') ||
+      url.includes('/rma') ||
+      url.includes('/inventory') ||
+      url.includes('/media') ||
+      url.includes('/customer-groups') ||
+      url.includes('/notifications') ||
+      url.includes('/feature-flags') ||
+      url.includes('/pages');
 
     return next.handle().pipe(
       tap({

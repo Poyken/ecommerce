@@ -371,7 +371,7 @@ export class AuthService {
     roles: string[],
     permissions: string[],
   ) {
-    const isSuperAdmin = roles.includes('SUPER_ADMIN');
+    const isSuperAdmin = roles.includes('SUPERADMIN');
     const hasPlatformControl = permissions.includes('superAdmin:read');
 
     // PLATFORM ADMIN = Super Admin + Có quyền hệ thống.

@@ -209,7 +209,7 @@ async function main() {
 
   // 3. Roles
   console.log('👮 Seeding Roles...');
-  const roles = ['SUPER_ADMIN'];
+  const roles = ['SUPERADMIN'];
   const roleMap: Record<string, Role> = {};
 
   for (const rName of roles) {
@@ -223,7 +223,7 @@ async function main() {
     }
     roleMap[rName] = role;
 
-    // Assign Permissions (Give all permissions to SUPER_ADMIN)
+    // Assign Permissions (Give all permissions to SUPERADMIN)
     await prisma.rolePermission.deleteMany({ where: { roleId: role.id } });
     await prisma.rolePermission.createMany({
       data: allPermissions.map((p) => ({
@@ -249,7 +249,7 @@ async function main() {
       lastName: 'Admin',
       password: passwordHash,
       tenantId: tenant.id,
-      roles: { create: { roleId: roleMap['SUPER_ADMIN'].id } },
+      roles: { create: { roleId: roleMap['SUPERADMIN'].id } },
     },
   });
 

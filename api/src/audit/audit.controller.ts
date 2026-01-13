@@ -44,6 +44,10 @@ export class AuditController {
     @Query('filter') filter?: string,
   ) {
     const rolesArray = roles ? roles.split(',') : undefined;
+
+    // Standardized role name is SUPERADMIN
+    // No special normalization needed as all roles are unified to SUPERADMIN in the DB and code.
+
     const result = await this.auditService.findAll(
       +page,
       +limit,

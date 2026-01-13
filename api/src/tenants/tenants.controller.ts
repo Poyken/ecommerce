@@ -37,7 +37,7 @@ import { getTenant } from '@core/tenant/tenant.context';
  *
  * 1. PHÂN QUYỀN (RBAC):
  *    - Các API này rất nhạy cảm (Tạo/Xóa cửa hàng), nên được bảo vệ bởi `@Permissions`.
- *    - Chỉ User có Role là `SUPER_ADMIN` mới có thể gọi được quyền `tenant:create`, `tenant:delete`...
+ *    - Chỉ User có Role là `SUPERADMIN` mới có thể gọi được quyền `tenant:create`, `tenant:delete`...
  *
  * 2. KIẾN TRÚC SAAS (SOFTWARE AS A SERVICE):
  *    - Đây là nơi quản lý "Khách hàng" của hệ thống Platform.

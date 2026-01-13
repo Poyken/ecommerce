@@ -6,7 +6,7 @@
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. SECURITY CAO CẤP:
- * - `@Permissions('SUPER_ADMIN')`: Chỉ user có quyền tối thượng mới truy cập được.
+ * - `@Permissions('SUPERADMIN')`: Chỉ user có quyền tối thượng mới truy cập được.
  * - Endpoint này cực kỳ nhạy cảm vì chứa số liệu tài chính toàn hệ thống
  *   và quyền truy cập vào bất kỳ tenant nào. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
@@ -22,7 +22,7 @@ import { Permissions } from '@/auth/decorators/permissions.decorator';
 
 @Controller('super-admin')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
-@Permissions('SUPER_ADMIN')
+@Permissions('SUPERADMIN')
 export class SuperAdminController {
   constructor(private readonly service: SuperAdminService) {}
 

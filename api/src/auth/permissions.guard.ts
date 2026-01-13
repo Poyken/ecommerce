@@ -57,7 +57,7 @@ export class PermissionsGuard implements CanActivate {
     // Only Platform Admins (Super Admins with 'superAdmin:read' permission) bypass all checks.
     // Regular tenant admins MUST have explicit permissions in their token.
     if (
-      user?.roles?.includes('SUPER_ADMIN') &&
+      user?.roles?.includes('SUPERADMIN') &&
       user?.permissions?.includes('superAdmin:read')
     ) {
       return true;

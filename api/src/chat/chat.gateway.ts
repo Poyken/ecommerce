@@ -76,7 +76,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // If admin, join admin room
       const isAdmin = roles.some(
         (r: string) =>
-          r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPER_ADMIN',
+          r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPERADMIN',
       );
 
       if (isAdmin) {
@@ -114,7 +114,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const isAdmin = roles.some(
       (r: string) =>
-        r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPER_ADMIN',
+        r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPERADMIN',
     );
 
     if (isAdmin) {
@@ -187,7 +187,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const isAdmin = roles.some(
       (r: string) =>
-        r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPER_ADMIN',
+        r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPERADMIN',
     );
 
     if (isAdmin) {

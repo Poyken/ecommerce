@@ -47,7 +47,7 @@ export default async function SuperAdminAuditLogsPage({
     limit: 20,
     search,
     filter,
-    roles: ["SUPER_ADMIN", "ADMIN"],
+    roles: ["SUPERADMIN", "ADMIN"],
   });
 
   if (response.error) {
