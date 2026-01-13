@@ -109,6 +109,7 @@ export default async function proxy(request: NextRequest) {
       // Lấy thông tin thiết bị thật của người dùng để Backend verify Fingerprint
       const userAgent = request.headers.get("user-agent") || "";
       const forwardedFor = request.headers.get("x-forwarded-for") || "";
+      const host = request.headers.get("host") || "";
 
       const refreshRes = await fetch(`${apiUrl}/auth/refresh`, {
         method: "POST",
@@ -116,6 +117,7 @@ export default async function proxy(request: NextRequest) {
           "Content-Type": "application/json",
           "User-Agent": userAgent,
           "X-Forwarded-For": forwardedFor,
+          "X-Tenant-Domain": host.split(":")[0],
           Cookie: `refreshToken=${refreshToken}`,
         },
         body: JSON.stringify({ refreshToken }),

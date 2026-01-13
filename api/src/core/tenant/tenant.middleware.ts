@@ -50,6 +50,9 @@ export class TenantMiddleware implements NestMiddleware {
       req.headers.host ||
       '') as string;
     const domain = rawHost.split(':')[0];
+    console.log(
+      `[TenantMiddleware] Resolving tenant for domain: "${domain}" (from x-tenant-domain: "${req.headers['x-tenant-domain']}", host: "${req.headers.host}")`,
+    );
 
     // 2. Find Tenant (Cached)
     const cacheKey = `tenant:${domain}`;
@@ -58,12 +61,18 @@ export class TenantMiddleware implements NestMiddleware {
 
     if (!tenant) {
       // Advanced Resolution: Check customDomain, subdomain, or legacy domain field
+      const lowerDomain = domain.toLowerCase();
       tenant = await this.prisma.tenant.findFirst({
         where: {
           OR: [
-            { customDomain: domain },
-            { subdomain: domain.split('.')[0] }, // Fallback for subdomains
-            { domain: domain },
+            { customDomain: { equals: lowerDomain, mode: 'insensitive' } },
+            {
+              subdomain: {
+                equals: lowerDomain.split('.')[0],
+                mode: 'insensitive',
+              },
+            },
+            { domain: { equals: lowerDomain, mode: 'insensitive' } },
           ],
         },
       });
@@ -95,11 +104,16 @@ export class TenantMiddleware implements NestMiddleware {
     } else {
       // [SECURITY] If a specific tenant domain was requested but not found,
       // do NOT allow bypass to global context unless it's a system-whitelisted domain.
-      if (req.headers['x-tenant-domain']) {
+      const requestedTenantDomain = req.headers['x-tenant-domain'];
+      if (requestedTenantDomain && requestedTenantDomain !== '') {
+        console.error(
+          `[TenantMiddleware] Unauthorized Tenant access: domain="${domain}", x-tenant-domain="${requestedTenantDomain}"`,
+        );
         return res.status(403).json({
           error: 'Unauthorized Tenant',
           message:
             'The requested store domain does not exist or is not registered.',
+          debug: { domain, requestedTenantDomain },
         });
       }
       next();

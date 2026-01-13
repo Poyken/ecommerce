@@ -165,15 +165,18 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     // Forward headers for Fingerprinting
     ...(forwardedUserAgent ? { "User-Agent": forwardedUserAgent } : {}),
     ...(forwardedIp ? { "X-Forwarded-For": forwardedIp } : {}),
-
-    // [TENANCY OPTIMIZATION] Forward tenant domain to API
-    "X-Tenant-Domain":
-      typeof window !== "undefined"
-        ? window.location.hostname
-        : forwardedHost
-        ? forwardedHost.split(":")[0]
-        : "",
   };
+
+  const tenantDomain =
+    typeof window !== "undefined"
+      ? window.location.hostname
+      : forwardedHost
+      ? forwardedHost.split(":")[0]
+      : undefined;
+
+  if (tenantDomain) {
+    requestHeaders["X-Tenant-Domain"] = tenantDomain;
+  }
 
   // Đính kèm Bearer token nếu có (Ưu tiên token từ server-side session)
   if (accessToken) {
