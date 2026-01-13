@@ -132,7 +132,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
       if (fp !== currentFp) {
         // [DEV MODE] Fingerprint mismatch is common in dev (e.g. localhost vs IP).
-        // Log warning instead of revoking token.
+        // Log warning instead of revoking token to prevent loops.
         this.logger.warn(`[JWT] Fingerprint mismatch detected!`);
         this.logger.debug(`[JWT] Token FP: ${fp.substring(0, 10)}...`);
         this.logger.debug(`[JWT] Current FP: ${currentFp.substring(0, 10)}...`);
@@ -141,10 +141,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           `[JWT] IP: ${req.ip} (X-Forwarded-For: ${req.headers['x-forwarded-for']})`,
         );
 
-        // In production, we might want to be stricter, but for now we just log
-        throw new UnauthorizedException(
-          'Device fingerprint mismatch. Please login again.',
-        );
+        if (process.env.NODE_ENV === 'production') {
+          throw new UnauthorizedException(
+            'Device fingerprint mismatch. Please login again.',
+          );
+        }
       } else {
         // this.logger.debug(`[JWT] Fingerprint verified for user ${userId}`);
       }
