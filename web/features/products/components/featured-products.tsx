@@ -23,6 +23,7 @@ import { ProductCard } from "@/features/products/components/product-card";
 import { Product } from "@/types/models";
 import { m } from "@/lib/animations";
 import { useTranslations } from "next-intl";
+import { getProductImage } from "@/lib/product-helper";
 
 interface FeaturedProductsProps {
   products: Product[];
@@ -88,11 +89,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
                   ? Number(product.skus[0].salePrice)
                   : undefined
               }
-              imageUrl={
-                (typeof product.images?.[0] === "string"
-                  ? product.images?.[0]
-                  : product.images?.[0]?.url) || "/placeholder-product.png"
-              }
+              imageUrl={getProductImage(product)}
               category={product.category?.name}
               skus={product.skus}
             />

@@ -33,6 +33,7 @@ import { AnimatePresence } from "framer-motion";
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { getProductImage } from "@/lib/product-helper";
 
 export function ProfileWishlistTab() {
   const t = useTranslations("wishlist");
@@ -127,13 +128,7 @@ export function ProfileWishlistTab() {
                   name={product.name}
                   price={displayPrice}
                   originalPrice={originalPrice}
-                  imageUrl={
-                    (typeof product.images?.[0] === "string"
-                      ? product.images?.[0]
-                      : product.images?.[0]?.url) ||
-                    product.skus?.[0]?.imageUrl ||
-                    ""
-                  }
+                  imageUrl={getProductImage(product) || ""}
                   category={product.category?.name}
                   skus={product.skus}
                   options={product.options}

@@ -818,11 +818,12 @@ export class OrdersService {
     }
 
     // CHẶN THAO TÁC THỦ CÔNG: Đảm bảo luồng trạng thái tuân thủ Webhook từ GHN
-    if (newStatus === OrderStatus.SHIPPED && !dto.force) {
-      throw new BadRequestException(
-        'Không được cập nhật thủ công sang "Đã Giao ĐVVC". Trạng thái này sẽ tự động cập nhật khi GHN qua lấy hàng (Picked). Nếu cần thiết, hãy dùng flag "force: true".',
-      );
-    }
+    // [TEMPORARY BYPASS] User requested to allow manual trigger
+    // if (newStatus === OrderStatus.SHIPPED && !dto.force) {
+    //   throw new BadRequestException(
+    //     'Không được cập nhật thủ công sang "Đã Giao ĐVVC". Trạng thái này sẽ tự động cập nhật khi GHN qua lấy hàng (Picked). Nếu cần thiết, hãy dùng flag "force: true".',
+    //   );
+    // }
 
     // Kiểm tra bổ sung: Không cho phép xử lý đơn hàng COD nếu chưa thanh toán (Trừ khi admin xác nhận thanh toán ngay lúc này)
     const effectivePaymentStatus = dto.paymentStatus || order.paymentStatus;

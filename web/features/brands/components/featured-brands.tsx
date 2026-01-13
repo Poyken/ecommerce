@@ -111,7 +111,7 @@ export function FeaturedBrands({
 
       <m.div
         className={cn(
-          "grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center",
+          "grid grid-cols-2 md:grid-cols-4 gap-8 justify-items-center items-stretch",
           grayscale &&
             "grayscale hover:grayscale-0 transition-all duration-700",
           layout === "grid" ? "grid" : "flex flex-wrap"
@@ -131,7 +131,12 @@ export function FeaturedBrands({
                 ? {
                     y: -10,
                     scale: 1.05,
-                    transition: { type: "spring", stiffness: 400, damping: 15, mass: 0.5 },
+                    transition: {
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 15,
+                      mass: 0.5,
+                    },
                   }
                 : hoverEffect === "glow"
                 ? {
@@ -139,18 +144,15 @@ export function FeaturedBrands({
                       "brightness(1.2) drop-shadow(0 0 15px rgba(var(--accent), 0.3))",
                   }
                 : { scale: 1.1 }
-            } 
-            className={cn(
-              "relative w-full flex items-center justify-center p-6 grayscale-0 contrast-125 transition-[filter] duration-300",
-              logoSizeClasses[logoSize]
-            )}
+            }
+            className="relative w-full flex flex-col justify-center p-2 grayscale-0 contrast-125 transition-[filter] duration-300 h-full"
           >
             <BrandCard
               id={brand.id}
               name={brand.name}
               count={brand._count?.products || 0}
               imageUrl={brand.imageUrl || undefined}
-              className="border border-border/40 bg-card/50 shadow-sm p-0 group rounded-2xl overflow-hidden"
+              className="border border-border/40 bg-card/50 shadow-sm p-0 group rounded-2xl overflow-hidden w-full h-full"
             />
           </m.div>
         ))}

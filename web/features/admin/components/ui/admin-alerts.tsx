@@ -7,6 +7,7 @@ import { AlertTriangle, ArrowUpRight, Package, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
+import { getProductImage } from "@/lib/product-helper";
 
 /**
  * =====================================================================
@@ -76,9 +77,8 @@ export function AdminAlerts({
               <div className="flex items-center gap-4">
                 <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-foreground/5">
                   {(() => {
-                    const firstImage = sku.product?.images?.[0];
-                    const src = typeof firstImage === 'string' ? firstImage : (firstImage as any)?.url;
-                    
+                    const src = getProductImage(sku.product as any);
+
                     if (src) {
                       return (
                         <Image
@@ -155,37 +155,37 @@ export function AdminAlerts({
         </div>
 
         <div className="space-y-5">
-          {trendingProducts.filter(p => !!p).map((product, index) => {
-            const maxSales = trendingProducts[0]?.sales || 1;
-            
-            return (
-              <div key={index} className="group/item flex items-center gap-5">
-                <span className="text-3xl font-black text-foreground/5 group-hover/item:text-primary/30 transition-colors duration-300 w-8">
-                  {index + 1}
-                </span>
-                <div className="flex-1">
-                  <div className="flex justify-between items-center mb-2">
-                    <p className="text-sm font-bold truncate w-48">
-                      {product.name}
-                    </p>
-                    <span className="text-xs font-black text-primary uppercase tracking-wider">
-                      {t("alerts.soldCount", { count: product.sales })}
-                    </span>
-                  </div>
-                  <div className="h-2 w-full bg-foreground/5 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-linear-to-r from-primary via-amber-500 to-primary rounded-full transition-all duration-500"
-                      style={{
-                        width: `${
-                          (product.sales / maxSales) * 100
-                        }%`,
-                      }}
-                    />
+          {trendingProducts
+            .filter((p) => !!p)
+            .map((product, index) => {
+              const maxSales = trendingProducts[0]?.sales || 1;
+
+              return (
+                <div key={index} className="group/item flex items-center gap-5">
+                  <span className="text-3xl font-black text-foreground/5 group-hover/item:text-primary/30 transition-colors duration-300 w-8">
+                    {index + 1}
+                  </span>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-center mb-2">
+                      <p className="text-sm font-bold truncate w-48">
+                        {product.name}
+                      </p>
+                      <span className="text-xs font-black text-primary uppercase tracking-wider">
+                        {t("alerts.soldCount", { count: product.sales })}
+                      </span>
+                    </div>
+                    <div className="h-2 w-full bg-foreground/5 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-linear-to-r from-primary via-amber-500 to-primary rounded-full transition-all duration-500"
+                        style={{
+                          width: `${(product.sales / maxSales) * 100}%`,
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </div>
       </GlassCard>
     </div>

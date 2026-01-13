@@ -18,6 +18,7 @@ import { cn, formatCurrency } from "@/lib/utils";
 import { productService } from "@/features/products/services/product.service";
 import { Product, Sku } from "@/types/models";
 import { Shield, Truck } from "lucide-react";
+import { getProductImage } from "@/lib/product-helper";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -107,11 +108,7 @@ export function ProductQuickViewDialog({
         // Validate data has an ID (fixes issue with http.ts returning [] on error)
         if (data && data.id) {
           setProduct(data);
-          const defaultImg =
-            data.skus?.[0]?.imageUrl ||
-            (typeof data.images?.[0] === "string"
-              ? data.images[0]
-              : data.images?.[0]?.url);
+          const defaultImg = data.skus?.[0]?.imageUrl || getProductImage(data);
           if (defaultImg) setActiveImage(defaultImg);
         } else {
           // Handle case where API returns invalid data/fallback
@@ -308,6 +305,7 @@ export function ProductQuickViewDialog({
                       <Link
                         href={`/products/${product.id}`}
                         className="hover:underline hover:text-primary transition-colors"
+                        onClick={() => onOpenChange(false)}
                       >
                         <h2 className="text-2xl md:text-3xl font-bold tracking-tighter text-foreground leading-[1.1]">
                           {product.name}
@@ -328,6 +326,7 @@ export function ProductQuickViewDialog({
                     <Link
                       href={`/products/${product.id}`}
                       className="text-xs font-bold uppercase tracking-widest text-primary hover:underline"
+                      onClick={() => onOpenChange(false)}
                     >
                       View Full Details
                     </Link>

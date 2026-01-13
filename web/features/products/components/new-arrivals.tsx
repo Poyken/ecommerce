@@ -34,6 +34,7 @@ import { cn } from "@/lib/utils";
 import { Product } from "@/types/models";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { getProductImage } from "@/lib/product-helper";
 
 interface NewArrivalsProps {
   products: Product[];
@@ -143,13 +144,7 @@ export function NewArrivals({
               id={product.id}
               name={product.name}
               price={Number(product.skus?.[0]?.price || 0)}
-              imageUrl={
-                (typeof product.images?.[0] === "string"
-                  ? product.images?.[0]
-                  : product.images?.[0]?.url) ||
-                product.skus?.[0]?.imageUrl ||
-                ""
-              }
+              imageUrl={getProductImage(product) || ""}
               category={product.category?.name}
               isNew={true}
               skus={product.skus}

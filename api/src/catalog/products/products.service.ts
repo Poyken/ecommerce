@@ -729,6 +729,11 @@ export class ProductsService {
             name: true,
             slug: true,
             brandId: true,
+            images: {
+              select: { url: true, alt: true },
+              orderBy: { displayOrder: 'asc' },
+              take: 1,
+            },
             categories: {
               select: {
                 category: {

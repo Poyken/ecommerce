@@ -80,6 +80,8 @@ export function NotificationBell() {
     setOpen(false);
     if (notification.link) {
       router.push(notification.link as any);
+    } else {
+      router.push("/notifications");
     }
   };
 

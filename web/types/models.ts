@@ -295,7 +295,7 @@ export interface Product {
   };
 
   // Frontend enriched
-  images?: ProductImage[] | { url: string; alt?: string }[] | string[];
+  images?: ProductImage[] | { url: string; alt?: string | null }[] | string[];
 }
 
 // =============================================================================

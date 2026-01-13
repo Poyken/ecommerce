@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
 import { Product } from "@/types/models";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { getProductImage } from "@/lib/product-helper";
 
 interface TrendingProductsProps {
   products: Product[];
@@ -146,13 +147,7 @@ export function TrendingProducts({
                   ? Number(product.skus?.[0]?.originalPrice)
                   : undefined
               }
-              imageUrl={
-                (typeof product.images?.[0] === "string"
-                  ? product.images?.[0]
-                  : product.images?.[0]?.url) ||
-                product.skus?.[0]?.imageUrl ||
-                ""
-              }
+              imageUrl={getProductImage(product) || ""}
               category={product.category?.name}
               isHot={true}
               skus={product.skus}

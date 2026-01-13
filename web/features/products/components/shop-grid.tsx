@@ -35,6 +35,7 @@ import { Search } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { use, useCallback, useEffect, useState } from "react";
+import { getProductImage } from "@/lib/product-helper";
 
 interface ShopGridProps {
   productsPromise: Promise<{
@@ -177,13 +178,7 @@ export function ShopGrid({
                       id={product.id}
                       name={product.name}
                       price={Number(product.skus?.[0]?.price || 0)}
-                      imageUrl={
-                        (typeof product.images?.[0] === "string"
-                          ? product.images?.[0]
-                          : product.images?.[0]?.url) ||
-                        product.skus?.[0]?.imageUrl ||
-                        ""
-                      }
+                      imageUrl={getProductImage(product) || ""}
                       category={product.category?.name}
                       isNew={
                         new Date(product.createdAt).getTime() >
@@ -271,13 +266,7 @@ export function ShopGrid({
                         id={product.id}
                         name={product.name}
                         price={Number(product.skus?.[0]?.price || 0)}
-                        imageUrl={
-                          (typeof product.images?.[0] === "string"
-                            ? product.images?.[0]
-                            : product.images?.[0]?.url) ||
-                          product.skus?.[0]?.imageUrl ||
-                          ""
-                        }
+                        imageUrl={getProductImage(product) || ""}
                         category={product.category?.name}
                         isNew={
                           new Date(product.createdAt).getTime() >

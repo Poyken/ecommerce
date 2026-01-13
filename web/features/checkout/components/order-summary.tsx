@@ -34,6 +34,7 @@ import { CartItem } from "@/types/models"; // Shared type
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { memo, ReactNode } from "react";
+import { getProductImage } from "@/lib/product-helper";
 
 interface OrderSummaryProps {
   items: CartItem[];
@@ -74,37 +75,17 @@ export const OrderSummary = memo(function OrderSummary({
           <div key={item.id} className="flex gap-4">
             {/* Ảnh sản phẩm (Hình vuông bo góc) */}
             <div className="w-20 h-20 rounded-2xl bg-foreground/2 overflow-hidden relative shrink-0 border border-foreground/5">
-              {item.sku?.imageUrl ? (
-                <Image
-                  src={item.sku.imageUrl}
-                  alt={item.sku.product?.name || "Product"}
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                />
-              ) : item.sku?.product?.images?.[0] ? (
-                // Logic fallback để lấy ảnh từ Product nếu SKU không có ảnh riêng
-                <Image
-                  src={
-                    typeof item.sku.product.images[0] === "string"
-                      ? item.sku.product.images[0]
-                      : item.sku.product.images[0].url
-                  }
-                  alt={item.sku.product.name}
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                />
-              ) : (
-                // Ảnh placeholder cuối cùng
-                <Image
-                  src="/images/placeholders/product-placeholder.jpg"
-                  alt={item.sku?.product?.name || "Product"}
-                  fill
-                  sizes="80px"
-                  className="object-cover"
-                />
-              )}
+              <Image
+                src={
+                  item.sku?.imageUrl ||
+                  getProductImage(item.sku?.product as any) ||
+                  "/images/placeholders/product-placeholder.jpg"
+                }
+                alt={item.sku?.product?.name || "Product"}
+                fill
+                sizes="80px"
+                className="object-cover"
+              />
             </div>
 
             {/* Thông tin chi tiết */}

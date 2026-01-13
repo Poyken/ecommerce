@@ -15,6 +15,7 @@ import { LoadingState } from "@/components/shared/data-states";
 import { ProductsSkeleton } from "@/features/home/components/skeletons/home-skeleton";
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { useSearchParams } from "next/navigation";
+import { getProductImage } from "@/lib/product-helper";
 
 interface CollectionContentProps {
   title: string;
@@ -298,13 +299,7 @@ function CollectionGrid({
                     ? Number(product.skus?.[0]?.originalPrice)
                     : undefined
                 }
-                imageUrl={
-                  (typeof product.images?.[0] === "string"
-                    ? product.images?.[0]
-                    : product.images?.[0]?.url) ||
-                  product.skus?.[0]?.imageUrl ||
-                  ""
-                }
+                imageUrl={getProductImage(product) || ""}
                 category={product.category?.name}
                 skus={product.skus}
                 options={product.options}

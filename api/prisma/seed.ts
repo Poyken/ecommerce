@@ -458,6 +458,32 @@ async function main() {
     },
   });
 
+  // 6b. Coupons
+  console.log('🎟 Seeding Coupons...');
+  await prisma.coupon.upsert({
+    where: {
+      code_tenantId: {
+        code: 'NEWUSER',
+        tenantId: tenant.id,
+      },
+    },
+    create: {
+      code: 'NEWUSER',
+      description: 'Discount for new users',
+      discountType: 'PERCENTAGE',
+      discountValue: 5,
+      maxDiscountAmount: 200000,
+      minOrderAmount: 0,
+      startDate: getRandomPastDate(1),
+      endDate: getRandomFutureDate(365),
+      isActive: true,
+      tenantId: tenant.id,
+    },
+    update: {
+      discountValue: 5,
+    },
+  });
+
   // 7. Rich Products
   console.log('📦 Seeding Rich Products...');
 
@@ -534,8 +560,9 @@ async function main() {
     });
 
     // Options & SKUs
-    const hasColor = Math.random() > 0.3;
-    const hasMaterial = Math.random() > 0.5;
+    const hasColor = Math.random() > 0.1; // Almost all have color
+    const hasMaterial = Math.random() > 0.3;
+    const hasSize = Math.random() > 0.3;
 
     const colorOpts = [
       'Charcoal',
@@ -544,58 +571,143 @@ async function main() {
       'Forest Green',
       'Teal',
       'Rust',
+      'Mustard',
+      'Cream',
     ];
-    const matOpts = ['Leather', 'Velvet', 'Linen', 'Oak', 'Walnut'];
+    const matOpts = [
+      'Leather',
+      'Velvet',
+      'Linen',
+      'Oak',
+      'Walnut',
+      'Marble',
+      'Brass',
+    ];
+    const sizeOpts = ['Small', 'Medium', 'Large', 'XL'];
 
-    const skuCombinations: any[] = []; // { colorId, matId, colorName, matName }
+    // Create Options and Values
+    const options: any[] = [];
 
-    // Create Options
     if (hasColor) {
       const opt = await prisma.productOption.create({
         data: { name: 'Color', productId: product.id, displayOrder: 1 },
       });
-      // Pick 2-3 colors
-      const selectedColors = [
-        getRandomItem(colorOpts),
-        getRandomItem(colorOpts),
-      ];
-      for (const c of selectedColors) {
-        const val = await prisma.optionValue.create({
-          data: { value: c, optionId: opt.id },
-        });
-        skuCombinations.push({ type: 'color', id: val.id, name: c });
-      }
+      const selectedColors = getRandomItem([
+        [getRandomItem(colorOpts), getRandomItem(colorOpts)],
+        [
+          getRandomItem(colorOpts),
+          getRandomItem(colorOpts),
+          getRandomItem(colorOpts),
+        ],
+      ]);
+      const values = await Promise.all(
+        selectedColors.map((c) =>
+          prisma.optionValue.create({ data: { value: c, optionId: opt.id } }),
+        ),
+      );
+      options.push({ type: 'Color', values });
     }
 
-    // Create SKUs
-    const variantCount = getRandomInt(1, 3);
-    for (let k = 0; k < variantCount; k++) {
-      const skuPrice = basePrice + k * 500000;
+    if (hasMaterial) {
+      const opt = await prisma.productOption.create({
+        data: { name: 'Material', productId: product.id, displayOrder: 2 },
+      });
+      const selectedMats = getRandomItem([
+        [getRandomItem(matOpts), getRandomItem(matOpts)],
+      ]);
+      const values = await Promise.all(
+        selectedMats.map((m) =>
+          prisma.optionValue.create({ data: { value: m, optionId: opt.id } }),
+        ),
+      );
+      options.push({ type: 'Material', values });
+    }
+
+    if (hasSize) {
+      const opt = await prisma.productOption.create({
+        data: { name: 'Size', productId: product.id, displayOrder: 3 },
+      });
+      const selectedSizes = getRandomItem([
+        [getRandomItem(sizeOpts), getRandomItem(sizeOpts)],
+      ]);
+      const values = await Promise.all(
+        selectedSizes.map((s) =>
+          prisma.optionValue.create({ data: { value: s, optionId: opt.id } }),
+        ),
+      );
+      options.push({ type: 'Size', values });
+    }
+
+    // Generate Helper for Combinations
+    const cartesian = (...a: any[]) =>
+      a.reduce(
+        (a, b) => a.flatMap((d: any) => b.map((e: any) => [d, e].flat())),
+        [[]],
+      );
+
+    const valueArrays = options.map((o) => o.values);
+    const combinations =
+      valueArrays.length > 0 ? cartesian(...valueArrays) : [[]];
+
+    let skuIndex = 0;
+    for (const combo of combinations) {
+      const variantName = combo.map((v: any) => v.value).join('-');
+      // Use efficient unique SKU code: SKU-{SLUG_PART}-{INDEX}-{RANDOM}
+      const uniquePart = Math.random()
+        .toString(36)
+        .substring(2, 7)
+        .toUpperCase();
+      const skuCode = `SKU-${product.slug.substring(0, 8).toUpperCase()}-${skuIndex}-${uniquePart}`;
+      const skuPrice = basePrice + skuIndex * 200000;
+
       const sku = await prisma.sku.create({
         data: {
-          skuCode: `SKU-${product.slug}-${k}`,
+          skuCode,
           productId: product.id,
           price: skuPrice,
-          salePrice: k === 0 ? skuPrice * 0.9 : undefined, // First variant on sale
+          salePrice: Math.random() > 0.7 ? skuPrice * 0.9 : undefined,
           tenantId: tenant.id,
           status: 'ACTIVE',
         },
       });
 
-      // Inventory
+      // Link Option Values to SKU
+      if (combo.length > 0) {
+        await prisma.skuToOptionValue.createMany({
+          data: combo.map((val: any) => ({
+            skuId: sku.id,
+            optionValueId: val.id,
+          })),
+        });
+      }
+
+      // Inventory - INCREASED QUANTITY
+      const qty = getRandomInt(50, 200);
       await prisma.inventoryItem.create({
         data: {
           skuId: sku.id,
           warehouseId: warehouse.id,
-          quantity: getRandomInt(0, 100),
+          quantity: qty,
         },
+      });
+
+      // Update Legacy Stock field to match
+      await prisma.sku.update({
+        where: { id: sku.id },
+        data: { stock: qty },
       });
 
       // Price List
       await prisma.priceListItem.create({
         data: { priceListId: plRetail.id, skuId: sku.id, price: skuPrice },
       });
+
+      skuIndex++;
     }
+
+    /* 
+       ORIGINAL LOGIC REMOVED
+    */
   }
 
   // 8. Rich Blogs

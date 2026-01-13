@@ -65,6 +65,7 @@ import {
   Truck,
   X,
 } from "lucide-react";
+import { getProductImage } from "@/lib/product-helper";
 import { useFormatter, useTranslations } from "next-intl";
 import {
   useCallback,
@@ -81,7 +82,7 @@ interface PopulatedCartItem extends Omit<CartItem, "sku"> {
     product: {
       id: string;
       name: string;
-      images?: string[];
+      images?: string[] | { url: string }[];
     };
     optionValues?: {
       optionValueId: string;
@@ -638,7 +639,7 @@ export function CartClient({ cart }: CartClientProps) {
                           <OptimizedImage
                             src={
                               item.sku.imageUrl ||
-                              item.sku.product.images?.[0] ||
+                              getProductImage(item.sku.product as any) ||
                               ""
                             }
                             alt={item.sku.product.name}

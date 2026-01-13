@@ -26,6 +26,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { getProductImage } from "@/lib/product-helper";
 
 /**
  * =====================================================================
@@ -290,9 +291,7 @@ function OrderDetailsContent({
                               src={
                                 (item.sku as any)?.imageUrl ||
                                 (item.sku as any)?.image ||
-                                (item.sku?.product?.images?.[0] as any)?.url ||
-                                item.sku?.product?.images?.[0] ||
-                                `https://picsum.photos/seed/${item.sku?.product?.id}/100`
+                                getProductImage(item.sku?.product as any)
                               }
                               alt={item.sku?.product?.name || "Product"}
                               fill

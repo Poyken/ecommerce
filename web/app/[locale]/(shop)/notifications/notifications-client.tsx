@@ -28,12 +28,12 @@
 import { GlassCard } from "@/components/shared/glass-card";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { useNotificationStore } from "@/features/notifications/store/notification.store";
 import { m } from "@/lib/animations";
@@ -43,14 +43,14 @@ import { formatDistanceToNow } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
 import { AnimatePresence } from "framer-motion";
 import {
-    Bell,
-    CheckCheck,
-    ExternalLink,
-    MessageSquare,
-    Package,
-    ShoppingBag,
-    Tag,
-    Zap,
+  Bell,
+  CheckCheck,
+  ExternalLink,
+  MessageSquare,
+  Package,
+  ShoppingBag,
+  Tag,
+  Zap,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -66,7 +66,9 @@ export function NotificationsClient() {
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
 
-  const filteredNotifications = notifications.filter((n: Notification) => {
+  const safeNotifications = Array.isArray(notifications) ? notifications : [];
+
+  const filteredNotifications = safeNotifications.filter((n: Notification) => {
     if (filter === "unread") return !n.isRead;
     return true;
   });
