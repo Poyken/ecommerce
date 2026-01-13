@@ -149,4 +149,23 @@ export class EmailService {
        <p>Trân trọng,<br/>Poyken Shop Team</p>`,
     );
   }
+
+  async sendLoyaltyPointsEarned(
+    to: string,
+    name: string,
+    points: number,
+    orderId: string,
+  ): Promise<void> {
+    const frontendUrl = this.configService.get('FRONTEND_URL');
+
+    await this.sendCustomEmail(
+      to,
+      `🎉 Bạn đã nhận được ${points} điểm thưởng!`,
+      `<p>Chào ${name},</p>
+       <p>Chúc mừng bạn! Bạn đã nhận được <strong>${points} điểm thưởng</strong> từ đơn hàng <strong>#${orderId.slice(0, 8)}</strong>.</p>
+       <p>Bạn có thể sử dụng điểm thưởng để giảm giá cho các đơn hàng tiếp theo.</p>
+       <p><a href="${frontendUrl}/account/loyalty">Xem số dư điểm của bạn</a></p>
+       <p>Cảm ơn bạn đã mua sắm tại Poyken Shop!</p>`,
+    );
+  }
 }

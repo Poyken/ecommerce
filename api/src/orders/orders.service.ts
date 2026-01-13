@@ -18,6 +18,7 @@ import { NotificationsService } from '@/notifications/notifications.service';
 import { ShippingService } from '@/shipping/shipping.service';
 import { InventoryService } from '@/catalog/skus/inventory.service';
 import { EmailService } from '@integrations/email/email.service';
+import { LoyaltyService } from '@/loyalty/loyalty.service';
 import { Logger } from '@nestjs/common';
 
 /**
@@ -73,6 +74,7 @@ export class OrdersService {
     private readonly emailService: EmailService,
     private readonly notificationsService: NotificationsService,
     private readonly notificationsGateway: NotificationsGateway,
+    private readonly loyaltyService: LoyaltyService,
   ) {}
 
   /**
@@ -1006,6 +1008,18 @@ export class OrdersService {
           this.logger.error(
             `Đồng bộ GHN nền thất bại cho đơn ${transactionResult.id}`,
             e,
+          );
+        });
+      }
+    }
+
+    // 🎁 AUTO-EARN LOYALTY POINTS khi đơn hàng được giao thành công
+    if (newStatus === OrderStatus.DELIVERED) {
+      const tenant = getTenant();
+      if (tenant) {
+        this.loyaltyService.earnPointsFromOrder(tenant.id, id).catch((e) => {
+          this.logger.error(
+            `Lỗi tích điểm loyalty cho đơn ${id}: ${e.message}`,
           );
         });
       }

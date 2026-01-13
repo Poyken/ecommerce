@@ -1,128 +1,46 @@
-/**
- * =====================================================================
- * ANALYTICS CONTROLLER - Thống kê & Báo cáo
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. AGGREGATION:
- * - Các API này thường gọi query rất nặng (SUM, COUNT, GROUP BY).
- * - Frontend thường sẽ gọi các API này khi vào trang Dashboard.
- *
- * 2. WEB VITALS (`postVitals`):
- * - Endpoint nhận metrics hiệu năng (LCP, CLS, INP) từ trình duyệt người dùng
- *   gửi về để giám sát trải nghiệm người dùng thực tế (RUM - Real User Monitoring). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
-
- * =====================================================================
- */
-import {
-  ApiGetOneResponse,
-  ApiListResponse,
-  RequirePermissions,
-} from '@/common/decorators/crud.decorators';
+import { Controller, Get, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { AnalyticsService } from './analytics.service';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
-import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AnalyticsService } from './analytics.service';
-import { CreateVitalDto } from './dto/create-vital.dto';
+import { RequirePermissions } from '@/common/decorators/crud.decorators';
+import { getTenant } from '@/core/tenant/tenant.context';
 
-@ApiTags('Analytics')
+import { AppPermission } from '@/common/enums/permissions.enum';
+
+@ApiTags('Admin Analytics')
 @ApiBearerAuth()
-@Controller('analytics')
+@Controller('admin/analytics')
+@UseGuards(JwtAuthGuard, PermissionsGuard)
+@RequirePermissions(AppPermission.ANALYTICS_READ)
 export class AnalyticsController {
   constructor(private readonly analyticsService: AnalyticsService) {}
 
-  @Get('stats')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('analytics:read')
-  @ApiGetOneResponse('Analytics Stats', {
-    summary: 'Get overall store statistics',
-  })
-  async getStats(
-    @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
-  ) {
-    const data = await this.analyticsService.getStats(startDate, endDate);
-    return { data };
+  @Get('dashboard')
+  @ApiOperation({ summary: 'Lấy tổng quan dashboard' })
+  getDashboardOverview() {
+    const tenant = getTenant();
+    return this.analyticsService.getDashboardOverview(tenant!.id);
   }
 
-  @Get('sales')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('analytics:read')
-  @ApiListResponse('Sales Data', { summary: 'Get sales data over time' })
-  async getSalesData(
-    @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
-    @Query('days') days?: string,
-  ) {
-    if (days && !startDate) {
-      const date = new Date();
-      date.setDate(date.getDate() - parseInt(days));
-      startDate = date.toISOString();
-    }
-    const data = await this.analyticsService.getSalesData(startDate, endDate);
-    return { data };
+  @Get('revenue-chart')
+  @ApiOperation({ summary: 'Lấy biểu đồ doanh thu 30 ngày' })
+  getRevenueChart() {
+    const tenant = getTenant();
+    return this.analyticsService.getRevenueChart(tenant!.id);
   }
 
   @Get('top-products')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('analytics:read')
-  @ApiListResponse('Top Products', { summary: 'Get top selling products' })
-  async getTopProducts(
-    @Query('limit') limit?: string,
-    @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
-  ) {
-    const data = await this.analyticsService.getTopProducts(
-      limit ? parseInt(limit) : 5,
-      startDate,
-      endDate,
-    );
-    return { data };
+  @ApiOperation({ summary: 'Lấy top 10 sản phẩm bán chạy' })
+  getTopProducts() {
+    const tenant = getTenant();
+    return this.analyticsService.getTopProducts(tenant!.id);
   }
 
-  @Get('inventory')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('analytics:read')
-  @ApiGetOneResponse('Inventory Analysis', {
-    summary: 'Analyze inventory health',
-  })
-  async getInventoryAnalysis() {
-    const data = await this.analyticsService.getInventoryAnalysis();
-    return { data };
-  }
-
-  @Get('categories')
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('analytics:read')
-  @ApiListResponse('Revenue by Category', {
-    summary: 'Get revenue by category',
-  })
-  async getRevenueByCategory(
-    @Query('startDate') startDate?: string,
-    @Query('endDate') endDate?: string,
-  ) {
-    const data = await this.analyticsService.getRevenueByCategory(
-      startDate,
-      endDate,
-    );
-    return { data };
-  }
-
-  @Post('vitals')
-  @ApiOperation({ summary: 'Receive Web Vitals telemetry' })
-  async postVitals(@Body() data: CreateVitalDto) {
-    const result = await this.analyticsService.savePerformanceMetric({
-      name: data.name,
-      value: data.value,
-      rating: data.rating,
-      url: data.url || '',
-      userAgent: data.userAgent,
-      navigationType: data.navigationType,
-    });
-    return { data: result };
+  @Get('orders-by-status')
+  @ApiOperation({ summary: 'Thống kê đơn hàng theo trạng thái' })
+  getOrdersByStatus() {
+    const tenant = getTenant();
+    return this.analyticsService.getOrdersByStatus(tenant!.id);
   }
 }

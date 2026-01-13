@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { PrismaService } from '@/core/prisma/prisma.service';
 import { LoyaltyPointType } from '@prisma/client';
@@ -10,10 +11,16 @@ import {
   RedeemPointsDto,
   RefundPointsDto,
 } from './dto/loyalty.dto';
+import { EmailService } from '@/integrations/email/email.service';
 
 @Injectable()
 export class LoyaltyService {
-  constructor(private readonly prisma: PrismaService) {}
+  private readonly logger = new Logger(LoyaltyService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly emailService: EmailService,
+  ) {}
 
   // =====================================================================
   // TÍCH ĐIỂM (EARN POINTS)
@@ -46,6 +53,16 @@ export class LoyaltyService {
       throw new NotFoundException('Order not found');
     }
 
+    // Idempotency: Kiểm tra xem đơn hàng này đã được tích điểm chưa
+    const existingPoints = await this.prisma.loyaltyPoint.findFirst({
+      where: { orderId, type: LoyaltyPointType.EARNED },
+    });
+
+    if (existingPoints) {
+      this.logger.warn(`Order ${orderId} already earned points. Skipping.`);
+      return existingPoints;
+    }
+
     // Tính điểm: 1 điểm cho mỗi 10.000đ
     const pointsToEarn = Math.floor(Number(order.totalAmount) / 10000);
 
@@ -53,7 +70,7 @@ export class LoyaltyService {
       return null; // Không đủ để tích điểm
     }
 
-    return this.prisma.loyaltyPoint.create({
+    const loyaltyPoint = await this.prisma.loyaltyPoint.create({
       data: {
         userId: order.userId,
         orderId,
@@ -63,6 +80,29 @@ export class LoyaltyService {
         tenantId,
       },
     });
+
+    // Gửi email thông báo tích điểm thành công
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: order.userId },
+        select: { email: true, firstName: true },
+      });
+
+      if (user?.email) {
+        await this.emailService.sendLoyaltyPointsEarned(
+          user.email,
+          user.firstName || 'Quý khách',
+          pointsToEarn,
+          orderId,
+        );
+      }
+    } catch (emailError) {
+      this.logger.error(
+        `Lỗi gửi email thông báo tích điểm: ${emailError.message}`,
+      );
+    }
+
+    return loyaltyPoint;
   }
 
   // =====================================================================
@@ -132,9 +172,9 @@ export class LoyaltyService {
     });
   }
 
-  async getOrderPoints(orderId: string) {
+  async getOrderPoints(tenantId: string, orderId: string) {
     return this.prisma.loyaltyPoint.findMany({
-      where: { orderId },
+      where: { orderId, tenantId },
       orderBy: { createdAt: 'asc' },
     });
   }

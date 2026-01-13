@@ -112,18 +112,28 @@ export class TaxService {
     return taxDetail;
   }
 
-  async getOrderTaxDetails(orderId: string) {
+  async getOrderTaxDetails(tenantId: string, orderId: string) {
+    // Verify order belongs to tenant
+    const order = await this.prisma.order.findUnique({
+      where: { id: orderId, tenantId },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
     return this.prisma.orderTaxDetail.findMany({
       where: { orderId },
     });
   }
 
-  async removeOrderTaxDetail(id: string) {
+  async removeOrderTaxDetail(tenantId: string, id: string) {
     const taxDetail = await this.prisma.orderTaxDetail.findUnique({
       where: { id },
+      include: { order: { select: { tenantId: true } } },
     });
 
-    if (!taxDetail) {
+    if (!taxDetail || taxDetail.order?.tenantId !== tenantId) {
       throw new NotFoundException('Order tax detail not found');
     }
 

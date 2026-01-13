@@ -90,12 +90,12 @@ export class ProcurementService {
   ) {
     const tenantId = this.getTenantId();
 
-    const po = await this.prisma.purchaseOrder.findUnique({
-      where: { id },
+    const po = await this.prisma.purchaseOrder.findFirst({
+      where: { id, tenantId },
       include: { items: true },
     });
 
-    if (!po || po.tenantId !== tenantId) {
+    if (!po) {
       throw new NotFoundException('Purchase order not found');
     }
 

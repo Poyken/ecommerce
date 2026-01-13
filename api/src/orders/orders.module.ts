@@ -26,6 +26,7 @@ import { CouponsModule } from '@/coupons/coupons.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { ProductsModule } from '@/catalog/products/products.module';
 import { ShippingModule } from '@/shipping/shipping.module';
+import { LoyaltyModule } from '@/loyalty/loyalty.module';
 import { InvoiceService } from './invoice.service';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
@@ -43,6 +44,7 @@ import { OrdersExportService } from './orders-export.service';
     CouponsModule,
     ShippingModule,
     ProductsModule,
+    LoyaltyModule,
     BullModule.registerQueue({
       name: 'orders-queue',
     }),
