@@ -689,6 +689,8 @@ export interface ChatConversation {
 export interface Tenant {
   id: string;
   name: string;
+  subdomain?: string | null;
+  customDomain?: string | null;
   domain: string;
   themeConfig?: Record<string, any>;
   plan: "BASIC" | "PRO" | "ENTERPRISE";

@@ -215,15 +215,35 @@ export function TenantsClient({
                     </div>
                   </TableCell>
                   <TableCell>
-                    <a
-                      href={`http://${tenant.domain}:3000`}
-                      target="_blank"
-                      className="flex items-center gap-1 hover:underline text-blue-600"
-                    >
-                      <Globe className="h-3 w-3" />
-                      {tenant.domain}
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
+                    {(() => {
+                      let displayDomain =
+                        tenant.customDomain || tenant.domain || "";
+
+                      // Strip any protocol if accidentally included in DB
+                      displayDomain = displayDomain
+                        .replace(/^https?:\/\//, "")
+                        .replace(/\/$/, "");
+
+                      const isLocal =
+                        displayDomain === "localhost" ||
+                        displayDomain?.includes("127.0.0.1");
+                      const protocol = isLocal ? "http" : "https";
+                      const port = isLocal ? ":3000" : "";
+                      const href = `${protocol}://${displayDomain}${port}`;
+
+                      return (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 hover:underline text-blue-600"
+                        >
+                          <Globe className="h-3 w-3" />
+                          {displayDomain}
+                          <ExternalLink className="h-3 w-3" />
+                        </a>
+                      );
+                    })()}
                   </TableCell>
                   <TableCell>
                     <Badge

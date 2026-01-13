@@ -449,17 +449,25 @@ export function TenantDialog({
               <Button
                 type="button"
                 onClick={() => {
-                  const protocol = window.location.protocol;
-                  const host = window.location.host;
-                  let targetDomain = tenant?.domain || "";
-                  if (
-                    host.includes("localhost") &&
-                    !targetDomain.includes(":")
-                  ) {
-                    const port = host.split(":")[1] || "3000";
-                    targetDomain = `${targetDomain}:${port}`;
-                  }
-                  window.open(`${protocol}//${targetDomain}/admin`, "_blank");
+                  const currentHost = window.location.host;
+                  const displayDomain =
+                    tenant?.customDomain || tenant?.domain || "";
+
+                  // Clean up domain
+                  const cleanDomain = displayDomain
+                    .replace(/^https?:\/\//, "")
+                    .replace(/\/$/, "");
+
+                  const isLocal =
+                    currentHost.includes("localhost") ||
+                    currentHost.includes("127.0.0.1");
+
+                  const protocol = isLocal ? "http:" : "https:";
+                  const port =
+                    isLocal && !cleanDomain.includes(":") ? ":3000" : "";
+
+                  const targetUrl = `${protocol}//${cleanDomain}${port}/admin`;
+                  window.open(targetUrl, "_blank");
                 }}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white border-none shadow-md"
               >
