@@ -1,31 +1,39 @@
 import { Injectable } from '@nestjs/common';
 import { ThrottlerGuard, ThrottlerRequest } from '@nestjs/throttler';
+import { getTenant } from '../tenant/tenant.context';
+import { TenantPlan } from '@prisma/client';
+
+/**
+ * PLAN-BASED LIMITS
+ * Limits are per minute (matching the 60s TTL in AppModule)
+ */
+const PLAN_LIMITS = {
+  [TenantPlan.BASIC]: 500,
+  [TenantPlan.PRO]: 2000,
+  [TenantPlan.ENTERPRISE]: 5000,
+};
 
 @Injectable()
 export class AppThrottlerGuard extends ThrottlerGuard {
   /**
    * =====================================================================
-   * APP THROTTLER GUARD - Bảo vệ tài nguyên (Rate Limiting)
+   * APP THROTTLER GUARD - Tenant-Aware Rate Limiting
    * =====================================================================
    *
    * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
    *
-   * 1. RATE LIMITING LOGIC:
-   * - Guard này kế thừa từ `ThrottlerGuard` chuẩn của NestJS.
-   * - Nhiệm vụ: Chặn các request quá nhanh từ cùng 1 IP (DDoS protection).
+   * 1. MULTI-TENANT RATE LIMITING:
+   * - Thay vì dùng một giới hạn chung cho toàn bộ server, guard này điều chỉnh
+   *   limit dựa trên Gói Dịch Vụ (Plan) của cửa hàng hiện tại.
    *
-   * 2. CUSTOM LOGIC:
-   * - Guest (Chưa đăng nhập): Giới hạn 1000 requests/phút.
-   * - User (Đã đăng nhập): Giới hạn 2000 requests/phút (Cao hơn vì tin tưởng hơn).
+   * 2. LOGIC PHÂN TẦNG:
+   * - BASIC: 500 req/min (Dành cho shop nhỏ).
+   * - PRO: 2000 req/min (Dành cho shop vừa).
+   * - ENTERPRISE: 5000 req/min (Dành cho tập đoàn lớn).
    *
-   * 3. WHY HIGH LIMIT?
-   * - Next.js khi build (SSG - Static Site Generation) sẽ bắn hàng nghìn request cùng lúc để lấy dữ liệu build trang.
-   * - Nếu để limit thấp (vd: 20 req/phút), quá trình build sẽ bị lỗi 429 Too Many Requests. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Hỗ trợ Next.js SSG: Cho phép build static pages nhanh chóng mà không bị chặn bởi rate limit.
- * - Layered Protection: Hoạt động như lớp bảo vệ đầu tiên trước khi request đi sâu vào xử lý nghiệp vụ.
- * - WebSocket Limit: Giới hạn riêng cho socket connection để tránh full connection pool.
-
+   * 3. FALLBACK:
+   * - Nếu không xác định được Tenant (vd: public API chung), dùng limit mặc định.
+   *
    * =====================================================================
    */
 
@@ -33,27 +41,34 @@ export class AppThrottlerGuard extends ThrottlerGuard {
     requestProps: ThrottlerRequest,
   ): Promise<boolean> {
     const { context } = requestProps;
+    const tenant = getTenant();
+
+    // Determine base limit from plan
+    let planLimit = 1000; // Global default
+    if (tenant?.plan) {
+      planLimit = PLAN_LIMITS[tenant.plan] || 1000;
+    }
 
     if (context.getType() === 'ws') {
       const client = context.switchToWs().getClient();
-      const isUser = !!client.handshake?.user || !!client.request?.user; // Depends on how auth is attached
-      const effectiveLimit = isUser ? 2000 : 1000;
+      const isUser = !!client.handshake?.user || !!client.request?.user;
+      const effectiveLimit = isUser ? planLimit * 1.5 : planLimit;
+
       return super.handleRequest({
         ...requestProps,
-        limit: effectiveLimit,
+        limit: Math.floor(effectiveLimit),
       });
     }
 
     const req = context.switchToHttp().getRequest();
     const isUser = !!req.user;
 
-    // Custom Limit Logic: Scaled up to support static site generation (SSG)
-    // P0 Optimization: Increased from 100/20 to 1000 to prevent build failures.
-    const effectiveLimit = isUser ? 2000 : 1000;
+    // Users get 50% more quota than guests
+    const effectiveLimit = isUser ? planLimit * 1.5 : planLimit;
 
     return super.handleRequest({
       ...requestProps,
-      limit: effectiveLimit,
+      limit: Math.floor(effectiveLimit),
     });
   }
 }

@@ -94,8 +94,10 @@ export function CartInitializer({
   }, [initialUser, updateCount, setFetching]);
 
   useEffect(() => {
-    // Initial fetch
-    fetchCount();
+    // Only fetch if initialCount was not provided by server
+    if (initialCount === undefined) {
+      fetchCount();
+    }
 
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "guest_cart") fetchCount();
@@ -116,7 +118,7 @@ export function CartInitializer({
       window.removeEventListener("cart_updated", handleCartUpdate);
       window.removeEventListener("cart_clear", handleCartClear);
     };
-  }, [fetchCount, updateCount]);
+  }, [fetchCount, updateCount, initialCount]);
 
   return null;
 }
