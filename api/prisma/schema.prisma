@@ -1414,6 +1414,33 @@ model Tenant {
   // Infrastructure
   dbUrl String? // URL Database riêng (Chế độ Silo)
 
+  // ===================== SAAS ONBOARDING =====================
+  // Onboarding Status
+  onboardingCompleted Boolean @default(false) // Đã hoàn thành setup?
+  onboardingStep      Int     @default(0) // Bước hiện tại trong wizard (0-4)
+
+  // Trial Period
+  trialEndsAt DateTime? // Ngày kết thúc trial (14 ngày sau đăng ký)
+  trialStartedAt DateTime? // Ngày bắt đầu trial
+
+  // ===================== PLAN LIMITS =====================
+  // Limits from SubscriptionPlan (cached for quick access)
+  productLimit Int @default(100) // Giới hạn số sản phẩm
+  storageLimit Int @default(1024) // Giới hạn dung lượng (MB)
+  staffLimit   Int @default(2) // Giới hạn số nhân viên
+
+  // ===================== USAGE STATS =====================
+  currentProductCount Int @default(0) // Số sản phẩm hiện tại
+  currentStorageUsed  Int @default(0) // Dung lượng đã dùng (MB)
+  currentStaffCount   Int @default(0) // Số nhân viên hiện tại
+
+  // ===================== ADDITIONAL INFO =====================
+  businessType     String? // Loại hình kinh doanh: fashion, electronics, food...
+  businessSize     String? // Quy mô: small, medium, large
+  monthlyRevenue   String? // Doanh thu hàng tháng (dự kiến)
+  referralCode     String? @unique // Mã giới thiệu của tenant này
+  referredByCode   String? // Mã giới thiệu của người đã mời
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -1654,27 +1681,54 @@ enum InvoiceStatus {
 
 model SubscriptionPlan {
   id          String  @id @default(uuid()) // ID gói
-  name        String // Tên gói
+  name        String // Tên gói (Basic, Pro, Enterprise)
   slug        String  @unique // Slug định danh
-  description String? // Mô tả
+  description String? // Mô tả ngắn
 
+  // Pricing
   priceMonthly Decimal @default(0) @db.Decimal(10, 2) // Giá tháng
   priceYearly  Decimal @default(0) @db.Decimal(10, 2) // Giá năm
-  currency     String  @default("USD") // Đơn vị tiền
+  currency     String  @default("VND") // Đơn vị tiền
 
+  // Limits
   maxProducts    Int     @default(100) // Giới hạn số lượng sản phẩm
   maxStorage     Int     @default(1024) // Giới hạn dung lượng lưu trữ (MB)
+  maxStaff       Int     @default(2) // Giới hạn số nhân viên
+  maxWarehouses  Int     @default(1) // Giới hạn số kho
   transactionFee Decimal @default(0.0) @db.Decimal(5, 2) // Phí giao dịch sàn (%)
 
-  features Json? @default("[]") // Danh sách tính năng (JSON)
+  // Features (JSON array of feature strings)
+  features Json? @default("[]") // ["Custom Domain", "AI Chatbot", "B2B Price Lists"]
 
-  isActive Boolean @default(true) // Trạng thái đang bán
-  isPublic Boolean @default(true) // Hiển thị công khai trên bảng giá
+  // Display Settings
+  sortOrder    Int     @default(0) // Thứ tự hiển thị trên pricing page
+  badge        String? // Badge text: "Phổ biến nhất", "Tiết kiệm 20%"
+  isPopular    Boolean @default(false) // Highlight gói này
+  isActive     Boolean @default(true) // Trạng thái đang bán
+  isPublic     Boolean @default(true) // Hiển thị công khai trên bảng giá
+  trialDays    Int     @default(14) // Số ngày trial cho gói này
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   subscriptions Subscription[]
+}
+
+// =====================================================================
+// PLATFORM SETTINGS (Cấu hình toàn bộ platform - Super Admin only)
+// =====================================================================
+
+model PlatformSetting {
+  id    String @id @default(uuid())
+  key   String @unique // VD: "platform.name", "platform.commission_rate"
+  value Json // Giá trị dạng JSON để linh hoạt
+
+  description String? // Mô tả setting
+  type        String  @default("string") // string, number, boolean, json
+  isPublic    Boolean @default(false) // Có public qua API không
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // =====================================================================

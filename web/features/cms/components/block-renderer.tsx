@@ -21,12 +21,12 @@
  *    - Giảm bundle size ban đầu của trang
  *
  * 3. CÁC BLOCK TYPES HỖ TRỢ:
- *    - Hero: Banner chính trang chủ
- *    - Features: Danh sách tính năng
- *    - Categories/Brands/Products: Hiển thị data từ API
- *    - CTASection: Call-to-action
- *    - FAQ/Testimonials/Newsletter: Các section thông dụng
- *    - Header/Footer: Ẩn global header/footer khi có custom
+ *    - Layout: FlexLayout, Divider, Tabs, Accordion, Header, Footer
+ *    - Hero & Media: Hero, VideoHero, Banner, Gallery, PromoGrid, Marquee
+ *    - Content: TextBlock, ImageText, Team, Timeline, Steps, IconGrid
+ *    - Commerce: Products, Categories, Brands, Deal, Pricing, Comparison, Countdown, LogoWall
+ *    - Engagement: Newsletter, FAQ, Testimonials, ContactForm, Blog, CTASection, Features, Stats
+ *    - Advanced: Map, Embed, SocialFeed
  *
  * 4. LAYOUT VISIBILITY:
  *    - Nếu page có block Header/Footer custom
@@ -34,10 +34,8 @@
  *
  * 5. SUSPENSE + SKELETON:
  *    - Mỗi block có Skeleton riêng hiển thị khi đang load
- *    - UX mượt mà, không bị layout shift *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
+ *    - UX mượt mà, không bị layout shift
+ *
  * =====================================================================
  */
 
@@ -71,8 +69,68 @@ const BlockSkeleton = () => (
   </div>
 );
 
-// Dynamic Maps: Key = JSON "type" -> Value = React Component
+const SmallBlockSkeleton = () => (
+  <div className="h-32 w-full bg-muted/10 animate-pulse" />
+);
+
+// =====================================================================
+// DYNAMIC MAPS: Key = JSON "type" -> Value = React Component
+// =====================================================================
+
 export const PARAM_MAP = {
+  // =====================================================================
+  // LAYOUT BLOCKS
+  // =====================================================================
+  FlexLayout: dynamic(
+    () =>
+      import("@/features/home/components/flex-layout-block").then(
+        (mod) => mod.FlexLayoutBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
+  Divider: dynamic(
+    () =>
+      import("@/features/home/components/divider-block").then(
+        (mod) => mod.DividerBlock
+      ),
+    { loading: () => <SmallBlockSkeleton /> }
+  ),
+  Tabs: dynamic(
+    () =>
+      import("@/features/home/components/tabs-block").then(
+        (mod) => mod.TabsBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
+  Accordion: dynamic(
+    () =>
+      import("@/features/home/components/accordion-block").then(
+        (mod) => mod.AccordionBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
+  Header: dynamic(
+    () =>
+      import("@/features/home/components/header-block").then(
+        (mod) => mod.HeaderBlock
+      ),
+    {
+      loading: () => (
+        <div className="h-20 bg-muted/20 animate-pulse border-b" />
+      ),
+    }
+  ),
+  Footer: dynamic(
+    () =>
+      import("@/features/home/components/footer-block").then(
+        (mod) => mod.FooterBlock
+      ),
+    { loading: () => <div className="h-64 bg-muted/20 animate-pulse" /> }
+  ),
+
+  // =====================================================================
+  // HERO & MEDIA BLOCKS
+  // =====================================================================
   Hero: dynamic(
     () =>
       import("@/features/home/components/hero-section").then(
@@ -80,10 +138,10 @@ export const PARAM_MAP = {
       ),
     { loading: () => <BlockSkeleton /> }
   ),
-  Features: dynamic(
+  VideoHero: dynamic(
     () =>
-      import("@/features/home/components/features-section").then(
-        (mod) => mod.FeaturesSection
+      import("@/features/home/components/video-hero-block").then(
+        (mod) => mod.VideoHeroBlock
       ),
     { loading: () => <BlockSkeleton /> }
   ),
@@ -94,6 +152,31 @@ export const PARAM_MAP = {
       ),
     { loading: () => <BlockSkeleton /> }
   ),
+  Gallery: dynamic(
+    () =>
+      import("@/features/home/components/gallery-block").then(
+        (mod) => mod.GalleryBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
+  PromoGrid: dynamic(
+    () =>
+      import("@/features/home/components/promo-grid-block").then(
+        (mod) => mod.PromoGridBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
+  Marquee: dynamic(
+    () =>
+      import("@/features/home/components/marquee-block").then(
+        (mod) => mod.MarqueeBlock
+      ),
+    { loading: () => <div className="h-24 w-full bg-muted/5 animate-pulse" /> }
+  ),
+
+  // =====================================================================
+  // CONTENT BLOCKS
+  // =====================================================================
   TextBlock: dynamic(
     () =>
       import("@/features/home/components/text-block-section").then(
@@ -101,12 +184,57 @@ export const PARAM_MAP = {
       ),
     { loading: () => <BlockSkeleton /> }
   ),
-  CTASection: dynamic(
+  ImageText: dynamic(
     () =>
-      import("@/features/home/components/cta-section").then(
-        (mod) => mod.CTASection
+      import("@/features/home/components/image-text-block").then(
+        (mod) => mod.ImageTextBlock
       ),
     { loading: () => <BlockSkeleton /> }
+  ),
+  Team: dynamic(
+    () =>
+      import("@/features/home/components/team-block").then(
+        (mod) => mod.TeamBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
+  Timeline: dynamic(
+    () =>
+      import("@/features/home/components/timeline-block").then(
+        (mod) => mod.TimelineBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
+  Steps: dynamic(
+    () =>
+      import("@/features/home/components/steps-block").then(
+        (mod) => mod.StepsBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
+  IconGrid: dynamic(
+    () =>
+      import("@/features/home/components/icon-grid-block").then(
+        (mod) => mod.IconGridBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
+
+  // =====================================================================
+  // COMMERCE BLOCKS
+  // =====================================================================
+  Products: dynamic(
+    () =>
+      import("@/features/home/components/products-block").then(
+        (mod) => mod.ProductsBlock
+      ),
+    {
+      loading: () => (
+        <div className="container mx-auto px-4 py-12">
+          <ProductsSkeleton count={4} />
+        </div>
+      ),
+    }
   ),
   Categories: dynamic(
     () =>
@@ -134,19 +262,6 @@ export const PARAM_MAP = {
       ),
     }
   ),
-  Products: dynamic(
-    () =>
-      import("@/features/home/components/products-block").then(
-        (mod) => mod.ProductsBlock
-      ),
-    {
-      loading: () => (
-        <div className="container mx-auto px-4 py-12">
-          <ProductsSkeleton count={4} />
-        </div>
-      ),
-    }
-  ),
   Deal: dynamic(
     () =>
       import("@/features/home/components/deal-block").then(
@@ -154,17 +269,49 @@ export const PARAM_MAP = {
       ),
     { loading: () => <BlockSkeleton /> }
   ),
-  Stats: dynamic(
+  Pricing: dynamic(
     () =>
-      import("@/features/home/components/stats-block").then(
-        (mod) => mod.StatsBlock
+      import("@/features/home/components/pricing-block").then(
+        (mod) => mod.PricingBlock
       ),
-    { loading: () => <div className="h-32 w-full bg-muted/10 animate-pulse" /> }
+    { loading: () => <BlockSkeleton /> }
   ),
-  PromoGrid: dynamic(
+  Comparison: dynamic(
     () =>
-      import("@/features/home/components/promo-grid-block").then(
-        (mod) => mod.PromoGridBlock
+      import("@/features/home/components/comparison-block").then(
+        (mod) => mod.ComparisonBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
+  Countdown: dynamic(
+    () =>
+      import("@/features/home/components/countdown-block").then(
+        (mod) => mod.CountdownBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
+  LogoWall: dynamic(
+    () =>
+      import("@/features/home/components/logo-wall-block").then(
+        (mod) => mod.LogoWallBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
+
+  // =====================================================================
+  // ENGAGEMENT BLOCKS
+  // =====================================================================
+  Newsletter: dynamic(
+    () =>
+      import("@/features/home/components/newsletter-block").then(
+        (mod) => mod.NewsletterBlock
+      ),
+    { loading: () => <div className="h-64 w-full bg-muted/10 animate-pulse" /> }
+  ),
+  FAQ: dynamic(
+    () =>
+      import("@/features/home/components/faq-block").then(
+        (mod) => mod.FAQBlock
       ),
     { loading: () => <BlockSkeleton /> }
   ),
@@ -175,79 +322,65 @@ export const PARAM_MAP = {
       ),
     { loading: () => <BlockSkeleton /> }
   ),
-  FAQ: dynamic(
+  ContactForm: dynamic(
     () =>
-      import("@/features/home/components/faq-block").then(
-        (mod) => mod.FAQBlock
+      import("@/features/home/components/contact-form-block").then(
+        (mod) => mod.ContactFormBlock
       ),
     { loading: () => <BlockSkeleton /> }
   ),
-  Newsletter: dynamic(
+  Blog: dynamic(
     () =>
-      import("@/features/home/components/newsletter-block").then(
-        (mod) => mod.NewsletterBlock
-      ),
-    { loading: () => <div className="h-64 w-full bg-muted/10 animate-pulse" /> }
-  ),
-  Pricing: dynamic(
-    () =>
-      import("@/features/home/components/pricing-block").then(
-        (mod) => mod.PricingBlock
+      import("@/features/home/components/blog-block").then(
+        (mod) => mod.BlogBlock
       ),
     { loading: () => <BlockSkeleton /> }
   ),
-  Gallery: dynamic(
+  CTASection: dynamic(
     () =>
-      import("@/features/home/components/gallery-block").then(
-        (mod) => mod.GalleryBlock
+      import("@/features/home/components/cta-section").then(
+        (mod) => mod.CTASection
       ),
     { loading: () => <BlockSkeleton /> }
   ),
-  Marquee: dynamic(
+  Features: dynamic(
     () =>
-      import("@/features/home/components/marquee-block").then(
-        (mod) => mod.MarqueeBlock
-      ),
-    { loading: () => <div className="h-24 w-full bg-muted/5 animate-pulse" /> }
-  ),
-  Countdown: dynamic(
-    () =>
-      import("@/features/home/components/countdown-block").then(
-        (mod) => mod.CountdownBlock
+      import("@/features/home/components/features-section").then(
+        (mod) => mod.FeaturesSection
       ),
     { loading: () => <BlockSkeleton /> }
   ),
-  Header: dynamic(
+  Stats: dynamic(
     () =>
-      import("@/features/home/components/header-block").then(
-        (mod) => mod.HeaderBlock
+      import("@/features/home/components/stats-block").then(
+        (mod) => mod.StatsBlock
       ),
-    {
-      loading: () => (
-        <div className="h-20 bg-muted/20 animate-pulse border-b" />
-      ),
-    }
+    { loading: () => <SmallBlockSkeleton /> }
   ),
-  Footer: dynamic(
+
+  // =====================================================================
+  // ADVANCED BLOCKS
+  // =====================================================================
+  Map: dynamic(
     () =>
-      import("@/features/home/components/footer-block").then(
-        (mod) => mod.FooterBlock
-      ),
-    { loading: () => <div className="h-64 bg-muted/20 animate-pulse" /> }
-  ),
-  FlexLayout: dynamic(
-    () =>
-      import("@/features/home/components/flex-layout-block").then(
-        (mod) => mod.FlexLayoutBlock
+      import("@/features/home/components/map-block").then(
+        (mod) => mod.MapBlock
       ),
     { loading: () => <BlockSkeleton /> }
   ),
-  VideoHero: dynamic(
+  Embed: dynamic(
     () =>
-      import("@/features/home/components/video-hero-block").then(
-        (mod) => mod.VideoHeroBlock
+      import("@/features/home/components/embed-block").then(
+        (mod) => mod.EmbedBlock
       ),
     { loading: () => <BlockSkeleton /> }
+  ),
+  SocialFeed: dynamic(
+    () =>
+      import("@/features/home/components/social-feed-block").then(
+        (mod) => mod.SocialFeedBlock
+      ),
+    { loading: () => <SmallBlockSkeleton /> }
   ),
 };
 
@@ -278,15 +411,21 @@ export const BlockRenderer = ({
     return null;
   }
 
-  const { styles } = (block.props as any) || {};
+  const { styles, visibility, animation } = (block.props as any) || {};
+
+  // Check visibility
+  if (visibility) {
+    // Note: In a real implementation, you'd check device type and user state
+    // For now, we just render based on the visibility settings
+  }
 
   const wrapperStyle = {
-    paddingTop: styles?.paddingTop,
-    paddingBottom: styles?.paddingBottom,
-    paddingLeft: styles?.paddingLeft,
-    paddingRight: styles?.paddingRight,
-    marginTop: styles?.marginTop,
-    marginBottom: styles?.marginBottom,
+    paddingTop: styles?.paddingTop || styles?.padding?.top,
+    paddingBottom: styles?.paddingBottom || styles?.padding?.bottom,
+    paddingLeft: styles?.paddingLeft || styles?.padding?.left,
+    paddingRight: styles?.paddingRight || styles?.padding?.right,
+    marginTop: styles?.marginTop || styles?.margin?.top,
+    marginBottom: styles?.marginBottom || styles?.margin?.bottom,
     marginLeft: styles?.marginLeft,
     marginRight: styles?.marginRight,
     width: styles?.width,
@@ -312,10 +451,20 @@ export const BlockRenderer = ({
     gap: styles?.gap,
   };
 
+  // Animation classes
+  const animationClass =
+    animation?.type && animation.type !== "none"
+      ? `animate-${animation.type}`
+      : "";
+
   return (
     <div
       style={wrapperStyle}
-      className={cn(styles?.animation && `animate-${styles.animation}`)}
+      className={cn(
+        styles?.customClasses,
+        animationClass,
+        styles?.animation && `animate-${styles.animation}`
+      )}
     >
       <Suspense fallback={<BlockSkeleton />}>
         <Component {...(block.props as any)} data={data} />
