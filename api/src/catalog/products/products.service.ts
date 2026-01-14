@@ -116,15 +116,18 @@ export class ProductsService {
         categories: {
           create: categoryIds.map((id) => ({
             categoryId: id,
+            tenantId: tenant!.id,
           })),
         },
         options: {
           create: options?.map((opt, index) => ({
             name: opt.name,
             displayOrder: index,
+            tenantId: tenant!.id,
             values: {
               create: opt.values.map((val) => ({
                 value: val,
+                tenantId: tenant!.id,
               })),
             },
           })),
@@ -134,6 +137,7 @@ export class ProductsService {
             url: img.url,
             alt: img.alt,
             displayOrder: img.displayOrder || 0,
+            tenantId: tenant!.id,
           })),
         },
       },
@@ -609,6 +613,7 @@ export class ProductsService {
             categories: {
               create: updateProductDto.categoryIds.map((cid) => ({
                 categoryId: cid,
+                tenantId: getTenant()!.id,
               })),
             },
           },
@@ -629,8 +634,12 @@ export class ProductsService {
                 create: options.map((opt, index) => ({
                   name: opt.name,
                   displayOrder: index,
+                  tenantId: getTenant()!.id,
                   values: {
-                    create: opt.values.map((val) => ({ value: val })),
+                    create: opt.values.map((val) => ({
+                      value: val,
+                      tenantId: getTenant()!.id,
+                    })),
                   },
                 })),
               },
@@ -654,6 +663,7 @@ export class ProductsService {
                   url: img.url,
                   alt: img.alt,
                   displayOrder: img.displayOrder || 0,
+                  tenantId: getTenant()!.id,
                 })),
               },
             },

@@ -22,11 +22,11 @@ import { PrismaModule } from '@core/prisma/prisma.module';
 
  * =====================================================================
  */
-import { CouponsModule } from '@/coupons/coupons.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { ProductsModule } from '@/catalog/products/products.module';
 import { ShippingModule } from '@/shipping/shipping.module';
 import { LoyaltyModule } from '@/loyalty/loyalty.module';
+import { PromotionsModule } from '@/promotions/promotions.module';
 import { InvoiceService } from './invoice.service';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
@@ -41,7 +41,7 @@ import { OrdersExportService } from './orders-export.service';
     PrismaModule,
     PaymentModule,
     NotificationsModule,
-    CouponsModule,
+    PromotionsModule,
     ShippingModule,
     ProductsModule,
     LoyaltyModule,

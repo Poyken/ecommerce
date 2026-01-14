@@ -1,3 +1,29 @@
+/**
+ * =====================================================================
+ * INVENTORY SERVICE - QUẢN LÝ KHO HÀNG VÀ TỒN KHO
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Hệ thống quản lý kho của chúng ta hỗ trợ "Đa kho" (Multi-warehouse).
+ *
+ * 1. MÔ HÌNH DỮ LIỆU:
+ *    - Warehouse: Thông tin kho (Địa chỉ, Tên, Kho mặc định).
+ *    - InventoryItem: Liên kết giữa SKU và Warehouse (Biết SKU này trong kho kia còn bao nhiêu).
+ *    - InventoryLog: Nhật ký mọi biến động (Nhập, Xuất, Hoàn trả) để đối soát.
+ *
+ * 2. CƠ CHẾ CẬP NHẬT:
+ *    - Luôn dùng Transaction khi cập nhật tồn kho để đảm bảo tính nhất quán.
+ *    - Khi thay đổi số lượng ở InventoryItem, phải cập nhật đồng thời ở bảng Sku
+ *      (cột stock tổng) để hiển thị nhanh trên Storefront.
+ *    - Mọi thay đổi phải có lý do (reason) và người thực hiện (userId).
+ *
+ * 3. TENANCY:
+ *    - Các kho hàng tách biệt hoàn toàn theo TenantId.
+ *    - Shipper/Nhân viên kho chỉ thấy kho của cửa hàng họ.
+ * =====================================================================
+ */
+
 import {
   Injectable,
   NotFoundException,
@@ -14,7 +40,10 @@ export class InventoryService {
 
   private getTenantId(): string {
     const tenant = getTenant();
-    if (!tenant?.id) throw new BadRequestException('Tenant context missing');
+    if (!tenant?.id)
+      throw new BadRequestException(
+        'Không xác định được Cửa hàng (Tenant context missing)',
+      );
     return tenant.id;
   }
 
@@ -94,6 +123,7 @@ export class InventoryService {
           warehouseId: dto.warehouseId,
           skuId: dto.skuId,
           quantity: newQty,
+          tenantId,
         },
         update: {
           quantity: newQty,

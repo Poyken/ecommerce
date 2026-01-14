@@ -1,3 +1,26 @@
+/**
+ * =====================================================================
+ * INVENTORY ALERTS SERVICE - HỆ THỐNG CẢNH BÁO TỒN KHO
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Module này đóng vai trò là một "Người giám sát" kho hàng.
+ * Nó giúp đảm bảo cửa hàng không bao giờ bị hết hàng mà không biết.
+ *
+ * 1. NGƯỠNG CẢNH BÁO (Threshold):
+ *    - Mặc định là 10. Khi số lượng SKU trong kho < 10 -> Hệ thống coi là "Low Stock".
+ *
+ * 2. CRON JOB (Tác vụ tự động):
+ *    - Sử dụng `@Cron`. Hệ thống tự động quét toàn bộ kho vào 8:00 sáng mỗi ngày.
+ *    - Gom danh sách sản phẩm sắp hết và gửi Email cho Admin của từng Shop (Tenant).
+ *
+ * 3. TÍNH NĂNG:
+ *    - Gửi email thông báo tự động.
+ *    - Hỗ trợ xem danh sách nhanh qua API để hiển thị Badge trên Dashboard.
+ * =====================================================================
+ */
+
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@/core/prisma/prisma.service';
 import { EmailService } from '@/integrations/email/email.service';
@@ -47,7 +70,9 @@ export class InventoryAlertsService {
    */
   @Cron(CronExpression.EVERY_DAY_AT_8AM)
   async checkAndSendLowStockAlerts() {
-    this.logger.log('[Inventory Alerts] Checking low stock products...');
+    this.logger.log(
+      '[Inventory Alerts] Đang kiểm tra danh sách sản phẩm sắp hết hàng...',
+    );
 
     // Lấy tất cả tenants có sản phẩm tồn kho thấp
     const lowStockByTenant = await this.prisma.sku.groupBy({
@@ -59,7 +84,7 @@ export class InventoryAlertsService {
     });
 
     if (lowStockByTenant.length === 0) {
-      this.logger.log('[Inventory Alerts] No low stock products found');
+      this.logger.log('[Inventory Alerts] Không có sản phẩm nào sắp hết hàng');
       return;
     }
 
@@ -77,7 +102,7 @@ export class InventoryAlertsService {
     }
 
     this.logger.log(
-      `[Inventory Alerts] Sent alerts to ${tenantIdSet.size} tenants`,
+      `[Inventory Alerts] Đã gửi thông báo cho ${tenantIdSet.size} cửa hàng`,
     );
   }
 
@@ -90,7 +115,7 @@ export class InventoryAlertsService {
 
       if (lowStock.count === 0) return;
 
-      // Tìm admin users của tenant
+      // Tìm quản trị viên (ADMIN) của cửa hàng
       const adminUsers = await this.prisma.user.findMany({
         where: {
           tenantId,
@@ -110,17 +135,17 @@ export class InventoryAlertsService {
         .slice(0, 10) // Chỉ hiển thị top 10
         .map(
           (item) =>
-            `• ${item.productName} (${item.skuCode}): ${item.currentStock} còn lại`,
+            `• ${item.productName} (${item.skuCode}): còn ${item.currentStock} cái`,
         )
         .join('\n');
 
       const subject = `⚠️ Cảnh báo: ${lowStock.count} sản phẩm sắp hết hàng`;
       const html = `
         <h2>Cảnh báo tồn kho thấp</h2>
-        <p>Có <strong>${lowStock.count}</strong> sản phẩm có tồn kho dưới ${this.LOW_STOCK_THRESHOLD}:</p>
+        <p>Có <strong>${lowStock.count}</strong> sản phẩm có tồn kho dưới ngưỡng an toàn (${this.LOW_STOCK_THRESHOLD}):</p>
         <pre>${productList}</pre>
         ${lowStock.count > 10 ? `<p>...và ${lowStock.count - 10} sản phẩm khác.</p>` : ''}
-        <p><a href="#">Xem chi tiết trong Admin Dashboard</a></p>
+        <p><a href="#">Xem chi tiết trong trang Quản trị</a></p>
       `;
 
       // Gửi email cho tất cả admin
@@ -129,20 +154,20 @@ export class InventoryAlertsService {
       }
 
       this.logger.log(
-        `[Inventory Alerts] Sent to ${adminUsers.length} admins of tenant ${tenantId}`,
+        `[Inventory Alerts] Đã gửi thông báo tới ${adminUsers.length} admin của tenant ${tenantId}`,
       );
     } catch (error) {
       this.logger.error(
-        `[Inventory Alerts] Error sending alert for tenant ${tenantId}: ${error.message}`,
+        `[Inventory Alerts] Lỗi gửi thông báo cho tenant ${tenantId}: ${error.message}`,
       );
     }
   }
 
   /**
-   * Manual trigger để test alerts
+   * Kích hoạt gửi thông báo thủ công (để test hoặc ép buộc gửi)
    */
   async triggerManualAlert(tenantId: string) {
     await this.sendLowStockAlertToTenant(tenantId);
-    return { success: true, message: 'Alert sent' };
+    return { success: true, message: 'Đã gửi thông báo thành công' };
   }
 }

@@ -1,3 +1,27 @@
+/**
+ * =====================================================================
+ * LOYALTY SERVICE - HỆ THỐNG ĐIỂM THƯỞNG & CHĂM SÓC KHÁCH HÀNG
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Module này quản lý "Loyalty Points" (Điểm thành viên) của người dùng.
+ * Giống như thẻ tích điểm tại các siêu thị.
+ *
+ * 1. CƠ CHẾ HOẠT ĐỘNG:
+ *    - EARNED (Tích điểm): Thường diễn ra sau khi đơn hàng COMPLETED. Công thức là 1% giá trị đơn.
+ *    - REDEEMED (Tiêu điểm): Người dùng dùng điểm để trừ tiền khi mua hàng mới.
+ *    - REFUNDED (Hoàn điểm): Khi đơn hàng bị hủy, nếu người dùng đã tiêu điểm cho đơn đó -> phải trả lại điểm cho họ.
+ *
+ * 2. TÍNH NHẤT QUÁN (Consistency):
+ *    - Điểm được lưu theo dạng "Transaction Log" vào bảng LoyaltyPoint (mỗi biến động là 1 dòng).
+ *    - Số dư thực tế được tính bằng hàm SUM(amount). Cách làm này giúp truy vết (Audit) cực tốt.
+ *
+ * 3. IDEMPOTENCY (Tính ổn định):
+ *    - Tránh việc tích điểm 2 lần cho cùng 1 đơn hàng (hàm earnPointsFromOrder có check existingPoints).
+ * =====================================================================
+ */
+
 import {
   Injectable,
   NotFoundException,
@@ -28,7 +52,7 @@ export class LoyaltyService {
 
   async earnPoints(tenantId: string, dto: EarnPointsDto) {
     if (dto.amount <= 0) {
-      throw new BadRequestException('Amount must be positive');
+      throw new BadRequestException('Số điểm tích lũy phải là số dương');
     }
 
     return this.prisma.loyaltyPoint.create({
@@ -50,7 +74,7 @@ export class LoyaltyService {
     });
 
     if (!order) {
-      throw new NotFoundException('Order not found');
+      throw new NotFoundException('Không tìm thấy đơn hàng');
     }
 
     // Idempotency: Kiểm tra xem đơn hàng này đã được tích điểm chưa
@@ -111,14 +135,14 @@ export class LoyaltyService {
 
   async redeemPoints(tenantId: string, dto: RedeemPointsDto) {
     if (dto.amount <= 0) {
-      throw new BadRequestException('Amount must be positive');
+      throw new BadRequestException('Số điểm muốn tiêu phải là số dương');
     }
 
     // Kiểm tra số dư điểm
     const balance = await this.getUserPointBalance(tenantId, dto.userId);
     if (balance < dto.amount) {
       throw new BadRequestException(
-        `Insufficient points. Current balance: ${balance}`,
+        `Số dư điểm không đủ. Số dư hiện tại: ${balance}`,
       );
     }
 

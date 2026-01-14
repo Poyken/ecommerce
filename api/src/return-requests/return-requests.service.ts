@@ -1,3 +1,27 @@
+/**
+ * =====================================================================
+ * RETURN REQUEST SERVICE (RMA) - QUẢN LÝ ĐỔI TRẢ HÀNG
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * RMA (Return Merchandise Authorization) là module xử lý khi khách hàng
+ * không hài lòng và muốn trả hàng hoặc đổi hàng.
+ *
+ * 1. QUY TRÌNH (Workflow):
+ *    - PENDING (Chờ duyệt): Khách gửi yêu cầu + ảnh bằng chứng.
+ *    - APPROVED (Đã chấp nhận): Admin đồng ý cho trả. Khách cần gửi hàng về.
+ *    - IN_TRANSIT (Đang vận chuyển): Khách cập nhật mã vận đơn (Tracking Code).
+ *    - RECEIVED (Đã nhận hàng): Kho nhận được hàng và kiểm tra (Inspection).
+ *    - COMPLETED (Hoàn tất): Admin quyết định Hoàn tiền (Refund) hoặc Đổi hàng.
+ *    - REJECTED (Từ chối): Admin từ chối vì lý do nào đó (hàng quá hạn, hỏng do khách).
+ *
+ * 2. VALIDATION:
+ *    - Phải kiểm tra đơn hàng có đúng của User đó không.
+ *    - Số lượng trả không được lớn hơn số lượng đã mua.
+ * =====================================================================
+ */
+
 import {
   BadRequestException,
   Injectable,
@@ -12,33 +36,35 @@ export class ReturnRequestsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(userId: string, tenantId: string, dto: CreateReturnRequestDto) {
-    // 1. Verify Order belongs to User & Tenant
+    // 1. Kiểm tra Đơn hàng thuộc về User & Tenant
     const order = await this.prisma.order.findUnique({
       where: { id: dto.orderId },
       include: { items: true },
     });
 
     if (!order || order.userId !== userId || order.tenantId !== tenantId) {
-      throw new NotFoundException('Order not found or access denied');
+      throw new NotFoundException(
+        'Không tìm thấy đơn hàng hoặc bạn không có quyền truy cập',
+      );
     }
 
-    // 2. Validate Items exist in Order
+    // 2. Kiểm tra Items có trong Đơn hàng không
     for (const item of dto.items) {
       const orderItem = order.items.find((i) => i.id === item.orderItemId);
       if (!orderItem) {
         throw new BadRequestException(
-          `OrderItem ${item.orderItemId} invalid for this order`,
+          `Sản phẩm #${item.orderItemId} không tồn tại trong đơn hàng này`,
         );
       }
       if (item.quantity > orderItem.quantity) {
         throw new BadRequestException(
-          `Quantity ${item.quantity} exceeds purchased amount`,
+          `Số lượng trả (${item.quantity}) vượt quá số lượng đã mua`,
         );
       }
-      // TODO: Check if already returned?
+      // TODO: Kiểm tra xem đã yêu cầu trả trước đó chưa?
     }
 
-    // 3. Create Return Request
+    // 3. Tạo Yêu cầu trả hàng
     return this.prisma.returnRequest.create({
       data: {
         userId,
@@ -107,18 +133,19 @@ export class ReturnRequestsService {
         user: true,
       },
     });
-    if (!request) throw new NotFoundException('Return Request not found');
+    if (!request)
+      throw new NotFoundException('Không tìm thấy yêu cầu trả hàng');
     return request;
   }
 
   async update(id: string, dto: UpdateReturnRequestDto, tenantId: string) {
-    // Admin update logic (status, inspection result)
+    // Logic cập nhật từ Admin (status, kết quả kiểm tra)
     const { status, inspectionNotes, rejectedReason } = dto;
 
     return this.prisma.returnRequest.update({
       where: { id, tenantId },
       data: {
-        status: status as any, // Cast to any to avoid temporary lint error until client refresh
+        status: status as any,
         inspectionNotes,
         rejectedReason,
       },
@@ -134,10 +161,12 @@ export class ReturnRequestsService {
     const request = await this.prisma.returnRequest.findFirst({
       where: { id, userId },
     });
-    if (!request) throw new NotFoundException('Request not found');
+    if (!request) throw new NotFoundException('Không tìm thấy yêu cầu');
 
     if (request.status !== 'APPROVED') {
-      throw new BadRequestException('Request must be APPROVED to add tracking');
+      throw new BadRequestException(
+        'Yêu cầu phải được DUYỆT (APPROVED) mới có thể thêm thông tin vận chuyển',
+      );
     }
 
     return this.prisma.returnRequest.update({
@@ -145,7 +174,7 @@ export class ReturnRequestsService {
       data: {
         trackingCode,
         carrier,
-        status: 'IN_TRANSIT', // Update status automatically
+        status: 'IN_TRANSIT', // Tự động cập nhật trạng thái
       },
     });
   }

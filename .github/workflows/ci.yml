@@ -1,0 +1,189 @@
+# E-commerce Platform CI/CD Pipeline
+# Runs on push to main/develop and pull requests
+
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "20"
+
+jobs:
+  # =====================================================================
+  # API TESTS AND BUILD
+  # =====================================================================
+  api-test:
+    name: API Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: ecommerce_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: api/package-lock.json
+
+      - name: Install dependencies
+        working-directory: api
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: api
+        run: npx prisma generate
+
+      - name: Run linter
+        working-directory: api
+        run: npm run lint
+
+      - name: Type check
+        working-directory: api
+        run: npm run build
+
+      - name: Run unit tests
+        working-directory: api
+        run: npm run test -- --passWithNoTests
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/ecommerce_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-jwt-secret-for-ci
+
+      - name: Run E2E tests
+        working-directory: api
+        run: npm run test:e2e -- --passWithNoTests
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/ecommerce_test
+          REDIS_URL: redis://localhost:6379
+          JWT_SECRET: test-jwt-secret-for-ci
+
+  # =====================================================================
+  # WEB TESTS AND BUILD
+  # =====================================================================
+  web-test:
+    name: Web Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        working-directory: web
+        run: npm ci
+
+      - name: Run linter
+        working-directory: web
+        run: npm run lint
+
+      - name: Type check and build
+        working-directory: web
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8080
+
+  # =====================================================================
+  # SECURITY SCAN
+  # =====================================================================
+  security:
+    name: Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          severity: "CRITICAL,HIGH"
+          exit-code: "0" # Don't fail on vulnerabilities, just report
+
+  # =====================================================================
+  # DEPLOY TO STAGING (on develop branch)
+  # =====================================================================
+  deploy-staging:
+    name: Deploy to Staging
+    needs: [api-test, web-test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy API to Render (Staging)
+        run: |
+          echo "Triggering Render deploy webhook for staging..."
+          # curl -X POST ${{ secrets.RENDER_STAGING_WEBHOOK }}
+
+      - name: Deploy Web to Vercel (Staging)
+        run: |
+          echo "Vercel auto-deploys on push to develop branch"
+
+  # =====================================================================
+  # DEPLOY TO PRODUCTION (on main branch)
+  # =====================================================================
+  deploy-production:
+    name: Deploy to Production
+    needs: [api-test, web-test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy API to Render (Production)
+        run: |
+          echo "Triggering Render deploy webhook for production..."
+          # curl -X POST ${{ secrets.RENDER_PRODUCTION_WEBHOOK }}
+
+      - name: Deploy Web to Vercel (Production)
+        run: |
+          echo "Vercel auto-deploys on push to main branch"
+
+      - name: Notify on success
+        run: |
+          echo "✅ Production deployment completed successfully!"

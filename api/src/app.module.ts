@@ -37,7 +37,6 @@ import { CartModule } from '@/cart/cart.module';
 import { CategoriesModule } from '@/catalog/categories/categories.module';
 import { CommonModule } from '@/common/common.module';
 import { FeatureFlagsModule } from '@/common/feature-flags/feature-flags.module';
-import { CouponsModule } from '@/coupons/coupons.module';
 import { PromotionsModule } from '@/promotions/promotions.module';
 import { RmaModule } from '@/rma/rma.module';
 import { InventoryModule } from '@/inventory/inventory.module';
@@ -87,6 +86,7 @@ import { AiChatModule } from './ai/ai-chat/ai-chat.module';
 import { ChatModule } from './chat/chat.module';
 import { LockdownGuard } from '@core/guards/lockdown.guard';
 import { SuperAdminIpGuard } from '@core/guards/super-admin-ip.guard';
+import { TenantGuard } from '@core/guards/tenant.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { AgentModule } from './ai/agent/agent.module';
 import { InsightsModule } from './ai/insights/insights.module';
@@ -230,8 +230,6 @@ import { InventoryAlertsModule } from './inventory-alerts/inventory-alerts.modul
     // 17. CloudinaryModule - Upload ảnh
     CloudinaryModule,
 
-    CouponsModule,
-
     AnalyticsModule,
 
     AuditModule,
@@ -294,6 +292,11 @@ import { InventoryAlertsModule } from './inventory-alerts/inventory-alerts.modul
     {
       provide: APP_GUARD,
       useClass: CsrfGuard,
+    },
+    // TenantGuard: Auto-validate tenant for @RequireTenant endpoints
+    {
+      provide: APP_GUARD,
+      useClass: TenantGuard,
     },
     {
       provide: APP_INTERCEPTOR,

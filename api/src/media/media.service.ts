@@ -1,3 +1,28 @@
+/**
+ * =====================================================================
+ * MEDIA SERVICE - QUẢN LÝ TÀI NGUYÊN (HÌNH ẢNH, VIDEO, FILES)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Module này quản lý Metadata của tất cả các file được upload lên hệ thống.
+ *
+ * 1. TẠI SAO PHẢI LƯU VÀO DB?
+ *    - Các file thực tế thường nằm trên Cloud Storage (S3, Cloudinary).
+ *    - Ta lưu metadata vào DB để quản lý mối quan hệ: Ai upload? Khi nào?
+ *      File này đang dùng cho sản phẩm nào? Dung lượng bao nhiêu?
+ *
+ * 2. PHÂN LOẠI (Media Type):
+ *    - IMAGE: Ảnh sản phẩm, ảnh avatar.
+ *    - VIDEO: Review sản phẩm.
+ *    - DOCUMENT: File hướng dẫn sử dụng (PDF).
+ *
+ * 3. MULTI-TENANCY:
+ *    - Media của shop A không bao giờ được xuất hiện trong kho media của shop B.
+ *    - Luôn lọc theo `tenantId`.
+ * =====================================================================
+ */
+
 import {
   Injectable,
   BadRequestException,
@@ -13,7 +38,10 @@ export class MediaService {
 
   private getTenantId(): string {
     const tenant = getTenant();
-    if (!tenant?.id) throw new BadRequestException('Tenant context missing');
+    if (!tenant?.id)
+      throw new BadRequestException(
+        'Không xác định được Cửa hàng (Tenant context missing)',
+      );
     return tenant.id;
   }
 
@@ -51,7 +79,7 @@ export class MediaService {
     const tenantId = this.getTenantId();
     const media = await this.prisma.media.findUnique({ where: { id } });
     if (!media || media.tenantId !== tenantId)
-      throw new NotFoundException('Media not found');
+      throw new NotFoundException('Không tìm thấy tệp tin');
     return media;
   }
 
@@ -59,9 +87,9 @@ export class MediaService {
     const tenantId = this.getTenantId();
     const media = await this.findOne(id);
 
-    // Check usage before delete? (Optional logic)
+    // Có thể thêm logic kiểm tra xem file có đang được dùng ở đâu không
     // const used = await this.prisma.productImage.findFirst({ where: { mediaId: id } });
-    // if (used) throw new BadRequestException('Media is in use');
+    // if (used) throw new BadRequestException('Tệp tin này đang được sử dụng, không thể xóa');
 
     return this.prisma.media.delete({ where: { id } });
   }

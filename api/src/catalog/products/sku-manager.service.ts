@@ -176,6 +176,7 @@ export class SkuManagerService {
               optionValues: {
                 create: combo.map((val: OptionValue) => ({
                   optionValueId: val.id,
+                  tenantId: product.tenantId,
                 })),
               },
             },
@@ -261,6 +262,7 @@ export class SkuManagerService {
               optionValues: {
                 create: combo.map((val: OptionValue) => ({
                   optionValueId: val.id,
+                  tenantId: freshProduct.tenantId,
                 })),
               },
             },
@@ -277,6 +279,7 @@ export class SkuManagerService {
             data: combo.map((val: OptionValue) => ({
               skuId: existingSku.id,
               optionValueId: val.id,
+              tenantId: freshProduct.tenantId,
             })),
           });
         }

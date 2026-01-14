@@ -1,0 +1,89 @@
+
+> api@0.0.1 build
+> npx nest build
+
+[96msrc/cart/cart.service.ts[0m:[93m425[0m:[93m15[0m - [91merror[0m[90m TS2322: [0mType '{ cartId: string; skuId: string; quantity: number; }' is not assignable to type '(Without<CartItemCreateInput, CartItemUncheckedCreateInput> & CartItemUncheckedCreateInput) | (Without<...> & CartItemCreateInput)'.
+  Type '{ cartId: string; skuId: string; quantity: number; }' is not assignable to type 'Without<CartItemCreateInput, CartItemUncheckedCreateInput> & CartItemUncheckedCreateInput'.
+    Property 'tenantId' is missing in type '{ cartId: string; skuId: string; quantity: number; }' but required in type 'CartItemUncheckedCreateInput'.
+
+[7m425[0m               create: {
+[7m   [0m [91m              ~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m97278[0m:[93m5[0m
+    [7m97278[0m     tenantId: string
+    [7m     [0m [96m    ~~~~~~~~[0m
+    'tenantId' is declared here.
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m36379[0m:[93m5[0m
+    [7m36379[0m     create: XOR<CartItemCreateInput, CartItemUncheckedCreateInput>
+    [7m     [0m [96m    ~~~~~~[0m
+    The expected type comes from property 'create' which is declared here on type '{ select?: CartItemSelect<DefaultArgs> | null | undefined; omit?: CartItemOmit<DefaultArgs> | null | undefined; include?: CartItemInclude<...> | ... 1 more ... | undefined; where: CartItemWhereUniqueInput; create: (Without<...> & CartItemUncheckedCreateInput) | (Without<...> & CartItemCreateInput); update: (Without<...'
+[96msrc/catalog/products/products-import.service.ts[0m:[93m129[0m:[93m24[0m - [91merror[0m[90m TS2741: [0mProperty 'tenantId' is missing in type '{ categoryId: string; }' but required in type 'ProductToCategoryUncheckedCreateWithoutProductInput'.
+
+[7m129[0m               create: [{ categoryId }],
+[7m   [0m [91m                       ~~~~~~~~~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m120287[0m:[93m5[0m
+    [7m120287[0m     tenantId: string
+    [7m      [0m [96m    ~~~~~~~~[0m
+    'tenantId' is declared here.
+[96msrc/catalog/products/products-import.service.ts[0m:[93m140[0m:[93m24[0m - [91merror[0m[90m TS2741: [0mProperty 'tenantId' is missing in type '{ categoryId: string; }' but required in type 'ProductToCategoryUncheckedCreateWithoutProductInput'.
+
+[7m140[0m               create: [{ categoryId }],
+[7m   [0m [91m                       ~~~~~~~~~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m120287[0m:[93m5[0m
+    [7m120287[0m     tenantId: string
+    [7m      [0m [96m    ~~~~~~~~[0m
+    'tenantId' is declared here.
+[96msrc/catalog/products/products.service.ts[0m:[93m614[0m:[93m15[0m - [91merror[0m[90m TS2322: [0mType '{ categoryId: string; }[]' is not assignable to type '(Without<ProductToCategoryCreateWithoutProductInput, ProductToCategoryUncheckedCreateWithoutProductInput> & ProductToCategoryUncheckedCreateWithoutProductInput) | (Without<...> & ProductToCategoryCreateWithoutProductInput) | ProductToCategoryCreateWithoutProductInput[] | ProductToCategoryUncheckedCreateWithoutProduc...'.
+  Type '{ categoryId: string; }[]' is not assignable to type 'ProductToCategoryCreateWithoutProductInput[]'.
+    Type '{ categoryId: string; }' is missing the following properties from type 'ProductToCategoryCreateWithoutProductInput': tenant, category
+
+[7m614[0m               create: updateProductDto.categoryIds.map((cid) => ({
+[7m   [0m [91m              ~~~~~~[0m
+[96msrc/catalog/products/products.service.ts[0m:[93m633[0m:[93m17[0m - [91merror[0m[90m TS2322: [0mType '{ name: string; displayOrder: number; values: { create: { value: string; }[]; }; }[]' is not assignable to type '(Without<ProductOptionCreateWithoutProductInput, ProductOptionUncheckedCreateWithoutProductInput> & ProductOptionUncheckedCreateWithoutProductInput) | (Without<...> & ProductOptionCreateWithoutProductInput) | ProductOptionCreateWithoutProductInput[] | ProductOptionUncheckedCreateWithoutProductInput[] | undefined'.
+  Type '{ name: string; displayOrder: number; values: { create: { value: string; }[]; }; }[]' is not assignable to type 'ProductOptionCreateWithoutProductInput[]'.
+    Property 'tenant' is missing in type '{ name: string; displayOrder: number; values: { create: { value: string; }[]; }; }' but required in type 'ProductOptionCreateWithoutProductInput'.
+
+[7m633[0m                 create: options.map((opt, index) => ({
+[7m   [0m [91m                ~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m120379[0m:[93m5[0m
+    [7m120379[0m     tenant: TenantCreateNestedOneWithoutProductOptionsInput
+    [7m      [0m [96m    ~~~~~~[0m
+    'tenant' is declared here.
+[96msrc/catalog/products/products.service.ts[0m:[93m657[0m:[93m17[0m - [91merror[0m[90m TS2322: [0mType '{ url: string; alt: string | undefined; displayOrder: number; }[]' is not assignable to type '(Without<ProductImageCreateWithoutProductInput, ProductImageUncheckedCreateWithoutProductInput> & ProductImageUncheckedCreateWithoutProductInput) | (Without<...> & ProductImageCreateWithoutProductInput) | ProductImageCreateWithoutProductInput[] | ProductImageUncheckedCreateWithoutProductInput[] | undefined'.
+  Type '{ url: string; alt: string | undefined; displayOrder: number; }[]' is not assignable to type 'ProductImageCreateWithoutProductInput[]'.
+    Property 'tenant' is missing in type '{ url: string; alt: string | undefined; displayOrder: number; }' but required in type 'ProductImageCreateWithoutProductInput'.
+
+[7m657[0m                 create: images.map((img) => ({
+[7m   [0m [91m                ~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m120352[0m:[93m5[0m
+    [7m120352[0m     tenant: TenantCreateNestedOneWithoutProductImagesInput
+    [7m      [0m [96m    ~~~~~~[0m
+    'tenant' is declared here.
+[96msrc/customer-groups/customer-groups.service.ts[0m:[93m67[0m:[93m11[0m - [91merror[0m[90m TS2322: [0mType '{ skuId: string; price: number; compareAtPrice: number | undefined; }[]' is not assignable to type '(Without<PriceListItemCreateWithoutPriceListInput, PriceListItemUncheckedCreateWithoutPriceListInput> & PriceListItemUncheckedCreateWithoutPriceListInput) | (Without<...> & PriceListItemCreateWithoutPriceListInput) | PriceListItemCreateWithoutPriceListInput[] | PriceListItemUncheckedCreateWithoutPriceListInput[] | u...'.
+  Type '{ skuId: string; price: number; compareAtPrice: number | undefined; }[]' is not assignable to type 'PriceListItemCreateWithoutPriceListInput[]'.
+    Type '{ skuId: string; price: number; compareAtPrice: number | undefined; }' is missing the following properties from type 'PriceListItemCreateWithoutPriceListInput': tenant, sku
+
+[7m67[0m           create: items.map((item) => ({
+[7m  [0m [91m          ~~~~~~[0m
+[96msrc/procurement/procurement.service.ts[0m:[93m169[0m:[93m13[0m - [91merror[0m[90m TS2322: [0mType '{ warehouseId: string; skuId: string; quantity: number; }' is not assignable to type '(Without<InventoryItemCreateInput, InventoryItemUncheckedCreateInput> & InventoryItemUncheckedCreateInput) | (Without<...> & InventoryItemCreateInput)'.
+  Type '{ warehouseId: string; skuId: string; quantity: number; }' is not assignable to type 'Without<InventoryItemCreateInput, InventoryItemUncheckedCreateInput> & InventoryItemUncheckedCreateInput'.
+    Property 'tenantId' is missing in type '{ warehouseId: string; skuId: string; quantity: number; }' but required in type 'InventoryItemUncheckedCreateInput'.
+
+[7m169[0m             create: {
+[7m   [0m [91m            ~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m96976[0m:[93m5[0m
+    [7m96976[0m     tenantId: string
+    [7m     [0m [96m    ~~~~~~~~[0m
+    'tenantId' is declared here.
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m31773[0m:[93m5[0m
+    [7m31773[0m     create: XOR<InventoryItemCreateInput, InventoryItemUncheckedCreateInput>
+    [7m     [0m [96m    ~~~~~~[0m
+    The expected type comes from property 'create' which is declared here on type '{ select?: InventoryItemSelect<DefaultArgs> | null | undefined; omit?: InventoryItemOmit<DefaultArgs> | null | undefined; include?: InventoryItemInclude<...> | ... 1 more ... | undefined; where: InventoryItemWhereUniqueInput; create: (Without<...> & InventoryItemUncheckedCreateInput) | (Without<...> & InventoryItemC...'
+
+Found 8 error(s).
+

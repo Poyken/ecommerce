@@ -79,7 +79,10 @@ export class CartService {
    */
   async getCart(userId: string) {
     const tenant = getTenant();
-    if (!tenant) throw new BadRequestException('Tenant context missing');
+    if (!tenant)
+      throw new BadRequestException(
+        'Không xác định được Cửa hàng (Tenant context missing)',
+      );
 
     try {
       // Upsert: Tìm hoặc tạo mới trong 1 thao tác DB
@@ -210,7 +213,10 @@ export class CartService {
 
         // 2. Lấy hoặc tạo Cart (Atomic Upsert)
         const tenant = getTenant();
-        if (!tenant) throw new BadRequestException('Tenant context missing');
+        if (!tenant)
+          throw new BadRequestException(
+            'Không xác định được Cửa hàng (Tenant context missing)',
+          );
 
         const cart = await tx.cart.upsert({
           where: {
@@ -243,6 +249,7 @@ export class CartService {
             cartId: cart.id,
             skuId: dto.skuId,
             quantity: dto.quantity,
+            tenantId: tenant.id,
           },
         });
 
@@ -363,7 +370,10 @@ export class CartService {
 
         // 1. Get hoặc Create Cart một lần duy nhất
         const tenant = getTenant();
-        if (!tenant) throw new Error('Tenant context missing');
+        if (!tenant)
+          throw new Error(
+            'Không xác định được Cửa hàng (Tenant context missing)',
+          );
 
         const cart = await tx.cart.upsert({
           where: {
@@ -416,6 +426,7 @@ export class CartService {
                 cartId: cart.id,
                 skuId: item.skuId,
                 quantity: item.quantity,
+                tenantId: tenant.id,
               },
             });
 

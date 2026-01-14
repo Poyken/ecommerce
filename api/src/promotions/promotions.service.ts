@@ -1,3 +1,29 @@
+/**
+ * =====================================================================
+ * PROMOTIONS SERVICE - HỆ THỐNG KHUYẾN MÃI (MARKETING ENGINE)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Đây là module xử lý các chương trình giảm giá, khuyến mãi linh hoạt.
+ * Nó được thiết kế theo mô hình Rule-Action Engine.
+ *
+ * 1. CÁC THÀNH PHẦN CHÍNH:
+ *    - Promotion: Thông tin chung (Mã, Thời gian, Giới hạn sử dụng).
+ *    - PromotionRule: Các điều kiện để áp dụng (VD: Giỏ hàng > 500k, Mua sản phẩm A...).
+ *    - PromotionAction: Hành động khi thỏa điều kiện (VD: Giảm 10%, Freeship, Tặng quà).
+ *
+ * 2. CƠ CHẾ VALIDATE (Hàm validatePromotion):
+ *    - Kiểm tra thời hạn (startDate/endDate).
+ *    - Kiểm tra giới hạn sử dụng (usageLimit).
+ *    - Lần lượt kiểm tra tất cả các Rules gắn với Promotion đó.
+ *    - Nếu tất cả Rules thỏa mãn -> Tính toán số tiền giảm dựa trên Action.
+ *
+ * 3. LƯU Ý:
+ *    - Cột usedCount cần được cập nhật an toàn (Atomics increment) khi có đơn hàng thành công.
+ * =====================================================================
+ */
+
 import {
   Injectable,
   NotFoundException,
@@ -13,7 +39,10 @@ export class PromotionsService {
 
   private getTenantId(): string {
     const tenant = getTenant();
-    if (!tenant?.id) throw new BadRequestException('Tenant context missing');
+    if (!tenant?.id)
+      throw new BadRequestException(
+        'Không xác định được Cửa hàng (Tenant context missing)',
+      );
     return tenant.id;
   }
 
@@ -31,15 +60,19 @@ export class PromotionsService {
       },
     });
     if (existing) {
-      throw new BadRequestException('Promotion code already exists');
+      throw new BadRequestException('Mã khuyến mãi đã tồn tại');
     }
 
     return this.prisma.promotion.create({
       data: {
         ...data,
         tenantId,
-        rules: { create: rules },
-        actions: { create: actions },
+        rules: {
+          create: rules.map((r) => ({ ...r, tenantId })),
+        },
+        actions: {
+          create: actions.map((a) => ({ ...a, tenantId })),
+        },
       },
       include: { rules: true, actions: true },
     });
@@ -60,7 +93,7 @@ export class PromotionsService {
       include: { rules: true, actions: true },
     });
     if (!promo || promo.tenantId !== tenantId) {
-      throw new NotFoundException('Promotion not found');
+      throw new NotFoundException('Không tìm thấy chương trình khuyến mãi');
     }
     return promo;
   }
@@ -78,18 +111,23 @@ export class PromotionsService {
       include: { rules: true, actions: true },
     });
 
-    if (!promotion) throw new NotFoundException('Promotion not found');
+    if (!promotion)
+      throw new NotFoundException('Không tìm thấy chương trình khuyến mãi');
 
     if (!promotion.isActive)
-      throw new BadRequestException('Promotion is inactive');
+      throw new BadRequestException('Chương trình khuyến mãi đang tạm ngưng');
 
     const now = new Date();
     if (now < promotion.startDate || now > promotion.endDate) {
-      throw new BadRequestException('Promotion is expired or not yet active');
+      throw new BadRequestException(
+        'Chương trình khuyến mãi đã hết hạn hoặc chưa bắt đầu',
+      );
     }
 
     if (promotion.usageLimit && promotion.usedCount >= promotion.usageLimit) {
-      throw new BadRequestException('Promotion usage limit reached');
+      throw new BadRequestException(
+        'Chương trình khuyến mãi đã hết lượt sử dụng',
+      );
     }
 
     // Evaluate Rules
@@ -108,7 +146,7 @@ export class PromotionsService {
       }
 
       if (!passed) {
-        throw new BadRequestException(`Condition failed: ${rule.type}`);
+        throw new BadRequestException(`Điều kiện không thỏa mãn: ${rule.type}`);
       }
     }
 

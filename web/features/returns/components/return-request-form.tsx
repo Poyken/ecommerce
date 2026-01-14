@@ -12,23 +12,23 @@ import { useToast } from "@/components/ui/use-toast";
 // UI Components
 import { GlassCard } from "@/components/shared/glass-card";
 import { GlassButton } from "@/components/shared/glass-button";
-import { 
-  Form, 
-  FormControl, 
-  FormField, 
-  FormItem, 
-  FormLabel, 
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
   FormMessage,
-  FormDescription
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
@@ -67,6 +67,7 @@ interface ReturnRequestFormProps {
 export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
   const t = useTranslations("returns");
   const tOrders = useTranslations("orders");
+  const tCommon = useTranslations("common");
   const { toast } = useToast();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -86,7 +87,7 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
         accountNumber: "",
         accountHolder: "",
       },
-    }
+    },
   });
 
   const selectedType = form.watch("type");
@@ -96,10 +97,10 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
   const onSubmit = (data: any) => {
     // Flatten bankAccount if not needed
     const submissionData = { ...data };
-    if (submissionData.refundMethod !== 'BANK_TRANSFER') {
+    if (submissionData.refundMethod !== "BANK_TRANSFER") {
       delete submissionData.bankAccount;
     }
-    
+
     startTransition(async () => {
       const res = await createReturnRequestAction(submissionData);
       if (res.success) {
@@ -108,12 +109,13 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
           title: "Request submitted",
           description: "Your return request has been submitted successfully.",
         });
-        router.push("/profile"); 
+        router.push("/profile");
       } else {
         toast({
           variant: "destructive",
           title: "Submission failed",
-          description: res.error || "An error occurred while submitting your request.",
+          description:
+            res.error || "An error occurred while submitting your request.",
         });
       }
     });
@@ -121,7 +123,9 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
 
   const handleItemToggle = (orderItemId: string, maxQty: number) => {
     const currentItems = [...selectedItems];
-    const index = currentItems.findIndex((item: any) => item.orderItemId === orderItemId);
+    const index = currentItems.findIndex(
+      (item: any) => item.orderItemId === orderItemId
+    );
 
     if (index > -1) {
       currentItems.splice(index, 1);
@@ -140,43 +144,57 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
               <Package className="w-4 h-4" />
             </div>
-            <h2 className="text-xl font-bold">1. Select Items to {selectedType === 'REFUND_ONLY' ? 'Refund' : 'Return'}</h2>
+            <h2 className="text-xl font-bold">
+              1. Select Items to{" "}
+              {selectedType === "REFUND_ONLY" ? "Refund" : "Return"}
+            </h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {order.items?.map((item: any) => {
-              const isSelected = selectedItems.some((i: any) => i.orderItemId === item.id);
+              const isSelected = selectedItems.some(
+                (i: any) => i.orderItemId === item.id
+              );
               return (
-                <GlassCard 
-                  key={item.id} 
-                  className={`p-4 transition-all border-2 cursor-pointer relative ${isSelected ? 'border-primary ring-1 ring-primary/20 bg-primary/5' : 'border-white/5 hover:border-white/10'}`}
+                <GlassCard
+                  key={item.id}
+                  className={`p-4 transition-all border-2 cursor-pointer relative ${
+                    isSelected
+                      ? "border-primary ring-1 ring-primary/20 bg-primary/5"
+                      : "border-white/5 hover:border-white/10"
+                  }`}
                   onClick={() => handleItemToggle(item.id, item.quantity)}
                 >
                   <div className="flex items-center gap-4">
-                    <Checkbox 
-                        checked={isSelected} 
-                        onCheckedChange={() => handleItemToggle(item.id, item.quantity)} 
-                        className="data-[state=checked]:bg-primary"
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={() =>
+                        handleItemToggle(item.id, item.quantity)
+                      }
+                      className="data-[state=checked]:bg-primary"
                     />
                     <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 border border-white/10">
-                       <Image 
+                      <Image
                         src={
-                            item.sku?.imageUrl || 
-                            item.sku?.image || 
-                            (item.sku?.product?.images?.[0] as any)?.url || 
-                            item.sku?.product?.images?.[0] || 
-                            "https://picsum.photos/200"
-                        } 
-                        alt={item.sku?.product?.name || "Product"} 
-                        fill 
+                          item.sku?.imageUrl ||
+                          item.sku?.image ||
+                          (item.sku?.product?.images?.[0] as any)?.url ||
+                          item.sku?.product?.images?.[0] ||
+                          "https://picsum.photos/200"
+                        }
+                        alt={item.sku?.product?.name || "Product"}
+                        fill
                         className="object-cover"
-                       />
+                      />
                     </div>
                     <div className="flex-1 min-w-0 text-left">
-                       <p className="font-bold text-sm truncate">{item.sku?.product?.name}</p>
-                       <p className="text-xs text-muted-foreground mt-1">
-                           Qty: {item.quantity} • {formatCurrency(Number(item.priceAtPurchase))}
-                       </p>
+                      <p className="font-bold text-sm truncate">
+                        {item.sku?.product?.name}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Qty: {item.quantity} •{" "}
+                        {formatCurrency(Number(item.priceAtPurchase))}
+                      </p>
                     </div>
                   </div>
                 </GlassCard>
@@ -185,8 +203,8 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
           </div>
           {form.formState.errors.items && (
             <p className="text-sm font-medium text-red-500 mt-2 flex items-center gap-2">
-                <AlertCircle size={14} />
-                {form.formState.errors.items.message}
+              <AlertCircle size={14} />
+              {form.formState.errors.items.message}
             </p>
           )}
         </section>
@@ -207,16 +225,25 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs uppercase tracking-wider font-bold text-muted-foreground">Request Type</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormLabel className="text-xs uppercase tracking-wider font-bold text-muted-foreground">
+                    Request Type
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger className="bg-white/5 border-white/10 focus:ring-primary">
                         <SelectValue placeholder="Select type" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-black/90 backdrop-blur-xl border-white/10">
-                      <SelectItem value="REFUND_ONLY">Refund Only (No return needed)</SelectItem>
-                      <SelectItem value="RETURN_AND_REFUND">Return & Refund</SelectItem>
+                      <SelectItem value="REFUND_ONLY">
+                        Refund Only (No return needed)
+                      </SelectItem>
+                      <SelectItem value="RETURN_AND_REFUND">
+                        Return & Refund
+                      </SelectItem>
                       <SelectItem value="EXCHANGE">Exchange Item</SelectItem>
                     </SelectContent>
                   </Select>
@@ -230,18 +257,31 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
               name="reason"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-xs uppercase tracking-wider font-bold text-muted-foreground">Primary Reason</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormLabel className="text-xs uppercase tracking-wider font-bold text-muted-foreground">
+                    Primary Reason
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
                     <FormControl>
                       <SelectTrigger className="bg-white/5 border-white/10 focus:ring-primary">
                         <SelectValue placeholder="Select a reason" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-black/90 backdrop-blur-xl border-white/10">
-                      <SelectItem value="DAMAGED">Damaged/Defective product</SelectItem>
-                      <SelectItem value="WRONG_ITEM">Wrong item received</SelectItem>
-                      <SelectItem value="NOT_AS_DESCRIBED">Product not as described</SelectItem>
-                      <SelectItem value="CHANGED_MIND">Changed my mind</SelectItem>
+                      <SelectItem value="DAMAGED">
+                        Damaged/Defective product
+                      </SelectItem>
+                      <SelectItem value="WRONG_ITEM">
+                        Wrong item received
+                      </SelectItem>
+                      <SelectItem value="NOT_AS_DESCRIBED">
+                        Product not as described
+                      </SelectItem>
+                      <SelectItem value="CHANGED_MIND">
+                        Changed my mind
+                      </SelectItem>
                       <SelectItem value="OTHER">Other reason</SelectItem>
                     </SelectContent>
                   </Select>
@@ -256,12 +296,14 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs uppercase tracking-wider font-bold text-muted-foreground">Additional Comments</FormLabel>
+                <FormLabel className="text-xs uppercase tracking-wider font-bold text-muted-foreground">
+                  Additional Comments
+                </FormLabel>
                 <FormControl>
-                  <Textarea 
-                    placeholder="Tell us more about why you're returning these items..." 
+                  <Textarea
+                    placeholder="Tell us more about why you're returning these items..."
                     className="min-h-[120px] bg-white/5 border-white/10 focus:ring-primary resize-none"
-                    {...field} 
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage className="text-xs" />
@@ -269,10 +311,10 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
             )}
           />
 
-          {selectedType !== 'REFUND_ONLY' && (
+          {selectedType !== "REFUND_ONLY" && (
             <m.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              animate={{ opacity: 1, height: "auto" }}
               className="space-y-4"
             >
               <FormField
@@ -280,21 +322,33 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
                 name="returnMethod"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs uppercase tracking-wider font-bold text-muted-foreground">Home Shipping Method</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormLabel className="text-xs uppercase tracking-wider font-bold text-muted-foreground">
+                      Home Shipping Method
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
                       <FormControl>
                         <SelectTrigger className="bg-white/5 border-white/10 focus:ring-primary">
                           <SelectValue placeholder="Select method" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-black/90 backdrop-blur-xl border-white/10">
-                        <SelectItem value="PICKUP">Doorstep Pickup (We collect from you)</SelectItem>
-                        <SelectItem value="SELF_SHIP">Self Ship (You ship to us)</SelectItem>
-                        <SelectItem value="AT_COUNTER">Drop-off at Store Counter</SelectItem>
+                        <SelectItem value="PICKUP">
+                          Doorstep Pickup (We collect from you)
+                        </SelectItem>
+                        <SelectItem value="SELF_SHIP">
+                          Self Ship (You ship to us)
+                        </SelectItem>
+                        <SelectItem value="AT_COUNTER">
+                          Drop-off at Store Counter
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormDescription className="text-[10px] text-muted-foreground mt-1 italic">
-                      Pickup window is usually 24-48 business hours after approval.
+                      Pickup window is usually 24-48 business hours after
+                      approval.
                     </FormDescription>
                     <FormMessage className="text-xs" />
                   </FormItem>
@@ -319,17 +373,28 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
             name="refundMethod"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-xs uppercase tracking-wider font-bold text-muted-foreground">Refund To</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormLabel className="text-xs uppercase tracking-wider font-bold text-muted-foreground">
+                  Refund To
+                </FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
                   <FormControl>
                     <SelectTrigger className="bg-white/5 border-white/10 focus:ring-primary">
                       <SelectValue placeholder="Select refund method" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-black/90 backdrop-blur-xl border-white/10">
-                    <SelectItem value="ORIGINAL_PAYMENT">Original Payment Method (Reverse Charge)</SelectItem>
-                    <SelectItem value="BANK_TRANSFER">Direct Bank Transfer</SelectItem>
-                    <SelectItem value="WALLET">Luxe Store Wallet (Instant Credit)</SelectItem>
+                    <SelectItem value="ORIGINAL_PAYMENT">
+                      Original Payment Method (Reverse Charge)
+                    </SelectItem>
+                    <SelectItem value="BANK_TRANSFER">
+                      Direct Bank Transfer
+                    </SelectItem>
+                    <SelectItem value="WALLET">
+                      Luxe Store Wallet (Instant Credit)
+                    </SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage className="text-xs" />
@@ -337,22 +402,30 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
             )}
           />
 
-          {selectedRefundMethod === 'BANK_TRANSFER' && (
+          {selectedRefundMethod === "BANK_TRANSFER" && (
             <m.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-6"
             >
-              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary/80">Recipient Bank Account Details</h3>
+              <h3 className="text-xs font-black uppercase tracking-[0.2em] text-primary/80">
+                Recipient Bank Account Details
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                 <FormField
+                <FormField
                   control={form.control}
                   name="bankAccount.bankName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground">Bank Name</FormLabel>
+                      <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground">
+                        Bank Name
+                      </FormLabel>
                       <FormControl>
-                        <Input className="bg-black/20 border-white/5 h-10 focus:ring-primary" placeholder="e.g. Vietcombank" {...field} />
+                        <Input
+                          className="bg-black/20 border-white/5 h-10 focus:ring-primary"
+                          placeholder="e.g. Vietcombank"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage className="text-xs" />
                     </FormItem>
@@ -363,22 +436,34 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
                   name="bankAccount.accountNumber"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground">Account Number</FormLabel>
+                      <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground">
+                        Account Number
+                      </FormLabel>
                       <FormControl>
-                        <Input className="bg-black/20 border-white/5 h-10 focus:ring-primary" placeholder="0001000..." {...field} />
+                        <Input
+                          className="bg-black/20 border-white/5 h-10 focus:ring-primary"
+                          placeholder="0001000..."
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage className="text-xs" />
                     </FormItem>
                   )}
                 />
-                 <FormField
+                <FormField
                   control={form.control}
                   name="bankAccount.accountHolder"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground">Account Holder Name</FormLabel>
+                      <FormLabel className="text-[10px] font-bold uppercase text-muted-foreground">
+                        Account Holder Name
+                      </FormLabel>
                       <FormControl>
-                        <Input className="bg-black/20 border-white/5 h-10 focus:ring-primary" placeholder="NGUYEN VAN A" {...field} />
+                        <Input
+                          className="bg-black/20 border-white/5 h-10 focus:ring-primary"
+                          placeholder="NGUYEN VAN A"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage className="text-xs" />
                     </FormItem>
@@ -392,25 +477,29 @@ export function ReturnRequestForm({ order }: ReturnRequestFormProps) {
         {/* Policy Alert */}
         <Alert className="bg-primary/5 border-primary/20 text-foreground rounded-2xl p-6">
           <Truck className="h-5 w-5 text-primary" />
-          <AlertTitle className="text-primary font-bold mb-1">Advanced RMA Policy</AlertTitle>
+          <AlertTitle className="text-primary font-bold mb-1">
+            Advanced RMA Policy
+          </AlertTitle>
           <AlertDescription className="text-sm opacity-80 leading-relaxed">
-            Every luxe purchase is protected. Once you submit this request, our concierge team will inspect your details within 6-12 working hours. 
-            If your return requires shipping, we will provide a printable shipping label via email.
+            Every luxe purchase is protected. Once you submit this request, our
+            concierge team will inspect your details within 6-12 working hours.
+            If your return requires shipping, we will provide a printable
+            shipping label via email.
           </AlertDescription>
         </Alert>
 
         <div className="flex flex-col sm:flex-row justify-end gap-4 pt-4">
-          <GlassButton 
-            type="button" 
-            variant="ghost" 
+          <GlassButton
+            type="button"
+            variant="ghost"
             onClick={() => router.back()}
             disabled={isPending}
             className="w-full sm:w-auto"
           >
             {tCommon("cancel")}
           </GlassButton>
-          <GlassButton 
-            type="submit" 
+          <GlassButton
+            type="submit"
             className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-primary-foreground font-black px-12 h-12 rounded-full shadow-lg shadow-primary/20"
             disabled={isPending}
           >

@@ -137,12 +137,12 @@ export class PaymentController {
         where: { id: orderId },
       });
       if (!order) {
-        return { RspCode: '01', Message: 'Order not found' };
+        return { RspCode: '01', Message: 'Không tìm thấy đơn hàng' };
       }
 
-      // Check if already paid
+      // Kiểm tra xem đơn đã thanh toán chưa
       if (order.status !== 'PENDING') {
-        return { RspCode: '02', Message: 'Order already confirmed' };
+        return { RspCode: '02', Message: 'Đơn hàng đã được xác nhận trước đó' };
       }
 
       if (rspCode === '00') {
@@ -155,15 +155,15 @@ export class PaymentController {
           },
         });
 
-        // Calculate commissions/fees
+        // Tính toán hoa hồng và phí nền tảng
         await this.commissionService.calculateForOrder(orderId).catch((e) => {
           this.logger.error(
-            `Error calculating commission for order ${orderId}`,
+            `Lỗi khi tính toán hoa hồng cho đơn hàng ${orderId}`,
             e,
           );
         });
 
-        return { RspCode: '00', Message: 'Success' };
+        return { RspCode: '00', Message: 'Thành công' };
       } else {
         // Payment Failed
         await this.prisma.order.update({
@@ -173,7 +173,7 @@ export class PaymentController {
             paymentStatus: 'FAILED',
           },
         });
-        return { RspCode: '00', Message: 'Success' };
+        return { RspCode: '00', Message: 'Thành công' };
       }
     } else {
       return { RspCode: '97', Message: 'Checksum failed' };
@@ -204,7 +204,7 @@ export class PaymentController {
     const accessKey = this.configService.get('MOMO_ACCESS_KEY');
 
     if (!secretKey) {
-      return { message: 'MOMO_SECRET_KEY not configured' };
+      return { message: 'Chưa cấu hình MOMO_SECRET_KEY' };
     }
 
     // MoMo IPN signature raw string format
@@ -221,7 +221,7 @@ export class PaymentController {
         where: { id: orderId },
       });
       if (!order) {
-        return { message: 'Order not found' };
+        return { message: 'Không tìm thấy đơn hàng' };
       }
 
       if (resultCode === 0) {
@@ -252,9 +252,9 @@ export class PaymentController {
           },
         });
       }
-      return { message: 'Success' };
+      return { message: 'Thành công' };
     } else {
-      return { message: 'Signature mismatch' };
+      return { message: 'Chữ ký không khớp (Signature mismatch)' };
     }
   }
 }

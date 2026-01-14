@@ -1,9 +1,32 @@
+/**
+ * =====================================================================
+ * FULFILLMENT SERVICE - QUẢN LÝ GIAO VẬN VÀ TÁCH ĐƠN (PARTIAL SHIPMENT)
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Module này xử lý việc đưa hàng từ kho đến tay khách hàng.
+ * Tại sao cần "Giao hàng từng phần" (Partial Fulfillment) dù đã check stock lúc order?
+ *
+ * 1. ĐA KHO (Multi-warehouse): Sản phẩm A ở kho HN, B ở kho HCM. Phải tách 2 Shipment.
+ * 2. SAI LỆCH KHO THỰC TẾ: Hệ thống báo còn hàng, nhưng khi ra kệ lấy thì hàng bị hỏng
+ *    hoặc thất thoát. Cần giao những gì đang có trước để giữ chân khách.
+ * 3. HÀNG CỒNG KỀNH: Một số món cần đơn vị vận chuyển chuyên dụng (như xe tải),
+ *    số còn lại đi xe máy.
+ *
+ * QUY TRÌNH:
+ * - createShipment(): Kiểm tra số lượng còn lại (Remaining = Ordered - Already Shipped).
+ * - updateShipmentStatus(): Khi 1 kiện được DELIVERED, check tổng số lượng toàn đơn.
+ * - Nếu ĐỦ -> Order sang COMPLETED.
+ * =====================================================================
+ */
+
 import {
   Injectable,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { PrismaService } from '@/core/prisma/prisma.service';
+import { PrismaService } from '@core/prisma/prisma.service';
 import { ShipmentStatus, OrderStatus } from '@prisma/client';
 import {
   CreateShipmentDto,
@@ -24,7 +47,7 @@ export class FulfillmentService {
     })) as any;
 
     if (!order) {
-      throw new NotFoundException('Order not found');
+      throw new NotFoundException('Không tìm thấy đơn hàng');
     }
 
     // 2. Validate Items và tính toán số lượng còn lại (Remaining Quantity)
@@ -34,7 +57,7 @@ export class FulfillmentService {
       const orderItem = order.items.find((oi) => oi.id === itemDto.orderItemId);
       if (!orderItem) {
         throw new BadRequestException(
-          `Order item ${itemDto.orderItemId} not found in this order`,
+          `Sản phẩm #${itemDto.orderItemId} không tồn tại trong đơn hàng này`,
         );
       }
 
@@ -50,7 +73,7 @@ export class FulfillmentService {
 
       if (itemDto.quantity > remainingQuantity) {
         throw new BadRequestException(
-          `Quantity ${itemDto.quantity} exceeds remaining quantity ${remainingQuantity} for item ${orderItem.skuId}`,
+          `Số lượng ${itemDto.quantity} vượt quá số lượng còn lại (${remainingQuantity}) của sản phẩm ${orderItem.skuId}`,
         );
       }
 
@@ -103,7 +126,7 @@ export class FulfillmentService {
     })) as any;
 
     if (!shipment) {
-      throw new NotFoundException('Shipment not found');
+      throw new NotFoundException('Không tìm thấy vận đơn (Shipment)');
     }
 
     return this.prisma.$transaction(async (tx) => {
@@ -168,7 +191,7 @@ export class FulfillmentService {
     });
 
     if (!shipment) {
-      throw new NotFoundException('Shipment not found');
+      throw new NotFoundException('Không tìm thấy vận đơn (Shipment)');
     }
     return shipment;
   }

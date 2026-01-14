@@ -209,9 +209,6 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   if (isClient && isGet) {
     const existingRequest = (window as any)._pendingRequests?.get(dedupKey);
     if (existingRequest) {
-      if (process.env.NODE_ENV === "development") {
-        // console.debug(`[HTTP] Deduplicating Parallel Request: ${url.toString()}`);
-      }
       return existingRequest;
     }
   }
@@ -234,13 +231,6 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     );
 
     try {
-      if (process.env.NODE_ENV === "development") {
-        // console.debug(
-        //   `[HTTP] Fetching: ${url.toString()} (Authorized: ${
-        //     !!accessToken || !!requestHeaders["Authorization"]
-        //   })`
-        // );
-      }
       res = await fetch(url.toString(), {
         headers: requestHeaders,
         credentials: "include", // Quan trọng để gửi Cookie khi gọi API khác origin (CORS)

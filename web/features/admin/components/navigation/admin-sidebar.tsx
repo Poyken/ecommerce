@@ -10,18 +10,6 @@ import {
   ArrowRight,
   BarChart3,
   Bell,
-"use client";
-
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/features/auth/providers/auth-provider";
-import { Logo } from "@/features/layout/components/logo";
-import { Link, usePathname } from "@/i18n/routing";
-import { cn } from "@/lib/utils";
-import {
-  ArrowLeft,
-  ArrowRight,
-  BarChart3,
-  Bell,
   BookOpen,
   Bot,
   Box,
@@ -30,8 +18,6 @@ import {
   LayoutDashboard,
   MessageSquare,
   Package,
-  RefreshCw,
-  RotateCcw,
   Settings,
   Shield,
   ShoppingBag,
@@ -63,6 +49,138 @@ import { useEffect, useState } from "react";
  * - Đây là tính năng bảo mật quan trọng (RBAC). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
  * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
+ * =====================================================================
+ */
+
+export function AdminSidebar() {
+  const t = useTranslations("admin.sidebar");
+  const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { hasPermission } = useAuth();
+
+  const sidebarItems = [
+    {
+      title: t("overview"),
+      items: [
+        {
+          title: t("dashboard"),
+          href: "/admin",
+          icon: LayoutDashboard,
+          permission: "dashboard:view",
+        },
+        {
+          title: t("notifications"),
+          href: "/admin/notifications",
+          icon: Bell,
+          permission: "notification:read",
+        },
+        {
+          title: "AI Agent",
+          href: "/admin/agent",
+          icon: Bot,
+          permission: "dashboard:view",
+        },
+      ],
+    },
+    {
+      title: t("productManagement"),
+      items: [
+        {
+          title: t("brands"),
+          href: "/admin/brands",
+          icon: Tag,
+          permission: "brand:read",
+        },
+        {
+          title: t("categories"),
+          href: "/admin/categories",
+          icon: Box,
+          permission: "category:read",
+        },
+        {
+          title: t("products"),
+          href: "/admin/products",
+          icon: Package,
+          permission: "product:read",
+        },
+        {
+          title: t("skus"),
+          href: "/admin/skus",
+          icon: BarChart3,
+          permission: "sku:read",
+        },
+      ],
+    },
+    {
+      title: t("contentManagement"),
+      items: [
+        {
+          title: t("blogs"),
+          href: "/admin/blogs",
+          icon: BookOpen,
+          permission: "blog:read",
+        },
+        {
+          title: t("pages"),
+          href: "/admin/pages",
+          icon: Layout,
+          permission: "page:read",
+        },
+      ],
+    },
+    {
+      title: t("userManagement"),
+      items: [
+        {
+          title: t("users"),
+          href: "/admin/users",
+          icon: Users,
+          permission: "user:read",
+        },
+        {
+          title: t("auditLogs"),
+          href: "/admin/audit-logs",
+          icon: History,
+          permission: "auditLog:read",
+        },
+        {
+          title: t("roles"),
+          href: "/admin/roles",
+          icon: Shield,
+          permission: "role:read",
+        },
+        {
+          title: t("permissions"),
+          href: "/admin/permissions",
+          icon: Settings,
+          permission: "permission:read",
+        },
+        {
+          title: t("chatSupport"),
+          href: "/admin/chat",
+          icon: MessageSquare,
+          permission: "chat:read",
+        },
+      ],
+    },
+    {
+      title: t("sales"),
+      items: [
+        {
+          title: t("orders"),
+          href: "/admin/orders",
+          icon: ShoppingBag,
+          permission: "order:read",
+        },
+        {
+          title: t("coupons"),
+          href: "/admin/coupons",
+          icon: Ticket,
+          permission: "coupon:read",
+        },
+        {
+          title: t("reviews"),
           href: "/admin/reviews",
           icon: Star,
           permission: "review:read",

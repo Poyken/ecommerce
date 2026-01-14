@@ -68,6 +68,7 @@ export class CustomerGroupsService {
             skuId: item.skuId,
             price: item.price,
             compareAtPrice: item.compareAtPrice,
+            tenantId, // Required for nested creates
           })),
         },
       },

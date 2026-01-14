@@ -72,6 +72,7 @@ export class SkusService {
         optionValues: {
           create: optionValueIds.map((valId) => ({
             optionValueId: valId,
+            tenantId: tenant!.id,
           })),
         },
       },
@@ -93,8 +94,9 @@ export class SkusService {
     search?: string,
     stockLimit?: number,
   ) {
+    const tenant = getTenant();
     const skip = (page - 1) * limit;
-    const where: any = {};
+    const where: any = { tenantId: tenant?.id };
 
     if (status) {
       where.status = status;

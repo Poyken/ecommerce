@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { getTenant } from '@core/tenant/tenant.context';
 import { CreateAddressDto } from './dto/create-address.dto';
@@ -47,6 +47,10 @@ export class AddressesService {
     const isDefault = count === 0 ? true : dto.isDefault;
 
     const tenant = getTenant();
+    if (!tenant)
+      throw new BadRequestException(
+        'Không xác định được Cửa hàng (Tenant context missing)',
+      );
     return this.prisma.address.create({
       data: {
         ...dto,
@@ -65,7 +69,7 @@ export class AddressesService {
   }
 
   async update(userId: string, addressId: string, dto: UpdateAddressDto) {
-    // Verify ownership (Chỉ chủ sở hữu mới được sửa)
+    // Xác minh quyền sở hữu (Chỉ chủ sở hữu mới được sửa)
     const address = await this.prisma.address.findFirst({
       where: { id: addressId, userId },
     });
@@ -89,13 +93,13 @@ export class AddressesService {
   }
 
   async remove(userId: string, addressId: string) {
-    // Verify ownership (Quan trọng để chặn IDOR)
+    // Xác minh quyền sở hữu (Ngăn chặn lỗ hổng IDOR)
     const address = await this.prisma.address.findFirst({
       where: { id: addressId, userId },
     });
 
     if (!address) {
-      throw new Error('Address not found');
+      throw new Error('Không tìm thấy địa chỉ');
     }
 
     return this.prisma.address.delete({

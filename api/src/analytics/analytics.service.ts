@@ -1,3 +1,26 @@
+/**
+ * =====================================================================
+ * ANALYTICS SERVICE - HỆ THỐNG THỐNG KÊ & BÁO CÁO
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Đây là "Bộ não" cung cấp dữ liệu cho Dashboard của Admin.
+ *
+ * 1. HIỆU NĂNG (Performance):
+ *    - Sử dụng `Promise.all` để chạy đồng thời nhiều câu lệnh SQL count/sum.
+ *    - Tránh việc chờ đợi tuần tự giúp Dashboard load cực nhanh.
+ *
+ * 2. CHỈ SỐ QUAN TRỌNG (KPIs):
+ *    - Doanh thu (Revenue): Chỉ tính những đơn đã giao thành công (DELIVERED).
+ *    - Tồn kho thấp: Cảnh báo những món sắp hết để Admin nhập hàng kịp thời.
+ *    - Khách hàng mới: Theo dõi mức độ tăng trưởng của cửa hàng.
+ *
+ * 3. PHẠM VI DỮ LIỆU:
+ *    - Luôn lọc theo `tenantId`. Dữ liệu của shop này không được lẫn vào shop kia.
+ * =====================================================================
+ */
+
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/core/prisma/prisma.service';
 import { OrderStatus } from '@prisma/client';
@@ -7,14 +30,14 @@ export class AnalyticsService {
   constructor(private readonly prisma: PrismaService) {}
 
   /**
-   * Lấy tổng quan dashboard cho admin
+   * Lấy tổng quan dashboard cho quản trị viên
    */
   async getDashboardOverview(tenantId: string) {
     const today = new Date();
     const startOfToday = new Date(today.setHours(0, 0, 0, 0));
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-    // Chạy parallel queries để tăng performance
+    // Chạy các truy vấn song song để tăng tốc độ phản hồi
     const [
       todayOrders,
       monthOrders,
@@ -41,7 +64,7 @@ export class AnalyticsService {
           deletedAt: null,
         },
       }),
-      // Doanh thu hôm nay (đơn delivered)
+      // Doanh thu hôm nay (chỉ tính đơn đã giao thành công)
       this.prisma.order.aggregate({
         where: {
           tenantId,
@@ -61,7 +84,7 @@ export class AnalyticsService {
         },
         _sum: { totalAmount: true },
       }),
-      // Đơn hàng đang chờ xử lý
+      // Đơn hàng đang chờ xử lý (PENDING)
       this.prisma.order.count({
         where: {
           tenantId,
@@ -69,18 +92,18 @@ export class AnalyticsService {
           deletedAt: null,
         },
       }),
-      // Tổng số khách hàng
+      // Tổng số khách hàng của shop
       this.prisma.user.count({
         where: { tenantId },
       }),
-      // Sản phẩm tồn kho thấp (< 10)
+      // Sản phẩm sắp hết hàng (tồn kho < 10)
       this.prisma.sku.count({
         where: {
           product: { tenantId },
           stock: { lt: 10 },
         },
       }),
-      // Tổng điểm loyalty (đã phát)
+      // Tổng số điểm thưởng đã phát hành
       this.prisma.loyaltyPoint.aggregate({
         where: {
           tenantId,
@@ -113,7 +136,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Lấy thống kê doanh thu theo ngày trong 30 ngày gần nhất
+   * Lấy thống kê doanh thu theo ngày trong 30 ngày gần nhất (cho biểu đồ)
    */
   async getRevenueChart(tenantId: string, days = 30) {
     const startDate = new Date();
@@ -132,7 +155,7 @@ export class AnalyticsService {
       },
     });
 
-    // Group by date
+    // Nhóm dữ liệu theo ngày
     const revenueByDate: Record<string, number> = {};
     for (const order of orders) {
       const dateKey = order.createdAt.toISOString().split('T')[0];
@@ -147,7 +170,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Lấy top sản phẩm bán chạy
+   * Lấy danh sách sản phẩm bán chạy nhất
    */
   async getTopProducts(tenantId: string, limit = 10) {
     const orderItems = await this.prisma.orderItem.groupBy({
@@ -185,7 +208,7 @@ export class AnalyticsService {
   }
 
   /**
-   * Lấy thống kê đơn hàng theo trạng thái
+   * Thống kê tỷ lệ đơn hàng theo trạng thái
    */
   async getOrdersByStatus(tenantId: string) {
     const statuses = await this.prisma.order.groupBy({
