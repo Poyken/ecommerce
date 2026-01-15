@@ -81,6 +81,7 @@ import { AgentModule } from './agent/agent.module';
 import { InsightsModule } from './insights/insights.module';
 import { ImageProcessorModule } from './images/image-processor.module';
 import { RagModule } from './rag/rag.module';
+import { PromotionsModule } from './promotions/promotions.module';
 
 @Module({
   imports: [
@@ -221,7 +222,7 @@ import { RagModule } from './rag/rag.module';
     AgentModule, // AI Agent System
     InsightsModule, // AI Business Insights
     ImageProcessorModule, // AI Image Enhancement
-    RagModule, // RAG Chatbot
+    RagModule, PromotionsModule, // RAG Chatbot
   ],
   controllers: [HealthController],
   providers: [

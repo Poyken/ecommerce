@@ -1,0 +1,44 @@
+{
+  "users": [
+    {
+      "email": "test@example.com",
+      "password": "Password123!",
+      "firstName": "Test",
+      "lastName": "User",
+      "role": "MEMBER"
+    },
+    {
+      "email": "admin@example.com",
+      "password": "AdminPassword123!",
+      "firstName": "Super",
+      "lastName": "Admin",
+      "role": "ADMIN"
+    }
+  ],
+  "products": [
+    {
+      "name": "iPhone 15 Pro Max",
+      "price": 34990000,
+      "description": "Titanium design, A17 Pro chip.",
+      "category": "Smartphone",
+      "brand": "Apple"
+    },
+    {
+      "name": "Samsung Galaxy S24 Ultra",
+      "price": 31990000,
+      "description": "Galaxy AI is here.",
+      "category": "Smartphone",
+      "brand": "Samsung"
+    }
+  ],
+  "orders": [
+    {
+      "userId": "uuid-user-1",
+      "totalAmount": 34990000,
+      "status": "PENDING",
+      "items": [
+        { "productId": "uuid-iphone-15", "quantity": 1 }
+      ]
+    }
+  ]
+}
