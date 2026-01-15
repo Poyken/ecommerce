@@ -1,5 +1,5 @@
-import { PermissionsGuard } from '@/auth/permissions.guard';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import type { Request as ExpRequest, Response } from 'express';
 import {
   ApiCreateResponse,
   ApiDeleteResponse,
@@ -24,6 +24,7 @@ import {
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { AssignRolesDto } from './dto/assign-roles.dto';
 import { CreateUserDto } from './dto/create-user.dto';
+import { FilterUserDto } from './dto/filter-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
@@ -58,6 +59,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation } from '@nestjs/swagger';
 import { UsersExportService } from './users-export.service';
 import { UsersImportService } from './users-import.service';
+import { PermissionsGuard } from '@/auth/permissions.guard'; // Added this import
 
 @ApiTags('Users (Admin)')
 @Controller('users')
@@ -73,14 +75,14 @@ export class UsersController {
   @Get('export/excel')
   @RequirePermissions('user:read')
   @ApiOperation({ summary: 'Export Users to Excel' })
-  async export(@Res() res: any) {
+  async export(@Res() res: Response) {
     return this.exportService.exportToExcel(res);
   }
 
   @Get('import/template')
   @RequirePermissions('user:create')
   @ApiOperation({ summary: 'Download User Import Template' })
-  async downloadTemplate(@Res() res: any) {
+  async downloadTemplate(@Res() res: Response) {
     return this.importService.generateTemplate(res);
   }
 
@@ -97,72 +99,49 @@ export class UsersController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiCreateResponse('any', { summary: 'Import Users from Excel' })
   async import(@UploadedFile() file: Express.Multer.File) {
-    const data = await this.importService.importFromExcel(file);
-    return { data };
+    return this.importService.importFromExcel(file);
   }
 
   @Post()
   @RequirePermissions('user:create')
   @ApiCreateResponse('User', { summary: 'Create a new user (Admin)' })
   async create(@Body() createUserDto: CreateUserDto) {
-    const data = await this.usersService.create(createUserDto);
-    return { data };
+    return this.usersService.create(createUserDto);
   }
 
   @Get()
   @RequirePermissions('user:read')
   @ApiListResponse('User', { summary: 'Get list of users' })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiQuery({ name: 'search', required: false, type: String })
-  @ApiQuery({ name: 'role', required: false, type: String })
-  async findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
-    @Query('search') search?: string,
-    @Query('role') role?: string,
-    @Request() req?: any,
-  ) {
-    const tenantId = req?.user?.tenantId;
-    const result = await this.usersService.findAll(
-      Number(page),
-      Number(limit),
-      search,
-      role,
-      tenantId,
-    );
-    return result;
+  async findAll(@Query() query: FilterUserDto, @Request() req?: ExpRequest) {
+    const tenantId = (req as any)?.user?.tenantId;
+    return this.usersService.findAll(query, tenantId);
   }
 
   @Get(':id')
   @RequirePermissions('user:read')
   @ApiGetOneResponse('User', { summary: 'Get user details' })
   async findOne(@Param('id') id: string) {
-    const data = await this.usersService.findOne(id);
-    return { data };
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')
   @RequirePermissions('user:update')
   @ApiUpdateResponse('User', { summary: 'Update user info' })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    const data = await this.usersService.update(id, updateUserDto);
-    return { data };
+    return this.usersService.update(id, updateUserDto);
   }
 
   @Post(':id/roles')
   @RequirePermissions('user:update')
   @ApiCreateResponse('User', { summary: 'Assign roles to user' })
   async assignRoles(@Param('id') id: string, @Body() dto: AssignRolesDto) {
-    const data = await this.usersService.assignRoles(id, dto.roles);
-    return { data };
+    return this.usersService.assignRoles(id, dto.roles);
   }
 
   @Delete(':id')
   @RequirePermissions('user:delete')
   @ApiDeleteResponse('User', { summary: 'Delete user' })
   async remove(@Param('id') id: string) {
-    const data = await this.usersService.remove(id);
-    return { data };
+    return this.usersService.remove(id);
   }
 }

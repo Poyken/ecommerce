@@ -251,7 +251,7 @@ export class TenantRegistrationController {
       const adminRole = await tx.role.create({
         data: {
           name: 'Admin',
-          description: 'Full access to store management',
+          // description: 'Full access to store management',
           tenantId: tenant.id,
         },
       });

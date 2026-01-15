@@ -50,10 +50,11 @@ import {
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { InvoiceService } from './invoice.service';
-import { OrdersService } from './orders.service';
-
-import { Res } from '@nestjs/common';
 import { OrdersExportService } from './orders-export.service';
+import { OrdersService } from './orders.service';
+import { Res } from '@nestjs/common';
+import type { Response } from 'express';
+import { OrderFilterDto } from './dto/order-filter.dto';
 
 @ApiTags('Orders')
 @Controller('orders')
@@ -70,7 +71,7 @@ export class OrdersController {
   @UseGuards(PermissionsGuard)
   @RequirePermissions('order:read')
   @ApiOperation({ summary: 'Export Orders to Excel' })
-  async export(@Res() res: any) {
+  async export(@Res() res: Response): Promise<void> {
     return this.exportService.exportToExcel(res);
   }
 
@@ -119,22 +120,8 @@ export class OrdersController {
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'status', required: false, type: String })
   @ApiQuery({ name: 'userId', required: false, type: String })
-  findAll(
-    @Query('search') search?: string,
-    @Query('status') status?: string,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10,
-    @Query('includeItems') includeItems?: string,
-    @Query('userId') userId?: string,
-  ) {
-    return this.ordersService.findAll(
-      search,
-      status, // Pass status to service
-      Number(page),
-      Number(limit),
-      includeItems === 'true',
-      userId,
-    );
+  findAll(@Query() filters: OrderFilterDto) {
+    return this.ordersService.findAll(filters);
   }
 
   @Get(':id')

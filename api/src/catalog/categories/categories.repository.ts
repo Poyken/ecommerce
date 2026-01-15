@@ -67,7 +67,7 @@ export class CategoriesRepository extends BaseRepository<Category> {
    * Tìm category theo slug
    */
   async findBySlug(slug: string): Promise<Category | null> {
-    return this.model.findFirst({
+    return await this.model.findFirst({
       where: this.withTenantFilter({ slug, deletedAt: null }),
       include: {
         children: { where: { deletedAt: null } },

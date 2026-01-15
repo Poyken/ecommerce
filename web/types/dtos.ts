@@ -255,3 +255,128 @@ export interface SecurityStats {
   ddosStatus: string;
   threatGrade: string;
 }
+
+// ==================== ORDER DTOs (Synced from API) ====================
+
+/**
+ * DTO để tạo đơn hàng mới.
+ * @apiSource api/src/orders/dto/create-order.dto.ts
+ */
+export interface CreateOrderDto {
+  recipientName: string;
+  phoneNumber: string;
+  shippingAddress: string;
+  paymentMethod?: string;
+  shippingCity?: string;
+  shippingDistrict?: string;
+  shippingWard?: string;
+  shippingPhone?: string;
+  itemIds?: string[];
+  couponCode?: string;
+  returnUrl?: string;
+  addressId?: string;
+}
+
+// ==================== CART DTOs (Synced from API) ====================
+
+/**
+ * @apiSource api/src/cart/dto/add-to-cart.dto.ts
+ */
+export interface AddToCartDto {
+  skuId: string;
+  quantity: number;
+}
+
+export interface UpdateCartItemDto {
+  quantity: number;
+}
+
+// ==================== REVIEW DTOs (Synced from API) ====================
+
+/**
+ * @apiSource api/src/reviews/dto/create-review.dto.ts
+ */
+export interface CreateReviewDto {
+  productId: string;
+  skuId?: string;
+  rating: number;
+  content?: string;
+  images?: string[];
+}
+
+// ==================== ADDRESS DTOs (Synced from API) ====================
+
+/**
+ * @apiSource api/src/addresses/dto/create-address.dto.ts
+ */
+export interface CreateAddressDto {
+  recipientName: string;
+  phoneNumber: string;
+  street: string;
+  city: string;
+  district: string;
+  ward?: string;
+  postalCode?: string;
+  country?: string;
+  isDefault?: boolean;
+  provinceId?: number;
+  districtId?: number;
+  wardCode?: string;
+}
+
+export interface UpdateAddressDto {
+  recipientName?: string;
+  phoneNumber?: string;
+  street?: string;
+  city?: string;
+  district?: string;
+  ward?: string;
+  postalCode?: string;
+  country?: string;
+  isDefault?: boolean;
+  provinceId?: number;
+  districtId?: number;
+  wardCode?: string;
+}
+
+// ==================== FILTER DTOs (Synced from API) ====================
+
+/**
+ * @apiSource api/src/catalog/products/dto/filter-product.dto.ts
+ */
+export type ProductSortOption =
+  | "price_asc"
+  | "price_desc"
+  | "newest"
+  | "oldest"
+  | "rating_desc";
+
+export interface FilterProductDto {
+  page?: number;
+  limit?: number;
+  search?: string;
+  categoryId?: string;
+  brandId?: string;
+  ids?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  sort?: ProductSortOption;
+  includeSkus?: boolean;
+}
+
+// ==================== LOGIN DTOs (Synced from API) ====================
+
+/**
+ * @apiSource api/src/auth/dto/login.dto.ts
+ */
+export interface LoginDto {
+  email: string;
+  password: string;
+}
+
+export interface RegisterDto {
+  email: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+}

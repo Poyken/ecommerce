@@ -198,9 +198,10 @@ export function Debounce(delayMs = 300) {
       }
 
       return new Promise((resolve) => {
-        timeoutId = setTimeout(async () => {
-          const result = await originalMethod.apply(this, args);
-          resolve(result);
+        timeoutId = setTimeout(() => {
+          originalMethod.apply(this, args).then((result: any) => {
+            resolve(result);
+          });
         }, delayMs);
       });
     };

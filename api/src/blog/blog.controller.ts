@@ -81,12 +81,7 @@ export class BlogController {
     @GetUser() user: User,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (file) {
-      const result = await this.cloudinaryService.uploadImage(file, 'blogs');
-      createBlogDto.image = (result as any).secure_url;
-    }
-    const data = await this.blogService.create(createBlogDto, user.id);
-    return { data };
+    return this.blogService.create(createBlogDto, user.id);
   }
 
   @Get('my-blogs')
@@ -132,29 +127,25 @@ export class BlogController {
   @ApiBearerAuth()
   @ApiUpdateResponse('Blog', { summary: 'Bật/tắt trạng thái hiển thị' })
   async togglePublish(@Param('id') id: string) {
-    const data = await this.blogService.togglePublish(id);
-    return { data };
+    return this.blogService.togglePublish(id);
   }
 
   @Get('categories')
   @ApiOperation({ summary: 'Lấy thống kê danh mục bài viết' })
   async getCategoryStats() {
-    const data = await this.blogService.getCategoryStats();
-    return { data };
+    return this.blogService.getCategoryStats();
   }
 
   @Get('category-stats')
   @ApiOperation({ summary: 'Lấy thống kê danh mục bài viết (Alias)' })
   async getCategoryStatsAlias() {
-    const data = await this.blogService.getCategoryStats();
-    return { data };
+    return this.blogService.getCategoryStats();
   }
 
   @Get('stats')
   @ApiOperation({ summary: 'Lấy thống kê bài viết (Alias cho categories)' })
   async getStats() {
-    const data = await this.blogService.getCategoryStats();
-    return { data };
+    return this.blogService.getCategoryStats();
   }
 
   @Get(':id')
@@ -164,7 +155,7 @@ export class BlogController {
     if (!data) {
       throw new NotFoundException('Blog không tồn tại');
     }
-    return { data: data };
+    return data;
   }
 
   @Patch(':id')
@@ -180,12 +171,7 @@ export class BlogController {
     @GetUser() user: User,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (file) {
-      const result = await this.cloudinaryService.uploadImage(file, 'blogs');
-      updateBlogDto.image = (result as any).secure_url;
-    }
-    const data = await this.blogService.update(id, updateBlogDto, user);
-    return { data };
+    return this.blogService.update(id, updateBlogDto, user);
   }
 
   @Delete(':id')
@@ -195,7 +181,6 @@ export class BlogController {
   @HttpCode(HttpStatus.OK)
   @ApiDeleteResponse('Blog', { summary: 'Xóa bài viết' })
   async remove(@Param('id') id: string, @GetUser() user: User) {
-    const data = await this.blogService.remove(id, user);
-    return { data };
+    return this.blogService.remove(id, user);
   }
 }

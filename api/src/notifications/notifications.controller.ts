@@ -26,6 +26,7 @@ import {
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BroadcastNotificationDto } from './dto/broadcast-notification.dto';
 import { SendToUserDto } from './dto/send-to-user.dto';
+import { FilterNotificationDto } from './dto/filter-notification.dto';
 import { NotificationsService } from './notifications.service';
 
 /**
@@ -54,7 +55,7 @@ import { NotificationsService } from './notifications.service';
  * =====================================================================
  */
 
-@ApiTags('Admin - Notifications')
+@ApiTags('Notifications (Thông báo)')
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -78,24 +79,12 @@ export class NotificationsController {
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ) {
-    const userId = req.user.userId || req.user.id;
-    const { items, total, unreadCount, hasMore } =
-      await this.notificationsService.findAll(
-        userId,
-        limit ? parseInt(limit) : 20,
-        offset ? parseInt(offset) : 0,
-      );
-
-    return {
-      data: items,
-      meta: {
-        total,
-        unreadCount,
-        hasMore,
-        limit: limit ? parseInt(limit) : 20,
-        offset: offset ? parseInt(offset) : 0,
-      },
-    };
+    const userId = req.user.id;
+    return this.notificationsService.findAll(
+      userId,
+      limit ? parseInt(limit) : 20,
+      offset ? parseInt(offset) : 0,
+    );
   }
 
   /**
@@ -105,9 +94,7 @@ export class NotificationsController {
   @ApiGetOneResponse('Notification Count')
   @ApiOperation({ summary: 'Đếm số thông báo chưa đọc' })
   async getUnreadCount(@Request() req) {
-    const count = await this.notificationsService.getUnreadCount(
-      req.user.userId || req.user.id,
-    );
+    const count = await this.notificationsService.getUnreadCount(req.user.id);
     return { data: count };
   }
 
@@ -118,9 +105,7 @@ export class NotificationsController {
   @ApiUpdateResponse('Notification')
   @ApiOperation({ summary: 'Đánh dấu tất cả thông báo đã đọc' })
   async markAllAsRead(@Request() req) {
-    const result = await this.notificationsService.markAllAsRead(
-      req.user.userId || req.user.id,
-    );
+    const result = await this.notificationsService.markAllAsRead(req.user.id);
     return { data: result };
   }
 
@@ -131,10 +116,7 @@ export class NotificationsController {
   @ApiUpdateResponse('Notification')
   @ApiOperation({ summary: 'Đánh dấu một thông báo đã đọc' })
   async markAsRead(@Request() req, @Param('id') id: string) {
-    const result = await this.notificationsService.markAsRead(
-      id,
-      req.user.userId || req.user.id,
-    );
+    const result = await this.notificationsService.markAsRead(id, req.user.id);
     return { data: result };
   }
 
@@ -145,10 +127,7 @@ export class NotificationsController {
   @ApiDeleteResponse('Notification')
   @ApiOperation({ summary: 'Xóa một thông báo' })
   async delete(@Request() req, @Param('id') id: string) {
-    const result = await this.notificationsService.delete(
-      id,
-      req.user.userId || req.user.id,
-    );
+    const result = await this.notificationsService.delete(id, req.user.id);
     return { data: result };
   }
 
@@ -159,9 +138,7 @@ export class NotificationsController {
   @ApiDeleteResponse('Notification')
   @ApiOperation({ summary: 'Xóa tất cả thông báo đã đọc' })
   async deleteAllRead(@Request() req) {
-    const result = await this.notificationsService.deleteAllRead(
-      req.user.userId || req.user.id,
-    );
+    const result = await this.notificationsService.deleteAllRead(req.user.id);
     return { data: result };
   }
 
@@ -232,24 +209,9 @@ export class NotificationsController {
   @RequirePermissions('notification:read')
   @ApiListResponse('Notification')
   @ApiOperation({ summary: 'Lấy tất cả thông báo (Admin view với filters)' })
-  async findAllAdmin(
-    @Query('page') page?: string,
-    @Query('limit') limit?: string,
-    @Query('userId') userId?: string,
-    @Query('type') type?: string,
-    @Query('isRead') isRead?: string,
-  ) {
-    const filters: any = {};
-    if (userId) filters.userId = userId;
-    if (type) filters.type = type;
-    if (isRead !== undefined) filters.isRead = isRead === 'true';
-
-    const data = await this.notificationsService.findAllAdmin(
-      page ? parseInt(page) : 1,
-      limit ? parseInt(limit) : 50,
-      filters,
-    );
-    return data; // Already has { data, meta }
+  async findAllAdmin(@Query() filters: FilterNotificationDto) {
+    const data = await this.notificationsService.findAllAdmin(filters);
+    return data;
   }
 
   /**

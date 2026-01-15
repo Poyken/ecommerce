@@ -31,6 +31,11 @@ import {
 } from "@/types/dtos";
 import { User } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
+import {
+  UserQueryParams,
+  FileExportResult,
+  ImportPreviewResult,
+} from "@/types/feature-types/admin.types";
 
 /**
  * =====================================================================
@@ -39,7 +44,7 @@ import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
  */
 
 export async function getUsersAction(
-  paramsOrPage: any = {},
+  paramsOrPage: UserQueryParams | number = {},
   limit?: number,
   search?: string
 ): Promise<ActionResult<User[]>> {
@@ -100,32 +105,24 @@ export async function assignRolesAction(
 }
 
 export async function exportUsersAction(): Promise<
-  ActionResult<{ base64: string; filename: string }>
+  ActionResult<FileExportResult>
 > {
   return wrapServerAction(async () => {
     const buffer = await http<ArrayBuffer>("/users/export/excel", {
       responseType: "arraybuffer",
     });
-    console.log(
-      "Export Buffer Length:",
-      (buffer as any).byteLength || (buffer as any).length
-    );
     const base64 = Buffer.from(buffer).toString("base64");
     return { base64, filename: `users_export_${Date.now()}.xlsx` };
   }, "Failed to export users");
 }
 
 export async function downloadUserTemplateAction(): Promise<
-  ActionResult<{ base64: string; filename: string }>
+  ActionResult<FileExportResult>
 > {
   return wrapServerAction(async () => {
     const buffer = await http<ArrayBuffer>("/users/import/template", {
       responseType: "arraybuffer",
     });
-    console.log(
-      "Template Buffer Length:",
-      (buffer as any).byteLength || (buffer as any).length
-    );
     const base64 = Buffer.from(buffer).toString("base64");
     return { base64, filename: "users_import_template.xlsx" };
   }, "Failed to download template");
@@ -145,7 +142,7 @@ export async function importUsersAction(
 
 export async function previewUsersImportAction(
   formData: FormData
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<ImportPreviewResult>> {
   return wrapServerAction(async () => {
     return await http("/users/import/preview", {
       method: "POST",

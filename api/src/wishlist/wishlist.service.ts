@@ -52,7 +52,7 @@ export class WishlistService {
    */
 
   async toggle(userId: string, productId: string) {
-    const existing = await this.prisma.wishlist.findUnique({
+    const existing = await (this.prisma.wishlist as any).findUnique({
       where: {
         userId_productId: {
           userId,
@@ -62,13 +62,13 @@ export class WishlistService {
     });
 
     if (existing) {
-      await this.prisma.wishlist.delete({
+      await (this.prisma.wishlist as any).delete({
         where: { id: existing.id },
       });
       return { isWishlisted: false };
     } else {
       try {
-        await this.prisma.wishlist.create({
+        await (this.prisma.wishlist as any).create({
           data: {
             userId,
             productId,
@@ -90,7 +90,7 @@ export class WishlistService {
   async findAll(userId: string, page = 1, limit = 10) {
     const skip = (page - 1) * limit;
     const [data, total] = await Promise.all([
-      this.prisma.wishlist.findMany({
+      (this.prisma.wishlist as any).findMany({
         where: { userId },
         skip,
         take: limit,
@@ -115,7 +115,7 @@ export class WishlistService {
         },
         orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.wishlist.count({ where: { userId } }),
+      (this.prisma.wishlist as any).count({ where: { userId } }),
     ]);
 
     return {
@@ -130,14 +130,14 @@ export class WishlistService {
   }
 
   async checkStatus(userId: string, productId: string) {
-    const existing = await this.prisma.wishlist.findUnique({
+    const existing = await (this.prisma.wishlist as any).findUnique({
       where: { userId_productId: { userId, productId } },
     });
     return { isWishlisted: !!existing };
   }
 
   async count(userId: string) {
-    const count = await this.prisma.wishlist.count({
+    const count = await (this.prisma.wishlist as any).count({
       where: { userId },
     });
     return { count };
@@ -157,7 +157,7 @@ export class WishlistService {
       try {
         // Toggle adds if it doesn't exist. If it exists, it removes it.
         // But for merge, we only want to ADD if it doesn't exist.
-        const existing = await this.prisma.wishlist.findUnique({
+        const existing = await (this.prisma.wishlist as any).findUnique({
           where: {
             userId_productId: {
               userId,
@@ -167,7 +167,7 @@ export class WishlistService {
         });
 
         if (!existing) {
-          await this.prisma.wishlist.create({
+          await (this.prisma.wishlist as any).create({
             data: {
               userId: userId,
               productId: productId,

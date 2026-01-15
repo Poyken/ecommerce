@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export enum NotificationType {
@@ -33,22 +34,27 @@ export enum NotificationType {
  * =====================================================================
  */
 export class CreateNotificationDto {
+  @ApiProperty({ description: 'ID User nhận thông báo' })
   @IsString()
   @IsNotEmpty()
   userId: string;
 
+  @ApiProperty({ enum: NotificationType, description: 'Loại thông báo' })
   @IsEnum(NotificationType)
   @IsNotEmpty()
   type: NotificationType;
 
+  @ApiProperty({ description: 'Tiêu đề' })
   @IsString()
   @IsNotEmpty()
   title: string;
 
+  @ApiProperty({ description: 'Nội dung chi tiết' })
   @IsString()
   @IsNotEmpty()
   message: string;
 
+  @ApiPropertyOptional({ description: 'Đường dẫn liên kết' })
   @IsString()
   @IsOptional()
   link?: string;

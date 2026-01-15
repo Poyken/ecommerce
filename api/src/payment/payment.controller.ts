@@ -74,7 +74,7 @@ export class PaymentController {
 
       if (responseCode === '00') {
         // Success -> Update Order Status immediately (good for local dev)
-        await this.prisma.order.update({
+        await (this.prisma.order as any).update({
           where: { id: orderId },
           data: {
             status: 'PROCESSING',
@@ -95,7 +95,7 @@ export class PaymentController {
         );
       } else {
         // Failed
-        await this.prisma.order.update({
+        await (this.prisma.order as any).update({
           where: { id: orderId },
           data: {
             status: 'CANCELLED',
@@ -133,7 +133,7 @@ export class PaymentController {
       const rspCode = vnp_Params['vnp_ResponseCode'];
 
       // Find Order
-      const order = await this.prisma.order.findUnique({
+      const order = await (this.prisma.order as any).findUnique({
         where: { id: orderId },
       });
       if (!order) {
@@ -147,7 +147,7 @@ export class PaymentController {
 
       if (rspCode === '00') {
         // Payment Success -> Update Order Status
-        await this.prisma.order.update({
+        await (this.prisma.order as any).update({
           where: { id: orderId },
           data: {
             status: 'PROCESSING', // Paid orders go to PROCESSING (or configured flow)
@@ -166,7 +166,7 @@ export class PaymentController {
         return { RspCode: '00', Message: 'Thành công' };
       } else {
         // Payment Failed
-        await this.prisma.order.update({
+        await (this.prisma.order as any).update({
           where: { id: orderId },
           data: {
             status: 'CANCELLED',
@@ -217,7 +217,7 @@ export class PaymentController {
 
     if (signature === expectedSignature) {
       // Find Order
-      const order = await this.prisma.order.findUnique({
+      const order = await (this.prisma.order as any).findUnique({
         where: { id: orderId },
       });
       if (!order) {
@@ -226,7 +226,7 @@ export class PaymentController {
 
       if (resultCode === 0) {
         // Success
-        await this.prisma.order.update({
+        await (this.prisma.order as any).update({
           where: { id: orderId },
           data: {
             status: 'PROCESSING',
@@ -244,7 +244,7 @@ export class PaymentController {
         });
       } else {
         // Failed
-        await this.prisma.order.update({
+        await (this.prisma.order as any).update({
           where: { id: orderId },
           data: {
             status: 'CANCELLED',

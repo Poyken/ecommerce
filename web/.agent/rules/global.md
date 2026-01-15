@@ -105,6 +105,66 @@ href={link.href as any}
 }
 ```
 
+### Improvement Goals 🎯
+
+| Category         | Current | Target     | Strategy                          |
+| ---------------- | ------- | ---------- | --------------------------------- |
+| `: any`          | ~176    | < 50       | Replace with proper interfaces    |
+| `as any` routing | ~50+    | 0          | Use `TypedLink` wrapper component |
+| API responses    | Varies  | 100% typed | Use `ApiResponse<T>` consistently |
+
+**Priority Fixes:**
+
+1. **Routing `as any`** → Create typed wrapper:
+
+```tsx
+// lib/typed-link.tsx
+import { Link as NextIntlLink } from "@/i18n/routing";
+import type { ComponentProps } from "react";
+
+type TypedLinkProps = Omit<ComponentProps<typeof NextIntlLink>, "href"> & {
+  href: `/${string}`;
+};
+
+export function TypedLink({ href, ...props }: TypedLinkProps) {
+  return (
+    <NextIntlLink
+      href={href as Parameters<typeof NextIntlLink>[0]["href"]}
+      {...props}
+    />
+  );
+}
+```
+
+2. **API Response typing** → Always use wrapper:
+
+```typescript
+// ✅ ĐÚNG
+const result = await http.get<ApiResponse<Product[]>>("/products");
+
+// ❌ SAI
+const result = await http.get("/products"); // Returns any
+```
+
+### Shared Types Location
+
+All shared types MUST be imported from centralized locations:
+
+| Type Category | Import From      | Example                             |
+| ------------- | ---------------- | ----------------------------------- |
+| Domain Models | `@/types/models` | `Product`, `User`, `Order`          |
+| API DTOs      | `@/types/dtos`   | `CreateProductDto`, `LoginResponse` |
+| API Utilities | `@/types/api`    | `ApiResponse<T>`, `PaginationMeta`  |
+
+```typescript
+// ✅ ĐÚNG - Import từ centralized types
+import { Product, User } from "@/types/models";
+import { ApiResponse } from "@/types/api";
+
+// ❌ SAI - Định nghĩa local type trùng lặp
+interface Product { ... } // Don't do this!
+```
+
 ### Interface vs Type
 
 | Loại        | Usage     | Evidence                                                             |

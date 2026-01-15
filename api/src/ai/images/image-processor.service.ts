@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import sharp from 'sharp';
+
 import * as path from 'path';
 import * as fs from 'fs';
 import { CloudinaryService } from '@/integrations/cloudinary/cloudinary.service';
@@ -207,15 +208,11 @@ export class ImageProcessorService {
    * Chỉ resize ảnh (không xóa phông)
    */
   async resizeOnly(
-    inputBuffer: Buffer,
+    buffer: Buffer,
     width: number,
     height: number,
-    format: 'webp' | 'png' | 'jpeg' = 'webp',
   ): Promise<Buffer> {
-    return sharp(inputBuffer)
-      .resize(width, height, { fit: 'cover' })
-      .toFormat(format)
-      .toBuffer();
+    return await sharp(buffer).resize(width, height).toBuffer();
   }
 
   /**

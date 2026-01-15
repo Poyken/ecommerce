@@ -1,5 +1,23 @@
+<<<<<<< HEAD
 import { IsString, IsNotEmpty, IsInt, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+=======
+import {
+  IsString,
+  IsNotEmpty,
+  IsInt,
+  IsOptional,
+  IsEnum,
+} from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+
+// Local enum to bypass stale Prisma client types
+export enum LoyaltyPointType {
+  EARNED = 'EARNED',
+  REDEEMED = 'REDEEMED',
+  REFUNDED = 'REFUNDED',
+}
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
 
 export class EarnPointsDto {
   @ApiProperty({ description: 'ID người dùng', example: 'user-uuid' })

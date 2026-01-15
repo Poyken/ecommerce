@@ -30,7 +30,9 @@ const MOCK_CATEGORIES: Category[] = [
     productCount: 156,
     imageUrl:
       "https://images.unsplash.com/photo-1565814329452-e1efa11c5b89?q=80&w=800&auto=format&fit=crop",
-  } as any,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
   {
     id: "2",
     name: "Ergonomic Chairs",
@@ -38,7 +40,9 @@ const MOCK_CATEGORIES: Category[] = [
     productCount: 84,
     imageUrl:
       "https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?q=80&w=800&auto=format&fit=crop",
-  } as any,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
   {
     id: "3",
     name: "Wooden Tables",
@@ -46,7 +50,9 @@ const MOCK_CATEGORIES: Category[] = [
     productCount: 62,
     imageUrl:
       "https://images.unsplash.com/photo-1533090161767-e6ffed986c88?q=80&w=800&auto=format&fit=crop",
-  } as any,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
   {
     id: "4",
     name: "Minimalist Sofas",
@@ -54,7 +60,9 @@ const MOCK_CATEGORIES: Category[] = [
     productCount: 95,
     imageUrl:
       "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=800&auto=format&fit=crop",
-  } as any,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
   {
     id: "5",
     name: "Decor Items",
@@ -62,7 +70,9 @@ const MOCK_CATEGORIES: Category[] = [
     productCount: 230,
     imageUrl:
       "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=800&auto=format&fit=crop",
-  } as any,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
 ];
 
 interface CategoriesBlockProps {

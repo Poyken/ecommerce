@@ -30,7 +30,13 @@ import {
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ChatSelector } from "./chat-selector"; // Import selector
+import { ChatSelector } from "./chat-selector";
+import type {
+  ChatMessage,
+  ChatMessageMetadata,
+  ProductMessageMetadata,
+  OrderMessageMetadata,
+} from "@/types/feature-types/chat.types";
 
 interface ChatWidgetProps {
   user: {
@@ -201,30 +207,38 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
     }
   };
 
-  const handleSelectContent = (type: "PRODUCT" | "ORDER", data: any) => {
+  const handleSelectContent = (
+    type: "PRODUCT" | "ORDER",
+    data: ProductMessageMetadata | OrderMessageMetadata
+  ) => {
     if (type === "PRODUCT") {
-      sendMessage(`Shared a product: ${data.name}`, undefined, "PRODUCT", data);
+      const productData = data as ProductMessageMetadata;
+      sendMessage(
+        `Shared a product: ${productData.productName || "Product"}`,
+        undefined,
+        "PRODUCT",
+        productData
+      );
     } else {
-      sendMessage(`Referenced an order: #${data.id}`, undefined, "ORDER", data);
+      const orderData = data as OrderMessageMetadata;
+      sendMessage(
+        `Referenced an order: #${orderData.orderId}`,
+        undefined,
+        "ORDER",
+        orderData
+      );
     }
   };
 
   // Safe metadata parser
-  const getMetadata = (msg: any) => {
+  const getMetadata = (msg: ChatMessage): ChatMessageMetadata => {
     if (!msg.metadata) return {};
-    if (typeof msg.metadata === "string") {
-      try {
-        return JSON.parse(msg.metadata);
-      } catch (e) {
-        return {};
-      }
-    }
     return msg.metadata;
   };
 
   // Helper to render message content based on type
-  const renderMessageContent = (msg: any) => {
-    const metadata = getMetadata(msg);
+  const renderMessageContent = (msg: ChatMessage) => {
+    const metadata = getMetadata(msg) as Record<string, unknown>;
     switch (msg.type) {
       case "PRODUCT":
         return (

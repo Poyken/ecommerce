@@ -45,25 +45,59 @@ export const RATE_LIMIT_CONFIG = {
 
 ### Bundle: Standard Feature Module
 
-Mỗi module chuẩn trong `src/modules` bao gồm:
+Mỗi module chuẩn trong `src/` bao gồm:
 
-- `[name].module.ts`: Entry point.
+- `[name].module.ts`: Entry point, khai báo imports/exports.
 - `[name].controller.ts`: API endpoints.
 - `[name].service.ts`: Business logic.
+- `[name].repository.ts`: Data access layer (Prisma queries).
 - `dto/*.dto.ts`: Input validation.
 - `[name].service.spec.ts`: Unit test (co-located).
 
-**Evidence:** `src/products/`
+**Evidence:** `src/catalog/products/`
 
 ```text
 products/
 ├── dto/
 │   ├── create-product.dto.ts
+│   ├── update-product.dto.ts
 │   └── filter-product.dto.ts
 ├── products.controller.ts
 ├── products.module.ts
 ├── products.service.ts
+├── products.repository.ts    # ← Repository layer
 └── products.service.spec.ts
+```
+
+### Pattern: Repository Layer
+
+- **Purpose:** Tách biệt Prisma queries khỏi business logic.
+- **Rule:** Mọi Prisma call nên đi qua Repository, không gọi trực tiếp trong Service.
+- **Exception:** Simple CRUD trong modules nhỏ có thể gọi Prisma trực tiếp trong Service.
+- **Evidence:** `src/catalog/products/products.repository.ts`, `src/cart/cart.repository.ts`
+
+```typescript
+// Repository (Data Access)
+@Injectable()
+export class ProductsRepository {
+  constructor(private prisma: PrismaService) {}
+
+  async findById(id: string) {
+    return this.prisma.product.findUnique({ where: { id } });
+  }
+}
+
+// Service (Business Logic) - inject Repository
+@Injectable()
+export class ProductsService {
+  constructor(private readonly productsRepo: ProductsRepository) {}
+
+  async getProduct(id: string) {
+    const product = await this.productsRepo.findById(id);
+    if (!product) throw new NotFoundException();
+    return product;
+  }
+}
 ```
 
 ## 3. TypeScript & Type System
@@ -84,6 +118,28 @@ export interface Response<T> {
   message: string;
   data: T;
 }
+```
+
+### Prisma Type Workarounds
+
+Khi Prisma TypeScript quá strict với complex writes (nested creates, transactions), sử dụng pattern sau:
+
+- **Pattern:** Wrap trong helper function với explicit return type.
+- **Evidence:** `src/catalog/products/products.repository.ts`, `src/orders/orders.service.ts`
+
+```typescript
+// ❌ SAI - TypeScript không infer được nested type
+const product = await this.prisma.product.create({
+  data: complexNestedData as any, // Force any
+});
+
+// ✅ ĐÚNG - Định nghĩa type rõ ràng
+type CreateProductInput = Prisma.ProductCreateInput;
+const data: CreateProductInput = { ... };
+const product = await this.prisma.product.create({ data });
+
+// ✅ Alternative - Use satisfies operator
+const data = { ... } satisfies Prisma.ProductCreateInput;
 ```
 
 ## 4. Import/Export Conventions

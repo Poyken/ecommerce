@@ -79,7 +79,7 @@ export class AuthService {
     avatarUrl: true,
     socialId: true,
     password: true,
-    tenantId: true, // Needed for security check
+    tenantId: true, // Needed for security
     twoFactorEnabled: true,
     twoFactorSecret: true,
     permissions: {
@@ -309,13 +309,13 @@ export class AuthService {
     }
 
     // 3. Tổng hợp quyền hạn (Roles & Permissions)
-    const roles = user.roles.map((r) => r.role.name);
+    const roles = (user as any).roles.map((r: any) => r.role.name);
     const allPermissions = this.permissionService.aggregatePermissions(
       user as any,
     );
 
     // 4. Kiểm tra quyền truy cập (Quan trọng cho Multi-tenancy)
-    await this.validateTenancyAccess(user, tenant, roles, allPermissions);
+    this.validateTenancyAccess(user, tenant, roles, allPermissions);
 
     // Kiểm tra IP Whitelist (nếu có cấu hình)
     this.validateIpWhitelist(user, ip);
@@ -354,7 +354,7 @@ export class AuthService {
         where: {
           email: { equals: email, mode: 'insensitive' },
           deletedAt: null,
-        },
+        } as any,
         select: this.USER_PERMISSION_SELECT,
       }),
     );
@@ -362,10 +362,9 @@ export class AuthService {
 
   /**
    * Kiểm tra quyền truy cập vào Tenant hiện tại (Store Isolation).
-   * - Platform Admin: Vào được mọi nơi.
    * - User thường: Chỉ vào được Tenant của mình.
    */
-  private async validateTenancyAccess(
+  private validateTenancyAccess(
     user: any,
     currentTenant: any,
     roles: string[],

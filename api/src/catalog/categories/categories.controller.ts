@@ -69,12 +69,7 @@ export class CategoriesController {
     @Body() createCategoryDto: CreateCategoryDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (file) {
-      const result = await this.cloudinaryService.uploadImage(file);
-      createCategoryDto.imageUrl = result.secure_url;
-    }
-    const data = await this.categoriesService.create(createCategoryDto);
-    return { data };
+    return this.categoriesService.create(createCategoryDto);
   }
 
   @Get()
@@ -104,8 +99,7 @@ export class CategoriesController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({ summary: 'Import Categories from Excel' })
   async import(@UploadedFile() file: Express.Multer.File) {
-    const data = await this.importService.importFromExcel(file);
-    return { data };
+    return this.importService.importFromExcel(file);
   }
 
   @Post('import/preview')
@@ -114,8 +108,7 @@ export class CategoriesController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({ summary: 'Preview Categories import' })
   async preview(@UploadedFile() file: Express.Multer.File) {
-    const data = await this.importService.previewFromExcel(file);
-    return { data };
+    return this.importService.previewFromExcel(file);
   }
 
   @Get('import/template')
@@ -129,8 +122,7 @@ export class CategoriesController {
   @Get(':id')
   @ApiGetOneResponse('Category', { summary: 'Get category details' })
   async findOne(@Param('id') id: string) {
-    const data = await this.categoriesService.findOne(id);
-    return { data };
+    return this.categoriesService.findOne(id);
   }
 
   @Patch(':id')
@@ -144,12 +136,7 @@ export class CategoriesController {
     @Body() updateCategoryDto: UpdateCategoryDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (file) {
-      const result = await this.cloudinaryService.uploadImage(file);
-      updateCategoryDto.imageUrl = result.secure_url;
-    }
-    const data = await this.categoriesService.update(id, updateCategoryDto);
-    return { data };
+    return this.categoriesService.update(id, updateCategoryDto);
   }
 
   @Delete(':id')
@@ -157,7 +144,6 @@ export class CategoriesController {
   @RequirePermissions('category:delete')
   @ApiDeleteResponse('Category', { summary: 'Delete category' })
   async remove(@Param('id') id: string) {
-    const data = await this.categoriesService.remove(id);
-    return { data };
+    return this.categoriesService.remove(id);
   }
 }

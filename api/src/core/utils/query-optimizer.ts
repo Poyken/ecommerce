@@ -49,7 +49,9 @@ export class BatchLoader<K, V> {
       // Schedule batch execution
       if (!this.scheduled) {
         this.scheduled = true;
-        setTimeout(() => this.executeBatch(), this.options.delayMs ?? 10);
+        setTimeout(() => {
+          this.executeBatch().catch((err) => logger.error(err));
+        }, this.options.delayMs ?? 10);
       }
 
       // Execute immediately if batch is full

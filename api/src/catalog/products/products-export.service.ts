@@ -63,7 +63,7 @@ export class ProductsExportService {
     let hasMore = true;
 
     while (hasMore) {
-      const products = await this.prisma.product.findMany({
+      const products = await (this.prisma.product as any).findMany({
         where: { deletedAt: null },
         take: batchSize,
         skip: cursor ? 1 : 0,

@@ -47,9 +47,17 @@ Hệ thống được chia thành các Feature Modules độc lập (`src/module
 1.  **Request Handling:**
     `Request` -> `Middleware` (Rate Limit, Helmet) -> `Guard` (Auth) -> `Interceptor` (Transform/Cache) -> `Pipe` (Validation) -> `Controller`.
 2.  **Business Logic:**
-    `Controller` -> `Service` -> `Prisma Transaction` -> `Database`.
+    `Controller` -> `Service` -> `Repository` -> `Prisma` -> `Database`.
 3.  **Cross-Cutting Concerns:**
     `Exception Filter` (Error Handling), `Auditing` (Save change history), `Logging` (Structured Logs).
+
+```mermaid
+flowchart LR
+    Controller --> Service
+    Service --> Repository
+    Repository --> Prisma["Prisma ORM"]
+    Prisma --> DB[(PostgreSQL)]
+```
 
 ### C. Async Processing (Background Jobs)
 

@@ -58,6 +58,27 @@ d:\ecommerce\web\
 └── public/                 # Static assets
 ```
 
+## Types Layer
+
+Types are centralized in the `types/` directory and synced from API:
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                    types/ Directory                       │
+├──────────────────────────────────────────────────────────┤
+│  models.ts   │ Domain entities (Product, User, Order)    │
+│  dtos.ts     │ API input/output DTOs (synced from API)   │
+│  api.ts      │ ApiResponse<T>, PaginationMeta            │
+└──────────────────────────────────────────────────────────┘
+           ↑
+           │ Manual sync (see .agent/docs/type-sync.md)
+           │
+┌──────────────────────┐
+│  API Types (Source)  │
+│  api/src/*/dto/*.ts  │
+└──────────────────────┘
+```
+
 ## Data Flow
 
 ```

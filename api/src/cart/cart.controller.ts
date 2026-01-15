@@ -67,8 +67,7 @@ export class CartController {
     summary: 'Lấy giỏ hàng của người dùng hiện tại',
   })
   async getCart(@Request() req: RequestWithUser) {
-    const data = await this.cartService.getCart(req.user.id);
-    return { data };
+    return this.cartService.getCart(req.user.id);
   }
 
   /**
@@ -78,8 +77,7 @@ export class CartController {
   @Post()
   @ApiCreateResponse('CartItem', { summary: 'Thêm sản phẩm vào giỏ hàng' })
   async addToCart(@Request() req: RequestWithUser, @Body() dto: AddToCartDto) {
-    const data = await this.cartService.addToCart(req.user.id, dto);
-    return { data };
+    return this.cartService.addToCart(req.user.id, dto);
   }
 
   /**
@@ -95,8 +93,7 @@ export class CartController {
     @Param('id') itemId: string,
     @Body() dto: UpdateCartItemDto,
   ) {
-    const data = await this.cartService.updateItem(req.user.id, itemId, dto);
-    return { data };
+    return this.cartService.updateItem(req.user.id, itemId, dto);
   }
 
   /**
@@ -108,8 +105,7 @@ export class CartController {
     @Request() req: RequestWithUser,
     @Param('id') itemId: string,
   ) {
-    const data = await this.cartService.removeItem(req.user.id, itemId);
-    return { data };
+    return this.cartService.removeItem(req.user.id, itemId);
   }
 
   /**
@@ -118,8 +114,7 @@ export class CartController {
   @Delete()
   @ApiDeleteResponse('Cart', { summary: 'Xóa toàn bộ giỏ hàng' })
   async clearCart(@Request() req: RequestWithUser) {
-    const data = await this.cartService.clearCart(req.user.id);
-    return { data };
+    return this.cartService.clearCart(req.user.id);
   }
 
   /**
@@ -138,7 +133,6 @@ export class CartController {
     @Request() req: RequestWithUser,
     @Body() items: { skuId: string; quantity: number }[],
   ) {
-    const data = await this.cartService.mergeCart(req.user.id, items);
-    return { data };
+    return this.cartService.mergeCart(req.user.id, items);
   }
 }

@@ -195,7 +195,7 @@ export class OrdersRepository extends BaseRepository<Order> {
    * Tìm order theo ID với full details
    */
   async findByIdWithDetails(id: string): Promise<OrderWithRelations | null> {
-    return this.model.findFirst({
+    return await this.model.findFirst({
       where: this.withTenantFilter({ id }),
       include: this.fullIncludes,
     });
@@ -205,7 +205,7 @@ export class OrdersRepository extends BaseRepository<Order> {
    * Tìm order theo order number
    */
   async findByOrderNumber(orderNumber: string): Promise<Order | null> {
-    return this.model.findFirst({
+    return await this.model.findFirst({
       where: this.withTenantFilter({ orderNumber }),
       include: this.defaultIncludes,
     });
@@ -304,7 +304,7 @@ export class OrdersRepository extends BaseRepository<Order> {
    * Tìm orders cần xử lý (pending, processing)
    */
   async findPendingOrders(limit = 50): Promise<Order[]> {
-    return this.model.findMany({
+    return await this.model.findMany({
       where: this.withTenantFilter({
         status: { in: ['PENDING', 'PROCESSING'] },
       }),

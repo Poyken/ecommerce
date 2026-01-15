@@ -35,11 +35,15 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '@/core/prisma/prisma.service';
+<<<<<<< HEAD
 import { LoyaltyPointType, Prisma } from '@prisma/client';
+=======
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
 import {
   EarnPointsDto,
   RedeemPointsDto,
   RefundPointsDto,
+  LoyaltyPointType,
 } from './dto/loyalty.dto';
 import { EmailService } from '@/integrations/email/email.service';
 
@@ -82,11 +86,15 @@ export class LoyaltyService {
       throw new BadRequestException('Số điểm tích lũy phải là số dương');
     }
 
+<<<<<<< HEAD
     // Tính ngày hết hạn
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + LOYALTY_CONFIG.EXPIRY_DAYS);
 
     const point = await this.prisma.loyaltyPoint.create({
+=======
+    return (this.prisma as any).loyaltyPoint.create({
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
       data: {
         userId: dto.userId,
         orderId: dto.orderId,
@@ -102,6 +110,7 @@ export class LoyaltyService {
     return point;
   }
 
+<<<<<<< HEAD
   /**
    * Tự động tích điểm khi đơn hàng hoàn thành
    */
@@ -160,19 +169,89 @@ export class LoyaltyService {
           order.user.email,
           order.user.firstName || 'Quý khách',
           pointsToEarn,
+=======
+  // Tự động tích điểm khi đơn hàng hoàn thành
+  async earnPointsFromOrder(tenantId: string, orderId: string) {
+    return this.prisma.$transaction(async (tx) => {
+      const order = await (tx as any).order.findUnique({
+        where: { id: orderId, tenantId },
+      });
+
+      if (!order) {
+        throw new NotFoundException('Không tìm thấy đơn hàng');
+      }
+
+      // Idempotency: Kiểm tra xem đơn hàng này đã được tích điểm chưa
+      const existingPoints = await (tx as any).loyaltyPoint.findFirst({
+        where: { orderId, type: LoyaltyPointType.EARNED },
+      });
+
+      if (existingPoints) {
+        this.logger.warn(`Order ${orderId} already earned points. Skipping.`);
+        return existingPoints;
+      }
+
+      // 1. Lấy cấu hình Loyalty của Tenant
+      const settings = await (tx as any).tenantSettings.findUnique({
+        where: { tenantId },
+      });
+
+      // 2. Nếu Loyalty bị tắt, không làm gì cả
+      if (settings && !settings.isLoyaltyEnabled) {
+        this.logger.log(`Loyalty is disabled for tenant ${tenantId}.`);
+        return null;
+      }
+
+      // 3. Tính điểm: Sử dụng tỷ lệ từ cấu hình (mặc định 1000đ = 1 điểm)
+      const ratio = settings ? Number(settings.loyaltyPointRatio) : 1000;
+      const pointsToEarn = Math.floor(Number(order.totalAmount) / ratio);
+
+      if (pointsToEarn <= 0) {
+        return null; // Không đủ để tích điểm
+      }
+
+      const loyaltyPoint = await (tx as any).loyaltyPoint.create({
+        data: {
+          userId: order.userId,
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
           orderId,
+          amount: pointsToEarn,
+          type: LoyaltyPointType.EARNED as any,
+          reason: `Tích điểm từ đơn hàng #${orderId.slice(0, 8)}`,
+          tenantId,
+        },
+      });
+
+      // Gửi email thông báo tích điểm thành công
+      try {
+        const user = await (this.prisma.user as any).findUnique({
+          where: { id: order.userId },
+          select: { email: true, firstName: true },
+        });
+
+        if (user?.email) {
+          await this.emailService.sendLoyaltyPointsEarned(
+            user.email,
+            user.firstName || 'Quý khách',
+            pointsToEarn,
+            orderId,
+          );
+        }
+      } catch (emailError) {
+        this.logger.error(
+          `Lỗi gửi email thông báo tích điểm: ${emailError.message}`,
         );
       }
-    } catch (emailError) {
-      this.logger.error(
-        `Lỗi gửi email thông báo tích điểm: ${emailError.message}`,
-      );
-    }
 
+<<<<<<< HEAD
     this.logger.log(
       `User ${order.userId} earned ${pointsToEarn} points from order ${orderId}`,
     );
     return loyaltyPoint;
+=======
+      return loyaltyPoint;
+    });
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
   }
 
   // =====================================================================
@@ -193,6 +272,7 @@ export class LoyaltyService {
       );
     }
 
+<<<<<<< HEAD
     // Kiểm tra số dư điểm (chỉ tính điểm còn hiệu lực)
     const balance = await this.getAvailableBalance(tenantId, dto.userId);
     if (balance < dto.amount) {
@@ -218,6 +298,9 @@ export class LoyaltyService {
     }
 
     const point = await this.prisma.loyaltyPoint.create({
+=======
+    return (this.prisma as any).loyaltyPoint.create({
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
       data: {
         userId: dto.userId,
         orderId: dto.orderId,
@@ -260,6 +343,7 @@ export class LoyaltyService {
    * Hoàn điểm khi hủy đơn/trả hàng
    */
   async refundPoints(tenantId: string, dto: RefundPointsDto) {
+<<<<<<< HEAD
     // Kiểm tra đơn hàng có dùng điểm không
     const redeemedPoints = await this.prisma.loyaltyPoint.findFirst({
       where: {
@@ -296,6 +380,9 @@ export class LoyaltyService {
     const pointsToRefund = dto.amount || Math.abs(redeemedPoints.amount);
 
     const point = await this.prisma.loyaltyPoint.create({
+=======
+    return (this.prisma as any).loyaltyPoint.create({
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
       data: {
         userId: dto.userId,
         orderId: dto.orderId,
@@ -322,7 +409,7 @@ export class LoyaltyService {
    * Lấy số dư điểm hiện tại (tất cả)
    */
   async getUserPointBalance(tenantId: string, userId: string): Promise<number> {
-    const result = await this.prisma.loyaltyPoint.aggregate({
+    const result = await (this.prisma as any).loyaltyPoint.aggregate({
       where: { userId, tenantId },
       _sum: { amount: true },
     });
@@ -330,6 +417,7 @@ export class LoyaltyService {
     return result._sum.amount || 0;
   }
 
+<<<<<<< HEAD
   /**
    * Lấy số dư điểm còn hiệu lực (chưa hết hạn)
    */
@@ -345,6 +433,13 @@ export class LoyaltyService {
         OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
       },
       _sum: { amount: true },
+=======
+  async getUserPointHistory(tenantId: string, userId: string) {
+    return (this.prisma as any).loyaltyPoint.findMany({
+      where: { userId, tenantId },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
     });
 
     // Điểm đã tiêu + hoàn
@@ -459,7 +554,7 @@ export class LoyaltyService {
    * Lấy điểm liên quan đến đơn hàng
    */
   async getOrderPoints(tenantId: string, orderId: string) {
-    return this.prisma.loyaltyPoint.findMany({
+    return (this.prisma as any).loyaltyPoint.findMany({
       where: { orderId, tenantId },
       orderBy: { createdAt: 'asc' },
     });

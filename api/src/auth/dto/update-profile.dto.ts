@@ -1,5 +1,11 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUrl, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 /**
  * =====================================================================
@@ -22,31 +28,23 @@ import { IsOptional, IsString, IsUrl, MinLength } from 'class-validator';
  */
 export class UpdateProfileDto {
   @ApiPropertyOptional({ example: 'John' })
-  @IsOptional()
   @IsString()
-  @MinLength(2)
+  @IsOptional()
   firstName?: string;
 
   @ApiPropertyOptional({ example: 'Doe' })
-  @IsOptional()
   @IsString()
-  @MinLength(2)
+  @IsOptional()
   lastName?: string;
 
-  @ApiPropertyOptional({ example: 'https://example.com/avatar.jpg' })
+  @ApiPropertyOptional({ example: 'new_avatar_url' })
+  @IsString()
   @IsOptional()
-  @IsUrl()
   avatarUrl?: string;
 
-  @ApiPropertyOptional({ example: 'oldPassword123' })
-  @IsOptional()
+  @ApiPropertyOptional({ example: 'newpassword123', minLength: 6 })
   @IsString()
-  @MinLength(8)
+  @IsOptional()
+  @MinLength(6, { message: 'Mật khẩu phải ít nhất 6 ký tự' })
   password?: string;
-
-  @ApiPropertyOptional({ example: 'newPassword123' })
-  @IsOptional()
-  @IsString()
-  @MinLength(8)
-  newPassword?: string;
 }

@@ -29,6 +29,10 @@ import {
 } from "@/types/dtos";
 import { Subscription, Tenant } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
+import {
+  SubscriptionQueryParams,
+  SubscriptionUpdateInput,
+} from "@/types/feature-types/admin.types";
 
 /**
  * =====================================================================
@@ -89,10 +93,13 @@ export async function deleteTenantAction(
 }
 
 export async function getSubscriptionsAction(
-  params: any = {}
+  params: SubscriptionQueryParams = {}
 ): Promise<ActionResult<Subscription[]>> {
   return wrapServerAction(
-    () => http<ApiResponse<Subscription[]>>("/subscriptions", { params }),
+    () =>
+      http<ApiResponse<Subscription[]>>("/subscriptions", {
+        params: params as Record<string, string | number | boolean>,
+      }),
     "Failed to fetch subscriptions"
   );
 }
@@ -108,7 +115,7 @@ export async function cancelSubscriptionAction(
 
 export async function updateSubscriptionAction(
   id: string,
-  data: any
+  data: SubscriptionUpdateInput
 ): Promise<ActionResult<Subscription>> {
   return wrapServerAction(async () => {
     const res = await http<ApiResponse<Subscription>>(`/subscriptions/${id}`, {

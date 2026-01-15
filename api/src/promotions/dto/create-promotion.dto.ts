@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsString,
   IsOptional,
@@ -50,6 +51,7 @@ export enum PromotionActionType {
 }
 
 export class PromotionRuleDto {
+<<<<<<< HEAD
   @ApiProperty({
     enum: PromotionRuleType,
     description: 'Loại điều kiện áp dụng',
@@ -70,11 +72,23 @@ export class PromotionRuleDto {
     description: 'Giá trị so sánh (string để hỗ trợ nhiều kiểu dữ liệu)',
     example: '500000',
   })
+=======
+  @ApiProperty({ example: 'MIN_ORDER_VALUE' })
+  @IsString()
+  type: string;
+
+  @ApiProperty({ example: 'GTE' })
+  @IsString()
+  operator: string;
+
+  @ApiProperty({ example: '500000' })
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
   @IsString()
   value: string;
 }
 
 export class PromotionActionDto {
+<<<<<<< HEAD
   @ApiProperty({
     enum: PromotionActionType,
     description: 'Loại hành động giảm giá',
@@ -94,6 +108,17 @@ export class PromotionActionDto {
     description: 'Số tiền giảm tối đa (cho loại phần trăm)',
     example: 100000,
   })
+=======
+  @ApiProperty({ example: 'DISCOUNT_PERCENT' })
+  @IsString()
+  type: string;
+
+  @ApiProperty({ example: '10' })
+  @IsString()
+  value: string;
+
+  @ApiPropertyOptional({ example: 50000 })
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
   @IsOptional()
   @IsNumber()
   @Min(0)
@@ -101,6 +126,7 @@ export class PromotionActionDto {
 }
 
 export class CreatePromotionDto {
+<<<<<<< HEAD
   @ApiProperty({
     description: 'Tên chương trình khuyến mãi',
     example: 'Giảm 10% đơn hàng đầu tiên',
@@ -113,17 +139,29 @@ export class CreatePromotionDto {
     example: 'WELCOME10',
   })
   @IsOptional()
+=======
+  @ApiProperty({ example: 'Giảm giá mùa hè' })
+  @IsString()
+  name: string;
+
+  @ApiProperty({ example: 'SUMMER2024' })
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
   @IsString()
   code?: string;
 
+<<<<<<< HEAD
   @ApiPropertyOptional({
     description: 'Mô tả chi tiết chương trình',
     example: 'Áp dụng cho khách hàng mới, đơn tối thiểu 500k',
   })
+=======
+  @ApiPropertyOptional({ example: 'Chương trình khuyến mãi hè' })
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
   @IsOptional()
   @IsString()
   description?: string;
 
+<<<<<<< HEAD
   @ApiProperty({
     description: 'Ngày bắt đầu (ISO 8601)',
     example: '2025-01-01T00:00:00.000Z',
@@ -142,41 +180,68 @@ export class CreatePromotionDto {
     description: 'Trạng thái kích hoạt',
     default: true,
   })
+=======
+  @ApiProperty({ example: '2024-06-01T00:00:00Z' })
+  @IsDateString()
+  startDate: string;
+
+  @ApiProperty({ example: '2024-08-31T23:59:59Z' })
+  @IsDateString()
+  endDate: string;
+
+  @ApiPropertyOptional({ example: true })
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
 
+<<<<<<< HEAD
   @ApiPropertyOptional({
     description: 'Độ ưu tiên (số lớn = ưu tiên cao)',
     default: 0,
   })
+=======
+  @ApiPropertyOptional({ example: 1 })
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
   @IsOptional()
   @IsInt()
   @Min(0)
   priority?: number;
 
+<<<<<<< HEAD
   @ApiPropertyOptional({
     description: 'Giới hạn số lần sử dụng tổng cộng',
     example: 100,
   })
+=======
+  @ApiPropertyOptional({ example: 100 })
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
   @IsOptional()
   @IsInt()
   @Min(1)
   usageLimit?: number;
 
+<<<<<<< HEAD
   @ApiProperty({
     type: [PromotionRuleDto],
     description: 'Danh sách điều kiện áp dụng',
   })
+=======
+  @ApiProperty({ type: [PromotionRuleDto] })
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PromotionRuleDto)
   rules: PromotionRuleDto[];
 
+<<<<<<< HEAD
   @ApiProperty({
     type: [PromotionActionDto],
     description: 'Danh sách hành động khi thỏa điều kiện',
   })
+=======
+  @ApiProperty({ type: [PromotionActionDto] })
+>>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PromotionActionDto)

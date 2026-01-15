@@ -56,6 +56,7 @@ import { SkuManagerService } from './sku-manager.service';
 
 import { PlanUsageService } from '@/tenants/plan-usage.service';
 import { getTenant } from '@core/tenant/tenant.context';
+import { createPaginatedResult } from '@/common/dto/base.dto';
 
 /**
  * CACHE TTL CONFIGURATION (seconds)
@@ -96,10 +97,12 @@ export class ProductsService {
 
     // 2. Validate khóa ngoại: Categories và Brand phải tồn tại trong DB
     const [categories, brand] = await Promise.all([
-      this.prisma.category.findMany({
+      (this.prisma.category as any).findMany({
         where: { id: { in: createProductDto.categoryIds } },
       }),
-      this.prisma.brand.findFirst({ where: { id: productData.brandId } }),
+      (this.prisma.brand as any).findUnique({
+        where: { id: createProductDto.brandId },
+      }),
     ]);
 
     if (categories.length !== createProductDto.categoryIds.length)
@@ -108,15 +111,14 @@ export class ProductsService {
 
     // 3. Tạo Product và Options (Nested Create)
     const { categoryIds, ...dataForCreate } = productData;
-    const product = await this.prisma.product.create({
+    const product = await (this.prisma.product as any).create({
       data: {
-        ...dataForCreate,
+        ...productData,
         slug,
         tenantId: tenant!.id,
         categories: {
-          create: categoryIds.map((id) => ({
-            categoryId: id,
-            tenantId: tenant!.id,
+          create: createProductDto.categoryIds.map((categoryId) => ({
+            category: { connect: { id: categoryId } },
           })),
         },
         options: {
@@ -140,7 +142,7 @@ export class ProductsService {
             tenantId: tenant!.id,
           })),
         },
-      },
+      } as any,
       include: {
         brand: true,
         categories: {
@@ -176,7 +178,6 @@ export class ProductsService {
    */
   async findAll(query: FilterProductDto) {
     // [TỐI ƯU HÓA P9] Chuẩn hóa query (Canonicalization)
-    // Giúp đảm bảo ?cat=1&brand=2 và ?brand=2&cat=1 sẽ dùng chung 1 cache key
     const sortedQuery = Object.keys(query)
       .sort()
       .reduce(
@@ -215,60 +216,61 @@ export class ProductsService {
     const skip = (page - 1) * limit;
 
     // Xây dựng mệnh đề Where (Điều kiện lọc)
-    const where: Prisma.ProductWhereInput = {
-      AND: [
-        // 1. Search text (Full Text Search - Tiếng Việt không dấu/có dấu)
-        search
-          ? {
-              OR: [
-                {
-                  name: {
-                    search: search.trim().split(/\s+/).join(' & '),
-                  },
-                },
-                {
-                  description: {
-                    search: search.trim().split(/\s+/).join(' & '),
-                  },
-                },
-              ],
-            }
-          : {},
-        // 1.1 Lọc theo danh sách ID cụ thể (dùng cho Cart/Wishlist)
-        ids
-          ? {
-              id: { in: ids.split(',').map((id) => id.trim()) },
-            }
-          : {},
-        // 2. Filter theo Category (Quan hệ Many-to-Many)
-        categoryId === 'null'
-          ? {
-              categories: {
-                none: {},
-              },
-            }
-          : categoryId
-            ? {
-                categories: {
-                  some: {
-                    categoryId,
-                  },
-                },
-              }
-            : {},
-        // 3. Filter theo Brand
-        brandId ? { brandId } : {},
-        // 4. Filter theo khoảng giá (Tối ưu bằng cột minPrice/maxPrice cache sẵn trong bảng Product)
-        minPrice !== undefined || maxPrice !== undefined
-          ? {
-              AND: [
-                minPrice !== undefined ? { maxPrice: { gte: minPrice } } : {},
-                maxPrice !== undefined ? { minPrice: { lte: maxPrice } } : {},
-              ],
-            }
-          : {},
-      ],
+    const where: any = {
+      AND: [],
     };
+
+    // 1. Search text (Full Text Search - Tiếng Việt không dấu/có dấu)
+    if (search) {
+      where.AND.push({
+        OR: [
+          {
+            name: {
+              search: search.trim().split(/\s+/).join(' & '),
+            },
+          },
+          {
+            description: {
+              search: search.trim().split(/\s+/).join(' & '),
+            },
+          },
+        ],
+      });
+    }
+
+    // 1.1 Lọc theo danh sách ID cụ thể (dùng cho Cart/Wishlist)
+    if (ids) {
+      where.AND.push({
+        id: { in: ids.split(',').map((id) => id.trim()) },
+      });
+    }
+
+    // 2. Filter theo Category (Quan hệ Many-to-Many)
+    if (categoryId === 'null') {
+      where.categories = { none: {} };
+    } else if (categoryId) {
+      where.categories = { some: { categoryId } };
+    }
+
+    // 3. Filter theo Brand
+    if (brandId) {
+      where.brandId = brandId;
+    }
+
+    // 4. Filter theo khoảng giá (Tối ưu bằng cột minPrice/maxPrice cache sẵn trong bảng Product)
+    if (minPrice !== undefined || maxPrice !== undefined) {
+      const priceFilter: any = { AND: [] };
+      if (minPrice !== undefined)
+        priceFilter.AND.push({ maxPrice: { gte: minPrice } });
+      if (maxPrice !== undefined)
+        priceFilter.AND.push({ minPrice: { lte: maxPrice } });
+      where.AND.push(priceFilter);
+    }
+
+    // Dọn dẹp AND nếu trống
+    if (where.AND.length === 0) {
+      delete where.AND;
+    }
 
     // Xây dựng Order By (Sắp xếp)
     // Xây dựng Order By (Sắp xếp) - Thêm id: 'desc' để đảm bảo sort stable khi trùng createdAt
@@ -295,7 +297,7 @@ export class ProductsService {
     }
 
     const [products, total] = await Promise.all([
-      this.prisma.product.findMany({
+      (this.prisma.product as any).findMany({
         where,
         skip,
         take: limit,
@@ -332,7 +334,7 @@ export class ProductsService {
           },
 
           // Options - chỉ load khi cần (admin/wishlist)
-          ...(query.includeSkus === 'true'
+          ...(query.includeSkus
             ? {
                 options: {
                   select: {
@@ -348,7 +350,7 @@ export class ProductsService {
 
           // SKUs - tối ưu: chỉ load 1 SKU cho PLP, giảm nested relations
           skus: {
-            take: query.includeSkus === 'true' ? undefined : 1,
+            take: query.includeSkus ? undefined : 1,
             where: {
               status: 'ACTIVE',
             },
@@ -360,7 +362,7 @@ export class ProductsService {
               imageUrl: true,
               stock: true,
               // Chỉ load optionValues khi cần (wishlist/cart)
-              ...(query.includeSkus === 'true'
+              ...(query.includeSkus
                 ? {
                     optionValues: {
                       select: {
@@ -387,29 +389,12 @@ export class ProductsService {
               reviews: true,
             },
           },
-          // REMOVED: Không load reviews chi tiết cho listing
-          // Frontend sẽ tính avgRating từ Product Detail API
         },
       }),
-      this.prisma.product.count({ where }),
+      (this.prisma.product as any).count({ where }),
     ]);
 
-    const result = {
-      data: products,
-      meta: {
-        total,
-        page,
-        limit,
-        lastPage: Math.ceil(total / limit),
-      },
-    };
-
-    // await this.cacheManager.set(
-    //   cacheKey,
-    //   result,
-    //   CACHE_TTL.PRODUCT_LIST * 1000,
-    // );
-    return result;
+    return createPaginatedResult(products, total, page, limit);
   }
 
   /**
@@ -470,7 +455,7 @@ export class ProductsService {
     return this.cacheService.getOrSet(
       cacheKey,
       async () => {
-        const product = await this.prisma.product.findFirst({
+        const product = await (this.prisma.product as any).findFirst({
           where: { id },
           select: {
             id: true,
@@ -572,7 +557,7 @@ export class ProductsService {
 
     // 0. [SMART MIGRATION SNAPSHOT] Chụp lại trạng thái cũ trước khi thay đổi
     // Để so sánh và migrate SKU thông minh (VD: giữ nguyên giá/tồn kho nếu chỉ đổi tên Option)
-    const oldProductState = await this.prisma.product.findFirst({
+    const oldProductState = await (this.prisma.product as any).findFirst({
       where: { id },
       include: {
         skus: {
@@ -587,27 +572,31 @@ export class ProductsService {
     });
 
     const oldSkuSnapshots =
-      oldProductState?.skus.map((sku) => ({
+      (oldProductState?.skus as any[])?.map((sku) => ({
         id: sku.id,
         price: sku.price,
         stock: sku.stock,
         values: new Set(
-          sku.optionValues.map((ov) => ov.optionValue.value.toLowerCase()),
+          (sku.optionValues as any[]).map((ov) =>
+            ov.optionValue.value.toLowerCase(),
+          ),
         ),
       })) || [];
 
     // 1. Cập nhật Thông tin cơ bản & Options (Trong Transaction)
     await this.prisma.$transaction(async (tx) => {
       // Update các trường cơ bản (Tên, Mô tả...)
-      await this.prisma.product.update({
+      await (tx.product as any).update({
         where: { id },
-        data: data,
+        data: data as any,
       });
 
       // Update danh mục nếu có thay đổi
       if (updateProductDto.categoryIds) {
-        await tx.productToCategory.deleteMany({ where: { productId: id } });
-        await tx.product.update({
+        await (tx as any).productToCategory.deleteMany({
+          where: { productId: id },
+        });
+        await (tx as any).product.update({
           where: { id },
           data: {
             categories: {
@@ -616,18 +605,20 @@ export class ProductsService {
                 tenantId: getTenant()!.id,
               })),
             },
-          },
+          } as any,
         });
       }
 
       // Update options nếu có thay đổi (CẤU TRÚC PHỨC TẠP)
       if (options) {
         // Xóa options cũ (Cascade delete sẽ xóa values liên quan)
-        await tx.productOption.deleteMany({ where: { productId: id } });
+        await (tx as any).productOption.deleteMany({
+          where: { productId: id },
+        });
 
         // Tạo options mới
         if (options.length > 0) {
-          await tx.product.update({
+          await (tx as any).product.update({
             where: { id },
             data: {
               options: {
@@ -643,7 +634,7 @@ export class ProductsService {
                   },
                 })),
               },
-            },
+            } as any,
           });
         }
       }
@@ -651,11 +642,13 @@ export class ProductsService {
       // Update hình ảnh nếu có thay đổi
       if (images) {
         // Xóa ảnh cũ
-        await tx.productImage.deleteMany({ where: { productId: id } });
+        await (tx as any).productImage.deleteMany({
+          where: { productId: id },
+        });
 
         // Tạo ảnh mới
         if (images.length > 0) {
-          await tx.product.update({
+          await (tx as any).product.update({
             where: { id },
             data: {
               images: {
@@ -666,14 +659,15 @@ export class ProductsService {
                   tenantId: getTenant()!.id,
                 })),
               },
-            },
+            } as any,
           });
         }
       }
     });
 
     // 2. Lấy lại dữ liệu Product mới nhất kèm Options mới
-    const freshProduct = await this.prisma.product.findFirst({
+    // 2. Lấy lại dữ liệu Product mới nhất kèm Options mới
+    const freshProduct = await (this.prisma.product as any).findFirst({
       where: { id },
       include: { options: { include: { values: true } } },
     });
@@ -702,7 +696,7 @@ export class ProductsService {
   ) {
     // Validate: Ensure all SKUs belong to this product
     const skuIds = skus.map((s) => s.id);
-    const existingSkus = await this.prisma.sku.findMany({
+    const existingSkus = await (this.prisma.sku as any).findMany({
       where: {
         id: { in: skuIds },
         productId: productId,
@@ -718,13 +712,13 @@ export class ProductsService {
 
     await this.prisma.$transaction(
       skus.map((sku) =>
-        this.prisma.sku.update({
+        (this.prisma.sku as any).update({
           where: { id: sku.id },
           data: {
             price: sku.price,
             salePrice: sku.salePrice,
             stock: sku.stock,
-          },
+          } as any,
         }),
       ),
     );
@@ -738,17 +732,25 @@ export class ProductsService {
 
   async remove(id: string) {
     const result = await this.prisma.$transaction(async (tx) => {
-      const product = await tx.product.update({
+      const product = await (tx.product as any).findFirst({
+        where: { id },
+      });
+
+      if (!product) {
+        throw new NotFoundException('Product not found');
+      }
+
+      const updatedProduct = await (tx.product as any).update({
         where: { id },
         data: { deletedAt: new Date() },
       });
 
-      await tx.sku.updateMany({
+      await (tx.sku as any).updateMany({
         where: { productId: id },
         data: { status: 'INACTIVE' },
       });
 
-      return product;
+      return updatedProduct;
     });
 
     await this.invalidateProductCache(id);
@@ -763,7 +765,7 @@ export class ProductsService {
     const validIds = skuIds.filter((id) => id); // Remove null/undefined/empty
     if (validIds.length === 0) return [];
 
-    return this.prisma.sku.findMany({
+    return (this.prisma.sku as any).findMany({
       where: {
         id: { in: validIds },
       },
@@ -817,7 +819,7 @@ export class ProductsService {
     });
   }
   async getTranslations(productId: string) {
-    return this.prisma.productTranslation.findMany({
+    return (this.prisma.productTranslation as any).findMany({
       where: { productId },
     });
   }
@@ -828,7 +830,7 @@ export class ProductsService {
   ) {
     const { locale, name, description } = data;
 
-    return this.prisma.productTranslation.upsert({
+    return (this.prisma.productTranslation as any).upsert({
       where: {
         productId_locale: {
           productId,
@@ -884,7 +886,7 @@ export class ProductsService {
       cacheKey,
       async () => {
         // 1. Lấy thông tin cơ bản để biết Category của sản phẩm hiện tại
-        const product = await this.prisma.product.findFirst({
+        const product = await (this.prisma.product as any).findFirst({
           where: { id: productId },
           select: {
             categories: {
@@ -898,7 +900,7 @@ export class ProductsService {
         const mainCategoryId = product.categories[0].categoryId;
 
         // 2. Tìm các sản phẩm khác trong cùng Category
-        const related = await this.prisma.product.findMany({
+        const related = await (this.prisma.product as any).findMany({
           where: {
             categories: {
               some: {
@@ -974,17 +976,17 @@ export class ProductsService {
    * Internal helper to recalculate ratings for reconciliation
    */
   private async recalculateProductRating(productId: string) {
-    const aggregate = await this.prisma.review.aggregate({
+    const aggregate = await (this.prisma.review as any).aggregate({
       where: { productId, isApproved: true, deletedAt: null },
       _avg: { rating: true },
       _count: true,
     });
 
-    await this.prisma.product.update({
+    await (this.prisma.product as any).update({
       where: { id: productId },
       data: {
-        avgRating: aggregate._avg.rating || 0,
-        reviewCount: aggregate._count,
+        avgRating: aggregate._avg?.rating || 0,
+        reviewCount: aggregate._count || 0,
       },
     });
   }
@@ -999,10 +1001,13 @@ export class ProductsService {
    */
   @Cron('0 2 * * 0') // Sunday at 2 AM
   async reconcileAllProducts() {
-    this.logger.log(
-      'Starting global product data reconciliation (Batch Raw SQL)...',
-    );
+    this.logger.log('Starting full catalog reconciliation...');
 
+    // 1. Quét toàn bộ ID sản phẩm (Chỉ lấy ID để tiết kiệm RAM)
+    const products = await (this.prisma.product as any).findMany({
+      where: { deletedAt: null },
+      select: { id: true },
+    });
     try {
       await this.prisma.$transaction(async (tx) => {
         // 1. Update Price Ranges for all active products based on their SKUs
@@ -1074,7 +1079,7 @@ export class ProductsService {
 
     // Fallback to PostgreSQL fulltext search (no vector yet)
     // This is a graceful degradation when pgvector is not available
-    const results = await this.prisma.product.findMany({
+    const results = await (this.prisma.product as any).findMany({
       where: {
         OR: [
           { name: { contains: query, mode: 'insensitive' } },

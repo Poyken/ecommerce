@@ -1,5 +1,5 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
+import { Inject, Injectable, Logger, NestMiddleware } from '@nestjs/common';
 import { Tenant } from '@prisma/client';
 import * as cacheManager from 'cache-manager';
 import { NextFunction, Request, Response } from 'express';
@@ -39,6 +39,8 @@ import { tenantStorage } from './tenant.context';
  * =================================================================================================
  */
 export class TenantMiddleware implements NestMiddleware {
+  private readonly logger = new Logger(TenantMiddleware.name);
+
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: cacheManager.Cache,
@@ -50,8 +52,8 @@ export class TenantMiddleware implements NestMiddleware {
       req.headers.host ||
       '') as string;
     const domain = rawHost.split(':')[0];
-    console.log(
-      `[TenantMiddleware] Resolving tenant for domain: "${domain}" (from x-tenant-domain: "${req.headers['x-tenant-domain']}", host: "${req.headers.host}")`,
+    this.logger.debug(
+      `Resolving tenant for domain: "${domain}" (x-tenant-domain: "${String(req.headers['x-tenant-domain'] || '')}", host: "${String(req.headers.host || '')}")`,
     );
 
     // 2. Find Tenant (Cached)
@@ -80,8 +82,8 @@ export class TenantMiddleware implements NestMiddleware {
       if (tenant) {
         // [SECURITY] Check if tenant is active/suspended
         if (!tenant.isActive) {
-          console.warn(
-            `[TenantMiddleware] Attempt to access inactive tenant: ${tenant.name} (${domain})`,
+          this.logger.warn(
+            `Attempt to access inactive tenant: ${tenant.name} (${domain})`,
           );
           return res.status(403).json({
             error: 'Store suspended',
@@ -106,8 +108,8 @@ export class TenantMiddleware implements NestMiddleware {
       // do NOT allow bypass to global context unless it's a system-whitelisted domain.
       const requestedTenantDomain = req.headers['x-tenant-domain'];
       if (requestedTenantDomain && requestedTenantDomain !== '') {
-        console.error(
-          `[TenantMiddleware] Unauthorized Tenant access: domain="${domain}", x-tenant-domain="${requestedTenantDomain}"`,
+        this.logger.error(
+          `Unauthorized Tenant access: domain="${domain}", x-tenant-domain="${String(requestedTenantDomain || '')}"`,
         );
         return res.status(403).json({
           error: 'Unauthorized Tenant',

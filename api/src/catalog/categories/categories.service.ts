@@ -69,7 +69,7 @@ export class CategoriesService extends BaseCrudService<
 
     // 2. Kiểm tra xem danh mục đã tồn tại chưa (check cả tên và slug)
     const tenant = getTenant();
-    const existing = await this.model.findFirst({
+    const existing = await (this.model as any).findFirst({
       where: {
         OR: [{ name: createCategoryDto.name }, { slug }],
         tenantId: tenant?.id,
@@ -82,7 +82,7 @@ export class CategoriesService extends BaseCrudService<
 
     // 3. Validate danh mục cha (nếu người dùng truyền lên)
     if (createCategoryDto.parentId) {
-      const parent = await this.model.findFirst({
+      const parent = await (this.model as any).findFirst({
         where: { id: createCategoryDto.parentId },
       });
       if (!parent) {
@@ -91,12 +91,12 @@ export class CategoriesService extends BaseCrudService<
     }
 
     // 4. Lưu vào database
-    const newCategory = await this.model.create({
+    const newCategory = await (this.model as any).create({
       data: {
         ...createCategoryDto,
         slug,
         tenantId: tenant!.id,
-      },
+      } as any,
     });
 
     // Invalidate cache
@@ -183,7 +183,7 @@ export class CategoriesService extends BaseCrudService<
     // Nếu có đổi slug, kiểm tra xem slug mới có bị trùng với danh mục KHÁC không
     if (updateCategoryDto.slug) {
       const tenant = getTenant();
-      const existingSlug = await this.model.findFirst({
+      const existingSlug = await (this.model as any).findFirst({
         where: {
           slug: updateCategoryDto.slug,
           tenantId: tenant?.id,
@@ -204,9 +204,9 @@ export class CategoriesService extends BaseCrudService<
         updateCategoryDto.parentId === '' ? null : updateCategoryDto.parentId,
     };
 
-    const updated = await this.model.update({
+    const updated = await (this.model as any).update({
       where: { id },
-      data: dataToUpdate,
+      data: dataToUpdate as any,
     });
 
     await this.cacheService.invalidatePattern('categories:all:*');
@@ -222,7 +222,7 @@ export class CategoriesService extends BaseCrudService<
    */
   async remove(id: string) {
     // 1. Check sản phẩm con
-    const hasProducts = await this.prisma.product.findFirst({
+    const hasProducts = await (this.prisma.product as any).findFirst({
       where: {
         categories: {
           some: { categoryId: id },
@@ -236,7 +236,7 @@ export class CategoriesService extends BaseCrudService<
     }
 
     // 2. Check danh mục con
-    const hasChildren = await this.model.findFirst({
+    const hasChildren = await (this.model as any).findFirst({
       where: { parentId: id },
     });
     if (hasChildren) {

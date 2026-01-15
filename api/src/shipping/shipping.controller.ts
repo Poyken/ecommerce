@@ -45,8 +45,7 @@ export class ShippingController {
   @Get('provinces')
   @ApiListResponse('Province', { summary: 'Lấy danh sách Tỉnh/Thành phố' })
   async getProvinces() {
-    const data = await this.shippingService.getProvinces();
-    return { data };
+    return this.shippingService.getProvinces();
   }
 
   @Get('districts/:provinceId')
@@ -54,25 +53,19 @@ export class ShippingController {
     summary: 'Lấy danh sách Quận/Huyện theo Tỉnh',
   })
   async getDistricts(@Param('provinceId') provinceId: string) {
-    const data = await this.shippingService.getDistricts(Number(provinceId));
-    return { data };
+    return this.shippingService.getDistricts(Number(provinceId));
   }
 
   @Get('wards/:districtId')
   @ApiListResponse('Ward', { summary: 'Lấy danh sách Phường/Xã theo Quận' })
   async getWards(@Param('districtId') districtId: string) {
-    const data = await this.shippingService.getWards(Number(districtId));
-    return { data };
+    return this.shippingService.getWards(Number(districtId));
   }
 
   @Post('fee')
   @ApiGetOneResponse('Shipping Fee', { summary: 'Tính phí vận chuyển' })
   async calculateFee(@Body() body: { districtId: number; wardCode: string }) {
-    const data = await this.shippingService.calculateFee(
-      body.districtId,
-      body.wardCode,
-    );
-    return { data };
+    return this.shippingService.calculateFee(body.districtId, body.wardCode);
   }
 
   @Post('webhook')

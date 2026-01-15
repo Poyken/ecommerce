@@ -41,7 +41,7 @@ export class BrandsRepository extends BaseRepository<Brand> {
    * Tìm brand theo slug
    */
   async findBySlug(slug: string): Promise<Brand | null> {
-    return this.model.findFirst({
+    return await this.model.findFirst({
       where: this.withTenantFilter({ slug, deletedAt: null }),
     });
   }

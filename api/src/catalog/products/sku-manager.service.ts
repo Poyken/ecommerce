@@ -104,7 +104,7 @@ export class SkuManagerService {
    */
   async updateProductPriceRange(productId: string) {
     // [P10 OPTIMIZATION] Use DB aggregate for much better performance than in-memory Math.min/max
-    const aggregate = await this.prisma.sku.aggregate({
+    const aggregate = await (this.prisma.sku as any).aggregate({
       where: {
         productId,
         status: 'ACTIVE',
@@ -121,7 +121,7 @@ export class SkuManagerService {
 
     if (!aggregate._min.price && !aggregate._min.salePrice) {
       // No active SKUs
-      await this.prisma.product.update({
+      await (this.prisma.product as any).update({
         where: { id: productId },
         data: { minPrice: null, maxPrice: null },
       });
@@ -141,7 +141,7 @@ export class SkuManagerService {
     const finalMax = Math.max(maxP, maxS);
 
     // 3. Update lại Product
-    await this.prisma.product.update({
+    await (this.prisma.product as any).update({
       where: { id: productId },
       data: {
         minPrice: finalMin,
@@ -165,7 +165,7 @@ export class SkuManagerService {
       await Promise.all(
         combinations.map((combo) => {
           const skuCode = this.generateSkuCode(product.slug, combo);
-          return this.prisma.sku.create({
+          return (this.prisma.sku as any).create({
             data: {
               skuCode,
               productId: product.id,
@@ -179,12 +179,12 @@ export class SkuManagerService {
                   tenantId: product.tenantId,
                 })),
               },
-            },
+            } as any,
           });
         }),
       );
     } else {
-      await this.prisma.sku.create({
+      await (this.prisma.sku as any).create({
         data: {
           skuCode: `${product.slug}-DEFAULT`.toUpperCase(),
           productId: product.id,
@@ -223,7 +223,7 @@ export class SkuManagerService {
       const migratedOldSkuIds = new Set<string>();
 
       // [P10 OPTIMIZATION] Batch fetch existing SKUs to avoid n+1 inside the loop
-      const existingSkus = await this.prisma.sku.findMany({
+      const existingSkus = await (this.prisma.sku as any).findMany({
         where: { productId },
       });
       const skuMap = new Map(existingSkus.map((s) => [s.skuCode, s]));
@@ -251,7 +251,7 @@ export class SkuManagerService {
             migratedOldSkuIds.add(ancestor.id);
           }
 
-          await this.prisma.sku.create({
+          await (this.prisma.sku as any).create({
             data: {
               skuCode,
               productId,
@@ -265,19 +265,19 @@ export class SkuManagerService {
                   tenantId: freshProduct.tenantId,
                 })),
               },
-            },
+            } as any,
           });
         } else {
-          await this.prisma.sku.update({
-            where: { id: existingSku.id },
+          await (this.prisma.sku as any).update({
+            where: { id: (existingSku as any).id },
             data: { status: 'ACTIVE' },
           });
-          await this.prisma.skuToOptionValue.deleteMany({
-            where: { skuId: existingSku.id },
+          await (this.prisma.skuToOptionValue as any).deleteMany({
+            where: { skuId: (existingSku as any).id },
           });
-          await this.prisma.skuToOptionValue.createMany({
+          await (this.prisma.skuToOptionValue as any).createMany({
             data: combo.map((val: OptionValue) => ({
-              skuId: existingSku.id,
+              skuId: (existingSku as any).id,
               optionValueId: val.id,
               tenantId: freshProduct.tenantId,
             })),
@@ -285,7 +285,7 @@ export class SkuManagerService {
         }
       }
 
-      await this.prisma.sku.updateMany({
+      await (this.prisma.sku as any).updateMany({
         where: {
           productId,
           skuCode: { notIn: Array.from(validSkuCodes) },
@@ -294,7 +294,7 @@ export class SkuManagerService {
       });
     } else if (freshProduct) {
       const defaultSkuCode = `${freshProduct.slug}-DEFAULT`.toUpperCase();
-      const existingDefault = await this.prisma.sku.findFirst({
+      const existingDefault = await (this.prisma.sku as any).findFirst({
         where: {
           skuCode: defaultSkuCode,
           tenantId: freshProduct.tenantId,
@@ -302,7 +302,7 @@ export class SkuManagerService {
       });
 
       if (!existingDefault) {
-        await this.prisma.sku.create({
+        await (this.prisma.sku as any).create({
           data: {
             skuCode: defaultSkuCode,
             productId,
@@ -313,13 +313,13 @@ export class SkuManagerService {
           },
         });
       } else {
-        await this.prisma.sku.update({
+        await (this.prisma.sku as any).update({
           where: { id: existingDefault.id },
           data: { status: 'ACTIVE' },
         });
       }
 
-      await this.prisma.sku.updateMany({
+      await (this.prisma.sku as any).updateMany({
         where: {
           productId,
           skuCode: { not: defaultSkuCode },

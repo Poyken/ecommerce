@@ -2,16 +2,21 @@
 
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
+import { getErrorMessage } from "@/lib";
 import {
   downloadUserTemplateAction,
   exportUsersAction,
   importUsersAction,
   previewUsersImportAction,
-} from "../actions";
+} from "../domain-actions/user-actions";
+import type {
+  ImportPreviewResult,
+  ImportPreviewRow,
+} from "@/types/feature-types/admin.types";
 
 export interface UsersService {
-  onImport: (file: File) => Promise<any>;
-  onPreview: (file: File) => Promise<any>;
+  onImport: (file: File) => Promise<boolean>;
+  onPreview: (file: File) => Promise<ImportPreviewRow[]>;
   onDownloadTemplate: () => Promise<void>;
   onExport: () => Promise<void>;
 }
@@ -47,9 +52,8 @@ export const useUsersImportExport = () => {
       document.body.appendChild(link);
       link.click();
       link.parentNode?.removeChild(link);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Download error:", e);
-      console.log("Base64 Preview:", base64Data?.substring(0, 50));
 
       // Fallback
       try {
@@ -59,10 +63,11 @@ export const useUsersImportExport = () => {
         document.body.appendChild(link);
         link.click();
         link.parentNode?.removeChild(link);
-      } catch (e2) {
+      } catch {
+        const errorMessage = e instanceof Error ? e.message : "Unknown error";
         toast({
           title: "Lỗi tải xuống",
-          description: "Dữ liệu trả về không hợp lệ: " + e.message,
+          description: "Dữ liệu trả về không hợp lệ: " + errorMessage,
           variant: "destructive",
         });
       }
@@ -78,10 +83,10 @@ export const useUsersImportExport = () => {
       } else {
         throw new Error(res.error || "Download failed");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Tải template thất bại",
-        description: error.message || "Vui lòng thử lại sau.",
+        description: getErrorMessage(error) || "Vui lòng thử lại sau.",
         variant: "destructive",
       });
       console.error(error);
@@ -99,10 +104,10 @@ export const useUsersImportExport = () => {
       } else {
         throw new Error(res.error || "Export failed");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast({
         title: "Export thất bại",
-        description: error.message || "Vui lòng thử lại sau.",
+        description: getErrorMessage(error) || "Vui lòng thử lại sau.",
         variant: "destructive",
       });
       console.error(error);
@@ -129,11 +134,12 @@ export const useUsersImportExport = () => {
         description: "Import dữ liệu thành công.",
       });
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
       toast({
         title: "Import thất bại",
-        description: error.message || "Vui lòng kiểm tra lại file và thử lại.",
+        description:
+          getErrorMessage(error) || "Vui lòng kiểm tra lại file và thử lại.",
         variant: "destructive",
       });
       throw error;
@@ -142,7 +148,7 @@ export const useUsersImportExport = () => {
     }
   };
 
-  const previewUsers = async (file: File): Promise<any[]> => {
+  const previewUsers = async (file: File): Promise<ImportPreviewRow[]> => {
     try {
       setLoading(true);
       const formData = new FormData();
@@ -154,13 +160,14 @@ export const useUsersImportExport = () => {
         throw new Error(res.error || "Preview failed");
       }
 
-      // Backend returns { rows: [...] }
-      return (res.data as any)?.rows || [];
-    } catch (error: any) {
+      // Backend returns ImportPreviewResult with rows
+      const previewResult = res.data as ImportPreviewResult;
+      return previewResult?.preview || [];
+    } catch (error: unknown) {
       console.error(error);
       toast({
         title: "Lỗi xem trước",
-        description: error.message || "Không thể tải bản xem trước.",
+        description: getErrorMessage(error) || "Không thể tải bản xem trước.",
         variant: "destructive",
       });
       throw error;

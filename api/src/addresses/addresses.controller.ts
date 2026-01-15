@@ -55,18 +55,13 @@ export class AddressesController {
     @Request() req: RequestWithUser,
     @Body() createAddressDto: CreateAddressDto,
   ) {
-    const data = await this.addressesService.create(
-      req.user.id,
-      createAddressDto,
-    );
-    return { data };
+    return this.addressesService.create(req.user.id, createAddressDto);
   }
 
   @Get()
   @ApiListResponse('Address', { summary: 'Lấy danh sách địa chỉ của user' })
   async findAll(@Request() req: RequestWithUser) {
-    const data = await this.addressesService.findAll(req.user.id);
-    return { data };
+    return this.addressesService.findAll(req.user.id);
   }
 
   @Patch(':id')
@@ -76,18 +71,12 @@ export class AddressesController {
     @Param('id') id: string,
     @Body() updateAddressDto: UpdateAddressDto,
   ) {
-    const data = await this.addressesService.update(
-      req.user.id,
-      id,
-      updateAddressDto,
-    );
-    return { data };
+    return this.addressesService.update(req.user.id, id, updateAddressDto);
   }
 
   @Delete(':id')
   @ApiDeleteResponse('Address', { summary: 'Xóa địa chỉ' })
   async remove(@Request() req: RequestWithUser, @Param('id') id: string) {
-    const data = await this.addressesService.remove(req.user.id, id);
-    return { data };
+    return this.addressesService.remove(req.user.id, id);
   }
 }

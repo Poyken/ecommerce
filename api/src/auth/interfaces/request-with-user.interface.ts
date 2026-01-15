@@ -4,10 +4,12 @@ export interface RequestWithUser extends Request {
   user: {
     id: string;
     userId: string;
-    email: string;
+    email?: string;
+    tenantId?: string;
+    roles?: string[];
     permissions: string[];
     jti?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 /**

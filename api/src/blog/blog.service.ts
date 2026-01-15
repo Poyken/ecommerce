@@ -41,7 +41,7 @@ export class BlogService {
     if (userId) {
       data.userId = userId; // Ensure userId is set in the data object
       if (!data.author) {
-        const user = await this.prisma.user.findUnique({
+        const user = await (this.prisma.user as any).findUnique({
           where: { id: userId },
         });
         if (user) {
@@ -51,7 +51,7 @@ export class BlogService {
     }
 
     try {
-      return await this.prisma.blog.create({
+      return await (this.prisma.blog as any).create({
         data: {
           ...data,
           publishedAt: null, // Default to Draft. Admin must publish.
@@ -145,7 +145,7 @@ export class BlogService {
     }
 
     const [blogs, total] = await Promise.all([
-      this.prisma.blog.findMany({
+      (this.prisma.blog as any).findMany({
         where,
         orderBy: { publishedAt: 'desc' },
         skip,
@@ -167,7 +167,7 @@ export class BlogService {
           },
         },
       }),
-      this.prisma.blog.count({ where }),
+      (this.prisma.blog as any).count({ where }),
     ]);
 
     // Transform data to flatten products
@@ -189,11 +189,11 @@ export class BlogService {
   }
 
   async togglePublish(id: string) {
-    const blog = await this.prisma.blog.findUnique({ where: { id } });
+    const blog = await (this.prisma.blog as any).findUnique({ where: { id } });
     if (!blog) throw new Error('Blog not found');
 
     const isPublished = !!blog.publishedAt;
-    return this.prisma.blog.update({
+    return (this.prisma.blog as any).update({
       where: { id },
       data: {
         publishedAt: isPublished ? null : new Date(),
@@ -202,7 +202,7 @@ export class BlogService {
   }
 
   async findOne(idOrSlug: string): Promise<any> {
-    const blog = await this.prisma.blog.findFirst({
+    const blog = await (this.prisma.blog as any).findFirst({
       where: {
         OR: [{ id: idOrSlug }, { slug: idOrSlug }],
         publishedAt: { not: null },
@@ -236,7 +236,7 @@ export class BlogService {
   }
 
   async getCategoryStats() {
-    const stats = await this.prisma.blog.groupBy({
+    const stats = await (this.prisma.blog as any).groupBy({
       by: ['category'],
       where: {
         publishedAt: { not: null },
@@ -250,7 +250,7 @@ export class BlogService {
       },
     });
 
-    const total = await this.prisma.blog.count({
+    const total = await (this.prisma.blog as any).count({
       where: {
         publishedAt: { not: null },
         deletedAt: null,
@@ -278,7 +278,9 @@ export class BlogService {
   ): Promise<Blog> {
     const { productIds, ...blogData } = updateBlogDto;
 
-    const existingBlog = await this.prisma.blog.findUnique({ where: { id } });
+    const existingBlog = await (this.prisma.blog as any).findUnique({
+      where: { id },
+    });
     if (!existingBlog) throw new Error('Blog not found');
 
     if (user) {
@@ -307,13 +309,13 @@ export class BlogService {
     // If productIds provided, update the relations
     if (productIds !== undefined) {
       // Delete existing relations
-      await this.prisma.blogProduct.deleteMany({
+      await (this.prisma.blogProduct as any).deleteMany({
         where: { blogId: id },
       });
 
       // Create new relations
       if (productIds.length > 0) {
-        await this.prisma.blogProduct.createMany({
+        await (this.prisma.blogProduct as any).createMany({
           data: productIds.map((productId) => ({
             blogId: id,
             productId,
@@ -323,9 +325,9 @@ export class BlogService {
     }
 
     try {
-      return await this.prisma.blog.update({
+      return await (this.prisma.blog as any).update({
         where: { id },
-        data: blogData,
+        data: blogData as any,
       });
     } catch (error) {
       if (error.code === 'P2002') {
@@ -336,7 +338,9 @@ export class BlogService {
   }
 
   async remove(id: string, user?: any): Promise<Blog> {
-    const existingBlog = await this.prisma.blog.findUnique({ where: { id } });
+    const existingBlog = await (this.prisma.blog as any).findUnique({
+      where: { id },
+    });
     if (!existingBlog) throw new Error('Blog not found');
 
     if (user) {
@@ -348,7 +352,7 @@ export class BlogService {
       }
     }
 
-    return this.prisma.blog.update({
+    return (this.prisma.blog as any).update({
       where: { id },
       data: {
         deletedAt: new Date(),

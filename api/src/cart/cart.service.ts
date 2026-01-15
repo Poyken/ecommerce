@@ -54,7 +54,7 @@ export class CartService {
     cutoffDate.setDate(cutoffDate.getDate() - daysOld);
 
     try {
-      const result = await this.prisma.cart.deleteMany({
+      const result = await (this.prisma.cart as any).deleteMany({
         where: {
           updatedAt: { lt: cutoffDate },
         },
@@ -86,7 +86,7 @@ export class CartService {
 
     try {
       // Upsert: Tìm hoặc tạo mới trong 1 thao tác DB
-      const cart = await this.prisma.cart.upsert({
+      const cart = await (this.prisma.cart as any).upsert({
         where: {
           userId_tenantId: {
             userId,
@@ -180,7 +180,7 @@ export class CartService {
     return await this.prisma.$transaction(
       async (tx) => {
         // 1. Kiểm tra SKU (Nguyên tử trong transaction)
-        const sku = await tx.sku.findUnique({
+        const sku = await (tx.sku as any).findUnique({
           where: { id: dto.skuId },
           select: {
             id: true,
@@ -233,7 +233,7 @@ export class CartService {
         });
 
         // 3. Upsert Cart Item (Cộng dồn số lượng nếu đã có)
-        const cartItem = await tx.cartItem.upsert({
+        const cartItem = await (tx.cartItem as any).upsert({
           where: {
             cartId_skuId: {
               cartId: cart.id,
@@ -256,7 +256,7 @@ export class CartService {
         // 4. Kiểm tra lại lần cuối: Nếu tổng số lượng trong giỏ > Tồn kho -> Cắt xuống bằng tồn kho
         if (cartItem.quantity > sku.stock) {
           // Cap at maximum available stock
-          const capped = await tx.cartItem.update({
+          const capped = await (tx.cartItem as any).update({
             where: { id: cartItem.id },
             data: { quantity: sku.stock },
           });
@@ -282,7 +282,7 @@ export class CartService {
    */
   async updateItem(userId: string, itemId: string, dto: UpdateCartItemDto) {
     // 1. Check quyền sở hữu: Item này có phải của User này không?
-    const item = await this.prisma.cartItem.findUnique({
+    const item = await (this.prisma.cartItem as any).findUnique({
       where: { id: itemId },
       include: { cart: true, sku: true },
     });
@@ -302,7 +302,7 @@ export class CartService {
       });
     }
 
-    return this.prisma.cartItem.update({
+    return (this.prisma.cartItem as any).update({
       where: { id: itemId },
       data: { quantity: dto.quantity },
     });
@@ -312,7 +312,7 @@ export class CartService {
    * Xóa một item khỏi giỏ hàng.
    */
   async removeItem(userId: string, itemId: string) {
-    const item = await this.prisma.cartItem.findUnique({
+    const item = await (this.prisma.cartItem as any).findUnique({
       where: { id: itemId },
       include: { cart: true },
     });
@@ -321,7 +321,7 @@ export class CartService {
       throw new NotFoundException('Không tìm thấy sản phẩm trong giỏ');
     }
 
-    return this.prisma.cartItem.delete({ where: { id: itemId } });
+    return (this.prisma.cartItem as any).delete({ where: { id: itemId } });
   }
 
   /**
@@ -331,7 +331,7 @@ export class CartService {
     const tenant = getTenant();
     if (!tenant) return;
 
-    const cart = await this.prisma.cart.findUnique({
+    const cart = await (this.prisma.cart as any).findUnique({
       where: {
         userId_tenantId: {
           userId,
@@ -341,7 +341,9 @@ export class CartService {
     });
     if (!cart) return;
 
-    return this.prisma.cartItem.deleteMany({ where: { cartId: cart.id } });
+    return (this.prisma.cartItem as any).deleteMany({
+      where: { cartId: cart.id },
+    });
   }
 
   /**
@@ -391,7 +393,7 @@ export class CartService {
 
         // 2. Fetch tất cả SKU một lần để tối ưu (Bulk Read)
         const skuIds = items.map((i) => i.skuId);
-        const skus = await tx.sku.findMany({
+        const skus = await (tx.sku as any).findMany({
           where: { id: { in: skuIds } },
           select: {
             id: true,
@@ -412,7 +414,7 @@ export class CartService {
               throw new Error('Sản phẩm không còn được bán');
 
             // Atomic Upsert cho item
-            const cartItem = await tx.cartItem.upsert({
+            const cartItem = await (tx.cartItem as any).upsert({
               where: {
                 cartId_skuId: {
                   cartId: cart.id,
@@ -432,7 +434,7 @@ export class CartService {
 
             // Validate lại số lượng sau khi cộng dồn
             if (cartItem.quantity > sku.stock) {
-              const capped = await tx.cartItem.update({
+              const capped = await (tx.cartItem as any).update({
                 where: { id: cartItem.id },
                 data: { quantity: sku.stock },
               });

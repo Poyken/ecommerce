@@ -7,6 +7,10 @@ import { ReturnRequest } from "@/types/models";
 import { ReturnRequestSchema } from "@/lib/schemas";
 import { cache } from "react";
 import { cookies } from "next/headers";
+import { z } from "zod";
+
+// Type inferred from schema
+type CreateReturnRequestInput = z.infer<typeof ReturnRequestSchema>;
 
 /**
  * Fetch return requests for the current user.
@@ -37,7 +41,9 @@ export const getReturnRequestDetailAction = cache(async (id: string) => {
 /**
  * Create a new return request.
  */
-export async function createReturnRequestAction(data: any) {
+export async function createReturnRequestAction(
+  data: CreateReturnRequestInput
+) {
   await cookies();
 
   // Validate with Zod

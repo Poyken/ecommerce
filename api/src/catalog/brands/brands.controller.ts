@@ -72,12 +72,7 @@ export class BrandsController {
     @Body() createBrandDto: CreateBrandDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (file) {
-      const result = await this.cloudinaryService.uploadImage(file);
-      createBrandDto.imageUrl = result.secure_url;
-    }
-    const data = await this.brandsService.create(createBrandDto);
-    return { data };
+    return this.brandsService.create(createBrandDto);
   }
 
   @Get()
@@ -105,8 +100,7 @@ export class BrandsController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({ summary: 'Import Brands from Excel' })
   async import(@UploadedFile() file: Express.Multer.File) {
-    const data = await this.importService.importFromExcel(file);
-    return { data };
+    return this.importService.importFromExcel(file);
   }
 
   @Post('import/preview')
@@ -115,8 +109,7 @@ export class BrandsController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({ summary: 'Preview Brands import' })
   async preview(@UploadedFile() file: Express.Multer.File) {
-    const data = await this.importService.previewFromExcel(file);
-    return { data };
+    return this.importService.previewFromExcel(file);
   }
 
   @Get('import/template')
@@ -130,8 +123,7 @@ export class BrandsController {
   @Get(':id')
   @ApiGetOneResponse('Brand', { summary: 'Get brand details' })
   async findOne(@Param('id') id: string) {
-    const data = await this.brandsService.findOne(id);
-    return { data };
+    return this.brandsService.findOne(id);
   }
 
   @Patch(':id')
@@ -145,12 +137,7 @@ export class BrandsController {
     @Body() updateBrandDto: UpdateBrandDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (file) {
-      const result = await this.cloudinaryService.uploadImage(file);
-      updateBrandDto.imageUrl = result.secure_url;
-    }
-    const data = await this.brandsService.update(id, updateBrandDto);
-    return { data };
+    return this.brandsService.update(id, updateBrandDto);
   }
 
   @Delete(':id')
@@ -158,7 +145,6 @@ export class BrandsController {
   @RequirePermissions('brand:delete')
   @ApiDeleteResponse('Brand', { summary: 'Delete brand' })
   async remove(@Param('id') id: string) {
-    const data = await this.brandsService.remove(id);
-    return { data };
+    return this.brandsService.remove(id);
   }
 }

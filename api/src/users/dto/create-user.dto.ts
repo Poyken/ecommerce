@@ -1,51 +1,42 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 /**
  * =====================================================================
- * CREATE USER DTO - Đối tượng tạo người dùng mới (Dành cho Admin)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ADMIN-LEVEL CREATION:
- * - Khác với `RegisterDto` (người dùng tự đăng ký), DTO này dùng cho Admin để tạo tài khoản nhân viên hoặc khách hàng thủ công.
- *
- * 2. DATA INTEGRITY:
- * - Đảm bảo mọi người dùng mới đều có đầy đủ thông tin cơ bản: Email, Mật khẩu, Họ và Tên.
- * - `@IsNotEmpty()`: Ngăn chặn việc tạo các tài khoản "rác" thiếu thông tin.
- *
- * 3. SECURITY:
- * - Vẫn áp dụng `@MinLength(6)` cho mật khẩu để duy trì tiêu chuẩn bảo mật chung của hệ thống. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
-
+ * CREATE USER DTO - Đối tượng tạo người dùng mới
  * =====================================================================
  */
 
 export class CreateUserDto {
-  @ApiProperty({ example: 'user@example.com' })
-  @IsEmail()
-  @IsNotEmpty()
+  @ApiProperty({ example: 'admin@example.com' })
+  @IsEmail({}, { message: 'Email không hợp lệ' })
+  @IsNotEmpty({ message: 'Email không được để trống' })
   email: string;
 
   @ApiProperty({ example: 'password123', minLength: 6 })
   @IsString()
-  @MinLength(6)
+  @IsNotEmpty({ message: 'Mật khẩu không được để trống' })
+  @MinLength(6, { message: 'Mật khẩu phải ít nhất 6 ký tự' })
   password: string;
 
-  @ApiProperty({ example: 'John' })
+  @ApiProperty({ example: 'Admin' })
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Tên không được để trống' })
   firstName: string;
 
-  @ApiProperty({ example: 'Doe' })
+  @ApiProperty({ example: 'System' })
   @IsString()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Họ không được để trống' })
   lastName: string;
 
-  // Tùy chọn: Cho phép gán vai trò trong khi tạo (Tính năng Admin)
-  // @ApiProperty({ example: ['admin', 'manager'], required: false })
-  // @IsOptional()
-  // roles?: string[];
+  @ApiPropertyOptional({ example: 'https://avatar-url.com' })
+  @IsString()
+  @IsOptional()
+  avatarUrl?: string;
 }

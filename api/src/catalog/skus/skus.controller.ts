@@ -67,12 +67,7 @@ export class SkusController {
     @Body() createSkuDto: CreateSkuDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (file) {
-      const result = await this.cloudinaryService.uploadImage(file);
-      createSkuDto.imageUrl = result.secure_url;
-    }
-    const data = await this.skusService.create(createSkuDto);
-    return { data };
+    return this.skusService.create(createSkuDto);
   }
 
   @Get()
@@ -104,8 +99,7 @@ export class SkusController {
   @Get(':id')
   @ApiGetOneResponse('Sku', { summary: 'Lấy chi tiết SKU' })
   async findOne(@Param('id') id: string) {
-    const data = await this.skusService.findOne(id);
-    return { data };
+    return this.skusService.findOne(id);
   }
 
   @Patch(':id')
@@ -121,12 +115,7 @@ export class SkusController {
     @Body() updateSkuDto: UpdateSkuDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    if (file) {
-      const result = await this.cloudinaryService.uploadImage(file);
-      updateSkuDto.imageUrl = result.secure_url;
-    }
-    const data = await this.skusService.update(id, updateSkuDto);
-    return { data };
+    return this.skusService.update(id, updateSkuDto);
   }
 
   @Delete(':id')
@@ -134,7 +123,6 @@ export class SkusController {
   @RequirePermissions('product:delete')
   @ApiDeleteResponse('Sku', { summary: 'Xóa SKU' })
   async remove(@Param('id') id: string) {
-    const data = await this.skusService.remove(id);
-    return { data };
+    return this.skusService.remove(id);
   }
 }

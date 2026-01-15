@@ -40,10 +40,11 @@ export class CategoriesImportService {
     for (const row of rows) {
       results.total++;
       try {
-        const name = String(row.getCell(2).value || '');
-        const slug = String(row.getCell(3).value || '') || createSlug(name);
-        const parentName = String(row.getCell(4).value || '');
-        const status = String(row.getCell(6).value || 'ACTIVE');
+        const name = (row.getCell(2).value || '').toString();
+        const slug =
+          (row.getCell(3).value || '').toString() || createSlug(name);
+        const parentName = (row.getCell(4).value || '').toString();
+        const status = (row.getCell(6).value || 'ACTIVE').toString();
 
         if (!name) throw new Error('Tên danh mục là bắt buộc');
 
@@ -90,15 +91,18 @@ export class CategoriesImportService {
 
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) return;
-      const name = String(row.getCell(2).value || '');
+      const nameValue = row.getCell(2).value;
+      const name =
+        nameValue !== null && nameValue !== undefined
+          ? (nameValue as any).toString()
+          : '';
       const errors: string[] = [];
       if (!name) errors.push('Thiếu tên danh mục');
 
       previewData.push({
         name,
-        slug: String(row.getCell(3).value || ''),
-        parentName: String(row.getCell(4).value || ''),
-        status: String(row.getCell(6).value || 'ACTIVE'),
+        slug: ((row.getCell(3).value as any) || '').toString(),
+        status: ((row.getCell(6).value as any) || 'ACTIVE').toString(),
         rowNumber,
         isValid: errors.length === 0,
         errors,

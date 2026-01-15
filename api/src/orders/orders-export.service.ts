@@ -1,12 +1,13 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
+import { Response } from 'express';
 import * as ExcelJS from 'exceljs';
 
 @Injectable()
 export class OrdersExportService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async exportToExcel(res: any) {
+  async exportToExcel(res: Response) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Orders');
 

@@ -50,14 +50,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         (request: any) => {
           // Fallback to cookie
           if (request && request.headers && request.headers.cookie) {
-            if (
-              request.url?.includes('import') ||
-              request.url?.includes('export')
-            ) {
-              console.log(
-                `[JwtStrategy] Debug ${request.url} - Cookie len: ${request.headers.cookie.length}`,
-              );
-            }
             const cookies = request.headers.cookie
               .split(';')
               .reduce((acc: any, cookie: string) => {
@@ -65,28 +57,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
                 const key = parts[0];
                 const value = parts.slice(1).join('=');
                 acc[key] = value;
-                return acc;
               }, {});
 
-            if (
-              request.url?.includes('import') ||
-              request.url?.includes('export')
-            ) {
-              console.log(
-                `[JwtStrategy] Debug ${request.url} - Token found: ${!!cookies[
-                  'accessToken'
-                ]}`,
-              );
-            }
             return cookies['accessToken'];
-          }
-          if (
-            request &&
-            (request.url?.includes('import') || request.url?.includes('export'))
-          ) {
-            console.log(
-              `[JwtStrategy] Debug ${request.url} - No Cookie Header`,
-            );
           }
           return null;
         },

@@ -39,6 +39,7 @@ model User {
   commissionTransactions CommissionTransaction[]
   loyaltyPoints          LoyaltyPoint[]
 
+
   // Media Reference
   avatarId String?
   avatar   Media?  @relation(fields: [avatarId], references: [id])
@@ -690,6 +691,7 @@ model Order {
 
   promotions     PromotionUsage[]
   returnRequests ReturnRequest[]
+  loyaltyPoints  LoyaltyPoint[]
 
   addressId            String? // ID địa chỉ đã chọn
   shippingCode         String? // Mã vận đơn
@@ -798,6 +800,7 @@ model LoyaltyPoint {
   id        String           @id @default(uuid())
   userId    String
   orderId   String?
+  order     Order? @relation(fields: [orderId], references: [id])
   amount    Int // Dương: tích điểm, Âm: tiêu điểm
   type      LoyaltyPointType @default(EARNED)
   reason    String?
@@ -1411,6 +1414,7 @@ model Tenant {
   suspendedAt      DateTime? // Thời điểm bị treo
   suspensionReason String? // Lý do treo (nợ cước, vi phạm...)
   deletedAt        DateTime? // Thời điểm xóa mềm (Soft delete). Chỉ SuperAdmin mới có quyền xóa cứng.
+  settings         TenantSettings?
 
   // Infrastructure
   dbUrl String? // URL Database riêng (Chế độ Silo)
@@ -1507,6 +1511,22 @@ model Tenant {
   skuImages           SkuImage[]
 
   @@index([deletedAt]) // Index giúp lọc nhanh các tenant chưa bị xóa
+}
+
+model TenantSettings {
+  id        String   @id @default(uuid())
+  tenantId  String   @unique
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  // Loyalty Points Configuration
+  loyaltyPointRatio  Decimal @default(1000) // 1 pt per X amount
+  isLoyaltyEnabled   Boolean @default(true)
+
+  // Shipping Configuration
+  defaultShippingFee    Decimal @default(30000)
+  freeShippingThreshold Decimal? // Threshold for free shipping
+
+  updatedAt DateTime @updatedAt
 }
 
 model Supplier {
@@ -1760,5 +1780,7 @@ enum CommissionType {
 enum CommissionStatus {
   PENDING // Đang chờ xử lý
   COMPLETED // Đã hoàn thành
-  CANCELLED // Đã hủy
+  CANCELLED // Đã hủy (do user refund)
 }
+
+

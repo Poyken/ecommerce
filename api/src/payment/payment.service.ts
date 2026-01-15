@@ -92,7 +92,7 @@ export class PaymentService {
     // Logic thực tế cần Regex phức tạp hơn tùy theo cú pháp quy định với ngân hàng.
     const possibleIds = payload.content.split(/\s+/).map((s) => s.trim());
 
-    let order: any = null;
+    let order: Awaited<ReturnType<typeof this.prisma.order.findUnique>> = null;
 
     // Duyệt qua từng từ trong nội dung để tìm đơn hàng
     for (const id of possibleIds) {
