@@ -147,10 +147,8 @@ export class SubscriptionService {
         await this.activateSubscription(subscription.id, invoice.id);
       }
     } catch (error) {
-      this.logger.error(`Payment failed: ${(error as any).message}`);
-      throw new BadRequestException(
-        `Payment failed: ${(error as any).message}`,
-      );
+      this.logger.error(`Payment failed: ${error.message}`);
+      throw new BadRequestException(`Payment failed: ${error.message}`);
     }
 
     return { subscription, invoice, paymentUrl };

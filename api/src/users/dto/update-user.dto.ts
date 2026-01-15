@@ -1,24 +1,34 @@
-import { PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { CreateUserDto } from './create-user.dto';
 
 /**
  * =====================================================================
- * UPDATE USER DTO - Đối tượng cập nhật thông tin người dùng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REUSE VALIDATION:
- * - Sử dụng `PartialType` để kế thừa toàn bộ các quy tắc validation từ `CreateUserDto`.
- * - Giúp code ngắn gọn và dễ bảo trì (DRY - Don't Repeat Yourself).
- *
- * 2. OPTIONAL FIELDS:
- * - `PartialType` tự động biến tất cả các trường thành tùy chọn (`optional`).
- * - Phù hợp cho hành động PATCH, nơi Admin chỉ muốn cập nhật một vài thông tin cụ thể (VD: chỉ đổi họ tên mà không đổi mật khẩu). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
-
+ * UPDATE USER DTO - Đối tượng cập nhật người dùng
  * =====================================================================
  */
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {}
+export class UpdateUserDto extends PartialType(CreateUserDto) {
+  @ApiPropertyOptional({ example: 'newpassword123', minLength: 6 })
+  @IsString()
+  @IsOptional()
+  @MinLength(6, { message: 'Mật khẩu phải ít nhất 6 ký tự' })
+  password?: string;
+}
+
+export class AssignRolesDto {
+  @ApiProperty({
+    example: ['ADMIN', 'MANAGER'],
+    description: 'Danh sách tên Roles cần gán',
+  })
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  roles: string[];
+}

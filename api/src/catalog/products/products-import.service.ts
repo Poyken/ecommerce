@@ -117,7 +117,7 @@ export class ProductsImportService {
         }
 
         // 2. Upsert Product
-        const product = await this.prisma.product.upsert({
+        const product = await (this.prisma.product as any).upsert({
           where: (productRow.productId
             ? { id: productRow.productId }
             : { slug: productRow.productSlug }) as any,
@@ -128,7 +128,7 @@ export class ProductsImportService {
               deleteMany: {},
               create: [{ categoryId, tenantId: getTenant()!.id }],
             },
-          },
+          } as any,
           create: {
             name: productRow.productName,
             slug:
@@ -139,12 +139,12 @@ export class ProductsImportService {
             categories: {
               create: [{ categoryId, tenantId: getTenant()!.id }],
             },
-          },
+          } as any,
         });
 
         // 3. Upsert SKUs
         for (const skuRow of item.skus) {
-          await this.prisma.sku.upsert({
+          await (this.prisma.sku as any).upsert({
             where: (skuRow.skuId
               ? { id: skuRow.skuId }
               : {
@@ -158,7 +158,7 @@ export class ProductsImportService {
               salePrice: skuRow.salePrice,
               stock: skuRow.stock,
               status: skuRow.status,
-            },
+            } as any,
             create: {
               skuCode: skuRow.skuCode,
               price: skuRow.price,
@@ -167,7 +167,7 @@ export class ProductsImportService {
               productId: product.id,
               tenantId: product.tenantId,
               status: skuRow.status,
-            },
+            } as any,
           });
           results.success++;
         }

@@ -57,7 +57,9 @@ async function main() {
       admin.token.value = adminToken;
       log('Super Admin Login Successful', 'SUCCESS');
     }
-  } catch (e) {}
+  } catch (e) {
+    // Ignore initial attempt if it fails
+  }
 
   if (!adminToken) {
     try {

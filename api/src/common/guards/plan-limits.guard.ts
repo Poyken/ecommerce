@@ -151,7 +151,7 @@ export class PlanLimitsGuard implements CanActivate {
         };
         break;
 
-      case 'warehouse':
+      case 'warehouse': {
         // Count warehouses
         const warehouseCount = await this.prisma.warehouse.count({
           where: { tenantId: tenant.id },
@@ -167,6 +167,7 @@ export class PlanLimitsGuard implements CanActivate {
           message: `Bạn đã đạt giới hạn ${warehouseLimit} kho hàng của gói ${tenantData.plan}.`,
         };
         break;
+      }
 
       default:
         // Không kiểm tra nếu không có loại nào match

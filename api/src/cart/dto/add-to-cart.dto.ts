@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsUUID, Max, Min } from 'class-validator';
 
 /**
@@ -22,9 +23,14 @@ import { IsNumber, IsUUID, Max, Min } from 'class-validator';
  * =====================================================================
  */
 export class AddToCartDto {
+  @ApiProperty({
+    example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+    description: 'Mã định danh của SKU sản phẩm',
+  })
   @IsUUID('4', { message: 'SKU ID không hợp lệ' })
   skuId: string;
 
+  @ApiProperty({ example: 1, description: 'Số lượng sản phẩm muốn thêm' })
   @IsNumber({}, { message: 'Số lượng phải là số' })
   @Min(1, { message: 'Số lượng tối thiểu là 1' })
   @Max(999, { message: 'Số lượng tối đa là 999 sản phẩm' })

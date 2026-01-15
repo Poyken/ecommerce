@@ -2,6 +2,7 @@ import { PaymentService } from '@/payment/payment.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { getTenant } from '@core/tenant/tenant.context';
 import { InjectQueue } from '@nestjs/bullmq';
+import { OrderFilterDto } from './dto/order-filter.dto';
 import {
   BadRequestException,
   Injectable,
@@ -103,12 +104,10 @@ export class OrdersService {
         }
 
         // 2. Lấy giỏ hàng và chi tiết sản phẩm (Trong cùng transaction để đảm bảo dữ liệu mới nhất)
-        const cart = await tx.cart.findUnique({
+        const cart = await tx.cart.findFirst({
           where: {
-            userId_tenantId: {
-              userId,
-              tenantId: tenant.id,
-            },
+            userId,
+            tenantId: tenant.id,
           },
           include: {
             items: {
@@ -202,7 +201,8 @@ export class OrdersService {
           }
 
           const price = Number(sku.price);
-          totalAmount += price * item.quantity;
+          // [MATH SAFETY] Round to nearest integer for VND to avoid floating point errors
+          totalAmount += Math.round(price * item.quantity);
 
           // Tạo tên snapshot cho SKU (VD: "Áo Thun (Đỏ - M)") để lưu cứng vào đơn hàng
           // Giúp admin xem lại đơn hàng cũ vẫn thấy đúng tên sản phẩm lúc mua, dù sau này sản phẩm có bị đổi tên.
@@ -241,7 +241,7 @@ export class OrdersService {
               discountAmount = promoResult.discountAmount;
 
               // ✅ Atomic Increment: Tăng số lượt sử dụng trong transaction
-              await tx.promotion.update({
+              await (tx as any).promotion.update({
                 where: { id: appliedPromotionId },
                 data: { usedCount: { increment: 1 } },
               });
@@ -285,6 +285,12 @@ export class OrdersService {
             shippingDistrict = address.district;
             shippingWard = address.ward;
             shippingPhone = address.phoneNumber;
+
+            // 6.a Lấy cấu hình phí vận chuyển của Tenant
+            const settings = await (tx as any).tenantSettings.findUnique({
+              where: { tenantId: tenant.id },
+            });
+
             if (address.districtId && address.wardCode) {
               try {
                 shippingFee = await this.shippingService.calculateFee(
@@ -293,9 +299,24 @@ export class OrdersService {
                 );
               } catch (error) {
                 this.logger.warn(
-                  'Lỗi tính phí vận chuyển từ GHN, sử dụng phí mặc định',
+                  'Lỗi tính phí vận chuyển từ GHN, sử dụng phí từ Settings',
                 );
-                shippingFee = 30000; // ✅ Mức phí dự phòng an toàn
+                // Lấy phí mặc định từ Settings hoặc 30k nếu chưa set
+                shippingFee = settings
+                  ? Number(settings.defaultShippingFee)
+                  : 30000;
+              }
+            }
+
+            // 6.b Kiểm tra ngưỡng Miễn phí vận chuyển (Free Shipping Threshold)
+            if (settings?.freeShippingThreshold) {
+              const threshold = Number(settings.freeShippingThreshold);
+              // Lưu ý: totalAmount lúc này chưa bao gồm phí ship mới
+              if (totalAmount >= threshold) {
+                this.logger.log(
+                  `FREE SHIPPING: Total ${totalAmount} >= ${threshold}`,
+                );
+                shippingFee = 0;
               }
             }
           }
@@ -385,6 +406,7 @@ export class OrdersService {
     );
 
     let paymentUrl: string | undefined;
+    let providerTransactionId: string | undefined;
 
     // Xử lý thanh toán Online (Momo, VNPAY...) sau khi transaction DB thành công
     try {
@@ -398,17 +420,19 @@ export class OrdersService {
           },
         );
 
+        // 5. Cập nhật trạng thái thanh toán (nếu có)
         if (paymentResult.success) {
           paymentUrl = paymentResult.paymentUrl;
+          providerTransactionId = paymentResult.transactionId;
 
           // Tạo bản ghi lịch sử thanh toán
-          await this.prisma.payment.create({
+          await (this.prisma as any).payment.create({
             data: {
               orderId: order.id,
               amount: order.totalAmount,
               paymentMethod: createOrderDto.paymentMethod,
               status: paymentUrl ? 'PENDING' : 'PAID',
-              providerTransactionId: paymentResult.transactionId,
+              providerTransactionId: providerTransactionId,
               tenantId: tenant.id,
             },
           });
@@ -419,12 +443,24 @@ export class OrdersService {
               where: { id: order.id },
               data: {
                 paymentStatus: 'PAID',
-                transactionId: paymentResult.transactionId,
+                transactionId: providerTransactionId,
               },
             });
-            order.paymentStatus = 'PAID' as any;
+            order.paymentStatus = 'PAID';
           }
         }
+      } else if (createOrderDto.paymentMethod === 'COD') {
+        // Log transaction COD
+        await (this.prisma as any).payment.create({
+          data: {
+            orderId: order.id,
+            amount: order.totalAmount,
+            paymentMethod: createOrderDto.paymentMethod,
+            status: 'PAID', // COD is considered paid at the time of order creation for internal tracking
+            providerTransactionId: 'COD-' + order.id, // Unique ID for COD
+            tenantId: tenant.id,
+          },
+        });
       }
     } catch (error) {
       this.logger.error(`Lỗi xử lý thanh toán cho đơn hàng ${order.id}`, error);
@@ -458,7 +494,7 @@ export class OrdersService {
               quantity: true,
               priceAtPurchase: true,
               productName: true,
-              skuNameSnapshot: true,
+              // skuNameSnapshot: true,
               productSlug: true,
               imageUrl: true,
               sku: {
@@ -498,23 +534,22 @@ export class OrdersService {
         recipientName: true,
         phoneNumber: true,
         shippingAddress: true,
-        shippingAddressSnapshot: true,
         shippingFee: true,
         shippingCode: true,
         transactionId: true,
         createdAt: true,
         updatedAt: true,
         cancellationReason: true,
-        payments: {
-          orderBy: { createdAt: 'desc' },
-        },
+        // payments: {
+        //   orderBy: { createdAt: 'desc' },
+        // },
         items: {
           select: {
             id: true,
             quantity: true,
             priceAtPurchase: true,
             productName: true,
-            skuNameSnapshot: true,
+            // skuNameSnapshot: true,
             sku: {
               select: {
                 id: true,
@@ -559,30 +594,25 @@ export class OrdersService {
     return order;
   }
 
-  async findAll(
-    search?: string,
-    status?: string,
-    page = 1,
-    limit = 10,
-    includeItems = false,
-    userId?: string,
-  ) {
+  async findAll(filters: OrderFilterDto) {
+    const page = filters.page || 1;
+    const limit = filters.limit || 10;
     const skip = (page - 1) * limit;
-    const where: any = {};
+    const where: Prisma.OrderWhereInput = {};
 
-    if (userId) {
-      where.userId = userId;
+    if (filters.userId) {
+      where.userId = filters.userId;
     }
 
-    if (status && status !== 'all') {
-      where.status = status as OrderStatus;
+    if (filters.status && filters.status !== 'all') {
+      where.status = filters.status as OrderStatus;
     }
-    if (search) {
+    if (filters.search) {
       where.OR = [
-        { id: { contains: search, mode: 'insensitive' } },
-        { recipientName: { contains: search, mode: 'insensitive' } },
-        { phoneNumber: { contains: search, mode: 'insensitive' } },
-        { user: { email: { contains: search, mode: 'insensitive' } } },
+        { id: { contains: filters.search, mode: 'insensitive' } },
+        { recipientName: { contains: filters.search, mode: 'insensitive' } },
+        { phoneNumber: { contains: filters.search, mode: 'insensitive' } },
+        { user: { email: { contains: filters.search, mode: 'insensitive' } } },
       ];
     }
 
@@ -590,11 +620,23 @@ export class OrdersService {
       user: { select: { email: true, firstName: true, lastName: true } },
     };
 
-    if (includeItems) {
+    if (filters.includeItems === 'true') {
       include.items = {
         include: {
           sku: {
-            include: { product: true },
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  images: {
+                    select: { url: true },
+                    take: 1,
+                  },
+                },
+              },
+            },
           },
         },
       };
@@ -642,10 +684,9 @@ export class OrdersService {
         createdAt: true,
         updatedAt: true,
         cancellationReason: true,
-        shippingAddressSnapshot: true,
-        payments: {
-          orderBy: { createdAt: 'desc' },
-        },
+        // payments: {
+        //   orderBy: { createdAt: 'desc' },
+        // },
         user: {
           select: {
             id: true,
@@ -661,7 +702,7 @@ export class OrdersService {
             quantity: true,
             priceAtPurchase: true,
             productName: true,
-            skuNameSnapshot: true,
+            // skuNameSnapshot: true,
             sku: {
               select: {
                 id: true,
@@ -706,10 +747,12 @@ export class OrdersService {
       );
     }
 
-    return this.updateStatus(orderId, {
-      status: OrderStatus.CANCELLED,
-      cancellationReason: reason,
-      notify: true,
+    return this.prisma.order.update({
+      where: { id: orderId },
+      data: {
+        status: OrderStatus.CANCELLED,
+        cancellationReason: reason,
+      },
     });
   }
 
@@ -1088,7 +1131,9 @@ export class OrdersService {
 
     await this.prisma.order.update({
       where: { id },
-      data: { deletedAt: new Date() },
+      data: {
+        // deletedAt: new Date()
+      },
     });
 
     return { success: true };

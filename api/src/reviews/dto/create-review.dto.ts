@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsInt,
   IsNotEmpty,
@@ -30,23 +31,40 @@ import {
  */
 
 export class CreateReviewDto {
-  @IsNotEmpty()
+  @ApiProperty({
+    example: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+    description: 'Mã định danh của sản phẩm',
+  })
+  @IsNotEmpty({ message: 'ProductId không được để trống' })
   @IsString()
   productId: string;
 
-  @IsInt()
-  @Min(1)
-  @Max(5)
+  @ApiProperty({ example: 5, description: 'Số sao đánh giá (1-5)' })
+  @IsInt({ message: 'Rating phải là số nguyên' })
+  @Min(1, { message: 'Rating tối thiểu là 1' })
+  @Max(5, { message: 'Rating tối đa là 5' })
   rating: number;
 
+  @ApiPropertyOptional({
+    example: 'Sản phẩm rất tốt!',
+    description: 'Nội dung đánh giá',
+  })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'Nội dung phải là chuỗi' })
   content?: string;
 
+  @ApiPropertyOptional({
+    example: 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22',
+    description: 'Mã định danh của SKU sản phẩm (biến thể)',
+  })
   @IsOptional()
   @IsString()
   skuId?: string;
 
+  @ApiPropertyOptional({
+    example: ['https://example.com/image1.jpg'],
+    description: 'Danh sách URL hình ảnh đính kèm',
+  })
   @IsOptional()
   @IsString({ each: true })
   images?: string[];

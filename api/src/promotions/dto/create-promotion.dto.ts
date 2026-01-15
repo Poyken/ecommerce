@@ -1,30 +1,4 @@
-<<<<<<< HEAD
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-  IsNumber,
-  Min,
-} from 'class-validator';
-
-export class CreatePromotionDto {
-  @ApiProperty({ example: 'Summer Sale 2026' })
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @ApiProperty({ example: 'Big discount for summer', required: false })
-  @IsString()
-  @IsOptional()
-  description?: string;
-
-  @ApiProperty({ example: 10 })
-  @IsNumber()
-  @Min(0)
-  discountPercent: number;
-=======
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsString,
   IsOptional,
@@ -38,65 +12,80 @@ import {
 import { Type } from 'class-transformer';
 
 export class PromotionRuleDto {
+  @ApiProperty({ example: 'MIN_ORDER_VALUE' })
   @IsString()
-  type: string; // MIN_ORDER_VALUE, SPECIFIC_CATEGORY, CUSTOMER_GROUP
+  type: string;
 
+  @ApiProperty({ example: 'GTE' })
   @IsString()
-  operator: string; // GTE, EQ, IN
+  operator: string;
 
+  @ApiProperty({ example: '500000' })
   @IsString()
   value: string;
 }
 
 export class PromotionActionDto {
+  @ApiProperty({ example: 'DISCOUNT_PERCENT' })
   @IsString()
-  type: string; // DISCOUNT_FIXED, DISCOUNT_PERCENT, FREE_SHIPPING, GIFT
+  type: string;
 
+  @ApiProperty({ example: '10' })
   @IsString()
   value: string;
 
+  @ApiPropertyOptional({ example: 50000 })
   @IsOptional()
   @IsNumber()
   maxDiscountAmount?: number;
 }
 
 export class CreatePromotionDto {
+  @ApiProperty({ example: 'Giảm giá mùa hè' })
   @IsString()
   name: string;
 
+  @ApiProperty({ example: 'SUMMER2024' })
   @IsString()
   code: string;
 
+  @ApiPropertyOptional({ example: 'Chương trình khuyến mãi hè' })
   @IsOptional()
   @IsString()
   description?: string;
 
+  @ApiProperty({ example: '2024-06-01T00:00:00Z' })
   @IsDateString()
   startDate: string;
 
+  @ApiProperty({ example: '2024-08-31T23:59:59Z' })
   @IsDateString()
   endDate: string;
 
+  @ApiPropertyOptional({ example: true })
   @IsOptional()
   @IsBoolean()
   isActive?: boolean;
 
+  @ApiPropertyOptional({ example: 1 })
   @IsOptional()
   @IsInt()
   priority?: number;
 
+  @ApiPropertyOptional({ example: 100 })
   @IsOptional()
   @IsInt()
   usageLimit?: number;
 
+  @ApiProperty({ type: [PromotionRuleDto] })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PromotionRuleDto)
   rules: PromotionRuleDto[];
 
+  @ApiProperty({ type: [PromotionActionDto] })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PromotionActionDto)
   actions: PromotionActionDto[];
->>>>>>> 8f5a875198d5ce2371ec25b2aeb50dc403c8c172
 }

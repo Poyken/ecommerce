@@ -3,7 +3,7 @@ import { LoyaltyService } from './loyalty.service';
 import { PrismaService } from '@/core/prisma/prisma.service';
 import { EmailService } from '@/integrations/email/email.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { LoyaltyPointType } from '@prisma/client';
+import { LoyaltyPointType } from './dto/loyalty.dto';
 
 describe('LoyaltyService', () => {
   let service: LoyaltyService;
@@ -12,6 +12,7 @@ describe('LoyaltyService', () => {
     loyaltyPoint: {
       create: jest.fn(),
       findMany: jest.fn(),
+      findFirst: jest.fn(),
       aggregate: jest.fn(),
     },
     order: {
@@ -80,11 +81,11 @@ describe('LoyaltyService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should calculate points based on order total (1 point per 10000)', async () => {
+    it('should calculate points based on order total (1 point per 1000)', async () => {
       const order = {
         id: 'order-1',
         userId: 'user-1',
-        totalAmount: 500000, // Should earn 50 points
+        totalAmount: 500000, // Should earn 500 points
       };
 
       mockPrismaService.order.findUnique.mockResolvedValue(order);
@@ -92,13 +93,13 @@ describe('LoyaltyService', () => {
         id: 'point-1',
         userId: 'user-1',
         orderId: 'order-1',
-        amount: 50,
+        amount: 500,
         type: LoyaltyPointType.EARNED,
       });
 
       const result = await service.earnPointsFromOrder('tenant-1', 'order-1');
 
-      expect(result.amount).toBe(50);
+      expect(result.amount).toBe(500);
     });
   });
 

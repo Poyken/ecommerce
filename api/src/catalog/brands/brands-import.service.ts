@@ -44,7 +44,7 @@ export class BrandsImportService {
           },
           create: {
             name,
-            tenantId,
+            tenantId: tenantId as any,
             deletedAt: status === 'INACTIVE' ? new Date() : null,
           },
         });
@@ -70,13 +70,17 @@ export class BrandsImportService {
 
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) return;
-      const name = String(row.getCell(2).value || '');
+      const nameValue = row.getCell(2).value;
+      const name =
+        nameValue !== null && nameValue !== undefined
+          ? (nameValue as any).toString()
+          : '';
       const errors: string[] = [];
       if (!name) errors.push('Thiếu tên thương hiệu');
 
       previewData.push({
         name,
-        status: String(row.getCell(4).value || 'ACTIVE'),
+        status: ((row.getCell(4).value as any) || 'ACTIVE').toString(),
         rowNumber,
         isValid: errors.length === 0,
         errors,

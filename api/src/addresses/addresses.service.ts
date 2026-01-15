@@ -36,14 +36,16 @@ export class AddressesService {
   async create(userId: string, dto: CreateAddressDto) {
     // Nếu user muốn đây là địa chỉ mặc định, các địa chỉ cũ phải bỏ cờ mặc định đi
     if (dto.isDefault) {
-      await this.prisma.address.updateMany({
+      await (this.prisma.address as any).updateMany({
         where: { userId },
         data: { isDefault: false },
       });
     }
 
     // Tự động set mặc định nếu đây là địa chỉ đầu tiên của họ
-    const count = await this.prisma.address.count({ where: { userId } });
+    const count = await (this.prisma.address as any).count({
+      where: { userId },
+    });
     const isDefault = count === 0 ? true : dto.isDefault;
 
     const tenant = getTenant();
@@ -51,18 +53,18 @@ export class AddressesService {
       throw new BadRequestException(
         'Không xác định được Cửa hàng (Tenant context missing)',
       );
-    return this.prisma.address.create({
+    return (this.prisma.address as any).create({
       data: {
         ...dto,
         userId,
         isDefault,
-        tenantId: tenant!.id,
+        tenantId: tenant.id,
       },
     });
   }
 
   findAll(userId: string) {
-    return this.prisma.address.findMany({
+    return (this.prisma.address as any).findMany({
       where: { userId },
       orderBy: { isDefault: 'desc' }, // Mặc định lên đầu
     });
@@ -70,7 +72,7 @@ export class AddressesService {
 
   async update(userId: string, addressId: string, dto: UpdateAddressDto) {
     // Xác minh quyền sở hữu (Chỉ chủ sở hữu mới được sửa)
-    const address = await this.prisma.address.findFirst({
+    const address = await (this.prisma.address as any).findFirst({
       where: { id: addressId, userId },
     });
 
@@ -80,21 +82,21 @@ export class AddressesService {
 
     // Logic đổi địa chỉ mặc định tương tự như lúc tạo
     if (dto.isDefault) {
-      await this.prisma.address.updateMany({
+      await (this.prisma.address as any).updateMany({
         where: { userId, id: { not: addressId } },
         data: { isDefault: false },
       });
     }
 
-    return this.prisma.address.update({
+    return (this.prisma.address as any).update({
       where: { id: addressId },
-      data: dto,
+      data: dto as any,
     });
   }
 
   async remove(userId: string, addressId: string) {
     // Xác minh quyền sở hữu (Ngăn chặn lỗ hổng IDOR)
-    const address = await this.prisma.address.findFirst({
+    const address = await (this.prisma.address as any).findFirst({
       where: { id: addressId, userId },
     });
 
@@ -102,7 +104,7 @@ export class AddressesService {
       throw new Error('Không tìm thấy địa chỉ');
     }
 
-    return this.prisma.address.delete({
+    return (this.prisma.address as any).delete({
       where: { id: addressId },
     });
   }

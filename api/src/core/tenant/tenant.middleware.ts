@@ -51,7 +51,7 @@ export class TenantMiddleware implements NestMiddleware {
       '') as string;
     const domain = rawHost.split(':')[0];
     console.log(
-      `[TenantMiddleware] Resolving tenant for domain: "${domain}" (from x-tenant-domain: "${req.headers['x-tenant-domain']}", host: "${req.headers.host}")`,
+      `[TenantMiddleware] Resolving tenant for domain: "${domain}" (from x-tenant-domain: "${String(req.headers['x-tenant-domain'] || '')}", host: "${String(req.headers.host || '')}")`,
     );
 
     // 2. Find Tenant (Cached)
@@ -107,7 +107,7 @@ export class TenantMiddleware implements NestMiddleware {
       const requestedTenantDomain = req.headers['x-tenant-domain'];
       if (requestedTenantDomain && requestedTenantDomain !== '') {
         console.error(
-          `[TenantMiddleware] Unauthorized Tenant access: domain="${domain}", x-tenant-domain="${requestedTenantDomain}"`,
+          `[TenantMiddleware] Unauthorized Tenant access: domain="${domain}", x-tenant-domain="${String(requestedTenantDomain || '')}"`,
         );
         return res.status(403).json({
           error: 'Unauthorized Tenant',

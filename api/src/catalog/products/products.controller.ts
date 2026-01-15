@@ -60,6 +60,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsExportService } from './products-export.service';
 import { ProductsImportService } from './products-import.service';
 import { ProductsService } from './products.service';
+import { BulkUpdateSkusDto } from './dto/bulk-update-skus.dto';
 
 @ApiTags('Products')
 @Controller('products')
@@ -79,8 +80,7 @@ export class ProductsController {
   @RequirePermissions('product:create')
   @ApiCreateResponse('Product', { summary: 'Tạo sản phẩm mới (Admin)' })
   async create(@Body() createProductDto: CreateProductDto) {
-    const data = await this.productsService.create(createProductDto);
-    return { data };
+    return this.productsService.create(createProductDto);
   }
 
   /**
@@ -109,11 +109,7 @@ export class ProductsController {
     @Query('q') query: string,
     @Query('limit') limit?: string,
   ) {
-    const data = await this.productsService.semanticSearch(
-      query,
-      Number(limit) || 10,
-    );
-    return { data };
+    return this.productsService.semanticSearch(query, Number(limit) || 10);
   }
 
   /**
@@ -125,8 +121,7 @@ export class ProductsController {
   @Cached(300000)
   @ApiGetOneResponse('Product', { summary: 'Lấy chi tiết sản phẩm' })
   async findOne(@Param('id') id: string) {
-    const data = await this.productsService.findOne(id);
-    return { data };
+    return this.productsService.findOne(id);
   }
 
   /**
@@ -136,8 +131,7 @@ export class ProductsController {
   @Cached(300000)
   @ApiListResponse('Product', { summary: 'Lấy danh sách sản phẩm liên quan' })
   async getRelated(@Param('id') id: string) {
-    const data = await this.productsService.getRelatedProducts(id);
-    return { data };
+    return this.productsService.getRelatedProducts(id);
   }
 
   /**
@@ -152,8 +146,7 @@ export class ProductsController {
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
   ) {
-    const data = await this.productsService.update(id, updateProductDto);
-    return { data };
+    return this.productsService.update(id, updateProductDto);
   }
 
   /**
@@ -165,10 +158,9 @@ export class ProductsController {
   @ApiUpdateResponse('any', { summary: 'Cập nhật hàng loạt SKU (Admin)' })
   async bulkUpdateSkus(
     @Param('id') id: string,
-    @Body() body: import('./dto/bulk-update-skus.dto').BulkUpdateSkusDto,
+    @Body() body: BulkUpdateSkusDto,
   ) {
-    const data = await this.productsService.bulkUpdateSkus(id, body.skus);
-    return { data };
+    return this.productsService.bulkUpdateSkus(id, body.skus);
   }
 
   /**
@@ -179,8 +171,7 @@ export class ProductsController {
   @RequirePermissions('product:delete')
   @ApiDeleteResponse('Product', { summary: 'Xóa sản phẩm (Admin)' })
   async remove(@Param('id') id: string) {
-    const data = await this.productsService.remove(id);
-    return { data };
+    return this.productsService.remove(id);
   }
 
   /**
@@ -192,8 +183,7 @@ export class ProductsController {
     summary: 'Lấy thông tin nhiều SKUs (cho Guest Cart)',
   })
   async getSkusDetails(@Body() body: { skuIds: string[] }) {
-    const data = await this.productsService.getSkusByIds(body.skuIds);
-    return { data };
+    return this.productsService.getSkusByIds(body.skuIds);
   }
 
   @Get(':id/translations')
@@ -201,8 +191,7 @@ export class ProductsController {
   @RequirePermissions('product:read')
   @ApiListResponse('any', { summary: 'Lấy bản dịch sản phẩm' })
   async getTranslations(@Param('id') id: string) {
-    const data = await this.productsService.getTranslations(id);
-    return { data };
+    return this.productsService.getTranslations(id);
   }
 
   @Post(':id/translations')
@@ -213,8 +202,7 @@ export class ProductsController {
     @Param('id') id: string,
     @Body() body: { locale: string; name: string; description?: string },
   ) {
-    const data = await this.productsService.translate(id, body);
-    return { data };
+    return this.productsService.translate(id, body);
   }
 
   /**
@@ -237,8 +225,7 @@ export class ProductsController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiCreateResponse('any', { summary: 'Import Products & SKUs from Excel' })
   async import(@UploadedFile() file: Express.Multer.File) {
-    const data = await this.importService.importFromExcel(file);
-    return { data };
+    return this.importService.importFromExcel(file);
   }
 
   /**
@@ -250,8 +237,7 @@ export class ProductsController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiOperation({ summary: 'Preview Products import from Excel' })
   async preview(@UploadedFile() file: Express.Multer.File) {
-    const data = await this.importService.previewFromExcel(file);
-    return { data };
+    return this.importService.previewFromExcel(file);
   }
 
   /**

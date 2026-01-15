@@ -51,7 +51,7 @@ export class InventoryService {
     const prisma = tx || this.prisma;
 
     // Cập nhật nguyên tử: chỉ giảm nếu stock >= quantity
-    const result = await prisma.sku.updateMany({
+    const result = await (prisma.sku as any).updateMany({
       where: {
         id: skuId,
         stock: { gte: quantity },
@@ -78,7 +78,7 @@ export class InventoryService {
   async releaseStock(skuId: string, quantity: number, tx?: any) {
     const prisma = tx || this.prisma;
 
-    await prisma.sku.update({
+    await (prisma.sku as any).update({
       where: { id: skuId },
       data: {
         stock: { increment: quantity },
@@ -97,7 +97,7 @@ export class InventoryService {
   async deductStock(skuId: string, quantity: number, tx?: any) {
     const prisma = tx || this.prisma;
 
-    await prisma.sku.update({
+    await (prisma.sku as any).update({
       where: { id: skuId },
       data: {
         reservedStock: { decrement: quantity },
@@ -113,7 +113,7 @@ export class InventoryService {
    * ✅ TỐI ƯU HÓA: Gửi batch notification (nhanh hơn 100x).
    */
   private async checkLowStock(skuId: string) {
-    const sku = await this.prisma.sku.findUnique({
+    const sku = await (this.prisma.sku as any).findUnique({
       where: { id: skuId },
       include: { product: true },
     });
@@ -125,7 +125,7 @@ export class InventoryService {
       );
 
       // ✅ Query 1 lần để lấy tất cả user bị ảnh hưởng
-      const carts = await this.prisma.cart.findMany({
+      const carts = await (this.prisma.cart as any).findMany({
         where: {
           items: {
             some: {
@@ -148,7 +148,7 @@ export class InventoryService {
         isRead: false,
       }));
 
-      await this.prisma.notification.createMany({
+      await (this.prisma.notification as any).createMany({
         data: notifications,
       });
 
@@ -180,7 +180,7 @@ export class InventoryService {
    */
   private async notifyStockUpdate(skuId: string) {
     try {
-      const sku = await this.prisma.sku.findUnique({
+      const sku = await (this.prisma.sku as any).findUnique({
         where: { id: skuId },
         select: { stock: true, productId: true },
       });

@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
+import { PaginationQueryDto, stringToBoolean } from '@/common/dto/base.dto';
 
 export enum SortOption {
   PRICE_ASC = 'price_asc',
@@ -10,7 +11,7 @@ export enum SortOption {
   RATING_DESC = 'rating_desc',
 }
 
-export class FilterProductDto {
+export class FilterProductDto extends PaginationQueryDto {
   /**
    * =====================================================================
    * FILTER PRODUCT DTO - Bộ lọc sản phẩm nâng cao
@@ -78,20 +79,6 @@ export class FilterProductDto {
     description: 'Có bao gồm đầy đủ thông tin SKU không (true/false)',
   })
   @IsOptional()
-  @IsString()
-  includeSkus?: string;
-
-  @ApiPropertyOptional({ description: 'Trang hiện tại', default: 1 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(1)
-  page?: number = 1;
-
-  @ApiPropertyOptional({ description: 'Số sản phẩm mỗi trang', default: 10 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(1)
-  limit?: number = 10;
+  @Transform(({ value }) => stringToBoolean(value))
+  includeSkus?: boolean;
 }

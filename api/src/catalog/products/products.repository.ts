@@ -131,14 +131,14 @@ export class ProductsRepository extends BaseRepository<Product> {
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
-      this.model.findMany({
+      (this.model as any).findMany({
         where: whereConditions,
         orderBy,
         include: this.defaultIncludes,
         skip,
         take: limit,
       }),
-      this.model.count({ where: whereConditions }),
+      (this.model as any).count({ where: whereConditions }),
     ]);
 
     const lastPage = Math.ceil(total / limit) || 1;
@@ -163,7 +163,7 @@ export class ProductsRepository extends BaseRepository<Product> {
     slug: string,
     includeSkus = true,
   ): Promise<ProductWithRelations | null> {
-    return this.model.findFirst({
+    return await (this.model as any).findFirst({
       where: this.withTenantFilter({
         slug,
         deletedAt: null,
@@ -201,9 +201,7 @@ export class ProductsRepository extends BaseRepository<Product> {
         where: {
           deletedAt: null,
           categories: {
-            some: {
-              categoryId: { in: categoryIds },
-            },
+            some: { categoryId: { in: categoryIds } },
           },
         },
         orderBy: { createdAt: 'desc' },
@@ -218,7 +216,7 @@ export class ProductsRepository extends BaseRepository<Product> {
    */
   async findRelated(productId: string, limit = 4): Promise<Product[]> {
     // Lấy categories của product hiện tại
-    const product = await this.model.findFirst({
+    const product = await (this.model as any).findFirst({
       where: this.withTenantFilter({ id: productId }),
       include: { categories: true },
     });
@@ -229,7 +227,7 @@ export class ProductsRepository extends BaseRepository<Product> {
 
     const categoryIds = product.categories.map((c: any) => c.categoryId);
 
-    return this.model.findMany({
+    return (this.model as any).findMany({
       where: this.withTenantFilter({
         id: { not: productId },
         deletedAt: null,
@@ -269,15 +267,11 @@ export class ProductsRepository extends BaseRepository<Product> {
   /**
    * Lấy products cho homepage (featured, best sellers, etc.)
    */
-  async findFeatured(limit = 8): Promise<Product[]> {
-    return this.model.findMany({
-      where: this.withTenantFilter({
-        deletedAt: null,
-        // Có thể thêm flag isFeatured trong tương lai
-      }),
-      include: this.defaultIncludes,
+  async findFeatured(limit = 10): Promise<Product[]> {
+    return await (this.model as any).findMany({
+      where: this.withTenantFilter({ isFeatured: true, deletedAt: null }),
       take: limit,
-      orderBy: [{ avgRating: 'desc' }, { reviewCount: 'desc' }],
+      orderBy: { createdAt: 'desc' },
     });
   }
 
@@ -285,7 +279,7 @@ export class ProductsRepository extends BaseRepository<Product> {
    * Update min/max prices cho product (denormalization)
    */
   async updatePriceRange(productId: string): Promise<Product> {
-    const skuPrices = await this.prisma.sku.aggregate({
+    const skuPrices = await (this.prisma.sku as any).aggregate({
       where: { productId, status: 'ACTIVE' },
       _min: { price: true, salePrice: true },
       _max: { price: true, salePrice: true },
@@ -294,7 +288,7 @@ export class ProductsRepository extends BaseRepository<Product> {
     const minPrice = skuPrices._min.salePrice ?? skuPrices._min.price ?? 0;
     const maxPrice = skuPrices._max.price ?? 0;
 
-    return this.model.update({
+    return (this.model as any).update({
       where: { id: productId },
       data: { minPrice, maxPrice },
     });
@@ -307,10 +301,8 @@ export class ProductsRepository extends BaseRepository<Product> {
   /**
    * Build where conditions từ filter options
    */
-  private buildWhereConditions(
-    filter: ProductFilterOptions,
-  ): Prisma.ProductWhereInput {
-    const conditions: Prisma.ProductWhereInput = {
+  private buildWhereConditions(filter: ProductFilterOptions): any {
+    const conditions: any = {
       ...this.withTenantFilter(),
       deletedAt: null,
     };

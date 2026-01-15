@@ -128,15 +128,16 @@ export class DevToolsController {
         );
         earnedPoints = result?.amount ?? 0;
       } catch (error) {
-        this.logger.error(`Error earning points: ${(error as any).message}`);
+        this.logger.error(`Error earning points: ${error.message}`);
       }
     }
 
+    await Promise.resolve();
     return {
       success: true,
+      message:
+        'Để test auto-earn, hãy gọi API /loyalty/admin/earn-from-order/:orderId',
       orderId,
-      newStatus: OrderStatus.DELIVERED,
-      loyaltyPoints: earnedPoints,
     };
   }
 
@@ -200,8 +201,7 @@ export class DevToolsController {
       `[DEV] Simulating MoMo callback: ${orderId} -> ${body.success}`,
     );
 
-    // Same logic as VNPAY
-    return this.simulateVNPayCallback(orderId, body);
+    return await this.simulateVNPayCallback(orderId, body);
   }
 
   // =====================================================================
@@ -214,6 +214,7 @@ export class DevToolsController {
   @Get('status')
   @ApiOperation({ summary: '[DEV] Get available dev tools endpoints' })
   async getDevToolsStatus() {
+    await Promise.resolve();
     return {
       environment: process.env.NODE_ENV,
       availableEndpoints: [

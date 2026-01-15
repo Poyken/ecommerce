@@ -100,9 +100,13 @@ export class PlatformAnalyticsController {
         },
       }),
 
-      // Active subscriptions
-      this.prisma.subscription.count({
-        where: { status: 'ACTIVE' },
+      // Active subscriptions (Same as active tenants for now)
+      this.prisma.tenant.count({
+        where: {
+          isActive: true,
+          suspendedAt: null,
+          deletedAt: null,
+        },
       }),
 
       // Pending invoices
@@ -287,9 +291,9 @@ export class PlatformAnalyticsController {
           owner: {
             select: { id: true, email: true, firstName: true, lastName: true },
           },
-          subscription: {
-            select: { status: true, currentPeriodEnd: true },
-          },
+          // subscription: {
+          //   select: { status: true, currentPeriodEnd: true },
+          // },
           _count: {
             select: { products: true, orders: true, users: true },
           },
@@ -363,11 +367,12 @@ export class PlatformAnalyticsController {
         case 'day':
           key = date.toISOString().split('T')[0];
           break;
-        case 'week':
+        case 'week': {
           const weekStart = new Date(date);
           weekStart.setDate(date.getDate() - date.getDay());
           key = weekStart.toISOString().split('T')[0];
           break;
+        }
         case 'month':
         default:
           key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;

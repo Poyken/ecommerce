@@ -25,9 +25,14 @@ import { PlanUsageService } from './plan-usage.service';
 import { SubscriptionsService } from './subscriptions.service';
 
 import { SubscriptionsController } from './subscriptions.controller';
+import { TenantSettingsController } from './tenant-settings.controller';
 
 @Module({
-  controllers: [TenantsController, SubscriptionsController],
+  controllers: [
+    TenantsController,
+    SubscriptionsController,
+    TenantSettingsController,
+  ],
   providers: [TenantsService, PlanUsageService, SubscriptionsService],
   exports: [TenantsService, PlanUsageService, SubscriptionsService],
 })

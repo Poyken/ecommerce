@@ -61,7 +61,7 @@ export class CartRepository extends BaseRepository<Cart> {
    * Lấy cart của user với items
    */
   async findByUser(userId: string): Promise<CartWithItems | null> {
-    return this.model.findFirst({
+    return await this.model.findFirst({
       where: this.withTenantFilter({ userId }),
       include: {
         items: {

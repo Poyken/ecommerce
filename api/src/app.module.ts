@@ -88,13 +88,6 @@ import { LockdownGuard } from '@core/guards/lockdown.guard';
 import { SuperAdminIpGuard } from '@core/guards/super-admin-ip.guard';
 import { TenantGuard } from '@core/guards/tenant.guard';
 import { JwtModule } from '@nestjs/jwt';
-<<<<<<< HEAD
-import { AgentModule } from './agent/agent.module';
-import { InsightsModule } from './insights/insights.module';
-import { ImageProcessorModule } from './images/image-processor.module';
-import { RagModule } from './rag/rag.module';
-import { PromotionsModule } from './promotions/promotions.module';
-=======
 import { AgentModule } from './ai/agent/agent.module';
 import { InsightsModule } from './ai/insights/insights.module';
 import { ImageProcessorModule } from './ai/images/image-processor.module';
@@ -113,7 +106,6 @@ import { DevToolsModule } from './dev-tools/dev-tools.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { ReportsModule } from './reports/reports.module';
 import { InventoryAlertsModule } from './inventory-alerts/inventory-alerts.module';
->>>>>>> 8f5a875198d5ce2371ec25b2aeb50dc403c8c172
 
 @Module({
   imports: [
@@ -260,9 +252,6 @@ import { InventoryAlertsModule } from './inventory-alerts/inventory-alerts.modul
     AgentModule, // AI Agent System
     InsightsModule, // AI Business Insights
     ImageProcessorModule, // AI Image Enhancement
-<<<<<<< HEAD
-    RagModule, PromotionsModule, // RAG Chatbot
-=======
     RagModule, // RAG Chatbot
     SentryModule, // Error Tracking & Performance Monitoring
     DataLoaderModule, // N+1 Query Prevention
@@ -283,7 +272,6 @@ import { InventoryAlertsModule } from './inventory-alerts/inventory-alerts.modul
     SubscriptionModule,
     ReportsModule,
     InventoryAlertsModule,
->>>>>>> 8f5a875198d5ce2371ec25b2aeb50dc403c8c172
   ],
   controllers: [HealthController],
   providers: [

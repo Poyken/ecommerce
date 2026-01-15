@@ -52,8 +52,7 @@ export class PagesController {
   @Get()
   @ApiOperation({ summary: 'List all public pages' })
   async findAllPublic() {
-    const result = await this.pagesService.findAll();
-    return { data: result };
+    return this.pagesService.findAll();
   }
 
   @Get(':slug')
@@ -71,7 +70,7 @@ export class PagesController {
     const lookupSlug = slug === 'home' ? '/' : `/${slug}`;
     const page = await this.pagesService.findBySlug(lookupSlug);
     if (!page) throw new NotFoundException('Page not found');
-    return { data: page };
+    return page;
   }
 
   @Post()
@@ -86,8 +85,7 @@ export class PagesController {
   @Get('translations/:locale')
   @ApiOperation({ summary: 'Get translations for a locale' })
   async getTranslations(@Param('locale') locale: string) {
-    const result = await this.pagesService.getTranslations(locale);
-    return { data: result };
+    return this.pagesService.getTranslations(locale);
   }
 
   // --- ADMIN ---
@@ -98,8 +96,7 @@ export class PagesController {
   @ApiBearerAuth()
   @ApiListResponse('Page', { summary: 'Admin: List all pages' })
   async findAll() {
-    const result = await this.pagesService.findAll();
-    return { data: result };
+    return this.pagesService.findAll();
   }
 
   @Get('admin/:id')
@@ -108,8 +105,7 @@ export class PagesController {
   @ApiBearerAuth()
   @ApiGetOneResponse('Page', { summary: 'Admin: Get page by ID' })
   async findById(@Param('id') id: string) {
-    const result = await this.pagesService.findById(id);
-    return { data: result };
+    return this.pagesService.findById(id);
   }
 
   @Post('admin')
@@ -118,8 +114,7 @@ export class PagesController {
   @ApiBearerAuth()
   @ApiCreateResponse('Page', { summary: 'Admin: Create new page' })
   async create(@Body() data: any) {
-    const result = await this.pagesService.create(data);
-    return { data: result };
+    return this.pagesService.create(data);
   }
 
   @Patch('admin/:id')
@@ -128,8 +123,7 @@ export class PagesController {
   @ApiBearerAuth()
   @ApiUpdateResponse('Page', { summary: 'Admin: Update existing page' })
   async update(@Param('id') id: string, @Body() data: any) {
-    const result = await this.pagesService.update(id, data);
-    return { data: result };
+    return this.pagesService.update(id, data);
   }
 
   @Delete('admin/:id')
@@ -138,7 +132,6 @@ export class PagesController {
   @ApiBearerAuth()
   @ApiDeleteResponse('Page', { summary: 'Admin: Delete page' })
   async delete(@Param('id') id: string) {
-    const result = await this.pagesService.delete(id);
-    return { data: result };
+    return this.pagesService.delete(id);
   }
 }

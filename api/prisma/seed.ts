@@ -202,7 +202,7 @@ async function main() {
       domain: TENANT_DOMAIN,
       plan: 'ENTERPRISE',
       themeConfig: { primaryColor: '#1a1a1a' },
-      currency: 'VND',
+      // currency: 'VND', // Removed as it seemingly doesn't exist on Tenant model
     },
     update: {},
   });
@@ -249,9 +249,82 @@ async function main() {
       lastName: 'Admin',
       password: passwordHash,
       tenantId: tenant.id,
-      roles: { create: { roleId: roleMap['SUPERADMIN'].id } },
+      roles: {
+        create: [{ roleId: roleMap['SUPERADMIN'].id }],
+      },
     },
   });
+
+  // 5. Seed Categories
+  console.log('📂 Seeding Categories...');
+  const categoryIds: string[] = [];
+  for (const [slug, img] of Object.entries(IMAGES.categories)) {
+    const cat = await prisma.category.upsert({
+      where: { tenantId_slug: { tenantId: tenant.id, slug } },
+      update: {},
+      create: {
+        name: slug.charAt(0).toUpperCase() + slug.slice(1),
+        slug,
+        imageUrl: img,
+        tenantId: tenant.id,
+      },
+    });
+    categoryIds.push(cat.id);
+  }
+
+  // 6. Seed Brands
+  console.log('🏷️ Seeding Brands...');
+  const brandIds: string[] = [];
+  for (const [i, img] of IMAGES.brands.entries()) {
+    const name = `Brand ${i + 1}`;
+    const slug = `brand-${i + 1}`;
+    const brand = await prisma.brand.upsert({
+      where: { tenantId_slug: { tenantId: tenant.id, slug } },
+      update: {},
+      create: {
+        name,
+        slug,
+        imageUrl: img,
+        tenantId: tenant.id,
+      },
+    });
+    brandIds.push(brand.id);
+  }
+
+  // 7. Seed Products with SKUs
+  console.log('📦 Seeding Products...');
+  if (categoryIds.length > 0 && brandIds.length > 0) {
+    const product = await prisma.product.create({
+      data: {
+        name: 'Luxury Sofa',
+        slug: `luxury-sofa-${Date.now()}`,
+        description: 'A very comfortable luxury sofa',
+        tenantId: tenant.id,
+        categoryId: categoryIds[0],
+        brandId: brandIds[0],
+        images: {
+          create: [
+            {
+              url: IMAGES.products[0],
+              tenantId: tenant.id,
+              displayOrder: 0,
+            },
+          ],
+        },
+        skus: {
+          create: {
+            skuCode: `SOFA-BLK-${Date.now()}`,
+            price: 5000000,
+            stock: 100,
+            status: 'ACTIVE',
+            tenantId: tenant.id,
+            attributes: { color: 'Black' },
+          },
+        },
+      },
+    });
+    console.log(`   - Created product: ${product.name}`);
+  }
 
   console.log('🎉 SEEDING COMPLETE!');
   console.log('👉 SUPER ADMIN: super@platform.com / 12345678');

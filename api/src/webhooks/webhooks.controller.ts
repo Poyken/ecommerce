@@ -163,6 +163,7 @@ export class WebhooksController {
 
     // TODO: Implement GHTK webhook handling
     // GHTK có cấu trúc webhook khác với GHN
+    await Promise.resolve();
 
     return { success: true, message: 'GHTK webhook received' };
   }

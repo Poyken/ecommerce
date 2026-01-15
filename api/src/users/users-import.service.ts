@@ -4,13 +4,15 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
 import * as bcrypt from 'bcrypt';
 
+import { Response } from 'express';
+
 @Injectable()
 export class UsersImportService {
   private readonly logger = new Logger(UsersImportService.name);
 
   constructor(private readonly prisma: PrismaService) {}
 
-  async generateTemplate(res: any) {
+  async generateTemplate(res: Response) {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Template');
 

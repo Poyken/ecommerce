@@ -1,6 +1,16 @@
 import { PrismaService } from '@core/prisma/prisma.service';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  Inject,
+  forwardRef,
+} from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { Prisma } from '@prisma/client';
+import { FilterNotificationDto } from './dto/filter-notification.dto';
+import { createPaginatedResult } from '@/common/dto/base.dto';
+import { NotificationsGateway } from './notifications.gateway';
 
 /**
  * =====================================================================
@@ -31,7 +41,11 @@ import { Cron, CronExpression } from '@nestjs/schedule';
 export class NotificationsService {
   private readonly logger = new Logger(NotificationsService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(forwardRef(() => NotificationsGateway))
+    private readonly gateway: NotificationsGateway,
+  ) {}
 
   /**
    * Tạo thông báo cho một user.
@@ -43,9 +57,14 @@ export class NotificationsService {
     message: string;
     link?: string;
   }) {
-    return this.prisma.notification.create({
+    const notification = await (this.prisma.notification as any).create({
       data,
     });
+
+    // Real-time push
+    this.gateway.sendNotificationToUser(data.userId, notification);
+
+    return notification;
   }
 
   /**
@@ -54,21 +73,22 @@ export class NotificationsService {
    */
   async findAll(userId: string, limit = 20, offset = 0) {
     const [items, total, unreadCount] = await Promise.all([
-      this.prisma.notification.findMany({
+      (this.prisma.notification as any).findMany({
         where: { userId },
         orderBy: { createdAt: 'desc' },
         take: limit,
         skip: offset,
       }),
-      this.prisma.notification.count({ where: { userId } }),
-      this.prisma.notification.count({
+      (this.prisma.notification as any).count({ where: { userId } }),
+      (this.prisma.notification as any).count({
         where: { userId, isRead: false },
       }),
     ]);
 
+    const page = Math.floor(offset / limit) + 1;
+
     return {
-      items,
-      total,
+      ...createPaginatedResult(items, total, page, limit),
       unreadCount,
       hasMore: offset + limit < total,
     };
@@ -78,7 +98,7 @@ export class NotificationsService {
    * Đếm số thông báo chưa đọc (Dùng cho pooling hoặc lấy state ban đầu).
    */
   async getUnreadCount(userId: string) {
-    return this.prisma.notification.count({
+    return (this.prisma.notification as any).count({
       where: { userId, isRead: false },
     });
   }
@@ -87,7 +107,7 @@ export class NotificationsService {
    * Đánh dấu một thông báo là đã đọc.
    */
   async markAsRead(id: string, userId: string) {
-    const result = await this.prisma.notification.updateMany({
+    const result = await (this.prisma.notification as any).updateMany({
       where: { id, userId },
       data: { isRead: true },
     });
@@ -98,6 +118,12 @@ export class NotificationsService {
       );
     }
 
+    // Real-time update count
+    const unreadCount = await this.getUnreadCount(userId);
+    this.gateway.server
+      .to(`user:${userId}`)
+      .emit('unread_count', { count: unreadCount });
+
     return result;
   }
 
@@ -105,17 +131,22 @@ export class NotificationsService {
    * Đánh dấu TẤT CẢ thông báo là đã đọc.
    */
   async markAllAsRead(userId: string) {
-    return this.prisma.notification.updateMany({
+    const result = await (this.prisma.notification as any).updateMany({
       where: { userId, isRead: false },
       data: { isRead: true },
     });
+
+    // Real-time update count
+    this.gateway.server.to(`user:${userId}`).emit('unread_count', { count: 0 });
+
+    return result;
   }
 
   /**
    * Xóa một thông báo.
    */
   async delete(id: string, userId: string) {
-    const result = await this.prisma.notification.deleteMany({
+    const result = await (this.prisma.notification as any).deleteMany({
       where: { id, userId },
     });
 
@@ -130,7 +161,7 @@ export class NotificationsService {
    * Xóa tất cả thông báo đã đọc của user (Dọn dẹp thủ công).
    */
   async deleteAllRead(userId: string) {
-    const result = await this.prisma.notification.deleteMany({
+    const result = await (this.prisma.notification as any).deleteMany({
       where: { userId, isRead: true },
     });
 
@@ -170,9 +201,12 @@ export class NotificationsService {
         isRead: false,
       }));
 
-      const result = await this.prisma.notification.createMany({
+      const result = await (this.prisma.notification as any).createMany({
         data: notifications,
       });
+
+      // Gateway broadcast (optional: if we want live popups for online users during broadcast)
+      this.gateway.broadcastNotification(data);
 
       totalCreated += result.count;
       skip += BATCH_SIZE;
@@ -206,7 +240,7 @@ export class NotificationsService {
       userId,
     }));
 
-    return this.prisma.notification.createMany({
+    return (this.prisma.notification as any).createMany({
       data: notifications,
     });
   }
@@ -240,7 +274,7 @@ export class NotificationsService {
    * Lấy thông báo theo ID (Admin)
    */
   async findOne(id: string) {
-    const notification = await this.prisma.notification.findUnique({
+    const notification = await (this.prisma.notification as any).findUnique({
       where: { id },
       include: {
         user: {
@@ -264,39 +298,32 @@ export class NotificationsService {
   /**
    * Lấy tất cả thông báo (Admin, with pagination and filters)
    */
-  async findAllAdmin(
-    page = 1,
-    limit = 50,
-    filters?: {
-      userId?: string;
-      type?: string;
-      isRead?: boolean;
-    },
-  ) {
+  /**
+   * Lấy tất cả thông báo (Admin, with pagination and filters)
+   */
+  async findAllAdmin(dto: FilterNotificationDto) {
+    const page = dto.page || 1;
+    const limit = dto.limit || 50;
     const skip = (page - 1) * limit;
-    const where: any = {};
 
-    if (filters?.userId) {
-      where.userId = filters.userId;
+    const where: Prisma.NotificationWhereInput = {};
+
+    if (dto.userId) {
+      where.userId = dto.userId;
     }
-    if (filters?.type) {
-      if (Array.isArray(filters.type)) {
-        where.type = { in: filters.type };
-      } else if (
-        typeof filters.type === 'string' &&
-        filters.type.includes(',')
-      ) {
-        where.type = { in: filters.type.split(',') };
+    if (dto.type) {
+      if (dto.type.includes(',')) {
+        where.type = { in: dto.type.split(',') };
       } else {
-        where.type = filters.type;
+        where.type = dto.type;
       }
     }
-    if (filters?.isRead !== undefined) {
-      where.isRead = filters.isRead;
+    if (dto.isRead !== undefined) {
+      where.isRead = dto.isRead;
     }
 
     const [items, total] = await Promise.all([
-      this.prisma.notification.findMany({
+      (this.prisma.notification as any).findMany({
         where,
         skip,
         take: limit,
@@ -312,17 +339,9 @@ export class NotificationsService {
           },
         },
       }),
-      this.prisma.notification.count({ where }),
+      (this.prisma.notification as any).count({ where }),
     ]);
 
-    return {
-      data: items,
-      meta: {
-        total,
-        page,
-        limit,
-        lastPage: Math.ceil(total / limit),
-      },
-    };
+    return createPaginatedResult(items, total, page, limit);
   }
 }

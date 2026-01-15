@@ -141,7 +141,7 @@ export abstract class BaseRepository<T = any> {
     id: string,
     options?: Pick<FindOptions, 'select' | 'include'>,
   ): Promise<T | null> {
-    return this.model.findFirst({
+    return await this.model.findFirst({
       where: this.withTenantFilter({ id }),
       ...options,
     });
@@ -173,7 +173,7 @@ export abstract class BaseRepository<T = any> {
    * @returns Entity hoặc null
    */
   async findFirst(options?: FindOptions): Promise<T | null> {
-    return this.model.findFirst({
+    return await this.model.findFirst({
       ...options,
       where: this.withTenantFilter(options?.where),
     });
@@ -186,7 +186,7 @@ export abstract class BaseRepository<T = any> {
    * @returns Array of entities
    */
   async findMany(options?: FindOptions): Promise<T[]> {
-    return this.model.findMany({
+    return await this.model.findMany({
       ...options,
       where: this.withTenantFilter(options?.where),
     });
@@ -241,7 +241,7 @@ export abstract class BaseRepository<T = any> {
    * @returns Số lượng entities
    */
   async count(where?: Record<string, any>): Promise<number> {
-    return this.model.count({
+    return await this.model.count({
       where: this.withTenantFilter(where),
     });
   }
@@ -274,7 +274,7 @@ export abstract class BaseRepository<T = any> {
     options?: Pick<FindOptions, 'select' | 'include'>,
   ): Promise<T> {
     const tenantId = this.tenantId;
-    return this.model.create({
+    return await this.model.create({
       data: tenantId ? { ...data, tenantId } : data,
       ...options,
     });
@@ -293,7 +293,7 @@ export abstract class BaseRepository<T = any> {
       ? data.map((item) => ({ ...item, tenantId }))
       : data;
 
-    return this.model.createMany({ data: enrichedData });
+    return await this.model.createMany({ data: enrichedData });
   }
 
   /**
@@ -330,7 +330,7 @@ export abstract class BaseRepository<T = any> {
     where: Record<string, any>,
     data: Record<string, any>,
   ): Promise<{ count: number }> {
-    return this.model.updateMany({
+    return await this.model.updateMany({
       where: this.withTenantFilter(where),
       data,
     });
@@ -359,7 +359,7 @@ export abstract class BaseRepository<T = any> {
    * @returns Số lượng entities đã xóa
    */
   async deleteMany(where: Record<string, any>): Promise<{ count: number }> {
-    return this.model.deleteMany({
+    return await this.model.deleteMany({
       where: this.withTenantFilter(where),
     });
   }
@@ -378,7 +378,7 @@ export abstract class BaseRepository<T = any> {
     update: Record<string, any>,
   ): Promise<T> {
     const tenantId = this.tenantId;
-    return this.model.upsert({
+    return await this.model.upsert({
       where: this.withTenantFilter(where),
       create: tenantId ? { ...create, tenantId } : create,
       update,

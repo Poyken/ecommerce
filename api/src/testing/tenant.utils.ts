@@ -33,6 +33,7 @@ import { tenantStorage } from '@core/tenant/tenant.context';
 export const DEFAULT_MOCK_TENANT: Tenant = {
   id: 'test-tenant-id',
   name: 'Test Store',
+
   ownerId: 'test-owner-id',
   subdomain: 'test-store',
   customDomain: null,
@@ -54,6 +55,25 @@ export const DEFAULT_MOCK_TENANT: Tenant = {
   dbUrl: null,
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
+  onboardingStep: 1,
+  trialEndsAt: null,
+  trialStartedAt: null,
+  // settings: null,
+  // maxUsers: 5,
+  // settings: null,
+  // maxUsers: 5,
+  currentStorageUsed: 0,
+  productLimit: 100,
+  storageLimit: 1024,
+  staffLimit: 2,
+  currentProductCount: 0,
+  currentStaffCount: 0,
+  onboardingCompleted: false,
+  businessType: null,
+  businessSize: null,
+  monthlyRevenue: null,
+  referralCode: null,
+  referredByCode: null,
 };
 
 /**
@@ -106,7 +126,7 @@ export async function withTenantContext<T>(
         const result = await fn();
         resolve(result);
       } catch (error) {
-        reject(error);
+        reject(error instanceof Error ? error : new Error(String(error)));
       }
     });
   });
@@ -234,7 +254,7 @@ export function resetMocks(
     if (typeof value === 'object' && value !== null) {
       Object.values(value).forEach((fn) => {
         if (typeof fn === 'function' && 'mockReset' in fn) {
-          (fn as jest.Mock).mockReset();
+          fn.mockReset();
         }
       });
     }

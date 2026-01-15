@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsEnum,
@@ -23,22 +24,27 @@ export class BroadcastNotificationDto {
 
    * =====================================================================
    */
+  @ApiProperty({ enum: NotificationType, description: 'Loại thông báo' })
   @IsEnum(NotificationType)
   @IsNotEmpty()
   type: NotificationType;
 
+  @ApiProperty({ description: 'Tiêu đề' })
   @IsString()
   @IsNotEmpty()
   title: string;
 
+  @ApiProperty({ description: 'Nội dung chi tiết' })
   @IsString()
   @IsNotEmpty()
   message: string;
 
+  @ApiPropertyOptional({ description: 'Đường dẫn liên kết' })
   @IsString()
   @IsOptional()
   link?: string;
 
+  @ApiPropertyOptional({ description: 'Có gửi email không?', default: false })
   @IsBoolean()
   @IsOptional()
   sendEmail?: boolean;

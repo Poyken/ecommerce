@@ -1,6 +1,13 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsOptional, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsNotEmpty,
+  ValidateNested,
+} from 'class-validator';
 import {
   CreateOptionDto,
   CreateProductDto,
@@ -27,14 +34,14 @@ import {
  */
 
 export class UpdateProductDto extends PartialType(CreateProductDto) {
-  @ApiProperty({ type: [CreateOptionDto], required: false })
+  @ApiPropertyOptional({ type: [CreateOptionDto] })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateOptionDto)
   options?: CreateOptionDto[];
 
-  @ApiProperty({ type: [CreateProductImageDto], required: false })
+  @ApiPropertyOptional({ type: [CreateProductImageDto] })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
