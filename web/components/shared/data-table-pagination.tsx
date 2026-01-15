@@ -11,14 +11,16 @@
  *
  * 2. DYNAMIC PAGE NUMBERS:
  * - Tự động tính toán và hiển thị các số trang xung quanh trang hiện tại.
- * - Hỗ trợ nút Previous/Next để điều hướng nhanh.
+ * - Hỗ trợ nút Previous/Next để điều hướng nhanh. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
@@ -33,7 +35,7 @@ export function DataTablePagination({
   total,
   limit,
 }: DataTablePaginationProps) {
-  const t = useTranslations("common.shop"); // Fallback or adjust key
+  // const t = useTranslations("common.shop"); // Fallback or adjust key
   const router = useRouter();
   const searchParams = useSearchParams();
   const [jumpPage, setJumpPage] = useState("");

@@ -1,143 +1,143 @@
-import { env } from "@/lib/env";
 import { io, Socket } from "socket.io-client";
+import { env } from "./env";
 
 /**
  * =====================================================================
- * STOCK SOCKET CLIENT - KẾT NỐI TỒN KHO THỜI GIAN THỰC
+ * STOCK SOCKET CLIENT - Kết nối real-time cho cập nhật tồn kho
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. SINGLETON PATTERN:
- * - Chúng ta chỉ tạo một instance DUY NHẤT (`new StockSocketClient()`) và export nó.
- * - Đảm bảo toàn bộ ứng dụng dùng chung 1 kết nối WebSocket, tránh tạo hàng chục kết nối gây sập server.
+ * - Chỉ tạo 1 WebSocket connection duy nhất cho toàn app
+ * - Tránh tạo nhiều connections không cần thiết gây quá tải Server.
  *
- * 2. OBSERVER PATTERN (Cơ chế đăng ký/lắng nghe):
- * - Map `listeners` lưu danh sách các component đang quan tâm đến 1 SKU.
- * - Khi Socket nhận `stock_updated` từ server -> Loop qua list này và gọi callback để update UI component đó.
+ * 2. ROOM-BASED SUBSCRIPTIONS:
+ * - Mỗi Product là một "Room". Client join room để nhận updates cho SKUs thuộc product đó.
+ * - Server chỉ broadcast updates cho các clients trong room -> Tối ưu bandwidth.
  *
- * 3. IDEMPOTENCY (Tính lũy đẳng):
- * - Hàm `connect()` kiểm tra `if (this.socket?.connected) return;`.
- * - Gọi 100 lần cũng chỉ tạo 1 kết nối thực sự.
+ * 3. STOCK UPDATE FLOW:
+ * - Khi có đơn hàng mới -> Backend emit `stock_update` event với skuId và newStock.
+ * - Client nhận event và cập nhật UI tức thì (không cần refresh). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Real-time Inventory: Khách hàng thấy ngay số lượng tồn kho thay đổi khi có người khác vừa mua xong, tránh tình trạng "đặt hụt" (Out of stock).
+ * - Bandwidth Efficiency: Nhờ cơ chế Room-based, người dùng chỉ nhận thông báo cho sản phẩm họ đang xem, giúp tiết kiệm data 4G cho khách hàng.
+
  * =====================================================================
  */
-class StockSocketClient {
-  // Biến lưu trữ kết nối socket thực tế
-  private socket: Socket | null = null;
 
-  // Map lưu trữ các hàm callback (listeners) cho từng sự kiện.
-  // Key: tên sự kiện (vd: "stock:sku-123"), Value: mảng các hàm cần gọi khi có sự kiện.
-  // Đây là triển khai thủ công của mẫu OBSERVER PATTERN.
-  private listeners: Map<string, Array<(data: unknown) => void>> = new Map();
+type StockUpdateCallback = (newStock: number) => void;
+
+class StockSocketClient {
+  private socket: Socket | null = null;
+  private stockListeners: Map<string, Set<StockUpdateCallback>> = new Map();
+  private connectedRooms: Set<string> = new Set();
 
   /**
-   * Khởi tạo kết nối tới Server
+   * Kết nối đến Stock Socket server
    */
   connect() {
-    // Nếu đã kết nối rồi thì không làm gì cả (Idempotency)
-    if (this.socket?.connected) return;
-
-    // Lấy URL của API từ biến môi trường
-    const serverUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8088";
-
-    // Xử lý URL: Socket.io cần base URL (vd: http://localhost:8088) chứ không phải full API path
-    // Nếu URL là http://localhost:8088/api/v1 -> cắt bỏ phần /api trở đi
-    let wsBaseUrl = serverUrl;
-    if (serverUrl.includes("/api/")) {
-      wsBaseUrl = serverUrl.split("/api/")[0];
-    } else if (serverUrl.includes("/api")) {
-      wsBaseUrl = serverUrl.split("/api")[0];
+    if (this.socket?.connected) {
+      return;
     }
 
-    // Chuyển giao thức http -> ws (tùy chọn, socket.io tự xử lý được nhưng explicit tốt hơn)
-    const wsUrl = wsBaseUrl.replace(/^http/, "ws");
+    // WebSocket server is at port 8080 (not /api/v1)
+    const serverUrl = env.NEXT_PUBLIC_SOCKET_URL;
 
-    // Khởi tạo kết nối tới namespace "/stock"
-    // Namespaces giúp tách biệt luồng dữ liệu, ví dụ: /chat, /notifications, /stock
-    this.socket = io(`${wsUrl}/stock`, {
-      transports: ["websocket"], // Bắt buộc dùng WebSocket, không fallback về HTTP Long-polling (tối ưu tốc độ)
-      reconnection: true, // Tự động kết nối lại nếu rớt mạng
+    this.socket = io(`${serverUrl}/stock`, {
+      transports: ["websocket", "polling"],
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+      autoConnect: true,
     });
 
-    // Lắng nghe sự kiện từ Server: "stock_updated"
-    // Khi server báo một SKU thay đổi số lượng, ta bắn sự kiện nội bộ tới các component đang theo dõi
-    this.socket.on("stock_updated", (data) => {
-      // data: { skuId: string, stock: number }
-      this.emit(`stock:${data.skuId}`, data.stock);
+    // Setup event handlers
+    this.socket.on("connect", () => {
+      // Rejoin rooms after reconnect
+      this.connectedRooms.forEach((productId) => {
+        this.socket?.emit("join_product", { productId });
+      });
     });
 
-    // Lắng nghe sự kiện global (ví dụ: Reset kho toàn hệ thống)
-    this.socket.on("global_stock_updated", (data) => {
-      this.emit("global_stock", data);
+    this.socket.on("disconnect", () => {});
+
+    this.socket.on("connect_error", (error) => {
+      console.error("[StockSocket] Connection error:", error.message);
     });
-  }
 
-  /**
-   * Đăng ký vào "phòng" (room) của một Product.
-   * Chỉ những client ở trong room này mới nhận được update của product đó.
-   * -> Giảm tải băng thông (bandwidth optimization).
-   */
-  joinProduct(productId: string) {
-    if (!this.socket?.connected) this.connect();
-    this.socket?.emit("join_product", productId);
-  }
-
-  /**
-   * Rời khỏi phòng khi user chuyển trang hoặc tắt component.
-   */
-  leaveProduct(productId: string) {
-    this.socket?.emit("leave_product", productId);
-  }
-
-  /**
-   * Hàm để Component đăng ký lắng nghe thay đổi của một SKU cụ thể.
-   * @param skuId - ID của biến thể sản phẩm cần theo dõi
-   * @param callback - Hàm sẽ chạy khi có update (React state setter thường được truyền vào đây)
-   * @returns Hàm cleanup để hủy đăng ký (dùng trong useEffect return)
-   */
-  onStockUpdate(skuId: string, callback: (stock: number) => void) {
-    const event = `stock:${skuId}`;
-
-    // Nếu chưa có ai lắng nghe sự kiện này, tạo mảng mới
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, []);
-    }
-
-    // Thêm callback vào danh sách
-    this.listeners.get(event)!.push(callback as (data: unknown) => void);
-
-    // Trả về hàm cleanup (Unsubscribe function)
-    return () => {
-      const callbacks = this.listeners.get(event);
+    // Listen for stock updates from server
+    this.socket.on("stock_update", (data: { skuId: string; stock: number }) => {
+      const callbacks = this.stockListeners.get(data.skuId);
       if (callbacks) {
-        // Tìm và xóa callback khỏi mảng
-        const index = callbacks.indexOf(callback as (data: unknown) => void);
-        if (index > -1) callbacks.splice(index, 1);
+        callbacks.forEach((callback) => callback(data.stock));
       }
-    };
+    });
   }
 
   /**
-   * Bắn sự kiện nội bộ tới các listeners
-   * (Private method: chỉ dùng bên trong class)
-   */
-  private emit(event: string, data: unknown) {
-    const callbacks = this.listeners.get(event);
-    if (callbacks) {
-      callbacks.forEach((cb) => cb(data));
-    }
-  }
-
-  /**
-   * Ngắt kết nối hoàn toàn (thường ít dùng trong SPA, trừ khi logout hoặc tắt app)
+   * Ngắt kết nối
    */
   disconnect() {
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
+      this.connectedRooms.clear();
     }
+  }
+
+  /**
+   * Join room để nhận updates cho một Product cụ thể
+   */
+  joinProduct(productId: string) {
+    if (!this.socket?.connected) {
+      this.connect();
+    }
+    if (!this.connectedRooms.has(productId)) {
+      this.socket?.emit("join_product", { productId });
+      this.connectedRooms.add(productId);
+    }
+  }
+
+  /**
+   * Leave room khi không cần nhận updates nữa
+   */
+  leaveProduct(productId: string) {
+    if (this.socket?.connected && this.connectedRooms.has(productId)) {
+      this.socket.emit("leave_product", { productId });
+      this.connectedRooms.delete(productId);
+    }
+  }
+
+  /**
+   * Đăng ký lắng nghe stock updates cho một SKU cụ thể
+   * @returns Unsubscribe function
+   */
+  onStockUpdate(skuId: string, callback: StockUpdateCallback): () => void {
+    if (!this.stockListeners.has(skuId)) {
+      this.stockListeners.set(skuId, new Set());
+    }
+    this.stockListeners.get(skuId)!.add(callback);
+
+    // Return unsubscribe function
+    return () => {
+      const callbacks = this.stockListeners.get(skuId);
+      if (callbacks) {
+        callbacks.delete(callback);
+        if (callbacks.size === 0) {
+          this.stockListeners.delete(skuId);
+        }
+      }
+    };
+  }
+
+  /**
+   * Kiểm tra trạng thái kết nối
+   */
+  isConnected(): boolean {
+    return this.socket?.connected ?? false;
   }
 }
 
-// Export một instance duy nhất (Singleton)
+// Export singleton instance
 export const stockSocket = new StockSocketClient();

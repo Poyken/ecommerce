@@ -17,7 +17,11 @@
  * QUY ƯỚC:
  * - Fields optional (có `?`): Không bắt buộc hoặc có thể `null` trong DB.
  * - Nested objects (như `category` trong `Product`): Là relations (kết bảng).
- * - `_count`: Field đặc biệt từ Prisma aggregations (đếm số lượng relation).
+ * - `_count`: Field đặc biệt từ Prisma aggregations (đếm số lượng relation). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Single Source of Truth: Là "xương sống" của ứng dụng, đảm bảo dữ liệu hiển thị trên UI hoàn toàn khớp với dữ liệu từ Database.
+ * - Debugging: Giúp phát hiện ngay lập tức nếu API đổi cấu hình (vd: đổi field `price` thành `unitPrice`), tiết kiệm hàng giờ debug mò mẫm.
+
  * =====================================================================
  */
 
@@ -37,7 +41,8 @@ export type OrderStatus =
   | "SHIPPED" // Đã giao cho shipper
   | "DELIVERED" // Đã giao thành công
   | "CANCELLED" // Đã hủy
-  | "RETURNED"; // Đã hoàn trả
+  | "RETURNED" // Đã trả hàng
+  | "COMPLETED"; // Hoàn thành
 
 /**
  * Trạng thái thanh toán.
@@ -291,7 +296,7 @@ export interface Product {
   };
 
   // Frontend enriched
-  images?: ProductImage[] | { url: string; alt?: string }[] | string[];
+  images?: ProductImage[] | { url: string; alt?: string | null }[] | string[];
 }
 
 // =============================================================================
@@ -685,6 +690,8 @@ export interface ChatConversation {
 export interface Tenant {
   id: string;
   name: string;
+  subdomain?: string | null;
+  customDomain?: string | null;
   domain: string;
   themeConfig?: Record<string, any>;
   plan: "BASIC" | "PRO" | "ENTERPRISE";
@@ -724,4 +731,74 @@ export interface Invoice {
   dueDate: string;
   createdAt: string;
   updatedAt: string;
+}
+// =============================================================================
+// 🔄 RMA - Return Merchandise Authorization
+// =============================================================================
+
+export type ReturnType = "REFUND_ONLY" | "RETURN_AND_REFUND" | "EXCHANGE";
+
+export type ReturnMethod = "AT_COUNTER" | "PICKUP" | "SELF_SHIP";
+
+export type RefundMethod = "ORIGINAL_PAYMENT" | "BANK_TRANSFER" | "WALLET";
+
+export type ReturnStatus =
+  | "PENDING"
+  | "APPROVED"
+  | "WAITING_FOR_RETURN"
+  | "IN_TRANSIT"
+  | "RECEIVED"
+  | "INSPECTING"
+  | "REFUNDED"
+  | "REJECTED"
+  | "CANCELLED";
+
+/**
+ * Yêu cầu trả hàng/hoàn tiền.
+ */
+export interface ReturnRequest {
+  id: string;
+  orderId: string;
+  userId: string;
+  status: ReturnStatus;
+  type: ReturnType;
+  reason: string;
+  description?: string | null;
+  images?: string[];
+
+  // Return shipping details
+  returnMethod?: ReturnMethod | null;
+  trackingCode?: string | null;
+  carrier?: string | null;
+  pickupAddress?: any; // Json
+
+  // Refund details
+  refundMethod: RefundMethod;
+  bankAccount?: any; // Json
+
+  // Admin fields
+  inspectionNotes?: string | null;
+  rejectedReason?: string | null;
+
+  createdAt: string;
+  updatedAt: string;
+
+  // Relations
+  order?: Order;
+  user?: User;
+  items?: ReturnItem[];
+}
+
+/**
+ * Item cụ thể trong yêu cầu trả hàng.
+ */
+export interface ReturnItem {
+  id: string;
+  returnRequestId: string;
+  orderItemId: string;
+  quantity: number;
+
+  // Relations
+  returnRequest?: ReturnRequest;
+  orderItem?: OrderItem;
 }

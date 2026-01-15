@@ -23,7 +23,10 @@ import { cn } from "@/lib/utils";
  * - Sử dụng `Eye` và `EyeOff` từ Lucide để biểu thị trạng thái trực quan.
  *
  * 3. ACCESSIBILITY:
- * - `aria-label` giúp người dùng sử dụng trình đọc màn hình (Screen Reader) hiểu được chức năng của nút này.
+ * - `aria-label` giúp người dùng sử dụng trình đọc màn hình (Screen Reader) hiểu được chức năng của nút này. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

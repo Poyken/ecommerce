@@ -35,8 +35,8 @@ RUN npx prisma generate
 COPY . .
 # 1. Build main application
 RUN npm run build
-# 2. Build seeds into a separate folder within dist
-RUN npx tsc prisma/seed.ts prisma/seed-products.ts prisma/seed-blog.ts --outDir dist/seeds --skipLibCheck --module commonjs --target es2020
+# 2. Build seed into dist/seeds
+RUN npx tsc prisma/seed.ts --outDir dist/seeds --skipLibCheck --module commonjs --target es2020 --esModuleInterop
 
 # Prune dev dependencies, giữ lại chỉ production deps
 RUN --mount=type=cache,target=/root/.npm \
@@ -63,4 +63,4 @@ COPY --from=builder --chown=nestjs:nodejs /app/prisma ./prisma
 
 USER nestjs
 EXPOSE 8080
-CMD ["node", "dist/main"]
+CMD ["sh", "-c", "node_modules/.bin/prisma db push --skip-generate && node dist/seeds/seed.js && node dist/main"]

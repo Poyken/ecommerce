@@ -18,7 +18,10 @@ import { cn } from "@/lib/utils";
  *
  * 2. UNIQUE CIRCLE ANIMATION:
  * - Thay vì vòng xoay đơn điệu, ta sử dụng 2 vòng tròn lồng nhau với hiệu ứng "Orbit" (Quỹ đạo).
- * - Kết hợp với hiệu ứng Pulse ở tâm để tạo cảm giác "sống".
+ * - Kết hợp với hiệu ứng Pulse ở tâm để tạo cảm giác "sống". *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -33,13 +36,7 @@ export function LoadingScreen({
   fullScreen = true,
   className,
 }: LoadingScreenProps) {
-  let t;
-  try {
-    t = useTranslations("loading");
-  } catch (e) {
-    // Fallback if context is missing
-    t = (key: string) => (key === "message" ? "Loading..." : key);
-  }
+  const t = useTranslations("loading");
   const displayMessage = message || t("message");
 
   return (

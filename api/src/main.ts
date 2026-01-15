@@ -1,3 +1,6 @@
+// QUAN TRỌNG: Import Sentry đầu tiên trước mọi thứ khác để đảm bảo bắt trọn lỗi!
+import './core/sentry/instrument';
+
 /**
  * =====================================================================
  * MAIN BOOTSTRAP - ĐIỂM KHỞI CHẠY ỨNG DỤNG
@@ -10,13 +13,14 @@
  * 1. Khởi tạo instance ứng dụng (`NestFactory.create`).
  * 2. Cấu hình Middleware toàn cục (Global Middleware):
  *    - Security (Helmet, CORS): Bảo mật HTTP headers và chặn request trái phép.
- *    - Performance (Compression): Nén Gzip response.
- *    - Logging: Ghi log chuẩn format.
+ *    - Performance (Compression): Nén Gzip response để giảm dung lượng tải.
+ *    - Logging: Ghi log chuẩn format JSON để dễ debug và trace.
  * 3. Cấu hình Pipes & Interceptors toàn cục:
  *    - ValidationPipe: Tự động kiểm tra và convert dữ liệu đầu vào (DTO).
  *    - TransformInterceptor: Chuẩn hóa format trả về { data, message, statusCode }.
- *    - AllExceptionsFilter: Bắt lỗi tập trung và trả về lỗi đẹp.
+ *    - AllExceptionsFilter: Bắt lỗi tập trung và trả về lỗi đẹp thay vì stack trace thô.
  * 4. Tạo tài liệu API (Swagger) tự động tại `/docs`.
+ * 5. [NEW] Sentry error tracking và performance monitoring (Theo dõi lỗi và hiệu năng).
  * =====================================================================
  */
 
@@ -43,30 +47,29 @@ import { TransformInterceptor } from './core/interceptors/transform.interceptor'
 
 async function bootstrap() {
   // Tạo instance ứng dụng NestJS
-  // bufferLogs: true => Chỉ ghi log sau khi logger custom đã khởi tạo xong
+  // bufferLogs: true => Chỉ ghi log sau khi logger custom đã khởi tạo xong, tránh mất log lúc khởi động
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     bufferLogs: true,
   });
 
-  // Enable trust proxy for X-Forwarded-For headers
-  app.set('trust proxy', 1); // Trust the first proxy (e.g. Next.js server / Nginx)
+  // Enable trust proxy để lấy đúng IP người dùng khi chạy sau Nginx/Load Balancer
+  app.set('trust proxy', 1);
 
-  // Khởi tạo LoggerService
+  // Khởi tạo LoggerService (sử dụng Winston) thay thế cho logger mặc định
   const logger = app.get(LoggerService);
   app.useLogger(logger);
 
   // Bật Graceful Shutdown (Quan trọng cho Production)
-  // Đảm bảo đóng kết nối DB, Redis... an toàn khi stop container
+  // Đảm bảo đóng kết nối DB, Redis... an toàn hủy các process cũ khi deploy mới
   app.enableShutdownHooks();
 
   // ============================================================================
   // 1. SECURITY - Bảo mật với Helmet
   // ============================================================================
   // Helmet thiết lập các HTTP headers bảo mật để chống lại các tấn công phổ biến:
-  // - XSS (Cross-Site Scripting)
-  // - Clickjacking
-  // - MIME type sniffing
-  // Using centralized security configuration from constants
+  // - XSS (Cross-Site Scripting): Chèn mã độc vào trang web
+  // - Clickjacking: Lừa người dùng click vào nút ẩn
+  // - MIME type sniffing: Giả dạng kiểu file
   app.use(
     helmet({
       contentSecurityPolicy: {
@@ -88,20 +91,20 @@ async function bootstrap() {
     }),
   );
 
-  // Use cookie-parser middleware
+  // Sử dụng cookie-parser để đọc cookie từ request (cho JWT trong cookie)
   app.use(cookieParser());
 
   // ============================================================================
   // LIMITS - Giới hạn kích thước request để tránh tấn công DoS
   // ============================================================================
   const { json, urlencoded } = await import('express');
-  app.use(json({ limit: '5mb' }));
-  app.use(urlencoded({ extended: true, limit: '5mb' }));
+  app.use(json({ limit: '5mb' })); // Giới hạn JSON body 5MB
+  app.use(urlencoded({ extended: true, limit: '5mb' })); // Giới hạn Form data 5MB
 
   // ============================================================================
   // 2. PERFORMANCE - Tối ưu hiệu năng với Compression
   // ============================================================================
-  // Nén response (Gzip) để giảm băng thông và tăng tốc độ tải
+  // Nén response (Gzip) để giảm băng thông và tăng tốc độ tải cho Client
   app.use(compression());
 
   // ============================================================================
@@ -115,7 +118,7 @@ async function bootstrap() {
   // 4. API VERSIONING - Quản lý phiên bản API
   // ============================================================================
   // Cho phép versioning API qua URI (VD: /api/v1/..., /api/v2/...)
-  // Mặc định sử dụng version 1
+  // Giúp nâng cấp API mà không làm hỏng app cũ của người dùng
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
@@ -124,7 +127,7 @@ async function bootstrap() {
   // ============================================================================
   // 5. CORS - Cross-Origin Resource Sharing
   // ============================================================================
-  // Cấu hình CORS để kiểm soát domain nào được phép gọi API
+  // Cấu hình CORS để kiểm soát domain nào được phép gọi API (Frontend, Mobile App)
   app.enableCors({
     origin: (origin, callback) => {
       // Danh sách domain được phép (whitelist)
@@ -132,7 +135,7 @@ async function bootstrap() {
         process.env.FRONTEND_URL,
         'http://localhost:3000',
         'http://localhost:8080',
-        'https://web-okfy.onrender.com',
+        'https://web-five-gilt-79.vercel.app', // Production Domain
       ].filter(Boolean); // Lọc bỏ giá trị undefined/null
 
       // 1. Cho phép request không có origin (Server-to-Server, Tools like Postman)
@@ -154,11 +157,11 @@ async function bootstrap() {
         return callback(null, true);
       }
 
-      // 4. Block
+      // 4. Chặn (Block)
       logger.warn(`🚫 CORS Blocked Origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     },
-    credentials: true, // Cho phép gửi cookies
+    credentials: true, // Cho phép gửi cookies/headers xác thực
   });
 
   // ============================================================================
@@ -166,45 +169,48 @@ async function bootstrap() {
   // ============================================================================
 
   // 6.1. Exception Filter - Xử lý lỗi toàn cục
+  // Bắt mọi lỗi, log ra Sentry/Console và trả về JSON chuẩn cho Client
   const httpAdapter = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter)); // Format lỗi chuẩn
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
-  // 6.2. ClassSerializerInterceptor - Ẩn các field nhạy cảm (VD: password)
+  // 6.2. ClassSerializerInterceptor - Ẩn các field nhạy cảm
+  // Tự động loại bỏ các field có @Exclude() (như password, salt) khỏi response
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  // 6.3. TransformInterceptor - Format response chuẩn {data, message}
+  // 6.3. TransformInterceptor - Format response chuẩn
+  // Bọc mọi response thành { success: true, data: ..., message: ... }
   app.useGlobalInterceptors(new TransformInterceptor());
 
   // ============================================================================
   // 7. VALIDATION - Validate dữ liệu đầu vào (DTO)
   // ============================================================================
-  // Tự động validate và transform dữ liệu từ request
+  // Tự động validate và transform dữ liệu từ request body/params
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Tự động loại bỏ các field không khai báo trong DTO (Bảo mật)
-      forbidNonWhitelisted: true, // Báo lỗi nếu gửi field thừa
+      forbidNonWhitelisted: true, // Báo lỗi nếu gửi field thừa (Chặt chẽ)
       transform: true, // Tự động convert kiểu dữ liệu (VD: string '1' -> number 1)
       transformOptions: {
         enableImplicitConversion: true, // Cho phép convert ngầm định
       },
-      disableErrorMessages: false, // Hiển thị thông báo lỗi chi tiết
+      disableErrorMessages: false, // Hiển thị thông báo lỗi chi tiết (Dev friendly)
     }),
   );
 
   // ============================================================================
   // 8. SWAGGER - API Documentation (Tài liệu API tự động)
   // ============================================================================
-  // Cấu hình Swagger để tạo tài liệu API tự động
+  // Cấu hình Swagger để tạo tài liệu API tự động, giúp Frontend/Mobile team dễ tích hợp
   const config = new DocumentBuilder()
     .setTitle('E-commerce API') // Tiêu đề
     .setDescription(
       'Tài liệu API cho hệ thống thương mại điện tử - Full Features', // Mô tả
     )
     .setVersion('1.0') // Phiên bản
-    .addTag('Auth', 'Xác thực và phân quyền') // Tag cho nhóm endpoint
-    .addTag('Products', 'Quản lý sản phẩm') // Tag cho nhóm endpoint
-    .addTag('Orders', 'Quản lý đơn hàng') // Tag cho nhóm endpoint
-    .addTag('Reviews', 'Quản lý đánh giá') // Tag cho nhóm endpoint
+    .addTag('Auth', 'Xác thực và phân quyền')
+    .addTag('Products', 'Quản lý sản phẩm')
+    .addTag('Orders', 'Quản lý đơn hàng')
+    .addTag('Reviews', 'Quản lý đánh giá')
     .addBearerAuth() // Thêm nút nhập JWT Token trên Swagger UI
     .build();
 
@@ -214,7 +220,7 @@ async function bootstrap() {
   // ============================================================================
   // 9. START SERVER - Khởi động server
   // ============================================================================
-  const port = process.env.PORT ?? 8088;
+  const port = process.env.PORT ?? 8080;
   await app.listen(port);
 
   logger.log(`🚀 Server is running on: http://localhost:${port}`);

@@ -20,11 +20,20 @@
  * 5. Xóa toàn bộ giỏ hàng (DELETE /cart)
  * 6. Gộp giỏ hàng guest vào tài khoản (POST /cart/merge)
  *
- * ⚠️ LƯU Ý: Tất cả các endpoint đều yêu cầu đăng nhập (JwtAuthGuard)
+ * ⚠️ LƯU Ý: Tất cả các endpoint đều yêu cầu đăng nhập (JwtAuthGuard) *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import {
+  ApiCreateResponse,
+  ApiDeleteResponse,
+  ApiGetOneResponse,
+  ApiUpdateResponse,
+} from '@/common/decorators/crud.decorators';
 import {
   Body,
   Controller,
@@ -54,7 +63,9 @@ export class CartController {
    * Trả về danh sách items, tổng tiền và tổng số lượng.
    */
   @Get()
-  @ApiOperation({ summary: 'Lấy giỏ hàng của người dùng hiện tại' })
+  @ApiGetOneResponse('Cart', {
+    summary: 'Lấy giỏ hàng của người dùng hiện tại',
+  })
   async getCart(@Request() req: RequestWithUser) {
     const data = await this.cartService.getCart(req.user.id);
     return { data };
@@ -65,7 +76,7 @@ export class CartController {
    * Nếu SKU đã có trong giỏ → Cộng dồn số lượng.
    */
   @Post()
-  @ApiOperation({ summary: 'Thêm sản phẩm vào giỏ hàng' })
+  @ApiCreateResponse('CartItem', { summary: 'Thêm sản phẩm vào giỏ hàng' })
   async addToCart(@Request() req: RequestWithUser, @Body() dto: AddToCartDto) {
     const data = await this.cartService.addToCart(req.user.id, dto);
     return { data };
@@ -76,7 +87,9 @@ export class CartController {
    * Được gọi khi user tăng/giảm số lượng ở trang giỏ hàng.
    */
   @Patch('items/:id')
-  @ApiOperation({ summary: 'Cập nhật số lượng sản phẩm trong giỏ' })
+  @ApiUpdateResponse('CartItem', {
+    summary: 'Cập nhật số lượng sản phẩm trong giỏ',
+  })
   async updateItem(
     @Request() req: RequestWithUser,
     @Param('id') itemId: string,
@@ -90,7 +103,7 @@ export class CartController {
    * Xóa một item khỏi giỏ hàng.
    */
   @Delete('items/:id')
-  @ApiOperation({ summary: 'Xóa một sản phẩm khỏi giỏ hàng' })
+  @ApiDeleteResponse('CartItem', { summary: 'Xóa một sản phẩm khỏi giỏ hàng' })
   async removeItem(
     @Request() req: RequestWithUser,
     @Param('id') itemId: string,
@@ -103,7 +116,7 @@ export class CartController {
    * Xóa toàn bộ giỏ hàng (Clear Cart).
    */
   @Delete()
-  @ApiOperation({ summary: 'Xóa toàn bộ giỏ hàng' })
+  @ApiDeleteResponse('Cart', { summary: 'Xóa toàn bộ giỏ hàng' })
   async clearCart(@Request() req: RequestWithUser) {
     const data = await this.cartService.clearCart(req.user.id);
     return { data };
@@ -118,7 +131,9 @@ export class CartController {
    * 3. Service xử lý từng item: check tồn kho, cộng dồn nếu trùng SKU
    */
   @Post('merge')
-  @ApiOperation({ summary: 'Gộp giỏ hàng guest vào tài khoản user' })
+  @ApiCreateResponse('Cart', {
+    summary: 'Gộp giỏ hàng guest vào tài khoản user',
+  })
   async mergeCart(
     @Request() req: RequestWithUser,
     @Body() items: { skuId: string; quantity: number }[],

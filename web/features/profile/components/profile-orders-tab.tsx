@@ -13,7 +13,10 @@
  * - Nếu chưa có đơn hàng, hiển thị thông báo kèm nút "Start Shopping" để dẫn dắt người dùng.
  *
  * 3. SKELETON LOADING:
- * - Hiển thị các khung placeholder (skeleton) trong khi đang tải dữ liệu từ API.
+ * - Hiển thị các khung placeholder (skeleton) trong khi đang tải dữ liệu từ API. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

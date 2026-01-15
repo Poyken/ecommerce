@@ -20,7 +20,10 @@ import { useCallback, useEffect, useState } from "react";
  *   (Pub/Sub pattern đơn giản bằng DOM Events).
  *
  * 2. ANIMATE PRESENCE:
- * - Badge số lượng item có hiệu ứng pop-in/pop-out khi số lượng thay đổi.
+ * - Badge số lượng item có hiệu ứng pop-in/pop-out khi số lượng thay đổi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -16,7 +16,10 @@ import { IsEmail, MinLength } from 'class-validator';
  * - `@MinLength(6)` cho mật khẩu: Đảm bảo độ phức tạp tối thiểu.
  *
  * 3. DATA CONSISTENCY:
- * - DTO này đảm bảo rằng mọi tài khoản mới được tạo ra đều có đầy đủ các thông tin cơ bản cần thiết cho hệ thống.
+ * - DTO này đảm bảo rằng mọi tài khoản mới được tạo ra đều có đầy đủ các thông tin cơ bản cần thiết cho hệ thống. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

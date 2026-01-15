@@ -1,19 +1,21 @@
 /**
  * =====================================================================
- * UTILITY FUNCTIONS - Hàm tiện ích dùng chung
+ * UTILITY & FORMAT FUNCTIONS - Các hàm tiện ích dùng chung
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. `cn` (Class Name Utility):
- * - Đây là hàm quan trọng nhất khi làm việc với Tailwind trong React.
- * - Nó kết hợp `clsx` (để xử lý điều kiện: `isTrue && "class"`)
- *   và `tailwind-merge` (để xử lý conflict: `cn("p-4", "p-2")` -> `p-2`).
- * - Không có nó, việc override style từ props sẽ rất lỗi.
+ * - Kết hợp `clsx` và `tailwind-merge` để xử lý class Tailwind thông minh.
  *
- * 2. HELPERS KHÁC:
- * - `toSlug`: Biến tên sản phẩm "Áo Thun Đẹp" thành URL "ao-thun-dep" (Chuẩn SEO).
- * - `formatCurrency`: Format tiền tệ chuyên nghiệp (100.000 ₫) dùng Intl API của trình duyệt.
+ * 2. FORMATTING:
+ * - Tập trung các hàm format tiền, ngày tháng, text tại một nơi.
+ * - Sử dụng Intl API để hỗ trợ đa ngôn ngữ (vi-VN). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Consistent Formatting: Đảm bảo hiển thị tiền tệ, ngày tháng thống nhất trên toàn bộ giao diện người dùng.
+ * - Clean Code: Tách biệt logic xử lý chuỗi, classnames (cn) ra khỏi UI component, giúp code dễ đọc và dễ bảo trì.
+ * - SEO Optimization: Hàm `toSlug` giúp tạo URL thân thiện (User-Friendly URLs) cho sản phẩm và bài viết.
+
  * =====================================================================
  */
 
@@ -22,78 +24,114 @@ import { twMerge } from "tailwind-merge";
 
 /**
  * Kết hợp và merge các class names một cách thông minh.
- *
- * Sử dụng clsx để xử lý conditional classes và mảng,
- * sau đó dùng tailwind-merge để xử lý conflicts giữa Tailwind classes.
- *
- * @param inputs - Class names (strings, objects, arrays)
- * @returns String class names đã được merge
- *
- * @example
- * cn("px-2 py-1", "px-4")
- * // → "py-1 px-4" (px-4 override px-2)
- *
- * @example
- * cn("text-red-500", { "text-blue-500": isBlue })
- * // → "text-blue-500" nếu isBlue = true
  */
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-/**
- * Chuyển đổi chuỗi thành slug URL-friendly.
- * Hỗ trợ tiếng Việt và các ký tự đặc biệt.
- *
- * @param str - Chuỗi cần chuyển đổi
- * @returns Slug string (vd: "San Pham Moi" -> "san-pham-moi")
- */
-export function toSlug(str: string): string {
-  return str
-    .normalize("NFD") // Tách các ký tự có dấu (vd: é -> e + sắc)
-    .replace(/[\u0300-\u036f]/g, "") // Xóa các dấu
-    .replace(/đ/g, "d")
-    .replace(/Đ/g, "D")
-    .toLowerCase() // Chuyển về chữ thường
-    .replace(/[^a-z0-9 ]/g, "") // Xóa ký tự đặc biệt (chỉ giữ chữ, số, dấu cách)
-    .replace(/\s+/g, "-") // Thay dấu cách bằng dấu gạch ngang
-    .replace(/^-+|-+$/g, ""); // Xóa gạch ngang ở đầu/cuối
+// ============================================================================
+// CURRENCY FORMATTING
+// ============================================================================
+
+export function formatNumber(amount: number, locale = "vi-VN"): string {
+  return new Intl.NumberFormat(locale).format(amount);
 }
 
-/**
- * Định dạng số thành tiền tệ Việt Nam (VND).
- *
- * @param amount - Số tiền cần định dạng
- * @returns Chuỗi đã định dạng (vd: 100.000 ₫)
- */
 export function formatCurrency(
   amount: number,
-  options?: Intl.NumberFormatOptions
+  locale = "vi-VN",
+  currency = "VND",
+  options: Intl.NumberFormatOptions = {}
 ): string {
-  return new Intl.NumberFormat("vi-VN", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: "VND",
+    currency,
     ...options,
   }).format(amount);
 }
 
-/**
- * Định dạng ngày tháng theo chuẩn Việt Nam.
- *
- * @param date - Date object hoặc chuỗi ngày
- * @param options - Tùy chọn định dạng
- * @returns Chuỗi ngày đã định dạng (vd: 01/01/2024)
- */
-export function formatDate(
-  date: Date | string | number,
-  options?: Intl.DateTimeFormatOptions
+export function formatVND(
+  amount: number,
+  options: Intl.NumberFormatOptions = {}
 ): string {
+  return formatCurrency(amount, "vi-VN", "VND", options);
+}
+
+// ============================================================================
+// DATE/TIME FORMATTING
+// ============================================================================
+
+export function formatDate(date: Date | string | number): string {
   if (!date) return "";
-  const d = new Date(date);
   return new Intl.DateTimeFormat("vi-VN", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
-    ...options,
-  }).format(d);
+  }).format(new Date(date));
+}
+
+export function formatDateTime(date: Date | string | number): string {
+  if (!date) return "";
+  return new Intl.DateTimeFormat("vi-VN", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(new Date(date));
+}
+
+// ============================================================================
+// TEXT & MISC
+// ============================================================================
+
+export function toSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .trim()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[đĐ]/g, "d")
+    .replace(/([^0-9a-z-\s])/g, "")
+    .replace(/(\s+)/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// ============================================================================
+// API HELPERS
+// ============================================================================
+
+export interface PaginationParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  [key: string]: any;
+}
+
+/**
+ * Normalize pagination parameters for API requests.
+ * Handles both object-style and positional arguments.
+ */
+export function normalizePaginationParams(
+  paramsOrPage?: number | PaginationParams,
+  limit?: number,
+  search?: string
+): Record<string, string | number | boolean | undefined> {
+  // If first argument is an object, use its properties
+  if (typeof paramsOrPage === "object" && paramsOrPage !== null) {
+    return {
+      page: paramsOrPage.page || 1,
+      limit: paramsOrPage.limit || 10,
+      search: paramsOrPage.search || undefined,
+      ...paramsOrPage,
+    };
+  }
+
+  // Otherwise, treat as positional arguments
+  return {
+    page: paramsOrPage || 1,
+    limit: limit || 10,
+    search: search || undefined,
+  };
 }

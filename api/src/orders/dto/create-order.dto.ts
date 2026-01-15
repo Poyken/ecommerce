@@ -17,7 +17,10 @@ import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
  * - Nếu `itemIds` trống, hệ thống sẽ mặc định thanh toán tất cả các món trong giỏ.
  *
  * 3. PAYMENT METHOD:
- * - Mặc định là `COD` nếu người dùng không chọn phương thức khác.
+ * - Mặc định là `COD` nếu người dùng không chọn phương thức khác. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -41,6 +44,26 @@ export class CreateOrderDto {
   @IsString()
   @IsOptional()
   paymentMethod?: string;
+
+  @ApiProperty({ example: 'Hanoi', required: false })
+  @IsString()
+  @IsOptional()
+  shippingCity?: string;
+
+  @ApiProperty({ example: 'Hoan Kiem', required: false })
+  @IsString()
+  @IsOptional()
+  shippingDistrict?: string;
+
+  @ApiProperty({ example: 'Hang Bac', required: false })
+  @IsString()
+  @IsOptional()
+  shippingWard?: string;
+
+  @ApiProperty({ example: '0987654321', required: false })
+  @IsString()
+  @IsOptional()
+  shippingPhone?: string;
 
   @ApiProperty({ example: ['item-uuid-1', 'item-uuid-2'], required: false })
   @IsOptional()

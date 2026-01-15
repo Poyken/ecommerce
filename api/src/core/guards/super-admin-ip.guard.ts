@@ -1,3 +1,25 @@
+/**
+ * =====================================================================
+ * SUPER-ADMIN-IP.GUARD.TS
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * [Mô tả ngắn gọn mục đích của file]
+ *
+ * 1. CHỨC NĂNG:
+ *    - [Mô tả các chức năng chính]
+ *
+ * 2. CÁCH SỬ DỤNG:
+ *    - [Hướng dẫn sử dụng] *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Zero Trust Security: Không tin ai cả, ngay cả khi đã có password admin -> Cần đúng IP công ty mới vào được.
+ * - Compliance: Đáp ứng các yêu cầu bảo mật khắt khe (ISO 27001, PCI DSS) về việc giới hạn truy cập vùng Admin.
+ * - VPN Integration: Buộc admin phải dùng VPN công ty mới có thể truy cập hệ thống quản trị.
+
+ * =====================================================================
+ */
+
 import {
   CanActivate,
   ExecutionContext,
@@ -12,8 +34,8 @@ export class SuperAdminIpGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const user = request.user as any;
 
-    // 1. Chỉ áp dụng cho SUPER_ADMIN
-    if (!user || !user.roles?.includes('SUPER_ADMIN')) {
+    // 1. Chỉ áp dụng cho PLATFORM ADMIN
+    if (!user || !user.permissions?.includes('superAdmin:read')) {
       return true;
     }
 

@@ -1,3 +1,23 @@
+/**
+ * =====================================================================
+ * TENANTS.MODULE MODULE
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Module này đóng gói các thành phần liên quan lại với nhau.
+ *
+ * 1. CẤU TRÚC MODULE:
+ *    - imports: Các module khác cần sử dụng
+ *    - controllers: Các controller xử lý request
+ *    - providers: Các service cung cấp logic
+ *    - exports: Các service cho module khác sử dụng *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
+ * =====================================================================
+ */
+
 import { Module } from '@nestjs/common';
 import { TenantsController } from './tenants.controller';
 import { TenantsService } from './tenants.service';

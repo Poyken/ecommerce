@@ -16,7 +16,10 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  * - `PrismaModule`: Cần thiết để tương tác với các bảng liên quan đến phân quyền trong database.
  *
  * 3. GLOBAL IMPACT:
- * - Mặc dù là một module riêng biệt, nhưng dữ liệu từ module này được sử dụng bởi `PermissionsGuard` trên toàn bộ ứng dụng để kiểm soát truy cập.
+ * - Mặc dù là một module riêng biệt, nhưng dữ liệu từ module này được sử dụng bởi `PermissionsGuard` trên toàn bộ ứng dụng để kiểm soát truy cập. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { RolesController } from './roles.controller';

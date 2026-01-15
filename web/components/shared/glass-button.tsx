@@ -22,7 +22,10 @@ import { forwardRef } from "react";
  * - Border cũng có độ trong suốt (`border-white/10`) để tạo cảm giác cạnh kính sắc nét.
  *
  * 3. FORWARD REF:
- * - Sử dụng `forwardRef` để các thư viện khác (như Radix UI hoặc Tooltip) có thể truy cập trực tiếp vào DOM element.
+ * - Sử dụng `forwardRef` để các thư viện khác (như Radix UI hoặc Tooltip) có thể truy cập trực tiếp vào DOM element. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -31,6 +34,26 @@ interface GlassButtonProps extends HTMLMotionProps<"button"> {
   size?: "sm" | "md" | "lg" | "icon";
   loading?: boolean;
 }
+
+const variants = {
+  primary:
+    "bg-primary text-primary-foreground hover:opacity-90 shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 border-transparent font-bold",
+  secondary:
+    "bg-secondary text-secondary-foreground hover:bg-secondary/90 border-transparent shadow-lg font-bold",
+  glass:
+    "bg-white/10 backdrop-blur-xl border-white/10 text-white hover:bg-white/20 hover:border-white/30 shadow-lg font-bold",
+  ghost:
+    "bg-transparent text-current hover:bg-foreground/5 border-transparent font-medium",
+  outline:
+    "bg-transparent border-2 border-foreground/10 hover:bg-foreground/5 hover:border-primary/30 font-bold",
+};
+
+const sizes = {
+  sm: "h-9 px-4 text-xs font-bold uppercase tracking-wider",
+  md: "h-11 px-7 py-2.5 text-sm font-bold",
+  lg: "h-14 px-10 text-base font-black uppercase tracking-wide",
+  icon: "h-11 w-11 p-0 flex items-center justify-center rounded-2xl",
+};
 
 const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
   (
@@ -44,26 +67,6 @@ const GlassButton = forwardRef<HTMLButtonElement, GlassButtonProps>(
     },
     ref
   ) => {
-    const variants = {
-      primary:
-        "bg-primary text-primary-foreground hover:opacity-90 shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 border-transparent font-bold",
-      secondary:
-        "bg-secondary text-secondary-foreground hover:bg-secondary/90 border-transparent shadow-lg font-bold",
-      glass:
-        "bg-white/10 backdrop-blur-xl border-white/10 text-white hover:bg-white/20 hover:border-white/30 shadow-lg font-bold",
-      ghost:
-        "bg-transparent text-current hover:bg-foreground/5 border-transparent font-medium",
-      outline:
-        "bg-transparent border-2 border-foreground/10 hover:bg-foreground/5 hover:border-primary/30 font-bold",
-    };
-
-    const sizes = {
-      sm: "h-9 px-4 text-xs font-bold uppercase tracking-wider",
-      md: "h-11 px-7 py-2.5 text-sm font-bold",
-      lg: "h-14 px-10 text-base font-black uppercase tracking-wide",
-      icon: "h-11 w-11 p-0 flex items-center justify-center rounded-2xl",
-    };
-
     return (
       <m.button
         ref={ref}

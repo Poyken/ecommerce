@@ -1,3 +1,26 @@
+/**
+ * =====================================================================
+ * SUBSCRIPTIONS.SERVICE SERVICE
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Service này chịu trách nhiệm xử lý logic nghiệp vụ.
+ *
+ * 1. NHIỆM VỤ CHÍNH:
+ *    - [Mô tả chức năng chính của service]
+ *
+ * 2. CÁC PHƯƠNG THỨC QUAN TRỌNG:
+ *    - [Liệt kê các method chính]
+ *
+ * 3. LƯU Ý KHI SỬ DỤNG:
+ *    - [Các lưu ý quan trọng] *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
+ * =====================================================================
+ */
+
 import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BillingFrequency, TenantPlan } from '@prisma/client';
@@ -143,6 +166,19 @@ export class SubscriptionsService {
         isActive: false,
         cancelAtPeriodEnd: true,
       },
+    });
+  }
+
+  async update(id: string, data: any) {
+    return this.prisma.subscription.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.subscription.delete({
+      where: { id },
     });
   }
 }

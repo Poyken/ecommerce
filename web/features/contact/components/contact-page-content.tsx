@@ -23,7 +23,10 @@ import { useTranslations } from "next-intl";
  * 1. ContactInfoCards: Hiển thị thông tin liên hệ (Email, Phone, Address).
  * 2. ContactForm: Form gửi tin nhắn.
  * 3. ContactMap: Bản đồ Google Map.
- * 4. FAQGrid: Các câu hỏi thường gặp.
+ * 4. FAQGrid: Các câu hỏi thường gặp. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

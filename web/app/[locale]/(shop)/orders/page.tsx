@@ -28,7 +28,11 @@ import { GlassCard } from "@/components/shared/glass-card";
  *
  * COMPONENT STRUCTURE:
  * - `OrdersPage` (Server): Fetch dữ liệu.
- * - `OrdersClient` (Client): Hiển thị danh sách, filter, pagination.
+ * - `OrdersClient` (Client): Hiển thị danh sách, filter, pagination. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Post-purchase Experience: Xây dựng lòng tin với khách hàng thông qua việc cung cấp lịch sử mua hàng minh bạch, cho phép theo dõi trạng thái vận đơn mọi lúc mọi nơi.
+ * - Order History Transparency: Giúp người dùng dễ dàng xem lại các đơn hàng cũ để thực hiện việc mua lại (re-order) hoặc yêu cầu hỗ trợ bảo hành một cách nhanh chóng.
+
  * =====================================================================
  */
 import { cookies } from "next/headers";

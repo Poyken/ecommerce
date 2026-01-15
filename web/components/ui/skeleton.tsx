@@ -17,7 +17,10 @@ import { cn } from "@/lib/utils";
  * - `animate-pulse`: Hiệu ứng nhấp nháy mờ dần.
  *
  * 3. FLEXIBILITY:
- * - Truyền `className` để thay đổi hình dáng (tròn, vuông, dài) tùy ý.
+ * - Truyền `className` để thay đổi hình dáng (tròn, vuông, dài) tùy ý. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

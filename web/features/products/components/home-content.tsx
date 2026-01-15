@@ -1,9 +1,10 @@
 "use client";
 
 import {
-    CategoriesSkeleton,
-    ProductsSkeleton,
-} from "@/components/shared/skeletons/home-skeleton";
+  CategoriesSkeleton,
+  BrandsSkeleton,
+  ProductsSkeleton,
+} from "@/features/home/components/skeletons/home-skeleton";
 import { FeaturedBrands } from "@/features/brands/components/featured-brands";
 import { FeaturedCategories } from "@/features/categories/components/featured-categories";
 import { DealSection } from "@/features/marketing/components/deal-section";
@@ -11,11 +12,11 @@ import { NewArrivals } from "@/features/products/components/new-arrivals";
 import { TrendingProducts } from "@/features/products/components/trending-products";
 import { Link } from "@/i18n/routing";
 import {
-    fadeInLeft,
-    fadeInRight,
-    fadeInUp,
-    scaleUp,
-    zoomIn,
+  fadeInLeft,
+  fadeInRight,
+  fadeInUp,
+  scaleUp,
+  zoomIn,
 } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { Brand, Category, Product } from "@/types/models";
@@ -62,51 +63,48 @@ export function HomeContent({
   categories,
   brands,
 }: HomeContentProps) {
-/**
- * =====================================================================
- * HOME CONTENT - Container chính trang chủ
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. LAZY LOADING & SUSPENSE:
- * - Các component nặng (Testimonials, FAQ) được `dynamic import` để không block
- *   Render ban đầu.
- * - Các component data (Products, Categories) được bọc trong `Suspense` để hiển thị
- *   Skeleton loading trong khi chờ setup client-side hydration.
- *
- * 2. VIEWPORT ANIMATIONS:
- * - `whileInView="visible"` + `viewport={{ once: true }}`: Chỉ chạy animation
- *   khi user scroll tới vị trí đó (Scroll Trigger).
- * =====================================================================
- */
+  /**
+   * =====================================================================
+   * HOME CONTENT - Container chính trang chủ
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. LAZY LOADING & SUSPENSE:
+   * - Các component nặng (Testimonials, FAQ) được `dynamic import` để không block
+   *   Render ban đầu.
+   * - Các component data (Products, Categories) được bọc trong `Suspense` để hiển thị
+   *   Skeleton loading trong khi chờ setup client-side hydration.
+   *
+   * 2. VIEWPORT ANIMATIONS:
+   * - `whileInView="visible"` + `viewport={{ once: true }}`: Chỉ chạy animation
+   *   khi user scroll tới vị trí đó (Scroll Trigger). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
+   * =====================================================================
+   */
   const t = useTranslations("home");
 
   return (
     <main className="space-y-16 pb-16">
-      <Suspense
-        fallback={
-          <div className="container mx-auto px-4 mt-8">
-            <CategoriesSkeleton />
-          </div>
-        }
-      >
-        <FeaturedCategories categories={categories} />
-      </Suspense>
+      <div className="container mx-auto px-4 mt-8">
+        <Suspense fallback={<CategoriesSkeleton />}>
+          <FeaturedCategories categories={categories} />
+        </Suspense>
+      </div>
 
-      <Suspense fallback={null}>
-        <FeaturedBrands brands={brands} />
-      </Suspense>
+      <div className="container mx-auto px-4">
+        <Suspense fallback={<BrandsSkeleton />}>
+          <FeaturedBrands brands={brands} />
+        </Suspense>
+      </div>
 
-      <Suspense
-        fallback={
-          <div className="container mx-auto px-4">
-            <ProductsSkeleton count={5} />
-          </div>
-        }
-      >
-        <TrendingProducts products={products} />
-      </Suspense>
+      <div className="container mx-auto px-4">
+        <Suspense fallback={<ProductsSkeleton count={5} />}>
+          <TrendingProducts products={products} />
+        </Suspense>
+      </div>
 
       <m.div
         initial="hidden"
@@ -117,15 +115,11 @@ export function HomeContent({
         <DealSection />
       </m.div>
 
-      <Suspense
-        fallback={
-          <div className="container mx-auto px-4">
-            <ProductsSkeleton count={4} />
-          </div>
-        }
-      >
-        <NewArrivals products={products} />
-      </Suspense>
+      <div className="container mx-auto px-4">
+        <Suspense fallback={<ProductsSkeleton count={4} />}>
+          <NewArrivals products={products} />
+        </Suspense>
+      </div>
 
       <section className="container mx-auto px-4 overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">

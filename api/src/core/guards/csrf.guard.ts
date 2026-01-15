@@ -25,7 +25,12 @@ import { Request } from 'express';
  *
  * TẠI SAO AN TOÀN?
  * - Hacker có thể khiến trình duyệt gửi Cookie đi (tự động), nhưng Hacker
- *   KHÔNG THỂ đọc được Cookie (do cùng chính sách Same-Origin) để đưa vào Header.
+ *   KHÔNG THỂ đọc được Cookie (do cùng chính sách Same-Origin) để đưa vào Header. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Bảo mật giao dịch: Ngăn chặn hacker lừa user click link lạ để chuyển tiền/đổi mật khẩu ngầm.
+ * - Tuân thủ tiêu chuẩn OWASP: Đáp ứng yêu cầu bảo mật tối thiểu cho các ứng dụng Enterprise.
+ * - Stateless Security: Bảo vệ API mà không cần lưu session state trên server (phù hợp mô hình Microservices).
+
  * =====================================================================
  */
 @Injectable()
@@ -47,6 +52,7 @@ export class CsrfGuard implements CanActivate {
     '/api/v1/health',
     '/api/v1/notifications',
     '/api/v1/ai-chat', // AI Chat (guest + logged-in)
+    '/api/v1/analytics/vitals', // Vercel Analytics
   ];
 
   canActivate(context: ExecutionContext): boolean {
@@ -69,7 +75,7 @@ export class CsrfGuard implements CanActivate {
 
     // 3. Chế độ phát triển (Optional: disable nếu cần debug dễ dàng)
     // UNCOMMENT line below to disable CSRF in development
-    // if (process.env.NODE_ENV !== 'production') return true;
+    if (process.env.NODE_ENV !== 'production') return true;
 
     // 4. Trích xuất token từ Header và Cookie
     const csrfHeader = request.headers['x-csrf-token'];

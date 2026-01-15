@@ -15,7 +15,10 @@ import { IsBoolean, IsNotEmpty, IsOptional, IsString } from 'class-validator';
  *
  * 2. ENABLED VS RULES:
  * - `isEnabled` là công tắc tổng. Nếu `false`, tính năng tắt hoàn toàn.
- * - Nếu `true`, hệ thống mới xét tiếp đến `rules` để quyết định bật cho ai.
+ * - Nếu `true`, hệ thống mới xét tiếp đến `rules` để quyết định bật cho ai. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class CreateFeatureFlagDto {

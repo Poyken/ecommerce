@@ -18,7 +18,10 @@ import { useEffect, useState } from "react";
  * 2. SUBSCRIPTION PATTERN:
  * - `useEffect` sẽ đăng ký (subscribe) lắng nghe sự kiện update cho SKU cụ thể.
  * - Các hàm cleanup trong `useEffect` sẽ hủy đăng ký (unsubscribe) khi component unmount
- *   để tránh memory leak.
+ *   để tránh memory leak. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
+
  * =====================================================================
  */
 

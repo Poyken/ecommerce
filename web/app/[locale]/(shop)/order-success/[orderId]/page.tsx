@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { getOrderDetailsAction } from "@/features/orders/actions";
 import { formatCurrency } from "@/lib/utils";
 import { ArrowRight, CheckCircle, Package, ShoppingBag } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -21,7 +22,11 @@ import { notFound } from "next/navigation";
  *      (kết hợp plugin tailwind-animate) để tạo hiệu ứng xuất hiện mềm mại.
  *
  * 3. DYNAMIC UI ELEMENTS:
- *    - `#order.id.slice(-8).toUpperCase()`: Rút gọn ID cho thân thiện với người dùng.
+ *    - `#order.id.slice(-8).toUpperCase()`: Rút gọn ID cho thân thiện với người dùng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Post-purchase Gratification: Tăng cường sự hài lòng của khách hàng bằng việc xác nhận đặt hàng thành công ngay lập tức với các hiệu ứng hình ảnh chúc mừng chuyên nghiệp.
+ * - Immediate Order Confirmation: Cung cấp bản tóm tắt nhanh về đơn hàng vừa đặt, giúp khách hàng yên tâm rằng thông tin của họ đã được hệ thống ghi nhận chính xác.
+
  * =================================================================================================
  */
 export default async function OrderSuccessPage({
@@ -30,6 +35,7 @@ export default async function OrderSuccessPage({
   params: Promise<{ orderId: string; locale: string }>;
 }) {
   const { orderId } = await params;
+  const t = await getTranslations("orderStatus");
   const result = await getOrderDetailsAction(orderId);
 
   if (!result.data) {
@@ -50,14 +56,16 @@ export default async function OrderSuccessPage({
 
         <div className="space-y-4">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-            Order Confirmed!
+            {t("confirmed")}
           </h1>
           <p className="text-lg text-zinc-500 dark:text-zinc-400 max-w-md mx-auto">
-            Thank you for your purchase. Your order{" "}
-            <span className="font-mono font-bold text-primary">
-              #{order.id.slice(-8).toUpperCase()}
-            </span>{" "}
-            has been placed successfully.
+            {t.rich("thankYou", {
+              id: () => (
+                <span className="font-mono font-bold text-primary">
+                  #{order.id.slice(-8).toUpperCase()}
+                </span>
+              ),
+            })}
           </p>
         </div>
 
@@ -65,13 +73,13 @@ export default async function OrderSuccessPage({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-8 border-y border-zinc-100 dark:border-zinc-800 my-8">
           <div className="space-y-1 sm:text-left">
             <span className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
-              Recipient
+              {t("recipient")}
             </span>
             <p className="font-medium">{order.recipientName}</p>
           </div>
           <div className="space-y-1 sm:text-right">
             <span className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
-              Total Amount
+              {t("totalAmount")}
             </span>
             <p className="text-2xl font-bold text-primary">
               {formatCurrency(Number(order.totalAmount))}
@@ -79,13 +87,13 @@ export default async function OrderSuccessPage({
           </div>
           <div className="space-y-1 sm:text-left">
             <span className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
-              Payment Status
+              {t("paymentStatus")}
             </span>
             <p className="font-medium text-success">{order.paymentStatus}</p>
           </div>
           <div className="space-y-1 sm:text-right">
             <span className="text-xs uppercase tracking-wider font-semibold text-zinc-400">
-              Shipping to
+              {t("shippingTo")}
             </span>
             <p className="text-sm text-zinc-500 line-clamp-1">
               {order.shippingAddress}
@@ -100,7 +108,7 @@ export default async function OrderSuccessPage({
             className="w-full sm:w-auto rounded-full group px-8"
           >
             <Link href={`/orders/${order.id}`}>
-              View Order Details
+              {t("viewDetails")}
               <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </Button>
@@ -110,16 +118,13 @@ export default async function OrderSuccessPage({
             size="lg"
             className="w-full sm:w-auto rounded-full px-8"
           >
-            <Link href="/shop">Continue Shopping</Link>
+            <Link href="/shop">{t("continueShopping")}</Link>
           </Button>
         </div>
 
         <div className="pt-8 text-zinc-400 text-sm flex items-center justify-center gap-2">
           <Package className="w-4 h-4" />
-          <span>
-            We&apos;ll send you an email with tracking details as soon as it
-            ships.
-          </span>
+          <span>{t("emailNotice")}</span>
         </div>
       </div>
     </div>

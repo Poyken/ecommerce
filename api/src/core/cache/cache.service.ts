@@ -1,5 +1,5 @@
 import { RedisService } from '@core/redis/redis.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as zlib from 'zlib';
 
 /**
@@ -20,15 +20,33 @@ import * as zlib from 'zlib';
  * - Mỗi dữ liệu trong cache đều có thời gian sống (`DEFAULT_TTL`). Sau thời gian này, dữ liệu tự động bị xóa để đảm bảo tính cập nhật.
  *
  * 4. CACHE INVALIDATION:
- * - `invalidatePattern`: Dùng để xóa hàng loạt cache khi dữ liệu gốc thay đổi (VD: Khi cập nhật sản phẩm, ta xóa toàn bộ cache liên quan đến sản phẩm đó).
+ * - `invalidatePattern`: Dùng để xóa hàng loạt cache khi dữ liệu gốc thay đổi (VD: Khi cập nhật sản phẩm, ta xóa toàn bộ cache liên quan đến sản phẩm đó). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - High Traffic Handling: Chịu tải hàng chục nghìn request/giây nhờ cơ chế L1 (RAM) cực nhanh.
+ * - Database Cost Optimization: Thay vì tốn tiền nâng cấp DB server, ta dùng cache để trả kết quả có sẵn.
+ * - Cache Stampede Prevention: Kỹ thuật Jitter giúp tránh việc 1000 user cùng chọc vào DB đúng giây cache hết hạn.
+
  * =====================================================================
  */
 @Injectable()
 export class CacheService {
+  private readonly logger = new Logger(CacheService.name);
   private readonly DEFAULT_TTL = 300; // 5 phút
   private readonly JITTER_PERCENTAGE = 0.1; // ±10% variance
   private readonly COMPRESSION_THRESHOLD = 5120; // 5KB
   private readonly GZIP_PREFIX = 'gz:';
+  private readonly TAG_PREFIX = 'tag:'; // 📚 Set tag:name chứa danh sách các keys thuộc tag đó
+
+  /**
+   * [P17 OPTIMIZATION] L1 CACHE (Server Memory)
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   * - L1 Cache lưu ngay trong RAM của Node.js instance.
+   * - Tốc độ truy xuất gần như = 0ms vì không mất công truyền qua mạng tới Redis.
+   * - Tuy nhiên, RAM server có hạn và không đồng bộ giữa các instance, nên ta chỉ lưu Hot Data trong thời gian cực ngắn (L1_TTL).
+   */
+  private readonly l1Cache = new Map<string, { value: any; expiry: number }>();
+  private readonly L1_TTL = 10; // 10 giây
+  private readonly L1_MAX_SIZE = 1000;
 
   constructor(private readonly redis: RedisService) {}
 
@@ -52,6 +70,13 @@ export class CacheService {
    * Lấy giá trị đã cache
    */
   async get<T>(key: string): Promise<T | null> {
+    // 1. Check L1 (In-memory) first
+    const l1Entry = this.l1Cache.get(key);
+    if (l1Entry && l1Entry.expiry > Date.now()) {
+      return l1Entry.value as T;
+    }
+
+    // 2. Check L2 (Redis)
     let data = await this.redis.get(key);
     if (!data) return null;
 
@@ -65,18 +90,32 @@ export class CacheService {
         data = zlib.gunzipSync(compressedData).toString('utf-8');
       } catch (err) {
         // Fallback to raw data if decompression fails
-        console.error(
-          `[CacheService] Decompression failed for key ${key}`,
-          err,
-        );
+        this.logger.error(`Decompression failed for key ${key}`, err);
       }
     }
 
     try {
-      return JSON.parse(data) as T;
+      const parsed = JSON.parse(data) as T;
+
+      // Update L1 for next time
+      this.updateL1(key, parsed);
+
+      return parsed;
     } catch {
+      this.updateL1(key, data);
       return data as unknown as T;
     }
+  }
+
+  private updateL1(key: string, value: any) {
+    if (this.l1Cache.size >= this.L1_MAX_SIZE) {
+      const firstKey = this.l1Cache.keys().next().value;
+      if (firstKey) this.l1Cache.delete(firstKey);
+    }
+    this.l1Cache.set(key, {
+      value,
+      expiry: Date.now() + this.L1_TTL * 1000,
+    });
   }
 
   /**
@@ -101,12 +140,45 @@ export class CacheService {
 
     const effectiveTtl = useJitter ? this.applyJitter(ttl) : ttl;
     await this.redis.set(key, serialized, 'EX', effectiveTtl);
+
+    // [P16 OPTIMIZATION] Auto-tagging
+    if (key.startsWith('products:')) await this.tagKey(key, 'products');
+    if (key.startsWith('categories:')) await this.tagKey(key, 'categories');
+  }
+
+  /**
+   * [P16 OPTIMIZATION] Gắn nhãn (Tag) cho một Key
+   * Giúp xóa hàng loạt các key liên quan mà không cần dùng SCAN (nhanh hơn).
+   */
+  async tagKey(key: string, ...tags: string[]): Promise<void> {
+    const multi = this.redis.client.multi();
+    for (const tag of tags) {
+      multi.sadd(`${this.TAG_PREFIX}${tag}`, key);
+      multi.expire(`${this.TAG_PREFIX}${tag}`, 86400 * 7); // Tag set sống 7 ngày
+    }
+    await multi.exec();
+  }
+
+  /**
+   * [P16 OPTIMIZATION] Xóa toàn bộ cache theo Tag
+   * Ví dụ: invalidateTag('products') -> Xóa sạch cache của mọi product.
+   */
+  async invalidateTag(tag: string): Promise<void> {
+    const tagName = `${this.TAG_PREFIX}${tag}`;
+    const keys = await this.redis.client.smembers(tagName);
+
+    if (keys.length > 0) {
+      // Xóa các key trong tag và bản thân tag set
+      await Promise.all([this.redis.del(...keys), this.redis.del(tagName)]);
+      this.logger.log(`Invalidated tag: ${tag} (${keys.length} keys)`);
+    }
   }
 
   /**
    * Xóa giá trị đã cache
    */
   async del(key: string): Promise<void> {
+    this.l1Cache.delete(key);
     await this.redis.del(key);
   }
 
@@ -124,6 +196,9 @@ export class CacheService {
    * Sử dụng SCAN thay vì KEYS để tránh treo server.
    */
   async invalidatePattern(pattern: string): Promise<void> {
+    // Clear L1 (với pattern đơn giản, ta clear sạch L1 cho an toàn)
+    this.l1Cache.clear();
+
     const keys = await this.redis.scan(pattern);
     if (keys.length > 0) {
       // Chunk to avoid "Too many arguments" error if keys array is huge

@@ -35,7 +35,10 @@ export function ImageUpload({
  * - `URL.createObjectURL(file)` tạo link preview tạm thời ngay tại browser trước khi upload thật.
  *
  * 2. CONTROLLED COMPONENT:
- * - Nhận `value` và `onChange` từ React Hook Form (thường thấy).
+ * - Nhận `value` và `onChange` từ React Hook Form (thường thấy). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
   const t = useTranslations("admin.media");

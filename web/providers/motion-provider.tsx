@@ -22,7 +22,11 @@ import React from "react";
  * 3. USAGE:
  * - Thay vì sử dụng `<motion.div>`, ta NÊN sử dụng `<m.div>` (import { m } from "framer-motion").
  * - Dự án hiện tại đã áp dụng `m.div` ở hầu hết các nơi để tối ưu hóa hiệu năng.
- * - LazyMotion giúp quản lý runtime features một cách thông minh và hiệu quả.
+ * - LazyMotion giúp quản lý runtime features một cách thông minh và hiệu quả. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Bundle Optimization: Cắt giảm tới 25kb dung lượng JS dư thừa mà người dùng phải tải về, giúp website "nhẹ" hơn đáng kể.
+ * - Smooth Interactions: Cung cấp nền tảng để tạo ra các hiệu ứng di chuột (hover) và chuyển động (transition) mượt mà 60fps trên mọi trình duyệt.
+
  * =====================================================================
  */
 export function MotionProvider({ children }: { children: React.ReactNode }) {

@@ -16,7 +16,11 @@
  *
  * 3. SECURITY NOTE:
  * - Việc check permission ở Client (`hasPermission`) chỉ là để ẩn hiện UI (UX).
- * - BẮT BUỘC phải check lại ở Backend/API để đảm bảo an toàn thực sự.
+ * - BẮT BUỘC phải check lại ở Backend/API để đảm bảo an toàn thực sự. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Granular Access Control: Cho phép phân quyền chi tiết (vd: Nhân viên A chỉ được xem đơn hàng, Nhân viên B được xóa đơn hàng).
+ * - Dynamic UI: Tự động ẩn các nút chức năng hoặc menu mà người dùng không có quyền truy cập, giúp giao diện gọn gàng và tránh gây bối rối.
+
  * =====================================================================
  */
 

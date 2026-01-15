@@ -25,7 +25,10 @@ import {
  * - Điều này giúp hệ thống phản hồi cực nhanh và giảm tải cho Database.
  *
  * 4. FORBIDDEN EXCEPTION:
- * - Nếu không đủ quyền, ta ném ra `ForbiddenException` (HTTP 403), khác với `UnauthorizedException` (HTTP 401 - chưa đăng nhập).
+ * - Nếu không đủ quyền, ta ném ra `ForbiddenException` (HTTP 403), khác với `UnauthorizedException` (HTTP 401 - chưa đăng nhập). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { Reflector } from '@nestjs/core';
@@ -50,8 +53,13 @@ export class PermissionsGuard implements CanActivate {
     // 2. Lấy User từ Request (Đã được JwtStrategy decode và gán vào)
     const { user } = context.switchToHttp().getRequest();
 
-    // [SUPER ADMIN BYPASS] Super admins have all permissions implicitly
-    if (user?.roles?.includes('SUPER_ADMIN')) {
+    // [PLATFORM ADMIN BYPASS]
+    // Only Platform Admins (Super Admins with 'superAdmin:read' permission) bypass all checks.
+    // Regular tenant admins MUST have explicit permissions in their token.
+    if (
+      user?.roles?.includes('SUPERADMIN') &&
+      user?.permissions?.includes('superAdmin:read')
+    ) {
       return true;
     }
 

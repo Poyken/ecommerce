@@ -17,7 +17,11 @@
  *
  * 3. SELECTION SYSTEM:
  * - Cho phép user chọn từng món để thanh toán (`selectedItems`).
- * - Tự động tính toán lại tổng tiền dựa trên các món đã chọn.
+ * - Tự động tính toán lại tổng tiền dựa trên các món đã chọn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Dynamic Cart Orchestration: Quản lý tập trung toàn bộ logic giỏ hàng ở phía Client, cho phép xử lý đồng thời cả giỏ hàng định danh (Login) và giỏ hàng ẩn danh (Guest) một cách nhất quán.
+ * - Optimistic Quantity Adjustments: Tăng tốc độ phản hồi của giao diện bằng cách cập nhật ngay lập tức số lượng sản phẩm và tổng tiền, sau đó mới đồng bộ với database qua cơ chế Debouncing thông minh.
+
  * =====================================================================
  */
 
@@ -26,7 +30,7 @@
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { OptimizedImage } from "@/components/shared/optimized-image";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,8 +65,16 @@ import {
   Truck,
   X,
 } from "lucide-react";
+import { getProductImage } from "@/lib/product-helper";
 import { useFormatter, useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 
 // Extend shared types for stricter UI requirements (we know SKU must exist here)
 interface PopulatedCartItem extends Omit<CartItem, "sku"> {
@@ -70,7 +82,7 @@ interface PopulatedCartItem extends Omit<CartItem, "sku"> {
     product: {
       id: string;
       name: string;
-      images?: string[];
+      images?: string[] | { url: string }[];
     };
     optionValues?: {
       optionValueId: string;
@@ -123,7 +135,7 @@ export function CartClient({ cart }: CartClientProps) {
     if (isGuest) return guestItems;
     return (cart?.items || []) as unknown as PopulatedCartItem[];
   }, [isGuest, guestItems, cart]);
-  
+
   const total = isGuest ? totalGuest : Number(cart?.totalAmount) || 0;
 
   useEffect(() => {
@@ -216,8 +228,7 @@ export function CartClient({ cart }: CartClientProps) {
               setGuestItems([]);
               setTotalGuest(0);
             }
-          } catch (_e) {
-            // console.error("Error loading guest cart", e);
+          } catch {
             setGuestItems([]);
           } finally {
             setIsInitializing(false);
@@ -316,7 +327,7 @@ export function CartClient({ cart }: CartClientProps) {
         localStorage.setItem("guest_cart", JSON.stringify(updatedCart));
         window.dispatchEvent(new Event("guest_cart_updated"));
       } else {
-        const res = await removeFromCartAction(id);
+        const res = await removeFromCartAction({ itemId: id });
         if (res.success) {
           toast({
             variant: "success",
@@ -371,7 +382,7 @@ export function CartClient({ cart }: CartClientProps) {
             localStorage.setItem("guest_cart", JSON.stringify(updatedCart));
             window.dispatchEvent(new Event("guest_cart_updated"));
           } else {
-            const res = await updateCartItemAction(id, quantity);
+            const res = await updateCartItemAction({ itemId: id, quantity });
             if (!res.success) {
               const availableStock = (res as { availableStock?: number })
                 .availableStock;
@@ -379,7 +390,9 @@ export function CartClient({ cart }: CartClientProps) {
               if (typeof availableStock === "number") {
                 toast({
                   title: t("updateFailed"),
-                  description: `Only ${availableStock} items available. Quantity updated to maximum.`,
+                  description: `${t("onlyAvailable", {
+                    count: availableStock,
+                  })} ${t("quantityMax")}`,
                   variant: "warning",
                 });
                 setLocalItems((prev) =>
@@ -389,7 +402,10 @@ export function CartClient({ cart }: CartClientProps) {
                       : item
                   )
                 );
-                await updateCartItemAction(id, availableStock);
+                await updateCartItemAction({
+                  itemId: id,
+                  quantity: availableStock,
+                });
               } else {
                 toast({
                   title: t("updateFailed"),
@@ -405,8 +421,7 @@ export function CartClient({ cart }: CartClientProps) {
               }
             }
           }
-        } catch (_error) {
-          // console.error("Failed to update cart item", error);
+        } catch {
           setLocalItems((prev) => {
             const serverItem = items.find((i) => i.id === id);
             return prev.map((item) =>
@@ -442,7 +457,7 @@ export function CartClient({ cart }: CartClientProps) {
         >
           <div className="space-y-3">
             <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
-              Your Selection
+              {t("yourSelection")}
             </span>
             <h1 className="text-4xl md:text-5xl font-serif font-normal text-foreground tracking-tight">
               {t("title")}
@@ -624,7 +639,7 @@ export function CartClient({ cart }: CartClientProps) {
                           <OptimizedImage
                             src={
                               item.sku.imageUrl ||
-                              item.sku.product.images?.[0] ||
+                              getProductImage(item.sku.product as any) ||
                               ""
                             }
                             alt={item.sku.product.name}

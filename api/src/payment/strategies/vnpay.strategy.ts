@@ -24,7 +24,10 @@ import { VNPayUtils } from '../vnpay.utils';
  *
  * 3. TMN CODE & SECRET KEY:
  * - `TmnCode` là mã định danh website của mình trên VNPay.
- * - `SecretKey` dùng để tạo chữ ký. TUYỆT ĐỐI không được để lộ key này ở phía Client.
+ * - `SecretKey` dùng để tạo chữ ký. TUYỆT ĐỐI không được để lộ key này ở phía Client. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

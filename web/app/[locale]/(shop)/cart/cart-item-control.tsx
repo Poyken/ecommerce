@@ -21,11 +21,14 @@ import { useState, useTransition } from "react";
  * - User: Gọi Server Action `updateCartItemAction` để lưu vào database.
  *
  * 3. UX ENHANCEMENT:
- * - Sử dụng `useTransition` (`isPending`) để disable các nút bấm khi đang xử lý API, tránh việc user click quá nhanh gây lỗi race condition.
+ * - Sử dụng `useTransition` (`isPending`) để disable các nút bấm khi đang xử lý API, tránh việc user click quá nhanh gây lỗi race condition. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { CartItem } from "@/types/models";
 
 export function CartItemControl({
@@ -72,7 +75,7 @@ export function CartItemControl({
     } else {
       // Logic cho User đã đăng nhập: Gọi API
       startTransition(async () => {
-        await updateCartItemAction(item.id, newQuantity);
+        await updateCartItemAction({ itemId: item.id, quantity: newQuantity });
         window.dispatchEvent(new Event("cart_updated"));
       });
     }

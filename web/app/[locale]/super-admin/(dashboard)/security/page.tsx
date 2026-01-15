@@ -1,6 +1,23 @@
+/**
+ * =====================================================================
+ * SECURITY HUB - TRUNG TÂM PHÒNG CHỐNG TẤN CÔNG
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Đây là "nút bấm khẩn cấp" của hệ thống SaaS:
+ * 1. EMERGENCY LOCKDOWN: Khóa toàn bộ nền tảng nếu phát hiện tấn công.
+ * 2. IP WHITELIST: Chỉ cho phép các IP tin tưởng được truy cập Super Admin.
+ * 3. THREAT DETECTION: Theo dõi số lần login sai toàn hệ thống. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Infrastructural Perimeter Defense: Thiết lập lớp phòng thủ vòng ngoài bằng cách Whitelist IP, ngăn chặn tối đa các truy cập trái phép vào khu vực điều hành cấp cao.
+ * - Cyber Threat Response: Cung cấp công cụ phản ứng nhanh (Emergency Lockdown) giúp cô lập hệ thống ngay lập tức khi phát hiện có dấu hiệu bị thâm nhập hoặc tấn công từ chối dịch vụ (DDoS).
+
+ * =====================================================================
+ */
+
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -41,9 +58,10 @@ import {
   toggleLockdownAction,
   getSuperAdminWhitelistAction,
   updateSuperAdminWhitelistAction,
+  getMyIpAction,
 } from "@/features/admin/actions";
 import { SecurityStats } from "@/types/dtos";
-import { toast } from "@/components/shared/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
@@ -57,6 +75,7 @@ export default function SecurityHubPage() {
   const [toggling, setToggling] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const [savingWhitelist, setSavingWhitelist] = useState(false);
+  const [fetchingIp, setFetchingIp] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -71,7 +90,7 @@ export default function SecurityHubPage() {
           setStats(statsRes.data);
         }
         if (lockdownRes.success && lockdownRes.data) {
-          setIsLockdown(lockdownRes.data.isEnabled);
+          setIsLockdown(lockdownRes.data.isLockdown);
         }
         if (whitelistRes.success && Array.isArray(whitelistRes.data)) {
           setWhitelist(whitelistRes.data);
@@ -95,6 +114,7 @@ export default function SecurityHubPage() {
       if (res.success) {
         setIsLockdown(nextState);
         toast({
+          variant: "success",
           title: nextState ? t("lockdown.active") : t("lockdown.inactive"),
         });
       } else {
@@ -116,10 +136,15 @@ export default function SecurityHubPage() {
   };
 
   const handleAddIp = () => {
+    if (!newIp) return;
     const trimmedIp = newIp.trim();
     if (!trimmedIp) return;
-    const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
-    if (!ipPattern.test(trimmedIp)) {
+
+    // Support both IPv4 and IPv6
+    const isIpv4 = /^(\d{1,3}\.){3}\d{1,3}$/.test(trimmedIp);
+    const isIpv6 = trimmedIp.includes(":") && trimmedIp.length >= 3;
+
+    if (!isIpv4 && !isIpv6) {
       toast({ title: "Invalid IP address format", variant: "destructive" });
       return;
     }
@@ -134,6 +159,35 @@ export default function SecurityHubPage() {
     setNewIp("");
   };
 
+  const handleAddYourIp = async () => {
+    setFetchingIp(true);
+    try {
+      const res = await getMyIpAction();
+      if (res.success && res.data && res.data.ip) {
+        setNewIp(res.data.ip);
+        toast({
+          variant: "success",
+          title: "IP Fetched",
+          description: `Your IP: ${res.data.ip}`,
+        });
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: res.error || "Failed to fetch your IP or IP is empty",
+        });
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "An error occurred",
+      });
+    } finally {
+      setFetchingIp(false);
+    }
+  };
+
   const handleRemoveIp = (ip: string) => {
     setWhitelist(whitelist.filter((i) => i !== ip));
   };
@@ -143,7 +197,7 @@ export default function SecurityHubPage() {
     try {
       const res = await updateSuperAdminWhitelistAction(whitelist);
       if (res.success) {
-        toast({ title: t("whitelist.success") });
+        toast({ variant: "success", title: t("whitelist.success") });
       } else {
         toast({
           variant: "destructive",
@@ -337,21 +391,36 @@ export default function SecurityHubPage() {
               <CardDescription>{t("whitelist.description")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-2">
-                <Input
-                  placeholder={t("whitelist.placeholder")}
-                  value={newIp}
-                  onChange={(e) => setNewIp(e.target.value)}
-                  className="rounded-xl"
-                  onKeyDown={(e) => e.key === "Enter" && handleAddIp()}
-                />
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex-1 flex gap-2">
+                  <Input
+                    placeholder={t("whitelist.placeholder")}
+                    value={newIp || ""}
+                    onChange={(e) => setNewIp(e.target.value)}
+                    className="rounded-xl"
+                    onKeyDown={(e) => e.key === "Enter" && handleAddIp()}
+                  />
+                  <Button
+                    onClick={handleAddIp}
+                    className="rounded-xl shrink-0"
+                    disabled={!newIp?.trim()}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    {t("whitelist.addButton")}
+                  </Button>
+                </div>
                 <Button
-                  onClick={handleAddIp}
-                  className="rounded-xl"
-                  disabled={!newIp.trim()}
+                  variant="outline"
+                  onClick={handleAddYourIp}
+                  className="rounded-xl border-indigo-200 text-indigo-600 hover:bg-indigo-50 shrink-0"
+                  disabled={fetchingIp}
                 >
-                  <Plus className="h-4 w-4 mr-2" />
-                  {t("whitelist.addButton")}
+                  {fetchingIp ? (
+                    <Activity className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Globe className="h-4 w-4 mr-2" />
+                  )}
+                  {t("whitelist.addYourIp")}
                 </Button>
               </div>
 

@@ -2,17 +2,20 @@
  * =====================================================================
  * CART INITIALIZER - Đồng bộ giỏ hàng đa nền tảng
  * =====================================================================
- * 
+ *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- * 
+ *
  * 1. DATA HYDRATION:
  * - Khi Server trả về `initialCount` (từ SEO/Server Components), ta "bơm" ngay vào store để user thấy số ngay, không chờ JS load xong mới fetch.
- * 
+ *
  * 2. CROSS-TAB SYNC:
  * - Lắng nghe event `storage` để khi User mở tab mới và add cart, tab hiện tại cũng tự nhảy số.
- * 
+ *
  * 3. GUEST CART INTEGRATION:
- * - Trực tiếp đọc `localStorage` nếu chưa login, đảm bảo trải nghiệm mua hàng không bị gián đoạn.
+ * - Trực tiếp đọc `localStorage` nếu chưa login, đảm bảo trải nghiệm mua hàng không bị gián đoạn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -28,7 +31,10 @@ interface CartInitializerProps {
   initialCount?: number;
 }
 
-export function CartInitializer({ initialUser, initialCount }: CartInitializerProps) {
+export function CartInitializer({
+  initialUser,
+  initialCount,
+}: CartInitializerProps) {
   const { updateCount, setFetching } = useCartStore();
   const isFetchingRef = useRef(false);
 
@@ -48,8 +54,12 @@ export function CartInitializer({ initialUser, initialCount }: CartInitializerPr
         isFetchingRef.current = true;
         setFetching(true);
         const result = await getCartCountAction();
-        if (result.success && typeof result.count === "number") {
-          updateCount(result.count);
+        if (
+          result.success &&
+          result.data &&
+          typeof result.data.totalItems === "number"
+        ) {
+          updateCount(result.data.totalItems);
         } else {
           updateCount(0);
         }
@@ -84,8 +94,10 @@ export function CartInitializer({ initialUser, initialCount }: CartInitializerPr
   }, [initialUser, updateCount, setFetching]);
 
   useEffect(() => {
-    // Initial fetch
-    fetchCount();
+    // Only fetch if initialCount was not provided by server
+    if (initialCount === undefined) {
+      fetchCount();
+    }
 
     const handleStorageChange = (e: StorageEvent) => {
       if (e.key === "guest_cart") fetchCount();
@@ -106,7 +118,7 @@ export function CartInitializer({ initialUser, initialCount }: CartInitializerPr
       window.removeEventListener("cart_updated", handleCartUpdate);
       window.removeEventListener("cart_clear", handleCartClear);
     };
-  }, [fetchCount, updateCount]);
+  }, [fetchCount, updateCount, initialCount]);
 
   return null;
 }

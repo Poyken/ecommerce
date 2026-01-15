@@ -1,4 +1,5 @@
 import { LoggerService } from '@core/logger/logger.service';
+import { maskSensitiveData } from '@/common/utils/masking';
 import {
   CallHandler,
   ExecutionContext,
@@ -7,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { MetricsService } from '@core/metrics/metrics.service';
 
 /**
  * =====================================================================
@@ -24,12 +26,21 @@ import { tap } from 'rxjs/operators';
  * - Điều này giúp các hệ thống như ELK (Elasticsearch, Logstash, Kibana) hoặc Grafana Loki có thể parse và vẽ biểu đồ giám sát.
  *
  * 3. SLOW REQUEST ALERT:
- * - Nếu một request tốn hơn 500ms, hệ thống sẽ tự động in ra Warning kèm icon 🐢 để thu hút sự chú ý của developer.
+ * - Nếu một request tốn hơn 500ms, hệ thống sẽ tự động in ra Warning kèm icon 🐢 để thu hút sự chú ý của developer. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Giám sát sức khỏe hệ thống (System Health Monitoring): Phát hiện API chậm thông qua cảnh báo "Slow Request".
+ * - Debugging & Tracing: Khi có lỗi xảy ra, developer có thể tra cứu log dựa trên `correlationId` để biết chính xác luồng chạy của request.
+ * - Audit Log: Lưu trữ lịch sử truy cập (ai, làm gì, khi nào) để phục vụ tra soát bảo mật.
+ * - Performance Tuning: Dữ liệu thời gian phản hồi (duration) được dùng để vẽ biểu đồ Latency trên Grafana/CloudWatch.
+
  * =====================================================================
  */
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  constructor(private readonly logger: LoggerService) {}
+  constructor(
+    private readonly logger: LoggerService,
+    private readonly metrics: MetricsService,
+  ) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const request = context.switchToHttp().getRequest();
@@ -44,6 +55,12 @@ export class LoggingInterceptor implements NestInterceptor {
           const response = context.switchToHttp().getResponse();
           const statusCode = response.statusCode;
           const duration = Date.now() - startTime;
+
+          // [METRICS OPTIMIZATION] Track business performance
+          this.metrics.incrementCounter(`api_requests_total`);
+          this.metrics.incrementCounter(`api_requests_status_${statusCode}`);
+          this.metrics.recordHistogram(`api_request_duration_ms`, duration);
+
           const correlationId = request.correlationId || 'unknown';
 
           // Production Grade Structured Log with Correlation ID
@@ -59,6 +76,7 @@ export class LoggingInterceptor implements NestInterceptor {
               userId,
               ip,
               userAgent: userAgent.substring(0, 100),
+              body: maskSensitiveData(request.body),
             }),
           );
 

@@ -12,7 +12,10 @@ import { Controller } from '@nestjs/common';
  * - Thường ít được sử dụng trong các dự án thực tế vì các logic nghiệp vụ đã được chia nhỏ vào các module con (Auth, Product, Order...).
  *
  * 2. ROUTING:
- * - `@Controller()` không có tham số nghĩa là nó sẽ lắng nghe ở đường dẫn gốc (`/`).
+ * - `@Controller()` không có tham số nghĩa là nó sẽ lắng nghe ở đường dẫn gốc (`/`). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

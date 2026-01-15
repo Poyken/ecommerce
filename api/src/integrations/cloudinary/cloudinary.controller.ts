@@ -16,7 +16,10 @@ import { CloudinaryService } from './cloudinary.service';
  * - API này tạo ra chữ ký đó dựa trên API Key và Secret Key của shop.
  *
  * 2. FOLDER MANAGEMENT:
- * - Ảnh sẽ được tổ chức theo các folder (VD: `products`, `blogs`) để dễ quản lý trên giao diện Cloudinary dashboard.
+ * - Ảnh sẽ được tổ chức theo các folder (VD: `products`, `blogs`) để dễ quản lý trên giao diện Cloudinary dashboard. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @ApiTags('Cloudinary')

@@ -3,6 +3,7 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { Queue } from 'bullmq';
 import { resolveMx } from 'dns/promises';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 
 /**
  * =====================================================================
@@ -20,7 +21,10 @@ import { PrismaService } from '@core/prisma/prisma.service';
  * - Nếu server gửi mail bị lỗi, BullMQ có thể tự động thử lại (Retry) sau một khoảng thời gian.
  *
  * 3. LOGGING:
- * - Sử dụng `Logger` của NestJS để ghi lại các sự kiện quan trọng, giúp theo dõi hoạt động của hệ thống trong môi trường Production.
+ * - Sử dụng `Logger` của NestJS để ghi lại các sự kiện quan trọng, giúp theo dõi hoạt động của hệ thống trong môi trường Production. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -53,8 +57,12 @@ export class NewsletterService {
       );
     }
 
-    const existing = await this.prisma.newsletterSubscriber.findUnique({
-      where: { email },
+    const tenant = getTenant();
+    const existing = await this.prisma.newsletterSubscriber.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
     });
 
     if (existing) {
@@ -70,7 +78,10 @@ export class NewsletterService {
     } else {
       // Create new
       await this.prisma.newsletterSubscriber.create({
-        data: { email },
+        data: {
+          email,
+          tenantId: tenant?.id,
+        },
       });
     }
 
@@ -88,8 +99,12 @@ export class NewsletterService {
   }
 
   async checkSubscriber(email: string) {
-    const subscriber = await this.prisma.newsletterSubscriber.findUnique({
-      where: { email },
+    const tenant = getTenant();
+    const subscriber = await this.prisma.newsletterSubscriber.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
     });
     return {
       exists: !!subscriber,

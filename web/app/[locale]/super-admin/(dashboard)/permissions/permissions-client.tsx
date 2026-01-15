@@ -12,7 +12,10 @@
  * - Grid layout for better visibility
  * - Color-coded action badges
  * - Search with instant filter
- * - Stats in header
+ * - Stats in header *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 
@@ -23,10 +26,10 @@ import { deletePermissionAction } from "@/features/admin/actions";
 import {
   AdminEmptyState,
   AdminPageHeader,
-} from "@/features/admin/components/admin-page-components";
-import { CreatePermissionDialog } from "@/features/admin/components/create-permission-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
-import { EditPermissionDialog } from "@/features/admin/components/edit-permission-dialog";
+} from "@/features/admin/components/ui/admin-page-components";
+import { CreatePermissionDialog } from "@/features/admin/components/roles/create-permission-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
+import { EditPermissionDialog } from "@/features/admin/components/roles/edit-permission-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { cn } from "@/lib/utils";
 import { Permission } from "@/types/models";
@@ -176,7 +179,7 @@ export function PermissionsPageClient({
   const totalGroups = Object.keys(groupedPermissions).length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("permissions.management")}

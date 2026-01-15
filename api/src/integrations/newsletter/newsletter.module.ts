@@ -12,7 +12,10 @@ import { NotificationsModule } from '@/notifications/notifications.module';
  * - Module này phụ thuộc vào `NotificationsModule` để có thể sử dụng các hàng đợi (Queues) gửi email.
  *
  * 2. FEATURE ENCAPSULATION:
- * - Gom nhóm các logic liên quan đến việc thu thập email khách hàng và gửi tin khuyến mãi.
+ * - Gom nhóm các logic liên quan đến việc thu thập email khách hàng và gửi tin khuyến mãi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { NewsletterController } from './newsletter.controller';

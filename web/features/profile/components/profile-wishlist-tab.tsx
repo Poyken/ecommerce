@@ -13,7 +13,10 @@
  * - Dữ liệu được fetch trực tiếp từ API khi tab được mở, đảm bảo danh sách luôn mới nhất.
  *
  * 3. EMPTY STATE:
- * - Nếu chưa có sản phẩm nào, hiển thị nút "Browse Shop" để khuyến khích người dùng khám phá sản phẩm.
+ * - Nếu chưa có sản phẩm nào, hiển thị nút "Browse Shop" để khuyến khích người dùng khám phá sản phẩm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -30,6 +33,7 @@ import { AnimatePresence } from "framer-motion";
 import { Heart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import { getProductImage } from "@/lib/product-helper";
 
 export function ProfileWishlistTab() {
   const t = useTranslations("wishlist");
@@ -39,8 +43,10 @@ export function ProfileWishlistTab() {
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
-        const data = await getWishlistAction();
-        setProducts(data);
+        const res = await getWishlistAction();
+        if (res.success && res.data) {
+          setProducts(res.data);
+        }
       } catch (error) {
         console.error("Failed to fetch wishlist", error);
       } finally {
@@ -122,13 +128,7 @@ export function ProfileWishlistTab() {
                   name={product.name}
                   price={displayPrice}
                   originalPrice={originalPrice}
-                  imageUrl={
-                    (typeof product.images?.[0] === "string"
-                      ? product.images?.[0]
-                      : product.images?.[0]?.url) ||
-                    product.skus?.[0]?.imageUrl ||
-                    ""
-                  }
+                  imageUrl={getProductImage(product) || ""}
                   category={product.category?.name}
                   skus={product.skus}
                   options={product.options}

@@ -14,17 +14,20 @@
  * 3. Xóa bài viết.
  * 4. Revalidate cache để cập nhật giao diện ngay lập tức.
  *
- * ⚠️ LƯU Ý: Các action này thường được gọi từ Admin Dashboard.
+ * ⚠️ LƯU Ý: Các action này thường được gọi từ Admin Dashboard. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Content Marketing: Cung cấp các công cụ cho bộ phận Marketing biên tập và xuất bản bài viết, giúp tăng lượng truy cập tự nhiên (Organic Traffic) vào website.
+ * - Dynamic SEO: Tự động cập nhật cache bài viết mới nhất lên giao diện người dùng (Revalidate), đảm bảo khách hàng và bot tìm kiếm luôn thấy nội dung mới nhất.
+
  * =====================================================================
  */
 
 "use server";
 
 import { http } from "@/lib/http";
-import { ActionResult, ApiResponse } from "@/types/dtos";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 import { BlogWithProducts } from "@/types/models";
 import { getTranslations } from "next-intl/server";
-import { revalidatePath } from "next/cache";
 
 /**
  * Tạo bài viết blog mới.
@@ -47,23 +50,17 @@ export async function createBlogAction(
         productIds: string[];
       }
     | FormData
-): Promise<ActionResult> {
-  try {
+) {
+  return wrapServerAction(async () => {
     const isFormData = data instanceof FormData;
-    await http("/blogs", {
+    const res = await http("/blogs", {
       method: "POST",
       body: isFormData ? data : JSON.stringify(data),
     });
 
-    // Làm mới cache cho trang quản trị và trang blog người dùng
-    revalidatePath("/admin/blogs");
-    revalidatePath("/blog");
-
-    return { success: true };
-  } catch (error: unknown) {
-    console.error("Error creating blog:", error);
-    return { error: (error as Error).message || "Failed to create blog post" };
-  }
+    REVALIDATE.admin.blogs();
+    return res;
+  }, "Failed to create blog post");
 }
 
 /**
@@ -88,22 +85,17 @@ export async function updateBlogAction(
         productIds: string[];
       }
     | FormData
-): Promise<ActionResult> {
-  try {
+) {
+  return wrapServerAction(async () => {
     const isFormData = data instanceof FormData;
-    await http(`/blogs/${id}`, {
+    const res = await http(`/blogs/${id}`, {
       method: "PATCH",
       body: isFormData ? data : JSON.stringify(data),
     });
 
-    revalidatePath("/admin/blogs");
-    revalidatePath("/blog");
-
-    return { success: true };
-  } catch (error: unknown) {
-    console.error("Error updating blog:", error);
-    return { error: (error as Error).message || "Failed to update blog post" };
-  }
+    REVALIDATE.admin.blogs();
+    return res;
+  }, "Failed to update blog post");
 }
 
 /**
@@ -111,18 +103,12 @@ export async function updateBlogAction(
  *
  * @param id - ID của bài viết cần xóa
  */
-export async function deleteBlogAction(id: string): Promise<ActionResult> {
-  try {
-    await http(`/blogs/${id}`, { method: "DELETE" });
-
-    revalidatePath("/admin/blogs");
-    revalidatePath("/blog");
-
-    return { success: true };
-  } catch (error: unknown) {
-    console.error("Error deleting blog:", error);
-    return { error: (error as Error).message || "Failed to delete blog post" };
-  }
+export async function deleteBlogAction(id: string) {
+  return wrapServerAction(async () => {
+    const res = await http(`/blogs/${id}`, { method: "DELETE" });
+    REVALIDATE.admin.blogs();
+    return res;
+  }, "Failed to delete blog post");
 }
 
 /**
@@ -130,42 +116,22 @@ export async function deleteBlogAction(id: string): Promise<ActionResult> {
  *
  * @param id - ID bài viết
  */
-export async function toggleBlogPublishAction(
-  id: string
-): Promise<ActionResult> {
-  try {
-    await http(`/blogs/${id}/toggle-publish`, { method: "PATCH" });
-
-    revalidatePath("/admin/blogs");
-    revalidatePath("/blog");
-
-    return { success: true };
-  } catch (error: unknown) {
-    console.error("Error toggling blog publish:", error);
-    return {
-      error: (error as Error).message || "Failed to update blog status",
-    };
-  }
+export async function toggleBlogPublishAction(id: string) {
+  return wrapServerAction(async () => {
+    const res = await http(`/blogs/${id}/toggle-publish`, { method: "PATCH" });
+    REVALIDATE.admin.blogs();
+    return res;
+  }, "Failed to update blog status");
 }
 
-export async function getMyBlogsAction(): Promise<
-  ActionResult<BlogWithProducts[]>
-> {
+export async function getMyBlogsAction() {
   const t = await getTranslations("admin.blogs");
-  try {
-    const res = await http<ApiResponse<BlogWithProducts[]>>(`/blogs/my-blogs`, {
-      method: "GET",
-      next: { tags: ["my-blogs"] },
-    });
-    return {
-      success: true,
-      data: res.data,
-    };
-  } catch (error) {
-    console.error("Failed to fetch my blogs:", error);
-    return {
-      success: false,
-      error: (error as Error).message || t("error"),
-    };
-  }
+  return wrapServerAction(
+    () =>
+      http(`/blogs/my-blogs`, {
+        method: "GET",
+        next: { tags: ["my-blogs"] },
+      }),
+    t("error")
+  );
 }

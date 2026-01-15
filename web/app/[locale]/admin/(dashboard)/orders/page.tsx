@@ -17,7 +17,11 @@ import { OrdersClient } from "./orders-client";
  * - `getOrderCounts` (dòng 21) sử dụng `Promise.all` để đếm số lượng đơn hàng ở mỗi trạng thái, giúp hiển thị các Badge/Tabs thống kê chính xác.
  *
  * 3. PHÂN TRANG (Pagination):
- * - Chỉ load một lượng nhỏ đơn hàng mỗi trang để đảm bảo tốc độ phản hồi nhanh, ngay cả khi database có hàng triệu bản ghi.
+ * - Chỉ load một lượng nhỏ đơn hàng mỗi trang để đảm bảo tốc độ phản hồi nhanh, ngay cả khi database có hàng triệu bản ghi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Order Lifecycle Management: Cung cấp công cụ quản lý toàn diện vòng đời của một đơn hàng, từ khâu xác nhận đơn đến khi giao hàng thành công, giúp tối ưu hóa quy trình vận hành của shop.
+ * - Logistics Orchestration: Hỗ trợ Admin theo dõi và điều phối các đơn hàng theo trạng thái vận chuyển, đảm bảo hàng hóa được giao đúng hẹn và giảm thiểu tỷ lệ hoàn hàng.
+
  * =====================================================================
  */
 
@@ -33,13 +37,15 @@ async function getOrderCounts() {
   try {
     // Fetch counts in parallel
     const results = await Promise.all(
-      statuses.map((status) => getOrdersAction(1, 1, "", status))
+      statuses.map((status) =>
+        getOrdersAction({ page: 1, limit: 1, search: "", status })
+      )
     );
 
     const counts: Record<string, number> = {};
 
     // Total count (fetch all)
-    const allResult = await getOrdersAction(1, 1);
+    const allResult = await getOrdersAction({ page: 1, limit: 1 });
     if ("data" in allResult) {
       counts.total = allResult.meta?.total || 0;
     }
@@ -53,8 +59,8 @@ async function getOrderCounts() {
     });
 
     return counts;
-  } catch (error) {
-    // console.error("Error fetching order counts:", error);
+  } catch {
+    // console.error("Error fetching order counts");
     return { total: 0 };
   }
 }
@@ -71,7 +77,7 @@ export default async function AdminOrdersPage({
   const status = params.status || "all";
 
   const [ordersResult, counts] = await Promise.all([
-    getOrdersAction(page, limit, search, status),
+    getOrdersAction({ page, limit, search, status }),
     getOrderCounts(),
   ]);
 

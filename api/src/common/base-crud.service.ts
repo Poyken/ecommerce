@@ -41,11 +41,14 @@ export interface CrudDelegate<T> {
  * - Giảm tải cho database và băng thông mạng (Network Payload).
  *
  * 3. STANDARDIZED PAGINATION:
- * - Tự động tính toán `skip`, `take` và trả về metadata (total, lastPage) theo một format nhất định cho mọi API.
+ * - Tự động tính toán `skip`, `take` và trả về metadata (total, lastPage) theo một format nhất định cho mọi API. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()
-export abstract class BaseCrudService<T, CreateDto, UpdateDto> {
+export abstract class BaseCrudService<T, _CreateDto, _UpdateDto> {
   protected abstract get model(): CrudDelegate<T>;
   protected readonly logger: Logger;
 
@@ -64,7 +67,8 @@ export abstract class BaseCrudService<T, CreateDto, UpdateDto> {
     const skip = (page - 1) * limit;
 
     try {
-      // [P13 OPTIMIZATION] Support both comma-separated string or Prisma select object
+      // [P13 OPTIMIZATION] Hỗ trợ cả chuỗi phân cách dấu phẩy hoặc Prisma select object
+      // Ví dụ: "id,name" hoặc { id: true, name: true }
       const prismaSelect =
         typeof select === 'string' ? this.parseFields(select) : select;
 
@@ -92,15 +96,17 @@ export abstract class BaseCrudService<T, CreateDto, UpdateDto> {
           lastPage: Math.ceil(total / limit),
         },
       };
-    } catch (error) {
-      this.logger.error(`Failed to findAll: ${error.message}`, error.stack);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      const stack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Failed to findAll: ${message}`, stack);
       throw new InternalServerErrorException('Could not fetch records');
     }
   }
 
   /**
-   * Generic FindOne
-   * Supports both 'select' and 'include' via options object
+   * Hàm tìm kiếm một bản ghi (FindOne Base).
+   * Hỗ trợ tùy chọn `select` hoặc `include` thông qua options object.
    */
   async findOneBase(
     id: string,
@@ -114,7 +120,7 @@ export abstract class BaseCrudService<T, CreateDto, UpdateDto> {
       queryOptions.include = options.include;
     }
 
-    const item = await this.model.findUnique(queryOptions);
+    const item = await this.model.findFirst(queryOptions);
 
     if (!item) {
       throw new NotFoundException(`Record with ID ${id} not found`);
@@ -124,8 +130,8 @@ export abstract class BaseCrudService<T, CreateDto, UpdateDto> {
   }
 
   /**
-   * Generic Soft Delete
-   * Requires model to have 'deletedAt' field
+   * Hàm xóa mềm (Soft Delete Base).
+   * Yêu cầu model phải có trường `deletedAt`.
    */
   async softDeleteBase(id: string): Promise<T> {
     await this.findOneBase(id); // Check existence
@@ -135,15 +141,17 @@ export abstract class BaseCrudService<T, CreateDto, UpdateDto> {
         where: { id },
         data: { deletedAt: new Date() },
       });
-    } catch (error) {
-      this.logger.error(`Failed to soft delete: ${error.message}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to soft delete: ${message}`);
       throw new InternalServerErrorException('Could not delete record');
     }
   }
 
   /**
-   * Parse comma-separated fields into Prisma select object
-   * Example: "id,name,category.id" -> { id: true, name: true, category: { select: { id: true } } }
+   * Phân tích chuỗi các trường ngăn cách bởi dấu phẩy thành Prisma select object.
+   * Ví dụ: "id,name,category.id" -> { id: true, name: true, category: { select: { id: true } } }
+   * Giúp Client có thể request chính xác những field cần lấy (Graph-like fetching).
    */
   private parseFields(fields: string): any {
     const result = {};
@@ -167,13 +175,5 @@ export abstract class BaseCrudService<T, CreateDto, UpdateDto> {
     }
 
     return result;
-  }
-
-  /**
-   * Generic Check Exists (Helper)
-   */
-  protected async checkExists(where: any): Promise<boolean> {
-    const count = await this.model.count({ where });
-    return count > 0;
   }
 }

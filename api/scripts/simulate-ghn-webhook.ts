@@ -27,7 +27,10 @@ const API_URL =
  * - Ví dụ: `npx ts-node scripts/simulate-ghn-webhook.ts L8CC208P delivered`
  *
  * 3. LOGIC:
- * - Script gửi POST request có cấu trúc y hệt GHN (OrderCode, Status, Type...) vào API local.
+ * - Script gửi POST request có cấu trúc y hệt GHN (OrderCode, Status, Type...) vào API local. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

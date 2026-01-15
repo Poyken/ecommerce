@@ -15,7 +15,10 @@ import { IsNotEmpty, MinLength } from 'class-validator';
  * - Ta sử dụng tham số `message` trong các decorator validation để trả về thông báo lỗi bằng tiếng Việt, giúp Frontend hiển thị trực tiếp cho người dùng mà không cần dịch lại.
  *
  * 3. SECURITY:
- * - Tiếp tục duy trì ràng buộc `@MinLength(6)` cho mật khẩu mới để đảm bảo an toàn.
+ * - Tiếp tục duy trì ràng buộc `@MinLength(6)` cho mật khẩu mới để đảm bảo an toàn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

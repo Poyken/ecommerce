@@ -2,7 +2,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { getTenant } from '@core/tenant/tenant.context';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import type { Cache } from 'cache-manager';
 
 @Injectable()
@@ -21,10 +21,15 @@ import type { Cache } from 'cache-manager';
  *
  * 2. MULTI-TENANCY CONTEXT:
  *    - Hàm `getTenant()` lấy ID cửa hàng hiện tại.
- *    - Mọi query DB đều phải có `where: { tenantId }` (Dù Prisma Extension đã hỗ trợ, nhưng viết rõ ở đây giúp dễ hiểu hơn).
+ *    - Mọi query DB đều phải có `where: { tenantId }` (Dù Prisma Extension đã hỗ trợ, nhưng viết rõ ở đây giúp dễ hiểu hơn). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =================================================================================================
  */
 export class PagesService {
+  private readonly logger = new Logger(PagesService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
@@ -96,6 +101,7 @@ export class PagesService {
     return this.prisma.page.findMany({
       where: {
         tenantId: tenant.id,
+        deletedAt: null, // Exclude soft-deleted pages
       },
       orderBy: { updatedAt: 'desc' },
     });
@@ -103,11 +109,14 @@ export class PagesService {
 
   async findById(id: string) {
     const tenant = getTenant();
-    const where: Prisma.PageWhereInput = { id };
+    const where: Prisma.PageWhereInput = {
+      id,
+      deletedAt: null, // Exclude soft-deleted pages
+    };
 
     // If tenant context exists, enforce it.
     // If Super Admin accesses via specific tenant domain, it enforces that tenant.
-    // If accessing globally (tenant=null + superadmin), maybe allow?
+    // If accessing globally (tenant=null + super-admin), maybe allow?
     // But usually admin panel works under a tenant context.
     if (tenant) {
       where.tenantId = tenant.id;
@@ -129,10 +138,24 @@ export class PagesService {
     const tenant = getTenant();
     if (!tenant) throw new NotFoundException('Tenant context missing');
 
-    const page = await this.prisma.page.create({
-      data: {
+    // Use upsert to handle duplicate slug gracefully (update if exists)
+    const page = await this.prisma.page.upsert({
+      where: {
+        tenantId_slug: {
+          tenantId: tenant.id,
+          slug: data.slug,
+        },
+      },
+      create: {
         ...data,
         tenantId: tenant.id,
+      },
+      update: {
+        title: data.title,
+        blocks: data.blocks,
+        isPublished: data.isPublished,
+        deletedAt: null, // Reset soft-delete if it was previously deleted
+        updatedAt: new Date(),
       },
     });
 
@@ -158,14 +181,10 @@ export class PagesService {
     });
 
     // Clear cache for both old and new slug to be safe
-    console.log(
-      `[PagesService] Invalidate Cache: page:${tenant?.id}:${existing.slug}`,
-    );
+    this.logger.log(`Invalidate Cache: page:${tenant?.id}:${existing.slug}`);
     await this.cacheManager.del(`page:${tenant?.id}:${existing.slug}`);
     if (data.slug) {
-      console.log(
-        `[PagesService] Invalidate Cache: page:${tenant?.id}:${data.slug}`,
-      );
+      this.logger.log(`Invalidate Cache: page:${tenant?.id}:${data.slug}`);
       await this.cacheManager.del(`page:${tenant?.id}:${data.slug}`);
     }
 
@@ -181,9 +200,7 @@ export class PagesService {
       data: { deletedAt: new Date() },
     });
 
-    console.log(
-      `[PagesService] Invalidate Cache: page:${tenant?.id}:${existing.slug}`,
-    );
+    this.logger.log(`Invalidate Cache: page:${tenant?.id}:${existing.slug}`);
     await this.cacheManager.del(`page:${tenant?.id}:${existing.slug}`);
     return { success: true };
   }

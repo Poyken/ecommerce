@@ -3,7 +3,8 @@
 import { FormDialog } from "@/components/shared/form-dialog";
 import { ImageUpload } from "@/components/shared/image-upload";
 import { LazyRichTextEditor as RichTextEditor } from "@/components/shared/lazy-rich-text-editor";
-import { useToast } from "@/components/shared/use-toast";
+import { AnimatedError } from "@/components/shared/animated-error";
+import { useToast } from "@/components/ui/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,7 +49,10 @@ import { useEffect, useMemo, useState, useTransition } from "react";
  * - Giúp giảm tải cho Server và phản hồi tức thì cho User (Better UX).
  *
  * 4. DYNAMIC SELECTS:
- * - Categories và Products được fetch ngay khi mở Dialog (`useEffect`) để đảm bảo dữ liệu mới nhất.
+ * - Categories và Products được fetch ngay khi mở Dialog (`useEffect`) để đảm bảo dữ liệu mới nhất. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 interface BlogFormDialogProps {
@@ -106,20 +110,21 @@ export function BlogFormDialog({
     if (!open) return;
 
     const fetchData = async () => {
-      const productsRes = await getProductsAction(1, 100);
+      const productsRes = await getProductsAction({ page: 1, limit: 100 });
       if ("data" in productsRes) {
         setProducts(productsRes.data || []);
       }
 
       if (categories.length === 0) {
         const catsRes = await getCategoriesAction(1, 100);
-        if (catsRes && "data" in catsRes && catsRes.data) {
-          setCategories(catsRes.data);
+        if (catsRes.success && catsRes.data) {
+          const fetchedCats = catsRes.data;
+          setCategories(fetchedCats);
           // Set default category if creating
-          if (!blog && !formData.category && catsRes.data.length > 0) {
+          if (!blog && !formData.category && fetchedCats.length > 0) {
             setFormData((prev) => ({
               ...prev,
-              category: catsRes.data[0].name,
+              category: fetchedCats[0].name,
             }));
           }
         }
@@ -305,18 +310,7 @@ export function BlogFormDialog({
               disabled={isPending}
               className={errors.title ? "border-destructive" : ""}
             />
-            <AnimatePresence>
-              {errors.title && (
-                <m.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="text-xs text-destructive"
-                >
-                  {errors.title}
-                </m.p>
-              )}
-            </AnimatePresence>
+            <AnimatedError message={errors.title} />
           </div>
 
           <div className="space-y-2">
@@ -332,18 +326,7 @@ export function BlogFormDialog({
               placeholder="auto-generated-from-title"
               className={errors.slug ? "border-destructive" : ""}
             />
-            <AnimatePresence>
-              {errors.slug && (
-                <m.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="text-xs text-destructive"
-                >
-                  {errors.slug}
-                </m.p>
-              )}
-            </AnimatePresence>
+            <AnimatedError message={errors.slug} />
           </div>
         </div>
 
@@ -362,18 +345,7 @@ export function BlogFormDialog({
             placeholder={t("placeholders.excerpt")}
             className={errors.excerpt ? "border-destructive" : ""}
           />
-          <AnimatePresence>
-            {errors.excerpt && (
-              <m.p
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="text-xs text-destructive"
-              >
-                {errors.excerpt}
-              </m.p>
-            )}
-          </AnimatePresence>
+          <AnimatedError message={errors.excerpt} />
         </div>
 
         <div className="space-y-2">
@@ -387,18 +359,7 @@ export function BlogFormDialog({
             }}
             placeholder={t("placeholders.content")}
           />
-          <AnimatePresence>
-            {errors.content && (
-              <m.p
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="text-xs text-destructive"
-              >
-                {errors.content}
-              </m.p>
-            )}
-          </AnimatePresence>
+          <AnimatedError message={errors.content} />
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -427,18 +388,7 @@ export function BlogFormDialog({
                   ))}
               </SelectContent>
             </Select>
-            <AnimatePresence>
-              {errors.category && (
-                <m.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="text-xs text-destructive"
-                >
-                  {errors.category}
-                </m.p>
-              )}
-            </AnimatePresence>
+            <AnimatedError message={errors.category} />
           </div>
 
           <div className="space-y-2">
@@ -477,23 +427,12 @@ export function BlogFormDialog({
               placeholder="John Doe"
               className={errors.author ? "border-destructive" : ""}
             />
-            <AnimatePresence>
-              {errors.author && (
-                <m.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="text-xs text-destructive"
-                >
-                  {errors.author}
-                </m.p>
-              )}
-              {isUserMode && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  Author name will be automatically set to your name.
-                </p>
-              )}
-            </AnimatePresence>
+            <AnimatedError message={errors.author} />
+            {isUserMode && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Author name will be automatically set to your name.
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">

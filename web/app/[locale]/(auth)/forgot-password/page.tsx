@@ -18,7 +18,10 @@ import { Metadata } from "next";
  *
  * 3. SECURITY:
  * - Không nên thông báo rõ ràng "Email này không tồn tại" để tránh việc kẻ xấu dò tìm danh sách email của hệ thống.
- * - Thông thường sẽ báo "Nếu email tồn tại, một liên kết đã được gửi đi".
+ * - Thông thường sẽ báo "Nếu email tồn tại, một liên kết đã được gửi đi". *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

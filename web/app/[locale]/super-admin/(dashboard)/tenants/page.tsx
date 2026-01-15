@@ -17,7 +17,11 @@ import { TenantsClient } from "./tenants-client";
  *    - Việc tách nhỏ giúp Logic Client-side (search, filter) không làm nặng Server component.
  *
  * 3. ERROR RESILIENCE:
- *    - Có cơ chế hiển thị lỗi ngay tại trang nếu API fetch danh sách tenants thất bại.
+ *    - Có cơ chế hiển thị lỗi ngay tại trang nếu API fetch danh sách tenants thất bại. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tenant Lifecycle Management: Kiểm soát toàn bộ vòng đời của một cửa hàng từ lúc đăng ký (Provisioning) đến khi gia hạn hoặc tạm dừng dịch vụ trên nền tảng SaaS.
+ * - B2B Relationship Hub: Quản lý danh sách đối tác doanh nghiệp sử dụng nền tảng, giúp bộ phận kinh doanh dễ dàng theo dõi và hỗ trợ từng chủ Store riêng biệt.
+
  * =================================================================================================
  */
 export default async function TenantsPage() {
@@ -30,39 +34,20 @@ export default async function TenantsPage() {
         <div className="text-red-600 bg-red-50 border border-red-200 rounded p-4">
           <h2 className="font-bold mb-2">Error Loading Tenants</h2>
           <p>{tenantsRes.error}</p>
-        </div>
+          </div>
       </div>
     );
   }
 
-  // Handle PaginatedData response
-  // Assuming getTenantsAction returns { data: PaginatedData<Tenant> } or similar based on my implementation
-  // create-tenant-dialog.tsx implementation of getTenantsAction return:
-  /*
-    return {
-        data: res, // Tenant[]
-        meta: { ... }
-    };
-  */
-  // So tenantsRes.data is { data: Tenant[], meta: ... } ?
-  // No, ActionResult<T> has .data: T.
-  // getTenantsAction returns ActionResult<PaginatedData<Tenant>>.
-  // So tenantsRes.data IS PaginatedData<Tenant>.
-  // PaginatedData has .data (Tenant[]) and .meta.
-
-  const paginatedData = tenantsRes.data;
-
-  // Safety check
-  if (!paginatedData || !Array.isArray(paginatedData.data)) {
-    return <div>Invalid data format</div>;
-  }
+  const tenants = tenantsRes.data || [];
+  const meta = tenantsRes.meta;
 
   return (
     <TenantsClient
-      tenants={paginatedData.data}
-      total={paginatedData.meta.total}
-      page={paginatedData.meta.page}
-      limit={paginatedData.meta.limit}
+      tenants={tenants}
+      total={meta?.total || 0}
+      page={meta?.page || 1}
+      limit={meta?.limit || 10}
     />
   );
 }

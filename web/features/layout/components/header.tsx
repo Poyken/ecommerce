@@ -32,14 +32,16 @@ import { useTranslations } from "next-intl";
  *
  * 3. FALLBACK & SKELETON:
  * - `HeaderFallback`: Hiển thị khung xương khi component động đang load.
- * - Ngăn chặn Layout Shift (CLS) - hiện tượng giao diện bị giật cục khi load.
+ * - Ngăn chặn Layout Shift (CLS) - hiện tượng giao diện bị giật cục khi load. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
 interface HeaderProps {
   initialUser?: any; // Thông tin user (được truyền từ server component cha)
   permissions?: string[]; // Quyền hạn (RBAC)
-  initialCartCount?: number;
   initialWishlistCount?: number;
   isInline?: boolean;
 }
@@ -94,7 +96,6 @@ export function HeaderFallback() {
 export function Header({
   initialUser,
   permissions,
-  initialCartCount,
   initialWishlistCount,
   isInline = false,
 }: HeaderProps) {
@@ -102,7 +103,10 @@ export function Header({
 
   return (
     // StickyHeader: Wrapper xử lý sự kiện cuộn trang (ẩn hiện header)
-    <StickyHeader isInline={isInline} className="border-b bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60 z-50 transition-all duration-500">
+    <StickyHeader
+      isInline={isInline}
+      className="border-b bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60 z-50 transition-all duration-500"
+    >
       <div className="container flex h-20 items-center justify-between max-w-7xl mx-auto px-4 md:px-8">
         {/* 1. Logo Brand */}
         <Logo />
@@ -141,10 +145,7 @@ export function Header({
                 size={22}
                 className="group-hover:scale-110 transition-transform"
               />
-              <CartBadge
-                initialUser={initialUser}
-                initialCount={initialCartCount}
-              />
+              <CartBadge />
             </span>
           </Link>
 

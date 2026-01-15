@@ -38,7 +38,10 @@ export function useChatSocket(
    *
    * 3. DEDUPLICATION STRATEGY:
    * - WebSocket có thể nhận tin nhắn trùng lặp do mạng chập chờn.
-   * - Sử dụng `processedMessageIdsRef` (Set) để đảm bảo mỗi tin nhắn chỉ được xử lý 1 lần.
+   * - Sử dụng `processedMessageIdsRef` (Set) để đảm bảo mỗi tin nhắn chỉ được xử lý 1 lần. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
+
    * =====================================================================
    */
   accessToken: string | undefined,
@@ -213,7 +216,7 @@ export function useChatSocket(
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [user?.id, accessToken, namespace]);
+  }, [user, accessToken, namespace, isConnected]);
 
   const sendMessage = useCallback(
     (
@@ -269,7 +272,7 @@ export function useChatSocket(
         );
       }
     },
-    [user, isConnected]
+    [user]
   );
 
   const markAsRead = useCallback(

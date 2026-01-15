@@ -1,4 +1,34 @@
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+/**
+ * =====================================================================
+ * FEATURE FLAGS CONTROLLER - Quản lý Cờ tính năng
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. KHI NÀO DÙNG?
+ * - Khi cần quản lý bật/tắt các tính năng (features) trong hệ thống mà không cần deploy lại code.
+ * - Ví dụ: Bật/tắt cổng thanh toán mới, banner khuyến mãi, hoặc module đang bảo trì.
+ *
+ * 2. CHỨC NĂNG CHÍNH:
+ * - CRUD (Create, Read, Update, Delete) các Feature Flags.
+ * - API này chỉ dành cho Admin (yêu cầu quyền `admin:read`, `admin:update`).
+ *
+ * 3. KIẾN TRÚC:
+ * - Controller này nhận request HTTP -> Gọi xuống `FeatureFlagsService` để xử lý logic -> Trả về kết quả.
+ * - Sử dụng các Decorators tùy chỉnh (`@RequirePermissions`, `@ApiListResponse`...) để chuẩn hóa code.
+ * *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
+ * =====================================================================
+ */
+import {
+  RequirePermissions,
+  ApiListResponse,
+  ApiCreateResponse,
+  ApiUpdateResponse,
+  ApiDeleteResponse,
+} from '@/common/decorators/crud.decorators';
 import {
   Body,
   Controller,
@@ -18,46 +48,42 @@ import {
 } from './dto/feature-flag.dto';
 import { FeatureFlagsService } from './feature-flags.service';
 
-/**
- * =====================================================================
- * FEATURE FLAGS CONTROLLER - ĐIỀU KHIỂN TÍNH NĂNG ĐỘNG (ADMIN)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DYNAMIC TOGGLE (Bật/Tắt động):
- * - Cho phép Admin bật hoặc tắt một tính năng mới (VD: `dark_mode`, `new_checkout`) ngay lập tức mà không cần deploy lại code.
- *
- * 2. SAFE ROLLOUT (Triển khai an toàn):
- * - Giảm thiểu rủi ro khi ra mắt tính năng lớn. Nếu có lỗi, Admin chỉ cần vào đây Tắt đi là xong.
- * =====================================================================
- */
 @ApiTags('Admin - Feature Flags')
 @ApiBearerAuth()
 @Controller('admin/feature-flags')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
-@Permissions('admin:update')
 export class FeatureFlagsController {
   constructor(private readonly featureFlagsService: FeatureFlagsService) {}
 
   @Get()
-  @Permissions('admin:read')
-  findAll() {
-    return this.featureFlagsService.findAll();
+  @RequirePermissions('admin:read')
+  @ApiListResponse('Feature Flag', { summary: 'Lấy danh sách feature flags' })
+  async findAll() {
+    const result = await this.featureFlagsService.findAll();
+    return { data: result };
   }
 
   @Post()
-  create(@Body() dto: CreateFeatureFlagDto) {
-    return this.featureFlagsService.create(dto);
+  @RequirePermissions('admin:update')
+  @ApiCreateResponse('Feature Flag', { summary: 'Tạo feature flag mới' })
+  async create(@Body() dto: CreateFeatureFlagDto) {
+    const result = await this.featureFlagsService.create(dto);
+    return { data: result };
   }
 
   @Patch(':key')
-  update(@Param('key') key: string, @Body() dto: UpdateFeatureFlagDto) {
-    return this.featureFlagsService.update(key, dto);
+  @RequirePermissions('admin:update')
+  @ApiUpdateResponse('Feature Flag', { summary: 'Cập nhật feature flag' })
+  async update(@Param('key') key: string, @Body() dto: UpdateFeatureFlagDto) {
+    const result = await this.featureFlagsService.update(key, dto);
+    return { data: result };
   }
 
   @Delete(':key')
-  remove(@Param('key') key: string) {
-    return this.featureFlagsService.remove(key);
+  @RequirePermissions('admin:update')
+  @ApiDeleteResponse('Feature Flag', { summary: 'Xóa feature flag' })
+  async remove(@Param('key') key: string) {
+    const result = await this.featureFlagsService.remove(key);
+    return { data: result };
   }
 }

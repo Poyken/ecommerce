@@ -1,6 +1,5 @@
-// import { cookies } from "next/headers"; // Moved to dynamic import
 import { redirect } from "next/navigation";
-// import "server-only"; // Removed to allow client-side usage
+import { API_CONFIG, HTTP_STATUS } from "./constants";
 import { env } from "./env";
 
 /**
@@ -20,7 +19,12 @@ import { env } from "./env";
  *
  * 3. CENTRALIZED ERROR HANDLING:
  * - Tự động check `res.ok`. Nếu lỗi (4xx, 5xx), tự động parse JSON body để lấy message lỗi chi tiết.
- * - Xử lý đặc biệt cho lỗi 401 (Unauthorized) -> Redirect về login.
+ * - Xử lý đặc biệt cho lỗi 401 (Unauthorized) -> Redirect về login. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Server Components Fetching: Dùng trong các trang Server (`page.tsx`) để lấy dữ liệu mà vẫn giữ được Auth Context.
+ * - Static Site Generation (SSG) Optimization: Tự động phát hiện khi nào nên cache (public API) và khi nào cần dữ liệu tươi (private API) để build trang siêu tốc.
+ * - Security Headers: Tự động đính kèm CSRF Token và Forward IP để vượt qua các tường lửa bảo mật của Backend.
+
  * =====================================================================
  */
 
@@ -36,7 +40,16 @@ type FetchOptions = RequestInit & {
   next?: NextFetchRequestConfig;
   /** Bỏ qua tự động redirect về login khi gặp lỗi 401 */
   skipRedirectOn401?: boolean;
+  /** Timeout request (ms) */
+  timeout?: number;
+  /** Response type (json, blob, text, etc.) */
+  responseType?: "json" | "blob" | "text" | "arraybuffer";
 };
+
+/**
+ * Variable toàn cục để deduplicate việc refresh token trên Client
+ */
+let refreshTokenPromise: Promise<boolean> | null = null;
 
 /**
  * HTTP client utility cho Server Components/Actions.
@@ -59,7 +72,7 @@ type FetchOptions = RequestInit & {
  * });
  */
 export async function http<T>(path: string, options: FetchOptions = {}) {
-  const { params, headers, skipAuth, ...rest } = options;
+  const { params, headers, skipAuth, timeout, ...rest } = options;
 
   // ========================================
   // 3. CẤU HÌNH HEADERS & CSRF & AUTH
@@ -73,6 +86,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   let accessToken: string | undefined;
   let forwardedUserAgent: string | undefined;
   let forwardedIp: string | undefined;
+  let forwardedHost: string | undefined;
 
   const isStateChanging = ["POST", "PUT", "PATCH", "DELETE"].includes(
     rest.method?.toUpperCase() || "GET"
@@ -110,6 +124,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
         // Fingerprinting headers (User-Agent, IP) để bảo mật
         forwardedUserAgent = headersList.get("user-agent") || undefined;
         forwardedIp = headersList.get("x-forwarded-for") || undefined;
+        forwardedHost = headersList.get("host") || undefined;
       } catch {
         // "use cache" context hoặc static generation thì không có cookies
       }
@@ -122,16 +137,11 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     }
   }
 
-  // ... (URL construction code remains mainly effectively same but ensure variable scope) ...
-  // Need to be careful not to break existing logic.
-  // The structure of the original function had these sections interleaved.
-  // I will replace the whole block starting from section 3 down to headers construction.
-
   // ========================================
   // 2. XÂY DỰNG URL ĐẦY ĐỦ
   // ========================================
   // Đảm bảo đường dẫn cơ sở được giữ nguyên khi đường dẫn bắt đầu bằng /
-  const apiUrl = env.API_URL || env.NEXT_PUBLIC_API_URL;
+  const apiUrl = env.NEXT_PUBLIC_API_URL;
   const baseUrl = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
 
   const cleanPath = path.startsWith("/") ? path.slice(1) : path;
@@ -156,6 +166,17 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     ...(forwardedUserAgent ? { "User-Agent": forwardedUserAgent } : {}),
     ...(forwardedIp ? { "X-Forwarded-For": forwardedIp } : {}),
   };
+
+  const tenantDomain =
+    typeof window !== "undefined"
+      ? window.location.hostname
+      : forwardedHost
+      ? forwardedHost.split(":")[0]
+      : undefined;
+
+  if (tenantDomain) {
+    requestHeaders["X-Tenant-Domain"] = tenantDomain;
+  }
 
   // Đính kèm Bearer token nếu có (Ưu tiên token từ server-side session)
   if (accessToken) {
@@ -182,12 +203,12 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   const isClient = typeof window !== "undefined";
   const dedupKey = `${url.toString()}-${JSON.stringify(requestHeaders)}`;
 
+  // Note: We skip deduplication if AbortController (timeout) involves,
+  // but standard fetch logic handles it fine.
+
   if (isClient && isGet) {
     const existingRequest = (window as any)._pendingRequests?.get(dedupKey);
     if (existingRequest) {
-      if (process.env.NODE_ENV === "development") {
-        console.log(`[HTTP] Deduplicating Parallel Request: ${url.toString()}`);
-      }
       return existingRequest;
     }
   }
@@ -200,46 +221,106 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
   // Define executeFetch internal function
   const executeFetch = async (): Promise<T> => {
     // ========================================
-    // 4. THỰC HIỆN REQUEST
+    // 4. THỰC HIỆN REQUEST (WITH TIMEOUT)
     // ========================================
     let res: Response;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      timeout ?? API_CONFIG.DEFAULT_TIMEOUT
+    );
+
     try {
-      if (process.env.NODE_ENV === "development") {
-        console.log(
-          `[HTTP] Fetching: ${url.toString()} (Authorized: ${
-            !!accessToken || !!requestHeaders["Authorization"]
-          })`
-        );
-      }
       res = await fetch(url.toString(), {
         headers: requestHeaders,
         credentials: "include", // Quan trọng để gửi Cookie khi gọi API khác origin (CORS)
+        signal: controller.signal,
         ...rest,
       });
     } catch (error) {
-      console.warn(`[HTTP Fetch Error] Failed to reach ${url}:`, error);
+      if ((error as Error).name === "AbortError") {
+        console.warn(`[HTTP Fetch Timeout] ${url} after ${timeout ?? 10000}ms`);
+      } else {
+        console.warn(`[HTTP Fetch Error] Failed to reach ${url}:`, error);
+      }
+
       // Return a dummy response that won't break the build logic
-      // We return a mock response that looks like a successful empty response
-      // to prevent components from crashing on build.
       return {
         data: [],
         meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
       } as T;
+    } finally {
+      clearTimeout(timeoutId);
     }
 
     // ========================================
-    // 5. XỬ LÝ LỖI
+    // 5. XỬ LÝ LỖI & SILENT REFRESH (LỚP PHÒNG THỦ 2)
     // ========================================
+    // 📚 GIẢI THÍCH: Lớp này xử lý khi User đang thao tác trên 1 trang quá lâu
+    // dẫn đến Access Token hết hạn giữa chừng (AJAX call).
     if (!res.ok) {
-      // Extract error message từ response body first, as it's needed for isUserNotFound
+      // 401 Unauthorized → Thử Silent Refresh trên Client trước khi đá User ra ngoài
+      if (
+        res.status === HTTP_STATUS.UNAUTHORIZED &&
+        !options.skipRedirectOn401
+      ) {
+        if (typeof window !== "undefined") {
+          /**
+           * 🛡️ LOGIC HỒI SINH (REVENT LOGOUT):
+           * 1. Nếu có nhiều request cùng bị 401, chỉ cho phép 1 cái gọi Refresh (Deduplication).
+           * 2. Nếu Refresh thành công, tất cả các request đang chờ sẽ tự động Retry.
+           * 3. User hoàn toàn không biết token vừa được thay mới, trải nghiệm không bị ngắt quãng.
+           */
+          if (!refreshTokenPromise) {
+            refreshTokenPromise = fetch(`${baseUrl}auth/refresh`, {
+              method: "POST",
+              credentials: "include",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-Token": csrfToken || "",
+              },
+            })
+              .then((r) => r.ok)
+              .catch(() => false)
+              .finally(() => {
+                refreshTokenPromise = null; // Reset để lần sau có thể refresh tiếp
+              });
+          }
+
+          const isRefreshed = await refreshTokenPromise;
+
+          if (isRefreshed) {
+            // Refresh thành công! Thử lại yêu cầu gốc đúng 1 lần.
+            if (process.env.NODE_ENV === "development") {
+              console.debug(
+                `[HTTP] Silent Refresh Successful. Retrying ${url}...`
+              );
+            }
+            // SkipRedirectOn401 để tránh vòng lặp vô tận nếu Refresh Token cũng hết hạn
+            return await http<T>(path, {
+              ...options,
+              skipRedirectOn401: true,
+            });
+          }
+
+          // Nếu thực sự không thể refresh (Refresh Token hết hạn 7 ngày) -> Logout
+          console.warn(
+            `[HTTP 401] Session truly expired. Redirecting to /login.`
+          );
+          window.location.href = "/login";
+          return new Promise<T>(() => {}); // Dừng mọi logic phía sau
+        } else {
+          // Server-side: Đã có Middleware xử lý, nếu vẫn lọt vào đây thì redirect.
+          redirect("/login");
+        }
+      }
+
       let errorMessage = `API Error: ${res.status} ${res.statusText}`;
       let errorBody: unknown = null;
-
       try {
         errorBody = await res.json();
         if (errorBody && typeof errorBody === "object") {
           const body = errorBody as Record<string, unknown>;
-          // Handle NestJS validation errors and standard error messages
           const rawMessage = body.message || body.error;
 
           if (Array.isArray(rawMessage)) {
@@ -247,7 +328,6 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
           } else if (typeof rawMessage === "string") {
             errorMessage = rawMessage;
           } else if (typeof rawMessage === "object" && rawMessage !== null) {
-            // Handle nested NestJS exception response
             const innerMessage =
               (rawMessage as Record<string, unknown>).message ||
               (rawMessage as Record<string, unknown>).error;
@@ -264,20 +344,6 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
         // Keep default message if JSON parsing fails
       }
 
-      // 401 Unauthorized → Chuyển về trang login
-      if (res.status === 401 && !options.skipRedirectOn401) {
-        console.warn(
-          `[HTTP ${res.status}] Unauthorized request to: ${url}. Redirecting to /login.`
-        );
-        if (typeof window !== "undefined") {
-          window.location.href = "/login";
-          // Stop execution to avoid throwing error downstream
-          return new Promise<T>(() => {});
-        } else {
-          redirect("/login");
-        }
-      }
-
       const error = new Error(errorMessage) as Error & {
         status: number;
         body: unknown;
@@ -285,7 +351,7 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
       error.status = res.status;
       error.body = errorBody;
 
-      const isUnauthorized = res.status === 401;
+      const isUnauthorized = res.status === HTTP_STATUS.UNAUTHORIZED;
       if (!isUnauthorized || options.skipRedirectOn401) {
         if (isUnauthorized) {
           console.warn(
@@ -299,10 +365,6 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
               res.status
             }, URL: ${url.toString()}, Message: ${errorMessage}`
           );
-          console.error(
-            `[HTTP Error Body]:`,
-            JSON.stringify(errorBody, null, 2)
-          );
         }
       }
 
@@ -312,11 +374,28 @@ export async function http<T>(path: string, options: FetchOptions = {}) {
     // ========================================
     // 6. PARSE VÀ TRẢ VỀ DATA
     // ========================================
-    // Handle 204 No Content (DELETE typically returns this)
-    if (res.status === 204) {
+    // Handle 204 No Content
+    if (res.status === HTTP_STATUS.NO_CONTENT) {
       return null as T;
     }
 
+    const type = options.responseType || "json";
+
+    if (type === "json") {
+      const data = await res.json();
+      return data as T;
+    } else if (type === "blob") {
+      const data = await res.blob();
+      return data as unknown as T;
+    } else if (type === "text") {
+      const data = await res.text();
+      return data as unknown as T;
+    } else if (type === "arraybuffer") {
+      const data = await res.arrayBuffer();
+      return data as unknown as T;
+    }
+
+    // Default to json
     const data = await res.json();
     return data as T;
   };

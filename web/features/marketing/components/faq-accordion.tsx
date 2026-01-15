@@ -22,7 +22,10 @@ import { useState } from "react";
  * - Kết hợp với `transition-all` để có hiệu ứng mượt mà mà không cần JS tính toán height.
  *
  * 3. STYLING:
- * - Sử dụng `GlassCard` để tạo hiệu ứng kính mờ đồng bộ với toàn app.
+ * - Sử dụng `GlassCard` để tạo hiệu ứng kính mờ đồng bộ với toàn app. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -32,10 +35,11 @@ interface FAQAccordionProps {
 
 export function FAQAccordion({ items }: FAQAccordionProps) {
   const t = useTranslations("home.faq");
-  const faqs = items || (t.raw("items") as { question: string; answer: string }[]);
+  const faqs =
+    items || (t.raw("items") as { question: string; answer: string }[]);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const getColorClasses = (index: number) => {
+  const getColorClasses = () => {
     return {
       activeBg: "bg-accent/5",
       activeBorder: "border-accent/20 shadow-2xl shadow-accent/5",
@@ -48,7 +52,7 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
   return (
     <div className="space-y-5">
       {faqs.map((faq, i) => {
-        const colors = getColorClasses(i);
+        const colors = getColorClasses();
         const isOpen = openIndex === i;
 
         return (

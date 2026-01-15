@@ -24,7 +24,10 @@ import { Loader2 } from "lucide-react";
  *
  * 3. ACCESSIBILITY:
  * - Tự động focus vào nút `Cancel` khi mở để tránh việc user lỡ tay nhấn `Enter` xóa nhầm dữ liệu.
- * - Sử dụng `role="alertdialog"` để thông báo mức độ quan trọng cho trình đọc màn hình.
+ * - Sử dụng `role="alertdialog"` để thông báo mức độ quan trọng cho trình đọc màn hình. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

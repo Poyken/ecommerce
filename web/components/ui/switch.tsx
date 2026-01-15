@@ -1,5 +1,40 @@
 "use client";
 
+/**
+ * =====================================================================
+ * SWITCH - CÔNG TẮC BẬT/TẮT
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Component toggle switch dựa trên Radix UI.
+ * Giống công tắc đèn: ON/OFF, không có trạng thái trung gian.
+ *
+ * 1. CÁCH HOẠT ĐỘNG:
+ *    - Root: Container với 2 màu (checked: primary, unchecked: input)
+ *    - Thumb: Nút tròn trượt qua lại khi toggle
+ *    - data-[state=checked/unchecked]: CSS selector cho từng trạng thái
+ *
+ * 2. CÁCH SỬ DỤNG:
+ *    <Switch checked={isDarkMode} onCheckedChange={setIsDarkMode} />
+ *    <Switch disabled /> // Không thể toggle
+ *
+ * 3. ACCESSIBILITY:
+ *    - Hỗ trợ keyboard navigation (Space/Enter)
+ *    - Focus ring khi tab vào
+ *    - disabled state visual feedback
+ *
+ * 4. USE CASES:
+ *    - Dark mode toggle
+ *    - Feature flags (bật/tắt tính năng)
+ *    - Email preferences (nhận/không nhận thông báo)
+ *    - Settings forms *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
+ * =====================================================================
+ */
+
 import * as SwitchPrimitives from "@radix-ui/react-switch";
 import * as React from "react";
 

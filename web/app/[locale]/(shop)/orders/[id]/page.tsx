@@ -4,6 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import { BankTransferQR } from "@/features/orders/components/bank-transfer-qr";
 import { BuyAgainButton } from "@/features/orders/components/buy-again-button";
 import { CancelOrderButton } from "@/features/orders/components/cancel-order-button";
+import { RequestReturnButton } from "@/features/orders/components/request-return-button";
 import { Link } from "@/i18n/routing";
 import { http } from "@/lib/http";
 import { formatCurrency } from "@/lib/utils";
@@ -30,7 +31,11 @@ import Image from "next/image";
  * - Hàm `generateMetadata` cho phép ta thay đổi tiêu đề trang dựa trên dữ liệu thực tế (VD: "Order #12345 | Luxe").
  *
  * 4. PRICE SNAPSHOT:
- * - `priceAtPurchase`: Đây là giá tại thời điểm mua. Ta KHÔNG dùng giá hiện tại của sản phẩm vì giá có thể thay đổi theo thời gian, nhưng hóa đơn thì phải giữ nguyên giá cũ.
+ * - `priceAtPurchase`: Đây là giá tại thời điểm mua. Ta KHÔNG dùng giá hiện tại của sản phẩm vì giá có thể thay đổi theo thời gian, nhưng hóa đơn thì phải giữ nguyên giá cũ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Detailed Order Traceability: Cung cấp cái nhìn sâu sắc về từng mặt hàng trong đơn hàng, bao gồm cả biến thể và giá tại thời điểm mua, giúp khách hàng dễ dàng đối soát.
+ * - Fulfillment Transparency: Kết nối trực tiếp với các đơn vị vận chuyển (như GHN) để hiển thị mã vận đơn và link theo dõi hành trình thực tế, nâng cao niềm tin vào dịch vụ logistics.
+
  * =====================================================================
  */
 
@@ -95,7 +100,7 @@ export async function generateMetadata({
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 
-import { EmptyState } from "@/components/shared/empty-state";
+import { ShopEmptyState } from "@/components/shared/shop-empty-state";
 import { AlertCircle, PackageSearch } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -123,7 +128,7 @@ async function DynamicOrderDetail({ id }: { id: string }) {
   if (error || !order) {
     return (
       <div className="container mx-auto px-4 pt-24 pb-8 max-w-4xl">
-        <EmptyState
+        <ShopEmptyState
           icon={error ? AlertCircle : PackageSearch}
           title={error ? t("orderNotFound") : t("loadingDetails")}
           description={
@@ -147,6 +152,9 @@ async function DynamicOrderDetail({ id }: { id: string }) {
         <div className="flex items-center gap-4">
           {order.status === "PENDING" && (
             <CancelOrderButton orderId={order.id} />
+          )}
+          {(order.status === "DELIVERED" || order.status === "COMPLETED") && (
+            <RequestReturnButton orderId={order.id} />
           )}
           <Link href="/orders" className="text-primary hover:underline">
             &larr; {t("backToOrders")}

@@ -1,7 +1,7 @@
-import { BrandsService } from '@/brands/brands.service';
-import { CategoriesService } from '@/categories/categories.service';
-import { SortOption } from '@/products/dto/filter-product.dto';
-import { ProductsService } from '@/products/products.service';
+import { BrandsService } from '@/catalog/brands/brands.service';
+import { CategoriesService } from '@/catalog/categories/categories.service';
+import { SortOption } from '@/catalog/products/dto/filter-product.dto';
+import { ProductsService } from '@/catalog/products/products.service';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { Job } from 'bullmq';
@@ -19,7 +19,12 @@ import { Job } from 'bullmq';
  *
  * 2. TẠI SAO PHẢI LÀM?
  * - Giảm thời gian phản hồi (TTFB) cho những trang quan trọng nhất.
- * - Tránh việc DB bị quá tải đột ngột khi vừa mới khởi động lại server.
+ * - Tránh việc DB bị quá tải đột ngột khi vừa mới khởi động lại server. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tự động hóa việc nạp lại Cache định kỳ hoặc ngay sau khi hệ thống khởi động.
+ * - Cải thiện trải nghiệm người dùng (UX) bằng cách đảm bảo dữ liệu luôn sẵn sàng trong RAM.
+ * - Giảm tải áp lực truy vấn trực tiếp lên Database vào giờ cao điểm.
+
  * =====================================================================
  */
 @Processor('cache-warming')
@@ -47,6 +52,9 @@ export class CacheWarmingProcessor extends WorkerHost {
       case 'warm-brands':
         await this.warmBrands();
         break;
+      case 'warm-hot-products':
+        await this.warmHotProducts();
+        break;
       default:
         this.logger.warn(`Unknown job name: ${job.name}`);
     }
@@ -56,15 +64,12 @@ export class CacheWarmingProcessor extends WorkerHost {
     this.logger.log('Warming Core Product Lists for Homepage...');
 
     try {
-      // 1. Newest Products (Homepage Grid)
+      // 1. Newest Products (Homepage Grid & Featured)
       await this.productsService.findAll({
         limit: 12,
         page: 1,
         sort: SortOption.NEWEST,
       });
-
-      // 2. Default Featured List
-      await this.productsService.findAll({ limit: 12, page: 1 });
 
       this.logger.log('HomePage Product Lists Warmed Successfully');
     } catch (error) {
@@ -92,6 +97,21 @@ export class CacheWarmingProcessor extends WorkerHost {
       this.logger.log('Brands List Warmed Successfully');
     } catch (error) {
       this.logger.error('Failed to warm brands', error);
+    }
+  }
+
+  private async warmHotProducts() {
+    this.logger.log('Warming Hot Products (High Rating & Reviews)...');
+    try {
+      // Warm products with high rating (Proxy for "Hot")
+      await this.productsService.findAll({
+        limit: 24,
+        page: 1,
+        sort: SortOption.RATING_DESC,
+      });
+      this.logger.log('Hot Products Warmed Successfully');
+    } catch (error) {
+      this.logger.error('Failed to warm hot products', error);
     }
   }
 }

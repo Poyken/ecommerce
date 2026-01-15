@@ -1,14 +1,14 @@
 "use client";
 
 import {
-    ReviewItem,
-    ReviewItemProps,
-    ReviewListSkeleton,
-} from "@/components/molecules/review-item";
+  ReviewItem,
+  ReviewItemProps,
+  ReviewListSkeleton,
+} from "@/features/reviews/components/review-item";
 import { Button } from "@/components/ui/button";
 import {
-    checkReviewEligibilityAction,
-    getReviewsAction,
+  checkReviewEligibilityAction,
+  getReviewsAction,
 } from "@/features/reviews/actions";
 import { ReviewFormDialog } from "@/features/reviews/components/review-form-dialog";
 import { m } from "@/lib/animations";
@@ -37,7 +37,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * - Hiệu quả hơn với các bảng dữ liệu lớn (Big Data) vì database không phải scan/offset lại từ đầu.
  *
  * 4. STRICT MODE HANDLING:
- * - `useRef(hasFetched)`: Ngăn chặn việc React 18 Strict Mode gọi API 2 lần khi dev, tiết kiệm tài nguyên.
+ * - `useRef(hasFetched)`: Ngăn chặn việc React 18 Strict Mode gọi API 2 lần khi dev, tiết kiệm tài nguyên. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -110,8 +113,7 @@ export function ProductReviews({
           (eligibilityRes.data.purchasedSkus as unknown as PurchasedSku[]) || []
         );
       }
-    } catch (_e) {
-      // console.error(e);
+    } catch {
       setError("Failed to load reviews");
     }
     setLoading(false);
@@ -122,11 +124,11 @@ export function ProductReviews({
     setLoadingMore(true);
     try {
       const res = await getReviewsAction(productId, meta.nextCursor);
-      if (res.success && res.data) {
-        setReviews((prev) => [...prev, ...res.data]);
+      if (res.success && Array.isArray(res.data)) {
+        setReviews((prev) => [...prev, ...(res.data as any[])]);
         setMeta((res.meta as any) || null);
       }
-    } catch (_e) {
+    } catch {
       // console.error("Failed to load more reviews", e);
     }
     setLoadingMore(false);

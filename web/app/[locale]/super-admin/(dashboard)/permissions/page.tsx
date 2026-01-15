@@ -19,7 +19,11 @@ import { PermissionsPageClient } from "./permissions-client";
  * - Danh sách này thường không quá lớn nên có thể fetch toàn bộ mà không cần phân trang phức tạp.
  *
  * 3. BẢO MẬT:
- * - Chỉ những tài khoản có quyền `permission:read` mới có thể truy cập và xem danh sách này.
+ * - Chỉ những tài khoản có quyền `permission:read` mới có thể truy cập và xem danh sách này. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Granular Access Definition: Định nghĩa các "nguyên tử" quyền hạn nhỏ nhất, cho phép bộ phận bảo mật tùy biến cực kỳ chi tiết các hành động được phép thực hiện trên từng module.
+ * - Security Policy Mapping: Tạo bảng tham chiếu quyền hạn giúp lập trình viên Frontend dễ dàng thực hiện việc ẩn/hiện UI (Conditional Rendering) dựa trên Token của người dùng.
+
  * =====================================================================
  */
 

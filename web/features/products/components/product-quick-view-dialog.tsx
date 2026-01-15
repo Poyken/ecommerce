@@ -1,7 +1,7 @@
 "use client";
 
 import { GlassCard } from "@/components/shared/glass-card";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Dialog,
   DialogContent,
@@ -15,10 +15,10 @@ import { ProductVariantSelector } from "@/features/products/components/product-v
 import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
 import { Link } from "@/i18n/routing";
 import { cn, formatCurrency } from "@/lib/utils";
-import { productService } from "@/services/product.service";
+import { productService } from "@/features/products/services/product.service";
 import { Product, Sku } from "@/types/models";
 import { Shield, Truck } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { getProductImage } from "@/lib/product-helper";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -52,7 +52,10 @@ interface ProductQuickViewDialogProps {
  *
  * 3. SMART IMAGE SORTING (`useMemo`):
  * - Logic phức tạp để sắp xếp ảnh: Ảnh của tùy chọn chính (VD: Màu sắc) lên đầu, tiếp theo là các ảnh chung.
- * - Giúp user thấy đúng ảnh màu áo mình đang chọn ngay lập tức.
+ * - Giúp user thấy đúng ảnh màu áo mình đang chọn ngay lập tức. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 export function ProductQuickViewDialog({
@@ -62,7 +65,6 @@ export function ProductQuickViewDialog({
   initialSkuId,
   initialData,
 }: ProductQuickViewDialogProps) {
-  const t = useTranslations("common.shop");
   const { toast } = useToast();
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
@@ -100,17 +102,13 @@ export function ProductQuickViewDialog({
 
     productService
       .getProduct(productId)
-      .then((data) => {
+      .then((data: Product | null) => {
         if (!isMounted) return;
 
         // Validate data has an ID (fixes issue with http.ts returning [] on error)
         if (data && data.id) {
           setProduct(data);
-          const defaultImg =
-            data.skus?.[0]?.imageUrl ||
-            (typeof data.images?.[0] === "string"
-              ? data.images[0]
-              : data.images?.[0]?.url);
+          const defaultImg = data.skus?.[0]?.imageUrl || getProductImage(data);
           if (defaultImg) setActiveImage(defaultImg);
         } else {
           // Handle case where API returns invalid data/fallback
@@ -120,7 +118,7 @@ export function ProductQuickViewDialog({
           // Optional: onOpenChange(false) if strict
         }
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         if (!isMounted) return;
         console.error("Failed to fetch product", err);
         toast({
@@ -137,7 +135,7 @@ export function ProductQuickViewDialog({
     return () => {
       isMounted = false;
     };
-  }, [isOpen, productId]); // Removed 'product' from dependency array
+  }, [isOpen, productId, onOpenChange, toast]); // Removed 'product' from dependency array
 
   const { addToCart, isAdding } = useCart(
     product?.name || initialData?.name || ""
@@ -307,6 +305,7 @@ export function ProductQuickViewDialog({
                       <Link
                         href={`/products/${product.id}`}
                         className="hover:underline hover:text-primary transition-colors"
+                        onClick={() => onOpenChange(false)}
                       >
                         <h2 className="text-2xl md:text-3xl font-bold tracking-tighter text-foreground leading-[1.1]">
                           {product.name}
@@ -327,6 +326,7 @@ export function ProductQuickViewDialog({
                     <Link
                       href={`/products/${product.id}`}
                       className="text-xs font-bold uppercase tracking-widest text-primary hover:underline"
+                      onClick={() => onOpenChange(false)}
                     >
                       View Full Details
                     </Link>
@@ -337,7 +337,6 @@ export function ProductQuickViewDialog({
                     <ProductVariantSelector
                       options={product.options || []}
                       skus={product.skus || []}
-                      isLoggedIn={true} // Assuming true or handling guest in selector
                       selectedSkuId={currentSkuId}
                       onSkuChange={handleSkuChange}
                       onImageChange={setActiveImage}

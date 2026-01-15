@@ -24,11 +24,11 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
-import { AssignPermissionsDialog } from "@/features/admin/components/assign-permissions-dialog";
-import { CreateRoleDialog } from "@/features/admin/components/create-role-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
-import { EditRoleDialog } from "@/features/admin/components/edit-role-dialog";
+} from "@/features/admin/components/ui/admin-page-components";
+import { AssignPermissionsDialog } from "@/features/admin/components/users/assign-permissions-dialog";
+import { CreateRoleDialog } from "@/features/admin/components/roles/create-role-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
+import { EditRoleDialog } from "@/features/admin/components/roles/edit-role-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { PaginationMeta } from "@/types/dtos";
@@ -61,7 +61,10 @@ import { useEffect, useState, useTransition } from "react";
  *
  * 2. PERMISSION CHECKING:
  * - `canCreate`, `canUpdate`... được check qua `useAuth().hasPermission`.
- * - Ẩn/Hiện nút bấm dựa trên quyền của Admin đang login.
+ * - Ẩn/Hiện nút bấm dựa trên quyền của Admin đang login. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 export function RolesPageClient({
@@ -108,7 +111,6 @@ export function RolesPageClient({
         } else {
           params.delete("search");
         }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         router.push(`/super-admin/roles?${params.toString()}` as any);
       });
     }
@@ -130,19 +132,20 @@ export function RolesPageClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* 1. Standard Admin Header */}
       <AdminPageHeader
         title={t("roles.management")}
         subtitle={`${meta?.total || 0} roles defined in system`}
-        icon={<Shield className="h-5 w-5" />}
-        stats={[
-          { label: "total", value: meta?.total || 0, variant: "default" },
-        ]}
+        icon={<Shield className="text-blue-600 dark:text-blue-400" />}
+        stats={[{ label: "total", value: meta?.total || 0, variant: "info" }]}
         actions={
           canCreate ? (
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
+            <Button
+              onClick={() => setCreateDialogOpen(true)}
+              className="rounded-2xl h-12 px-6 shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all font-bold"
+            >
+              <Plus className="mr-2 h-5 w-5 font-black" />
               {t("roles.createNew")}
             </Button>
           ) : undefined
@@ -150,14 +153,14 @@ export function RolesPageClient({
       />
 
       {/* 2. Search Bar */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      <div className="flex items-center gap-4 px-2">
+        <div className="relative flex-1 max-w-sm group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             placeholder={t("roles.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 rounded-2xl border-muted-foreground/20 focus:border-primary transition-all h-11"
           />
         </div>
       </div>
@@ -197,7 +200,27 @@ export function RolesPageClient({
                         <Key className="h-5 w-5" />
                       </div>
                       <div className="font-medium text-foreground">
-                        {role.name}
+                        {role.name === "SUPERADMIN" && (
+                          <Badge className="bg-purple-500/15 text-purple-700 dark:text-purple-300 hover:bg-purple-500/25 border-purple-200 dark:border-purple-800">
+                            SUPERADMIN
+                          </Badge>
+                        )}
+                        {role.name === "ADMIN" && (
+                          <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 hover:bg-blue-500/25 border-blue-200 dark:border-blue-800">
+                            ADMIN
+                          </Badge>
+                        )}
+                        {role.name === "STAFF" && (
+                          <Badge className="bg-green-500/15 text-green-700 dark:text-green-300 hover:bg-green-500/25 border-green-200 dark:border-green-800">
+                            STAFF
+                          </Badge>
+                        )}
+                        {role.name === "USER" && (
+                          <Badge variant="secondary">USER</Badge>
+                        )}
+                        {!["SUPERADMIN", "ADMIN", "STAFF", "USER"].includes(
+                          role.name
+                        ) && <Badge variant="outline">{role.name}</Badge>}
                       </div>
                     </div>
                   </TableCell>

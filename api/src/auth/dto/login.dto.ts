@@ -16,7 +16,10 @@ import { IsEmail, MinLength } from 'class-validator';
  * - `@ApiProperty`: Giúp tự động tạo tài liệu API. Người dùng có thể nhìn thấy ví dụ (`example`) và mô tả (`description`) ngay trên giao diện Swagger.
  *
  * 3. DATA TRANSFER OBJECT (DTO):
- * - Đóng vai trò là "hợp đồng" giữa Frontend và Backend. Frontend phải gửi đúng các trường này thì Backend mới xử lý.
+ * - Đóng vai trò là "hợp đồng" giữa Frontend và Backend. Frontend phải gửi đúng các trường này thì Backend mới xử lý. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

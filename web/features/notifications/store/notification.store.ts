@@ -14,7 +14,11 @@
  * - Store tự động slice list thông báo để giữ bộ nhớ nhẹ (tối đa 10 cái mới nhất).
  *
  * 3. REFRESH LOGIC:
- * - Cung cấp hàm `refresh` để đồng bộ dữ liệu thủ công hoặc khi user quay lại app (visibility change).
+ * - Cung cấp hàm `refresh` để đồng bộ dữ liệu thủ công hoặc khi user quay lại app (visibility change). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Real-time Engagement: Đảm bảo khách hàng nhận được tin vui (vd: "Đơn hàng đã được xác nhận") ngay giây phút Backend xử lý xong, tăng tính tương tác.
+ * - Instant Feedback: Cập nhật trạng thái "đã đọc" trên giao diện ngay lập tức khi user click (Optimistic Update), mang lại trải nghiệm mượt mà không độ trễ.
+
  * =====================================================================
  */
 
@@ -43,7 +47,7 @@ interface NotificationState {
   refresh: () => Promise<void>;
 }
 
-export const useNotificationStore = create<NotificationState>((set, get) => ({
+export const useNotificationStore = create<NotificationState>((set) => ({
   notifications: [],
   unreadCount: 0,
   isLoading: false,
@@ -118,42 +122,27 @@ export const useNotificationStore = create<NotificationState>((set, get) => ({
   },
 
   refresh: async () => {
-    // This is a placeholder, implementation will likely be in Initializer
-    // but we can expose it if we have access to fetch
     set({ isLoading: true });
     try {
-      const apiUrl =
-        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+      // Use Server Actions for data fetching
       const [listRes, countRes] = await Promise.all([
-        fetch(`${apiUrl}/notifications?limit=10`, {
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }).then((r) => r.json()),
-        fetch(`${apiUrl}/notifications/unread-count`, {
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }).then((r) => r.json()),
+        import("@/features/notifications/actions").then((mod) =>
+          mod.getNotificationsAction(10)
+        ),
+        import("@/features/notifications/actions").then((mod) =>
+          mod.getUnreadCountAction()
+        ),
       ]);
 
-      // API returns { data: { items: [], unreadCount: number } }
-      if (listRes.data && Array.isArray(listRes.data.items)) {
-        set({ notifications: listRes.data.items });
-        // Also get unreadCount from list response if available
-        if (typeof listRes.data.unreadCount === "number") {
-          set({ unreadCount: listRes.data.unreadCount });
-        }
-      } else if (Array.isArray(listRes.data)) {
+      if (listRes.data && Array.isArray(listRes.data)) {
         set({ notifications: listRes.data });
       }
 
-      // API returns { data: number } for unread count
-      if (typeof countRes.data === "number") {
-        set({ unreadCount: countRes.data });
-      } else if (typeof countRes.data?.count === "number") {
+      if (
+        countRes.success &&
+        countRes.data &&
+        typeof countRes.data.count === "number"
+      ) {
         set({ unreadCount: countRes.data.count });
       }
     } catch (e) {

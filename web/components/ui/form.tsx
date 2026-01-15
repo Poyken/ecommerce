@@ -35,7 +35,10 @@ import { cn } from "@/lib/utils";
  *
  * 3. ACCESSIBILITY (A11y):
  * - Tự động gắn các attribute ARIA (`aria-invalid`, `aria-describedby`) để hỗ trợ screen reader.
- * - `htmlFor` của Label tự động link với `id` của Input.
+ * - `htmlFor` của Label tự động link với `id` của Input. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

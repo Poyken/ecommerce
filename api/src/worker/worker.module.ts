@@ -1,6 +1,6 @@
-import { BrandsModule } from '@/brands/brands.module';
-import { CategoriesModule } from '@/categories/categories.module';
-import { ProductsModule } from '@/products/products.module';
+import { BrandsModule } from '@/catalog/brands/brands.module';
+import { CategoriesModule } from '@/catalog/categories/categories.module';
+import { ProductsModule } from '@/catalog/products/products.module';
 import { BullModule, InjectQueue } from '@nestjs/bullmq';
 import { Logger, Module, OnApplicationBootstrap } from '@nestjs/common';
 import { Queue } from 'bullmq';
@@ -39,7 +39,11 @@ import { OutboxProcessor } from './processors/outbox.processor';
  *
  * 2. CRON SCHEDULE:
  * - Sử dụng BullMQ để lên lịch chạy định kỳ (VD: mỗi 15 phút update sản phẩm trang chủ).
- * - `onApplicationBootstrap`: Hook chạy ngay khi App khởi động để đăng ký lịch.
+ * - `onApplicationBootstrap`: Hook chạy ngay khi App khởi động để đăng ký lịch. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tự động hóa các tác vụ lặp đi lặp lại như làm nóng cache, tính toán hoa hồng.
+ * - Đảm bảo hệ thống luôn mượt mà bằng cách xử lý các logic nặng ở Background.
+
  * =====================================================================
  */
 export class WorkerModule implements OnApplicationBootstrap {
@@ -57,7 +61,7 @@ export class WorkerModule implements OnApplicationBootstrap {
       {},
       {
         repeat: {
-          every: 15 * 60 * 1000, // 15 minutes
+          every: 60 * 60 * 1000, // 60 minutes
         },
         jobId: 'warm-home-products-cron-v1',
         removeOnComplete: 3,

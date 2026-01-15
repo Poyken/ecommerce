@@ -18,7 +18,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
  *
  * 3. RETRY STRATEGY (Cơ chế thử lại):
  * - Nếu một job bị lỗi (VD: Server gửi mail bị tèo), BullMQ sẽ tự động thử lại (`attempts`).
- * - `backoff` giúp tăng dần thời gian chờ giữa các lần thử lại để tránh làm nghẽn hệ thống.
+ * - `backoff` giúp tăng dần thời gian chờ giữa các lần thử lại để tránh làm nghẽn hệ thống. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Reliability: Đảm bảo email quan trọng (đăng ký, đơn hàng) được gửi 100% bằng cách thử lại 3-5 lần nếu lỗi.
+ * - Traffic Smoothing: Tránh làm sập Server Email/SMS khi có chiến dịch Marketing (gửi 1 triệu mail) nhờ cơ chế hàng đợi (Queue) hạn chế số lượng gửi mỗi giây (`limiter`).
+
  * =====================================================================
  */
 

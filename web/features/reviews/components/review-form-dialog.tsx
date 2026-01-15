@@ -1,7 +1,7 @@
 "use client";
 
 import { ImageUpload } from "@/components/shared/image-upload";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -50,7 +50,10 @@ import * as z from "zod";
  * - Giúp tái sử dụng 1 Dialog cho cả 2 mục đích.
  *
  * 3. INTERACTIVE RATING:
- * - Các ngôi sao có thể click được. Khi click, giá trị `rating` trong form sẽ được cập nhật.
+ * - Các ngôi sao có thể click được. Khi click, giá trị `rating` trong form sẽ được cập nhật. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -164,9 +167,10 @@ function ReviewForm({
       }
     }
 
-    let result: { success: boolean; error?: string };
+    let result: { success?: boolean; error?: string };
     if (sku.review) {
-      result = await updateReviewAction(sku.review.id, {
+      result = await updateReviewAction({
+        reviewId: sku.review.id,
         rating: values.rating,
         content: values.content,
         images: imageUrls.length > 0 ? imageUrls : sku.review.images,
@@ -182,7 +186,7 @@ function ReviewForm({
     }
 
     setLoading(false);
-    if (result.success) {
+    if (result.success === true) {
       toast({
         variant: "success",
         title: tCommon("toast.success"),
@@ -344,7 +348,9 @@ function ReviewForm({
               onClick={async () => {
                 setLoading(true);
                 if (!sku.review) return;
-                const result = await deleteReviewAction(sku.review.id);
+                const result = await deleteReviewAction({
+                  reviewId: sku.review.id,
+                });
                 setLoading(false);
                 if (result.success) {
                   toast({

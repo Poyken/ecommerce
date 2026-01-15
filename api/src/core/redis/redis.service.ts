@@ -26,7 +26,12 @@ import Redis, { Cluster } from 'ioredis';
  * - Luôn dùng `SCAN` để duyệt key theo từng đợt nhỏ (Batching), đảm bảo không gây nghẽn hệ thống.
  *
  * 4. RETRY STRATEGY:
- * - Khi mất kết nối, hệ thống tự động thử lại (Retry) với độ trễ tăng dần để tránh làm quá tải server khi nó vừa sống dậy.
+ * - Khi mất kết nối, hệ thống tự động thử lại (Retry) với độ trễ tăng dần để tránh làm quá tải server khi nó vừa sống dậy. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Session Management: Lưu trạng thái đăng nhập của user (JWT blacklist) để logout tức thì trên mọi thiết bị.
+ * - API Rate Limiting: Đếm số lần request từ 1 IP để chặn các cuộc tấn công DDoS.
+ * - Leaderboard: Dùng Redis Sorted Set để xếp hạng game thủ/người mua nhiều nhất theo thời gian thực (Real-time).
+
  * =====================================================================
  */
 @Injectable()
@@ -39,7 +44,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
     const isCluster = process.env.REDIS_CLUSTER === 'true';
 
     if (isCluster) {
-      // Redis Cluster Configuration (for production scale)
+      // Cấu hình Redis Cluster (cho hệ thống Production lớn)
       const nodes = process.env.REDIS_CLUSTER_NODES?.split(',') || [];
       this.client = new Cluster(
         nodes.map((node) => {
@@ -53,7 +58,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
           },
           clusterRetryStrategy: (times) => {
             if (times > 3) {
-              this.logger.error('Redis Cluster max retries reached');
+              this.logger.error('Redis Cluster: Đã hết số lần thử lại');
               return null;
             }
             return Math.min(times * 100, 3000);
@@ -61,37 +66,37 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
         },
       );
     } else {
-      // Single Redis Instance with Production Config
+      // Cấu hình Redis Đơn (Single Instance) cho môi trường Dev/Small Prod
       this.client = new Redis(redisUrl, {
         // ============================================================
-        // RETRY STRATEGY
+        // CHIẾN LƯỢC THỬ LẠI (RETRY STRATEGY)
         // ============================================================
         retryStrategy: (times) => {
           if (times > 3) {
-            this.logger.error('Redis max retries reached');
-            return null; // Stop retrying
+            this.logger.error('Redis: Đã hết số lần thử lại kết nối');
+            return null; // Dừng thử lại
           }
-          // Exponential backoff: 100ms, 200ms, 300ms
+          // Tăng dần thời gian chờ: 100ms, 200ms, 300ms...
           return Math.min(times * 100, 3000);
         },
 
         // ============================================================
-        // CONNECTION MANAGEMENT
+        // QUẢN LÝ KẾT NỐI (CONNECTION MANAGEMENT)
         // ============================================================
         maxRetriesPerRequest: 3,
         enableReadyCheck: true,
-        enableOfflineQueue: true,
-        lazyConnect: false,
+        enableOfflineQueue: true, // Cho phép queue lệnh khi mất kết nối
+        lazyConnect: false, // Kết nối ngay lập tức khi khởi tạo
 
         // ============================================================
-        // PERFORMANCE TUNING
+        // TỐI ƯU HIỆU NĂNG (PERFORMANCE TUNING)
         // ============================================================
-        connectTimeout: 10000, // 10s timeout for initial connection
-        keepAlive: 30000, // Keep connection alive with ping every 30s
-        family: 4, // Force IPv4 (faster DNS resolution)
+        connectTimeout: 10000, // 10s là timeout cho kết nối ban đầu
+        keepAlive: 30000, // Giữ kết nối (Ping mỗi 30s)
+        family: 4, // Bắt buộc dùng IPv4 (Phân giải DNS nhanh hơn IPv6)
 
         // ============================================================
-        // SECURITY
+        // BẢO MẬT (SECURITY)
         // ============================================================
         tls: process.env.REDIS_TLS === 'true' ? {} : undefined,
         password: process.env.REDIS_PASSWORD,
@@ -101,7 +106,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   onModuleInit() {
     // ============================================================
-    // CONNECTION EVENT LISTENERS
+    // LẮNG NGHE SỰ KIỆN KẾT NỐI
     // ============================================================
     this.client.on('connect', () => {
       this.logger.log('✅ Redis connected successfully');
@@ -130,18 +135,18 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
 
   async onModuleDestroy() {
     try {
-      // Graceful shutdown: wait for pending commands
+      // Graceful shutdown: đợi các lệnh đang chạy hoàn tất
       await this.client.quit();
       this.logger.log('✅ Redis disconnected gracefully');
     } catch (error) {
       this.logger.error('Error during Redis shutdown:', error);
-      // Force disconnect if graceful shutdown fails
+      // Ngắt kết nối cưỡng bức nếu graceful shutdown thất bại
       this.client.disconnect();
     }
   }
 
   // ============================================================
-  // BASIC OPERATIONS WITH ERROR HANDLING
+  // CÁC LỆNH CƠ BẢN (CÓ XỬ LÝ LỖI)
   // ============================================================
 
   async set(
@@ -180,11 +185,11 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   // ============================================================
-  // BATCH OPERATIONS (Better Performance)
+  // CÁC LỆNH BATCH (TỐI ƯU HIỆU NĂNG CHO NHIỀU KEY)
   // ============================================================
 
   /**
-   * Get multiple keys at once - Much faster than multiple GET calls
+   * Lấy nhiều key cùng lúc - Nhanh hơn nhiều so với gọi GET nhiều lần
    */
   async mget(...keys: string[]): Promise<(string | null)[]> {
     try {
@@ -196,7 +201,7 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * Set multiple key-value pairs at once - Atomic operation
+   * Lưu nhiều cặp key-value cùng lúc - Atomic operation (Toàn bộ thành công hoặc thất bại)
    */
   async mset(pairs: Record<string, string>): Promise<'OK' | null> {
     try {
@@ -209,12 +214,12 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   // ============================================================
-  // PATTERN MATCHING (Production-Safe)
+  // TÌM KIẾM KEY (AN TOÀN CHO PRODUCTION)
   // ============================================================
 
   /**
-   * ⚠️ WARNING: KEYS command blocks Redis!
-   * Use SCAN instead for production
+   * ⚠️ CẢNH BÁO: Lệnh KEYS sẽ block toàn bộ Redis!
+   * Tuyệt đối không dùng khi server đang có tải cao. Dùng scan() thay thế.
    */
   async keys(pattern: string): Promise<string[]> {
     try {
@@ -229,8 +234,8 @@ export class RedisService implements OnModuleInit, OnModuleDestroy {
   }
 
   /**
-   * ✅ RECOMMENDED: Non-blocking alternative to KEYS
-   * Use this in production!
+   * ✅ KHUYÊN DÙNG: Giải pháp thay thế KEYS không gây block (Non-blocking)
+   * Hãy dùng hàm này trên Production!
    */
   async scan(pattern: string, count: number = 100): Promise<string[]> {
     const keys: string[] = [];

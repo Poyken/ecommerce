@@ -23,7 +23,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
  * - Điều này giúp logic sạch hơn (Single Responsibility Principle).
  *
  * 3. REACTION CONTROL:
- * - Sử dụng `useRef` (`lastNotifiedSkuId`) để tránh việc bắn event `onSkuChange` liên tục gây ra vòng lặp render vô tận.
+ * - Sử dụng `useRef` (`lastNotifiedSkuId`) để tránh việc bắn event `onSkuChange` liên tục gây ra vòng lặp render vô tận. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

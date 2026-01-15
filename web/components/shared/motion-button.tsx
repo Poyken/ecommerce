@@ -27,7 +27,10 @@ import { forwardRef } from "react";
  *
  * 2. INHERITANCE:
  * - Kế thừa styles từ `buttonVariants` (Shadcn UI) để đảm bảo đồng bộ về thiết kế.
- * - Kế thừa props từ `HTMLMotionProps<"button">` để vẫn có thể custom thêm nếu cần.
+ * - Kế thừa props từ `HTMLMotionProps<"button">` để vẫn có thể custom thêm nếu cần. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

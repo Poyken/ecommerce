@@ -21,7 +21,10 @@ import { cn } from "@/lib/utils";
  * 2. SUB-COMPONENTS:
  * - `DropdownMenuItem`: Mục menu cơ bản.
  * - `DropdownMenuCheckboxItem`: Mục menu có trạng thái on/off.
- * - `DropdownMenuSeparator`: Đường kẻ phân cách.
+ * - `DropdownMenuSeparator`: Đường kẻ phân cách. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

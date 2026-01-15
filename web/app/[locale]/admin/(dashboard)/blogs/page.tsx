@@ -19,7 +19,10 @@ import { BlogsClient } from "./blogs-client";
  *
  * 3. STATUS FILTER:
  * - Hỗ trợ lọc bài viết theo trạng thái thông qua URL parameter `status`.
- * - Giúp Admin dễ dàng quản lý các bài nháp hoặc bài đã đăng.
+ * - Giúp Admin dễ dàng quản lý các bài nháp hoặc bài đã đăng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

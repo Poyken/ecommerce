@@ -1,0 +1,47 @@
+# File: .github/workflows/codeql.yml
+# Giải thích cho thực tập sinh:
+# Workflow này sử dụng GitHub CodeQL để quét mã nguồn và phát hiện các lỗi bảo mật, lỗi logic hoặc các vấn đề về chất lượng code.
+# Đây là một công cụ phân tích tĩnh (Static Analysis) rất mạnh mẽ giúp đảm bảo code của chúng ta an toàn trước khi deploy.
+
+name: "CodeQL"
+
+on:
+  push:
+    branches: ["main", "master", "develop"]
+  pull_request:
+    branches: ["main", "master", "develop"]
+  schedule:
+    - cron: "25 10 * * 1"
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ["javascript-typescript"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          # Queries: security-extended,security-and-quality
+          queries: security-extended
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          category: "/language:${{matrix.language}}"

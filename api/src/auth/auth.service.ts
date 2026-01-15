@@ -1,6 +1,6 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { RedisService } from '@core/redis/redis.service';
-import { getTenant } from '@core/tenant/tenant.context'; // Import getTenant
+import { getTenant, tenantStorage } from '@core/tenant/tenant.context'; // Import getTenant, tenantStorage
 import { EmailService } from '@integrations/email/email.service';
 import { InjectQueue } from '@nestjs/bullmq';
 import {
@@ -43,7 +43,10 @@ import { TwoFactorService } from './two-factor.service';
  *
  * 3. SECURITY:
  * - Mật khẩu LUÔN được hash bằng `bcrypt` trước khi lưu DB.
- * - Refresh Token cũng được quản lý chặt chẽ kèm Fingerprint thiết bị.
+ * - Refresh Token cũng được quản lý chặt chẽ kèm Fingerprint thiết bị. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -107,14 +110,18 @@ export class AuthService {
   async register(dto: RegisterDto, fingerprint?: string) {
     const { email, password, firstName, lastName } = dto;
 
-    // 1. Validate real email domain (MX Check)
+    // 1. Kiểm tra Email Domain thực tế (MX Check) để tránh email ảo
     await this.verifyEmailDomain(email);
 
-    const existsUser = await this.prisma.user.findUnique({
-      where: { email },
+    const tenant = getTenant();
+    const existsUser = await this.prisma.user.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
     });
     if (existsUser) {
-      throw new ConflictException('User already exists');
+      throw new ConflictException('Email này đã được sử dụng');
     }
 
     const hashedPassword = await bcrypt.hash(
@@ -128,22 +135,21 @@ export class AuthService {
         password: hashedPassword,
         firstName,
         lastName,
+        tenantId: tenant!.id, // Tenant được đảm bảo bởi Middleware
       },
     });
 
     await this.ensureGuestRoleAndAssign(user.id);
 
+    // Tạo Token ngay sau khi đăng ký để auto-login
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
-      [], // Permissions will be fetched/cached next time or derived?
-      ['GUEST'], // New user has GUEST role
+      [],
+      ['GUEST'], // User mới mặc định quyền GUEST
       fingerprint,
     );
 
-    // To include permissions in the first token, reload user:
-    // For now, let's stick to minimal change to avoid breaking.
-    // Permissions in token are useful.
-
+    // Lưu Refresh Token vào Redis
     await this.redisService.set(
       `refreshToken:${user.id}`,
       refreshToken,
@@ -152,9 +158,10 @@ export class AuthService {
     );
 
     try {
+      // Tặng quà chào mừng (Async)
       await this.grantWelcomeVoucher(user.id);
     } catch (error) {
-      this.logger.error('Failed to process post-registration tasks', error);
+      this.logger.error('Lỗi khi tặng quà chào mừng', error);
     }
 
     return { accessToken, refreshToken };
@@ -174,15 +181,20 @@ export class AuthService {
     const { email, firstName, lastName, picture, provider, socialId } = profile;
 
     if (!email) {
-      throw new BadRequestException('Email is required from social provider');
+      throw new BadRequestException('Email là bắt buộc khi đăng nhập qua MXH');
     }
 
-    let user = await this.prisma.user.findUnique({
-      where: { email },
+    const tenant = getTenant();
+    let user = await this.prisma.user.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
       select: this.USER_PERMISSION_SELECT,
     });
 
     if (user) {
+      // Nếu user đã tồn tại nhưng chưa link Social ID -> Update
       if (!user.socialId) {
         await this.prisma.user.update({
           where: { id: user.id },
@@ -194,6 +206,7 @@ export class AuthService {
         });
       }
     } else {
+      // Nếu user chưa tồn tại -> Tạo mới (Auto Register)
       user = (await this.prisma.user.create({
         data: {
           email,
@@ -202,41 +215,44 @@ export class AuthService {
           provider,
           socialId,
           avatarUrl: picture,
+          tenantId: tenant!.id,
         },
         select: this.USER_PERMISSION_SELECT,
       })) as any;
 
-      if (!user) throw new UnauthorizedException('Failed to create user');
+      if (!user) throw new UnauthorizedException('Không thể tạo tài khoản');
       await this.ensureGuestRoleAndAssign(user.id);
 
-      const reloaded = await this.prisma.user.findUnique({
+      // Reload để lấy đủ permission
+      const reloaded = await this.prisma.user.findFirst({
         where: { id: user.id },
         select: this.USER_PERMISSION_SELECT,
       });
 
-      if (!reloaded) throw new UnauthorizedException('Failed to reload user');
+      if (!reloaded)
+        throw new UnauthorizedException('Lỗi tải lại thông tin user');
       user = reloaded as any;
 
       if (user) {
         await this.grantWelcomeVoucher(user.id).catch((err) =>
-          this.logger.error('Failed to grant social welcome voucher', err),
+          this.logger.error('Lỗi tặng quà chào mừng cho user MXH', err),
         );
       }
     }
 
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException('Không tìm thấy User');
     }
 
-    // [SECURITY] TENANT CHECK FOR SOCIAL LOGIN
+    // [BẢO MẬT] Kiểm tra Tenant: Tránh login nhầm cửa hàng
     const currentTenant = getTenant();
     if (currentTenant && user.tenantId && user.tenantId !== currentTenant.id) {
       throw new UnauthorizedException(
-        'Tài khoản xã hội này đã được liên kết với cửa hàng khác',
+        'Tài khoản này thuộc về cửa hàng khác, không thể đăng nhập tại đây',
       );
     }
 
-    // Use PermissionService for consistent permission aggregation
+    // Tổng hợp quyền hạn (Permissions)
     const allPermissions = this.permissionService.aggregatePermissions(
       user as any,
     );
@@ -268,79 +284,142 @@ export class AuthService {
     };
   }
 
-  async login(dto: LoginDto, fingerprint?: string) {
-    const { email, password } = dto;
+  async login(dto: LoginDto, fingerprint?: string, ip?: string) {
+    const { password } = dto;
+    const email = dto.email.toLowerCase().trim();
+    const tenant = getTenant();
 
-    const user = await this.prisma.user.findUnique({
-      where: { email },
-      select: this.USER_PERMISSION_SELECT,
-    });
+    this.logger.log(
+      `[AUTH] Đang xử lý đăng nhập: "${email}", Store: ${tenant?.domain || 'Global'}`,
+    );
+
+    // 1. Tìm user (Bỏ qua filter tenantId mặc định để check chéo nếu cần)
+    const user = await this.findUserByEmailUnfiltered(email);
 
     if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
+      this.logger.warn(`[AUTH] Không tìm thấy user: ${email}`);
+      throw new UnauthorizedException('Thông tin đăng nhập không chính xác');
     }
 
-    if (!user.password) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
+    // 2. Validate Mật khẩu
+    const isPasswordValid = await bcrypt.compare(password, user.password || '');
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
+      this.logger.warn(`[AUTH] Sai mật khẩu: ${email}`);
+      throw new UnauthorizedException('Thông tin đăng nhập không chính xác');
     }
 
-    // 2FA CHECK
-    if ((user as any).twoFactorEnabled) {
-      return {
-        mfaRequired: true,
-        userId: user.id,
-      };
-    }
-
-    // [SECURITY] TENANT CHECK
-    // If request has a tenant context, user MUST belong to that tenant
-    // Exception: Super Admin (no tenantId) can login anywhere (or restrict as needed)
-    const currentTenant = getTenant();
-    if (currentTenant) {
-      // If user has a tenantId and it doesn't match currentTenant.id -> DENY
-      // If user is Super Admin (tenantId=null) -> ALLOW (or enforce platform domain check if needed)
-      if (user.tenantId && user.tenantId !== currentTenant.id) {
-        throw new UnauthorizedException(
-          'Tài khoản không thuộc về cửa hàng này',
-        );
-      }
-
-      // OPTIONAL: If user has NO tenantId (Super Admin) but trying to login to a specific store?
-      // For now, assume Super Admin can access tenant dashboards.
-    }
-
-    // Use PermissionService for consistent permission aggregation
+    // 3. Tổng hợp quyền hạn (Roles & Permissions)
+    const roles = user.roles.map((r) => r.role.name);
     const allPermissions = this.permissionService.aggregatePermissions(
       user as any,
     );
 
-    const { accessToken, refreshToken } = this.tokenService.generateTokens(
+    // 4. Kiểm tra quyền truy cập (Quan trọng cho Multi-tenancy)
+    await this.validateTenancyAccess(user, tenant, roles, allPermissions);
+
+    // Kiểm tra IP Whitelist (nếu có cấu hình)
+    this.validateIpWhitelist(user, ip);
+
+    // 5. Kiểm tra 2FA (Bảo mật 2 lớp)
+    if (user.twoFactorEnabled) {
+      this.logger.log(`[AUTH] Yêu cầu 2FA: ${email}`);
+      return { mfaRequired: true, userId: user.id };
+    }
+
+    // 6. Tạo Session (Tokens)
+    const tokens = this.tokenService.generateTokens(
       user.id,
       allPermissions,
-      user.roles.map((r) => r.role.name),
+      roles,
       fingerprint,
     );
 
     await this.redisService.set(
       `refreshToken:${user.id}`,
-      refreshToken,
+      tokens.refreshToken,
       'EX',
       this.tokenService.getRefreshTokenExpirationTime(),
     );
 
-    return {
-      accessToken,
-      refreshToken,
-    };
+    this.logger.log(`[AUTH] Đăng nhập thành công: ${email}`);
+    return tokens;
+  }
+
+  /**
+   * Finds a user by email across all tenants.
+   */
+  private async findUserByEmailUnfiltered(email: string) {
+    return tenantStorage.run(undefined as any, () =>
+      this.prisma.user.findFirst({
+        where: {
+          email: { equals: email, mode: 'insensitive' },
+          deletedAt: null,
+        },
+        select: this.USER_PERMISSION_SELECT,
+      }),
+    );
+  }
+
+  /**
+   * Kiểm tra quyền truy cập vào Tenant hiện tại (Store Isolation).
+   * - Platform Admin: Vào được mọi nơi.
+   * - User thường: Chỉ vào được Tenant của mình.
+   */
+  private async validateTenancyAccess(
+    user: any,
+    currentTenant: any,
+    roles: string[],
+    permissions: string[],
+  ) {
+    const isSuperAdmin = roles.includes('SUPERADMIN');
+    const hasPlatformControl = permissions.includes('superAdmin:read');
+
+    // PLATFORM ADMIN = Super Admin + Có quyền hệ thống.
+    // Được phép truy cập mọi Tenant và trang quản trị tổng (Global Portal).
+    const isPlatformAdmin = isSuperAdmin && hasPlatformControl;
+
+    if (currentTenant) {
+      // Đang truy cập vào một cửa hàng cụ thể (Store Domain)
+      if (user.tenantId !== currentTenant.id && !isPlatformAdmin) {
+        this.logger.warn(
+          `[AUTH-TENANCY] Bị chặn: User ${user.email} (Tenant: ${user.tenantId}) cố gắng truy cập Tenant: ${currentTenant.id}`,
+        );
+        throw new UnauthorizedException(
+          'Tài khoản không thuộc về cửa hàng này',
+        );
+      }
+    } else {
+      // Đang truy cập trang quản trị hệ thống (Global/Platform Portal)
+      if (!isPlatformAdmin) {
+        this.logger.warn(
+          `[AUTH-TENANCY] Bị chặn: User thường ${user.email} cố gắng truy cập Platform Portal`,
+        );
+        throw new UnauthorizedException(
+          'Chỉ quản trị viên cấp cao mới có quyền truy cập trang này',
+        );
+      }
+    }
+  }
+
+  /**
+   * Kiểm tra IP User có nằm trong danh sách cho phép không (nếu đã cấu hình).
+   */
+  private validateIpWhitelist(user: any, currentIp?: string) {
+    const whitelistedIps = user.whitelistedIps as string[];
+    if (
+      whitelistedIps?.length > 0 &&
+      currentIp &&
+      !whitelistedIps.includes(currentIp)
+    ) {
+      this.logger.warn(
+        `[AUTH-SECURITY] IP Bị chặn: ${user.email} từ ${currentIp}`,
+      );
+      throw new UnauthorizedException('Truy cập bị từ chối từ địa chỉ IP này');
+    }
   }
 
   async verify2FALogin(userId: string, token: string, fingerprint?: string) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: { id: userId },
       select: this.USER_PERMISSION_SELECT,
     });
@@ -361,7 +440,7 @@ export class AuthService {
       throw new UnauthorizedException('Mã xác thực không hợp lệ');
     }
 
-    // Use PermissionService for consistent permission aggregation
+    // Tổng hợp quyền hạn khi 2FA thành công
     const allPermissions = this.permissionService.aggregatePermissions(
       user as any,
     );
@@ -399,18 +478,20 @@ export class AuthService {
     const decoded = this.tokenService.validateRefreshToken(refreshToken);
 
     if (!decoded || !decoded.userId) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException(
+        'Refresh token không hợp lệ hoặc đã hết hạn',
+      );
     }
 
-    // CHECK FINGERPRINT
+    // [BẢO MẬT] CHECK FINGERPRINT (Chống trộm token)
     if (decoded.fp && currentFingerprint && decoded.fp !== currentFingerprint) {
-      // Potential Token Theft!
-      // We should invalidate all tokens for this user ideally.
-      // For now, just reject.
+      // Phát hiện dấu hiệu trộm token (Device không khớp)
+      // Lý tưởng: Thu hồi tất cả token của user này.
+      // Hiện tại: Chặn request này.
       this.logger.warn(
-        `Suspicious refresh attempt defined for user ${decoded.userId}`,
+        `Phát hiện nghi vấn trộm token của user ${decoded.userId}`,
       );
-      throw new UnauthorizedException('Invalid refresh token (FP)');
+      throw new UnauthorizedException('Token không hợp lệ (Lỗi Fingerprint)');
     }
 
     const userId = decoded.userId;
@@ -418,19 +499,21 @@ export class AuthService {
     const storedToken = await this.redisService.get(`refreshToken:${userId}`);
 
     if (!storedToken || storedToken !== refreshToken) {
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException(
+        'Refresh token không hợp lệ hoặc đã bị thu hồi',
+      );
     }
 
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: { id: userId },
       select: this.USER_PERMISSION_SELECT,
     });
 
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException('User không tồn tại');
     }
 
-    // Use PermissionService for consistent permission aggregation
+    // Luôn update quyền hạn mới nhất mỗi khi refresh token
     const allPermissions = this.permissionService.aggregatePermissions(
       user as any,
     );
@@ -439,7 +522,7 @@ export class AuthService {
       userId,
       allPermissions,
       user.roles.map((r) => r.role.name),
-      currentFingerprint, // Maintain binding to current device
+      currentFingerprint, // Duy trì binding với thiết bị hiện tại
     );
 
     await this.redisService.set(
@@ -459,7 +542,7 @@ export class AuthService {
     const { roles, email, password, newPassword, ...updateData } = dto;
 
     if (password && newPassword) {
-      const user = await this.prisma.user.findUnique({ where: { id: userId } });
+      const user = await this.prisma.user.findFirst({ where: { id: userId } });
       if (!user) throw new UnauthorizedException('User not found');
 
       if (!user.password) {
@@ -497,7 +580,7 @@ export class AuthService {
   }
 
   async getMe(userId: string) {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: { id: userId },
       select: {
         ...this.USER_PERMISSION_SELECT,
@@ -535,8 +618,8 @@ export class AuthService {
   }
 
   /**
-   * Helper to verify if email domain has valid MX records
-   * @throws BadRequestException if domain is invalid
+   * Helper xác thực miền Email (MX Record)
+   * @throws BadRequestException nếu domain không hợp lệ hoặc không nhận email
    */
   async verifyEmailDomain(email: string) {
     try {
@@ -546,7 +629,7 @@ export class AuthService {
       const mxRecords = await resolveMx(domain);
       if (!mxRecords || mxRecords.length === 0) {
         throw new BadRequestException(
-          `Email domain '${domain}' does not accept emails (No MX records)`,
+          `Tên miền email '${domain}' không hợp lệ (Không có bản ghi MX)`,
         );
       }
       return true;
@@ -555,13 +638,19 @@ export class AuthService {
       if (error instanceof BadRequestException) throw error;
       // Code ENODATA or ENOTFOUND means no MX
       throw new BadRequestException(
-        `Invalid email domain: ${email.split('@')[1]}`,
+        `Tên miền email không hợp lệ: ${email.split('@')[1]}`,
       );
     }
   }
 
   async forgotPassword(email: string) {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+    const tenant = getTenant();
+    const user = await this.prisma.user.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -580,7 +669,7 @@ export class AuthService {
       throw new BadRequestException('Invalid or expired token');
     }
 
-    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const user = await this.prisma.user.findFirst({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -603,18 +692,19 @@ export class AuthService {
   }
 
   private async grantWelcomeVoucher(userId: string) {
-    // Check if user already has a welcome voucher (to prevent duplicates)
-    // Check via orders relation - if user has used any WELCOME coupon
-    const existingWelcomeCoupon = await this.prisma.coupon.findFirst({
-      where: {
-        code: { startsWith: 'WELCOME-' },
-        orders: {
-          some: { userId },
-        },
-      },
-    });
+    // Kiểm tra user đã nhận quà chưa (chống spam nhận quà)
+    // 1. Check xem đã dùng coupon WELCOME nào chưa
+    // [MIGRATION TODO]: Rewrite this using Promotion Engine
+    // const existingWelcomeCoupon = await this.prisma.coupon.findFirst({
+    //   where: {
+    //     code: { startsWith: 'WELCOME-' },
+    //     orders: {
+    //       some: { userId },
+    //     },
+    //   },
+    // });
 
-    // Also check for coupons created with notification to this user
+    // 2. Check xem đã được hệ thống gửi thông báo tặng quà chưa
     const existingNotification = await this.prisma.notification.findFirst({
       where: {
         userId,
@@ -622,10 +712,9 @@ export class AuthService {
       },
     });
 
-    if (existingWelcomeCoupon || existingNotification) {
-      this.logger.log(
-        `User ${userId} already has a welcome voucher, skipping...`,
-      );
+    // existingWelcomeCoupon ||
+    if (existingNotification) {
+      this.logger.log(`User ${userId} đã nhận quà chào mừng rồi, bỏ qua...`);
       return null;
     }
 
@@ -636,24 +725,34 @@ export class AuthService {
     const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
     const couponCode = `WELCOME-${randomSuffix}`;
 
-    const coupon = await this.prisma.coupon.create({
-      data: {
-        code: couponCode,
-        discountType: 'FIXED_AMOUNT',
-        discountValue: 50000,
-        description: 'Voucher chào mừng thành viên mới',
-        startDate: now,
-        endDate: endDate,
-        usageLimit: 1,
-        isActive: true,
-      },
-    });
+    const tenant = getTenant();
+    // const coupon = await this.prisma.coupon.create({
+    //   data: {
+    //     code: couponCode,
+    //     discountType: 'FIXED_AMOUNT',
+    //     discountValue: 50000,
+    //     description: 'Voucher chào mừng thành viên mới',
+    //     startDate: now,
+    //     endDate: endDate,
+    //     usageLimit: 1,
+    //     isActive: true,
+    //     tenantId: tenant!.id,
+    //   },
+    // });
+
+    // Fake coupon object for now to avoid errors, or just don't return it
+    const coupon = null;
+
+    // TODO: Create a Promotion record instead
+    this.logger.warn(
+      'Skipping Welcome Coupon creation - Promotion Engine migration pending',
+    );
 
     const notification = await this.notificationsService.create({
       userId,
       type: 'SYSTEM',
       title: 'Quà tặng chào mừng thành viên mới! 🎁',
-      message: `Chào mừng bạn! Tặng bạn mã giảm giá ${couponCode} trị giá 50.000đ. Hạn sử dụng trong 1 tuần. Hãy mua sắm ngay!`,
+      message: `Chào mừng bạn! Tính năng quà tặng đang được nâng cấp, bạn sẽ nhận được ưu đãi sớm nhất!`,
       link: '/profile',
     });
 
@@ -663,8 +762,11 @@ export class AuthService {
   }
 
   private async ensureGuestRoleAndAssign(userId: string) {
-    let guestRole = await this.prisma.role.findUnique({
-      where: { name: 'GUEST' },
+    const tenant = getTenant();
+    if (!tenant) return;
+
+    let guestRole = await this.prisma.role.findFirst({
+      where: { name: 'GUEST', tenantId: tenant.id },
     });
 
     if (!guestRole) {
@@ -694,6 +796,7 @@ export class AuthService {
       guestRole = await this.prisma.role.create({
         data: {
           name: 'GUEST',
+          tenantId: tenant.id,
           permissions: {
             create: permissionRecords.map((p) => ({
               permissionId: p.id,

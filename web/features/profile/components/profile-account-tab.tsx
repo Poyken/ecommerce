@@ -14,7 +14,10 @@
  * - Giúp tránh việc gọi API không cần thiết.
  *
  * 3. SERVER ACTIONS:
- * - Sử dụng `updateProfileAction` để cập nhật thông tin lên server một cách an toàn.
+ * - Sử dụng `updateProfileAction` để cập nhật thông tin lên server một cách an toàn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -22,7 +25,7 @@
 
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateProfileAction } from "@/features/profile/actions";

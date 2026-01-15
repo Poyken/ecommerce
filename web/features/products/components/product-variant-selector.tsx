@@ -21,12 +21,16 @@
  * 3. VISUAL FEEDBACK:
  * - Badge "Outline": Chưa chọn.
  * - Badge "Solid" (Primary): Đang chọn.
- * - Badge "Opacity-50 + Line-through": Hết hàng hoặc không tồn tại.
+ * - Badge "Opacity-50 + Line-through": Hết hàng hoặc không tồn tại. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
 "use client";
 import { GlassButton } from "@/components/shared/glass-button";
+import { AnimatedError } from "@/components/shared/animated-error";
 import { Badge } from "@/components/ui/badge";
 import { cn, formatCurrency } from "@/lib/utils";
 import { ProductOption, Sku } from "@/types/models";
@@ -36,7 +40,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 interface ProductVariantSelectorProps {
   options: ProductOption[]; // Danh sách các Option (Màu, Size)
   skus: Sku[]; // Danh sách các biến thể thực tế (SKU)
-  isLoggedIn?: boolean;
   selectedSkuId?: string | null;
   onSkuChange?: (sku: Sku | null) => void;
   onImageChange?: (imageUrl: string) => void;
@@ -52,7 +55,6 @@ interface ProductVariantSelectorProps {
 export function ProductVariantSelector({
   options,
   skus,
-  isLoggedIn = false,
   selectedSkuId,
   onSkuChange,
   onImageChange,
@@ -137,22 +139,24 @@ export function ProductVariantSelector({
     }
 
     // Case B: URL không có -> Chọn SKU đầu tiên còn hàng (Available Stock)
-    if (options.length > 0) {
-      const availableSku = skus.find((s) => s.stock > 0) || skus[0];
-      if (availableSku && availableSku.optionValues) {
+    const availableSku = skus.find((s) => s.stock > 0) || skus[0];
+    if (availableSku) {
+      if (options.length > 0 && availableSku.optionValues) {
         availableSku.optionValues.forEach((ov) => {
           if (ov?.optionValue)
             newSelectedOptions[ov.optionValue.optionId] = ov.optionValue.id;
         });
+      }
 
-        isInitialized.current = true;
+      isInitialized.current = true;
+      if (Object.keys(newSelectedOptions).length > 0) {
         setSelectedOptions(newSelectedOptions);
+      }
 
-        // Notify auto-selection
-        if (availableSku.id !== lastNotifiedSkuId.current) {
-          lastNotifiedSkuId.current = availableSku.id;
-          onSkuChange?.(availableSku);
-        }
+      // Notify auto-selection (Case for both options > 0 and options === 0)
+      if (availableSku.id !== lastNotifiedSkuId.current) {
+        lastNotifiedSkuId.current = availableSku.id;
+        onSkuChange?.(availableSku);
       }
     }
   }, [
@@ -382,12 +386,12 @@ export function ProductVariantSelector({
         )}
       </div>
 
-      {selectedSku && isOutOfStock && (
-        <p className="text-destructive text-sm font-medium flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-destructive animate-pulse"></span>
-          Item is currently out of stock
-        </p>
-      )}
+      <AnimatedError
+        message={
+          selectedSku && isOutOfStock ? "Item is currently out of stock" : ""
+        }
+        className="font-medium flex items-center gap-2"
+      />
     </div>
   );
 }

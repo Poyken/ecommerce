@@ -3,9 +3,10 @@
 import { forgotPasswordAction } from "@/features/auth/actions";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
+import { AnimatedError } from "@/components/shared/animated-error";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Link } from "@/i18n/routing";
 import { forgotPasswordSchema } from "@/lib/schemas";
 import { m } from "@/lib/animations";
@@ -27,7 +28,10 @@ import { useActionState, useEffect, useRef, useState } from "react";
  *
  * 2. SUCCESS STATE:
  * - Khi `state.success` là true, ta ẩn form và hiển thị thông báo "Check your email".
- * - Giúp giảm bớt sự phức tạp của giao diện và tập trung vào hành động tiếp theo của user.
+ * - Giúp giảm bớt sự phức tạp của giao diện và tập trung vào hành động tiếp theo của user. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -112,12 +116,7 @@ export function ForgotPasswordPageContent() {
             </Link>
           </div>
         ) : (
-          <m.form
-            layout
-            action={handleAction}
-            className="space-y-6"
-            noValidate
-          >
+          <m.form layout action={handleAction} className="space-y-6" noValidate>
             <div className="space-y-2">
               <Label htmlFor="email" className="text-foreground/80 font-bold">
                 {t("emailLabel")}
@@ -148,21 +147,7 @@ export function ForgotPasswordPageContent() {
                   }
                 }}
               />
-              <AnimatePresence initial={false}>
-                {localErrors.email && (
-                  <m.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <p className="text-red-500 text-sm mt-1">
-                      {localErrors.email[0]}
-                    </p>
-                  </m.div>
-                )}
-              </AnimatePresence>
+              <AnimatedError message={localErrors.email?.[0]} />
             </div>
 
             <GlassButton

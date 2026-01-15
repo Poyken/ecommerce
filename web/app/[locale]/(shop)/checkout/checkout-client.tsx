@@ -23,7 +23,11 @@
  *
  * 4. DYNAMIC FEE CALCULATION:
  * - Khi `selectedAddress` thay đổi -> Trigger `useEffect` gọi shipping API.
- * - Cập nhật phí ship realtime dựa trên Quận/Huyện.
+ * - Cập nhật phí ship realtime dựa trên Quận/Huyện. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Interactive Payment Orchestration: Điều phối luồng thanh toán đa bước một cách thông minh, từ khâu chọn địa chỉ đến việc tính toán phí vận chuyển và áp dụng mã giảm giá theo thời gian thực.
+ * - Real-time Order Validation: Đảm bảo mọi thông tin đơn hàng đều hợp lệ trước khi gửi về Server, giúp giảm thiểu sai sót dữ liệu và cung cấp phản hồi tức thì về tình trạng kho hàng hoặc tính hợp lệ của Coupon.
+
  * =====================================================================
  */
 
@@ -37,11 +41,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { validateCouponAction } from "@/features/coupons/coupon-actions";
+import {
+  validateCouponAction,
+  getAvailableCouponsAction,
+} from "@/features/coupons/actions";
 import { placeOrderAction } from "@/features/orders/actions";
 import { calculateShippingFeeAction } from "@/features/shipping/actions";
-// import { AddAddressDialog } from "@/features/admin/components/add-address-dialog"; // Replaced with dynamic import
-import { useToast } from "@/components/shared/use-toast";
+// import { AddAddressDialog } from "@/features/admin/components/dialogs/add-address-dialog"; // Replaced with dynamic import
+import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getGuestCartDetailsAction } from "@/features/cart/actions";
 import { AddressSelector } from "@/features/checkout/components/address-selector";
@@ -69,7 +76,7 @@ import {
 
 const AddAddressDialog = dynamic(
   () =>
-    import("@/features/admin/components/add-address-dialog").then(
+    import("@/features/admin/components/users/add-address-dialog").then(
       (m) => m.AddAddressDialog
     ),
   { ssr: false }
@@ -177,8 +184,8 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
                 setGuestItems(mappedItems);
               }
             }
-          } catch (_e) {
-            // console.error("Error loading guest cart", e);
+          } catch {
+            // Silently fail
           } finally {
             setIsInitializing(false);
           }
@@ -231,23 +238,9 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
   // Effects
   useEffect(() => {
     const fetchCoupons = async () => {
-      try {
-        // Dynamically import to avoid server-side issues if any
-        const { http } = await import("@/lib/http");
-        const res = await http<Coupon[] | { data: Coupon[] }>(
-          "/coupons/available",
-          {
-            skipAuth: true,
-          }
-        );
-        const list = Array.isArray(res)
-          ? res
-          : res?.data && Array.isArray(res.data)
-          ? res.data
-          : [];
-        setAvailableCoupons(list);
-      } catch {
-        // console.error("Failed to fetch coupons");
+      const result = await getAvailableCouponsAction();
+      if (result.success && result.data) {
+        setAvailableCoupons(result.data);
       }
     };
     fetchCoupons();
@@ -262,11 +255,15 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
       ) {
         setIsCalculatingFee(true);
         try {
-          const fee = await calculateShippingFeeAction(
+          const result = await calculateShippingFeeAction(
             Number(selectedAddress.districtId),
             selectedAddress.wardCode
           );
-          setShippingFee(fee);
+          if (result.success && typeof result.data === "number") {
+            setShippingFee(result.data);
+          } else {
+            setShippingFee(0);
+          }
         } finally {
           setIsCalculatingFee(false);
         }
@@ -290,11 +287,11 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
       try {
         const res = await validateCouponAction(targetCode, subtotal);
 
-        if (res.success) {
-          if (res.isValid) {
+        if (res.success && res.data) {
+          if (res.data.isValid) {
             setAppliedCoupon({
               code: targetCode,
-              discount: res.discountAmount || 0,
+              discount: res.data.discountAmount || 0,
             });
             toast({
               title: t("couponApplied"),
@@ -302,14 +299,14 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
               variant: "success",
             });
           } else {
-            setCouponError(res.message || t("couponInvalid"));
+            setCouponError(res.data.message || t("couponInvalid"));
             setAppliedCoupon(null);
           }
         } else {
           setCouponError(res.error || t("couponInvalid"));
           setAppliedCoupon(null);
         }
-      } catch (_error) {
+      } catch {
         setCouponError("Failed to validate coupon");
       } finally {
         setIsValidatingCoupon(false);
@@ -343,19 +340,22 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
         couponCode: appliedCoupon?.code,
       });
 
-      if (res && "success" in res) {
-        if (res.paymentUrl) {
-          window.location.href = res.paymentUrl;
+      if (res.success) {
+        if ((res.data as any)?.paymentUrl) {
+          window.location.href = (res.data as any).paymentUrl;
           return;
         }
         window.dispatchEvent(new Event("cart_updated"));
 
         if (paymentMethod === "BANKING" || paymentMethod === "VIETQR") {
           setTempOrderData({
-            id: res.orderId,
+            id: (res.data as any)?.orderId || "",
             totalAmount: total,
             createdAt: new Date().toISOString(),
-            qrUrl: paymentMethod === "VIETQR" ? res.paymentUrl : undefined,
+            qrUrl:
+              paymentMethod === "VIETQR"
+                ? (res.data as any)?.paymentUrl
+                : undefined,
           });
           setIsPaymentModalOpen(true);
           return;
@@ -366,11 +366,11 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
           description: t("toast.successDesc"),
           variant: "success",
         });
-        router.push(`/checkout/success?orderId=${res.orderId}`);
+        router.push(`/checkout/success?orderId=${(res.data as any)?.orderId}`);
       } else {
         toast({
           title: t("failed"),
-          description: res && "error" in res ? res.error : t("error"),
+          description: res.error || t("error"),
           variant: "destructive",
         });
       }

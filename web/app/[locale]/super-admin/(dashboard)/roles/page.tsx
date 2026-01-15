@@ -17,7 +17,11 @@ import { RolesPageClient } from "./roles-client";
  * - Hỗ trợ tìm kiếm vai trò thông qua `searchParams`.
  *
  * 3. SECURITY:
- * - Việc quản lý vai trò là cực kỳ quan trọng, chỉ những user có quyền cao nhất mới được truy cập trang này.
+ * - Việc quản lý vai trò là cực kỳ quan trọng, chỉ những user có quyền cao nhất mới được truy cập trang này. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Platform RBAC Definition: Thiết lập các nhóm quyền chuẩn hóa cho toàn bộ hệ thống, giúp việc phân quyền cho nhân viên mới diễn ra nhanh chóng và chính xác theo vị trí công việc.
+ * - Scalable Permissioning: Cho phép mở rộng hệ thống bằng cách tạo thêm các mô hình quản trị mới (VD: Manager cấp vùng) mà không cần thay đổi cấu trúc mã nguồn.
+
  * =====================================================================
  */
 
@@ -30,7 +34,7 @@ export default async function RolesPage({
   const search = params.search || "";
   const page = Number(params.page) || 1;
   const limit = Number(params.limit) || 10;
-  const result = await getRolesAction(page, limit, search);
+  const result = await getRolesAction({ page, limit, search });
 
   if ("error" in result) {
     return (
@@ -38,5 +42,5 @@ export default async function RolesPage({
     );
   }
 
-  return <RolesPageClient roles={result.data || []} meta={result.meta} />;
+  return <RolesPageClient roles={(result.data || []) as any} meta={result.meta} />;
 }

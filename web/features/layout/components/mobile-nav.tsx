@@ -28,7 +28,10 @@ import { useState } from "react";
  *
  * 3. PORTAL & OVERLAY:
  * - Menu mở rộng ("More") sử dụng `AnimatePresence` để animate lúc mount/unmount.
- * - `safe-area-pb`: Class utility (custom) để tránh bị che bởi thanh Home Indicator của iPhone X+.
+ * - `safe-area-pb`: Class utility (custom) để tránh bị che bởi thanh Home Indicator của iPhone X+. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -44,13 +47,11 @@ interface NavItem {
  */
 interface MobileBottomNavProps {
   initialUser?: any;
-  initialCartCount?: number;
   initialWishlistCount?: number;
 }
 
 export function MobileBottomNav({
   initialUser,
-  initialCartCount,
   initialWishlistCount,
 }: MobileBottomNavProps) {
   const t = useTranslations("nav");
@@ -95,10 +96,7 @@ export function MobileBottomNav({
                   {item.label === t("cart") ? (
                     <>
                       <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-                      <CartBadge
-                        initialUser={initialUser}
-                        initialCount={initialCartCount}
-                      />
+                      <CartBadge />
                     </>
                   ) : (
                     <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />

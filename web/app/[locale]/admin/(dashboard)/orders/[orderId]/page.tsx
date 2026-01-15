@@ -31,7 +31,11 @@ import { notFound } from "next/navigation";
  *
  * 3. ERROR HANDLING:
  * - Nếu đơn hàng không tồn tại, gọi `notFound()` để hiển thị 404 page.
- * - Nếu có lỗi khác, hiển thị thông báo lỗi rõ ràng.
+ * - Nếu có lỗi khác, hiển thị thông báo lỗi rõ ràng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Deep Order Insight: Cho phép nhân viên xử lý đơn hàng xem chi tiết từng mặt hàng, ghi chú của khách và lịch sử thanh toán, giúp giải quyết các thắc mắc hoặc khiếu nại một cách chính xác.
+ * - Fulfillment Resolution: Cung cấp đầy đủ thông tin địa chỉ và số điện thoại người nhận, hỗ trợ đắc lực cho bộ phận đóng gói và đơn vị vận chuyển trong việc thực hiện đơn hàng.
+
  * =====================================================================
  */
 

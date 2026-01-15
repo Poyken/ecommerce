@@ -17,7 +17,10 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
  *
  * 3. FLEXIBILITY:
  * - Nếu dùng `@GetUser()`, ta lấy toàn bộ object user.
- * - Nếu dùng `@GetUser('id')`, ta chỉ lấy trường `id` của user.
+ * - Nếu dùng `@GetUser('id')`, ta chỉ lấy trường `id` của user. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

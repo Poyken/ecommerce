@@ -29,7 +29,10 @@ interface CTASectionProps {
  *
  * 2. ANIMATION (`framer-motion`):
  *    - `<m.div>`: Phiên bản tối ưu của `motion.div` (giảm bundle size).
- *    - `whileInView`: Chỉ chạy animation khi User cuộn tới khối này.
+ *    - `whileInView`: Chỉ chạy animation khi User cuộn tới khối này. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function CTASection({

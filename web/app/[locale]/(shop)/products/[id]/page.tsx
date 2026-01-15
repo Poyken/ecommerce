@@ -17,7 +17,11 @@
  * -> Tối ưu thời gian phản hồi máy chủ (TTFB).
  *
  * 3. SEO METADATA (`generateMetadata`):
- * - Vì là Server Component, ta có thể fetch data sản phẩm để điền Title, Description, OpenGraph Image chuẩn SEO dynamic.
+ * - Vì là Server Component, ta có thể fetch data sản phẩm để điền Title, Description, OpenGraph Image chuẩn SEO dynamic. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Product Detail Conversion: Kết hợp thông tin chi tiết, biến thể (SKUs) và đánh giá thật từ khách hàng để thuyết phục người dùng đưa sản phẩm vào giỏ hàng, tối ưu hóa tỷ lệ chuyển đổi.
+ * - SEO Rich Snippets: Cung cấp dữ liệu sản phẩm chuẩn OpenGraph và Meta động, giúp sản phẩm hiển thị bắt mắt với đầy đủ giá và đánh giá khi chia sẻ lên mạng xã hội hoặc kết quả tìm kiếm.
+
  * =====================================================================
  */
 
@@ -27,10 +31,10 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav";
-import { ProductDetailSkeleton } from "@/components/shared/skeletons/product-detail-skeleton";
+import { ProductDetailSkeleton } from "@/features/products/components/skeletons/product-detail-skeleton";
 import { ProductRecommendations } from "@/features/products/components/product-recommendations";
 import { getProfileAction } from "@/features/profile/actions";
-import { productService } from "@/services/product.service";
+import { productService } from "@/features/products/services/product.service";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ProductDetailClient } from "./product-detail-client";
@@ -88,17 +92,14 @@ async function ProductDetailStreamer({ id }: { id: string }) {
   );
 
   // Kỹ thuật Parallel Fetching quan trọng
-  const [product, { data: user }, reviewsData, eligibilityData] =
-    await Promise.all([
-      productService.getProduct(id), // Lấy thông tin sản phẩm
-      getProfileAction(), // Lấy user hiện tại (để check login)
-      getReviewsAction(id), // Lấy reviews
-      checkReviewEligibilityAction(id), // Check xem user đã mua hàng chưa (để cho review)
-    ]);
+  const [product, , reviewsData, eligibilityData] = await Promise.all([
+    productService.getProduct(id), // Lấy thông tin sản phẩm
+    getProfileAction(), // Lấy user hiện tại (có thể dùng cho review eligibility)
+    getReviewsAction(id), // Lấy reviews
+    checkReviewEligibilityAction(id), // Check xem user đã mua hàng chưa (để cho review)
+  ]);
 
   if (!product) notFound();
-
-  const isLoggedIn = !!user;
 
   // Tổng hợp ảnh từ Product và Variant SKUs
   const productImages = (product.images || []).map((img) =>
@@ -119,7 +120,6 @@ async function ProductDetailStreamer({ id }: { id: string }) {
     <ProductDetailClient
       product={product}
       initialImages={images}
-      isLoggedIn={isLoggedIn}
       initialReviews={reviewsData.success ? reviewsData.data : []}
       initialMeta={reviewsData.success ? reviewsData.meta : null}
       initialPurchasedSkus={

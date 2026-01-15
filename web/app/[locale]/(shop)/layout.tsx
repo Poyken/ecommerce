@@ -1,4 +1,4 @@
-import { ClientOnlyWidgets } from "@/components/shared/client-only-widgets";
+import { ClientOnlyWidgets } from "@/features/layout/components/client-only-widgets";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { getCartCountAction } from "@/features/cart/actions";
 import { CartInitializer } from "@/features/cart/components/cart-initializer";
@@ -8,8 +8,8 @@ import { Footer } from "@/features/layout/components/footer";
 import { HeaderFallback } from "@/features/layout/components/header";
 import { MobileBottomNav } from "@/features/layout/components/mobile-nav";
 import {
-    getNotificationsAction,
-    getUnreadCountAction,
+  getNotificationsAction,
+  getUnreadCountAction,
 } from "@/features/notifications/actions";
 import { NotificationInitializer } from "@/features/notifications/components/notification-initializer";
 import { getProfileAction } from "@/features/profile/actions";
@@ -37,7 +37,10 @@ import Loading from "./loading";
  * DATA FETCHING OPTIMIZATION:
  * - Tất cả dynamic data (user, permissions) được fetch MỘT LẦN trong DynamicShopContent.
  * - Sau đó pass xuống các component con (Header, MobileNav).
- * - Tránh gọi API nhiều lần từ các Suspense boundaries khác nhau.
+ * - Tránh gọi API nhiều lần từ các Suspense boundaries khác nhau. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 
@@ -57,34 +60,37 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
   try {
     if (token) {
       const [
-        profile,
+        profileRes,
         cartRes,
-        wishlistItems,
+        wishlistRes,
         notificationsRes,
         unreadCountRes,
       ] = await Promise.all([
-        getProfileAction().catch(() => ({ data: null, error: null })),
-        getCartCountAction().catch(() => ({ count: 0 })),
-        getWishlistAction().catch(() => []),
-        getNotificationsAction(10).catch(() => ({ data: [] })),
-        getUnreadCountAction().catch(() => ({ count: 0 })),
+        getProfileAction(),
+        getCartCountAction(),
+        getWishlistAction(),
+        getNotificationsAction(10),
+        getUnreadCountAction(),
       ]);
 
-      user = profile.data;
+      user = profileRes.success ? profileRes.data : null;
       permissions = user ? getPermissionsFromToken(token) : [];
       initialCartCount =
-        user && cartRes && typeof cartRes.count === "number"
-          ? cartRes.count
-          : 0;
+        user && cartRes.success && cartRes.data ? cartRes.data.totalItems : 0;
       initialWishlistCount =
-        user && Array.isArray(wishlistItems) ? wishlistItems.length : 0;
-      initialNotifications = (notificationsRes?.data || []) as Notification[];
+        user && wishlistRes.success && Array.isArray(wishlistRes.data)
+          ? wishlistRes.data.length
+          : 0;
+      initialNotifications =
+        notificationsRes.success && notificationsRes.data
+          ? (notificationsRes.data as Notification[])
+          : [];
       initialUnreadCount =
-        unreadCountRes && typeof unreadCountRes.count === "number"
-          ? unreadCountRes.count
+        unreadCountRes.success && unreadCountRes.data
+          ? unreadCountRes.data.count
           : 0;
     }
-  } catch (_e) {
+  } catch {
     // Falls back to defaults
   }
 
@@ -109,7 +115,6 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
       <ConditionalFooter />
       <MobileBottomNav
         initialUser={user}
-        initialCartCount={initialCartCount}
         initialWishlistCount={initialWishlistCount}
       />
       <ClientOnlyWidgets user={user} accessToken={token} />
@@ -138,12 +143,12 @@ export default async function ShopLayout({
 }) {
   return (
     <LayoutVisibilityProvider>
-        <div className="flex min-h-screen flex-col">
-          <Suspense fallback={<ShopLayoutFallback />}>
-            {/* Force Rebuild */}
-            <DynamicShopContent>{children}</DynamicShopContent>
-          </Suspense>
-        </div>
+      <div className="flex min-h-screen flex-col">
+        <Suspense fallback={<ShopLayoutFallback />}>
+          {/* Force Rebuild */}
+          <DynamicShopContent>{children}</DynamicShopContent>
+        </Suspense>
+      </div>
     </LayoutVisibilityProvider>
   );
 }

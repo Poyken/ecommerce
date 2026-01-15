@@ -29,7 +29,10 @@ import { useState } from "react";
  * - `disabled={loading}`: Ngăn chặn người dùng click nhiều lần trong khi đang xử lý xóa trên server.
  *
  * 3. PREVENT DEFAULT:
- * - `e.preventDefault()`: Cần thiết khi dùng `AlertDialogAction` để tránh việc đóng dialog trước khi logic xóa hoàn tất (nếu cần).
+ * - `e.preventDefault()`: Cần thiết khi dùng `AlertDialogAction` để tránh việc đóng dialog trước khi logic xóa hoàn tất (nếu cần). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

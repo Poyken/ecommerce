@@ -15,7 +15,11 @@ import { MetadataRoute } from "next";
  * - Điều này giúp bảo mật thông tin và tập trung "ngân sách thu thập dữ liệu" (Crawl Budget) vào các trang sản phẩm quan trọng.
  *
  * 3. SITEMAP LINK:
- * - Khai báo đường dẫn đến file `sitemap.xml` để bot dễ dàng tìm thấy tất cả các trang trên website.
+ * - Khai báo đường dẫn đến file `sitemap.xml` để bot dễ dàng tìm thấy tất cả các trang trên website. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - SEO Protection: Ngăn chặn bot tìm kiếm truy cập vào những trang nhạy cảm (Giỏ hàng, Tài khoản cá nhân), tránh việc lộ thông tin hoặc rác trên kết quả tìm kiếm Google.
+ * - Crawl Budget Optimization: Tiết kiệm tài nguyên cho bot Google, tập trung toàn bộ "sức mạnh" để quét các trang sản phẩm và danh mục nhằm tăng thứ hạng SEO.
+
  * =====================================================================
  */
 

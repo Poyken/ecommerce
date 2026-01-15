@@ -1,0 +1,33 @@
+# File: .github/workflows/audit.yml
+# Giải thích cho thực tập sinh:
+# Workflow này được sử dụng để kiểm tra các lỗ hổng bảo mật trong các thư viện (dependencies) của dự án.
+# Nó chạy lệnh 'npm audit' trong cả hai thư mục 'api' và 'web' để đảm bảo không có thư viện nào bị lỗi thời hoặc có nguy cơ bảo mật cao.
+
+name: Security Audit
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master, develop]
+  schedule:
+    - cron: "0 0 * * 1" # Run every Monday at midnight
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      - name: Audit API Dependencies
+        working-directory: ./api
+        run: npm audit --audit-level=high
+
+      - name: Audit Web Dependencies
+        working-directory: ./web
+        run: npm audit --audit-level=high

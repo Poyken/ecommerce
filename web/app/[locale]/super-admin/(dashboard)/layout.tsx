@@ -1,8 +1,8 @@
 import { LoadingScreen } from "@/components/shared/loading-screen";
-import { AdminHeader } from "@/features/admin/components/admin-header";
+import { AdminHeader } from "@/features/admin/components/navigation/admin-header";
 import { AuthRedirect } from "@/features/auth/components/auth-redirect";
 import { getProfileAction } from "@/features/profile/actions";
-import { SuperAdminSidebar } from "@/features/superadmin/components/super-admin-sidebar";
+import { SuperAdminSidebar } from "@/features/super-admin/components/super-admin-sidebar";
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
@@ -24,7 +24,11 @@ import { Suspense } from "react";
  *
  * 3. SPECIFIC STYLING:
  *    - `bg-slate-950`: Sử dụng tông màu tối (Dark mode đặc trưng) cho Super Admin để phân biệt
- *      với giao diện Admin thường.
+ *      với giao diện Admin thường. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Platform-level Control: Cung cấp giao diện quản trị tối cao dành cho đội ngũ vận hành nền tảng (Platform Owners), cho phép giám sát tất cả các Store đang hoạt động.
+ * - SaaS Multi-tenant Command Hub: Tách biệt hoàn toàn luồng quản trị hệ thống khỏi quản trị bán lẻ thông thường, đảm bảo các cài đặt hạ tầng được bảo vệ nghiêm ngặt.
+
  * =================================================================================================
  */
 export default function SuperAdminDashboardLayout({
@@ -33,9 +37,9 @@ export default function SuperAdminDashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen bg-slate-950 text-slate-50 font-sans">
+    <div className="flex min-h-screen bg-background text-foreground font-sans">
       <SuperAdminSidebar />
-      <main className="relative z-10 flex-1 flex flex-col min-w-0 bg-slate-50 text-foreground overflow-hidden">
+      <main className="relative z-10 flex-1 flex flex-col min-w-0 bg-background overflow-hidden">
         <Suspense fallback={<AdminHeaderSkeleton />}>
           <DynamicSuperAdminShell>{children}</DynamicSuperAdminShell>
         </Suspense>

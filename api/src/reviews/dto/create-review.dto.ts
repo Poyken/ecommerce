@@ -22,7 +22,10 @@ import {
  * - Nếu không có `skuId`, đánh giá sẽ được tính chung cho toàn bộ sản phẩm.
  *
  * 3. OPTIONAL CONTENT:
- * - `@IsOptional()`: Người dùng có thể chỉ chấm sao mà không cần viết nội dung bình luận.
+ * - `@IsOptional()`: Người dùng có thể chỉ chấm sao mà không cần viết nội dung bình luận. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

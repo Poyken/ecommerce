@@ -12,7 +12,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Link, useRouter } from "@/i18n/routing";
+import { Link } from "@/i18n/routing";
 import { Tenant } from "@/types/models";
 import { format } from "date-fns";
 import {
@@ -26,7 +26,6 @@ import {
   Globe,
   HardDrive,
   Lock,
-  Plus,
   Settings,
   Shield,
   Users,
@@ -51,11 +50,13 @@ import { useTranslations } from "next-intl";
  *
  * 3. LOCAL DOMAIN CONFIG:
  *    - Giải thích cách cấu hình file `hosts` để lập trình viên có thể truy cập Store cục bộ
- *      qua tên miền tùy chỉnh (VD: store1.localhost).
+ *      qua tên miền tùy chỉnh (VD: store1.localhost). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export function TenantDetailClient({ tenant }: { tenant: Tenant }) {
-  const router = useRouter();
   const t = useTranslations("superAdmin.tenants.tenantDetail");
 
   // Mocked plan limits based on plan type

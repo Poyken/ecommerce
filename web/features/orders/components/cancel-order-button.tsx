@@ -10,20 +10,23 @@
  * Component này cho phép user hủy đơn hàng PENDING với lý do.
  * - Sử dụng AlertDialog để xác nhận trước khi hủy
  * - Bắt buộc nhập lý do hủy đơn
- * - Gọi cancelOrderAction và refresh trang
+ * - Gọi cancelOrderAction và refresh trang *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import {
-    AlertDialog,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -76,7 +79,7 @@ export function CancelOrderButton({ orderId }: CancelOrderButtonProps) {
           variant: "destructive",
         });
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "An unexpected error occurred",
@@ -99,7 +102,8 @@ export function CancelOrderButton({ orderId }: CancelOrderButtonProps) {
         <AlertDialogHeader>
           <AlertDialogTitle>{t("confirmCancel")}</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. Please provide a reason for cancellation.
+            This action cannot be undone. Please provide a reason for
+            cancellation.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

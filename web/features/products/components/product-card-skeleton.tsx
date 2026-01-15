@@ -15,7 +15,10 @@ import { cn } from "@/lib/utils";
  * - Layout giống y hệt ProductCard thật để tránh "layout shift".
  *
  * 2. USAGE:
- * - Sử dụng trong Suspense boundaries hoặc loading states.
+ * - Sử dụng trong Suspense boundaries hoặc loading states. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

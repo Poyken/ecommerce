@@ -1,4 +1,4 @@
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { addToCartAction } from "@/features/cart/actions";
 import { useCartStore } from "@/features/cart/store/cart.store";
 import { useTranslations } from "next-intl";
@@ -21,7 +21,11 @@ import { useCallback, useState } from "react";
  * - Không chờ Server trả về (Latency). Tạo cảm giác app cực nhanh.
  *
  * 3. EVENT DISPATCH:
- * - Khi lưu vào LocalStorage, phải bắn event `guest_cart_updated` để `CartProvider` biết mà cập nhật lại state chung.
+ * - Khi lưu vào LocalStorage, phải bắn event `guest_cart_updated` để `CartProvider` biết mà cập nhật lại state chung. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Frictionless Interactions: Giúp khách hàng thêm sản phẩm vào giỏ ngay tức thì (Optimistic UI) mà không cần chờ API phản hồi, tạo cảm giác hệ thống cực kỳ nhanh nhạy.
+ * - High Availability: Duy trì khả năng mua sắm liên tục bằng cách tự động lưu vào LocalStorage nếu hệ thống Authentication gặp sự cố hoặc user chưa kịp đăng nhập.
+
  * =====================================================================
  */
 
@@ -60,7 +64,7 @@ export function useCart(productName?: string): UseCartResult {
       try {
         // BƯỚC 1: Thử gọi Server Action (Lưu vào Database)
         // -------------------------------------------------------------
-        const result = await addToCartAction(skuId, quantity);
+        const result = await addToCartAction({ skuId, quantity });
 
         if (result.success) {
           // THÀNH CÔNG (User đã login):
@@ -97,8 +101,6 @@ export function useCart(productName?: string): UseCartResult {
         // BƯỚC 2: Fallback sang Guest Cart (LocalStorage)
         // -------------------------------------------------------------
         if (!addedSuccessfully) {
-          console.log("Adding to guest cart (fallback)...");
-
           // Lấy giỏ hàng hiện tại từ LocalStorage (hoặc mảng rỗng nếu chưa có)
           const guestCart = JSON.parse(
             localStorage.getItem("guest_cart") || "[]"

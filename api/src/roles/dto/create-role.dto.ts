@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 /**
  * =====================================================================
@@ -13,7 +13,10 @@ import { IsNotEmpty, IsString } from 'class-validator';
  * - Nên dùng chữ hoa (Uppercase) cho tên vai trò để dễ phân biệt với các dữ liệu khác.
  *
  * 2. VALIDATION:
- * - `@IsNotEmpty()`: Đảm bảo không tạo ra một vai trò không có tên.
+ * - `@IsNotEmpty()`: Đảm bảo không tạo ra một vai trò không có tên. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -22,4 +25,10 @@ export class CreateRoleDto {
   @IsString()
   @IsNotEmpty()
   name: string;
+
+  @ApiProperty({ example: ['user:read'], required: false })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  permissions?: string[];
 }

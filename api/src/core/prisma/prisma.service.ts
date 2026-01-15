@@ -23,7 +23,12 @@ import { tenancyExtension } from '../tenant/prisma-tenancy.extension';
  * - `onModuleDestroy`: Tự động ngắt kết nối khi ứng dụng tắt, tránh rò rỉ tài nguyên (Connection Leak).
  *
  * 3. INHERITANCE:
- * - Lớp này kế thừa `PrismaClient`, nghĩa là mọi hàm của Prisma (findMany, create, update...) đều có sẵn để ta sử dụng.
+ * - Lớp này kế thừa `PrismaClient`, nghĩa là mọi hàm của Prisma (findMany, create, update...) đều có sẵn để ta sử dụng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Auto-Connect: Đảm bảo server không bao giờ xử lý request khi chưa kết nối tới DB, tránh lỗi 500 ngớ ngẩn.
+ * - Performance Logging: Tự động cảnh báo (Warn) khi có câu query chạy chậm hơn 200ms để dev kịp tối ưu (đánh index).
+ * - Security Sanitization: Tự động che giấu password trong log để hacker đọc trộm log cũng không thấy thông tin nhạy cảm.
+
  * =====================================================================
  */
 
@@ -42,11 +47,9 @@ export class PrismaService
 
     const threshold = 200;
 
-    // [P8 OPTIMIZATION] Use $extends for modern logging and performance monitoring
-    // Returns the extended client which will be used as the actual singleton instance
-    const client = this.$extends(tenancyExtension);
-
-    return client.$extends({
+    // [P8 OPTIMIZATION] Sử dụng $extends để thêm tính năng logging và giám sát hiệu năng
+    // Trả về extended client (singleton instance) thay vì client gốc.
+    return this.$extends(tenancyExtension).$extends({
       query: {
         $allModels: {
           async $allOperations({ operation, model, args, query }) {
@@ -56,7 +59,7 @@ export class PrismaService
 
             if (duration > threshold) {
               const logger = new Logger('PrismaPerformance');
-              // Sanitize args to avoid logging sensitive info like passwords
+              // Loại bỏ các thông tin nhạy cảm (Sanitize) trước khi log để bảo mật
               const sanitizedArgs = JSON.parse(JSON.stringify(args));
               const sensitiveFields = ['password', 'token', 'secret', 'key'];
 

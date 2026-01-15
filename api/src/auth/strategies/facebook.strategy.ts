@@ -18,7 +18,10 @@ import { Strategy } from 'passport-facebook';
  * - Khác với Google, Facebook cần được chỉ định rõ các trường muốn lấy qua `profileFields` (VD: name, emails, photos) để tránh lỗi không lấy được dữ liệu.
  *
  * 3. VALIDATE:
- * - Trả về một object User chuẩn. Lưu ý: Một số User Facebook không công khai Email, nên ta cần xử lý logic `emails ? emails[0].value : null` để tránh crash app.
+ * - Trả về một object User chuẩn. Lưu ý: Một số User Facebook không công khai Email, nên ta cần xử lý logic `emails ? emails[0].value : null` để tránh crash app. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

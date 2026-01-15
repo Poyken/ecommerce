@@ -13,7 +13,10 @@
  * - Địa chỉ mặc định được làm nổi bật bằng màu nền `primary` và hiệu ứng đổ bóng đặc biệt.
  *
  * 3. CONFIRMATION DIALOG:
- * - Sử dụng `AlertDialog` để xác nhận trước khi xóa địa chỉ, tránh việc người dùng lỡ tay xóa nhầm.
+ * - Sử dụng `AlertDialog` để xác nhận trước khi xóa địa chỉ, tránh việc người dùng lỡ tay xóa nhầm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -36,8 +39,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
-import { AddAddressDialog } from "@/features/admin/components/add-address-dialog";
-import { useToast } from "@/components/shared/use-toast";
+import { AddAddressDialog } from "@/features/admin/components/users/add-address-dialog";
+import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { m } from "@/lib/animations";
 import { Edit, MapPin, Plus, Trash2 } from "lucide-react";

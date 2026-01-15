@@ -6,7 +6,11 @@
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * Trang này hiển thị tất cả các sản phẩm mà người dùng đã nhấn "Yêu thích".
- * Sử dụng `WishlistClient` để xử lý việc hiển thị và tương tác.
+ * Sử dụng `WishlistClient` để xử lý việc hiển thị và tương tác. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Abandoned Cart Recovery: Đóng vai trò như một "giỏ hàng chờ", nơi khách hàng lưu giữ các món đồ yêu thích để cân nhắc mua sau, giúp giảm tỷ lệ thoát trang và tăng doanh thu tiềm năng.
+ * - Personalized Favorites: Tạo ra không gian mua sắm cá nhân hóa, giúp khách hàng quay lại website thường xuyên hơn để kiểm tra tình trạng hàng hóa hoặc giảm giá của các món đồ họ đang quan tâm.
+
  * =====================================================================
  */
 
@@ -23,13 +27,9 @@ export const metadata = {
 async function DynamicWishlist() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let wishlistItems: any[] = [];
-  try {
-    const items = await getWishlistAction();
-    if (items) {
-      wishlistItems = items;
-    }
-  } catch {
-    // Handle error or empty state
+  const result = await getWishlistAction();
+  if (result.success && result.data) {
+    wishlistItems = result.data;
   }
 
   return <WishlistClient wishlistItems={wishlistItems} />;

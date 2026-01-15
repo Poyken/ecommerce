@@ -23,7 +23,10 @@ import { useTranslations } from "next-intl";
  *      để quay lại trang chủ một cách dễ dàng.
  *
  * 3. I18N (INTERNATIONALIZATION):
- *    - `useTranslations("auth.login")`: Load bản dịch cho các nhãn chữ trong trang.
+ *    - `useTranslations("auth.login")`: Load bản dịch cho các nhãn chữ trong trang. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =================================================================================================
  */
 export default function AuthLayout({
@@ -40,7 +43,7 @@ export default function AuthLayout({
       {/* Left Side - Image */}
       <div className="hidden lg:flex flex-col justify-center items-center bg-muted relative overflow-hidden h-full">
         <OptimizedImage
-          src="/images/home/hero-luxury.jpg"
+          src="/images/auth-hero-luxury.png"
           alt="Authentication Background"
           fill
           containerClassName="w-full h-full"

@@ -14,7 +14,10 @@ import { IsNotEmpty, IsString } from 'class-validator';
  *
  * 2. MINIMAL DATA:
  * - DTO này chỉ cần duy nhất một trường `refreshToken`.
- * - Việc kiểm tra tính hợp lệ và cấp mới sẽ do `AuthService` và `TokenService` đảm nhận.
+ * - Việc kiểm tra tính hợp lệ và cấp mới sẽ do `AuthService` và `TokenService` đảm nhận. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

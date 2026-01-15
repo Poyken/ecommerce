@@ -1,5 +1,20 @@
+/**
+ * =====================================================================
+ * FLUID LAYOUT - LAYOUT TRÀN VIỀN CHO PAGE BUILDER
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Khác với Dashboard Layout thông thường, Fluid Layout tận dụng tối đa
+ * diện tích màn hình (không có padding lề).
+ * Thường dùng cho các tính năng cần không gian lớn như Page Builder. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
-import { AdminSidebar } from "@/features/admin/components/admin-sidebar";
+ * =====================================================================
+ */
+
+import { AdminSidebar } from "@/features/admin/components/navigation/admin-sidebar";
 import { AuthRedirect } from "@/features/auth/components/auth-redirect";
 import { getProfileAction } from "@/features/profile/actions";
 
@@ -12,7 +27,7 @@ export default async function FluidLayout({
   const user = profile.data;
 
   if (!user) {
-     return <AuthRedirect />;
+    return <AuthRedirect />;
   }
 
   return (

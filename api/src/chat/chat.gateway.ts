@@ -26,7 +26,10 @@ import { ChatService } from './chat.service';
  * - Admin sẽ vào phòng `admin-room` để nhận tất cả tin nhắn từ mọi khách hàng.
  *
  * 3. SURGICAL EMITS:
- * - Thay vì gửi nguyên object DB cồng kềnh, ta chỉ gửi những field cần thiết (Sanitization) qua socket để tiết kiệm băng thông.
+ * - Thay vì gửi nguyên object DB cồng kềnh, ta chỉ gửi những field cần thiết (Sanitization) qua socket để tiết kiệm băng thông. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @WebSocketGateway({
@@ -73,7 +76,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       // If admin, join admin room
       const isAdmin = roles.some(
         (r: string) =>
-          r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPER_ADMIN',
+          r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPERADMIN',
       );
 
       if (isAdmin) {
@@ -111,7 +114,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const isAdmin = roles.some(
       (r: string) =>
-        r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPER_ADMIN',
+        r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPERADMIN',
     );
 
     if (isAdmin) {
@@ -184,7 +187,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     const isAdmin = roles.some(
       (r: string) =>
-        r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPER_ADMIN',
+        r.toUpperCase() === 'ADMIN' || r.toUpperCase() === 'SUPERADMIN',
     );
 
     if (isAdmin) {

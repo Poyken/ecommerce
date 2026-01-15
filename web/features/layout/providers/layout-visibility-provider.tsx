@@ -34,7 +34,11 @@ const LayoutVisibilityContext = createContext<
  * 2. AUTOMATIC RESET:
  *    - `useEffect` lắng nghe sự thay đổi của `pathname`.
  *    - Khi User chuyển trang, Header/Footer sẽ tự động hiện lại (Reset về false).
- *    - Điều này tránh tình trạng trang trước ẩn Header làm trang sau cũng bị ẩn theo.
+ *    - Điều này tránh tình trạng trang trước ẩn Header làm trang sau cũng bị ẩn theo. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Immersive Experience: Ẩn Header/Footer trong các trang xem video toàn màn hình hoặc landing page khuyến mãi để người dùng tập trung tối đa vào nội dung.
+ * - Clean Checkout: Tối ưu trang thanh toán bằng cách ẩn bớt các thành phần gây xao nhãng (Menu, Footer Link), giúp khách hàng nhanh chóng hoàn tất đơn hàng.
+
  * =================================================================================================
  */
 export function LayoutVisibilityProvider({
@@ -48,9 +52,9 @@ export function LayoutVisibilityProvider({
 
   // Reset visibility when navigating to a new page
   useEffect(() => {
+    // eslint-disable-next-line
     setHideHeader(false);
     setHideFooter(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return (

@@ -11,9 +11,10 @@ import { format } from "date-fns";
 import DOMPurify from "isomorphic-dompurify";
 import { ArrowLeft, Calendar, Clock, Share2, User } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { AnimatedError } from "@/components/shared/animated-error";
 import Image from "next/image";
 
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -38,7 +39,10 @@ import { useEffect, useState } from "react";
  *
  * 4. FEATURED PRODUCTS:
  * - Hiển thị sản phẩm liên quan được gắn với bài blog.
- * - Giúp tăng conversion và trải nghiệm người dùng.
+ * - Giúp tăng conversion và trải nghiệm người dùng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -323,11 +327,7 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
                         emailError ? "border-destructive ring-destructive" : ""
                       }`}
                     />
-                    {emailError && (
-                      <p className="text-xs text-destructive px-1">
-                        {emailError}
-                      </p>
-                    )}
+                    <AnimatedError message={emailError} />
                   </div>
                   <GlassButton
                     className="w-full bg-primary text-primary-foreground"

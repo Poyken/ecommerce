@@ -15,7 +15,10 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  * - `AddressesService` được export để các module khác (như OrderModule) có thể sử dụng để lấy địa chỉ giao hàng khi tạo đơn.
  *
  * 3. STRUCTURE:
- * - Tuân thủ cấu trúc chuẩn của NestJS: Controller xử lý request, Service xử lý logic, Module kết nối mọi thứ.
+ * - Tuân thủ cấu trúc chuẩn của NestJS: Controller xử lý request, Service xử lý logic, Module kết nối mọi thứ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { AddressesController } from './addresses.controller';

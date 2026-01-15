@@ -1,8 +1,36 @@
 {
+  "chat": {
+    "title": "Trò chuyện",
+    "aiAssistant": "Trợ lý AI",
+    "humanSupport": "Hỗ trợ",
+    "loginToChat": "Đăng nhập để chat",
+    "supportHelpDesc": "Nói chuyện với đội ngũ của chúng tôi để được tư vấn.",
+    "loginToSupport": "Đăng nhập hỗ trợ",
+    "aiHelpGuest": "Bạn có thể dùng trợ lý AI với tư cách khách.",
+    "aiWelcome": "Xin chào! Tôi có thể giúp gì cho bạn?",
+    "aiDescription": "Tôi là trợ lý mua sắm AI của bạn.",
+    "placeholder": "Nhập tin nhắn...",
+    "supportWelcome": "Chào mừng! Chúng tôi có thể giúp gì cho bạn?",
+    "image": "Hình ảnh",
+    "product": "Sản phẩm",
+    "order": "Đơn hàng",
+    "supportPlaceholder": "Nhập tin nhắn cho bộ phận hỗ trợ...",
+    "selector": {
+      "title": "Chọn mục để chia sẻ",
+      "tabs": {
+        "products": "Sản phẩm",
+        "orders": "Đơn hàng"
+      },
+      "searchProducts": "Tìm kiếm sản phẩm...",
+      "noProducts": "Không tìm thấy sản phẩm.",
+      "noOrders": "Không tìm thấy đơn hàng."
+    }
+  },
   "common": {
     "shop": "Cửa hàng",
     "about": "Giới thiệu",
     "contact": "Liên hệ",
+    "chat": "Trò chuyện",
     "blog": "Tin tức",
     "login": "Đăng nhập",
     "register": "Đăng ký",
@@ -68,12 +96,13 @@
     "showMore": "Xem thêm",
     "showLess": "Thu gọn",
     "resetAllFilters": "Đặt lại bộ lọc",
-    "backToHome": "Quay lại trang chủ",
-    "backToCategories": "Quay lại danh mục",
+    "backToHome": "Về Trang chủ",
+    "backToCategories": "Về trang Danh mục",
     "backToBrands": "Quay lại thương hiệu",
     "browseCategories": "Duyệt danh mục",
     "browseBrands": "Duyệt theo thương hiệu",
     "browseAllProducts": "Xem tất cả sản phẩm",
+    "curatedForYou": "Gợi ý cho bạn",
     "noProductsFound": "Không tìm thấy sản phẩm",
     "noProductsFoundDesc": "Chưa có sản phẩm nào trong bộ sưu tập này.",
     "noCategoriesAvailable": "Không có danh mục nào",
@@ -83,7 +112,13 @@
     "ourCollection": "Bộ sưu tập",
     "showingPosts": "Hiển thị {count} bài viết trong {category}",
     "all": "Tất cả",
-    "productsFound": "Tìm thấy {count} sản phẩm"
+    "productsFound": "Tìm thấy {count} sản phẩm",
+    "offline": {
+      "title": "Bạn đang ngoại tuyến",
+      "description": "Có vẻ như bạn đã mất kết nối. Đừng lo lắng, các lựa chọn của bạn vẫn an toàn. Chúng tôi sẽ trở lại ngay khi có kết nối.",
+      "refresh": "Thử tải lại",
+      "footer": "Luxe Premium E-Commerce • Chế độ Ngoại Tuyến"
+    }
   },
   "notifications": {
     "title": "Thông báo",
@@ -309,9 +344,11 @@
     "copied": "Đã sao chép",
     "shippingCode": "Mã vận đơn",
     "trackOrder": "Theo dõi hành trình",
-    "checkOrderId": "Vui lòng kiểm tra lại mã đơn hàng và thử lại."
+    "checkOrderId": "Vui lòng kiểm tra lại mã đơn hàng và thử lại.",
+    "requestReturn": "Yêu cầu trả hàng"
   },
   "home": {
+    "viewAll": "Xem tất cả",
     "heroTitle": "Cửa hàng nội thất cao cấp",
     "heroSubtitle": "Khám phá những xu hướng nội thất sang trọng mới nhất.",
     "featuredCollections": "Bộ sưu tập nổi bật",
@@ -325,7 +362,7 @@
     "trendingNowBold": "Xu hướng",
     "trendingNowItalic": "hiện nay",
     "justLaunched": "Vừa ra mắt",
-    "newArrivalsBold": "Hàng mới",
+    "newArrivalsBold": "Bộ Sưu Tập Mới",
     "newArrivalsItalic": "về",
     "deal": {
       "title": "Khuyến mãi của tháng",
@@ -502,6 +539,10 @@
     "contactUs": "Liên hệ"
   },
   "shop": {
+    "shop": {
+      "showing": "Đang hiển thị {from}-{to} trên {total} sản phẩm"
+    },
+    "loading": "Đang tải sản phẩm...",
     "title": "Danh mục sản phẩm",
     "subtitle": "Khám phá những sản phẩm cao cấp được tuyển chọn kỹ lưỡng.",
     "filters": "Bộ lọc",
@@ -523,7 +564,9 @@
     "page": "Trang",
     "errorLoading": "Lỗi khi tải cửa hàng",
     "metaDescription": "Khám phá bộ sưu tập các mặt hàng thời trang cao cấp của chúng tôi.",
-    "searchResults": "Kết quả tìm kiếm cho \"{query}\""
+    "searchResults": "Kết quả tìm kiếm cho \"{query}\"",
+    "browseAllProducts": "Xem tất cả sản phẩm",
+    "curatedForYou": "Gợi ý cho bạn"
   },
   "cart": {
     "title": "Giỏ hàng",
@@ -557,7 +600,9 @@
     "securePayments": "Thanh toán an toàn",
     "fastShipping": "Giao hàng nhanh hỏa tốc",
     "calculatedAtCheckout": "Tính tại bước thanh toán",
-    "checkingStock": "Đang kiểm tra kho hàng..."
+    "checkingStock": "Đang kiểm tra kho hàng...",
+    "yourSelection": "Lựa chọn của bạn",
+    "quantityMax": "Số lượng đã được cập nhật về mức tối đa."
   },
   "checkout": {
     "backToCart": "Quay lại giỏ hàng",
@@ -785,9 +830,87 @@
     }
   },
   "admin": {
+    "import": "Nhập dữ liệu",
+    "export": "Xuất dữ liệu",
+    "exportExcel": "Xuất ra Excel (.xlsx)",
+    "exportCsv": "Xuất ra CSV (Sắp có)",
+    "exportProcessing": "Đang xử lý xuất dữ liệu",
+    "exportFileWillDownload": "File sẽ tự động tải xuống khi hoàn tất.",
+    "exportError": "Lỗi xuất dữ liệu",
+    "exportErrorDesc": "Không thể xuất dữ liệu lúc này.",
+    "downloadTemplate": "Tải file mẫu",
     "refresh": "Làm mới",
     "dashboard": "Bảng điều khiển",
-    "pages": "Trang tùy chỉnh",
+    "pages": {
+      "title": "Trang",
+      "subtitle": "Quản lý các trang tĩnh và trang đích của cửa hàng",
+      "createNew": "Tạo trang mới",
+      "allPages": "Tất cả các trang",
+      "table": {
+        "title": "Tiêu đề",
+        "slug": "Đường dẫn",
+        "status": "Trạng thái",
+        "lastUpdated": "Cập nhật lần cuối",
+        "actions": "Thao tác",
+        "homeBadge": "Trang chủ",
+        "noPages": "Không tìm thấy trang nào. Hãy bắt đầu bằng cách tạo một trang mới."
+      },
+      "status": {
+        "published": "Đã xuất bản",
+        "draft": "Bản nháp"
+      },
+      "actions": {
+        "build": "Xây dựng",
+        "view": "Xem",
+        "publishToView": "Xuất bản trang để xem nội dung",
+        "addBlocksToView": "Thêm các khối để xem nội dung"
+      },
+      "delete": {
+        "title": "Xóa trang",
+        "description": "Bạn có chắc chắn muốn xóa trang \"{title}\"? Hành động này không thể hoàn tác.",
+        "confirm": "Xóa trang",
+        "cancel": "Hủy",
+        "success": "Xóa trang thành công",
+        "error": "Xóa trang thất bại"
+      },
+      "create": {
+        "title": "Tạo trang mới",
+        "description": "Nhập tiêu đề và URL cho trang mới của bạn. Bạn có thể thêm các khối nội dung sau.",
+        "pageTitle": "Tiêu đề trang",
+        "pageTitlePlaceholder": "VD: Bộ sưu tập mùa hè",
+        "urlSlug": "Đường dẫn URL",
+        "homepageBadge": "Trang chủ",
+        "slugHelp": "PHẢI BẮT ĐẦU BẰNG / (Dùng / cho Trang chủ)",
+        "cancel": "Hủy",
+        "submit": "Tạo trang",
+        "creating": "Đang tạo...",
+        "success": "Đã tạo trang",
+        "successDesc": "Tạo thành công trang \"{title}\"",
+        "error": "Lỗi",
+        "errorDefault": "Tạo trang thất bại"
+      },
+      "settings": {
+        "title": "Cấu hình trang",
+        "description": "Cấu hình siêu dữ liệu trang và các tùy chọn xuất bản",
+        "basicInfo": "Thông tin cơ bản",
+        "pageTitle": "Tiêu đề trang",
+        "pageTitlePlaceholder": "Nhập tiêu đề trang",
+        "urlSlug": "Đường dẫn URL",
+        "urlSlugPlaceholder": "/duong-dan-trang",
+        "urlSlugHelp": "Đường dẫn URL nơi trang này có thể truy cập",
+        "seo": "SEO",
+        "metaDescription": "Mô tả Meta",
+        "metaDescriptionPlaceholder": "Mô tả ngắn gọn cho các công cụ tìm kiếm...",
+        "charCount": "Khuyên dùng {count}/160 ký tự",
+        "publishing": "Xuất bản",
+        "publishPage": "Xuất bản trang",
+        "publishedStatus": "Trang đang hiển thị công khai",
+        "draftStatus": "Trang đang ở chế độ nháp",
+        "save": "Lưu cấu hình",
+        "saving": "Đang lưu...",
+        "delete": "Xóa trang"
+      }
+    },
     "product": "Sản phẩm",
     "openMenu": "Mở menu",
     "overview": "Tổng quan về hoạt động của cửa hàng",
@@ -1186,7 +1309,9 @@
         "PROCESSING": "Đang xử lý",
         "SHIPPED": "Đã giao đơn vị vận chuyển",
         "DELIVERED": "Đã giao hàng",
-        "CANCELLED": "Đã hủy"
+        "CANCELLED": "Đã hủy",
+        "RETURNED": "Đã trả hàng",
+        "COMPLETED": "Hoàn thành"
       },
       "paymentStatusMapping": {
         "UNPAID": "Chưa thanh toán",
@@ -1194,6 +1319,35 @@
         "PAID": "Đã thanh toán",
         "FAILED": "Thất bại",
         "REFUNDED": "Đã hoàn tiền"
+      }
+    },
+    "returns": {
+      "title": "Trả hàng",
+      "management": "Quản lý trả hàng",
+      "searchPlaceholder": "Tìm theo mã yêu cầu hoặc mã đơn hàng...",
+      "noFound": "Không tìm thấy yêu cầu trả hàng nào",
+      "details": "Chi tiết yêu cầu trả hàng",
+      "updateStatus": "Cập nhật trạng thái",
+      "idLabel": "Mã RMA",
+      "orderIdLabel": "Đơn hàng",
+      "customerLabel": "Khách hàng",
+      "typeLabel": "Loại",
+      "methodLabel": "Phương thức",
+      "statusLabel": "Trạng thái",
+      "dateLabel": "Ngày tạo",
+      "inspectionNotes": "Ghi chú kiểm hàng",
+      "rejectedReason": "Lý do từ chối",
+      "successUpdate": "Cập nhật yêu cầu trả hàng thành công",
+      "statusMapping": {
+        "PENDING": "Đang chờ duyệt",
+        "APPROVED": "Đã chấp thuận",
+        "WAITING_FOR_RETURN": "Chờ gửi hàng",
+        "IN_TRANSIT": "Đang vận chuyển",
+        "RECEIVED": "Đã nhận hàng",
+        "INSPECTING": "Đang kiểm tra",
+        "REFUNDED": "Đã hoàn tiền",
+        "REJECTED": "Từ chối",
+        "CANCELLED": "Đã hủy"
       }
     },
     "skus": {
@@ -1260,6 +1414,7 @@
       "permissions": "Quyền hạn",
       "sales": "BÁN HÀNG",
       "orders": "Đơn hàng",
+      "returns": "Trả hàng",
       "coupons": "Mã giảm giá",
       "reviews": "Đánh giá",
       "auditLogs": "Audit Logs",
@@ -1277,7 +1432,8 @@
       "brand": "Quản trị Hệ thống",
       "tenantAdmin": "Quản trị Cửa hàng",
       "chatSupport": "Hỗ trợ Trực tuyến",
-      "platformControl": "Quản trị Nền tảng"
+      "platformControl": "Quản trị Nền tảng",
+      "billing": "Thanh toán"
     },
     "blogs": {
       "title": "Blog",
@@ -1463,6 +1619,88 @@
         "description": "Chúng tôi đang tích hợp với MetaBase và PostHog để theo dõi hành vi thời gian thực."
       }
     },
+    "plans": {
+      "title": "Gói dịch vụ",
+      "subtitle": "Quản lý các gói dịch vụ có sẵn cho khách hàng.",
+      "addPlan": "Thêm Gói",
+      "table": {
+        "name": "Tên gói",
+        "slug": "Slug",
+        "price": "Giá (Tháng / Năm)",
+        "limits": "Giới hạn",
+        "status": "Trạng thái",
+        "actions": "Thao tác"
+      },
+      "limits": {
+        "products": "Sản phẩm",
+        "storage": "MB Lưu trữ",
+        "unlimited": "Không giới hạn"
+      },
+      "status": {
+        "active": "Hoạt động",
+        "inactive": "Ngừng hoạt động",
+        "public": "Công khai"
+      },
+      "messages": {
+        "deleteConfirm": "Bạn có chắc chắn muốn xóa gói này?",
+        "deleteSuccess": "Đã xóa gói",
+        "deleteError": "Xóa gói thất bại"
+      }
+    },
+    "planDialog": {
+      "titleCreate": "Tạo Gói Mới",
+      "titleEdit": "Sửa Gói Dịch Vụ",
+      "description": "Cấu hình chi tiết gói, giá cả và giới hạn.",
+      "fields": {
+        "name": "Tên Gói",
+        "namePlaceholder": "VD: Gói Chuyên Nghiệp",
+        "slug": "Mã (Slug)",
+        "slugPlaceholder": "VD: pro-plan",
+        "description": "Mô tả",
+        "descriptionPlaceholder": "Chi tiết gói...",
+        "priceMonthly": "Giá Tháng ($)",
+        "priceYearly": "Giá Năm ($)",
+        "maxProducts": "Tối đa Sản phẩm",
+        "limitNote": "Đặt -1 để không giới hạn",
+        "limitStorage": "Giới hạn Lưu trữ (MB)",
+        "active": "Kích hoạt",
+        "activeDesc": "Có sẵn cho các đăng ký mới",
+        "public": "Công khai",
+        "publicDesc": "Hiển thị trên bảng giá"
+      },
+      "buttons": {
+        "cancel": "Hủy",
+        "save": "Lưu Thay Đổi"
+      },
+      "messages": {
+        "successCreate": "Tạo gói thành công",
+        "successUpdate": "Cập nhật gói thành công",
+        "errorSave": "Lưu gói thất bại"
+      }
+    },
+    "invoices": {
+      "title": "Hóa Đơn",
+      "subtitle": "Quản lý thanh toán và lịch sử giao dịch.",
+      "stats": {
+        "total": "Tổng Hóa Đơn",
+        "revenue": "Doanh Thu"
+      },
+      "table": {
+        "id": "Mã HĐ",
+        "tenant": "Cửa Hàng",
+        "amount": "Số Tiền",
+        "status": "Trạng Thái",
+        "date": "Hạn Nộp",
+        "actions": "Hành Động"
+      },
+      "actions": {
+        "manage": "Quản lý Hóa đơn",
+        "view": "Xem Chi tiết",
+        "markPaid": "Đánh dấu Đã thanh toán",
+        "cancel": "Hủy Hóa đơn",
+        "successUpdate": "Trạng thái hóa đơn đã được cập nhật"
+      }
+    },
     "subscriptions": {
       "title": "Gói cước & Thanh toán",
       "subtitle": "Quản lý {total} thuê bao trên toàn nền tảng.",
@@ -1491,6 +1729,21 @@
       "empty": {
         "title": "Không tìm thấy thuê bao nào",
         "description": "Không có thuê bao nào phù hợp với tiêu chí tìm kiếm."
+      },
+      "actions": {
+        "edit": "Sửa thuê bao",
+        "cancel": "Hủy đăng ký",
+        "delete": "Xóa bản ghi"
+      },
+      "dialog": {
+        "cancelTitle": "Hủy đăng ký",
+        "cancelDesc": "Bạn có chắc chắn muốn hủy đăng ký của \"{name}\"? Họ sẽ mất quyền truy cập vào cuối chu kỳ thanh toán.",
+        "deleteTitle": "Xóa bản ghi đăng ký",
+        "deleteDesc": "CẢNH BÁO: Bạn có chắc chắn muốn xóa bản ghi đăng ký của \"{name}\"? Việc này sẽ xóa mọi liên kết thanh toán khỏi cơ sở dữ liệu.",
+        "confirmCancel": "Vâng, Hủy đăng ký",
+        "confirmDelete": "Xóa vĩnh viễn",
+        "successCancel": "Hủy đăng ký thành công",
+        "successDelete": "Đã xóa bản ghi đăng ký"
       }
     },
     "settings": {
@@ -1734,6 +1987,107 @@
         "pathWin": "C:\\Windows\\System32\\drivers\\etc\\hosts",
         "pathUnix": "/etc/hosts"
       }
+    },
+    "chat": {
+      "title": "Trợ lý Chat",
+      "aiAssistant": "Trợ lý AI",
+      "humanSupport": "Hỗ trợ viên",
+      "loginToChat": "Đăng nhập để Chat",
+      "supportChat": "Hỗ trợ trực tuyến",
+      "signInToChat": "Đăng nhập để chat",
+      "supportHelpDesc": "Kết nối với đội ngũ hỗ trợ của chúng tôi để được giúp đỡ về đơn hàng (Dành cho thành viên).",
+      "loginToSupport": "Đăng nhập ngay",
+      "aiHelpGuest": "Bạn có thể hỏi Trợ lý AI khi tham quan với tư cách khách!",
+      "aiWelcome": "Xin chào! 👋",
+      "aiDescription": "Tôi là Trợ lý AI của Luxe Shop.\nHãy hỏi tôi về sản phẩm hoặc các chính sách!",
+      "placeholder": "Bạn muốn hỏi gì...",
+      "supportPlaceholder": "Nhập tin nhắn...",
+      "unknownWidget": "Loại widget không xác định",
+      "invalidFileType": "Loại tập tin không hợp lệ",
+      "uploadImageDesc": "Vui lòng chọn một tập tin hình ảnh",
+      "uploadFailed": "Tải lên thất bại",
+      "uploadFailedDesc": "Không thể tải ảnh. Vui lòng thử lại.",
+      "sharedProduct": "Đã chia sẻ sản phẩm: {name}",
+      "referencedOrder": "Đã đính kèm đơn hàng: #{id}",
+      "orderItems": "{count} sản phẩm",
+      "orderDetails": "Chi tiết đơn hàng →",
+      "image": "Hình ảnh",
+      "uploading": "Đang tải...",
+      "product": "Sản phẩm",
+      "order": "Đơn hàng",
+      "read": "Đã xem",
+      "supportWelcome": "Chào {name}! Chúng tôi có thể giúp gì cho bạn?",
+      "selector": {
+        "tabs": {
+          "products": "Sản phẩm",
+          "orders": "Đơn hàng"
+        },
+        "searchProducts": "Tìm sản phẩm gần đây...",
+        "searchOrders": "Tìm đơn hàng của bạn...",
+        "noProducts": "Không tìm thấy sản phẩm nào",
+        "noOrders": "Không tìm thấy đơn hàng nào"
+      }
+    },
+    "productDetail": {
+      "selectOptions": "Vui lòng chọn phân loại",
+      "selectOptionsDesc": "Bạn cần chọn đầy đủ các tùy chọn (Size, Màu sắc) trước khi thêm vào giỏ hàng.",
+      "outOfStock": "Hết hàng",
+      "outOfStockDesc": "Sản phẩm này hiện đang hết hàng.",
+      "verifiedReviews": "({count} Đánh giá đã xác minh)",
+      "freeGlobalShipping": "Giao hàng quốc tế miễn phí",
+      "warranty": "Bảo hành 2 năm",
+      "authenticityVerified": "Xác thực chính hãng",
+      "customerReviews": "Đánh giá của khách hàng",
+      "recentlyViewed": "Đã xem gần đây"
+    },
+    "orderStatus": {
+      "confirmed": "Đơn hàng đã được xác nhận!",
+      "thankYou": "Cảm ơn bạn đã mua hàng. Đơn hàng <id></id> của bạn đã được đặt thành công.",
+      "recipient": "Người nhận",
+      "totalAmount": "Tổng tiền",
+      "paymentStatus": "Trạng thái thanh toán",
+      "shippingTo": "Giao đến",
+      "viewDetails": "Xem chi tiết đơn hàng",
+      "continueShopping": "Tiếp tục mua sắm",
+      "emailNotice": "Chúng tôi sẽ gửi email kèm thông tin theo dõi ngay khi đơn hàng được gửi đi.",
+      "orderFailed": "Đặt hàng thất bại",
+      "paymentFailed": "Thanh toán thất bại",
+      "paymentProblem": "Rất tiếc, thanh toán cho đơn hàng <id></id> của bạn không thể thực hiện.",
+      "paymentProblemBrief": "Thanh toán của bạn không thể thực hiện. Vui lòng thử lại.",
+      "paymentProblemDetail": "Giao dịch đã bị hủy hoặc bị từ chối bởi ngân hàng của bạn. Không có khoản tiền nào bị trừ.",
+      "orderID": "Mã đơn hàng",
+      "status": "Trạng thái",
+      "payment": "Thanh toán",
+      "cancelled": "Đã hủy",
+      "failed": "Thất bại",
+      "tryAgain": "Thử lại",
+      "needHelp": "Cần hỗ trợ? Liên hệ với đội ngũ CSKH của chúng tôi để được giúp đỡ."
+    }
+  },
+  "returns": {
+    "title": "Yêu cầu trả hàng",
+    "subtitle": "Quản lý các yêu cầu trả hàng và theo dõi trạng thái.",
+    "noReturns": "Chưa có yêu cầu trả hàng nào",
+    "noReturnsDesc": "Bạn chưa thực hiện yêu cầu trả hàng nào. Nếu bạn cần trả lại sản phẩm, hãy vào trang Đơn hàng và chọn đơn hàng tương ứng.",
+    "checkOrders": "Kiểm tra đơn hàng",
+    "viewDetails": "Xem chi tiết",
+    "viewProgress": "Xem tiến độ",
+    "reason": "Lý do",
+    "status": {
+      "PENDING": "Đang chờ duyệt",
+      "APPROVED": "Đã chấp thuận",
+      "WAITING_FOR_RETURN": "Chờ gửi hàng",
+      "IN_TRANSIT": "Đang vận chuyển",
+      "RECEIVED": "Đã nhận hàng",
+      "INSPECTING": "Đang kiểm tra",
+      "REFUNDED": "Đã hoàn tiền",
+      "REJECTED": "Từ chối",
+      "CANCELLED": "Đã hủy"
+    },
+    "type": {
+      "REFUND_ONLY": "Chỉ hoàn tiền",
+      "RETURN_AND_REFUND": "Trả hàng & Hoàn tiền",
+      "EXCHANGE": "Đổi hàng"
     }
   }
 }

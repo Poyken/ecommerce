@@ -16,7 +16,10 @@ import { useEffect } from "react";
  *
  * 2. CLIENT-SIDE REDIRECT:
  * - Dùng `window.location.replace` thay vì `router.push` để thay thế lịch sử duyệt web,
- *   tránh việc user ấn Back lại quay về trang Loading này.
+ *   tránh việc user ấn Back lại quay về trang Loading này. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 export function AuthRedirect() {

@@ -1,4 +1,5 @@
 import * as crypto from 'crypto';
+import { Request } from 'express';
 
 /**
  * =====================================================================
@@ -13,10 +14,13 @@ import * as crypto from 'crypto';
  * - Nếu Token bị dùng ở một thiết bị có IP/UA khác -> Hệ thống sẽ từ chối.
  *
  * 2. SHA-256 HASHING:
- * - Ta không lưu trực tiếp thông tin thô mà băm (Hash) nó thành một chuỗi ký tự duy nhất để bảo mật thông tin người dùng.
+ * - Ta không lưu trực tiếp thông tin thô mà băm (Hash) nó thành một chuỗi ký tự duy nhất để bảo mật thông tin người dùng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Cung cấp các hàm tiện ích dùng chung, giúp code gọn gàng và tái sử dụng hiệu quả.
+
  * =====================================================================
  */
-export function getFingerprint(req: any): string {
+export function getFingerprint(req: Request): string {
   const ua = req.headers['user-agent'] || '';
 
   // Lấy IP từ X-Forwarded-For (do Next.js server forward tới) hoặc fallback về req.ip

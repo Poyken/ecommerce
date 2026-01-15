@@ -25,7 +25,10 @@ import { env } from "./lib/env";
  * ✅ PRODUCTION-SAFE:
  * - CSRF token generated ONCE per request
  * - No duplicate token generation
- * - Consistent client/server state
+ * - Consistent client/server state *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 
@@ -36,8 +39,15 @@ const CSRF_COOKIE_NAME = "csrf-token";
 export default async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  // Bypass i18n routing for static assets (images, fonts, etc.)
-  if (pathname.startsWith("/images/") || pathname.startsWith("/fonts/")) {
+  // Bypass i18n routing for static assets (images, fonts, pwa icons, etc.)
+  if (
+    pathname.startsWith("/images/") ||
+    pathname.startsWith("/fonts/") ||
+    pathname.includes("icon-") ||
+    pathname.endsWith(".png") ||
+    pathname.endsWith(".ico") ||
+    pathname.endsWith(".json")
+  ) {
     return NextResponse.next();
   }
 
@@ -67,7 +77,9 @@ export default async function proxy(request: NextRequest) {
     try {
       const { decodeJwt } = await import("jose");
       const decoded = decodeJwt(accessToken);
-      if (decoded.exp && Date.now() >= decoded.exp * 1000) {
+      // [IMPROVEMENT] Refresh 1 minute before expiration to prevent 401 race conditions
+      // This ensures the token is fresh BEFORE it actually expires
+      if (decoded.exp && Date.now() >= decoded.exp * 1000 - 60000) {
         shouldRefresh = true;
       }
     } catch {
@@ -80,25 +92,32 @@ export default async function proxy(request: NextRequest) {
   // 3. Thực thi intlMiddleware (Xử lý đa ngôn ngữ)
   response = intlMiddleware(request);
 
-  // ✅ Set CSRF token ONCE (only if not already set)
-  if (!currentCsrfToken) {
-    response.cookies.set(CSRF_COOKIE_NAME, csrfToken, {
-      path: "/",
-      httpOnly: false, // Critical: Client must read this
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-    });
-  }
-
   if (shouldRefresh && refreshToken) {
+    /**
+     * 🛡️ LỚP PHÒNG THỦ 1: NAVIGATION REFRESH (CHỦ ĐỘNG)
+     * 📚 TẠI SAO CẦN?
+     * - Khi User chuyển trang hoặc nhấn F5, Middleware này chạy trước khi UI render.
+     * - Giúp trang web luôn có Token mới ngay từ lúc nạp Server Components.
+     *
+     * ⚠️ LƯU Ý SỐNG CÒN (DO NOT REMOVE):
+     * - Cần Forward 'User-Agent' và 'IP' thật của người dùng lên Backend.
+     * - Nếu thiếu, Backend sẽ thấy IP của Vercel/Server và coi là hacker -> Logout ngay lập tức.
+     */
     try {
       const apiUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
 
-      // Send refresh token in Cookie header
+      // Lấy thông tin thiết bị thật của người dùng để Backend verify Fingerprint
+      const userAgent = request.headers.get("user-agent") || "";
+      const forwardedFor = request.headers.get("x-forwarded-for") || "";
+      const host = request.headers.get("host") || "";
+
       const refreshRes = await fetch(`${apiUrl}/auth/refresh`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "User-Agent": userAgent,
+          "X-Forwarded-For": forwardedFor,
+          "X-Tenant-Domain": host.split(":")[0],
           Cookie: `refreshToken=${refreshToken}`,
         },
         body: JSON.stringify({ refreshToken }),
@@ -110,21 +129,25 @@ export default async function proxy(request: NextRequest) {
 
         if (newTokens && newTokens.accessToken) {
           accessToken = newTokens.accessToken;
-          // Đồng bộ token vào request headers cho Server Components
+          // Đồng bộ token cho Request hiện tại để Server Components có thể dùng ngay
           request.headers.set(
             "Cookie",
             `accessToken=${newTokens.accessToken}; refreshToken=${refreshToken}`
           );
+
+          // Cập nhật lại response object để next-intl không dùng dữ liệu cũ
           response = intlMiddleware(request);
 
-          // ✅ Don't regenerate CSRF - already set above!
-          // Just update auth cookies
-
-          // Cập nhật token vào browser cookies
+          /**
+           * 🌐 CROSS-DOMAIN PRODUCTION CONFIG (VERCEL + RENDER)
+           * 📚 TẠI SAO CẦN SameSite: 'none' và Secure: true?
+           * - Vì Web (Vercel) và API (Render) nằm trên 2 domain khác nhau.
+           * - Trình duyệt sẽ chặn cookie nếu không có cấu hình này.
+           */
           const cookieOptions = {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "lax" as const,
+            secure: true, // Bắt buộc cho SameSite: None
+            sameSite: "none" as const,
             path: "/",
           };
           response.cookies.set("accessToken", newTokens.accessToken, {
@@ -132,7 +155,6 @@ export default async function proxy(request: NextRequest) {
             maxAge: 15 * 60,
           });
 
-          // Only update Refresh Token if returned
           if (newTokens.refreshToken) {
             response.cookies.set("refreshToken", newTokens.refreshToken, {
               ...cookieOptions,
@@ -140,19 +162,40 @@ export default async function proxy(request: NextRequest) {
             });
           }
         }
-      } else {
+      } else if (refreshRes.status === 401 || refreshRes.status === 403) {
+        // Chỉ xóa token khi Backend xác nhận Token thực sự hết hạn/vô hiệu
         response.cookies.delete("accessToken");
         response.cookies.delete("refreshToken");
         accessToken = undefined;
       }
     } catch (error) {
-      console.error("[PROXY] Refresh failed:", error);
+      // 🛡️ BẢO VỆ KHI LỖI MẠNG: Không tự tiện Logout nếu server lag hoặc mất mạng tạm thời
+      console.error(
+        "[PROXY] Refresh failed - Network error. Keeping session for retry.",
+        error
+      );
     }
+  }
+
+  /**
+   * 🛡️ CSRF PROTECTION - BẢO VỆ CUỐI CÙNG
+   * - Luôn set CSRF token vào response cuối cùng, bất kể có refresh token hay không.
+   * - Ngăn chặn lỗi 403 Forbidden khi submit form sau khi tự động refresh token.
+   */
+  if (!currentCsrfToken || !response.cookies.get(CSRF_COOKIE_NAME)) {
+    response.cookies.set(CSRF_COOKIE_NAME, csrfToken, {
+      path: "/",
+      httpOnly: false,
+      secure: true,
+      sameSite: "none",
+    });
   }
 
   // 4. Bảo vệ Route Admin
   const isAdminPath =
-    pathname.match(/^\/([a-z]{2})\/admin/) || pathname.startsWith("/admin");
+    pathname.match(/^\/([a-z]{2})\/(admin|super-admin)/) ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/super-admin");
 
   if (isAdminPath) {
     if (!accessToken) {

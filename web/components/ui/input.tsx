@@ -20,7 +20,10 @@ import { cn } from "@/lib/utils";
  *
  * CN UTILITY:
  * - Dùng `cn()` để merge class mặc định với class truyền từ ngoài vào (`className`).
- * - Cho phép override styles khi cần thiết.
+ * - Cho phép override styles khi cần thiết. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -21,7 +21,10 @@ import { useCallback, useState } from "react";
  *
  * 3. API INTEGRATION:
  * - Gọi API /ai-chat/message với message và guestId
- * - Nếu user đã login, API sẽ dùng userId từ token
+ * - Nếu user đã login, API sẽ dùng userId từ token *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
+
  * =====================================================================
  */
 

@@ -21,7 +21,10 @@ import { toDataURL } from 'qrcode';
  * 3. QUY TRÌNH KÍCH HOẠT:
  * - Bước 1: Tạo Secret -> Tạo Link `otpauth` -> Chuyển thành QR Code.
  * - Bước 2: User quét mã bằng app điện thoại.
- * - Bước 3: User nhập mã từ app để xác nhận -> Server lưu Secret và bật `twoFactorEnabled`.
+ * - Bước 3: User nhập mã từ app để xác nhận -> Server lưu Secret và bật `twoFactorEnabled`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

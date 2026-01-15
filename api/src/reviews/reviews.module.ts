@@ -14,7 +14,10 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  *
  * 2. ARCHITECTURE:
  * - Sử dụng `PrismaModule` để lưu trữ nội dung đánh giá và điểm số (Rating).
- * - Tách biệt rõ ràng giữa logic cho khách hàng (viết review) và Admin (quản lý/xóa review).
+ * - Tách biệt rõ ràng giữa logic cho khách hàng (viết review) và Admin (quản lý/xóa review). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';

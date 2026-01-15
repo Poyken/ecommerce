@@ -1,5 +1,6 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable, Logger } from '@nestjs/common';
+import { getTenant } from '@core/tenant/tenant.context';
 
 /**
  * =====================================================================
@@ -16,7 +17,10 @@ import { Injectable, Logger } from '@nestjs/common';
  *
  * 2. COMPOSITE KEY:
  * - Trong DB, `userId` và `productId` tạo thành một Unique Constraint.
- * - Điều này ngăn chặn việc một User thêm trùng 1 sản phẩm vào Wishlist nhiều lần.
+ * - Điều này ngăn chặn việc một User thêm trùng 1 sản phẩm vào Wishlist nhiều lần. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()
@@ -68,6 +72,7 @@ export class WishlistService {
           data: {
             userId,
             productId,
+            tenantId: getTenant()!.id,
           },
         });
         return { isWishlisted: true };
@@ -100,7 +105,11 @@ export class WishlistService {
                 take: 1,
                 orderBy: { price: 'asc' },
               },
-              category: true,
+              categories: {
+                include: {
+                  category: true,
+                },
+              },
             },
           },
         },
@@ -135,6 +144,9 @@ export class WishlistService {
   }
 
   async mergeWishlist(userId: string, productIds: string[]) {
+    if (!productIds || !Array.isArray(productIds)) {
+      return [];
+    }
     const results: Array<{
       productId: string;
       success: boolean;
@@ -156,7 +168,11 @@ export class WishlistService {
 
         if (!existing) {
           await this.prisma.wishlist.create({
-            data: { userId: userId, productId: productId },
+            data: {
+              userId: userId,
+              productId: productId,
+              tenantId: getTenant()!.id,
+            },
           });
           results.push({ productId: productId, success: true });
         } else {

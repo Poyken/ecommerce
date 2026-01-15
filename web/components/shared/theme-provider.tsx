@@ -20,7 +20,10 @@ import * as React from "react";
  * - Tương thích tốt nhất với Tailwind CSS (`darkMode: "class"`).
  *
  * 3. COMPOSITION (Component Wrapping):
- * - Đây là một Wrapper Component, nó bao bọc toàn bộ App để cung cấp Context Theme xuống dưới.
+ * - Đây là một Wrapper Component, nó bao bọc toàn bộ App để cung cấp Context Theme xuống dưới. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

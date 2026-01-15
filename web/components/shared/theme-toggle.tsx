@@ -25,7 +25,10 @@ import { useTheme } from "next-themes";
  * 2. ICON ANIMATIONS:
  * - Sử dụng CSS classes (`rotate`, `scale`) để tạo hiệu ứng xoay và phóng to/thu nhỏ khi chuyển đổi giữa icon Mặt trời và Mặt trăng.
  * - `dark:-rotate-90 dark:scale-0`: Ẩn icon Sun khi ở chế độ Dark.
- * - `dark:rotate-0 dark:scale-100`: Hiện icon Moon khi ở chế độ Dark.
+ * - `dark:rotate-0 dark:scale-100`: Hiện icon Moon khi ở chế độ Dark. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

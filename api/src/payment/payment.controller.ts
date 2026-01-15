@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Logger,
   Post,
   Query,
   Res,
@@ -32,32 +33,23 @@ import { VNPayUtils } from './vnpay.utils';
  * - Đây mới là nơi TIN CẬY NHẤT để cập nhật trạng thái đơn hàng (`PAID`, `PROCESSING`) trong Database.
  *
  * 3. CHECKSUM VALIDATION:
- * - Mọi dữ liệu đối tác gửi về đều phải được xác thực chữ ký (`vnp_SecureHash` hoặc `signature`) để đảm bảo không bị kẻ xấu giả mạo gói tin thanh toán.
+ * - Mọi dữ liệu đối tác gửi về đều phải được xác thực chữ ký (`vnp_SecureHash` hoặc `signature`) để đảm bảo không bị kẻ xấu giả mạo gói tin thanh toán. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
+import { CommissionService } from '@/analytics/commission.service';
+
 @ApiTags('Payment')
 @Controller('payment')
 export class PaymentController {
-  /**
-   * =====================================================================
-   * PAYMENT CONTROLLER - Cổng thanh toán
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. HASH & CHECKSUM (Bảo mật):
-   * - Khi VNPay trả về kết quả (qua Return URL hoặc IPN), ta phải kiểm tra chữ ký (`vnp_SecureHash`).
-   * - Nguyên tắc: Sort params a-z -> Stringify -> Hash với Secret Key -> So sánh với Hash nhận được.
-   * - Nếu khớp -> Dữ liệu toàn vẹn (không bị hacker chỉnh sửa tiền/status).
-   *
-   * 2. IPN (Instant Payment Notification):
-   * - Đây là kênh "Server-to-Server" để VNPay báo kết quả cho Backend.
-   * - Độ tin cậy cao hơn Return URL (vì User có thể tắt browser trước khi redirect xong).
-   * =====================================================================
-   */
+  private readonly logger = new Logger(PaymentController.name);
+
   constructor(
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
+    private readonly commissionService: CommissionService,
   ) {}
 
   @Get('vnpay_return')
@@ -88,6 +80,14 @@ export class PaymentController {
             status: 'PROCESSING',
             paymentStatus: 'PAID',
           },
+        });
+
+        // Calculate commissions/fees
+        await this.commissionService.calculateForOrder(orderId).catch((e) => {
+          this.logger.error(
+            `Error calculating commission for order ${orderId}`,
+            e,
+          );
         });
 
         return res.redirect(
@@ -137,12 +137,12 @@ export class PaymentController {
         where: { id: orderId },
       });
       if (!order) {
-        return { RspCode: '01', Message: 'Order not found' };
+        return { RspCode: '01', Message: 'Không tìm thấy đơn hàng' };
       }
 
-      // Check if already paid
+      // Kiểm tra xem đơn đã thanh toán chưa
       if (order.status !== 'PENDING') {
-        return { RspCode: '02', Message: 'Order already confirmed' };
+        return { RspCode: '02', Message: 'Đơn hàng đã được xác nhận trước đó' };
       }
 
       if (rspCode === '00') {
@@ -154,7 +154,16 @@ export class PaymentController {
             paymentStatus: 'PAID',
           },
         });
-        return { RspCode: '00', Message: 'Success' };
+
+        // Tính toán hoa hồng và phí nền tảng
+        await this.commissionService.calculateForOrder(orderId).catch((e) => {
+          this.logger.error(
+            `Lỗi khi tính toán hoa hồng cho đơn hàng ${orderId}`,
+            e,
+          );
+        });
+
+        return { RspCode: '00', Message: 'Thành công' };
       } else {
         // Payment Failed
         await this.prisma.order.update({
@@ -164,7 +173,7 @@ export class PaymentController {
             paymentStatus: 'FAILED',
           },
         });
-        return { RspCode: '00', Message: 'Success' };
+        return { RspCode: '00', Message: 'Thành công' };
       }
     } else {
       return { RspCode: '97', Message: 'Checksum failed' };
@@ -194,6 +203,10 @@ export class PaymentController {
     const secretKey = this.configService.get('MOMO_SECRET_KEY');
     const accessKey = this.configService.get('MOMO_ACCESS_KEY');
 
+    if (!secretKey) {
+      return { message: 'Chưa cấu hình MOMO_SECRET_KEY' };
+    }
+
     // MoMo IPN signature raw string format
     const rawSignature = `accessKey=${accessKey}&amount=${amount}&extraData=${extraData || ''}&message=${message}&orderId=${orderId}&orderInfo=${orderInfo}&partnerCode=${partnerCode}&requestId=${requestId}&responseTime=${responseTime}&resultCode=${resultCode}&transId=${transId}`;
 
@@ -208,7 +221,7 @@ export class PaymentController {
         where: { id: orderId },
       });
       if (!order) {
-        return { message: 'Order not found' };
+        return { message: 'Không tìm thấy đơn hàng' };
       }
 
       if (resultCode === 0) {
@@ -221,6 +234,14 @@ export class PaymentController {
             transactionId: transId.toString(),
           },
         });
+
+        // Calculate commissions/fees
+        await this.commissionService.calculateForOrder(orderId).catch((e) => {
+          this.logger.error(
+            `Error calculating commission for order ${orderId}`,
+            e,
+          );
+        });
       } else {
         // Failed
         await this.prisma.order.update({
@@ -231,9 +252,9 @@ export class PaymentController {
           },
         });
       }
-      return { message: 'Success' };
+      return { message: 'Thành công' };
     } else {
-      return { message: 'Signature mismatch' };
+      return { message: 'Chữ ký không khớp (Signature mismatch)' };
     }
   }
 }

@@ -1,4 +1,10 @@
 import {
+  ApiCreateResponse,
+  ApiDeleteResponse,
+  ApiListResponse,
+  ApiUpdateResponse,
+} from '@/common/decorators/crud.decorators';
+import {
   Body,
   Controller,
   Delete,
@@ -9,6 +15,12 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
+import type { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { AddressesService } from './addresses.service';
+import { CreateAddressDto } from './dto/create-address.dto';
+import { UpdateAddressDto } from './dto/update-address.dto';
 
 /**
  * =====================================================================
@@ -25,25 +37,20 @@ import {
  * - `@Request() req`: Dùng để lấy thông tin user từ Token (sau khi qua Guard). `req.user.id` giúp ta biết chính xác ai đang thực hiện yêu cầu.
  *
  * 3. RESTFUL API:
- * - Sử dụng đầy đủ các phương thức: `POST` (Tạo), `GET` (Lấy), `PATCH` (Cập nhật), `DELETE` (Xóa).
+ * - Sử dụng đầy đủ các phương thức: `POST` (Tạo), `GET` (Lấy), `PATCH` (Cập nhật), `DELETE` (Xóa). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import type { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { AddressesService } from './addresses.service';
-import { CreateAddressDto } from './dto/create-address.dto';
-import { UpdateAddressDto } from './dto/update-address.dto';
-
 @ApiTags('Addresses')
 @Controller('addresses')
 @UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class AddressesController {
   constructor(private readonly addressesService: AddressesService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Tạo địa chỉ mới' })
+  @ApiCreateResponse('Address', { summary: 'Tạo địa chỉ mới' })
   async create(
     @Request() req: RequestWithUser,
     @Body() createAddressDto: CreateAddressDto,
@@ -56,14 +63,14 @@ export class AddressesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Lấy danh sách địa chỉ của user' })
+  @ApiListResponse('Address', { summary: 'Lấy danh sách địa chỉ của user' })
   async findAll(@Request() req: RequestWithUser) {
     const data = await this.addressesService.findAll(req.user.id);
     return { data };
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Cập nhật địa chỉ' })
+  @ApiUpdateResponse('Address', { summary: 'Cập nhật địa chỉ' })
   async update(
     @Request() req: RequestWithUser,
     @Param('id') id: string,
@@ -78,7 +85,7 @@ export class AddressesController {
   }
 
   @Delete(':id')
-  @ApiOperation({ summary: 'Xóa địa chỉ' })
+  @ApiDeleteResponse('Address', { summary: 'Xóa địa chỉ' })
   async remove(@Request() req: RequestWithUser, @Param('id') id: string) {
     const data = await this.addressesService.remove(req.user.id, id);
     return { data };

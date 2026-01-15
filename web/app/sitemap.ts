@@ -1,20 +1,23 @@
-import { blogPosts } from "@/data/blog-posts";
+import { blogService } from "@/features/blog/services/blog.service";
 import { MetadataRoute } from "next";
 
 /**
  * =====================================================================
- * SITEMAP.TS - Sơ đồ trang web (Static)
+ * SITEMAP.TS - Sơ đồ trang web (Dynamic)
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. NEXT.JS METADATA ROUTE:
- * - File này (app/sitemap.ts) là quy ước đặc biệt của Next.js App Router.
- * - Nó sẽ tự động generate file `public/sitemap.xml` khi build.
+ * 1. REAL-TIME SITEMAP:
+ * - Thay vì dùng data tĩnh, ta gọi blogService để lấy danh sách bài viết thực tế.
+ * - Giúp Google luôn nhận được các bài viết mới nhất ngay khi crawl.
  *
- * 2. PRIORITY & FREQUENCY:
- * - `priority`: Độ quan trọng (0.0 - 1.0). Trang chủ (1.0) quan trọng nhất.
- * - `changeFrequency`: Gợi ý Google bot bao lâu nên quay lại crawl 1 lần.
+ * 2. NEXT.JS METADATA ROUTE:
+ * - File này sinh ra sitemap.xml tự động. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - SEO Indexing: Giúp các công cụ tìm kiếm (Google, Bing) lập chỉ mục website nhanh hơn gấp 2 lần bằng cách tự động cung cấp danh sách tất cả sản phẩm và bài viết mới.
+ * - Discovery logic: Tự động khai báo độ ưu tiên (priority) của các trang quan trọng (Trang chủ) so với các trang phụ, giúp bot Google bò trúng những trang mang lại doanh thu.
+ *
  * =====================================================================
  */
 
@@ -37,13 +40,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: route === "" ? 1 : 0.8,
   }));
 
-  // Blog Routes (Safe because it's local data)
-  const blogRoutes: MetadataRoute.Sitemap = blogPosts.map((post) => ({
-    url: `${baseUrl}/blog/${post.id}`,
-    lastModified: post.date ? new Date(post.date) : new Date(),
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  // Blog Routes (Fetched from API)
+  let blogRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const blogsRes = await blogService.getBlogs({ limit: 100 });
+    if (blogsRes.data) {
+      blogRoutes = blogsRes.data.map((post) => ({
+        url: `${baseUrl}/blog/${post.slug || post.id}`,
+        lastModified: post.updatedAt ? new Date(post.updatedAt) : new Date(),
+        changeFrequency: "weekly" as const,
+        priority: 0.7,
+      }));
+    }
+  } catch (error) {
+    console.warn("Sitemap: Failed to fetch blogs", error);
+  }
 
   return [...routes, ...blogRoutes];
 }

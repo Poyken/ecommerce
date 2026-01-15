@@ -10,16 +10,19 @@ import { SenderType } from '@prisma/client';
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. CONVERSATION MODEL (Mô hình hội thoại):
+ * 1. MÔ HÌNH HỘI THOẠI (Conversation Model):
  * - Mỗi User sẽ có 1 `ChatConversation` duy nhất với Admin.
  * - Mọi tin nhắn (`ChatMessage`) đều thuộc về hội thoại này.
  *
- * 2. MESSAGE TYPES:
+ * 2. CÁC LOẠI TIN NHẮN (Message Types):
  * - Hệ thống hỗ trợ nhiều loại tin nhắn: TEXT, IMAGE, PRODUCT (gửi thông tin sản phẩm), ORDER (gửi thông tin đơn hàng).
- * - Điều này giúp việc hỗ trợ khách hàng trở nên trực quan hơn.
+ * - Metadata field (JSON) được dùng để lưu chi tiết sp/đơn hàng kèm theo.
  *
- * 3. DATA PRUNING (Dọn dẹp dữ liệu):
- * - Chat sinh ra rất nhiều dữ liệu rác. Hàm `pruneOldMessages` chạy định kỳ hàng tuần để xóa các tin nhắn cũ hơn 180 ngày, giữ cho DB luôn nhẹ nhàng.
+ * 3. DỌN DẸP DỮ LIỆU (Data Pruning):
+ * - Chat sinh ra rất nhiều dữ liệu rác. Hàm `pruneOldMessages` chạy định kỳ hàng tuần để xóa các tin nhắn cũ hơn 180 ngày, giữ cho DB luôn nhẹ nhàng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()
@@ -29,8 +32,8 @@ export class ChatService {
   constructor(private readonly prisma: PrismaService) {}
 
   /**
-   * [P14 OPTIMIZATION] Automated Chat Pruning (Weekly)
-   * Purge messages older than 180 days to keep DB lean.
+   * [P14 OPTIMIZATION] Tự động xóa tin nhắn cũ (Pruning Weekly).
+   * - Xóa tin nhắn quá 180 ngày để giải phóng dung lượng DB.
    */
   @Cron(CronExpression.EVERY_WEEK)
   async pruneOldMessages(daysOld = 180) {
@@ -55,7 +58,9 @@ export class ChatService {
   }
 
   /**
-   * Finds or creates a conversation for a user
+   * Tìm hoặc tạo mới cuộc hội thoại hội thoại cho một user.
+   * - Nếu chưa có hội thoại, tự động tạo mới.
+   * - Load sẵn 50 tin nhắn mới nhất.
    */
   async getConversation(userId: string) {
     let conversation = await this.prisma.chatConversation.findFirst({
@@ -103,7 +108,9 @@ export class ChatService {
   }
 
   /**
-   * Save a new message
+   * Lưu tin nhắn mới vào DB.
+   * - Hỗ trợ gửi text, hình ảnh, sản phẩm, đơn hàng.
+   * - Cập nhật `updatedAt` của Conversation để sort danh sách chat cho Admin.
    */
   async saveMessage(
     userId: string,
@@ -150,8 +157,8 @@ export class ChatService {
   }
 
   async markAsRead(conversationId: string, senderTypeToCheck: SenderType) {
-    // If I am ADMIN, I want to mark messages FROM USER as read.
-    // So senderTypeToCheck should be the OTHER party.
+    // Nếu tôi là ADMIN, tôi muốn đánh dấu tin nhắn TỪ USER là đã đọc.
+    // Nên `senderTypeToCheck` sẽ là phía bên kia (USER).
     await this.prisma.chatMessage.updateMany({
       where: {
         conversationId,
@@ -163,7 +170,9 @@ export class ChatService {
   }
 
   /**
-   * For Admin: List latest conversations
+   * Dành cho Admin: Lấy danh sách các cuộc hội thoại mới nhất.
+   * - Sắp xếp theo thời gian tin nhắn cuối cùng (`updatedAt`).
+   * - Kèm theo số lượng tin chưa đọc (`unreadCount`).
    */
   async getAdminConversations(page = 1, limit = 20) {
     const skip = (page - 1) * limit;

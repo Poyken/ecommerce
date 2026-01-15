@@ -10,7 +10,10 @@
  * - Giúp tăng khả năng bán hàng (Cross-selling) ngay khi người dùng đang đọc tin tức.
  *
  * 2. STAGGERED GRID:
- * - Sử dụng Framer Motion để tạo hiệu ứng xuất hiện lần lượt cho các thẻ sản phẩm.
+ * - Sử dụng Framer Motion để tạo hiệu ứng xuất hiện lần lượt cho các thẻ sản phẩm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -20,6 +23,7 @@ import { ProductCard } from "@/features/products/components/product-card";
 import { Product } from "@/types/models";
 import { m } from "@/lib/animations";
 import { useTranslations } from "next-intl";
+import { getProductImage } from "@/lib/product-helper";
 
 interface FeaturedProductsProps {
   products: Product[];
@@ -85,11 +89,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
                   ? Number(product.skus[0].salePrice)
                   : undefined
               }
-              imageUrl={
-                (typeof product.images?.[0] === "string"
-                  ? product.images?.[0]
-                  : product.images?.[0]?.url) || "/placeholder-product.png"
-              }
+              imageUrl={getProductImage(product)}
               category={product.category?.name}
               skus={product.skus}
             />

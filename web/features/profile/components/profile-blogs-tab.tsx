@@ -2,8 +2,8 @@
 
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
-import { useToast } from "@/components/shared/use-toast";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+import { useToast } from "@/components/ui/use-toast";
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
 import { deleteBlogAction, getMyBlogsAction } from "@/features/blog/actions";
 import { BlogFormDialog } from "@/features/blog/components/blog-form-dialog";
 import { m } from "@/lib/animations";
@@ -13,7 +13,7 @@ import { format } from "date-fns";
 import { AnimatePresence } from "framer-motion";
 import { Calendar, Edit, FileText, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 /**
  * =====================================================================
@@ -32,7 +32,10 @@ import { useEffect, useState } from "react";
  *
  * 3. STATE MANAGEMENT:
  * - `selectedBlog`: Lưu bài viết đang được chọn để Edit. Nếu null -> Mode Create.
- * - `itemToDelete`: Lưu item đang chờ xóa để hiện Confirm Dialog.
+ * - `itemToDelete`: Lưu item đang chờ xóa để hiện Confirm Dialog. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 export function ProfileBlogsTab() {
@@ -48,7 +51,7 @@ export function ProfileBlogsTab() {
     null
   );
 
-  const fetchBlogs = async () => {
+  const fetchBlogs = useCallback(async () => {
     try {
       setIsLoading(true);
       const res = await getMyBlogsAction();
@@ -66,11 +69,11 @@ export function ProfileBlogsTab() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [t, toast]);
 
   useEffect(() => {
     fetchBlogs();
-  }, []);
+  }, [fetchBlogs]);
 
   const handleCreate = () => {
     setSelectedBlog(null);

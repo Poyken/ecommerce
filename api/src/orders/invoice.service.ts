@@ -14,7 +14,10 @@ import { PrismaService } from '@core/prisma/prisma.service';
  * - Trả về dữ liệu JSON để frontend render hoặc tạo PDF.
  *
  * 2. INVOICE NUMBER:
- * - Tự động sinh mã hóa đơn dạng INV-YYYYMMDD-XXXXX.
+ * - Tự động sinh mã hóa đơn dạng INV-YYYYMMDD-XXXXX. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -65,6 +68,7 @@ export class InvoiceService {
       where: { id: orderId },
       include: {
         user: true,
+        // coupon: true, // [MIGRATION] Coupon relation removed
         items: {
           include: {
             sku: {
@@ -106,7 +110,22 @@ export class InvoiceService {
     const subtotal = items.reduce((sum, item) => sum + item.total, 0);
     const tax = 0; // VAT can be added later
     const shipping = Number(order.shippingFee || 0);
-    const discount = order.couponId ? 0 : 0; // TODO: Calculate discount from coupon
+
+    // Calculate discount from coupon
+    const discount = 0;
+    // [MIGRATION TODO]: Use PromotionUsage relation instead of coupon relation
+    // if (order.coupon) {
+    //   if (order.coupon.discountType === 'PERCENTAGE') {
+    //     discount = subtotal * (Number(order.coupon.discountValue) / 100);
+    //     // Apply max discount limit if specified
+    //     if (order.coupon.maxDiscountAmount) {
+    //       discount = Math.min(discount, Number(order.coupon.maxDiscountAmount));
+    //     }
+    //   } else if (order.coupon.discountType === 'FIXED_AMOUNT') {
+    //     discount = Number(order.coupon.discountValue);
+    //   }
+    // }
+
     const total = Number(order.totalAmount);
 
     // Generate invoice number
@@ -130,7 +149,7 @@ export class InvoiceService {
         name: order.recipientName,
         email: order.user?.email || '',
         phone: order.phoneNumber,
-        address: order.shippingAddress,
+        address: order.shippingAddress || undefined,
       },
       items,
       subtotal,

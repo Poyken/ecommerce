@@ -27,10 +27,50 @@ import { getTenant } from './tenant.context';
  *      - Với lệnh ĐỌC (Read): Tự động thêm `where: { tenantId: tenant.id }`.
  *      - Với lệnh GHI (Write): Tự động gán `data: { tenantId: tenant.id }`.
  *
- * 4. LƯU Ý QUAN TRỌNG:
- *    - Nếu bạn đang viết API cho Super Admin (người quản lý toàn sàn), tenantId sẽ là null/undefined -> Extension sẽ bỏ qua bộ lọc này (đúng mong muốn).
+ * 4. LƯU Ý QUAN TRỌNG (BẢO MẬT):
+ *    - Các model như User, Page, Cart BẮT BUỘC phải được lọc theo tenantId (không để trong SHARED_MODELS).
+ *    - Điều này đảm bảo User của Tenant A không bao giờ có thể thấy dữ liệu của Tenant B.
+ *    - Nếu bạn đang viết API cho Super Admin (người quản lý toàn sàn), tenantId sẽ là null/undefined -> Extension sẽ bỏ qua bộ lọc này (đúng mong muốn). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Data Isolation: "Bức tường lửa" ngăn chặn việc lộ dữ liệu giữa các cửa hàng khác nhau (Tenant Leakage).
+ * - Developer Productivity: Dev không cần nhớ viết `where: { tenantId }` trong mỗi câu query, giảm thiểu bug do quên sót.
+ * - Compliance: Đáp ứng tiêu chuẩn bảo mật doanh nghiệp (Enterprise Grade Security).
+
  * =================================================================================================
  */
+
+// [PERFORMANCE OPTIMIZATION] Static Sets for O(1) lookups
+const SHARED_MODELS = new Set([
+  'Tenant',
+  'OutboxEvent',
+  'Role',
+  'Permission',
+  'UserRole',
+  'RolePermission',
+  'UserPermission',
+  'Notification',
+  'ChatConversation',
+  'ChatMessage',
+  'AuditLog',
+  'PerformanceMetric',
+  'AiChatSession',
+  'AiChatMessage',
+  'ProductTranslation',
+  'BlogProduct',
+  'SubscriptionPlan',
+]);
+
+const MODELS_WITH_SOFT_DELETE = new Set([
+  'Product',
+  'Blog',
+  'User',
+  'Page',
+  'Category',
+  'Brand',
+  'Order',
+  'Review',
+  'Media',
+]);
 
 export const tenancyExtension = Prisma.defineExtension((client) => {
   return client.$extends({
@@ -38,64 +78,35 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
       $allModels: {
         async $allOperations({ model, operation, args, query }) {
           const tenant = getTenant();
-          if (model === 'FeatureFlag') {
-            console.log(
-              `[Tenancy] Intercepting ${model}.${operation}, Tenant: ${
-                tenant?.domain || 'Global'
-              }, IsShared: true`,
+
+          // [RLS OPTIMIZATION] Thiết lập biến session cho PostgreSQL Row Level Security.
+          // 📚 GIẢI THÍCH: Lệnh này nói với Database rằng "Tôi là Tenant X".
+          // Database sẽ tự động áp dụng các Policy (RLS) để chặn truy cập trái phép ở tầng thấp nhất (Database Layer).
+          // Ngay cả khi code Application bị lỗi lọc where, Database vẫn chặn được.
+          if (tenant) {
+            if (tenant['dbUrl']) {
+              // DETECTED SILO MODE (Chế độ Kho Riêng)
+              // Tenant này có Database riêng bbiệt. Connection Manager sẽ lo việc kết nối đúng DB.
+              // Ở đây ta vẫn set context RLS để an toàn tuyệt đối (Defense in Depth).
+            }
+            await client.$executeRawUnsafe(
+              `SET app.current_tenant_id = '${tenant.id}';`,
             );
+          } else {
+            await client.$executeRawUnsafe(`SET app.current_tenant_id = '';`);
           }
 
-          // List of models that should NOT be filtered by tenant (Shared data or 1:1 User data)
-          const sharedModels = [
-            'Tenant',
-            'User', // Users are global-ish, managed by AuthService security checks
-            'OutboxEvent',
-            'Brand',
-            'Category',
-            'Role',
-            'Permission',
-            'UserRole',
-            'RolePermission',
-            'UserPermission',
-            'Notification',
-            'ChatConversation',
-            'ChatMessage',
-            'CartItem',
-            'Cart', // Shared carts or managed explicitly
-            'Page', // Page management often conflicts with implicit caching/filtering
-            'AuditLog',
-            'Sku',
-            'SkuImage',
-            'ProductImage',
-            'ProductOption',
-            'OptionValue',
-            'SkuToOptionValue',
-            'NewsletterSubscriber',
-            'PerformanceMetric',
-            'AiChatSession',
-            'AiChatMessage',
-            'FeatureFlag',
-            'Coupon',
-            'ProductTranslation',
-            'BlogProduct',
-          ];
-
-          // Define which models have a deletedAt field for soft-delete
-          const modelsWithSoftDelete = [
-            'Product',
-            'Blog',
-            'User',
-            'Page',
-            'Category',
-            'Brand',
-            'Order',
-            'Review',
-          ];
-
           // 1. Multi-tenancy Filter
-          if (tenant && !sharedModels.includes(model)) {
+          if (tenant && !SHARED_MODELS.has(model as string)) {
             const anyArgs = args as any;
+            let currentOperation = operation;
+
+            // [TENANCY OPTIMIZATION] If findUnique and we are adding tenantId,
+            // we must use findFirst because findUnique only accepts unique criteria.
+            if (operation === 'findUnique') {
+              currentOperation = 'findFirst';
+            }
+
             if (
               [
                 'findUnique',
@@ -128,9 +139,9 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
             }
           }
 
-          // 2. Soft Delete Filter
+          // 2. Soft Delete Filter (Auto-hide deleted items)
           if (
-            modelsWithSoftDelete.includes(model) &&
+            MODELS_WITH_SOFT_DELETE.has(model as string) &&
             [
               'findUnique',
               'findFirst',
@@ -148,6 +159,28 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
                 ...anyArgs.where,
                 deletedAt: null,
               };
+            }
+          }
+
+          // 3. Intercept Delete Operations for Soft Delete
+          if (
+            MODELS_WITH_SOFT_DELETE.has(model as string) &&
+            (operation === 'delete' || operation === 'deleteMany')
+          ) {
+            const anyArgs = args as any;
+            // Transforming delete into update
+            const newOperation =
+              operation === 'delete' ? 'update' : 'updateMany';
+
+            // Ensure we don't accidentally update everything if where is empty (though Prisma guards against this)
+            if (anyArgs.where) {
+              return (client as any)[model][newOperation]({
+                ...anyArgs,
+                data: {
+                  ...anyArgs.data, // Should be empty for delete actually
+                  deletedAt: new Date(),
+                },
+              });
             }
           }
 

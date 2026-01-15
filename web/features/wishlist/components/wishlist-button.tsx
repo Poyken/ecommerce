@@ -19,11 +19,14 @@
  *
  * 3. USE TRANSITION:
  * - `useTransition`: Đánh dấu việc gọi Server Action là "non-blocking transition".
- * - Giúp React ưu tiên các update UI khác quan trọng hơn trong khi chờ action hoàn tất.
+ * - Giúp React ưu tiên các update UI khác quan trọng hơn trong khi chờ action hoàn tất. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 import { MotionButton } from "@/components/shared/motion-button";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { toggleWishlistAction } from "@/features/wishlist/actions";
 import { useGuestWishlist } from "@/features/wishlist/hooks/use-guest-wishlist";
@@ -119,14 +122,14 @@ export function WishlistButton({
       } else {
         dismiss(); // Dismiss previous toasts
         toast({
-          title: res.isWishlisted ? t("added") : t("removed"),
-          variant: res.isWishlisted ? "success" : "info",
+          title: (res as any).isWishlisted ? t("added") : t("removed"),
+          variant: (res as any).isWishlisted ? "success" : "info",
         });
-        
+
         // Update Global Store directly (faster than waiting for window event)
-        const { updateCount, refreshWishlist } = useWishlistStore.getState();
-        refreshWishlist(); // Or simpler: updateCount(prevCount + (res.isWishlisted ? 1 : -1));
-        
+        const { refreshWishlist } = useWishlistStore.getState();
+        refreshWishlist();
+
         // Keep window event for other listeners if any (e.g. multi-tab)
         window.dispatchEvent(new Event("wishlist_updated"));
       }

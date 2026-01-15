@@ -27,7 +27,12 @@ import { map } from 'rxjs/operators';
  * - Hàm `transformData` sử dụng đệ quy để xử lý mọi cấp độ của Object hoặc Array, đảm bảo không bỏ sót bất kỳ trường dữ liệu nào cần chuẩn hóa.
  *
  * 4. SEPARATION OF CONCERNS:
- * - Controller chỉ việc trả về dữ liệu thô từ Service. Việc "đóng gói" dữ liệu vào format chuẩn được giao cho Interceptor này.
+ * - Controller chỉ việc trả về dữ liệu thô từ Service. Việc "đóng gói" dữ liệu vào format chuẩn được giao cho Interceptor này. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Data Consistency: Frontend không bao giờ phải lo việc API A trả về `{ result: ... }` còn API B trả về `{ data: ... }`.
+ * - Precision Handling: Xử lý vấn đề độ chính xác số học (Decimal vs Float) giúp hiển thị giá tiền không bị sai lệch.
+ * - Simplified Integration: Giảm bớt code xử lý lỗi và map dữ liệu ở phía Client.
+
  * =====================================================================
  */
 

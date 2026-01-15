@@ -26,7 +26,10 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
  * - Dữ liệu trả về từ hàm này sẽ được NestJS tự động gán vào `request.user`.
  *
  * 4. PAYLOAD MAPPING:
- * - Ta trích xuất `userId` và `permissions` từ payload để các Guard và Controller phía sau có thể sử dụng thông tin này mà không cần truy vấn lại Database.
+ * - Ta trích xuất `userId` và `permissions` từ payload để các Guard và Controller phía sau có thể sử dụng thông tin này mà không cần truy vấn lại Database. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -47,14 +50,43 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         (request: any) => {
           // Fallback to cookie
           if (request && request.headers && request.headers.cookie) {
+            if (
+              request.url?.includes('import') ||
+              request.url?.includes('export')
+            ) {
+              console.log(
+                `[JwtStrategy] Debug ${request.url} - Cookie len: ${request.headers.cookie.length}`,
+              );
+            }
             const cookies = request.headers.cookie
               .split(';')
               .reduce((acc: any, cookie: string) => {
-                const [key, value] = cookie.trim().split('=');
+                const parts = cookie.trim().split('=');
+                const key = parts[0];
+                const value = parts.slice(1).join('=');
                 acc[key] = value;
                 return acc;
               }, {});
+
+            if (
+              request.url?.includes('import') ||
+              request.url?.includes('export')
+            ) {
+              console.log(
+                `[JwtStrategy] Debug ${request.url} - Token found: ${!!cookies[
+                  'accessToken'
+                ]}`,
+              );
+            }
             return cookies['accessToken'];
+          }
+          if (
+            request &&
+            (request.url?.includes('import') || request.url?.includes('export'))
+          ) {
+            console.log(
+              `[JwtStrategy] Debug ${request.url} - No Cookie Header`,
+            );
           }
           return null;
         },
@@ -86,9 +118,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     // 1. Check for Revoked Token (Blacklist) via JTI
     const isRevoked = await this.redisService.get(`jwt:revoked:${jti}`);
-    this.logger.debug(
-      `[JwtStrategy] Validating JTI: ${jti}, Revoked status: ${isRevoked}`,
-    );
+    // this.logger.debug(
+    //   `[JwtStrategy] Validating JTI: ${jti}, Revoked status: ${isRevoked}`,
+    // );
     // if (isRevoked) {
     //   throw new UnauthorizedException('Token revoked');
     // }
@@ -100,7 +132,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
       if (fp !== currentFp) {
         // [DEV MODE] Fingerprint mismatch is common in dev (e.g. localhost vs IP).
-        // Log warning instead of revoking token.
+        // Log warning instead of revoking token to prevent loops.
         this.logger.warn(`[JWT] Fingerprint mismatch detected!`);
         this.logger.debug(`[JWT] Token FP: ${fp.substring(0, 10)}...`);
         this.logger.debug(`[JWT] Current FP: ${currentFp.substring(0, 10)}...`);
@@ -109,12 +141,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           `[JWT] IP: ${req.ip} (X-Forwarded-For: ${req.headers['x-forwarded-for']})`,
         );
 
-        // In production, we might want to be stricter, but for now we just log
-        throw new UnauthorizedException(
-          'Device fingerprint mismatch. Please login again.',
-        );
+        if (process.env.NODE_ENV === 'production') {
+          throw new UnauthorizedException(
+            'Device fingerprint mismatch. Please login again.',
+          );
+        }
       } else {
-        this.logger.debug(`[JWT] Fingerprint verified for user ${userId}`);
+        // this.logger.debug(`[JWT] Fingerprint verified for user ${userId}`);
       }
     }
 
@@ -146,7 +179,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
     // Decrypt whitelistedIps if encrypted
     let whitelistedIps = user.whitelistedIps;
-    if (typeof whitelistedIps === 'string' && whitelistedIps.includes(':')) {
+    if (
+      whitelistedIps &&
+      typeof whitelistedIps === 'string' &&
+      whitelistedIps.includes(':')
+    ) {
       whitelistedIps = this.encryptionService.decryptObject(whitelistedIps);
     }
 

@@ -7,6 +7,7 @@ import { AiChatContent } from "@/features/chat/components/ai-chat-content";
 import { SupportChatContent } from "@/features/chat/components/support-chat-content";
 import { cn } from "@/lib/utils";
 import { MessageCircle, Minus, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
@@ -27,26 +28,7 @@ export function UnifiedChatWidget({
   user,
   accessToken,
 }: UnifiedChatWidgetProps) {
-/**
- * =====================================================================
- * UNIFIED CHAT WIDGET - Widget Chat Tổng hợp (AI + Human)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PORTAL PATTERN:
- * - Widget được render ra `document.body` bằng `createPortal`.
- * - Đảm bảo nó luôn nổi trên các thành phần khác (Z-Index cao) và không bị ảnh hưởng bởi
- *   `overflow: hidden` của container cha.
- *
- * 2. STATE MANAGEMENT:
- * - Quản lý 2 Tabs: AI Assistant (mặc định) và Human Support.
- * - Tổng hợp Unread Count từ cả 2 nguồn để hiển thị Badge đỏ ngoài icon.
- *
- * 3. MOUNTING CHECK:
- * - `useEffect` + `mounted` state để đảm bảo chỉ render Portal ở Client-side.
- * =====================================================================
- */
+  const t = useTranslations("chat");
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab>("AI");
@@ -140,7 +122,7 @@ export function UnifiedChatWidget({
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
           </span>
-          <span className="text-sm font-bold">Chat Assistant</span>
+          <span className="text-sm font-bold">{t("title")}</span>
           {totalUnreadCount > 0 && (
             <Badge
               variant="destructive"
@@ -185,7 +167,7 @@ export function UnifiedChatWidget({
                     : "text-muted-foreground hover:bg-foreground/5"
                 )}
               >
-                AI Assistant
+                {t("aiAssistant")}
               </button>
               <button
                 onClick={() => setActiveTab("SUPPORT")}
@@ -196,7 +178,7 @@ export function UnifiedChatWidget({
                     : "text-muted-foreground hover:bg-foreground/5"
                 )}
               >
-                Human Support
+                {t("humanSupport")}
                 {supportUnreadCount > 0 && (
                   <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-red-500 ring-2 ring-white"></span>
                 )}
@@ -266,10 +248,9 @@ export function UnifiedChatWidget({
                     <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-2">
                       <MessageCircle size={32} className="text-blue-600" />
                     </div>
-                    <h3 className="font-bold text-lg">Login to Chat</h3>
+                    <h3 className="font-bold text-lg">{t("loginToChat")}</h3>
                     <p className="text-sm text-muted-foreground max-w-[200px]">
-                      Connect with our support team to get help with your orders
-                      (User Only).
+                      {t("supportHelpDesc")}
                     </p>
                     <Button
                       variant="default"
@@ -279,10 +260,10 @@ export function UnifiedChatWidget({
                         window.location.href = "/login?callbackUrl=/";
                       }}
                     >
-                      Login to Support
+                      {t("loginToSupport")}
                     </Button>
                     <p className="text-xs text-muted-foreground">
-                      Ask our AI Assistant for help while browsing as a guest!
+                      {t("aiHelpGuest")}
                     </p>
                   </div>
                 )}

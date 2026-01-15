@@ -21,7 +21,10 @@ import { cn } from "@/lib/utils";
  *
  * 3. STYLING:
  * - Sử dụng `w-full` để bảng luôn chiếm 100% chiều rộng.
- * - `caption-bottom` đặt chú thích bảng ở dưới cùng.
+ * - `caption-bottom` đặt chú thích bảng ở dưới cùng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

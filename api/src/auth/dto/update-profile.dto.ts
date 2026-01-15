@@ -14,7 +14,10 @@ import { IsOptional, IsString, IsUrl, MinLength } from 'class-validator';
  *
  * 2. VALIDATION:
  * - `MinLength(2)`: Tên người ít nhất phải 2 ký tự (vd: "An").
- * - `IsUrl()`: Đảm bảo avatar phải là link ảnh hợp lệ (thường từ Cloudinary/S3).
+ * - `IsUrl()`: Đảm bảo avatar phải là link ảnh hợp lệ (thường từ Cloudinary/S3). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class UpdateProfileDto {
@@ -34,4 +37,16 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsUrl()
   avatarUrl?: string;
+
+  @ApiPropertyOptional({ example: 'oldPassword123' })
+  @IsOptional()
+  @IsString()
+  @MinLength(8)
+  password?: string;
+
+  @ApiPropertyOptional({ example: 'newPassword123' })
+  @IsOptional()
+  @IsString()
+  @MinLength(8)
+  newPassword?: string;
 }

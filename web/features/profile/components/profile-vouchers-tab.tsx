@@ -13,7 +13,10 @@
  * - Tích hợp nút Copy nhanh mã giảm giá để người dùng có thể sử dụng ngay khi thanh toán.
  *
  * 3. DECORATIVE ELEMENTS:
- * - Sử dụng các lớp gradient và blur để tạo hiệu ứng thẻ voucher cao cấp và thu hút.
+ * - Sử dụng các lớp gradient và blur để tạo hiệu ứng thẻ voucher cao cấp và thu hút. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -22,7 +25,7 @@
 import { getAvailableCouponsAction } from "@/features/coupons/actions";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { Coupon } from "@/types/models";
 import { m } from "@/lib/animations";
@@ -41,7 +44,7 @@ export function ProfileVouchersTab() {
     const fetchCoupons = async () => {
       try {
         const res = await getAvailableCouponsAction();
-        if (res.data) {
+        if (res.success && res.data) {
           setCoupons(res.data);
         }
       } catch (error) {

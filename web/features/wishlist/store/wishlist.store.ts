@@ -10,7 +10,11 @@
  * - Giảm thiểu việc props drilling (truyền data qua nhiều cấp component).
  *
  * 2. SIMPLE SYNC:
- * - `refreshWishlist` cho phép đồng bộ lại với Database khi cần thiết.
+ * - `refreshWishlist` cho phép đồng bộ lại với Database khi cần thiết. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Global Badge: Hiển thị số lượng sản phẩm yêu thích trên Header/Icon Trái tim ở mọi trang mà không cần gọi API liên tục.
+ * - Instant Feedback: Cập nhật trạng thái "đã thích" ngay lập tức trên UI khi user bấm nút, mang lại cảm giác ứng dụng phản hồi cực nhanh.
+
  * =====================================================================
  */
 
@@ -43,8 +47,14 @@ export const useWishlistStore = create<WishlistState>((set) => ({
   refreshWishlist: async () => {
     try {
       set({ isFetching: true });
-      const count = await getWishlistCountAction();
-      set({ count });
+      const result = await getWishlistCountAction();
+      if (
+        result.success &&
+        result.data &&
+        typeof result.data.count === "number"
+      ) {
+        set({ count: result.data.count });
+      }
     } catch (e) {
       console.error("Failed to refresh wishlist", e);
     } finally {

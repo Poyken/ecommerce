@@ -15,7 +15,10 @@ import { useEffect } from "react";
  * - Sử dụng `scrollIntoView({ behavior: "smooth" })` để cuộn mượt mà đến phần tử đó.
  *
  * 2. UX IMPROVEMENT:
- * - Giúp trải nghiệm người dùng tốt hơn khi di chuyển giữa các section trong cùng một trang.
+ * - Giúp trải nghiệm người dùng tốt hơn khi di chuyển giữa các section trong cùng một trang. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

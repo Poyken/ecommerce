@@ -1,71 +1,39 @@
 /**
  * =====================================================================
- * ENVIRONMENT VARIABLES - Biến môi trường
+ * CLIENT ENVIRONMENT VARIABLES - Biến môi trường phía Client
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. TẠI SAO CẦN FILE NÀY?
- * - Thay vì dùng trực tiếp `process.env.API_URL` rải rác khắp nơi, ta tập trung vào đây.
- * - Giúp autocomplete (IntelliSense) hoạt động tốt hơn.
- * - Đảm bảo Type Safety (không bao giờ bị undefined bất ngờ).
+ * 1. KHI NÀO DÙNG?
+ * - Dùng khi cần lấy các cấu hình như URL API, URL Socket... ở phía Frontend (React/Next.js).
  *
- * 2. ZOD VALIDATION (RUNTIME CHECK):
- * - Nếu quên set biến môi trường trong `.env`, ứng dụng sẽ CRASH ngay khi khởi động
- *   với thông báo lỗi rõ ràng, thay vì chạy sai logic ngầm.
- * - Validate định dạng (URL, Email, Min/Max length...).
+ * 2. TẠI SAO CẦN FILE NÀY?
+ * - Thay vì gọi trực tiếp `process.env.NEXT_PUBLIC_...` rải rác khắp nơi, ta tập trung vào đây.
+ * - Giúp dễ dàng set giá trị mặc định (fallback) nếu quên cấu hình `.env`.
+ * - Đảm bảo tính nhất quán (Consistency).
  *
- * 3. CLIENT VS SERVER:
- * - `NEXT_PUBLIC_`: Biến này sẽ được bundle vào code JS gửi xuống trình duyệt.
- * - Không có prefix: Chỉ tồn tại trên server (bảo mật API Key, Database URL...).
+ * ⚠️ LƯU Ý:
+ * - Chỉ các biến bắt đầu bằng `NEXT_PUBLIC_` mới lộ ra phía Client (Browser).
+ * - Đừng để lộ API Key bí mật ở đây! *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Configuration Management: Giúp quản trị viên dễ dàng chuyển đổi URL API từ môi trường Local sang Staging hoặc Production chỉ qua file `.env`.
+ * - Error Prevention: Ngăn chặn lỗi runtime do quên cấu hình nhờ cơ chế fallback (giá trị mặc định) thông minh.
+
  * =====================================================================
  */
-
-import { z } from "zod";
-
 /**
- * Schema validate cho environment variables.
- * Định nghĩa kiểu dữ liệu và giá trị mặc định cho từng biến.
+ * Centralized Environment Variables
+ * Use this file to access environment variables throughout the application.
+ * This ensures consistency and makes it easier to manage defaults.
  */
-const envSchema = z.object({
-  /**
-   * URL của API backend, accessible từ browser.
-   * ⚠️ Prefix NEXT_PUBLIC_ cho phép sử dụng từ Client Components.
-   */
-  NEXT_PUBLIC_API_URL: z.url().default("http://127.0.0.1:8080/api/v1"),
 
-  /**
-   * URL của API backend cho server-side requests (optional).
-   * Dùng trong Docker khi server container gọi API container qua internal network.
-   * Nếu không set, sẽ fallback về NEXT_PUBLIC_API_URL trong http.ts.
-   */
-  API_URL: z.url().optional(),
-});
-
-/**
- * Environment variables đã được validate.
- * Import và sử dụng thay vì truy cập trực tiếp process.env.
- *
- * @example
- * import { env } from "@/lib/env";
- *
- * const apiUrl = env.NEXT_PUBLIC_API_URL;
- * // → "http://127.0.0.1:8080/api/v1" (hoặc giá trị trong .env)
- */
-const rawApiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
-const formattedApiUrl = rawApiUrl.includes("/api/v1")
-  ? rawApiUrl
-  : `${rawApiUrl}/api/v1`;
-
-const rawServerApiUrl =
-  process.env.API_URL ||
-  process.env.NEXT_PUBLIC_API_URL ||
-  "http://localhost:8080";
-const formattedServerApiUrl = rawServerApiUrl.includes("/api/v1")
-  ? rawServerApiUrl
-  : `${rawServerApiUrl}/api/v1`;
-
-export const env = envSchema.parse({
-  NEXT_PUBLIC_API_URL: formattedApiUrl,
-  API_URL: formattedServerApiUrl,
-});
+export const env = {
+  NEXT_PUBLIC_API_URL:
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
+  NEXT_PUBLIC_APP_URL:
+    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  NEXT_PUBLIC_SOCKET_URL:
+    process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:8080",
+  NODE_ENV: process.env.NODE_ENV || "development",
+};

@@ -25,7 +25,10 @@ import {
  *
  * 3. DRY RUN:
  * - Chế độ "Chạy thử". Server sẽ validate dữ liệu, kiểm tra lỗi logic nhưng KHÔNG lưu vào DB.
- * - Giúp User biết file Excel của họ có lỗi gì không trước khi import thật.
+ * - Giúp User biết file Excel của họ có lỗi gì không trước khi import thật. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class ImportRowDto {

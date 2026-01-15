@@ -18,7 +18,10 @@ import { Suspense } from "react";
  * - Trong Next.js, bất kỳ component nào dùng `useSearchParams()` đều cần được bọc trong Suspense để tránh lỗi khi render tĩnh (Static Rendering).
  *
  * 3. SEPARATION OF CONCERNS:
- * - Trang này chỉ đóng vai trò là "vỏ bọc" (Shell). Toàn bộ logic và UI phức tạp được tách ra `LoginPageContent` (Client Component).
+ * - Trang này chỉ đóng vai trò là "vỏ bọc" (Shell). Toàn bộ logic và UI phức tạp được tách ra `LoginPageContent` (Client Component). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

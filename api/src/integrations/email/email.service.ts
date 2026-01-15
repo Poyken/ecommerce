@@ -18,7 +18,10 @@ import * as nodemailer from 'nodemailer';
  * - Nội dung được viết dưới dạng HTML template đơn giản để đảm bảo hiển thị tốt trên mọi thiết bị (Outlook, Gmail).
  *
  * 3. ASYNC NOTIFICATION:
- * - Việc gửi email có độ trễ (latency). Thường ta nên gọi qua BullMQ Queue (như trong OrdersService) để tránh treo request của user.
+ * - Việc gửi email có độ trễ (latency). Thường ta nên gọi qua BullMQ Queue (như trong OrdersService) để tránh treo request của user. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()
@@ -144,6 +147,25 @@ export class EmailService {
        <p>Mật khẩu tài khoản Poyken Shop của bạn đã được thay đổi thành công.</p>
        <p>Nếu bạn không thực hiện việc này, vui lòng liên hệ với bộ phận hỗ trợ ngay lập tức.</p>
        <p>Trân trọng,<br/>Poyken Shop Team</p>`,
+    );
+  }
+
+  async sendLoyaltyPointsEarned(
+    to: string,
+    name: string,
+    points: number,
+    orderId: string,
+  ): Promise<void> {
+    const frontendUrl = this.configService.get('FRONTEND_URL');
+
+    await this.sendCustomEmail(
+      to,
+      `🎉 Bạn đã nhận được ${points} điểm thưởng!`,
+      `<p>Chào ${name},</p>
+       <p>Chúc mừng bạn! Bạn đã nhận được <strong>${points} điểm thưởng</strong> từ đơn hàng <strong>#${orderId.slice(0, 8)}</strong>.</p>
+       <p>Bạn có thể sử dụng điểm thưởng để giảm giá cho các đơn hàng tiếp theo.</p>
+       <p><a href="${frontendUrl}/account/loyalty">Xem số dư điểm của bạn</a></p>
+       <p>Cảm ơn bạn đã mua sắm tại Poyken Shop!</p>`,
     );
   }
 }

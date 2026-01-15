@@ -19,7 +19,10 @@ import { Exclude, Expose } from 'class-transformer';
  * - Chúng được tính toán (Flatten) từ các quan hệ phức tạp của Prisma để trả về một mảng chuỗi đơn giản cho Frontend dễ xử lý.
  *
  * 3. CLASS TRANSFORMER:
- * - NestJS sử dụng thư viện `class-transformer` để tự động thực hiện việc chuyển đổi này dựa trên các Decorator ta đã khai báo.
+ * - NestJS sử dụng thư viện `class-transformer` để tự động thực hiện việc chuyển đổi này dựa trên các Decorator ta đã khai báo. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

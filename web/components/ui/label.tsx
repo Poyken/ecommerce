@@ -20,7 +20,10 @@ import { cn } from "@/lib/utils";
  * - `peer-disabled`: Kỹ thuật CSS của Tailwind để thay đổi style của label khi ô input "hàng xóm" (`peer`) bị disable.
  *
  * 3. USER EXPERIENCE:
- * - `select-none`: Ngăn chặn việc bôi đen văn bản label khi user click nhanh nhiều lần.
+ * - `select-none`: Ngăn chặn việc bôi đen văn bản label khi user click nhanh nhiều lần. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

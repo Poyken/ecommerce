@@ -15,7 +15,11 @@
  *
  * 3. PERFORMANCE:
  * - Giới hạn 20 sản phẩm để tránh lưu quá nhiều dữ liệu.
- * - Sử dụng Set-like behavior để tránh duplicate.
+ * - Sử dụng Set-like behavior để tránh duplicate. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Customer Retention: Giúp khách hàng dễ dàng tìm lại sản phẩm họ vừa xem, giảm thiểu tỷ lệ thoát trang do quên hoặc không tìm thấy đường về sản phẩm cũ.
+ * - Upselling: Tạo thêm điểm chạm (touchpoint) trên UI để giới thiệu lại các sản phẩm khách đang quan tâm, tăng cơ hội chốt đơn (Upsell).
+
  * =====================================================================
  */
 

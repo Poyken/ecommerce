@@ -1,6 +1,6 @@
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { InventoryService } from '@/skus/inventory.service';
+import { InventoryService } from '@/catalog/skus/inventory.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { EmailService } from '@integrations/email/email.service';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
@@ -28,7 +28,10 @@ import { Job } from 'bullmq';
  * - `order-created-post-process`:
  *     + Chạy ngay sau khi đơn tạo thành công.
  *     + Gửi email xác nhận cho khách.
- *     + Bắn thông báo (Notification) cho khách và Admin.
+ *     + Bắn thông báo (Notification) cho khách và Admin. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

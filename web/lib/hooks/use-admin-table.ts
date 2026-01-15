@@ -22,7 +22,12 @@ import { useEffect, useState, useTransition } from "react";
  *
  * 3. DEBOUNCE SEARCH:
  * - Chỉ cập nhật URL sau khi user ngừng gõ 400ms.
- * - Tránh lãng phí request khi user mới gõ được nửa chừng.
+ * - Tránh lãng phí request khi user mới gõ được nửa chừng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Admin Listing Pages: Quản lý danh sách sản phẩm, đơn hàng, khách hàng với đầy đủ tính năng tìm kiếm, lọc, phân trang.
+ * - Shareable URLs: CSKH A có thể filter "Đơn hàng chưa thanh toán" rồi copy link gửi sang CSKH để xử lý tiếp mà không cần chỉ dẫn bấm nút nào.
+ * - UX Perceived Performance: Kết hợp `useTransition` để UI luôn phản hồi (responsive) ngay cả khi đang loading dữ liệu mới.
+
  * =====================================================================
  */
 export function useAdminTable(baseUrl: string) {
@@ -49,7 +54,6 @@ export function useAdminTable(baseUrl: string) {
           params.delete("search");
         }
         params.set("page", "1"); // Reset to page 1 on search
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         router.push(`${baseUrl}?${params.toString()}` as any);
       });
     }
@@ -67,7 +71,6 @@ export function useAdminTable(baseUrl: string) {
         params.set(key, value);
       }
       params.set("page", "1"); // Reset to page 1 on filter change
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       router.push(`${baseUrl}?${params.toString()}` as any);
     });
   };
@@ -79,7 +82,6 @@ export function useAdminTable(baseUrl: string) {
     startTransition(() => {
       const params = new URLSearchParams(searchParams.toString());
       params.set("page", page.toString());
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       router.push(`${baseUrl}?${params.toString()}` as any);
     });
   };

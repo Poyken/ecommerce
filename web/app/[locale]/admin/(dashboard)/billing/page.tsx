@@ -1,6 +1,21 @@
-import { AdminPageHeader } from "@/features/admin/components/admin-page-components";
+/**
+ * =====================================================================
+ * BILLING PAGE - QUẢN LÝ GÓI CƯỚC VÀ THANH TOÁN
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Trang này cho phép Tenant (chủ cửa hàng) xem gói đăng ký hiện tại.
+ * 1. SUBSCRIPTION DATA: Fetch thông tin gói từ backend API /subscriptions/current.
+ * 2. PLAN STATUS: Hiển thị các giới hạn (Usage limits) dựa trên gói (Basic/Pro/Enterprise). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
+ * =====================================================================
+ */
+
+import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
 import { http } from "@/lib/http";
-import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { CreditCard, Zap } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -16,11 +31,11 @@ export default async function BillingPage() {
   ).catch(() => ({ data: null }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <AdminPageHeader
         title="Billing & Subscription"
         subtitle="Manage your plan and billing details"
-        icon={<CreditCard className="h-5 w-5" />}
+        icon={<CreditCard className="text-blue-500 fill-blue-500/10" />}
       />
 
       <div className="grid gap-6 md:grid-cols-2">

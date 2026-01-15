@@ -20,7 +20,10 @@ import * as crypto from 'crypto';
  * - Nếu hacker lấy được Token nhưng dùng ở thiết bị khác -> Token sẽ bị coi là vô hiệu.
  *
  * 3. JTI (JWT ID):
- * - Mỗi Token sinh ra có một mã `jti` duy nhất để tránh việc tái sử dụng Token (Replay Attack).
+ * - Mỗi Token sinh ra có một mã `jti` duy nhất để tránh việc tái sử dụng Token (Replay Attack). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -49,8 +52,8 @@ export class TokenService {
     };
 
     const accessToken = this.jwtService.sign(accessPayload, {
-      secret: this.configService.get('JWT_ACCESS_SECRET'),
-      expiresIn: this.configService.get('JWT_ACCESS_EXPIRED'),
+      secret: this.configService.get('JWT_ACCESS_SECRET') || 'access-secret',
+      expiresIn: this.configService.get('JWT_ACCESS_EXPIRED') || '15m',
     });
 
     // Refresh Token Payload

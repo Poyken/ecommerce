@@ -14,7 +14,10 @@ import { ArrayNotEmpty, IsArray, IsString } from 'class-validator';
  * - `@IsString({ each: true })`: Kiểm tra từng phần tử trong mảng phải là chuỗi (ID của Permission).
  *
  * 2. BATCH PROCESSING:
- * - DTO này cho phép gán nhiều quyền cùng lúc, giúp giảm số lượng request lên server.
+ * - DTO này cho phép gán nhiều quyền cùng lúc, giúp giảm số lượng request lên server. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

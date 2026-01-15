@@ -18,7 +18,10 @@ import { BrandsPageClient } from "./brands-client";
  *
  * 3. COMPONENT COMPOSITION:
  * - Dữ liệu sau khi fetch thành công sẽ được truyền vào `BrandsPageClient`.
- * - `BrandsPageClient` (Client Component) sẽ xử lý tương tác người dùng như mở Dialog Thêm/Sửa/Xoá.
+ * - `BrandsPageClient` (Client Component) sẽ xử lý tương tác người dùng như mở Dialog Thêm/Sửa/Xoá. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

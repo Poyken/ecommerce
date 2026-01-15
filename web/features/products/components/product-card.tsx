@@ -11,7 +11,10 @@
  * - Giúp dễ dàng reuse UI ở các chỗ khác (VD: trong Storybook hoặc Admin Preview).
  *
  * 2. COMPOSITION:
- * - Các nút bấm (QuickView, Wishlist) được truyền vào `ProductCardBase` qua prop `actions`.
+ * - Các nút bấm (QuickView, Wishlist) được truyền vào `ProductCardBase` qua prop `actions`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -19,6 +22,7 @@
 
 import { MotionButton } from "@/components/shared/motion-button";
 import { Button } from "@/components/ui/button";
+import { env } from "@/lib/env";
 import { useFeatureFlags } from "@/features/admin/hooks/use-feature-flags";
 import { useStock } from "@/features/products/hooks/use-stock";
 import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
@@ -70,11 +74,10 @@ export const ProductCard = memo(function ProductCard({
   reviewCount,
   initialIsWishlisted = false,
   isCompact = false,
-  options,
 }: ProductCardProps) {
   // 1. HOOKS KHỞI TẠO
   const t = useTranslations("productCard");
-  const { openQuickView } = useQuickViewStore();
+  const { open } = useQuickViewStore();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -89,8 +92,7 @@ export const ProductCard = memo(function ProductCard({
   // Khi user hover vào card, ta tải trước thông tin chi tiết
   // Giúp QuickView hoặc Navigation trang sau nhanh tức thì
   const prefetchProduct = useCallback(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-    preload(`${apiUrl}/products/${id}`, (url) =>
+    preload(`${env.NEXT_PUBLIC_API_URL}/products/${id}`, (url) =>
       fetch(url).then((res) => res.json())
     );
   }, [id]);
@@ -107,7 +109,10 @@ export const ProductCard = memo(function ProductCard({
       className="pointer-events-auto min-w-[140px] bg-white text-foreground hover:bg-accent hover:text-accent-foreground h-12 rounded-full font-bold text-xs tracking-wider uppercase shadow-2xl border-none hover:shadow-accent/30 hover:shadow-2xl transition-[background-color,color,box-shadow,opacity] duration-300 px-6 backdrop-blur-md transform-gpu"
       onClick={(e) => {
         e.preventDefault();
-        openQuickView(id, undefined, { name, price, imageUrl, category });
+        open({
+          productId: id,
+          initialData: { name, price, imageUrl, category },
+        });
       }}
     >
       <Eye size={16} className="mr-2 shrink-0" />
@@ -119,7 +124,10 @@ export const ProductCard = memo(function ProductCard({
       className="w-full bg-white/95 backdrop-blur-xl text-foreground border-none hover:bg-accent hover:text-accent-foreground rounded-full text-[10px] font-black h-9 shadow-xl hover:shadow-accent/20 transition-[background-color,color,box-shadow] duration-300 transform-gpu"
       onClick={(e) => {
         e.preventDefault();
-        openQuickView(id, undefined, { name, price, imageUrl, category });
+        open({
+          productId: id,
+          initialData: { name, price, imageUrl, category },
+        });
       }}
     >
       {t("quickView") || "Quick View"}
@@ -157,8 +165,6 @@ export const ProductCard = memo(function ProductCard({
         }}
         onMouseEnter={prefetchProduct}
       />
-
-
     </>
   );
 });

@@ -21,7 +21,10 @@ import { cn } from "@/lib/utils";
  * - Sử dụng `class-variance-authority` để định nghĩa các kiểu toast:
  *   - `default`: Thông báo thường (trắng/đen).
  *   - `destructive`: Lỗi (đỏ).
- *   - `success`: Thành công (xanh lá).
+ *   - `success`: Thành công (xanh lá). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

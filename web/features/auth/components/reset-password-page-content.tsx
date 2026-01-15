@@ -3,9 +3,10 @@
 import { resetPasswordAction } from "@/features/auth/actions";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
+import { AnimatedError } from "@/components/shared/animated-error";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/shared/password-input";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Link } from "@/i18n/routing";
 import { resetPasswordSchema } from "@/lib/schemas";
 import { m } from "@/lib/animations";
@@ -31,7 +32,10 @@ import { useActionState, useEffect, useRef, useState } from "react";
  * - `resetPasswordAction` sẽ kiểm tra xem 2 mật khẩu này có khớp nhau không trước khi cập nhật vào DB.
  *
  * 3. SECURITY:
- * - Token này thường chỉ có hiệu lực trong thời gian ngắn (vd: 1 giờ) và chỉ dùng được 1 lần.
+ * - Token này thường chỉ có hiệu lực trong thời gian ngắn (vd: 1 giờ) và chỉ dùng được 1 lần. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -147,12 +151,7 @@ export function ResetPasswordPageContent() {
             </Link>
           </div>
         ) : (
-          <m.form
-            layout
-            action={handleAction}
-            className="space-y-6"
-            noValidate
-          >
+          <m.form layout action={handleAction} className="space-y-6" noValidate>
             <input type="hidden" name="token" value={token} />
 
             <div className="space-y-2">
@@ -187,21 +186,7 @@ export function ResetPasswordPageContent() {
                   }
                 }}
               />
-              <AnimatePresence initial={false}>
-                {localErrors.newPassword && (
-                  <m.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <p className="text-red-500 text-sm mt-1">
-                      {localErrors.newPassword[0]}
-                    </p>
-                  </m.div>
-                )}
-              </AnimatePresence>
+              <AnimatedError message={localErrors.newPassword?.[0]} />
             </div>
 
             <div className="space-y-2">
@@ -238,21 +223,7 @@ export function ResetPasswordPageContent() {
                   }
                 }}
               />
-              <AnimatePresence initial={false}>
-                {localErrors.confirmPassword && (
-                  <m.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <p className="text-red-500 text-sm mt-1">
-                      {localErrors.confirmPassword[0]}
-                    </p>
-                  </m.div>
-                )}
-              </AnimatePresence>
+              <AnimatedError message={localErrors.confirmPassword?.[0]} />
             </div>
 
             <GlassButton

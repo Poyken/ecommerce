@@ -8,21 +8,28 @@ import { UpdateTenantDto } from './dto/update-tenant.dto';
 @Injectable()
 /**
  * =================================================================================================
- * TENANTS SERVICE - LOGIC NGHIỆP VỤ QUẢN LÝ CỬA HÀNG
+ * TENANTS SERVICE - LOGIC NGHIỆP VỤ QUẢN LÝ CỬA HÀNG (MULTI-TENANCY)
  * =================================================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * 1. TRANSACTION (GIAO DỊCH NGUYÊN TỐ):
- *    - Khi tạo mới một Tenant (`create`), ta phải làm 2 việc:
- *      A. Tạo dòng dữ liệu trong bảng `Tenant`.
- *      B. Tạo tài khoản `User` (Admin) cho Tenant đó.
- *    - Vấn đề: Nếu A thành công mà B thất bại -> Dữ liệu rác (Cửa hàng không có chủ).
- *    - Giải pháp: Dùng `prisma.$transaction`. Nếu B lỗi, A sẽ tự động bị hủy (Rollback).
+ *    - Khi tạo mới một Tenant (`create`), ta phải làm 2 việc cùng lúc:
+ *      A. Tạo dòng dữ liệu trong bảng `Tenant` (Thông tin cửa hàng).
+ *      B. Tạo tài khoản `User` (Admin) quản trị cho Tenant đó.
+ *    - Vấn đề: Nếu A thành công nhưng B thất bại -> Dữ liệu rác (Cửa hàng không có chủ).
+ *    - Giải pháp: Dùng `prisma.$transaction`. Nếu có bất kỳ lỗi nào xảy ra ở bước B, bước A sẽ tự động bị hủy bỏ (Rollback).
  *
- * 2. MẬT KHẨU (HASHING):
- *    - Mật khẩu admin KHÔNG ĐƯỢC lưu dưới dạng text (plain-text).
- *    - Bắt buộc phải mã hóa bằng `bcrypt` trước khi lưu vào DB.
+ * 2. MẬT KHẨU AN TOÀN (Hashing):
+ *    - Mật khẩu admin TUYỆT ĐỐI KHÔNG ĐƯỢC lưu dưới dạng text (plain-text).
+ *    - Bắt buộc phải mã hóa một chiều bằng `bcrypt` trước khi lưu vào DB.
+ *
+ * 3. CASCADE DELETION (Xóa lan truyền) - CẨN TRỌNG:
+ *    - Việc xóa một Tenant là thao tác cực kỳ nguy hiểm vì nó sẽ xóa toàn bộ dữ liệu liên quan (Sản phẩm, Đơn hàng, User...).
+ *    - Hãy chắc chắn rằng bạn hiểu rõ cơ chế Cascade của DB hoặc xử lý Soft Delete. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =================================================================================================
  */
 export class TenantsService {
@@ -32,7 +39,7 @@ export class TenantsService {
     const { adminEmail, adminPassword, ...tenantData } = createTenantDto;
 
     return this.prisma.$transaction(async (tx) => {
-      // 1. Create Tenant
+      // 1. Tạo Tenant mới
       const tenant = await tx.tenant.create({
         data: {
           name: tenantData.name,
@@ -42,21 +49,24 @@ export class TenantsService {
         },
       });
 
-      // 2. Create Admin User if requested
+      // 2. Tạo tài khoản Admin mặc định (nếu có yêu cầu)
       if (adminEmail && adminPassword) {
         const hashedPassword = await bcrypt.hash(
           adminPassword,
           AUTH_CONFIG.BCRYPT_ROUNDS,
         );
 
-        // Ensure ADMIN role exists
-        let adminRole = await tx.role.findUnique({
-          where: { name: 'ADMIN' },
+        // Đảm bảo role ADMIN tồn tại cho tenant này (hoặc tạo mới nếu chưa có)
+        let adminRole = await tx.role.findFirst({
+          where: { name: 'ADMIN', tenantId: tenant.id },
         });
 
         if (!adminRole) {
           adminRole = await tx.role.create({
-            data: { name: 'ADMIN' },
+            data: {
+              name: 'ADMIN',
+              tenant: { connect: { id: tenant.id } },
+            },
           });
         }
 
@@ -80,8 +90,10 @@ export class TenantsService {
     });
   }
 
-  async findAll() {
+  async findAll(includeDeleted = false) {
+    const whereClause = includeDeleted ? {} : { deletedAt: null };
     return this.prisma.tenant.findMany({
+      where: whereClause,
       include: {
         _count: {
           select: {
@@ -108,12 +120,23 @@ export class TenantsService {
         },
       },
     });
+    // Nếu tenant không tồn tại hoặc đã bị xóa mềm -> Trả về lỗi
+    if (!tenant || tenant.deletedAt)
+      throw new NotFoundException('Tenant not found');
+    return tenant;
+  }
+
+  // Phương thức tìm kiếm dành cho SuperAdmin (bao gồm cả tenant đã xóa)
+  async findOneAdmin(id: string) {
+    const tenant = await this.prisma.tenant.findUnique({
+      where: { id },
+    });
     if (!tenant) throw new NotFoundException('Tenant not found');
     return tenant;
   }
 
   async update(id: string, updateTenantDto: UpdateTenantDto) {
-    // Ensure existence
+    // Kiểm tra sự tồn tại (bao gồm cả check deletedAt)
     await this.findOne(id);
 
     return this.prisma.tenant.update({
@@ -122,10 +145,35 @@ export class TenantsService {
     });
   }
 
+  // Xóa mềm (Soft Delete) - Mặc định khi gọi API xóa
   async remove(id: string) {
-    // Check constraints (users, orders, etc.) or cascade?
-    // Prisma usually handles cascade if defined, but Tenant deletion is dangerous.
-    // For now, allow delete.
+    await this.findOne(id); // Check exists
+
+    return this.prisma.tenant.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+  }
+
+  // Khôi phục Tenant đã xóa (Undo Soft Delete)
+  async restore(id: string) {
+    const tenant = await this.findOneAdmin(id); // Tìm cả tenant đã xóa
+    if (!tenant.deletedAt) {
+      return tenant; // Đã active thì không cần restore
+    }
+
+    return this.prisma.tenant.update({
+      where: { id },
+      data: { deletedAt: null },
+    });
+  }
+
+  // Xóa cứng (Hard Delete) - Chỉ SuperAdmin dùng, xóa vĩnh viễn khỏi DB
+  async hardDelete(id: string) {
+    const tenant = await this.findOneAdmin(id);
+
+    // Thêm logic kiểm tra an toàn nếu cần (VD: Yêu cầu xác nhận lần 2)
+
     return this.prisma.tenant.delete({
       where: { id },
     });

@@ -7,24 +7,62 @@
  *
  * File này chứa các actions liên quan đến việc lấy danh sách mã giảm giá.
  * Khác với `coupon.ts` (dùng để validate), file này tập trung vào việc
- * hiển thị các mã giảm giá có sẵn cho người dùng.
+ * hiển thị các mã giảm giá có sẵn cho người dùng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Conversion Rate: Khuyến khích khách hàng chốt đơn nhanh hơn bằng cách hiển thị các mã giảm giá hấp dẫn ngay tại giỏ hàng.
+ * - Loyalty Marketing: Tích hợp logic kiểm tra mã giảm giá (Validate) để đảm bảo chỉ những khách hàng thân thiết hoặc đạt điều kiện mới được hưởng ưu đãi.
+
  * =====================================================================
  */
 
 "use server";
 
 import { http } from "@/lib/http";
-import { ApiResponse } from "@/types/dtos";
+import { wrapServerAction } from "@/lib/safe-action";
+import { ActionResult, ApiResponse } from "@/types/api";
 import { Coupon } from "@/types/models";
 
 /**
- * Lấy danh sách các mã giảm giá đang khả dụng (chưa hết hạn, còn lượt dùng).
+ * Láy danh sách các mã giảm giá đang khả dụng (chưa hết hạn, còn lượt dùng).
  */
-export async function getAvailableCouponsAction() {
-  try {
-    const res = await http<ApiResponse<Coupon[]>>("/coupons/available");
-    return { data: res.data };
-  } catch (error: unknown) {
-    return { error: (error as Error).message };
-  }
+export async function getAvailableCouponsAction(): Promise<
+  ActionResult<Coupon[]>
+> {
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<Coupon[]>>("/coupons/available", {
+        skipAuth: true,
+      }),
+    "Không thể lấy mã giảm giá"
+  );
+}
+
+/**
+ * Kiểm tra mã giảm giá có hợp lệ không.
+ */
+export async function validateCouponAction(
+  code: string,
+  amount: number
+): Promise<
+  ActionResult<{
+    isValid: boolean;
+    discountAmount: number;
+    message?: string;
+  }>
+> {
+  return wrapServerAction(async () => {
+    const res = await http<
+      ApiResponse<{
+        isValid: boolean;
+        discountAmount: number;
+        message?: string;
+      }>
+    >(`/coupons/validate?code=${code}&amount=${amount}`);
+
+    return {
+      isValid: res.data.isValid,
+      discountAmount: res.data.discountAmount,
+      message: res.data.message,
+    };
+  }, "Mã giảm giá không hợp lệ");
 }

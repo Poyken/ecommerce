@@ -1,0 +1,289 @@
+/**
+ * =====================================================================
+ * METADATA ACTIONS - Quản lý Danh mục, Thương hiệu, Coupon
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. GOM NHÓM (Aggregated Actions):
+ * - Thay vì tạo 3 files `brand-actions.ts`, `category-actions.ts`, `coupon-actions.ts`,
+ *   ta gom chúng vào đây vì chúng đều là "Metadata" (dữ liệu nền) của hệ thống Ecommerce.
+ *
+ * 2. POLYMORPHISM (Đa hình) trong API Call:
+ * - Hàm `createBrandAction`, `updateBrandAction`... nhận vào `CreateBrandDto` (JSON) HOẶC `FormData`.
+ * - Lý do: Nếu có upload ảnh -> phải dùng `FormData` (multipart). Nếu chỉ text -> dùng JSON.
+ * - Hàm tự động check `data instanceof FormData` để gửi request đúng định dạng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Data Centralization: Quản lý tập trung toàn bộ "xương sống" của cửa hàng điện tử bao gồm Danh mục, Thương hiệu và các mã giảm giá một cách có hệ thống.
+ * - Inventory & Brand Control: Đảm bảo tính nhất quán về dữ liệu sản phẩm, giúp việc quản lý kho và phân loại hàng hóa diễn ra mượt mà và chính xác.
+
+ * =====================================================================
+ */
+"use server";
+
+import { http } from "@/lib/http";
+import { normalizePaginationParams } from "@/lib/utils";
+import {
+  ApiResponse,
+  ActionResult,
+  CreateBrandDto,
+  CreateCategoryDto,
+  CreateCouponDto,
+  UpdateBrandDto,
+  UpdateCategoryDto,
+  UpdateCouponDto,
+} from "@/types/dtos";
+import { Brand, Category, Coupon } from "@/types/models";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
+
+// --- BRANDS ---
+
+export async function getBrandsAction(
+  paramsOrPage?: any,
+  limit?: number,
+  search?: string
+): Promise<ActionResult<Brand[]>> {
+  const params = normalizePaginationParams(paramsOrPage, limit, search);
+  return wrapServerAction(
+    () => http<ApiResponse<Brand[]>>("/brands", { params }),
+    "Failed to fetch brands"
+  );
+}
+
+export async function createBrandAction(
+  data: CreateBrandDto | FormData
+): Promise<ActionResult<Brand>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<Brand>>("/brands", {
+      method: "POST",
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    });
+    REVALIDATE.admin.brands();
+    return res.data;
+  }, "Failed to create brand");
+}
+
+export async function updateBrandAction(
+  id: string,
+  data: UpdateBrandDto | FormData
+): Promise<ActionResult<Brand>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<Brand>>(`/brands/${id}`, {
+      method: "PATCH",
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    });
+    REVALIDATE.admin.brands();
+    return res.data;
+  }, "Failed to update brand");
+}
+
+export async function deleteBrandAction(
+  id: string
+): Promise<ActionResult<void>> {
+  return wrapServerAction(async () => {
+    await http(`/brands/${id}`, { method: "DELETE" });
+    REVALIDATE.admin.brands();
+  }, "Failed to delete brand");
+}
+
+// --- CATEGORIES ---
+
+export async function getCategoriesAction(
+  paramsOrPage?: any,
+  limit?: number,
+  search?: string
+): Promise<ActionResult<Category[]>> {
+  const params = normalizePaginationParams(paramsOrPage, limit, search);
+  return wrapServerAction(
+    () => http<ApiResponse<Category[]>>("/categories", { params }),
+    "Failed to fetch categories"
+  );
+}
+
+export async function createCategoryAction(
+  data: CreateCategoryDto | FormData
+): Promise<ActionResult<Category>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<Category>>("/categories", {
+      method: "POST",
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    });
+    REVALIDATE.admin.categories();
+    return res.data;
+  }, "Failed to create category");
+}
+
+export async function updateCategoryAction(
+  id: string,
+  data: UpdateCategoryDto | FormData
+): Promise<ActionResult<Category>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<Category>>(`/categories/${id}`, {
+      method: "PATCH",
+      body: data instanceof FormData ? data : JSON.stringify(data),
+    });
+    REVALIDATE.admin.categories();
+    return res.data;
+  }, "Failed to update category");
+}
+
+export async function deleteCategoryAction(
+  id: string
+): Promise<ActionResult<void>> {
+  return wrapServerAction(async () => {
+    await http(`/categories/${id}`, { method: "DELETE" });
+    REVALIDATE.admin.categories();
+  }, "Failed to delete category");
+}
+
+// --- COUPONS ---
+
+export async function getCouponsAction(
+  paramsOrPage?: any,
+  limit?: number,
+  search?: string
+): Promise<ActionResult<Coupon[]>> {
+  const params = normalizePaginationParams(paramsOrPage, limit, search);
+  return wrapServerAction(
+    () => http<ApiResponse<Coupon[]>>("/coupons", { params }),
+    "Failed to fetch coupons"
+  );
+}
+
+export async function createCouponAction(
+  data: CreateCouponDto
+): Promise<ActionResult<Coupon>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<Coupon>>("/coupons", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+    REVALIDATE.admin.coupons();
+    return res.data;
+  }, "Failed to create coupon");
+}
+
+export async function updateCouponAction(
+  id: string,
+  data: UpdateCouponDto
+): Promise<ActionResult<Coupon>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<Coupon>>(`/coupons/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+    REVALIDATE.admin.coupons();
+    return res.data;
+  }, "Failed to update coupon");
+}
+
+export async function deleteCouponAction(
+  id: string
+): Promise<ActionResult<void>> {
+  return wrapServerAction(async () => {
+    await http(`/coupons/${id}`, { method: "DELETE" });
+    REVALIDATE.admin.coupons();
+  }, "Failed to delete coupon");
+}
+
+// --- IMPORT & EXPORT (CATEGORIES) ---
+
+export async function exportCategoriesAction(): Promise<
+  ActionResult<{ base64: string; filename: string }>
+> {
+  return wrapServerAction(async () => {
+    const res = await http<any>("/categories/export/excel");
+    return {
+      base64: res.base64,
+      filename: res.filename || "categories_export.xlsx",
+    };
+  }, "Failed to export categories");
+}
+
+export async function importCategoriesAction(
+  formData: FormData
+): Promise<ActionResult<any>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<any>>("/categories/import/excel", {
+      method: "POST",
+      body: formData,
+    });
+    REVALIDATE.admin.categories();
+    return res.data;
+  }, "Failed to import categories");
+}
+
+export async function previewCategoriesImportAction(
+  formData: FormData
+): Promise<ActionResult<any[]>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<any[]>>("/categories/import/preview", {
+      method: "POST",
+      body: formData,
+    });
+    return res.data;
+  }, "Failed to preview categories import");
+}
+
+export async function downloadCategoryTemplateAction(): Promise<
+  ActionResult<{ base64: string; filename: string }>
+> {
+  return wrapServerAction(async () => {
+    const res = await http<any>("/categories/import/template");
+    return {
+      base64: res.base64,
+      filename: res.filename || "categories_import_template.xlsx",
+    };
+  }, "Failed to download template");
+}
+
+// --- IMPORT & EXPORT (BRANDS) ---
+
+export async function exportBrandsAction(): Promise<
+  ActionResult<{ base64: string; filename: string }>
+> {
+  return wrapServerAction(async () => {
+    const res = await http<any>("/brands/export/excel");
+    return {
+      base64: res.base64,
+      filename: res.filename || "brands_export.xlsx",
+    };
+  }, "Failed to export brands");
+}
+
+export async function importBrandsAction(
+  formData: FormData
+): Promise<ActionResult<any>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<any>>("/brands/import/excel", {
+      method: "POST",
+      body: formData,
+    });
+    REVALIDATE.admin.brands();
+    return res.data;
+  }, "Failed to import brands");
+}
+
+export async function previewBrandsImportAction(
+  formData: FormData
+): Promise<ActionResult<any[]>> {
+  return wrapServerAction(async () => {
+    const res = await http<ApiResponse<any[]>>("/brands/import/preview", {
+      method: "POST",
+      body: formData,
+    });
+    return res.data;
+  }, "Failed to preview brands import");
+}
+
+export async function downloadBrandTemplateAction(): Promise<
+  ActionResult<{ base64: string; filename: string }>
+> {
+  return wrapServerAction(async () => {
+    const res = await http<any>("/brands/import/template");
+    return {
+      base64: res.base64,
+      filename: res.filename || "brands_import_template.xlsx",
+    };
+  }, "Failed to download template");
+}

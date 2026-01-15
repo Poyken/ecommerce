@@ -1,53 +1,60 @@
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import { AuditService } from './audit.service';
-
 /**
  * =====================================================================
- * AUDIT CONTROLLER - TRUY XUẤT NHẬT KÝ HỆ THỐNG
+ * AUDIT CONTROLLER - Nhật ký hoạt động hệ thống
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. AUDIT LOG READ (Xem nhật ký):
- * - Đây là API dành riêng cho Admin để kiểm tra xem ai đã làm gì trên hệ thống (VD: Admin nào đã xóa sản phẩm, thời gian nào).
- * - Dữ liệu này cực kỳ quan trọng để truy vết khi có sự cố hoặc tranh chấp.
+ * 1. AUDIT LOGGING:
+ * - Ghi lại MỌI hành động quan trọng (Ai làm gì? Khi nào? Ở đâu? Giá trị cũ/mới là gì?).
+ * - Controller này giúp Admin tra cứu lại lịch sử để truy vết lỗi hoặc hành vi gian lận.
  *
- * 2. PERMISSIONS (Phân quyền):
- * - Chỉ những user có quyền `auditLog:read` mới được phép gọi API này.
- * - Được bảo vệ bởi `JwtAuthGuard` và `PermissionsGuard`.
+ * 2. PERMISSIONS:
+ * - Chỉ user có quyền `auditLog:read` mới được xem. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
+import {
+  RequirePermissions,
+  ApiListResponse,
+} from '@/common/decorators/crud.decorators';
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { AuditService } from './audit.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Admin - Audit Logs')
 @Controller('audit')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
+@ApiBearerAuth()
 export class AuditController {
-  /**
-   * =====================================================================
-   * AUDIT CONTROLLER - Nhật ký kiểm toán
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. PURPOSE (Mục đích):
-   * - API này giúp Admin xem lại lịch sử các thay đổi dữ liệu trong hệ thống (Ai? Làm gì? Khi nào?).
-   * - Rất quan trọng để tra cứu trách nhiệm khi có sự cố.
-   *
-   * 2. SECURITY:
-   * - API này nhạy cảm nên yêu cầu quyền `auditLog:read` và bảo vệ nghiêm ngặt.
-   * =====================================================================
-   */
   constructor(private readonly auditService: AuditService) {}
 
   @Get()
-  @Permissions('auditLog:read')
+  @RequirePermissions('auditLog:read')
+  @ApiListResponse('Audit Log', { summary: 'Truy xuất nhật ký hệ thống' })
   async findAll(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
     @Query('search') search?: string,
+    @Query('roles') roles?: string,
+    @Query('filter') filter?: string,
   ) {
-    return this.auditService.findAll(+page, +limit, search);
+    const rolesArray = roles ? roles.split(',') : undefined;
+
+    // Standardized role name is SUPERADMIN
+    // No special normalization needed as all roles are unified to SUPERADMIN in the DB and code.
+
+    const result = await this.auditService.findAll(
+      +page,
+      +limit,
+      search,
+      rolesArray,
+      filter,
+    );
+    return result; // Result already has { data, meta }
   }
 }

@@ -1,3 +1,26 @@
+/**
+ * =====================================================================
+ * VERIFY ENDPOINTS SCRIPT - Script kiểm thử hệ thống tự động
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. SYSTEM HEALTH CHECK:
+ * - Script này kiểm tra toàn bộ các thành phần chính:
+ *   + Web App (Frontend).
+ *   + API Health (Backend).
+ *   + Auth Flow (Login Admin).
+ *   + Protected API (User List).
+ *   + Public API (Product List).
+ *
+ * 2. TẠI SAO CẦN?
+ * - Chạy trong CI/CD pipeline để đảm bảo code mới không làm sập hệ thống.
+ * - Chạy sau khi deploy để smoke test. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
+ * =====================================================================
+ */
 import axios from 'axios';
 
 const API_URL = 'http://localhost:8080/api';
@@ -51,8 +74,8 @@ async function main() {
         user?: { email: string };
       };
     }>(`${API_URL}/v1/auth/login`, {
-      email: 'admin@example.com',
-      password: '123456',
+      email: 'super@platform.com',
+      password: '12345678',
     });
 
     if (loginRes.data.data?.accessToken) {

@@ -16,7 +16,10 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
  * - `@IsNotEmpty()`: Ngăn chặn việc tạo các tài khoản "rác" thiếu thông tin.
  *
  * 3. SECURITY:
- * - Vẫn áp dụng `@MinLength(6)` cho mật khẩu để duy trì tiêu chuẩn bảo mật chung của hệ thống.
+ * - Vẫn áp dụng `@MinLength(6)` cho mật khẩu để duy trì tiêu chuẩn bảo mật chung của hệ thống. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

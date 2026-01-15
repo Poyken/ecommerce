@@ -1,14 +1,14 @@
 "use client";
 
-import { toast } from "@/components/shared/use-toast"; // Use shared toast hook
+import { toast } from "@/components/ui/use-toast"; // Use shared toast hook
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-    CardTitle,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -18,14 +18,14 @@ import { Link } from "@/i18n/routing";
 import { uploadToCloudinary } from "@/lib/cloudinary"; // Import upload helper
 import { cn } from "@/lib/utils";
 import {
-    Image as ImageIcon,
-    Loader2,
-    MessageCircle,
-    Minus,
-    Paperclip,
-    Send,
-    ShoppingBag,
-    X,
+  Image as ImageIcon,
+  Loader2,
+  MessageCircle,
+  Minus,
+  Paperclip,
+  Send,
+  ShoppingBag,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
@@ -44,22 +44,25 @@ interface ChatWidgetProps {
 }
 
 export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
-/**
- * =====================================================================
- * CHAT WIDGET (STANDALONE) - Widget Chat độc lập
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. BLINKING TITLE:
- * - Khi có tin nhắn mới mà cửa sổ chat đang đóng, ta làm tiêu đề Tab trình duyệt
- *   nhấp nháy (New Message...) để thu hút sự chú ý.
- *
- * 2. AUTO SCROLL:
- * - Khi có tin nhắn mới -> scroll xuống đáy.
- * - `scrollIntoView({ behavior: "smooth" })` tạo hiệu ứng mượt mà.
- * =====================================================================
- */
+  /**
+   * =====================================================================
+   * CHAT WIDGET (STANDALONE) - Widget Chat độc lập
+   * =====================================================================
+   *
+   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+   *
+   * 1. BLINKING TITLE:
+   * - Khi có tin nhắn mới mà cửa sổ chat đang đóng, ta làm tiêu đề Tab trình duyệt
+   *   nhấp nháy (New Message...) để thu hút sự chú ý.
+   *
+   * 2. AUTO SCROLL:
+   * - Khi có tin nhắn mới -> scroll xuống đáy.
+   * - `scrollIntoView({ behavior: "smooth" })` tạo hiệu ứng mượt mà. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
+   * =====================================================================
+   */
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [input, setInput] = useState("");
@@ -144,7 +147,7 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
       });
 
     return () => abortController.abort();
-  }, [isOpen, user, accessToken, setMessages]);
+  }, [isOpen, user, accessToken, setMessages, setUnreadCount]);
 
   useEffect(() => {
     if (scrollRef.current) {

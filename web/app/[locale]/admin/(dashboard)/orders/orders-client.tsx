@@ -10,14 +10,18 @@
  * - Filter theo status (Server-side via URL)
  * - Bulk actions: Export CSV, Delete
  * - Quick status update
- * - Show status counts from server props
+ * - Show status counts from server props *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
+import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { OrderDetailsDialog } from "@/features/admin/components/order-details-dialog";
-import { UpdateOrderStatusDialog } from "@/features/admin/components/update-order-status-dialog";
+import { OrderDetailsDialog } from "@/features/admin/components/orders/order-details-dialog";
+import { UpdateOrderStatusDialog } from "@/features/admin/components/orders/update-order-status-dialog";
 import {
   Check,
   Clock,
@@ -31,10 +35,11 @@ import {
   Truck,
   Upload,
   X,
+  Loader2,
 } from "lucide-react";
 
 import { StatusBadge } from "@/components/shared/status-badge";
-import { toast } from "@/components/shared/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -51,7 +56,7 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
+} from "@/features/admin/components/ui/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useNotificationStore } from "@/features/notifications/store/notification.store";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
@@ -60,6 +65,8 @@ import { Order, OrderStatus } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
+import { ExportButton } from "@/components/shared/data-table/export-button";
+import { useOrdersExport } from "@/features/admin/hooks/use-orders-export";
 
 type FilterType =
   | "all"
@@ -93,9 +100,9 @@ export function OrdersClient({
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { notifications } = useNotificationStore();
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const lastProcessedNotiId = useRef<string | null>(null);
   const [loadingOrderId, setLoadingOrderId] = useState<string | null>(null);
+  const { exportOrders } = useOrdersExport();
 
   // Track processed orderId to prevent infinite loop/re-processing
   const processedOrderIdRef = useRef<string | null>(null);
@@ -209,73 +216,11 @@ export function OrdersClient({
   };
 
   const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      // Mimic API Call for import
-      toast({
-        title: "Importing...",
-        description: `Processing file: ${file.name}`,
-      });
-
-      setTimeout(() => {
-        toast({
-          title: "Success",
-          description: `Successfully imported orders from ${file.name}`,
-          variant: "default",
-        });
-        startTransition(() => {
-          router.refresh();
-        });
-      }, 1500);
-
-      // Reset input
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    }
-  };
-
-  const handleExport = () => {
-    const ordersToExport = orders.filter((o) => selectedRows.has(o.id));
-    if (ordersToExport.length === 0) return;
-
-    const headers = [
-      t("orders.idLabel"),
-      t("orders.emailLabel"),
-      t("orders.totalLabel"),
-      t("orders.statusLabel"),
-      t("created"),
-    ];
-
-    const rows = ordersToExport.map((order) => [
-      order.id,
-      order.user?.email || t("unknownUser"),
-      order.totalAmount,
-      order.status,
-      new Date(order.createdAt).toISOString(),
-    ]);
-
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    if (link.download !== undefined) {
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute(
-        "download",
-        `orders_export_${new Date().toISOString().split("T")[0]}.csv`
-      );
-      link.style.visibility = "hidden";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
+    toast({
+      title: "Feature coming soon",
+      description:
+        "Order import is not yet implemented based on business rules.",
+    });
   };
 
   const getStatusIcon = (status: OrderStatus) => {
@@ -296,14 +241,7 @@ export function OrdersClient({
   };
 
   return (
-    <div className="space-y-6">
-      <input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileChange}
-        className="hidden"
-        accept=".csv,.xlsx"
-      />
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("orders.management")}
@@ -311,7 +249,7 @@ export function OrdersClient({
           count: orders.length,
           total: totalCount,
         })}
-        icon={<ShoppingBag className="h-5 w-5" />}
+        icon={<ShoppingBag className="text-blue-600 fill-blue-600/10" />}
         stats={[
           { label: "total", value: totalCount, variant: "default" },
           { label: "pending", value: pendingCount, variant: "warning" },
@@ -326,17 +264,9 @@ export function OrdersClient({
                   {t("orders.selectedCount", { count: selectedRows.size })}
                 </span>
                 <div className="h-4 w-px bg-primary/20 mx-2" />
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 hover:bg-primary/10"
-                  onClick={handleExport}
-                >
-                  <Download size={16} className="mr-2" />
-                  {t("orders.exportLabel")}
-                </Button>
               </div>
             )}
+            <ExportButton onExport={exportOrders} />
 
             <Button
               variant="outline"
@@ -364,50 +294,108 @@ export function OrdersClient({
       />
 
       {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <Tabs
           value={currentStatus}
           onValueChange={(v) => handleStatusChange(v as FilterType)}
+          className="w-full"
         >
-          <TabsList className="flex-wrap h-auto gap-1 p-1">
-            <TabsTrigger value="all" className="gap-2" disabled={isPending}>
-              All ({totalCount})
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
+            <TabsTrigger
+              value="all"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
+              disabled={isPending}
+            >
+              All
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black"
+              >
+                {totalCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="PENDING" className="gap-2">
-              <Clock className="h-3 w-3" />
-              Pending ({pendingCount})
+            <TabsTrigger
+              value="PENDING"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-amber-600 transition-all gap-2"
+            >
+              <Clock className="h-4 w-4" />
+              Pending
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-600 text-[10px] font-black"
+              >
+                {pendingCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="PROCESSING" className="gap-2">
-              <RefreshCw className="h-3 w-3" />
-              Processing ({processingCount})
+            <TabsTrigger
+              value="PROCESSING"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-blue-600 transition-all gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              Processing
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 text-[10px] font-black"
+              >
+                {processingCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="SHIPPED" className="gap-2">
-              <Truck className="h-3 w-3" />
-              Shipped ({shippedCount})
+            <TabsTrigger
+              value="SHIPPED"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-indigo-600 transition-all gap-2"
+            >
+              <Truck className="h-4 w-4" />
+              Shipped
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-indigo-100 dark:bg-indigo-900/40 text-indigo-600 text-[10px] font-black"
+              >
+                {shippedCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="DELIVERED" className="gap-2">
-              <Check className="h-3 w-3" />
-              Delivered ({deliveredCount})
+            <TabsTrigger
+              value="DELIVERED"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
+            >
+              <Check className="h-4 w-4" />
+              Delivered
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black"
+              >
+                {deliveredCount}
+              </Badge>
             </TabsTrigger>
             {cancelledCount > 0 && (
-              <TabsTrigger value="CANCELLED" className="gap-2">
-                <X className="h-3 w-3" />
-                Cancelled ({cancelledCount})
+              <TabsTrigger
+                value="CANCELLED"
+                className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-rose-600 transition-all gap-2"
+              >
+                <X className="h-4 w-4" />
+                Cancelled
+                <Badge
+                  variant="outline"
+                  className="ml-1 h-5 px-1.5 bg-rose-100 dark:bg-rose-900/40 text-rose-600 text-[10px] font-black"
+                >
+                  {cancelledCount}
+                </Badge>
               </TabsTrigger>
             )}
           </TabsList>
         </Tabs>
 
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t("orders.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
           />
           {(isPending || isTablePending) && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+            </div>
           )}
         </div>
       </div>
@@ -427,7 +415,12 @@ export function OrdersClient({
                 />
               </TableHead>
               <TableHead className="w-[150px]">{t("orders.idLabel")}</TableHead>
-              <TableHead>{t("sidebar.users")}</TableHead>
+              <TableHead>
+                {t("orders.recipientNameLabel") || "Recipient"}
+              </TableHead>
+              <TableHead>
+                {t("orders.paymentMethodLabel") || "Payment"}
+              </TableHead>
               <TableHead>{t("orders.totalLabel")}</TableHead>
               <TableHead>{t("orders.statusLabel")}</TableHead>
               <TableHead>{t("orders.paymentStatusLabel")}</TableHead>
@@ -442,7 +435,7 @@ export function OrdersClient({
           <TableBody>
             {orders.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={canRead || canUpdate ? 8 : 7}>
+                <TableCell colSpan={canRead || canUpdate ? 9 : 8}>
                   <AdminEmptyState
                     icon={ShoppingBag}
                     title={t("orders.noFound")}
@@ -481,14 +474,20 @@ export function OrdersClient({
                   <TableCell>
                     <div className="flex flex-col">
                       <span className="text-sm font-medium">
-                        {order.user
-                          ? `${order.user.firstName} ${order.user.lastName}`
-                          : t("unknownUser")}
+                        {order.recipientName}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        {order.user?.email}
+                        {order.phoneNumber}
                       </span>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className="font-medium bg-slate-50"
+                    >
+                      {order.paymentMethod || "N/A"}
+                    </Badge>
                   </TableCell>
                   <TableCell className="font-medium">
                     {formatCurrency(Number(order.totalAmount))}

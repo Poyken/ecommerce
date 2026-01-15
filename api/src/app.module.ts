@@ -18,7 +18,10 @@
  * - `BullModule`: Cấu hình kết nối tới Redis để phục vụ cho các hàng đợi (Queue) xử lý tác vụ nặng.
  *
  * 5. GLOBAL PROVIDERS:
- * - `APP_GUARD`: Ta đăng ký `ThrottlerGuard` ở cấp độ toàn cầu để bảo vệ mọi API mà không cần khai báo lại ở từng Controller.
+ * - `APP_GUARD`: Ta đăng ký `ThrottlerGuard` ở cấp độ toàn cầu để bảo vệ mọi API mà không cần khai báo lại ở từng Controller. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -29,21 +32,27 @@ import { AuditInterceptor } from '@/audit/audit.interceptor';
 import { AuditModule } from '@/audit/audit.module';
 import { AuthModule } from '@/auth/auth.module';
 import { BlogModule } from '@/blog/blog.module';
-import { BrandsModule } from '@/brands/brands.module';
+import { BrandsModule } from '@/catalog/brands/brands.module';
 import { CartModule } from '@/cart/cart.module';
-import { CategoriesModule } from '@/categories/categories.module';
+import { CategoriesModule } from '@/catalog/categories/categories.module';
 import { CommonModule } from '@/common/common.module';
 import { FeatureFlagsModule } from '@/common/feature-flags/feature-flags.module';
-import { CouponsModule } from '@/coupons/coupons.module';
+import { PromotionsModule } from '@/promotions/promotions.module';
+import { RmaModule } from '@/rma/rma.module';
+import { InventoryModule } from '@/inventory/inventory.module';
+import { MediaModule } from '@/media/media.module';
+import { CustomerGroupsModule } from '@/customer-groups/customer-groups.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { OrdersModule } from '@/orders/orders.module';
 import { PagesModule } from '@/pages/pages.module';
 import { PaymentModule } from '@/payment/payment.module';
-import { ProductsModule } from '@/products/products.module';
+import { ProductsModule } from '@/catalog/products/products.module';
+import { PlansModule } from '@/plans/plans.module';
+import { InvoicesModule } from '@/invoices/invoices.module';
 import { ReviewsModule } from '@/reviews/reviews.module';
 import { RolesModule } from '@/roles/roles.module';
 import { ShippingModule } from '@/shipping/shipping.module';
-import { SkusModule } from '@/skus/skus.module';
+import { SkusModule } from '@/catalog/skus/skus.module';
 import { TenantsModule } from '@/tenants/tenants.module';
 import { UsersModule } from '@/users/users.module';
 import { WishlistModule } from '@/wishlist/wishlist.module';
@@ -69,19 +78,42 @@ import { RedisThrottlerStorageService } from '@core/config/throttler/redis-throt
 import { LoggingInterceptor } from '@core/interceptors/logging.interceptor';
 import { CorrelationIdMiddleware } from '@core/middlewares/correlation-id.middleware';
 import { RedisService } from '@core/redis/redis.service';
+import { IdempotencyInterceptor } from '@core/interceptors/idempotency.interceptor';
 import { TenantMiddleware } from '@core/tenant/tenant.middleware';
 // import { TenantsController } from '@core/tenant/tenants.controller'; // REMOVED
 import { CacheModule } from '@nestjs/cache-manager';
-import { AiChatModule } from './ai-chat/ai-chat.module';
+import { AiChatModule } from './ai/ai-chat/ai-chat.module';
 import { ChatModule } from './chat/chat.module';
 import { LockdownGuard } from '@core/guards/lockdown.guard';
 import { SuperAdminIpGuard } from '@core/guards/super-admin-ip.guard';
+import { TenantGuard } from '@core/guards/tenant.guard';
 import { JwtModule } from '@nestjs/jwt';
+<<<<<<< HEAD
 import { AgentModule } from './agent/agent.module';
 import { InsightsModule } from './insights/insights.module';
 import { ImageProcessorModule } from './images/image-processor.module';
 import { RagModule } from './rag/rag.module';
 import { PromotionsModule } from './promotions/promotions.module';
+=======
+import { AgentModule } from './ai/agent/agent.module';
+import { InsightsModule } from './ai/insights/insights.module';
+import { ImageProcessorModule } from './ai/images/image-processor.module';
+import { RagModule } from './ai/rag/rag.module';
+import { SentryModule } from '@core/sentry/sentry.module';
+import { DataLoaderModule } from '@core/dataloader/dataloader.module';
+import { MetricsModule } from '@core/metrics/metrics.module';
+import { SuperAdminModule } from '@/super-admin/super-admin.module';
+import { ReturnRequestsModule } from './return-requests/return-requests.module';
+import { ProcurementModule } from './procurement/procurement.module';
+import { FulfillmentModule } from './fulfillment/fulfillment.module';
+import { TaxModule } from './tax/tax.module';
+import { LoyaltyModule } from './loyalty/loyalty.module';
+import { WebhooksModule } from './webhooks/webhooks.module';
+import { DevToolsModule } from './dev-tools/dev-tools.module';
+import { SubscriptionModule } from './subscription/subscription.module';
+import { ReportsModule } from './reports/reports.module';
+import { InventoryAlertsModule } from './inventory-alerts/inventory-alerts.module';
+>>>>>>> 8f5a875198d5ce2371ec25b2aeb50dc403c8c172
 
 @Module({
   imports: [
@@ -129,8 +161,14 @@ import { PromotionsModule } from './promotions/promotions.module';
       useFactory: (redisService: RedisService) => ({
         throttlers: [
           {
-            ttl: 60000, // 60 giây
-            limit: 100, // 100 requests
+            name: 'short',
+            ttl: 1000, // 1 giây
+            limit: 10, // Max 10 request/giây -> Chống burst/bot
+          },
+          {
+            name: 'long',
+            ttl: 60000, // 1 phút
+            limit: 100, // Max 100 request/phút -> Chống spam diện rộng
           },
         ],
         storage: new RedisThrottlerStorageService(redisService),
@@ -170,7 +208,8 @@ import { PromotionsModule } from './promotions/promotions.module';
     BrandsModule, // Thương hiệu
     ProductsModule, // Sản phẩm
     SkusModule, // Biến thể sản phẩm (SKU - Stock Keeping Unit)
-
+    PlansModule,
+    InvoicesModule,
     // 9. CartModule - Giỏ hàng
     CartModule,
 
@@ -199,8 +238,6 @@ import { PromotionsModule } from './promotions/promotions.module';
     // 17. CloudinaryModule - Upload ảnh
     CloudinaryModule,
 
-    CouponsModule,
-
     AnalyticsModule,
 
     AuditModule,
@@ -208,6 +245,7 @@ import { PromotionsModule } from './promotions/promotions.module';
     SitemapModule,
 
     AdminModule,
+    SuperAdminModule,
 
     ShippingModule,
 
@@ -222,7 +260,30 @@ import { PromotionsModule } from './promotions/promotions.module';
     AgentModule, // AI Agent System
     InsightsModule, // AI Business Insights
     ImageProcessorModule, // AI Image Enhancement
+<<<<<<< HEAD
     RagModule, PromotionsModule, // RAG Chatbot
+=======
+    RagModule, // RAG Chatbot
+    SentryModule, // Error Tracking & Performance Monitoring
+    DataLoaderModule, // N+1 Query Prevention
+    MetricsModule, // Prometheus Metrics
+    PromotionsModule,
+    RmaModule,
+    InventoryModule,
+    MediaModule,
+    CustomerGroupsModule,
+    ReturnRequestsModule,
+    ProcurementModule,
+    FulfillmentModule,
+    TaxModule,
+    LoyaltyModule,
+    WebhooksModule,
+    DevToolsModule,
+    AnalyticsModule,
+    SubscriptionModule,
+    ReportsModule,
+    InventoryAlertsModule,
+>>>>>>> 8f5a875198d5ce2371ec25b2aeb50dc403c8c172
   ],
   controllers: [HealthController],
   providers: [
@@ -244,6 +305,11 @@ import { PromotionsModule } from './promotions/promotions.module';
       provide: APP_GUARD,
       useClass: CsrfGuard,
     },
+    // TenantGuard: Auto-validate tenant for @RequireTenant endpoints
+    {
+      provide: APP_GUARD,
+      useClass: TenantGuard,
+    },
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
@@ -251,6 +317,10 @@ import { PromotionsModule } from './promotions/promotions.module';
     {
       provide: APP_INTERCEPTOR,
       useClass: AuditInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: IdempotencyInterceptor,
     },
   ],
 })

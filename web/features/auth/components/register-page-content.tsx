@@ -3,7 +3,8 @@
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { PasswordInput } from "@/components/shared/password-input";
-import { useToast } from "@/components/shared/use-toast";
+import { AnimatedError } from "@/components/shared/animated-error";
+import { useToast } from "@/components/ui/use-toast";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { registerAction } from "@/features/auth/actions";
@@ -36,7 +37,10 @@ import { useActionState, useEffect, useRef, useState } from "react";
  * - Sử dụng chung bộ `GlassCard` và `GlassButton` để đảm bảo tính thẩm mỹ đồng nhất với trang Login.
  *
  * 4. SYNC GUEST DATA:
- * - Sau khi đăng ký thành công, tự động sync Cart và Wishlist từ localStorage lên Server.
+ * - Sau khi đăng ký thành công, tự động sync Cart và Wishlist từ localStorage lên Server. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -233,21 +237,7 @@ export function RegisterPageContent() {
                   }
                 }}
               />
-              <AnimatePresence initial={false}>
-                {localErrors.firstName && (
-                  <m.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <p className="text-red-500 text-sm mt-1">
-                      {localErrors.firstName[0]}
-                    </p>
-                  </m.div>
-                )}
-              </AnimatePresence>
+              <AnimatedError message={localErrors.firstName?.[0]} />
             </div>
             <div className="space-y-2">
               <Label
@@ -281,21 +271,7 @@ export function RegisterPageContent() {
                   }
                 }}
               />
-              <AnimatePresence initial={false}>
-                {localErrors.lastName && (
-                  <m.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
-                  >
-                    <p className="text-red-500 text-sm mt-1">
-                      {localErrors.lastName[0]}
-                    </p>
-                  </m.div>
-                )}
-              </AnimatePresence>
+              <AnimatedError message={localErrors.lastName?.[0]} />
             </div>
           </div>
 
@@ -328,21 +304,7 @@ export function RegisterPageContent() {
                 }
               }}
             />
-            <AnimatePresence initial={false}>
-              {localErrors.email && (
-                <m.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <p className="text-red-500 text-sm mt-1">
-                    {localErrors.email[0]}
-                  </p>
-                </m.div>
-              )}
-            </AnimatePresence>
+            <AnimatedError message={localErrors.email?.[0]} />
           </div>
 
           <div className="space-y-2">
@@ -372,21 +334,7 @@ export function RegisterPageContent() {
                 }
               }}
             />
-            <AnimatePresence initial={false}>
-              {localErrors.password && (
-                <m.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden"
-                >
-                  <p className="text-red-500 text-sm mt-1">
-                    {localErrors.password[0]}
-                  </p>
-                </m.div>
-              )}
-            </AnimatePresence>
+            <AnimatedError message={localErrors.password?.[0]} />
           </div>
 
           <GlassButton

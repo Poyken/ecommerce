@@ -13,7 +13,10 @@
  * - Sau khi thêm thành công, bắn ra event `cart_updated` để đồng bộ số lượng trên Header Badge.
  *
  * 3. NAVIGATION:
- * - Tự động chuyển hướng người dùng đến trang giỏ hàng (`/cart`) sau khi thêm thành công.
+ * - Tự động chuyển hướng người dùng đến trang giỏ hàng (`/cart`) sau khi thêm thành công. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -21,7 +24,7 @@
 
 import { addToCartAction } from "@/features/cart/actions";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { ShoppingCart } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -44,7 +47,7 @@ export function BuyAgainButton({ skuId }: BuyAgainButtonProps) {
 
     startTransition(async () => {
       try {
-        const res = await addToCartAction(skuId, 1);
+        const res = await addToCartAction({ skuId, quantity: 1 });
         if (res.success) {
           window.dispatchEvent(new Event("cart_updated"));
           toast({
@@ -60,7 +63,7 @@ export function BuyAgainButton({ skuId }: BuyAgainButtonProps) {
             description: res.error || t("addToCartFailed"),
           });
         }
-      } catch (error) {
+      } catch {
         toast({
           variant: "destructive",
           title: tToast("error"),

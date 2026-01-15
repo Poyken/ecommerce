@@ -10,6 +10,7 @@ import { CreatePermissionDto } from './dto/create-permission.dto';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdatePermissionDto } from './dto/update-permission.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { getTenant } from '@core/tenant/tenant.context';
 
 /**
  * =====================================================================
@@ -18,21 +19,24 @@ import { UpdateRoleDto } from './dto/update-role.dto';
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. MANY-TO-MANY RELATIONSHIP:
- * - Mối quan hệ giữa `Role` và `Permission` là n-n (nhiều-nhiều).
- * - Ta sử dụng bảng trung gian `RolePermission` để lưu trữ các liên kết này.
+ * 1. QUAN HỆ NHIỀU - NHIỀU (Many-to-Many):
+ * - Mối quan hệ giữa `Role` và `Permission` là n-n. Một Role có nhiều Permission, một Permission thuộc về nhiều Role.
+ * - Ta sử dụng bảng trung gian `RolePermission` để lưu trữ các liên kết này nhằm tối ưu hóa truy vấn.
  *
- * 2. ATOMIC ASSIGNMENT (Gán quyền nguyên tử):
+ * 2. GÁN QUYỀN NGUYÊN TỐ (Atomic Assignment):
  * - Trong hàm `assignPermissions`, ta sử dụng `$transaction` để đảm bảo:
  *   - Bước 1: Xóa sạch các quyền cũ của Role.
  *   - Bước 2: Thêm danh sách các quyền mới.
- * - Điều này giúp tránh việc bị trùng lặp hoặc sót quyền khi cập nhật.
+ * - Điều này giúp tránh việc bị trùng lặp, sót quyền hoặc dữ liệu không nhất quán khi cập nhật.
  *
- * 3. CONFLICT HANDLING:
- * - Kiểm tra trùng tên (`findUnique`) trước khi tạo Role hoặc Permission mới để đảm bảo tính duy nhất trong hệ thống.
+ * 3. XỬ LÝ XUNG ĐỘT (Conflict Handling):
+ * - Luôn kiểm tra trùng tên (`findFirst`) trước khi tạo Role hoặc Permission mới để đảm bảo tính duy nhất trong hệ thống (Unique Constraint).
  *
- * 4. CASCADE DELETE:
- * - Khi xóa một Role hoặc Permission, các liên kết trong bảng `RolePermission` cũng cần được xử lý (thường là tự động xóa nhờ cấu hình Prisma/DB).
+ * 4. XÓA LAN TRUYỀN (Cascade Delete):
+ * - Khi xóa một Role hoặc Permission, các liên kết trong bảng `RolePermission` cũng cần được xử lý (thường là DB tự động xóa nhờ `ON DELETE CASCADE`). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -45,19 +49,55 @@ export class RolesService {
    * Ví dụ: "MANAGER", "SHIPPER".
    */
   async create(createRoleDto: CreateRoleDto) {
-    const existing = await this.prisma.role.findUnique({
-      where: { name: createRoleDto.name },
+    const tenant = getTenant();
+    if (!tenant) {
+      throw new BadRequestException('Bối cảnh tenant bị thiếu');
+    }
+    const existing = await this.prisma.role.findFirst({
+      where: {
+        name: createRoleDto.name,
+        tenantId: tenant.id,
+      },
     });
     if (existing) {
       throw new ConflictException('Role này đã tồn tại');
     }
-    return this.prisma.role.create({ data: createRoleDto });
+    const role = await this.prisma.role.create({
+      data: {
+        name: createRoleDto.name,
+        tenant: { connect: { id: tenant.id } },
+      },
+    });
+
+    if (createRoleDto.permissions && createRoleDto.permissions.length > 0) {
+      // Tìm permissions theo ID (giả sử Frontend gửi lên danh sách ID)
+      const permissions = await this.prisma.permission.findMany({
+        where: { id: { in: createRoleDto.permissions } },
+      });
+
+      if (permissions.length > 0) {
+        await this.prisma.rolePermission.createMany({
+          data: permissions.map((p) => ({
+            roleId: role.id,
+            permissionId: p.id,
+          })),
+        });
+      }
+    }
+
+    return this.findOne(role.id);
   }
 
   async findAll(search?: string, page = 1, limit = 10) {
-    const where = search
-      ? { name: { contains: search, mode: 'insensitive' as const } }
-      : {};
+    const tenant = getTenant();
+    const where: any = {};
+    if (tenant) {
+      where.tenantId = tenant.id;
+    }
+
+    if (search) {
+      where.name = { contains: search, mode: 'insensitive' as const };
+    }
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
@@ -96,9 +136,36 @@ export class RolesService {
   }
 
   async update(id: string, updateRoleDto: UpdateRoleDto) {
-    return this.prisma.role.update({
-      where: { id },
-      data: updateRoleDto,
+    const { permissions, ...updateData } = updateRoleDto;
+
+    return this.prisma.$transaction(async (tx) => {
+      const role = await tx.role.update({
+        where: { id },
+        data: updateData as any,
+      });
+
+      if (permissions) {
+        // Xóa quyền cũ và gán quyền mới (Reset Permissions)
+        await tx.rolePermission.deleteMany({ where: { roleId: id } });
+
+        if (permissions.length > 0) {
+          const perms = await tx.permission.findMany({
+            where: { id: { in: permissions } },
+          });
+
+          await tx.rolePermission.createMany({
+            data: perms.map((p) => ({
+              roleId: id,
+              permissionId: p.id,
+            })),
+          });
+        }
+      }
+
+      return tx.role.findUnique({
+        where: { id },
+        include: { permissions: { include: { permission: true } } },
+      });
     });
   }
 
@@ -109,6 +176,7 @@ export class RolesService {
   /**
    * Gán danh sách Permission cho Role.
    * Ví dụ: Role "MANAGER" được quyền ["user:read", "product:create", ...].
+   * - Sử dụng Transaction để đảm bảo tính toàn vẹn dữ liệu.
    */
   async assignPermissions(id: string, dto: AssignPermissionsDto) {
     const role = await this.prisma.role.findUnique({ where: { id } });

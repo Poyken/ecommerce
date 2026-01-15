@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
+import { CircuitBreaker } from '@/common/utils/circuit-breaker';
 
 /**
  * =====================================================================
@@ -18,7 +19,10 @@ import axios from 'axios';
  * - Ta dùng `Promise.race` để set timeout 5 giây. Nếu GHN không phản hồi kịp -> Hệ thống tự động dùng mức phí ship mặc định (30,000đ) để không làm gián đoạn việc đặt hàng của khách.
  *
  * 3. TOKEN & SHOP ID:
- * - Mọi request gửi lên GHN đều phải kèm `Token` định danh và `ShopId` để GHN biết đơn hàng thuộc về shop nào.
+ * - Mọi request gửi lên GHN đều phải kèm `Token` định danh và `ShopId` để GHN biết đơn hàng thuộc về shop nào. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()
@@ -29,7 +33,14 @@ export class GHNService {
   private readonly token: string;
   private readonly shopId: string;
 
+  // In-memory cache for provinces (rarely changes)
+  private provincesCache: any[] | null = null;
+  private provincesCacheTime: number = 0;
+  private readonly PROVINCES_CACHE_TTL = 24 * 60 * 60 * 1000; // 24 hours
+  private readonly circuitBreaker: CircuitBreaker;
+
   constructor(private readonly configService: ConfigService) {
+    this.circuitBreaker = new CircuitBreaker('GHN_API', 3, 60000); // 3 lỗi là ngắt mạch trong 60s
     const rawBaseUrl = this.configService.get('GHN_API_BASE_URL');
 
     // Nếu base URL chứa /v2/ hoặc kết thúc bằng /v2, ta cần bóc tách để lấy base thực sự
@@ -66,16 +77,33 @@ export class GHNService {
   }
 
   async getProvinces() {
+    // Check cache first
+    const now = Date.now();
+    if (
+      this.provincesCache &&
+      now - this.provincesCacheTime < this.PROVINCES_CACHE_TTL
+    ) {
+      return this.provincesCache;
+    }
+
     try {
       const response = await axios.get(`${this.masterDataUrl}province`, {
         headers: this.baseHeaders,
+        timeout: 5000,
       });
+      this.provincesCache = response.data.data;
+      this.provincesCacheTime = now;
       return response.data.data;
     } catch (error) {
       this.logger.error(
         'Failed to fetch provinces from GHN',
         error.response?.data || error.message,
       );
+      // Return cached data if available, even if stale
+      if (this.provincesCache) {
+        this.logger.warn('Returning stale provinces cache');
+        return this.provincesCache;
+      }
       return [];
     }
   }
@@ -128,49 +156,35 @@ export class GHNService {
     insurance_value?: number;
     coupon?: string;
   }) {
-    const feeUrl =
-      this.configService.get('GHN_FEE_URL') ||
-      `${this.v2Url}shipping-order/fee`;
+    return this.circuitBreaker.execute(async () => {
+      const feeUrl =
+        this.configService.get('GHN_FEE_URL') ||
+        `${this.v2Url}shipping-order/fee`;
 
-    try {
-      // ✅ Add timeout wrapper to prevent hanging
-      const response = await Promise.race([
-        axios.post(
-          feeUrl,
-          {
-            ...data,
-            from_district_id: parseInt(
-              this.configService.get('GHN_FROM_DISTRICT_ID') || '1482',
-            ), // Default to Hanoi Ba Dinh
-            service_type_id: data.service_type_id || 2, // Default E-commerce service
-          },
-          {
-            headers: this.shopHeaders,
-            timeout: 5000, // 5 second axios timeout
-          },
-        ),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error('GHN API timeout after 5s')), 5000),
-        ),
-      ]);
-
-      return response.data.data.total;
-    } catch (error) {
-      this.logger.error(
-        'Failed to calculate shipping fee from GHN, using default',
-        error.response?.data || error.message,
+      const response = await axios.post(
+        feeUrl,
+        {
+          ...data,
+          from_district_id: parseInt(
+            this.configService.get('GHN_FROM_DISTRICT_ID') || '1482',
+          ),
+          service_type_id: data.service_type_id || 2,
+        },
+        {
+          headers: this.shopHeaders,
+          timeout: 5000,
+        },
       );
 
-      // ✅ Graceful fallback - return default shipping fee
-      return 30000; // Default 30,000 VND
-    }
+      return response.data.data.total;
+    }, 30000); // Fallback về 30,000đ nếy GHN lỗi hoặc mạch đang mở
   }
 
   async createShippingOrder(orderData: any) {
-    const createUrl =
-      this.configService.get('GHN_CREATE_ORDER_URL') ||
-      `${this.v2Url}shipping-order/create`;
-    try {
+    return this.circuitBreaker.execute(async () => {
+      const createUrl =
+        this.configService.get('GHN_CREATE_ORDER_URL') ||
+        `${this.v2Url}shipping-order/create`;
       const payload = {
         ...orderData,
         from_district_id: parseInt(
@@ -180,15 +194,10 @@ export class GHNService {
       };
       const response = await axios.post(createUrl, payload, {
         headers: this.shopHeaders,
+        timeout: 10000,
       });
       return response.data.data;
-    } catch (error) {
-      this.logger.error(
-        'Failed to create shipping order on GHN',
-        error.response?.data || error.message,
-      );
-      throw error;
-    }
+    });
   }
 
   /**

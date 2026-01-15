@@ -29,7 +29,10 @@ import {
  * - `Admin`: Chỉ hiển thị nếu user có quyền `admin:read`.
  *
  * 3. HYBRID REFACTOR WARNING:
- * - `hasPermission` lấy dữ liệu từ `AuthProvider`. Nếu user đăng nhập ở client, context này cần được cập nhật để hiển thị đúng các link quyền hạn.
+ * - `hasPermission` lấy dữ liệu từ `AuthProvider`. Nếu user đăng nhập ở client, context này cần được cập nhật để hiển thị đúng các link quyền hạn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -42,14 +45,10 @@ interface HeaderNavProps {
 
 import { useTranslations } from "next-intl";
 
-export function HeaderNav({
-  initialUser,
-  permissions: propsPermissions,
-}: HeaderNavProps) {
+export function HeaderNav({ permissions: propsPermissions }: HeaderNavProps) {
   const t = useTranslations("nav");
   const pathname = usePathname();
-  // Use initialUser directly from props (already fetched by layout)
-  const user = initialUser;
+
   const { hasPermission: contextHasPermission } = useAuth();
 
   // Use permissions from props if available (for PPR stability), otherwise fallback to context

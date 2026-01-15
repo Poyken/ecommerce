@@ -14,7 +14,10 @@
  * - Giúp các thẻ `h1, h2, p, ul` bên trong editor có style chuẩn typography mà không cần viết CSS thủ công.
  *
  * 3. CONTROL BAR:
- * - Các nút điều khiển (`editor.chain().focus().toggleBold().run()`) thực hiện lệnh format một cách programmatic.
+ * - Các nút điều khiển (`editor.chain().focus().toggleBold().run()`) thực hiện lệnh format một cách programmatic. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

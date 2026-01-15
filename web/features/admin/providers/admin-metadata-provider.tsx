@@ -36,7 +36,11 @@ const AdminMetadataContext = createContext<
  * - Loại bỏ việc prop-drilling (truyền props qua nhiều tầng) vốn gây khó bảo trì.
  *
  * 3. SERVER ACTION INTEGRATION:
- * - Kết hợp mượt mà với Server Actions (`getBrandsAction`, `getCategoriesAction`).
+ * - Kết hợp mượt mà với Server Actions (`getBrandsAction`, `getCategoriesAction`). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Management Efficiency: Admin có thể chọn nhanh Thương hiệu/Danh mục khi tạo sản phẩm mà không cần chờ load dữ liệu từ API cho mỗi lần mở form.
+ * - Instant UI: Nhờ cơ chế SWR Cache, các dropdown list xuất hiện "tức thì", tạo cảm giác ứng dụng cực kỳ chuyên nghiệp và mượt mà cho nhân viên vận hành.
+
  * =====================================================================
  */
 
@@ -56,10 +60,9 @@ export function AdminMetadataProvider({
     mutate: mutateBrands,
   } = useSWR("admin-brands", () => getBrandsAction(), {
     fallbackData: {
+      success: true,
       data: initialBrands,
-      statusCode: 200,
-      message: "Success",
-    },
+    } as any,
     revalidateOnFocus: false,
   });
 
@@ -70,26 +73,23 @@ export function AdminMetadataProvider({
     mutate: mutateCategories,
   } = useSWR("admin-categories", () => getCategoriesAction(), {
     fallbackData: {
+      success: true,
       data: initialCategories,
-      statusCode: 200,
-      message: "Success",
-    },
+    } as any,
     revalidateOnFocus: false,
   });
 
   // Extract brands with proper type guard
   const brands = (() => {
-    if (!brandsRes || 'error' in brandsRes) return [];
+    if (!brandsRes || "error" in brandsRes) return [];
     if (Array.isArray(brandsRes.data)) return brandsRes.data;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (brandsRes.data as any)?.data || [];
   })();
-  
+
   // Extract categories with proper type guard
   const categories = (() => {
-    if (!categoriesRes || 'error' in categoriesRes) return [];
+    if (!categoriesRes || "error" in categoriesRes) return [];
     if (Array.isArray(categoriesRes.data)) return categoriesRes.data;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (categoriesRes.data as any)?.data || [];
   })();
 

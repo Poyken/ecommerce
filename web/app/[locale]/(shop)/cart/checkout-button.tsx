@@ -17,7 +17,10 @@ import { useTransition } from "react";
  *
  * 2. DYNAMIC URL:
  * - Nếu không chọn món nào, nút sẽ bị disable.
- * - URL được sinh động dựa trên mảng `itemIds`.
+ * - URL được sinh động dựa trên mảng `itemIds`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

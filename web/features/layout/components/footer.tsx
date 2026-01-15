@@ -21,7 +21,10 @@ import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
  * - `lg:col-span-4`: Chiếm 4/12 cột (1/3 chiều rộng).
  *
  * 3. VISUAL EFFECTS:
- * - Các thẻ `div` absolute với `blur-[120px]` tạo hiệu ứng nền phát sáng (Glow Effect) hiện đại.
+ * - Các thẻ `div` absolute với `blur-[120px]` tạo hiệu ứng nền phát sáng (Glow Effect) hiện đại. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 import { useTranslations } from "next-intl";

@@ -17,7 +17,12 @@
  *
  * 3. SECURITY NOTE:
  * - Không bao giờ tin tưởng tuyệt đối dữ liệu decode từ client cho các thao tác quan trọng.
- * - Luôn phải verify lại token ở phía Server (API Backend).
+ * - Luôn phải verify lại token ở phía Server (API Backend). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Phân quyền giao diện (UI Access Control): Ẩn/Hiện nút "Xóa sản phẩm" dựa trên quyền (`permissions`) của user.
+ * - Client-side Guard: Chặn truy cập vào các trang Admin nếu token không chứa quyền `admin:access`.
+ * - Tiết kiệm Request: Kiểm tra quyền ngay tại Client thay vì phải gọi API mới biết là không được phép.
+
  * =====================================================================
  */
 

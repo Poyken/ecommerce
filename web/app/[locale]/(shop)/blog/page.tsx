@@ -1,4 +1,4 @@
-import { blogService } from "@/services/blog.service";
+import { blogService } from "@/features/blog/services/blog.service";
 import { Blog } from "@/types/models";
 import { Metadata } from "next";
 import { BlogPageClient } from "./blog-page-client";
@@ -18,12 +18,15 @@ import { BlogPageClient } from "./blog-page-client";
  * - `BlogPageClient` xử lý việc hiển thị danh sách bài viết với các hiệu ứng animation.
  *
  * 3. SEO:
- * - Metadata được cấu hình để tối ưu hóa việc hiển thị trên các công cụ tìm kiếm.
+ * - Metadata được cấu hình để tối ưu hóa việc hiển thị trên các công cụ tìm kiếm. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 
 export const metadata: Metadata = {
-  title: "Journal | Luxe",
+  title: "Journal",
   description: "Stories, style guides, and news from the world of fashion.",
 };
 
@@ -37,8 +40,8 @@ export default async function BlogPage() {
     ]);
     posts = postsResult.data;
     stats = statsResult;
-  } catch (_error) {
-    // console.error("Failed to fetch blogs:", error);
+  } catch {
+    // Silently fail - will show empty posts
   }
 
   return <BlogPageClient posts={posts} initialStats={stats} />;

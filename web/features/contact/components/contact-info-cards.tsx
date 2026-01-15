@@ -9,7 +9,10 @@
  * - Sử dụng `staggerChildren` để các thẻ thông tin xuất hiện lần lượt, tạo hiệu ứng thị giác chuyên nghiệp.
  *
  * 2. VISUAL CONSISTENCY:
- * - Mỗi thẻ sử dụng `GlassCard` với icon và màu sắc đồng bộ, giúp người dùng dễ dàng nhận diện thông tin.
+ * - Mỗi thẻ sử dụng `GlassCard` với icon và màu sắc đồng bộ, giúp người dùng dễ dàng nhận diện thông tin. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -13,7 +13,11 @@
  * - Store chỉ lưu `count`, việc quyết định lấy count từ Database hay LocalStorage (Guest) được điều phối bởi `CartInitializer`.
  *
  * 3. REACTIVE UI:
- * - Khi gọi `increment`/`decrement`, UI sẽ cập nhật ngay lập tức giúp App cảm giác mượt mà (snappy).
+ * - Khi gọi `increment`/`decrement`, UI sẽ cập nhật ngay lập tức giúp App cảm giác mượt mà (snappy). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Frictionless Shopping: Giúp khách hàng thêm sản phẩm vào giỏ mà không bị load lại trang, tăng tỷ lệ hoàn tất đơn hàng.
+ * - Real-time Badge: Luôn hiển thị chính xác số sản phẩm trong giỏ ở biểu tượng Header, nhắc nhở khách hàng về mục tiêu mua sắm của họ.
+
  * =====================================================================
  */
 
@@ -58,8 +62,12 @@ export const useCartStore = create<CartState>((set) => ({
       set({ isFetching: true });
       // Attempt server fetch (will fail/return 0 if not auth, handled by implementation)
       const result = await getCartCountAction();
-      if (result.success && typeof result.count === "number") {
-        set({ count: result.count });
+      if (
+        result.success &&
+        result.data &&
+        typeof result.data.totalItems === "number"
+      ) {
+        set({ count: result.data.totalItems });
       } else {
         // Fallback to guest logic if server action implies guest?
         // Actually getCartCountAction usually returns 0 if guest.

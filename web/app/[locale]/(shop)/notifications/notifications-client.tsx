@@ -15,7 +15,11 @@
  * - Hỗ trợ "Đánh dấu tất cả là đã đọc" để cải thiện trải nghiệm người dùng.
  *
  * 3. DYNAMIC STYLING:
- * - `getTypeIcon` và `getTypeStyles`: Tự động thay đổi icon và màu sắc dựa trên loại thông báo (Order, Promo, System...).
+ * - `getTypeIcon` và `getTypeStyles`: Tự động thay đổi icon và màu sắc dựa trên loại thông báo (Order, Promo, System...). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Real-time Engagement Loop: Duy trì kết nối liên tục giữa nền tảng và người dùng, đảm bảo khách hàng nhận được các thông tin quan trọng về đơn hàng và khuyến mãi ngay lập tức qua WebSocket.
+ * - Contextual Feedback System: Chuyển đổi các sự kiện hệ thống khô khan thành những thông báo có tính tương tác cao, giúp điều hướng người dùng tới các khu vực chức năng liên quan một cách tự nhiên.
+
  * =====================================================================
  */
 
@@ -24,12 +28,12 @@
 import { GlassCard } from "@/components/shared/glass-card";
 import { Button } from "@/components/ui/button";
 import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "@/components/ui/dialog";
 import { useNotificationStore } from "@/features/notifications/store/notification.store";
 import { m } from "@/lib/animations";
@@ -39,14 +43,14 @@ import { formatDistanceToNow } from "date-fns";
 import { enUS, vi } from "date-fns/locale";
 import { AnimatePresence } from "framer-motion";
 import {
-    Bell,
-    CheckCheck,
-    ExternalLink,
-    MessageSquare,
-    Package,
-    ShoppingBag,
-    Tag,
-    Zap,
+  Bell,
+  CheckCheck,
+  ExternalLink,
+  MessageSquare,
+  Package,
+  ShoppingBag,
+  Tag,
+  Zap,
 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -62,7 +66,9 @@ export function NotificationsClient() {
   const [selectedNotification, setSelectedNotification] =
     useState<Notification | null>(null);
 
-  const filteredNotifications = notifications.filter((n: Notification) => {
+  const safeNotifications = Array.isArray(notifications) ? notifications : [];
+
+  const filteredNotifications = safeNotifications.filter((n: Notification) => {
     if (filter === "unread") return !n.isRead;
     return true;
   });

@@ -14,7 +14,10 @@
  *   SWR chỉ fetch 1 lần và share kết quả
  *
  * 3. CACHE KEY:
- * - Key được tạo từ params để cache riêng biệt cho từng filter
+ * - Key được tạo từ params để cache riêng biệt cho từng filter *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
+
  * =====================================================================
  */
 
@@ -68,8 +71,9 @@ export function useProducts(params?: GetProductsParams) {
     });
   }
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-  const url = `${apiUrl}/products?${searchParams.toString()}`;
+  // Pass relative path to SWR (Global Fetcher 'http' will handle base URL)
+  const queryString = searchParams.toString();
+  const url = queryString ? `/products?${queryString}` : "/products";
 
   const { data, error, isLoading, isValidating, mutate } =
     useSWR<ApiResponse<Product[]>>(url);
@@ -95,8 +99,7 @@ export function useProducts(params?: GetProductsParams) {
  * @returns { product, error, isLoading }
  */
 export function useProduct(id: string | null) {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-  const url = id ? `${apiUrl}/products/${id}` : null;
+  const url = id ? `/products/${id}` : null;
 
   const { data, error, isLoading } = useSWR<{ data: Product }>(url);
 
@@ -115,8 +118,7 @@ export function useProduct(id: string | null) {
  * Hook để fetch danh sách categories với client-side caching.
  */
 export function useCategories() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-  const url = `${apiUrl}/categories`;
+  const url = "/categories";
 
   const { data, error, isLoading } = useSWR<{
     data: import("@/types/models").Category[];
@@ -137,8 +139,7 @@ export function useCategories() {
  * Hook để fetch danh sách brands với client-side caching.
  */
 export function useBrands() {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
-  const url = `${apiUrl}/brands`;
+  const url = "/brands";
 
   const { data, error, isLoading } = useSWR<{
     data: import("@/types/models").Brand[];

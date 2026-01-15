@@ -1,3 +1,40 @@
+/**
+ * =====================================================================
+ * ENCRYPTION SERVICE - MÃ HÓA DỮ LIỆU NHẠY CẢM
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Service này xử lý mã hóa/giải mã dữ liệu nhạy cảm (IP whitelist, API keys, v.v.)
+ *
+ * 1. THUẬT TOÁN SỬ DỤNG (AES-256-GCM):
+ *    - AES-256: Mã hóa đối xứng 256-bit, chuẩn an ninh quân sự
+ *    - GCM (Galois/Counter Mode): Cung cấp cả confidentiality + integrity
+ *    - authTag: Tag xác thực để phát hiện data bị tampering
+ *
+ * 2. CẤU TRÚC DỮ LIỆU MÃ HÓA:
+ *    - Format: "IV:AUTH_TAG:ENCRYPTED_DATA" (hex encoded)
+ *    - IV (Initialization Vector): 16 bytes random, đảm bảo cùng plaintext -> khác ciphertext
+ *    - AUTH_TAG: 16 bytes, dùng để verify tính toàn vẹn
+ *
+ * 3. LƯU Ý BẢO MẬT QUAN TRỌNG:
+ *    - ENCRYPTION_KEY phải được lưu trong biến môi trường, KHÔNG commit vào Git
+ *    - Key phải >= 32 characters để đảm bảo entropy
+ *    - Nếu mất key -> mất toàn bộ dữ liệu đã mã hóa (không thể giải mã)
+ *
+ * 4. CÁC PHƯƠNG THỨC:
+ *    - encrypt(text): Mã hóa chuỗi text
+ *    - decrypt(text): Giải mã chuỗi đã mã hóa
+ *    - encryptObject(obj): Mã hóa JSON object
+ *    - decryptObject<T>(text): Giải mã về lại object *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Bảo vệ dữ liệu nhạy cảm (PII): Mã hóa số CCCD, tài khoản ngân hàng của user trong Database để tuân thủ luật GDPR/PDPA.
+ * - API Key Management: Lưu trữ key của đối tác (GHN, Payment Gateway) an toàn, tránh bị lộ khi database dump bị đánh cắp.
+ * - Secure Tokens: Tạo các token dùng một lần (như token reset password, invite link) mà không thể bị giả mạo.
+
+ * =====================================================================
+ */
+
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as crypto from 'crypto';
@@ -17,8 +54,8 @@ export class EncryptionService {
   }
 
   /**
-   * Encrypts plain text using AES-256-GCM
-   * Returns: iv:authTag:encryptedText
+   * Mã hóa chuỗi text (AES-256-GCM).
+   * Trả về format: iv:authTag:encryptedText
    */
   encrypt(text: string): string {
     try {
@@ -38,7 +75,8 @@ export class EncryptionService {
   }
 
   /**
-   * Decrypts text encrypted with AES-256-GCM
+   * Giải mã chuỗi text đã mã hóa.
+   * Yêu cầu đúng định dạng: iv:authTag:encryptedText
    */
   decrypt(encryptedData: string): string {
     try {
@@ -66,14 +104,14 @@ export class EncryptionService {
   }
 
   /**
-   * Helper to encrypt objects (useful for JSON fields)
+   * Tiện ích mã hóa object (JSON).
    */
   encryptObject(obj: any): string {
     return this.encrypt(JSON.stringify(obj));
   }
 
   /**
-   * Helper to decrypt to objects
+   * Tiện ích giải mã object.
    */
   decryptObject<T>(encryptedData: string): T {
     const decrypted = this.decrypt(encryptedData);

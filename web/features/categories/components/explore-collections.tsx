@@ -28,7 +28,10 @@ import { useState } from "react";
  * - `group-hover:scale-110`: Hiệu ứng zoom nhẹ khi di chuột vào card.
  *
  * 3. RESPONSIVE GRID:
- * - `grid-cols-2 md:grid-cols-4`: Hiển thị 2 cột trên mobile và 4 cột trên desktop.
+ * - `grid-cols-2 md:grid-cols-4`: Hiển thị 2 cột trên mobile và 4 cột trên desktop. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

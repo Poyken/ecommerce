@@ -25,7 +25,10 @@ import { cn } from "@/lib/utils"
  *
  * 3. PEER & STATE STYLING:
  * - `data-[state=checked]`: Attribute đặc biệt của Radix để style khi được chọn.
- * - `peer`: Giúp Label có thể đổi màu khi Checkbox bị disable (nếu dùng chung trong Form).
+ * - `peer`: Giúp Label có thể đổi màu khi Checkbox bị disable (nếu dùng chung trong Form). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 const Checkbox = React.forwardRef<

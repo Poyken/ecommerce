@@ -15,7 +15,10 @@
  * - Hiệu ứng nhấp nháy nhẹ giúp người dùng biết nội dung đang được tải và ứng dụng không bị "treo".
  *
  * 3. MATCHING LAYOUT:
- * - Các khối `div` trong Skeleton phải có kích thước và tỉ lệ (`aspect-[3/4]`) giống hệt với `ProductCard` thật.
+ * - Các khối `div` trong Skeleton phải có kích thước và tỉ lệ (`aspect-[3/4]`) giống hệt với `ProductCard` thật. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 import { Skeleton } from "@/components/ui/skeleton";

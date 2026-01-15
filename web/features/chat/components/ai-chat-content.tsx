@@ -8,6 +8,7 @@ import { useAiChat } from "@/features/chat/hooks/use-ai-chat";
 import { useQuickViewStore } from "@/features/products/store/quick-view.store";
 import { cn } from "@/lib/utils";
 import { Bot, Eye, Loader2, MessageCircle, Send } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
@@ -26,11 +27,11 @@ interface AiChatContentProps {
 const MarkdownLink = ({
   href,
   children,
-  openQuickView,
+  open,
 }: {
   href?: string;
   children: React.ReactNode;
-  openQuickView: (id: string, skuId?: string) => void;
+  open: (data: { productId: string; skuId?: string }) => void;
 }) => {
   if (href?.startsWith("quickview:")) {
     const handleClick = (e: React.MouseEvent) => {
@@ -39,7 +40,7 @@ const MarkdownLink = ({
       const [id, query] = path.split("?");
       const params = new URLSearchParams(query);
       const skuId = params.get("sku") || undefined;
-      openQuickView(id, skuId);
+      open({ productId: id, skuId });
     };
 
     return (
@@ -71,23 +72,7 @@ export function AiChatContent({
   active,
   onUnreadChange,
 }: AiChatContentProps) {
-/**
- * =====================================================================
- * AI CHAT CONTENT - Giao diện Chat với Bot
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MARKDOWN RENDERING:
- * - Bot trả về response dạng Markdown (có thể Bôi đậm, List, Link).
- * - Sử dụng `react-markdown` để render an toàn (tránh XSS).
- *
- * 2. CUSTOM DEEP LINKS:
- * - Bot có thể trả về link dạng `quickview:product-id`.
- * - Component `MarkdownLink` sẽ intercept click này để mở QuickView Modal
- *   thay vì chuyển trang.
- * =====================================================================
- */
+  const t = useTranslations("chat");
   const { messages, isLoading, sendMessage, loadHistory } = useAiChat({
     accessToken,
     onResponse: () => {
@@ -96,7 +81,7 @@ export function AiChatContent({
       }
     },
   });
-  const { openQuickView } = useQuickViewStore();
+  const { open } = useQuickViewStore();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
 
@@ -161,11 +146,11 @@ export function AiChatContent({
                 <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-violet-100 flex items-center justify-center">
                   <Bot className="w-6 h-6 text-violet-600" />
                 </div>
-                <p className="text-sm font-bold text-foreground">Hello! 👋</p>
+                <p className="text-sm font-bold text-foreground">
+                  {t("aiWelcome")}
+                </p>
                 <p className="text-xs mt-1 text-muted-foreground">
-                  I am the Luxe Shop AI Assistant.
-                  <br />
-                  Ask me about products or policies!
+                  {t("aiDescription")}
                 </p>
               </div>
             )}
@@ -197,10 +182,7 @@ export function AiChatContent({
                       <ReactMarkdown
                         components={{
                           a: ({ href, children, ...props }) => (
-                            <MarkdownLink
-                              href={href}
-                              openQuickView={openQuickView}
-                            >
+                            <MarkdownLink href={href} open={open}>
                               {children}
                             </MarkdownLink>
                           ),
@@ -244,7 +226,7 @@ export function AiChatContent({
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask anything..."
+            placeholder={t("placeholder")}
             className="flex-1 bg-background border-violet-200 focus-visible:ring-violet-500/20"
             disabled={isLoading}
           />

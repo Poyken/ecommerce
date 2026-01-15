@@ -1,9 +1,13 @@
 import type { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
 import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
-import { Permissions } from '../auth/decorators/permissions.decorator';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/permissions.guard';
+import {
+  ApiGetOneResponse,
+  ApiListResponse,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
 import { ChatService } from './chat.service';
 
 /**
@@ -18,9 +22,14 @@ import { ChatService } from './chat.service';
  * - API `/history/:userId` cho phép Admin xem lại toàn bộ tin nhắn cũ với một khách hàng cụ thể.
  *
  * 2. USER VIEW:
- * - API `/my-history` giúp khách hàng load lại tin nhắn của chính họ khi F5 trang web hoặc chuyển đổi thiết bị.
+ * - API `/my-history` giúp khách hàng load lại tin nhắn của chính họ khi F5 trang web hoặc chuyển đổi thiết bị. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
+@ApiTags('Chat Support')
+@ApiBearerAuth()
 @Controller('chat')
 @UseGuards(JwtAuthGuard)
 export class ChatController {
@@ -31,9 +40,21 @@ export class ChatController {
    */
   @Get('conversations')
   @UseGuards(PermissionsGuard)
-  @Permissions('user:read')
+  @RequirePermissions('chat:read')
+  @ApiListResponse('Conversation', {
+    summary: 'Lấy danh sách cuộc trò chuyện (Admin)',
+  })
   async getConversations(@Query('page') page = 1, @Query('limit') limit = 20) {
-    return this.chatService.getAdminConversations(Number(page), Number(limit));
+    const result = await this.chatService.getAdminConversations(
+      Number(page),
+      Number(limit),
+    );
+    // If service already returns { data, meta }, return as-is
+    if (result && 'data' in result && 'meta' in result) {
+      return result;
+    }
+    // Otherwise wrap
+    return { data: result };
   }
 
   /**
@@ -41,17 +62,22 @@ export class ChatController {
    */
   @Get('history/:userId')
   @UseGuards(PermissionsGuard)
-  @Permissions('user:read')
+  @RequirePermissions('chat:read')
+  @ApiGetOneResponse('Conversation', {
+    summary: 'Lấy lịch sử trò chuyện của một user (Admin)',
+  })
   async getUserHistory(@Param('userId') userId: string) {
-    return this.chatService.getConversation(userId);
+    const data = await this.chatService.getConversation(userId);
+    return { data };
   }
 
   /**
    * USER: Get my own conversation history
    */
   @Get('my-history')
-  @ApiOperation({ summary: 'Lấy lịch sử chat' })
+  @ApiGetOneResponse('Conversation', { summary: 'Lấy lịch sử chat của tôi' })
   async getMyHistory(@Req() req: RequestWithUser) {
-    return this.chatService.getConversation(req.user.userId);
+    const data = await this.chatService.getConversation(req.user.userId);
+    return { data };
   }
 }

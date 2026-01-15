@@ -1,4 +1,11 @@
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import {
+  ApiCreateResponse,
+  ApiDeleteResponse,
+  ApiGetOneResponse,
+  ApiListResponse,
+  ApiUpdateResponse,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import {
@@ -9,6 +16,8 @@ import {
   Param,
   Patch,
   Post,
+  Request,
+  NotFoundException,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -19,9 +28,6 @@ import { getTenant } from '@core/tenant/tenant.context';
 
 @ApiTags('Tenants (Super Admin)')
 @Controller('tenants')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
-@ApiBearerAuth()
-@ApiBearerAuth()
 /**
  * =================================================================================================
  * TENANTS CONTROLLER - QUẢN LÝ CỬA HÀNG (DÀNH CHO SUPER ADMIN)
@@ -31,79 +37,132 @@ import { getTenant } from '@core/tenant/tenant.context';
  *
  * 1. PHÂN QUYỀN (RBAC):
  *    - Các API này rất nhạy cảm (Tạo/Xóa cửa hàng), nên được bảo vệ bởi `@Permissions`.
- *    - Chỉ User có Role là `SUPER_ADMIN` mới có thể gọi được quyền `tenant:create`, `tenant:delete`...
+ *    - Chỉ User có Role là `SUPERADMIN` mới có thể gọi được quyền `tenant:create`, `tenant:delete`...
  *
  * 2. KIẾN TRÚC SAAS (SOFTWARE AS A SERVICE):
  *    - Đây là nơi quản lý "Khách hàng" của hệ thống Platform.
  *    - Một "Tenant" tương ứng với một "Cửa hàng" độc lập.
- *    - Controller này không xử lý logic bán hàng, mà chỉ xử lý việc Cấp phép (Provisioning) cửa hàng mới.
+ *    - Controller này không xử lý logic bán hàng, mà chỉ xử lý việc Cấp phép (Provisioning) cửa hàng mới. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =================================================================================================
  */
 export class TenantsController {
   constructor(private readonly tenantsService: TenantsService) {}
 
   @Post()
-  @Permissions('tenant:create')
-  @ApiOperation({ summary: 'Create a new Tenant (Store)' })
-  create(@Body() createTenantDto: CreateTenantDto) {
-    return this.tenantsService.create(createTenantDto);
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('tenant:create')
+  @ApiCreateResponse('Tenant', { summary: 'Create a new Tenant (Store)' })
+  async create(@Body() createTenantDto: CreateTenantDto) {
+    const data = await this.tenantsService.create(createTenantDto);
+    return { data };
   }
 
   @Get()
-  @Permissions('tenant:read')
-  @ApiOperation({ summary: 'List all Tenants' })
-  findAll() {
-    return this.tenantsService.findAll();
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('tenant:read')
+  @ApiListResponse('Tenant', { summary: 'List all Tenants' })
+  async findAll() {
+    const data = await this.tenantsService.findAll();
+    return { data };
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('tenant:read')
+  @ApiGetOneResponse('Tenant', {
+    summary: 'Lấy thông tin store của tôi (Tenant Admin)',
+  })
+  async getMyTenant(@Request() req: any) {
+    const tenantId = req.user.tenantId;
+    if (!tenantId)
+      throw new NotFoundException(
+        'Your user is not associated with any tenant',
+      );
+    const data = await this.tenantsService.findOne(tenantId);
+    return { data };
   }
 
   @Get(':id')
-  @Permissions('tenant:read')
-  @ApiOperation({ summary: 'Get Tenant info by ID' })
-  findOne(@Param('id') id: string) {
-    return this.tenantsService.findOne(id);
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('tenant:read')
+  @ApiGetOneResponse('Tenant', { summary: 'Get Tenant info by ID' })
+  async findOne(@Param('id') id: string) {
+    const data = await this.tenantsService.findOne(id);
+    return { data };
   }
 
   @Patch(':id')
-  @Permissions('tenant:update')
-  @ApiOperation({ summary: 'Update Tenant configuration' })
-  update(@Param('id') id: string, @Body() updateTenantDto: UpdateTenantDto) {
-    return this.tenantsService.update(id, updateTenantDto);
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('tenant:update')
+  @ApiUpdateResponse('Tenant', { summary: 'Update Tenant configuration' })
+  async update(
+    @Param('id') id: string,
+    @Body() updateTenantDto: UpdateTenantDto,
+  ) {
+    const data = await this.tenantsService.update(id, updateTenantDto);
+    return { data };
   }
 
   @Delete(':id')
-  @Permissions('tenant:delete')
-  @ApiOperation({ summary: 'Delete a Tenant' })
-  remove(@Param('id') id: string) {
-    return this.tenantsService.remove(id);
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('tenant:delete')
+  @ApiDeleteResponse('Tenant', {
+    summary: 'Soft Delete a Tenant (Move to Trash)',
+  })
+  async remove(@Param('id') id: string) {
+    const data = await this.tenantsService.remove(id);
+    return { data };
   }
 
-  // PUBLIC ENDPOINT
+  @Post(':id/restore')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('tenant:delete') // Reuse delete permission or add 'tenant:restore'
+  @ApiUpdateResponse('Tenant', { summary: 'Restore a deleted Tenant' })
+  async restore(@Param('id') id: string) {
+    const data = await this.tenantsService.restore(id);
+    return { data };
+  }
+
+  @Delete(':id/hard')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('tenant:hard-delete') // New specific permission
+  @ApiDeleteResponse('Tenant', {
+    summary: 'Permanently Delete a Tenant (Cannot be undone)',
+  })
+  async hardDelete(@Param('id') id: string) {
+    const data = await this.tenantsService.hardDelete(id);
+    return { data };
+  }
+
+  // PUBLIC ENDPOINT - No Guards
   @Get('current/config')
-  @ApiBearerAuth() // Optional?
   @ApiOperation({ summary: 'Get current Tenant Configuration (Public)' })
   getTenantConfig() {
-    // We need to dinamically import/use the context helper, or just move logic to service
-    // But getTenant() is from ALS (AsyncLocalStorage)
-    // We can use a custom decorator or just import the helper
-    // We can use a custom decorator or just import the helper
     const tenant = getTenant();
 
     if (!tenant) {
       return {
-        name: 'Platform Default',
-        themeConfig: {
-          primaryColor: '#000000',
-          borderRadius: '0.5rem',
+        data: {
+          name: 'Platform Default',
+          themeConfig: {
+            primaryColor: '#000000',
+            borderRadius: '0.5rem',
+          },
         },
       };
     }
 
     return {
-      id: tenant.id,
-      name: tenant.name,
-      domain: tenant.domain,
-      themeConfig: tenant.themeConfig,
-      plan: tenant.plan,
+      data: {
+        id: tenant.id,
+        name: tenant.name,
+        domain: tenant.domain,
+        themeConfig: tenant.themeConfig,
+        plan: tenant.plan,
+      },
     };
   }
 }

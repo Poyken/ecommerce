@@ -16,7 +16,10 @@
  * 3. CONTROLLED VS UNCONTROLLED SEARCH:
  * - Hỗ trợ cả 2 chế độ:
  *   + Uncontrolled (`internalSearch`): component tự quản lý state tìm kiếm.
- *   + Controlled (`searchValue` prop): cha quản lý state (thường dùng khi search gọi API server-side).
+ *   + Controlled (`searchValue` prop): cha quản lý state (thường dùng khi search gọi API server-side). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

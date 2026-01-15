@@ -1,7 +1,9 @@
 # =====================================================================
 # DOCKER COMPOSE - FULLSTACK (API + WEB)
 # =====================================================================
-# Khởi chạy toàn bộ hệ thống (Postgres, Redis, API, Web)
+# Giải thích cho thực tập sinh:
+# File này dùng để chạy toàn bộ môi trường phát triển cục bộ một cách nhanh chóng.
+# Nó khởi tạo: Postgres (Database), Redis (Cache), API (Backend) và Web (Frontend).
 #
 # Cách dùng:
 #   docker compose up -d --build

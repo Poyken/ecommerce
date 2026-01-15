@@ -1,3 +1,25 @@
+/**
+ * =====================================================================
+ * LOCKDOWN.GUARD.TS
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * [Mô tả ngắn gọn mục đích của file]
+ *
+ * 1. CHỨC NĂNG:
+ *    - [Mô tả các chức năng chính]
+ *
+ * 2. CÁCH SỬ DỤNG:
+ *    - [Hướng dẫn sử dụng] *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Emergency Response: Kích hoạt chế độ "Bảo trì khẩn cấp" khi hệ thống bị tấn công hoặc lỗi nghiêm trọng.
+ * - VIP Access: Vẫn cho phép Super Admin truy cập để sửa lỗi trong khi chặn toàn bộ user thường.
+ * - Feature Flagging Integration: Tích hợp với hệ thống cờ tính năng để bật/tắt nóng mà không cần deploy lại code.
+
+ * =====================================================================
+ */
+
 import {
   CanActivate,
   ExecutionContext,
@@ -25,6 +47,27 @@ export class LockdownGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>();
+    try {
+      const authHeader = request.headers.authorization;
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        const token = authHeader.split(' ')[1];
+        const payload = this.jwtService.verify(token, {
+          secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+        });
+
+        if (payload && Array.isArray(payload.permissions)) {
+          if (
+            payload.permissions.includes('superAdmin:read') ||
+            payload.permissions.includes('superAdmin:write')
+          ) {
+            return true;
+          }
+        }
+      }
+    } catch (error) {
+      // Token invalid or expired - progress to block
+    }
+
     const path = request.path;
 
     // 1. Always allow health checks and auth login/logout/refresh
@@ -37,27 +80,6 @@ export class LockdownGuard implements CanActivate {
     ) {
       return true;
     }
-
-    // 2. Try to extract user from JWT to check for Admin status
-    try {
-      const authHeader = request.headers.authorization;
-      if (authHeader && authHeader.startsWith('Bearer ')) {
-        const token = authHeader.split(' ')[1];
-        const payload = this.jwtService.verify(token, {
-          secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
-        });
-
-        if (
-          payload &&
-          (payload.role === 'ADMIN' || payload.role === 'SUPER_ADMIN')
-        ) {
-          return true;
-        }
-      }
-    } catch (error) {
-      // Token invalid or expired - progress to block
-    }
-
     // 3. Otherwise, block access during lockdown
     throw new ServiceUnavailableException({
       statusCode: 503,

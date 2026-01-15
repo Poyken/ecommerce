@@ -1,6 +1,6 @@
 "use client";
 
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { addToCartAction } from "@/features/cart/actions";
 import { Loader2, RefreshCcw } from "lucide-react";
@@ -17,7 +17,10 @@ import { useState } from "react";
  * 1. LOGIC RE-ADD TO CART:
  * - Khi đơn hàng thất bại, user muốn thử lại.
  * - Ta không thể "resume" đơn hàng cũ.
- * - Giải pháp: Lấy tất cả items từ đơn cũ -> Add lại vào Cart hiện tại -> Redirect về trang Cart.
+ * - Giải pháp: Lấy tất cả items từ đơn cũ -> Add lại vào Cart hiện tại -> Redirect về trang Cart. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 
@@ -55,7 +58,7 @@ export function RetryOrderButton({ order }: RetryButtonProps) {
     try {
       // Add all items from the failed order back to cart
       for (const item of order.items) {
-        await addToCartAction(item.skuId, item.quantity);
+        await addToCartAction({ skuId: item.skuId, quantity: item.quantity });
       }
 
       toast({
@@ -65,7 +68,7 @@ export function RetryOrderButton({ order }: RetryButtonProps) {
 
       // Redirect to cart so user can review before checkout
       router.push("/cart");
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to add items to cart. Please try again.",

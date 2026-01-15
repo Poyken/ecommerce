@@ -1,7 +1,7 @@
 "use client";
 
 import { GlassCard } from "@/components/shared/glass-card";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Combobox, ComboboxOption } from "@/components/ui/combobox";
@@ -31,6 +31,7 @@ import { Bell, Mail, Send, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { NotificationHistoryTab } from "./notification-history-tab";
+import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
 
 interface User {
   id: string;
@@ -58,7 +59,10 @@ const ALL_USERS_VALUE = "__ALL_USERS__";
  *
  * 2. POLYMORPHIC LINK BUILDER (Tạo link đa hình):
  * - Admin có thể chọn loại link (Product, Order, Coupon) để attach vào notif.
- * - Client sẽ tự động search và suggest ID tương ứng (vd: Search product -> lấy Product ID).
+ * - Client sẽ tự động search và suggest ID tương ứng (vd: Search product -> lấy Product ID). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 export function NotificationsAdminClient({
@@ -92,10 +96,18 @@ export function NotificationsAdminClient({
   useEffect(() => {
     const fetchData = async () => {
       if (linkType === "product") {
-        const res = await getProductsAction(1, 10, debouncedSearch);
+        const res = await getProductsAction({
+          page: 1,
+          limit: 10,
+          search: debouncedSearch,
+        });
         if ("data" in res && res.data) setProducts(res.data);
       } else if (linkType === "order") {
-        const res = await getOrdersAction(1, 10, debouncedSearch);
+        const res = await getOrdersAction({
+          page: 1,
+          limit: 10,
+          search: debouncedSearch,
+        });
         if ("data" in res && res.data)
           setOrders(res.data as unknown as Order[]);
       } else if (linkType === "coupon") {
@@ -206,16 +218,31 @@ export function NotificationsAdminClient({
   // ... inside NotificationsAdminClient component ...
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("subtitle")}</p>
-      </div>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <AdminPageHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        icon={<Bell className="text-amber-500 fill-amber-500/20" />}
+        stats={[
+          { label: "Active Users", value: users.length, variant: "info" },
+          { label: "Broadcasts", value: "48", variant: "default" },
+        ]}
+      />
 
       <Tabs defaultValue="send" className="w-full">
-        <TabsList className="grid w-[400px] grid-cols-2 mb-6">
-          <TabsTrigger value="send">{t("send")}</TabsTrigger>
-          <TabsTrigger value="history">{t("history")}</TabsTrigger>
+        <TabsList className="grid w-[400px] grid-cols-2 mb-8 bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner">
+          <TabsTrigger
+            value="send"
+            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all font-black uppercase tracking-widest text-xs"
+          >
+            {t("send")}
+          </TabsTrigger>
+          <TabsTrigger
+            value="history"
+            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all font-black uppercase tracking-widest text-xs"
+          >
+            {t("history")}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="send" className="space-y-6">

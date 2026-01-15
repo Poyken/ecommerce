@@ -15,7 +15,10 @@
  *
  * 3. BADGE LOGIC:
  * - Chỉ hiện badge đỏ nếu `unreadCount > 0`.
- * - Nếu > 99 thì hiện "99+" để tránh vỡ layout nếu user có quá nhiều thông báo.
+ * - Nếu > 99 thì hiện "99+" để tránh vỡ layout nếu user có quá nhiều thông báo. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -38,7 +41,7 @@ import { useState } from "react";
 import { NotificationItem } from "./notification-item";
 
 export function NotificationBell() {
-  const { notifications, unreadCount, markAsRead, markAllAsRead, refresh } =
+  const { notifications, markAsRead, markAllAsRead, refresh } =
     useNotificationStore();
   const t = useTranslations("notifications");
   const [open, setOpen] = useState(false);
@@ -77,6 +80,8 @@ export function NotificationBell() {
     setOpen(false);
     if (notification.link) {
       router.push(notification.link as any);
+    } else {
+      router.push("/notifications");
     }
   };
 

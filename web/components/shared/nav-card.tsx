@@ -22,7 +22,10 @@ import Image from "next/image";
  *
  * 3. FALLBACK UI:
  * - Nếu không có `imageUrl`, hiển thị chữ cái đầu của tên (`name.charAt(0)`).
- * - Đảm bảo UI không bị vỡ khi thiếu dữ liệu ảnh.
+ * - Đảm bảo UI không bị vỡ khi thiếu dữ liệu ảnh. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  */
 
 interface NavCardProps {

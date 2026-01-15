@@ -4,9 +4,9 @@ import { getUsersAction } from "@/features/admin/actions";
 async function getUserCounts() {
   try {
     const [all, admins, users] = await Promise.all([
-      getUsersAction(1, 1),
-      getUsersAction(1, 1, "", "ADMIN"),
-      getUsersAction(1, 1, "", "USER"),
+      getUsersAction({ page: 1, limit: 1 }),
+      getUsersAction({ page: 1, limit: 1, search: "", role: "ADMIN" }),
+      getUsersAction({ page: 1, limit: 1, search: "", role: "USER" }),
     ]);
 
     return {
@@ -14,7 +14,7 @@ async function getUserCounts() {
       admin: "data" in admins ? admins.meta?.total || 0 : 0,
       user: "data" in users ? users.meta?.total || 0 : 0,
     };
-  } catch (error) {
+  } catch {
     return { total: 0, admin: 0, user: 0 };
   }
 }
@@ -35,7 +35,11 @@ async function getUserCounts() {
  *      nếu có vấn đề về tài khoản.
  *
  * 3. SHARED CLIENT LOGIC:
- *    - Sử dụng `UsersPageClient` chung với Admin thường nhưng cung cấp `basePath` khác nhau.
+ *    - Sử dụng `UsersPageClient` chung với Admin thường nhưng cung cấp `basePath` khác nhau. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Global Identity Governance: Cung cấp cái nhìn toàn cảnh về toàn bộ người dùng trên tất cả các cửa hàng, giúp Super Admin dễ dàng quản lý định danh và xử lý các vấn đề tài khoản ở mức độ nền tảng.
+ * - Critical Access Auditing: Cho phép rà soát và kiểm soát quyền hạn của các Admin cấp dưới, đảm bảo tính bảo mật và tuân thủ các quy tắc truy cập dữ liệu của hệ thống SaaS.
+
  * =================================================================================================
  */
 export default async function SuperAdminUsersPage({
@@ -50,7 +54,7 @@ export default async function SuperAdminUsersPage({
   const role = (params?.role as string) || "all";
 
   const [response, counts] = await Promise.all([
-    getUsersAction(page, limit, search, role),
+    getUsersAction({ page, limit, search, role }),
     getUserCounts(),
   ]);
 

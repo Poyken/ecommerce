@@ -1,5 +1,12 @@
 import { GetUser } from '@/auth/decorators/get-user.decorator';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import {
+  ApiCreateResponse,
+  ApiDeleteResponse,
+  ApiGetOneResponse,
+  ApiListResponse,
+  ApiUpdateResponse,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import { CloudinaryService } from '@integrations/cloudinary/cloudinary.service';
@@ -48,43 +55,27 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
  * - Tuy nhiên, Service sẽ kiểm tra: Nếu bạn không phải Admin và cũng không phải chủ bài viết -> Bạn sẽ bị từ chối cập nhật.
  *
  * 3. PUBLISH FLOW:
- * - Admin có quyền tối cao dùng API `/toggle-publish` để cho phép bài viết hiển thị hoặc ẩn đi.
+ * - Admin có quyền tối cao dùng API `/toggle-publish` để cho phép bài viết hiển thị hoặc ẩn đi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
-@ApiTags('blogs')
-@Controller('blogs')
+@ApiTags('Admin - Blogs')
+@Controller(['blogs', 'blog'])
 export class BlogController {
-  /**
-   * =====================================================================
-   * BLOG CONTROLLER - API quản lý bài viết
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. FILE UPLOAD:
-   * - Sử dụng `FileInterceptor('image')` để bắt file upload từ form-data (key là 'image').
-   * - Sau đó gọi `CloudinaryService` để upload lên cloud và lấy URL về lưu vào DB.
-   * - Swagger cần `@ApiConsumes('multipart/form-data')` để hiển thị nút upload file trên UI.
-   *
-   * 2. PUBLIC VS PRIVATE ENDPOINTS:
-   * - `findAll`, `findOne`: Không có `@UseGuards` -> Ai cũng xem được (Public).
-   * - `create`, `update`, `delete`: Có `JwtAuthGuard`, `PermissionsGuard` -> Chỉ Admin mới được dùng.
-   *
-   * 3. DTO TRANSFORMATION:
-   * - `parseInt` ở `findAll`: Query param luôn là string, cần chuyển về number thủ công hoặc dùng `ParseIntPipe` (ở đây dùng tay cho rõ ràng logic).
-   * =====================================================================
-   */
   constructor(
     private readonly blogService: BlogService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('blog:create')
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Create a new blog post' })
+  @ApiCreateResponse('Blog', { summary: 'Tạo bài viết mới' })
   async create(
     @Body() createBlogDto: CreateBlogDto,
     @GetUser() user: User,
@@ -101,22 +92,21 @@ export class BlogController {
   @Get('my-blogs')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get current user blogs' })
+  @ApiListResponse('Blog', { summary: 'Lấy bài viết của tôi' })
   async findMyBlogs(@GetUser() user: User) {
     const result = await this.blogService.findAll({
       userId: user.id,
       status: 'all',
-      limit: 100, // Reasonable limit for profile
+      limit: 100,
     });
     return result;
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all published blog posts' })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiListResponse('Blog', { summary: 'Lấy tất cả bài viết' })
+  @ApiQuery({ name: 'category', required: false, type: String })
+  @ApiQuery({ name: 'language', required: false, type: String })
   @ApiQuery({ name: 'status', required: false, type: String })
-  @ApiQuery({ name: 'search', required: false, type: String })
   async findAll(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -138,41 +128,55 @@ export class BlogController {
 
   @Patch(':id/toggle-publish')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @Permissions('blog:update')
+  @RequirePermissions('blog:update')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Toggle publish status (Admin only)' })
+  @ApiUpdateResponse('Blog', { summary: 'Bật/tắt trạng thái hiển thị' })
   async togglePublish(@Param('id') id: string) {
     const data = await this.blogService.togglePublish(id);
     return { data };
   }
 
   @Get('categories')
-  @ApiOperation({ summary: 'Get blog category statistics' })
+  @ApiOperation({ summary: 'Lấy thống kê danh mục bài viết' })
   async getCategoryStats() {
     const data = await this.blogService.getCategoryStats();
     return { data };
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a single blog post by ID or slug' })
-  async findOne(@Param('id') id: string) {
-    const data = await this.blogService.findOne(id);
-    if (!data) {
-      throw new NotFoundException('Blog not found');
-    }
+  @Get('category-stats')
+  @ApiOperation({ summary: 'Lấy thống kê danh mục bài viết (Alias)' })
+  async getCategoryStatsAlias() {
+    const data = await this.blogService.getCategoryStats();
     return { data };
   }
 
+  @Get('stats')
+  @ApiOperation({ summary: 'Lấy thống kê bài viết (Alias cho categories)' })
+  async getStats() {
+    const data = await this.blogService.getCategoryStats();
+    return { data };
+  }
+
+  @Get(':id')
+  @ApiGetOneResponse('Blog', { summary: 'Lấy chi tiết bài viết' })
+  async findOne(@Param('id') id: string) {
+    const data = await this.blogService.findOne(id);
+    if (!data) {
+      throw new NotFoundException('Blog không tồn tại');
+    }
+    return { data: data };
+  }
+
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('blog:update')
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('image'))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Update a blog post' })
+  @ApiUpdateResponse('Blog', { summary: 'Cập nhật bài viết' })
   async update(
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
-
     @GetUser() user: User,
     @UploadedFile() file: Express.Multer.File,
   ) {
@@ -185,11 +189,13 @@ export class BlogController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('blog:delete')
   @ApiBearerAuth()
-  @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiOperation({ summary: 'Soft delete a blog post' })
-  remove(@Param('id') id: string, @GetUser() user: User) {
-    return this.blogService.remove(id, user);
+  @HttpCode(HttpStatus.OK)
+  @ApiDeleteResponse('Blog', { summary: 'Xóa bài viết' })
+  async remove(@Param('id') id: string, @GetUser() user: User) {
+    const data = await this.blogService.remove(id, user);
+    return { data };
   }
 }

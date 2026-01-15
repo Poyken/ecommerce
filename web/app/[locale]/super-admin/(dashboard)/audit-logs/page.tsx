@@ -1,24 +1,34 @@
+// GIẢI THÍCH CHO THỰC TẬP SINH:
+// =================================================================================================
+// SUPER ADMIN AUDIT LOGS - NHẬT KÝ HOẠT ĐỘNG TOÀN NỀN TẢNG
+// =================================================================================================
+//
+// Trang này cho phép Super Admin tra cứu lịch sử hoạt động (Audit Logs) của TOÀN BỘ hệ thống.
+// Khác với Admin thường (chỉ xem được log của shop mình), Super Admin cần cái nhìn tổng quan
+// để phát hiện các vấn đề bảo mật hoặc lỗi kỹ thuật ở cấp độ hạ tầng/nền tảng.
+//
+// LUỒNG DỮ LIỆU:
+// 1. Nhận `searchParams` từ URL (page, search keyword, filter type).
+// 2. Gọi Server Action `getAuditLogsAction`. Lưu ý: Action này cần đủ thông minh để biết
+//    khi nào đang được gọi bởi Super Admin để trả dữ liệu global thay vì scoped theo tenant.
+// 3. Access Control: Nếu API trả lỗi (403/Forbidden), hiển thị thông báo "Access Denied" trang trọng.
+//
+// TÁI SỬ DỤNG COMPONENT:
+// - Chúng ta tái sử dụng `AuditLogsClient` của Admin thường, vì giao diện hiển thị log là tương tự.
+// - Props `basePath` giúp điều hướng phân trang đúng về URL của Super Admin.
+// =================================================================================================
 import { AuditLogsClient } from "@/app/[locale]/admin/(dashboard)/audit-logs/audit-logs-client";
-import { getAuditLogsAction } from "@/features/admin/actions";
+import { getAuditLogsAction } from "@/features/admin/domain-actions/security-actions";
 import { getTranslations } from "next-intl/server";
+import { AuditLog } from "@/types/models";
 
 /**
  * =================================================================================================
- * SUPER ADMIN AUDIT LOGS - NHẬT KÝ HOẠT ĐỘNG TOÀN NỀN TẢNG
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SHARED CLIENT COMPONENT:
- *    - Tái sử dụng `AuditLogsClient` từ module Admin để đồng bộ về UI/UX.
- *    - Truyền `basePath="/super-admin/audit-logs"` để đảm bảo phân trang và search hoạt động đúng URL.
- *
- * 2. GLOBAL VISIBILITY:
- *    - Khác với Admin thường (chỉ xem log của 1 tenant), Super Admin xem được log của tất cả
- *      các hoạt động hệ thống (Cross-tenant logs).
- *
- * 3. ERROR HANDLING:
- *    - Hiển thị thông báo "Access Denied" trang nhã nếu backend trả về lỗi phân quyền.
+ * SUPER ADMIN AUDIT LOGS - NHẬT KÝ HOẠT ĐỘNG TOÀN NỀN TẢNG *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Governance & Compliance: Đảm bảo tính minh bạch và trách nhiệm bằng cách lưu trữ lịch sử mọi thay đổi quan trọng trên nền tảng, phục vụ công tác thanh tra và kiểm soát nội bộ.
+ * - System-wide Traceability: Cho phép đội ngũ kỹ thuật truy xuất nguồn gốc của các lỗi hệ thống hoặc hành vi người dùng đáng ngờ trên tất cả các Tenants từ một giao diện duy nhất.
+
  * =================================================================================================
  */
 export default async function SuperAdminAuditLogsPage({
@@ -32,9 +42,15 @@ export default async function SuperAdminAuditLogsPage({
   const filter = (params?.filter as string) || "all";
 
   // In a real multi-tenant app, getAuditLogsAction for Super Admin might return logs across all tenants
-  const response = await getAuditLogsAction(page, 20, search, filter);
+  const response = await getAuditLogsAction({
+    page,
+    limit: 20,
+    search,
+    filter,
+    roles: ["SUPERADMIN", "ADMIN"],
+  });
 
-  if ("error" in response) {
+  if (response.error) {
     const t = await getTranslations("superAdmin.auditLogs");
     return (
       <div className="flex items-center justify-center h-[50vh]">
@@ -53,7 +69,7 @@ export default async function SuperAdminAuditLogsPage({
 
   return (
     <AuditLogsClient
-      logs={logs as any[]}
+      logs={logs as AuditLog[]}
       total={total}
       page={page}
       limit={20}

@@ -13,7 +13,10 @@
  * - Tích hợp với `useTransition` để hiển thị trạng thái "Changing..." khi đang xử lý.
  *
  * 3. FEEDBACK:
- * - Thông báo thành công hoặc lỗi được hiển thị qua hệ thống Toast của ứng dụng.
+ * - Thông báo thành công hoặc lỗi được hiển thị qua hệ thống Toast của ứng dụng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -24,7 +27,7 @@ import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/shared/password-input";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { m } from "@/lib/animations";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";

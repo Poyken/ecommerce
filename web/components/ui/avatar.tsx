@@ -21,7 +21,10 @@ import { cn } from "@/lib/utils";
  *
  * 3. STYLING:
  * - `aspect-square`: Luôn đảm bảo ảnh là hình vuông.
- * - `rounded-full`: Cắt ảnh thành hình tròn.
+ * - `rounded-full`: Cắt ảnh thành hình tròn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

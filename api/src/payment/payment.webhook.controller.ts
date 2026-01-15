@@ -1,3 +1,26 @@
+/**
+ * =====================================================================
+ * PAYMENT.WEBHOOK.CONTROLLER CONTROLLER
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Controller này xử lý các HTTP request từ client.
+ *
+ * 1. NHIỆM VỤ CHÍNH:
+ *    - Nhận request từ client
+ *    - Validate dữ liệu đầu vào
+ *    - Gọi service xử lý logic
+ *    - Trả về response cho client
+ *
+ * 2. CÁC ENDPOINT:
+ *    - [Liệt kê các endpoint] *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
+ * =====================================================================
+ */
+
 import { Body, Controller, Post, Logger } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { PaymentService } from './payment.service';

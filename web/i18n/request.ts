@@ -10,7 +10,11 @@
  * - Nhiệm vụ: Xác định locale hiện tại và load file dịch (.json) tương ứng.
  *
  * 2. Dynamic Messages:
- * - Sử dụng dynamic import để chỉ load file ngôn ngữ cần thiết, giúp giảm memory và tăng tốc độ.
+ * - Sử dụng dynamic import để chỉ load file ngôn ngữ cần thiết, giúp giảm memory và tăng tốc độ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Dynamic Localization: Tự động chuyển đổi toàn bộ nội dung website (menu, nút, nhãn) sang ngôn ngữ người dùng yêu thích ngay khi trang vừa tải xong.
+ * - White-labeling ready: Cho phép ghi đè (override) các bản dịch mặc định của hệ thống bằng các bản dịch riêng cho từng Tenant (khách hàng doanh nghiệp) từ Database.
+
  * =====================================================================
  */
 
@@ -20,7 +24,9 @@ import { getRequestConfig } from "next-intl/server";
 import { headers } from "next/headers";
 import { routing } from "./routing";
 
-async function getTenantMessages(locale: string) {
+import { cache } from "react";
+
+const getTenantMessages = cache(async (locale: string) => {
   try {
     const headersList = await headers();
     const host = headersList.get("host") || "localhost";
@@ -36,10 +42,10 @@ async function getTenantMessages(locale: string) {
     if (!res.ok) return {};
     const json = await res.json();
     return json.data || json;
-  } catch (error) {
+  } catch {
     return null; // Fail silently to default
   }
-}
+});
 
 export default getRequestConfig(async ({ requestLocale }) => {
   let locale = await requestLocale;

@@ -26,7 +26,10 @@ import { CloudinaryService } from './cloudinary.service';
  * - `CloudinaryService`: Là nơi viết các hàm upload/delete ảnh.
  *
  * 2. SHARED MODULE:
- * - Module này được dùng chung bởi nhiều module khác (Product, Blog, User Avatar).
+ * - Module này được dùng chung bởi nhiều module khác (Product, Blog, User Avatar). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class CloudinaryModule {}

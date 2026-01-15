@@ -14,7 +14,10 @@
  * - Giúp giảm thời gian chờ đợi và tăng hiệu năng.
  *
  * 3. PERSONALIZED WELCOME:
- * - Hiển thị lời chào cá nhân hóa kèm theo tóm tắt thông tin cơ bản của tài khoản.
+ * - Hiển thị lời chào cá nhân hóa kèm theo tóm tắt thông tin cơ bản của tài khoản. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -51,7 +54,7 @@ export function ProfileDashboardTab({
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [ordersRes, wishlistCount, vouchersRes] = await Promise.all([
+        const [ordersRes, wishlistRes, vouchersRes] = await Promise.all([
           getMyOrdersAction(),
           getWishlistCountAction(),
           getAvailableCouponsAction(),
@@ -59,12 +62,13 @@ export function ProfileDashboardTab({
 
         setStats({
           orders:
-            ordersRes && "data" in ordersRes && ordersRes.data
-              ? ordersRes.data.length
+            ordersRes.success && ordersRes.data ? ordersRes.data.length : 0,
+          wishlist:
+            wishlistRes.success && wishlistRes.data
+              ? (wishlistRes.data as any).count
               : 0,
-          wishlist: wishlistCount || 0,
           vouchers:
-            vouchersRes && "data" in vouchersRes && vouchersRes.data
+            vouchersRes.success && vouchersRes.data
               ? vouchersRes.data.length
               : 0,
         });

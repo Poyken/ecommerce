@@ -2,7 +2,7 @@
 
 import { reorderAction } from "@/features/cart/actions";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { RotateCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -24,7 +24,10 @@ import { useTransition } from "react";
  * - `isPending` giúp ta hiển thị trạng thái "Adding..." trên nút bấm, ngăn user click nhiều lần.
  *
  * 3. NAVIGATION AFTER ACTION:
- * - Sau khi thêm thành công, ta dùng `router.push("/cart")` để đưa người dùng đến trang giỏ hàng ngay lập tức.
+ * - Sau khi thêm thành công, ta dùng `router.push("/cart")` để đưa người dùng đến trang giỏ hàng ngay lập tức. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 
@@ -41,8 +44,8 @@ export function ReorderButton({ orderId }: ReorderButtonProps) {
 
   const handleReorder = () => {
     startTransition(async () => {
-      const res = await reorderAction(orderId);
-      if (res.error) {
+      const res = await reorderAction({ orderId });
+      if (!res.success) {
         toast({
           variant: "destructive",
           title: tToast("error"),

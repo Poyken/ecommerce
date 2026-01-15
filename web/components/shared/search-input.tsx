@@ -28,7 +28,10 @@ import { useDebouncedCallback } from "use-debounce";
  *
  * 3. UX OPTIMIZATION (`useTransition`):
  * - Khi đổi URL, Next.js sẽ fetch lại dữ liệu mới. Quá trình này có thể mất 1-2s.
- * - `startTransition` đánh dấu process này là "việc phụ". UI ô input vẫn gõ mượt mà, không bị khựng lại (blocking).
+ * - `startTransition` đánh dấu process này là "việc phụ". UI ô input vẫn gõ mượt mà, không bị khựng lại (blocking). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

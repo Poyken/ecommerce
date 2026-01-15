@@ -15,14 +15,19 @@
  * QUY TẮC NGHIỆP VỤ:
  * - Mỗi user có thể có nhiều địa chỉ
  * - Chỉ 1 địa chỉ được đánh dấu mặc định (isDefault = true)
- * - Khi checkout, hệ thống ưu tiên dùng địa chỉ mặc định
+ * - Khi checkout, hệ thống ưu tiên dùng địa chỉ mặc định *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Frictionless Checkout: Giúp khách hàng hoàn tất việc mua hàng nhanh hơn bằng cách tự động áp dụng địa chỉ mặc định đã lưu, giảm bớt công đoạn nhập liệu thủ công.
+ * - Logistics Accuracy: Đảm bảo dữ liệu nhận hàng luôn chính xác và đầy đủ qua hệ thống quản lý địa chỉ có chiều sâu (Tỉnh -> Huyện -> Xã).
+
  * =====================================================================
  */
 
 "use server";
 
 import { http } from "@/lib/http";
-import { revalidatePath } from "next/cache";
+import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
+import { ActionResult } from "@/types/api";
 
 // =============================================================================
 // 📦 TYPES - Định nghĩa kiểu dữ liệu
@@ -99,11 +104,10 @@ function validateRequiredFields(data: AddressFormData): boolean {
 
 /**
  * Revalidate các paths liên quan đến địa chỉ.
- * Đảm bảo cache được làm mới sau khi thay đổi.
  */
 function revalidateAddressPaths() {
-  revalidatePath("/cart"); // Cart page có thể hiển thị địa chỉ giao hàng
-  revalidatePath("/profile"); // Profile page hiển thị danh sách địa chỉ
+  REVALIDATE.cart();
+  REVALIDATE.profile();
 }
 
 // =============================================================================
@@ -123,26 +127,25 @@ function revalidateAddressPaths() {
  *   toast.success("Đã thêm địa chỉ mới!");
  * }
  */
-export async function createAddressAction(formData: FormData) {
+export async function createAddressAction(
+  formData: FormData
+): Promise<ActionResult<void>> {
   const data = extractAddressData(formData);
 
-  // Validate các trường bắt buộc
   if (!validateRequiredFields(data)) {
-    return { error: "Vui lòng điền đầy đủ các trường bắt buộc" };
+    return {
+      success: false,
+      error: "Vui lòng điền đầy đủ các trường bắt buộc",
+    };
   }
 
-  try {
+  return wrapServerAction(async () => {
     await http("/addresses", {
       method: "POST",
       body: JSON.stringify(data),
     });
     revalidateAddressPaths();
-    return { success: true };
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Không thể tạo địa chỉ";
-    return { error: message };
-  }
+  }, "Không thể tạo địa chỉ");
 }
 
 /**
@@ -152,26 +155,26 @@ export async function createAddressAction(formData: FormData) {
  * @param formData - Dữ liệu form mới
  * @returns { success: true } hoặc { error: "message" }
  */
-export async function updateAddressAction(id: string, formData: FormData) {
+export async function updateAddressAction(
+  id: string,
+  formData: FormData
+): Promise<ActionResult<void>> {
   const data = extractAddressData(formData);
 
-  // Validate các trường bắt buộc
   if (!validateRequiredFields(data)) {
-    return { error: "Vui lòng điền đầy đủ các trường bắt buộc" };
+    return {
+      success: false,
+      error: "Vui lòng điền đầy đủ các trường bắt buộc",
+    };
   }
 
-  try {
+  return wrapServerAction(async () => {
     await http(`/addresses/${id}`, {
       method: "PATCH",
       body: JSON.stringify(data),
     });
     revalidateAddressPaths();
-    return { success: true };
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Không thể cập nhật địa chỉ";
-    return { error: message };
-  }
+  }, "Không thể cập nhật địa chỉ");
 }
 
 /**
@@ -182,18 +185,15 @@ export async function updateAddressAction(id: string, formData: FormData) {
  *
  * ⚠️ LƯU Ý: Nếu xóa địa chỉ mặc định, user cần set địa chỉ khác làm mặc định.
  */
-export async function deleteAddressAction(id: string) {
-  try {
+export async function deleteAddressAction(
+  id: string
+): Promise<ActionResult<void>> {
+  return wrapServerAction(async () => {
     await http(`/addresses/${id}`, {
       method: "DELETE",
     });
     revalidateAddressPaths();
-    return { success: true };
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Không thể xóa địa chỉ";
-    return { error: message };
-  }
+  }, "Không thể xóa địa chỉ");
 }
 
 /**
@@ -207,10 +207,10 @@ export async function deleteAddressAction(id: string) {
  * // Khi user click "Đặt làm mặc định"
  * await setDefaultAddressAction(addressId);
  */
-export async function setDefaultAddressAction(id: string) {
-  try {
-    // API hỗ trợ PATCH với partial data
-    // Chỉ gửi isDefault: true, backend xử lý logic còn lại
+export async function setDefaultAddressAction(
+  id: string
+): Promise<ActionResult<void>> {
+  return wrapServerAction(async () => {
     await http(`/addresses/${id}`, {
       method: "PATCH",
       body: JSON.stringify({
@@ -218,10 +218,5 @@ export async function setDefaultAddressAction(id: string) {
       }),
     });
     revalidateAddressPaths();
-    return { success: true };
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Không thể đặt địa chỉ mặc định";
-    return { error: message };
-  }
+  }, "Không thể đặt địa chỉ mặc định");
 }

@@ -1,12 +1,10 @@
 import { ShopContent } from "@/features/products/components/shop-content";
-import { http } from "@/lib/http";
-import { productService } from "@/services/product.service";
 import { getTranslations } from "next-intl/server";
 
 // Types based on API response
-import { ApiResponse } from "@/types/dtos";
-import { Brand, Product } from "@/types/models";
+import { Product } from "@/types/models";
 import { Metadata } from "next";
+import { productService } from "@/features/products/services/product.service";
 
 /**
  * =====================================================================
@@ -24,7 +22,11 @@ import { Metadata } from "next";
  * - Tối ưu hóa hiệu năng bằng cách không bắt các request phải chờ đợi nhau.
  *
  * 3. PAGINATION:
- * - Dữ liệu phân trang được lấy từ `productsRes.meta` và truyền xuống Client để hiển thị thanh phân trang.
+ * - Dữ liệu phân trang được lấy từ `productsRes.meta` và truyền xuống Client để hiển thị thanh phân trang. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Dynamic Catalog Browsing: Mang lại trải nghiệm tìm kiếm sản phẩm mượt mà với bộ lọc đa dạng (Category, Brand, Price), giúp khách hàng nhanh chóng tìm thấy món đồ ưng ý giữa hàng nghìn sản phẩm.
+ * - Search-Optimized Discovery: Tự động cập nhật Metadata theo từ khóa tìm kiếm và danh mục, giúp các trang kết quả lọc dễ dàng được lập chỉ mục (index) và xếp hạng cao trên Google.
+
  * =====================================================================
  */
 
@@ -49,9 +51,9 @@ export async function generateMetadata({
     title = `${t("searchResults", { query: searchQuery })} | Luxe`;
   } else if (categoryId || brandId) {
     try {
-      const [categories, brandsRes] = await Promise.all([
+      const [categories, brands] = await Promise.all([
         productService.getCategories(),
-        http<ApiResponse<Brand[]>>("/brands", { skipAuth: true }),
+        productService.getBrands(),
       ]);
 
       if (categoryId) {
@@ -61,7 +63,7 @@ export async function generateMetadata({
         );
         if (category) title = `${category.name} | Luxe`;
       } else if (brandId) {
-        const brand = brandsRes.data?.find(
+        const brand = brands.find(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (b: any) => b.id === brandId || b.name === brandId
         );
@@ -97,42 +99,34 @@ export default async function ShopPage({
     typeof params.search === "string" ? params.search : undefined;
 
   try {
-    // These can be cached as they don't change per request
-    const getCachedCategories = async () => {
-      "use cache";
-      return productService.getCategories();
-    };
+    const productsPromise = productService
+      .getProducts({
+        categoryId,
+        brandId,
+        search: searchQuery,
+        page: params.page ? Number(params.page) : 1,
+        limit: 20,
+        sort: typeof params.sort === "string" ? params.sort : undefined,
+        includeSkus: "true",
+      })
+      .then((res) => ({
+        data: res.data || [],
+        meta: res.meta || { page: 1, limit: 20, total: 0, lastPage: 1 },
+      }));
 
-    const getCachedBrands = async () => {
-      "use cache";
-      return productService.getBrands();
-    };
-
-    const productsPromise = productService.getProducts({
-      categoryId,
-      brandId,
-      search: searchQuery,
-      page: params.page ? Number(params.page) : 1,
-      limit: 12,
-      sort: typeof params.sort === "string" ? params.sort : undefined,
-      includeSkus: "true",
-    });
-
-    const categoriesPromise = getCachedCategories();
-    const brandsPromise = getCachedBrands();
+    const categoriesPromise = productService.getCategories();
+    const brandsPromise = productService.getBrands();
     const suggestedProductsPromise = productService.getFeaturedProducts(4);
 
     // Fetch wishlist items (server-side) to ensure correct initial state
     const { getWishlistAction } = await import("@/features/wishlist/actions");
     let wishlistItems: Product[] = [];
     try {
-      const items = await getWishlistAction();
-      if (items) {
-        wishlistItems = items;
+      const result = await getWishlistAction();
+      if (result.success && result.data) {
+        wishlistItems = result.data;
       }
-    } catch (_error) {
-      // console.error("Failed to fetch wishlist", error);
-    }
+    } catch (_error) {}
 
     return (
       <ShopContent
@@ -144,7 +138,6 @@ export default async function ShopPage({
       />
     );
   } catch (_e) {
-    // console.error("Failed to fetch data", e);
     const t = await getTranslations("shop");
     return <div>{t("errorLoading")}</div>;
   }

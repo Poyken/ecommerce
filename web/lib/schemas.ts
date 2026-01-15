@@ -15,11 +15,90 @@
  *
  * 3. ERROR MESSAGES:
  * - Các thông báo lỗi được định nghĩa trực tiếp trong schema.
- * - Có thể kết hợp với `react-hook-form` để hiển thị lỗi lên UI một cách tự động.
+ * - Có thể kết hợp với `react-hook-form` để hiển thị lỗi lên UI một cách tự động. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Runtime Safety: Ngăn chặn lỗi "sập trang" do data từ API gửi về không đúng cấu trúc mong muốn.
+ * - UI Sync: Tự động hiển thị lỗi validation ngay dưới ô input khi người dùng nhập sai format (vd: sai định dạng email).
+
  * =====================================================================
  */
 
 import { z } from "zod";
+import { PATTERNS, VALIDATION } from "./constants";
+
+// =============================================================================
+// VALIDATION PATTERNS
+// =============================================================================
+
+export const ValidationPatterns = {
+  email: PATTERNS.EMAIL,
+  phoneVN: PATTERNS.PHONE_VN,
+  password: PATTERNS.STRONG_PASSWORD,
+  slug: PATTERNS.SLUG,
+  url: PATTERNS.URL,
+} as const;
+
+// =============================================================================
+// BASE SCHEMAS
+// =============================================================================
+
+export const BaseSchema = {
+  email: z
+    .string()
+    .trim()
+    .min(1, "Email is required")
+    .email("Invalid email address"),
+  password: z
+    .string()
+    .min(
+      VALIDATION.PASSWORD_MIN_LENGTH,
+      `Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters`
+    ),
+  strongPassword: z
+    .string()
+    .min(
+      VALIDATION.PASSWORD_MIN_LENGTH,
+      `Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters`
+    )
+    .regex(
+      ValidationPatterns.password,
+      "Password must contain at least 1 uppercase, 1 lowercase and 1 number"
+    ),
+  phoneVN: z
+    .string()
+    .regex(ValidationPatterns.phoneVN, "Invalid Vietnamese phone number"),
+  name: z
+    .string()
+    .min(
+      VALIDATION.NAME_MIN_LENGTH,
+      `Name must be at least ${VALIDATION.NAME_MIN_LENGTH} characters`
+    )
+    .max(
+      VALIDATION.NAME_MAX_LENGTH,
+      `Name must be at most ${VALIDATION.NAME_MAX_LENGTH} characters`
+    ),
+  slug: z
+    .string()
+    .min(1, "Slug is required")
+    .regex(
+      ValidationPatterns.slug,
+      "Slug only contains lowercase letters, numbers and hyphens"
+    ),
+  price: z.number().min(0, "Price cannot be negative"),
+  rating: z.number().int().min(1).max(5),
+  content: z
+    .string()
+    .min(
+      VALIDATION.REVIEW_MIN_LENGTH,
+      `Content must be at least ${VALIDATION.REVIEW_MIN_LENGTH} characters`
+    ),
+  uuid: z.string().uuid("Invalid ID format"),
+  url: z.string().url("Invalid URL").optional().or(z.literal("")),
+} as const;
+
+// =============================================================================
+// FEATURE SCHEMAS
+// =============================================================================
 
 export const CartItemSchema = z.object({
   skuId: z.string().min(1, "SKU ID is required"),
@@ -58,16 +137,16 @@ export const ProfileUpdateSchema = z
   );
 
 export const ReviewSchema = z.object({
-  productId: z.string().min(1),
+  productId: BaseSchema.uuid,
   skuId: z.string().optional(),
-  rating: z.number().int().min(1).max(5),
-  content: z.string().min(10, "Review content must be at least 10 characters"),
+  rating: BaseSchema.rating,
+  content: BaseSchema.content,
   images: z.array(z.string()).optional(),
 });
 
 export const UpdateReviewSchema = z.object({
-  rating: z.number().int().min(1).max(5),
-  content: z.string().min(10, "Review content must be at least 10 characters"),
+  rating: BaseSchema.rating,
+  content: BaseSchema.content,
   images: z.array(z.string()).optional(),
 });
 
@@ -83,28 +162,26 @@ export const CheckoutSchema = z.object({
 });
 
 export const LoginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: BaseSchema.email,
+  password: BaseSchema.password,
 });
 
 export const RegisterSchema = z.object({
-  firstName: z.string().min(2, "First name is required"),
-  lastName: z.string().min(2, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  firstName: BaseSchema.name,
+  lastName: BaseSchema.name,
+  email: BaseSchema.email,
+  password: BaseSchema.password,
 });
 
 export const ForgotPasswordSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: BaseSchema.email,
 });
 
 export const ResetPasswordSchema = z
   .object({
     token: z.string().min(1, "Token is required"),
-    newPassword: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z
-      .string()
-      .min(6, "Password must be at least 6 characters"),
+    newPassword: BaseSchema.password,
+    confirmPassword: BaseSchema.password,
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
@@ -116,3 +193,27 @@ export const loginSchema = LoginSchema;
 export const registerSchema = RegisterSchema;
 export const forgotPasswordSchema = ForgotPasswordSchema;
 export const resetPasswordSchema = ResetPasswordSchema;
+export const ReturnRequestSchema = z.object({
+  orderId: z.string().min(1, "Order ID is required"),
+  type: z.enum(["REFUND_ONLY", "RETURN_AND_REFUND", "EXCHANGE"]),
+  reason: z.string().min(1, "Reason is required"),
+  description: z.string().optional(),
+  items: z
+    .array(
+      z.object({
+        orderItemId: z.string().min(1, "Order Item ID is required"),
+        quantity: z.number().int().min(1, "Quantity must be at least 1"),
+      })
+    )
+    .min(1, "At least one item must be returned"),
+  returnMethod: z.enum(["PICKUP", "SELF_SHIP", "AT_COUNTER"]),
+  refundMethod: z.enum(["ORIGINAL_PAYMENT", "BANK_TRANSFER", "WALLET"]),
+  bankAccount: z
+    .object({
+      bankName: z.string().min(1, "Bank name is required"),
+      accountNumber: z.string().min(1, "Account number is required"),
+      accountHolder: z.string().min(1, "Account holder name is required"),
+    })
+    .optional(),
+  images: z.array(z.string()).optional(),
+});

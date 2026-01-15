@@ -15,7 +15,11 @@
  *
  * 3. VALIDATION (Zod):
  * - Dữ liệu từ Form (Client) không bao giờ được tin tưởng.
- * - Luôn dùng Zod validate email/password trước khi gửi sang Backend API để tiết kiệm request lỗi.
+ * - Luôn dùng Zod validate email/password trước khi gửi sang Backend API để tiết kiệm request lỗi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Secure Onboarding: Tiếp nhận người dùng mới một cách an toàn qua các form Đăng ký/Đăng nhập đã được bảo vệ bởi CSRF và HttpOnly Cookies.
+ * - Identity Management: Quản lý phiên làm việc tập trung, hỗ trợ đăng nhập mạng xã hội (Social Login) và xác thực đa lớp (2FA) để đảm bảo an toàn tuyệt đối cho tài khoản.
+
  * =====================================================================
  */
 

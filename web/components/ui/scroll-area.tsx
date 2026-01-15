@@ -22,7 +22,10 @@ import { cn } from "@/lib/utils";
  * 3. STRUCTURE:
  * - `Viewport`: Vùng chứa nội dung thực tế.
  * - `ScrollBar`: Thanh cuộn (có thể là dọc hoặc ngang).
- * - `Thumb`: Phần cục trượt trên thanh cuộn.
+ * - `Thumb`: Phần cục trượt trên thanh cuộn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

@@ -20,7 +20,11 @@ import { useTranslations } from "next-intl";
  *
  * 2. CLIENT COMPONENT ("use client"):
  * - Vì trang này có Animation (`framer-motion`) và tương tác (Button back),
- *   nó phải là Client Component.
+ *   nó phải là Client Component. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - SEO & UX Recovery: Hướng dẫn người dùng quay trở lại lộ trình mua sắm đúng đắn (về trang chủ) khi họ vô tình truy cập vào các đường dẫn lỗi hoặc sản phẩm đã bị xóa.
+ * - Brand Personality: Thể hiện sự chỉn chu và cá tính của thương hiệu kể cả ở những trang "lỗi", giúp duy trì niềm tin của khách hàng đối với website.
+
  * =====================================================================
  */
 export default function NotFound() {

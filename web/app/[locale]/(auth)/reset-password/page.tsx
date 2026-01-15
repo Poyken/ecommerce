@@ -17,7 +17,10 @@ import { Suspense } from "react";
  * - Tương tự trang Login, việc sử dụng `useSearchParams()` để lấy token yêu cầu component phải được bọc trong `Suspense`.
  *
  * 3. SECURITY:
- * - Đây là bước cuối cùng trong luồng "Quên mật khẩu". Việc đặt lại mật khẩu thành công sẽ vô hiệu hóa token cũ.
+ * - Đây là bước cuối cùng trong luồng "Quên mật khẩu". Việc đặt lại mật khẩu thành công sẽ vô hiệu hóa token cũ. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 

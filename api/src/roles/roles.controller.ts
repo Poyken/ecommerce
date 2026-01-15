@@ -9,6 +9,24 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/auth/permissions.guard';
+import {
+  ApiCreateResponse,
+  ApiDeleteResponse,
+  ApiGetOneResponse,
+  ApiListResponse,
+  ApiUpdateResponse,
+  RequirePermissions,
+} from '@/common/decorators/crud.decorators';
+import { AssignPermissionsDto } from './dto/assign-permissions.dto';
+import { CreatePermissionDto } from './dto/create-permission.dto';
+import { CreateRoleDto } from './dto/create-role.dto';
+import { UpdatePermissionDto } from './dto/update-permission.dto';
+import { UpdateRoleDto } from './dto/update-role.dto';
+import { RolesService } from './roles.service';
 
 /**
  * =====================================================================
@@ -25,28 +43,14 @@ import {
  * - Không chỉ quản lý vai trò (Role), controller này còn quản lý cả danh sách các quyền (Permission) thô.
  * - Cho phép Admin tạo mới, cập nhật hoặc xóa các quyền hạn trong hệ thống.
  *
- * 3. DYNAMIC ASSIGNMENT:
- * - `assignPermissions`: API quan trọng nhất, cho phép gán một danh sách các quyền cho một vai trò cụ thể.
- * - Giúp hệ thống linh hoạt, có thể thay đổi quyền hạn của một nhóm người dùng ngay lập tức mà không cần sửa code.
+ * 3. RESPONSE STANDARDIZATION:
+ * - Các API trả về object được wrap trong `{ data: ... }` để đồng bộ với Frontend.
+ * - Ngoại trừ API List có phân trang trả về `{ data, meta }` trực tiếp. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
-import { AssignPermissionsDto } from './dto/assign-permissions.dto';
-import { CreatePermissionDto } from './dto/create-permission.dto';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { UpdatePermissionDto } from './dto/update-permission.dto';
-import { UpdateRoleDto } from './dto/update-role.dto';
-import { RolesService } from './roles.service';
-
 @ApiTags('Roles (Admin)')
 @Controller('roles')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -55,15 +59,16 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Post()
-  @Permissions('role:create') // Đảm bảo bạn seed quyền này
-  @ApiOperation({ summary: 'Tạo vai trò mới' })
-  create(@Body() createRoleDto: CreateRoleDto) {
-    return this.rolesService.create(createRoleDto);
+  @RequirePermissions('role:create')
+  @ApiCreateResponse('Role', { summary: 'Tạo vai trò mới' })
+  async create(@Body() createRoleDto: CreateRoleDto) {
+    const data = await this.rolesService.create(createRoleDto);
+    return { data };
   }
 
   @Get()
-  @Permissions('role:read')
-  @ApiOperation({ summary: 'Lấy tất cả vai trò' })
+  @RequirePermissions('role:read')
+  @ApiListResponse('Role', { summary: 'Lấy tất cả vai trò' })
   @ApiQuery({ name: 'search', required: false, type: String })
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
@@ -72,70 +77,80 @@ export class RolesController {
     @Query('page') page = 1,
     @Query('limit') limit = 10,
   ) {
+    // Service returns { data, meta } -> No wrap needed
     return this.rolesService.findAll(search, Number(page), Number(limit));
   }
 
   // ============= QUẢN LÝ QUYỀN HẠN =============
   @Get('permissions')
-  @UseGuards(JwtAuthGuard) // Ghi đè guard của controller - chỉ cần xác thực JWT
-  @ApiOperation({ summary: 'Lấy tất cả quyền hạn' })
-  getAllPermissions() {
-    return this.rolesService.getAllPermissions();
+  @UseGuards(JwtAuthGuard)
+  @ApiListResponse('Permission', { summary: 'Lấy tất cả quyền hạn' })
+  async getAllPermissions() {
+    const data = await this.rolesService.getAllPermissions();
+    return { data };
   }
 
   @Post('permissions')
-  @Permissions('permission:create')
-  @ApiOperation({ summary: 'Tạo quyền hạn mới' })
-  createPermission(@Body() dto: CreatePermissionDto) {
-    return this.rolesService.createPermission(dto);
+  @RequirePermissions('permission:create')
+  @ApiCreateResponse('Permission', { summary: 'Tạo quyền hạn mới' })
+  async createPermission(@Body() dto: CreatePermissionDto) {
+    const data = await this.rolesService.createPermission(dto);
+    return { data };
   }
 
   @Patch('permissions/:id')
-  @Permissions('permission:update')
-  @ApiOperation({ summary: 'Cập nhật quyền hạn' })
-  updatePermission(@Param('id') id: string, @Body() dto: UpdatePermissionDto) {
-    return this.rolesService.updatePermission(id, dto);
+  @RequirePermissions('permission:update')
+  @ApiUpdateResponse('Permission', { summary: 'Cập nhật quyền hạn' })
+  async updatePermission(
+    @Param('id') id: string,
+    @Body() dto: UpdatePermissionDto,
+  ) {
+    const data = await this.rolesService.updatePermission(id, dto);
+    return { data };
   }
 
   @Delete('permissions/:id')
-  @Permissions('permission:delete')
-  @ApiOperation({ summary: 'Xóa quyền hạn' })
-  deletePermission(@Param('id') id: string) {
-    return this.rolesService.deletePermission(id);
+  @RequirePermissions('permission:delete')
+  @ApiDeleteResponse('Permission', { summary: 'Xóa quyền hạn' })
+  async deletePermission(@Param('id') id: string) {
+    const data = await this.rolesService.deletePermission(id);
+    return { data };
   }
 
+  // ============= CHI TIẾT VAI TRÒ =============
+
   @Get(':id')
-  @Permissions('role:read')
-  @ApiOperation({ summary: 'Lấy chi tiết vai trò' })
-  findOne(@Param('id') id: string) {
-    return this.rolesService.findOne(id);
+  @RequirePermissions('role:read')
+  @ApiGetOneResponse('Role', { summary: 'Lấy chi tiết vai trò' })
+  async findOne(@Param('id') id: string) {
+    const data = await this.rolesService.findOne(id);
+    return { data };
   }
 
   @Patch(':id')
-  @Permissions('role:update')
-  @ApiOperation({ summary: 'Cập nhật vai trò' })
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
-    return this.rolesService.update(id, updateRoleDto);
+  @RequirePermissions('role:update')
+  @ApiUpdateResponse('Role', { summary: 'Cập nhật vai trò' })
+  async update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto) {
+    const data = await this.rolesService.update(id, updateRoleDto);
+    return { data };
   }
 
   @Delete(':id')
-  @Permissions('role:delete')
-  @ApiOperation({ summary: 'Xóa vai trò' })
-  remove(@Param('id') id: string) {
-    return this.rolesService.remove(id);
+  @RequirePermissions('role:delete')
+  @ApiDeleteResponse('Role', { summary: 'Xóa vai trò' })
+  async remove(@Param('id') id: string) {
+    const data = await this.rolesService.remove(id);
+    return { data };
   }
 
   @Post(':id/permissions')
-  @Permissions('role:update')
-  @ApiOperation({ summary: 'Gán quyền hạn cho vai trò' })
-  @ApiResponse({
-    status: 200,
-    description: 'Đã gán quyền hạn thành công.',
-  })
-  assignPermissions(
+  @RequirePermissions('role:update')
+  @ApiUpdateResponse('Role', { summary: 'Gán quyền hạn cho vai trò' })
+  async assignPermissions(
     @Param('id') id: string,
     @Body() dto: AssignPermissionsDto,
   ) {
-    return this.rolesService.assignPermissions(id, dto);
+    const data = await this.rolesService.assignPermissions(id, dto);
+    return { data };
   }
 }

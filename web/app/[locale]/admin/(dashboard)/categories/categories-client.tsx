@@ -9,7 +9,10 @@
  *
  * - SWR for data fetching and caching
  * - Added Parent column to show category hierarchy
- * - Using DataTablePagination with page numbers
+ * - Using DataTablePagination with page numbers *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 
@@ -33,17 +36,20 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
-import { CreateCategoryDialog } from "@/features/admin/components/create-category-dialog";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
-import { EditCategoryDialog } from "@/features/admin/components/edit-category-dialog";
+} from "@/features/admin/components/ui/admin-page-components";
+import { CreateCategoryDialog } from "@/features/admin/components/taxonomy/create-category-dialog";
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
+import { EditCategoryDialog } from "@/features/admin/components/taxonomy/edit-category-dialog";
 import { useAdminCategories } from "@/features/admin/providers/admin-metadata-provider";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { PaginationMeta } from "@/types/dtos";
 import { Category } from "@/types/models";
+import { useCategoriesImportExport } from "@/features/admin/hooks/use-categories-import-export";
+import { ImportDialog } from "@/components/shared/data-table/import-dialog";
 import { format } from "date-fns";
 import {
+  Download,
   Edit,
   Folder,
   FolderTree,
@@ -51,6 +57,7 @@ import {
   Plus,
   Search,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -69,9 +76,18 @@ export function CategoriesPageClient({
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(
     null
   );
+
+  const {
+    downloadTemplate,
+    exportCategories,
+    importCategories,
+    previewCategories,
+    loading: importExportLoading,
+  } = useCategoriesImportExport();
 
   const canCreate = hasPermission("category:create");
   const canUpdate = hasPermission("category:update");
@@ -98,10 +114,9 @@ export function CategoriesPageClient({
     () => getCategoriesAction(page, limit, debouncedSearchTerm),
     {
       fallbackData: {
+        success: true,
         data: initialCategories,
         meta: meta!,
-        statusCode: 200,
-        message: "Success",
       },
       revalidateOnFocus: false,
     }
@@ -165,39 +180,75 @@ export function CategoriesPageClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("categories.title")}
         subtitle={`${total} categories in total`}
-        icon={<FolderTree className="h-5 w-5" />}
+        icon={<FolderTree className="text-emerald-500 fill-emerald-500/10" />}
         stats={[
           { label: "total", value: total, variant: "default" },
           { label: "parents", value: parentCount, variant: "info" },
           { label: "children", value: childCount, variant: "success" },
         ]}
         actions={
-          canCreate ? (
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              {t("categories.createNew")}
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={exportCategories}
+              disabled={importExportLoading}
+            >
+              <Download className="mr-2 h-4 w-4" />
+              {t("export")}
             </Button>
-          ) : undefined
+            {canCreate && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setImportDialogOpen(true)}
+                  disabled={importExportLoading}
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  {t("import")}
+                </Button>
+                <Button onClick={() => setCreateDialogOpen(true)}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("categories.createNew")}
+                </Button>
+              </>
+            )}
+          </div>
         }
       />
-
-      {/* Search */}
-      <div className="flex items-center gap-4">
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Search and Filters */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t("search", {
               item: t("categories.title").toLowerCase(),
             })}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
           />
+        </div>
+
+        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl border-none shadow-inner h-14">
+          <div className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
+            <GitBranch className="h-3 w-3" />
+            Hierarchy
+          </div>
+          <div className="px-4 py-2 text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-primary" />
+            Parents: {parentCount}
+          </div>
+          <div className="px-4 py-2 text-xs font-black uppercase tracking-widest text-muted-foreground flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-emerald-500" />
+            Children: {childCount}
+          </div>
         </div>
       </div>
 
@@ -331,7 +382,6 @@ export function CategoriesPageClient({
           </TableBody>
         </Table>
       </AdminTableWrapper>
-
       {/* Pagination with page numbers */}
       {/* Pagination with page numbers - only show when needed */}
       {currentMeta &&
@@ -343,7 +393,6 @@ export function CategoriesPageClient({
             limit={currentMeta.limit}
           />
         )}
-
       {/* Dialogs */}
       <CreateCategoryDialog
         categories={categories}
@@ -353,7 +402,6 @@ export function CategoriesPageClient({
           if (!open) refreshData();
         }}
       />
-
       {selectedCategory && (
         <>
           <EditCategoryDialog
@@ -381,6 +429,14 @@ export function CategoriesPageClient({
           />
         </>
       )}
+      <ImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImport={importCategories}
+        onPreview={previewCategories}
+        onDownloadTemplate={downloadTemplate}
+        title={`${t("import")} ${t("categories.title")}`}
+      />
     </div>
   );
 }

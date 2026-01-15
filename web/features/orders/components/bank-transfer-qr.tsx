@@ -1,13 +1,13 @@
 "use client";
 
 import { GlassCard } from "@/components/shared/glass-card";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { simulatePaymentSuccessAction } from "@/features/orders/actions";
 import { useRouter } from "@/i18n/routing";
 import { formatCurrency } from "@/lib/utils";
 import { Copy, CreditCard, ExternalLink, Loader2, QrCode } from "lucide-react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -30,7 +30,10 @@ import { useEffect, useState } from "react";
  *
  * 3. DEV SIMULATION MODE:
  * - Vì môi trường dev không thể kết nối ngân hàng thật, ta có nút "Simulation".
- * - Gọi Server Action `simulatePaymentSuccessAction` để giả lập sự kiện Webhook thành công.
+ * - Gọi Server Action `simulatePaymentSuccessAction` để giả lập sự kiện Webhook thành công. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -58,16 +61,13 @@ export function BankTransferQR({
   const t = useTranslations("orders");
   const router = useRouter();
   const { toast } = useToast();
-  const locale = useLocale();
   const [mounted, setMounted] = useState(false);
-  const [origin, setOrigin] = useState("");
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [isSimulating, setIsSimulating] = useState(false);
 
   // Hydration fix: Chỉ render client-side logic khi mount xong
   useEffect(() => {
     setMounted(true);
-    setOrigin(window.location.origin);
   }, []);
 
   // Countdown Timer Logic
@@ -195,7 +195,7 @@ export function BankTransferQR({
                     variant: "destructive",
                   });
                 }
-              } catch (_error) {
+              } catch {
                 toast({
                   title: "Error",
                   description: "An unexpected error occurred",

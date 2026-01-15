@@ -17,7 +17,11 @@ import { CategoriesPageClient } from "./categories-client";
  * - Tận dụng khả năng xử lý bất đồng bộ của Next.js 15 với `searchParams`.
  *
  * 3. COMPONENT COMPOSITION:
- * - Trang này đóng vai trò là "Data Fetcher", sau đó truyền dữ liệu vào `CategoriesPageClient` để xử lý UI và tương tác.
+ * - Trang này đóng vai trò là "Data Fetcher", sau đó truyền dữ liệu vào `CategoriesPageClient` để xử lý UI và tương tác. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Taxonomical Structure Management: Cho phép Admin xây dựng và duy trì cấu trúc cây danh mục sản phẩm một cách khoa học, giúp khách hàng dễ dàng tìm kiếm và khám phá sản phẩm trên Storefront.
+ * - SEO Catalog Hierarchy: Tối ưu hóa cấu trúc URL và điều hướng trang web theo danh mục, nâng cao khả năng hiển thị của cửa hàng trên các công cụ tìm kiếm thông qua việc phân loại nội dung rõ ràng.
+
  * =====================================================================
  */
 

@@ -20,6 +20,9 @@ export interface RequestWithUser extends Request {
  * 1. TYPE AUGMENTATION:
  * - Express Request mặc định không có property `user`.
  * - Khi đi qua AuthGuard, ta gán user vào request.
- * - Interface này giúp TypeScript hiểu rằng `req.user` tồn tại và có các field admin/permissions.
+ * - Interface này giúp TypeScript hiểu rằng `req.user` tồn tại và có các field admin/permissions. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */

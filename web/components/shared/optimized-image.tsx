@@ -23,7 +23,10 @@ import { memo, useState } from "react";
  *
  * 3. SHIMMER EFFECT (Hiệu ứng lấp lánh):
  * - Trong khi chờ (`isLoading`), hiển thị vệt sáng chạy ngang (`animate-shimmer`).
- * - Tạo cảm giác "đang tải" (Perceived Performance) tốt hơn là xoay vòng tròn.
+ * - Tạo cảm giác "đang tải" (Perceived Performance) tốt hơn là xoay vòng tròn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -36,6 +39,8 @@ interface OptimizedImageProps extends ImageProps {
   aspectRatio?: "square" | "video" | "4/5" | "3/4" | "auto";
   /** ClassName cho thẻ div bao ngoài */
   containerClassName?: string;
+  /** Base64 blur data URL for smooth loading */
+  blurDataURL?: string;
 }
 
 // Map các tỉ lệ aspect ratio sang class của Tailwind
@@ -59,6 +64,7 @@ export const OptimizedImage = memo(function OptimizedImage({
   aspectRatio = "auto",
   containerClassName,
   className,
+  blurDataURL,
   ...props
 }: OptimizedImageProps) {
   // State 1: Đang tải hay xong?
@@ -134,6 +140,8 @@ export const OptimizedImage = memo(function OptimizedImage({
             : "scale-100 blur-0 opacity-100", // Load xong: Rõ nét, hiện ra
           className
         )}
+        placeholder={blurDataURL ? "blur" : "empty"}
+        blurDataURL={blurDataURL}
         // Sự kiện: Khi load xong -> Tắt trạng thái loading
         onLoad={(e) => {
           setIsLoading(false);
@@ -143,13 +151,11 @@ export const OptimizedImage = memo(function OptimizedImage({
         onError={(e) => {
           if (!finalError) {
             // Lần 1: Lỗi ảnh chính -> Thử fallback
-            console.warn(
-              `Failed to load image: ${src}, switching to fallback.`
-            );
+
             setError(true);
           } else {
             // Lần 2: Lỗi cả fallback -> Chấp nhận số phận
-            console.error(`Failed to load fallback image: ${fallbackSrc}`);
+
             setFallbackError(true);
           }
           // Dù lỗi cũng coi như là "load xong" quy trình để tắt shimmer
@@ -183,5 +189,3 @@ export const ProductImage = memo(function ProductImage({
     />
   );
 });
-
-

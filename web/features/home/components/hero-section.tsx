@@ -1,3 +1,26 @@
+/**
+ * =====================================================================
+ * HERO SECTION COMPONENT - Banner chính trang chủ
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. KIẾN TRÚC UI:
+ * - Đây là component quan trọng nhất trang Home ("First fold").
+ * - Sử dụng `framer-motion` (`m.div`, `AnimatePresence`) để tạo hiệu ứng xuất hiện mượt mà.
+ *
+ * 2. PERFORMANCE TIPS:
+ * - Dùng `m` từ `@/lib/animations` thay vì `motion` để giảm bundle size (Lazy Load).
+ * - `Image` component của Next.js có `priority={true}` vì đây là ảnh LCP (Largest Contentful Paint).
+ * - Dùng `sizes` prop để browser tải đúng kích thước ảnh theo thiết bị (Mobile/Desktop).
+ *
+ * 3. CUSTOMIZATION:
+ * - Props linh hoạt (`HeroSectionProps`) cho phép tái sử dụng ở các trang khác hoặc A/B Testing. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
+ * =====================================================================
+ */
 "use client";
 
 import { GlassButton } from "@/components/shared/glass-button";
@@ -13,41 +36,29 @@ import { useState } from "react";
 
 /**
  * =================================================================================================
- * HERO SECTION - PHẦN MỞ ĐẦU HOÀNH TRÁNG CỦA TRANG CHỦ
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MỤC ĐÍCH:
- *    - Đây là "bộ mặt" của Website. Nó cần gây ấn tượng ngay lập tức (First Impression).
- *    - Sử dụng ảnh chất lượng cao, font chữ to (Typography), và hiệu ứng chuyển động.
- *
- * 2. HIỆU ỨNG (ANIMATION):
- *    - Chúng ta dùng thư viện `framer-motion` (được import là `m` từ `@/lib/animations`).
- *    - `initial={{ opacity: 0 }}`: Trạng thái ban đầu (ẩn).
- *    - `animate={{ opacity: 1 }}`: Trạng thái đích (hiện).
- *    - `transition={{ delay: 0.5 }}`: Chờ 0.5s mới bắt đầu chạy -> Tạo hiệu ứng xuất hiện lần lượt (Stagger).
- *
- * 3. TỐI ƯU (OPTIMIZATION):
- *    - Component `Image` của Next.js được dùng với `priority` -> Báo cho trình duyệt tải ảnh này NGAY LẬP TỨC vì nó ở trên cùng (LCP - Largest Contentful Paint).
+ * HERO SECTION
  * =================================================================================================
  */
 interface HeroSectionProps {
+  // Content
   title?: string;
   subtitle?: string;
   ctaText?: string;
   ctaLink?: string;
-  alignment?: "left" | "center";
+  secondaryCtaText?: string;
+  secondaryCtaLink?: string;
+  badge?: string;
+
+  // Visual
   bgImage?: string;
-  bgColor?: string;
-  overlayOpacity?: number;
+
+  // Featured Card
   featuredTitle?: string;
   featuredPrice?: string;
-  featuredImage?: string;
-  styles?: {
-    backgroundColor?: string;
-    textColor?: string;
-  };
+  showFeaturedCard?: boolean;
+
+  // Layout
+  alignment?: "left" | "center";
 }
 
 export function HeroSection({
@@ -55,48 +66,39 @@ export function HeroSection({
   subtitle,
   ctaText,
   ctaLink,
-  alignment = "left",
+  secondaryCtaText,
+  secondaryCtaLink,
+  badge,
   bgImage = "/images/home/hero-luxury.jpg",
-  bgColor = "bg-background",
-  overlayOpacity = 0.4,
   featuredTitle,
   featuredPrice,
-  featuredImage,
-  styles,
+  showFeaturedCard = true,
+  alignment = "left",
 }: HeroSectionProps) {
   const t = useTranslations("hero");
   const [isImageReady, setIsImageReady] = useState(false);
 
-  // Use props if provided, otherwise fallback to translations/defaults
+  // Defaults
   const displayTitle = title || t("redefining");
   const displaySubtitle = subtitle || t("description");
   const displayCtaText = ctaText || t("shopCollection");
   const displayCtaLink = ctaLink || "/shop";
   const displayFeaturedTitle = featuredTitle || t("silkEveningDress");
   const displayFeaturedPrice = featuredPrice || "$1,299";
-  const displayFeaturedImage = featuredImage || bgImage;
+  const displayBadge = badge || t("newCollection");
 
   return (
-    <section
-      className={cn(
-        "relative min-h-screen flex items-center justify-center overflow-hidden pt-28",
-        bgColor
-      )}
-      style={{
-        backgroundColor: styles?.backgroundColor,
-        color: styles?.textColor,
-      }}
-    >
-      {/* Cinematic Background Lighting */}
-      <div className="absolute inset-0 z-0 text-foreground">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[60vh] bg-accent/10 rounded-full blur-[150px] opacity-60" />
-        <div className="absolute bottom-0 inset-x-0 h-[40vh] bg-linear-to-t from-background via-background/50 to-transparent" />
+    <section className="relative w-full min-h-screen flex items-center bg-background overflow-hidden pt-20  ">
+      {/* Background Decor */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-[50vh] h-[50vh] bg-accent/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-[40vh] h-[40vh] bg-secondary/30 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3" />
       </div>
 
       <div
         className={cn(
-          "container relative z-10 grid grid-cols-1 gap-12 lg:gap-20 items-center md:px-12 max-w-8xl mx-auto lg:py-0",
-          alignment === "center" ? "grid-cols-1 text-center" : "lg:grid-cols-2"
+          "container relative z-10 grid grid-cols-1 gap-12 lg:gap-20 items-center md:px-12 max-w-8xl mx-auto",
+          alignment === "center" ? "text-center" : "lg:grid-cols-2"
         )}
       >
         {/* Text Content */}
@@ -105,31 +107,26 @@ export function HeroSection({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           className={cn(
-            "space-y-10 order-2 lg:order-1",
-            alignment === "center"
-              ? "max-w-3xl mx-auto"
-              : "text-center lg:text-left"
+            "space-y-8 lg:space-y-10 order-2 lg:order-1",
+            alignment === "center" && "mx-auto max-w-4xl"
           )}
         >
-          <m.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.8 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary border border-border"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-accent" />
-            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-[0.2em]">
-              {t("newCollection")}
-            </span>
-          </m.div>
-
-          <div className="space-y-4">
-            <h1
-              className={cn(
-                "text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-normal tracking-[-0.03em] leading-[0.9]",
-                alignment === "center" ? "px-4" : ""
-              )}
+          {displayBadge && (
+            <m.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/50 backdrop-blur-md border border-border/50"
             >
+              <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
+              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.25em]">
+                {displayBadge}
+              </span>
+            </m.div>
+          )}
+
+          <div className="space-y-6">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-normal tracking-[-0.03em] leading-[0.9]">
               <span className="block text-foreground">{displayTitle}</span>
               <span className="relative inline-block mt-2 w-full">
                 <span className="text-gradient-champagne italic w-full block pb-4">
@@ -137,31 +134,28 @@ export function HeroSection({
                 </span>
               </span>
             </h1>
-          </div>
 
-          <p
-            className={cn(
-              "text-lg text-muted-foreground leading-relaxed font-light",
-              alignment === "center" ? "mx-auto" : "max-w-md mx-auto lg:mx-0"
-            )}
-          >
-            {displaySubtitle}
-          </p>
+            <p
+              className={cn(
+                "text-lg text-muted-foreground leading-relaxed font-light max-w-xl",
+                alignment === "center" && "mx-auto"
+              )}
+            >
+              {displaySubtitle}
+            </p>
+          </div>
 
           <div
             className={cn(
               "flex flex-col sm:flex-row gap-4 pt-4",
-              alignment === "center"
-                ? "justify-center"
-                : "justify-center lg:justify-start"
+              alignment === "center" ? "justify-center" : "justify-start"
             )}
           >
             <Link href={displayCtaLink as any}>
               <m.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                className="group h-14 px-10 rounded-full bg-primary text-primary-foreground font-medium text-sm tracking-wider uppercase transition-[background-color,box-shadow,opacity] duration-300 hover:shadow-2xl hover:shadow-primary/20 transform-gpu will-change-transform"
+                className="group h-14 px-10 rounded-full bg-primary text-primary-foreground font-bold text-sm tracking-mid uppercase transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 cursor-pointer"
               >
                 <span className="flex items-center gap-3">
                   {displayCtaText}
@@ -169,23 +163,23 @@ export function HeroSection({
                 </span>
               </m.button>
             </Link>
-            <Link href="/about">
+
+            <Link href={(secondaryCtaLink || "/about") as any}>
               <GlassButton
                 variant="outline"
                 size="lg"
-                className="h-14 px-10 rounded-full border border-border text-foreground hover:bg-secondary hover:border-accent/30 font-medium text-sm tracking-wider uppercase"
+                className="h-14 px-10 rounded-full border border-border text-foreground hover:bg-secondary font-bold text-sm tracking-mid uppercase"
               >
-                {t("ourStory")}
+                {secondaryCtaText || t("ourStory")}
               </GlassButton>
             </Link>
           </div>
 
+          {/* Bottom Features */}
           <m.div
             className={cn(
-              "flex items-center gap-8 pt-8 border-t border-border/50",
-              alignment === "center"
-                ? "justify-center"
-                : "justify-center lg:justify-start"
+              "flex flex-wrap items-center gap-x-12 gap-y-4 pt-10 border-t border-border/30",
+              alignment === "center" ? "justify-center" : "justify-start"
             )}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -195,8 +189,8 @@ export function HeroSection({
               { label: t("freeShipping"), value: "Free Shipping" },
               { label: t("premiumQuality"), value: "Premium Quality" },
             ].map((item, idx) => (
-              <div key={idx} className="text-center lg:text-left">
-                <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-medium">
+              <div key={idx} className="flex flex-col items-start gap-1">
+                <span className="text-[10px] uppercase tracking-[0.25em] text-accent font-bold">
                   {item.label}
                 </span>
               </div>
@@ -204,15 +198,19 @@ export function HeroSection({
           </m.div>
         </m.div>
 
-        {/* Visual Content - Hidden or Centered depending on alignment */}
+        {/* Visual Content (Right Side) */}
         {alignment === "left" && (
           <m.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="relative h-[60vh] lg:h-[80vh] min-h-[500px] order-1 lg:order-2 group"
+            initial={{ opacity: 0, x: 50, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{
+              duration: 1.2,
+              delay: 0.2,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+            className="relative h-[60vh] lg:h-[85vh] min-h-[500px] w-full order-1 lg:order-2 group"
           >
-            <m.div className="relative h-full w-full rounded-3xl lg:rounded-[2.5rem] overflow-hidden shadow-2xl shadow-accent/10">
+            <div className="relative z-10 w-full h-full rounded-4xl lg:rounded-[3rem] overflow-hidden shadow-2xl shadow-accent/10 border border-border/10">
               <AnimatePresence mode="wait">
                 {!isImageReady && (
                   <m.div
@@ -227,66 +225,67 @@ export function HeroSection({
 
               <Image
                 src={bgImage}
-                alt="Luxury Collection"
+                alt="Hero Focus"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover object-center transition-transform duration-700 ease-[0.16,1,0.3,1] group-hover:scale-105"
+                className="object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-105"
                 priority
                 onLoad={() => setIsImageReady(true)}
               />
 
-              <div
-                className="absolute inset-0 bg-black"
-                style={{ opacity: overlayOpacity }}
-              />
+              {/* No dark overlay here intentionally for 'light' look */}
 
-              <m.div
-                initial={{ y: 30, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{
-                  delay: 1.2,
-                  duration: 0.8,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="absolute bottom-6 left-6 right-6 md:left-8 md:right-8 md:bottom-8"
-              >
-                <div className="glass-luxury p-5 md:p-6 rounded-2xl flex items-center justify-between">
-                  <div className="space-y-1">
-                    <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-[0.2em]">
-                      {t("featuredLook")}
-                    </p>
-                    <p className="text-lg md:text-xl font-serif text-foreground">
-                      {displayFeaturedTitle}
-                    </p>
+              {showFeaturedCard && (
+                <m.div
+                  initial={{ y: 40, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{
+                    delay: 1.2,
+                    duration: 0.8,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
+                  className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10"
+                >
+                  <div className="glass-luxury p-6 md:p-8 rounded-3xl flex items-center justify-between border border-white/10 backdrop-blur-2xl">
+                    <div className="space-y-1.5">
+                      <p className="text-[10px] text-accent font-bold uppercase tracking-[0.3em]">
+                        {t("featuredLook")}
+                      </p>
+                      <p className="text-xl md:text-2xl font-serif text-foreground leading-tight">
+                        {displayFeaturedTitle}
+                      </p>
+                    </div>
+                    <div className="text-right pl-4">
+                      <span className="text-2xl md:text-3xl font-light text-foreground tracking-tight">
+                        {displayFeaturedPrice}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className="text-xl md:text-2xl font-medium text-foreground">
-                      {displayFeaturedPrice}
-                    </span>
-                  </div>
-                </div>
-              </m.div>
-            </m.div>
+                </m.div>
+              )}
+            </div>
 
-            <div className="absolute -z-10 -top-8 -right-8 w-32 h-32 border border-accent/20 rounded-full" />
-            <div className="absolute -z-10 -bottom-4 -left-4 w-24 h-24 border border-accent/10 rounded-full" />
+            {/* Decorative Elements */}
+            <div className="absolute -z-10 -top-8 -right-8 w-40 h-40 border border-accent/20 rounded-full blur-sm" />
+            <div className="absolute -z-10 -bottom-8 -left-8 w-32 h-32 border border-accent/10 rounded-full blur-[1px]" />
           </m.div>
         )}
       </div>
 
+      {/* Scroll indicator */}
       <m.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5, duration: 0.8 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2, duration: 1 }}
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pointer-events-none"
       >
-        <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-medium">
+        <span className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground/60 font-bold">
           Scroll
         </span>
         <m.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          className="w-px h-8 bg-linear-to-b from-accent/50 to-transparent"
+          animate={{ y: [0, 10, 0], opacity: [0.3, 0.7, 0.3] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="w-px h-12 bg-linear-to-b from-accent/50 to-transparent"
         />
       </m.div>
     </section>

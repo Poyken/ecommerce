@@ -35,7 +35,10 @@ import { NotificationsService } from './notifications.service';
  * - Thông báo đơn hàng mới
  * - Thông báo trạng thái đơn hàng thay đổi
  * - Thông báo khuyến mãi
- * - Chat support (nếu mở rộng)
+ * - Chat support (nếu mở rộng) *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -101,8 +104,6 @@ export class NotificationsGateway
       const unreadCount =
         await this.notificationsService.getUnreadCount(userId);
       client.emit('unread_count', { count: unreadCount });
-
-      // console.log(`[WS] User ${userId} connected (socket: ${client.id})`);
     } catch (error) {
       this.logger.error('[WS] Connection error:', error.message);
       client.disconnect();
@@ -123,7 +124,6 @@ export class NotificationsGateway
           this.userSockets.delete(userId);
         }
       }
-      // console.log(`[WS] User ${userId} disconnected (socket: ${client.id})`);
     }
   }
 
@@ -177,7 +177,7 @@ export class NotificationsGateway
     this.server.to(`user:${userId}`).emit('new_notification', notification);
 
     // Cập nhật unread count
-    this.notificationsService.getUnreadCount(userId).then((count) => {
+    void this.notificationsService.getUnreadCount(userId).then((count) => {
       this.server.to(`user:${userId}`).emit('unread_count', { count });
     });
 

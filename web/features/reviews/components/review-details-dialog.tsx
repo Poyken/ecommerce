@@ -27,7 +27,10 @@ import { useTranslations } from "next-intl";
  * - Cung cấp nút "View Product" để Admin có thể xem nhanh sản phẩm đang bị phản ánh.
  *
  * 3. WHITESPACE PRESERVATION:
- * - `whitespace-pre-wrap`: Giúp hiển thị đúng các dấu xuống dòng mà user đã nhập trong nội dung đánh giá.
+ * - `whitespace-pre-wrap`: Giúp hiển thị đúng các dấu xuống dòng mà user đã nhập trong nội dung đánh giá. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

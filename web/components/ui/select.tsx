@@ -20,7 +20,10 @@ import { cn } from "@/lib/utils";
  *
  * 2. POPPER POSITIONING:
  * - Sử dụng thuật toán Popper để hiển thị menu đè lên các element khác (`z-index` cao).
- * - `SelectScrollUpButton` / `DownButton`: Nút scroll khi danh sách quá dài.
+ * - `SelectScrollUpButton` / `DownButton`: Nút scroll khi danh sách quá dài. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

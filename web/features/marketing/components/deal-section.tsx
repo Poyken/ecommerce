@@ -23,7 +23,10 @@ import { useEffect, useState } from "react";
  * - Khi state thay đổi, React sẽ re-render component để hiển thị con số mới.
  *
  * 3. TABULAR NUMS:
- * - CSS `tabular-nums` giúp các con số có độ rộng bằng nhau -> Tránh hiện tượng chữ bị "nhảy" khi số thay đổi.
+ * - CSS `tabular-nums` giúp các con số có độ rộng bằng nhau -> Tránh hiện tượng chữ bị "nhảy" khi số thay đổi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

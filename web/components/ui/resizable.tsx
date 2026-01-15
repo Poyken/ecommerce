@@ -1,5 +1,43 @@
 "use client"
 
+/**
+ * =====================================================================
+ * RESIZABLE - PANELS CÓ THỂ THAY ĐỔI KÍCH THƯỚC
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * Bộ components cho phép tạo layout với các panel có thể kéo thay đổi kích thước.
+ * Dùng thư viện react-resizable-panels (đã được wrap lại).
+ *
+ * 1. CÁC COMPONENTS:
+ *    - ResizablePanelGroup: Container chứa các panels
+ *      Props: direction="horizontal" | "vertical"
+ *
+ *    - ResizablePanel: Mỗi panel trong group
+ *      Props: defaultSize={50} (% của container)
+ *
+ *    - ResizableHandle: Thanh kéo giữa 2 panels
+ *      Props: withHandle={true} để hiện icon grip
+ *
+ * 2. VÍ DỤ SỬ DỤNG:
+ *    <ResizablePanelGroup direction="horizontal">
+ *      <ResizablePanel defaultSize={30}>Sidebar</ResizablePanel>
+ *      <ResizableHandle withHandle />
+ *      <ResizablePanel defaultSize={70}>Content</ResizablePanel>
+ *    </ResizablePanelGroup>
+ *
+ * 3. USE CASES:
+ *    - Page Builder (sidebar + canvas)
+ *    - Code editor layouts
+ *    - Email client (folders + list + preview)
+ *    - Admin dashboards *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
+ * =====================================================================
+ */
+
 import { GripVertical } from "lucide-react"
 import * as React from "react"
 import {

@@ -14,7 +14,10 @@
  * - Click vào ảnh chính sẽ mở `ProductImageLightbox` để xem toàn màn hình.
  *
  * 3. SYNC WITH SKUS:
- * - Khi người dùng chọn một biến thể (màu sắc), gallery sẽ tự động chuyển đến ảnh tương ứng của biến thể đó.
+ * - Khi người dùng chọn một biến thể (màu sắc), gallery sẽ tự động chuyển đến ảnh tương ứng của biến thể đó. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -22,12 +25,12 @@
 
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import {
-    Carousel,
-    CarouselContent,
-    CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
-    type CarouselApi,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
 } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { m } from "@/lib/animations";
@@ -68,7 +71,7 @@ export const ProductImageGallery = memo(function ProductImageGallery({
   onLightboxChange,
 }: ProductImageGalleryProps) {
   // ... (existing logic)
-  const [api, setApi] = useState<CarouselApi>();
+  const [, setApi] = useState<CarouselApi>();
   const [isFirstLoadReady, setIsFirstLoadReady] = useState(false);
 
   // ... (useEffect for carousel)
@@ -86,11 +89,9 @@ export const ProductImageGallery = memo(function ProductImageGallery({
       const firstImage = activeImage || images[0];
       img.src = firstImage;
       img.onload = () => {
-         
         setIsFirstLoadReady(true);
       };
       img.onerror = () => {
-         
         setIsFirstLoadReady(true); // Don't block UI on error
       };
 
@@ -100,7 +101,6 @@ export const ProductImageGallery = memo(function ProductImageGallery({
         setDisplayImage(firstImage);
       }
     } else {
-       
       setIsFirstLoadReady(true);
     }
   }, [images, activeImage, displayImage, isTransitioning]);

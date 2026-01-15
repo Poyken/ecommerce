@@ -10,12 +10,17 @@
  * - Filter theo status (Server-side via URL)
  * - Stats fetched from server
  * - Search theo product hoặc comment
- * - Quick actions: Reply, Toggle Publish, Delete
+ * - Quick actions: Reply, Toggle Publish, Delete *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Brand Reputation Management: Kiểm soát uy tín thương hiệu thông qua việc kiểm duyệt các đánh giá (Publish/Hide), giúp xây dựng niềm tin cho khách hàng mới khi truy cập vào Store.
+ * - Customer Feedback Loop: Thiết lập kênh phản hồi hai chiều bằng cách cho phép Admin trả lời trực tiếp các nhận xét, giúp xử lý các khiếu nại kịp thời và tăng cường mối quan hệ với người tiêu dùng.
+
  * =====================================================================
  */
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
-import { useToast } from "@/components/shared/use-toast";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -39,7 +44,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   deleteReviewAction,
   replyToReviewAction,
-  toggleReviewStatusAction,
+  updateReviewStatusAction,
   analyzeReviewSentimentAction,
 } from "@/features/admin/actions";
 import {
@@ -47,22 +52,14 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
-import { DeleteConfirmDialog } from "@/features/admin/components/delete-confirm-dialog";
+} from "@/features/admin/components/ui/admin-page-components";
+import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useRouter } from "@/i18n/routing";
 import { useDebounce } from "@/lib/hooks/use-debounce";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import {
-  Eye,
-  EyeOff,
-  MessageSquare,
-  Search,
-  Star,
-  Trash2,
-  BrainCircuit,
-} from "lucide-react";
+import { Eye, EyeOff, MessageSquare, Search, Star, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
@@ -126,7 +123,6 @@ export function ReviewsClient({
   const [isPending, startTransition] = useTransition();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [analyzingId, setAnalyzingId] = useState<string | null>(null);
 
   // Reply State
   const [replyId, setReplyId] = useState<string | null>(null);
@@ -187,7 +183,7 @@ export function ReviewsClient({
 
   const togglePublish = (reviewId: string, currentStatus: boolean) => {
     startTransition(async () => {
-      const result = await toggleReviewStatusAction(reviewId, !currentStatus);
+      const result = await updateReviewStatusAction(reviewId, !currentStatus);
       if (result.success) {
         toast({
           title: t("success"),
@@ -247,7 +243,6 @@ export function ReviewsClient({
   };
 
   const handleAnalyze = async (reviewId: string, content: string) => {
-    setAnalyzingId(reviewId);
     try {
       const res = await analyzeReviewSentimentAction(content);
       if (res.success) {
@@ -264,14 +259,12 @@ export function ReviewsClient({
           variant: "destructive",
         });
       }
-    } catch (e) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to analyze",
         variant: "destructive",
       });
-    } finally {
-      setAnalyzingId(null);
     }
   };
 
@@ -294,7 +287,7 @@ export function ReviewsClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("reviews.management")}
@@ -302,7 +295,7 @@ export function ReviewsClient({
           count: reviews.length,
           total: totalCount,
         })}
-        icon={<Star className="h-5 w-5" />}
+        icon={<Star className="text-amber-500 fill-amber-500/10" />}
         stats={[
           { label: "total", value: totalCount, variant: "default" },
           { label: "published", value: publishedCount, variant: "success" },
@@ -320,40 +313,69 @@ export function ReviewsClient({
       />
 
       {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <Tabs
           value={currentStatus}
           onValueChange={(v) => handleStatusChange(v as FilterType)}
+          className="w-full"
         >
-          <TabsList>
-            <TabsTrigger value="all" className="gap-2" disabled={isPending}>
-              All ({totalCount})
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
+            <TabsTrigger
+              value="all"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
+              disabled={isPending}
+            >
+              All
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black"
+              >
+                {totalCount}
+              </Badge>
             </TabsTrigger>
             <TabsTrigger
               value="published"
-              className="gap-2"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
               disabled={isPending}
             >
               <Eye className="h-4 w-4" />
-              Published ({publishedCount})
+              Published
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black"
+              >
+                {publishedCount}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="hidden" className="gap-2" disabled={isPending}>
+            <TabsTrigger
+              value="hidden"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-amber-600 transition-all gap-2"
+              disabled={isPending}
+            >
               <EyeOff className="h-4 w-4" />
-              Hidden ({hiddenCount})
+              Hidden
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-600 text-[10px] font-black"
+              >
+                {hiddenCount}
+              </Badge>
             </TabsTrigger>
           </TabsList>
         </Tabs>
 
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t("reviews.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
           />
           {isPending && (
-            <div className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            </div>
           )}
         </div>
       </div>

@@ -14,7 +14,10 @@
  * - Hiển thị trạng thái "Sending..." khi đang xử lý.
  *
  * 3. SUCCESS STATE:
- * - Sau khi gửi thành công, hiển thị thông báo cảm ơn và tự động reset form sau vài giây.
+ * - Sau khi gửi thành công, hiển thị thông báo cảm ơn và tự động reset form sau vài giây. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -22,6 +25,7 @@
 
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
+import { AnimatedError } from "@/components/shared/animated-error";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -171,11 +175,7 @@ export function ContactForm() {
                     errors.name ? "border-red-500/50" : ""
                   }`}
                 />
-                {errors.name && (
-                  <p className="text-red-500 text-xs animate-in fade-in duration-200 ml-1">
-                    {errors.name}
-                  </p>
-                )}
+                <AnimatedError message={errors.name} />
               </div>
 
               <div className="space-y-2">
@@ -197,11 +197,7 @@ export function ContactForm() {
                     errors.email ? "border-red-500/50" : ""
                   }`}
                 />
-                {errors.email && (
-                  <p className="text-red-500 text-xs animate-in fade-in duration-200 ml-1">
-                    {errors.email}
-                  </p>
-                )}
+                <AnimatedError message={errors.email} />
               </div>
             </div>
 
@@ -223,11 +219,7 @@ export function ContactForm() {
                   errors.subject ? "border-red-500/50" : ""
                 }`}
               />
-              {errors.subject && (
-                <p className="text-red-500 text-xs animate-in fade-in duration-200 ml-1">
-                  {errors.subject}
-                </p>
-              )}
+              <AnimatedError message={errors.subject} />
             </div>
 
             <div className="space-y-2">
@@ -249,11 +241,7 @@ export function ContactForm() {
                   errors.message ? "border-red-500/50" : ""
                 }`}
               />
-              {errors.message && (
-                <p className="text-red-500 text-xs animate-in fade-in duration-200 ml-1">
-                  {errors.message}
-                </p>
-              )}
+              <AnimatedError message={errors.message} />
             </div>
 
             <GlassButton

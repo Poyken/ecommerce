@@ -17,7 +17,11 @@ export { m };
  * - `staggerChildren`: Giúp các phần tử con xuất hiện lần lượt thay vì cùng lúc.
  *
  * 3. REUSABILITY:
- * - Định nghĩa một lần, dùng mọi nơi (FadeIn, SlideIn, ZoomIn...).
+ * - Định nghĩa một lần, dùng mọi nơi (FadeIn, SlideIn, ZoomIn...). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Perceived Performance: Các hiệu ứng chuyển động mượt mà giúp người dùng cảm thấy ứng dụng nhanh hơn thực tế (giảm cảm giác chờ đợi khi load dữ liệu).
+ * - Brand Identity: Tạo ra các hiệu ứng mang bản sắc riêng (vd: hiệu ứng "hoàng gia" cho theme Luxury) giúp tăng tính chuyên nghiệp cho website.
+
  * =====================================================================
  */
 
@@ -249,4 +253,4 @@ export const slideInFromBottom: Variants = {
 // SKELETON SHIMMER (CSS class based)
 // ============================================
 export const shimmerClass =
-  "animate-pulse bg-gradient-to-r from-muted/30 via-muted/50 to-muted/30 bg-[length:200%_100%] animate-shimmer";
+  "animate-pulse bg-linear-to-r from-muted/30 via-muted/50 to-muted/30 bg-[length:200%_100%] animate-shimmer";

@@ -15,12 +15,15 @@
  * - Chỉ hiển thị với notification loại ORDER chưa xử lý.
  *
  * 3. BULK ACTIONS:
- * - Đánh dấu tất cả đã đọc.
+ * - Đánh dấu tất cả đã đọc. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 
 import { GlassCard } from "@/components/shared/glass-card";
-import { useToast } from "@/components/shared/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -33,7 +36,7 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { updateOrderStatusAction } from "@/features/admin/actions";
-import { AdminTableWrapper } from "@/features/admin/components/admin-page-components";
+import { AdminTableWrapper } from "@/features/admin/components/ui/admin-page-components";
 import {
   getAdminNotificationsAction,
   markAllAsReadAction,

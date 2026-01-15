@@ -1,4 +1,5 @@
 import { io, Socket } from "socket.io-client";
+import { env } from "./env";
 
 /**
  * =====================================================================
@@ -18,7 +19,12 @@ import { io, Socket } from "socket.io-client";
  * 3. AUTHENTICATION (Xác thực):
  * - SocketIO cũng cần bảo mật như API.
  * - Ta gửi JWT token qua `auth: { token }` khi connect.
- * - Server sẽ verify token này trong Middleware "Handshake".
+ * - Server sẽ verify token này trong Middleware "Handshake". *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Real-time Notifications: Nhận thông báo "Đơn hàng mới", "Hết hàng" ngay lập tức mà không cần refresh trang.
+ * - Live Chat Support: Hỗ trợ tính năng chat trực tuyến giữa Admin và Customer.
+ * - Sync Status: Cập nhật trạng thái online/offline của user trong thời gian thực.
+
  * =====================================================================
  */
 
@@ -31,12 +37,11 @@ class NotificationSocketClient {
    */
   connect(token: string) {
     if (this.socket?.connected) {
-      console.log("[Socket] Already connected");
       return;
     }
 
     // WebSocket server is at port 8080 (not /api/v1)
-    const serverUrl = "http://localhost:8080";
+    const serverUrl = env.NEXT_PUBLIC_SOCKET_URL;
 
     this.socket = io(`${serverUrl}/notifications`, {
       auth: {
@@ -49,13 +54,9 @@ class NotificationSocketClient {
     });
 
     // Setup event handlers
-    this.socket.on("connect", () => {
-      console.log("[Socket] Connected successfully");
-    });
+    this.socket.on("connect", () => {});
 
-    this.socket.on("disconnect", (reason) => {
-      console.log("[Socket] Disconnected:", reason);
-    });
+    this.socket.on("disconnect", () => {});
 
     this.socket.on("connect_error", (error) => {
       console.error("[Socket] Connection error:", error.message);
@@ -82,7 +83,6 @@ class NotificationSocketClient {
     if (this.socket) {
       this.socket.disconnect();
       this.socket = null;
-      console.log("[Socket] Disconnected manually");
     }
   }
 

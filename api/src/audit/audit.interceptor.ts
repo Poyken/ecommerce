@@ -7,6 +7,7 @@ import {
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AuditService } from './audit.service';
+import { maskSensitiveData } from '@/common/utils/masking';
 
 /**
  * =====================================================================
@@ -24,7 +25,10 @@ import { AuditService } from './audit.service';
  * - Các hành động xem dữ liệu (GET) thường được bỏ qua để tránh làm rác log.
  *
  * 3. RESOURCE EXTRACTION:
- * - Logic trong hàm `intercept` tự động bóc tách URL để biết User đang tương tác với tài nguyên nào (Sản phẩm, Đơn hàng, Người dùng...) và lưu lại kèm theo Body của request.
+ * - Logic trong hàm `intercept` tự động bóc tách URL để biết User đang tương tác với tài nguyên nào (Sản phẩm, Đơn hàng, Người dùng...) và lưu lại kèm theo Body của request. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()
@@ -42,6 +46,9 @@ export class AuditInterceptor implements NestInterceptor {
     const isMutation = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method);
     const isAdminRoute =
       url.includes('/admin') ||
+      url.includes('/super-admin') ||
+      url.includes('/tenants') ||
+      url.includes('/plans') ||
       url.includes('/users') ||
       url.includes('/roles') ||
       url.includes('/products') ||
@@ -52,7 +59,17 @@ export class AuditInterceptor implements NestInterceptor {
       url.includes('/reviews') ||
       url.includes('/orders') ||
       url.includes('/skus') ||
-      url.includes('/permissions');
+      url.includes('/permissions') ||
+      url.includes('/invoices') ||
+      url.includes('/settings') ||
+      url.includes('/promotions') ||
+      url.includes('/rma') ||
+      url.includes('/inventory') ||
+      url.includes('/media') ||
+      url.includes('/customer-groups') ||
+      url.includes('/notifications') ||
+      url.includes('/feature-flags') ||
+      url.includes('/pages');
 
     return next.handle().pipe(
       tap({
@@ -71,10 +88,10 @@ export class AuditInterceptor implements NestInterceptor {
               action,
               resource,
               payload: {
-                body: request.body,
+                body: maskSensitiveData(request.body),
                 params: request.params,
                 query: request.query,
-                response: data, // Có thể log cả response nếu cần
+                response: maskSensitiveData(data), // Masking response too
               },
               ipAddress: ip,
               userAgent,

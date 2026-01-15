@@ -13,7 +13,10 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
  * - Đây là bước kiểm tra quan trọng nhất để tránh rác (Spam) trong danh sách newsletter.
  *
  * 2. CUSTOM ERROR MESSAGES:
- * - Sử dụng thuộc tính `message` để trả về thông báo lỗi thân thiện bằng tiếng Việt cho người dùng Frontend.
+ * - Sử dụng thuộc tính `message` để trả về thông báo lỗi thân thiện bằng tiếng Việt cho người dùng Frontend. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 

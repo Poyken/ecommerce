@@ -10,7 +10,11 @@
  * - Removed virtual scrolling for simpler pagination
  * - Using DataTablePagination with page numbers
  * - Filter tabs
- * - Stats header
+ * - Stats header *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Enterprise Catalog Management: Cung cấp giao diện quản trị mạnh mẽ để kiểm soát hàng nghìn SKU sản phẩm, từ việc thiết lập thuộc tính đến quản lý phân loại và thương hiệu một cách khoa học.
+ * - Multi-dimensional Product Insights: Giúp Admin nhanh chóng nhận diện các sản phẩm mới nhập (Recent) hoặc các sản phẩm chưa được phân loại (No Category) để kịp thời tối ưu hóa luồng hiển thị trên Storefront.
+
  * =====================================================================
  */
 
@@ -32,10 +36,12 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
+} from "@/features/admin/components/ui/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { Product } from "@/types/models";
+import { useProductsImportExport } from "@/features/admin/hooks/use-products-import-export";
+import { ImportDialog } from "@/components/shared/data-table/import-dialog";
 import { format } from "date-fns";
 import {
   Box,
@@ -51,34 +57,36 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
+import { useRouter, usePathname } from "@/i18n/routing";
+import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 const CreateProductDialog = dynamic(
   () =>
-    import("@/features/admin/components/create-product-dialog").then(
+    import("@/features/admin/components/products/create-product-dialog").then(
       (mod) => mod.CreateProductDialog
     ),
   { ssr: false }
 );
 const DeleteConfirmDialog = dynamic(
   () =>
-    import("@/features/admin/components/delete-confirm-dialog").then(
+    import("@/features/admin/components/shared/delete-confirm-dialog").then(
       (mod) => mod.DeleteConfirmDialog
     ),
   { ssr: false }
 );
 const EditProductDialog = dynamic(
   () =>
-    import("@/features/admin/components/edit-product-dialog").then(
+    import("@/features/admin/components/products/edit-product-dialog").then(
       (mod) => mod.EditProductDialog
     ),
   { ssr: false }
 );
 const ProductTranslationDialog = dynamic(
   () =>
-    import("@/features/admin/components/product-translation-dialog").then(
-      (mod) => mod.ProductTranslationDialog
-    ),
+    import(
+      "@/features/admin/components/products/product-translation-dialog"
+    ).then((mod) => mod.ProductTranslationDialog),
   { ssr: false }
 );
 
@@ -101,36 +109,39 @@ export function ProductsClient({
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [translateDialogOpen, setTranslateDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const {
+    downloadTemplate,
+    exportProducts,
+    importProducts,
+    previewProducts,
+    loading: importExportLoading,
+  } = useProductsImportExport();
 
   const canCreate = hasPermission("product:create");
   const canUpdate = hasPermission("product:update");
   const canDelete = hasPermission("product:delete");
   const canTranslate = hasPermission("product:update");
 
-  const { searchTerm, setSearchTerm, isPending, handleFilterChange } =
+  const { searchTerm, setSearchTerm, isPending } =
     useAdminTable("/admin/products");
 
-  const [filter, setFilter] = useState<FilterType>("all");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const filter = (searchParams.get("filter") as FilterType) || "all";
 
   const handleStatusChange = (status: FilterType) => {
-    setFilter(status);
-    // Note: This filter is currently client-side only based on current page data.
-    // If you want server-side filtering, you should pass it to useAdminTable.
-    // But since the original code was client-side, I'll keep it for now.
-  };
-
-  // Filter products (client-side for current page only)
-  const filteredProducts = products.filter((product) => {
-    if (filter === "all") return true;
-    if (filter === "recent") {
-      const weekAgo = new Date();
-      weekAgo.setDate(weekAgo.getDate() - 7);
-      return new Date(product.createdAt) > weekAgo;
+    const params = new URLSearchParams(searchParams.toString());
+    if (status === "all") {
+      params.delete("filter");
+    } else {
+      params.set("filter", status);
     }
-    if (filter === "no-category") return !product.category;
-    return true;
-  });
+    params.set("page", "1"); // Reset to page 1
+    router.push(`/admin/products?${params.toString()}`);
+  };
 
   // Stats (based on current page)
   const recentCount = products.filter((p) => {
@@ -159,7 +170,7 @@ export function ProductsClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("products.title")}
@@ -168,7 +179,7 @@ export function ProductsClient({
           total: total,
           item: t("products.title").toLowerCase(),
         })}
-        icon={<Package className="h-5 w-5" />}
+        icon={<Package className="text-blue-500 fill-blue-500/10" />}
         stats={[
           { label: "total", value: total, variant: "default" },
           { label: "recent", value: recentCount, variant: "success" },
@@ -179,20 +190,22 @@ export function ProductsClient({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => alert("Export feature coming soon")}
+              onClick={exportProducts}
+              disabled={importExportLoading}
             >
               <Download className="mr-2 h-4 w-4" />
-              Export
+              {t("export")}
             </Button>
             {canCreate && (
               <>
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => alert("Import feature coming soon")}
+                  onClick={() => setImportDialogOpen(true)}
+                  disabled={importExportLoading}
                 >
                   <Upload className="mr-2 h-4 w-4" />
-                  Import
+                  {t("import")}
                 </Button>
                 <Button onClick={() => setCreateDialogOpen(true)}>
                   <Plus className="mr-2 h-4 w-4" />
@@ -205,36 +218,72 @@ export function ProductsClient({
       />
 
       {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
-        <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterType)}>
-          <TabsList>
-            <TabsTrigger value="all" className="gap-2">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <Tabs
+          value={filter}
+          onValueChange={(v) => handleStatusChange(v as FilterType)}
+          className="w-full"
+        >
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
+            <TabsTrigger
+              value="all"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
+            >
               <Box className="h-4 w-4" />
-              All ({products.length})
+              All
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black"
+              >
+                {products.length}
+              </Badge>
             </TabsTrigger>
-            <TabsTrigger value="recent" className="gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              Recent ({recentCount})
+            <TabsTrigger
+              value="recent"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
+            >
+              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              Recent
+              <Badge
+                variant="outline"
+                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black"
+              >
+                {recentCount}
+              </Badge>
             </TabsTrigger>
             {noCategoryCount > 0 && (
-              <TabsTrigger value="no-category" className="gap-2">
-                <span className="h-2 w-2 rounded-full bg-amber-500" />
-                No Category ({noCategoryCount})
+              <TabsTrigger
+                value="no-category"
+                className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-amber-600 transition-all gap-2"
+              >
+                <div className="h-2 w-2 rounded-full bg-amber-500" />
+                No Category
+                <Badge
+                  variant="outline"
+                  className="ml-1 h-5 px-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-600 text-[10px] font-black"
+                >
+                  {noCategoryCount}
+                </Badge>
               </TabsTrigger>
             )}
           </TabsList>
         </Tabs>
 
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t("search", {
               item: t("products.title").toLowerCase(),
             })}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
           />
+          {isPending && (
+            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+              <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+            </div>
+          )}
         </div>
       </div>
 
@@ -243,12 +292,13 @@ export function ProductsClient({
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50 hover:bg-muted/50">
-              <TableHead className="w-[35%]">
+              <TableHead className="w-[30%]">
                 <div className="flex items-center gap-2">
                   <Package className="h-4 w-4" />
                   {t("name")}
                 </div>
               </TableHead>
+              <TableHead>Slug</TableHead>
               <TableHead>
                 <div className="flex items-center gap-2">
                   <Tag className="h-4 w-4" />
@@ -256,6 +306,7 @@ export function ProductsClient({
                 </div>
               </TableHead>
               <TableHead>{t("brand")}</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>{t("created")}</TableHead>
               {(canTranslate || canUpdate || canDelete) && (
                 <TableHead className="text-right w-[150px]">
@@ -265,10 +316,10 @@ export function ProductsClient({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredProducts.length === 0 ? (
+            {products.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={canTranslate || canUpdate || canDelete ? 5 : 4}
+                  colSpan={canTranslate || canUpdate || canDelete ? 7 : 6}
                 >
                   <AdminEmptyState
                     icon={Package}
@@ -288,7 +339,7 @@ export function ProductsClient({
                 </TableCell>
               </TableRow>
             ) : (
-              filteredProducts.map((product) => (
+              products.map((product) => (
                 <TableRow
                   key={product.id}
                   className="hover:bg-muted/30 transition-colors"
@@ -305,6 +356,11 @@ export function ProductsClient({
                         </code>
                       </div>
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <code className="text-xs bg-slate-100 px-1 py-0.5 rounded">
+                      {product.slug}
+                    </code>
                   </TableCell>
                   <TableCell>
                     {product.category ? (
@@ -330,6 +386,13 @@ export function ProductsClient({
                         N/A
                       </span>
                     )}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={product.deletedAt ? "destructive" : "success"}
+                    >
+                      {product.deletedAt ? "Inactive" : "Active"}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {format(new Date(product.createdAt), "dd/MM/yyyy")}
@@ -379,7 +442,7 @@ export function ProductsClient({
       </AdminTableWrapper>
 
       {/* Pagination with page numbers - only show when needed */}
-      {filteredProducts.length > 0 && total > limit && (
+      {products.length > 0 && total > limit && (
         <DataTablePagination page={page} total={total} limit={limit} />
       )}
 
@@ -412,6 +475,14 @@ export function ProductsClient({
           />
         </>
       )}
+      <ImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImport={importProducts}
+        onPreview={previewProducts}
+        onDownloadTemplate={downloadTemplate}
+        title={`${t("import")} ${t("products.title")}`}
+      />
     </div>
   );
 }

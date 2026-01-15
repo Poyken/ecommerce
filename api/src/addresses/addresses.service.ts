@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
 
@@ -10,16 +11,21 @@ import { UpdateAddressDto } from './dto/update-address.dto';
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. DEFAULT ADDRESS LOGIC:
- * - Khi một địa chỉ được đặt làm mặc định (`isDefault: true`), ta phải dùng `updateMany` để bỏ đánh dấu mặc định của tất cả các địa chỉ khác của user đó.
- * - Nếu user chưa có địa chỉ nào, địa chỉ đầu tiên được tạo sẽ tự động trở thành mặc định.
+ * 1. LOGIC ĐỊA CHỈ MẶC ĐỊNH (Default Address):
+ * - Khi user set một địa chỉ là `Mặc định` (`isDefault: true`), logic hệ thống sẽ:
+ *   - Bước 1: Reset `isDefault = false` cho TẤT CẢ các địa chỉ cũ của user đó.
+ *   - Bước 2: Set `isDefault = true` cho địa chỉ đang thao tác.
+ * - Đặc biệt: Nếu user chưa có địa chỉ nào, địa chỉ đầu tiên tạo ra sẽ auto là mặc định.
  *
- * 2. OWNERSHIP VERIFICATION:
- * - Trong các hàm `update` và `remove`, ta luôn phải kiểm tra xem địa chỉ đó có thực sự thuộc về user đang đăng nhập hay không (`where: { id: addressId, userId }`).
- * - Tránh lỗi bảo mật ID Enumeration (người dùng này xóa địa chỉ của người dùng khác bằng cách đoán ID).
+ * 2. XÁC THỰC QUYỀN SỞ HỮU (Ownership Verification):
+ * - RẤT QUAN TRỌNG: Trong các hàm `update` và `remove`, vế `where` luôn phải kẹp thêm `userId`.
+ * - Mục đích để tránh lỗ hổng bảo mật IDOR (Insecure Direct Object References), nơi hacker đổi ID để xóa địa chỉ của người khác.
  *
- * 3. DATA ORDERING:
- * - Khi lấy danh sách địa chỉ, ta dùng `orderBy: { isDefault: 'desc' }` để địa chỉ mặc định luôn hiện lên đầu danh sách, tối ưu trải nghiệm người dùng.
+ * 3. HỨNG DỮ LIỆU (Data Ordering):
+ * - Luôn đưa địa chỉ mặc định lên đầu danh sách (`orderBy: { isDefault: 'desc' }`) để khi vào trang Checkout user thấy ngay. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -28,7 +34,7 @@ export class AddressesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(userId: string, dto: CreateAddressDto) {
-    // Nếu đặt làm mặc định, bỏ mặc định các địa chỉ khác
+    // Nếu user muốn đây là địa chỉ mặc định, các địa chỉ cũ phải bỏ cờ mặc định đi
     if (dto.isDefault) {
       await this.prisma.address.updateMany({
         where: { userId },
@@ -36,15 +42,21 @@ export class AddressesService {
       });
     }
 
-    // Nếu đây là địa chỉ đầu tiên, tự động đặt làm mặc định
+    // Tự động set mặc định nếu đây là địa chỉ đầu tiên của họ
     const count = await this.prisma.address.count({ where: { userId } });
     const isDefault = count === 0 ? true : dto.isDefault;
 
+    const tenant = getTenant();
+    if (!tenant)
+      throw new BadRequestException(
+        'Không xác định được Cửa hàng (Tenant context missing)',
+      );
     return this.prisma.address.create({
       data: {
         ...dto,
         userId,
         isDefault,
+        tenantId: tenant!.id,
       },
     });
   }
@@ -57,16 +69,16 @@ export class AddressesService {
   }
 
   async update(userId: string, addressId: string, dto: UpdateAddressDto) {
-    // Verify ownership
+    // Xác minh quyền sở hữu (Chỉ chủ sở hữu mới được sửa)
     const address = await this.prisma.address.findFirst({
       where: { id: addressId, userId },
     });
 
     if (!address) {
-      throw new Error('Address not found');
+      throw new Error('Địa chỉ không tồn tại hoặc bạn không có quyền truy cập');
     }
 
-    // Nếu đặt làm mặc định, bỏ mặc định các địa chỉ khác
+    // Logic đổi địa chỉ mặc định tương tự như lúc tạo
     if (dto.isDefault) {
       await this.prisma.address.updateMany({
         where: { userId, id: { not: addressId } },
@@ -81,13 +93,13 @@ export class AddressesService {
   }
 
   async remove(userId: string, addressId: string) {
-    // Verify ownership
+    // Xác minh quyền sở hữu (Ngăn chặn lỗ hổng IDOR)
     const address = await this.prisma.address.findFirst({
       where: { id: addressId, userId },
     });
 
     if (!address) {
-      throw new Error('Address not found');
+      throw new Error('Không tìm thấy địa chỉ');
     }
 
     return this.prisma.address.delete({

@@ -26,7 +26,10 @@ import { SecurityService } from './security.service';
  *
  * 2. EXPORTS:
  * - `exports: [BulkService]` có nghĩa là nếu module khác import `AdminModule`,
- *   họ sẽ dùng được `BulkService` (dependency injection) mà không bị lỗi.
+ *   họ sẽ dùng được `BulkService` (dependency injection) mà không bị lỗi. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class AdminModule {}

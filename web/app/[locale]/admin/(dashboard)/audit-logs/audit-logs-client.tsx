@@ -10,7 +10,10 @@
  * Trang này hiển thị tất cả các hoạt động của admin trong hệ thống.
  * - Filter theo action type (CREATE, UPDATE, DELETE)
  * - Search theo resource hoặc user
- * - View detail với JSON payload
+ * - View detail với JSON payload *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
+
  * =====================================================================
  */
 
@@ -37,7 +40,7 @@ import {
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
-} from "@/features/admin/components/admin-page-components";
+} from "@/features/admin/components/ui/admin-page-components";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useRouter } from "@/i18n/routing";
 import { useDebounce } from "@/lib/hooks/use-debounce";
@@ -57,6 +60,8 @@ import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
+import { AuditLog } from "@/types/models";
+
 type FilterType = "all" | "create" | "update" | "delete";
 
 export function AuditLogsClient({
@@ -66,7 +71,7 @@ export function AuditLogsClient({
   limit,
   basePath = "/admin/audit-logs",
 }: {
-  logs: Record<string, any>[];
+  logs: AuditLog[];
   total: number;
   page: number;
   limit: number;
@@ -88,9 +93,7 @@ export function AuditLogsClient({
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
   const [isPending, startTransition] = useTransition();
 
-  const [selectedLog, setSelectedLog] = useState<Record<string, any> | null>(
-    null
-  );
+  const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -108,9 +111,7 @@ export function AuditLogsClient({
         router.push(`${basePath}?${params.toString()}`);
       });
     }
-  }, [debouncedSearchTerm, router, searchParams]);
-
-  const totalPages = Math.ceil(total / limit);
+  }, [debouncedSearchTerm, router, searchParams, basePath]);
 
   const getActionVariant = (
     action: string
@@ -124,10 +125,10 @@ export function AuditLogsClient({
   };
 
   // Generate human-readable description from log data
-  const getLogDescription = (log: Record<string, any>): string => {
+  const getLogDescription = (log: AuditLog): string => {
     const action = log.action?.toLowerCase() || "";
     const resource = log.resource || "item";
-    const payload = log.payload || {};
+    const payload = (log.payload || {}) as any;
 
     // Try to extract meaningful info from payload
     const name =
@@ -180,16 +181,8 @@ export function AuditLogsClient({
     l.action.toLowerCase().includes("delete")
   ).length;
 
-  const goToPage = (newPage: number) => {
-    startTransition(() => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set("page", newPage.toString());
-      router.push(`${basePath}?${params.toString()}`);
-    });
-  };
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("audit.management")}
@@ -198,7 +191,7 @@ export function AuditLogsClient({
           total: filter === "all" ? total : filteredLogs.length,
           item: t("audit.title").toLowerCase(),
         })}
-        icon={<Activity className="h-5 w-5" />}
+        icon={<Activity className="text-rose-500 fill-rose-500/10" />}
         stats={[
           { label: "total", value: total, variant: "default" },
           { label: "creates", value: createCount, variant: "success" },
@@ -206,9 +199,7 @@ export function AuditLogsClient({
           { label: "deletes", value: deleteCount, variant: "danger" },
         ]}
       />
-
-      {/* Filters & Search */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <Tabs
           value={filter}
           onValueChange={(v) => {
@@ -225,34 +216,47 @@ export function AuditLogsClient({
               router.push(`${basePath}?${params.toString()}`);
             });
           }}
+          className="w-full"
         >
-          <TabsList>
-            <TabsTrigger value="all" className="gap-2">
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
+            <TabsTrigger
+              value="all"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
+            >
               <Filter className="h-4 w-4" />
               All
             </TabsTrigger>
-            <TabsTrigger value="create" className="gap-2">
+            <TabsTrigger
+              value="create"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
+            >
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
               Create
             </TabsTrigger>
-            <TabsTrigger value="update" className="gap-2">
+            <TabsTrigger
+              value="update"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-blue-600 transition-all gap-2"
+            >
               <span className="h-2 w-2 rounded-full bg-blue-500" />
               Update
             </TabsTrigger>
-            <TabsTrigger value="delete" className="gap-2">
+            <TabsTrigger
+              value="delete"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-rose-600 transition-all gap-2"
+            >
               <span className="h-2 w-2 rounded-full bg-red-500" />
               Delete
             </TabsTrigger>
           </TabsList>
         </Tabs>
 
-        <div className="relative flex-1 max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full md:w-80">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder={t("audit.searchPlaceholder")}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
           />
         </div>
       </div>
@@ -388,12 +392,10 @@ export function AuditLogsClient({
           </TableBody>
         </Table>
       </AdminTableWrapper>
-
       {/* Pagination with page numbers - only show when needed */}
       {filteredLogs.length > 0 && total > limit && (
         <DataTablePagination page={page} total={total} limit={limit} />
       )}
-
       {/* Detail Dialog */}
       <Dialog open={!!selectedLog} onOpenChange={() => setSelectedLog(null)}>
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">

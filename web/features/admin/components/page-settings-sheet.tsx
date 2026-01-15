@@ -14,6 +14,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Globe, Settings2, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 interface PageData {
@@ -48,7 +49,10 @@ interface PageSettingsSheetProps {
  *    - `isPublished`: Cờ (Flag) quyết định trang có được hiển thị cho khách hay không.
  *    - Draft (Nháp): Chỉ Admin thấy.
  *    - Published (Công khai): Mọi người đều thấy.
- *    - Khi sửa xong -> Save -> DB cập nhật -> Next.js revalidate cache (ISR).
+ *    - Khi sửa xong -> Save -> DB cập nhật -> Next.js revalidate cache (ISR). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =================================================================================================
  */
 export function PageSettingsSheet({
@@ -59,6 +63,7 @@ export function PageSettingsSheet({
   onDelete,
   isSaving,
 }: PageSettingsSheetProps) {
+  const t = useTranslations("admin.pages.settings");
   const [title, setTitle] = useState(page.title);
   const [slug, setSlug] = useState(page.slug);
   const [isPublished, setIsPublished] = useState(page.isPublished);
@@ -95,43 +100,41 @@ export function PageSettingsSheet({
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Settings2 className="h-5 w-5" />
-            Page Settings
+            {t("title")}
           </SheetTitle>
-          <SheetDescription>
-            Configure page metadata and publishing options
-          </SheetDescription>
+          <SheetDescription>{t("description")}</SheetDescription>
         </SheetHeader>
 
         <div className="space-y-6 mt-6">
           {/* Basic Settings */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              Basic Information
+              {t("basicInfo")}
             </h3>
             <div className="space-y-3">
               <div className="space-y-2">
-                <Label htmlFor="title">Page Title</Label>
+                <Label htmlFor="title">{t("pageTitle")}</Label>
                 <Input
                   id="title"
                   value={title}
                   onChange={(e) => handleTitleChange(e.target.value)}
-                  placeholder="Enter page title"
+                  placeholder={t("pageTitlePlaceholder")}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="slug">URL Slug</Label>
+                <Label htmlFor="slug">{t("urlSlug")}</Label>
                 <div className="flex items-center gap-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />
                   <Input
                     id="slug"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
-                    placeholder="/page-url"
+                    placeholder={t("urlSlugPlaceholder")}
                     className="font-mono text-sm"
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  The URL path where this page will be accessible
+                  {t("urlSlugHelp")}
                 </p>
               </div>
             </div>
@@ -142,19 +145,19 @@ export function PageSettingsSheet({
           {/* SEO Settings */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              SEO
+              {t("seo")}
             </h3>
             <div className="space-y-2">
-              <Label htmlFor="metaDescription">Meta Description</Label>
+              <Label htmlFor="metaDescription">{t("metaDescription")}</Label>
               <Textarea
                 id="metaDescription"
                 value={metaDescription}
                 onChange={(e) => setMetaDescription(e.target.value)}
-                placeholder="Brief description for search engines..."
+                placeholder={t("metaDescriptionPlaceholder")}
                 rows={3}
               />
               <p className="text-xs text-muted-foreground">
-                {metaDescription.length}/160 characters recommended
+                {t("charCount", { count: metaDescription.length })}
               </p>
             </div>
           </div>
@@ -164,17 +167,15 @@ export function PageSettingsSheet({
           {/* Publishing */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              Publishing
+              {t("publishing")}
             </h3>
             <div className="flex items-center justify-between p-4 rounded-lg border bg-muted/30">
               <div className="space-y-0.5">
                 <Label htmlFor="published" className="text-base">
-                  Publish Page
+                  {t("publishPage")}
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  {isPublished
-                    ? "Page is visible to the public"
-                    : "Page is in draft mode"}
+                  {isPublished ? t("publishedStatus") : t("draftStatus")}
                 </p>
               </div>
               <Switch
@@ -190,7 +191,7 @@ export function PageSettingsSheet({
           {/* Actions */}
           <div className="space-y-3 pt-4">
             <Button className="w-full" onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save Settings"}
+              {isSaving ? t("saving") : t("save")}
             </Button>
 
             {onDelete && (
@@ -200,7 +201,7 @@ export function PageSettingsSheet({
                 onClick={onDelete}
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete Page
+                {t("delete")}
               </Button>
             )}
           </div>

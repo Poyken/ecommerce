@@ -12,6 +12,7 @@ import { useDebounce } from "@/lib/hooks/use-debounce";
 import { http } from "@/lib/http";
 import { format } from "date-fns";
 import { Loader2, Package, Search, ShoppingBag } from "lucide-react";
+import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -30,22 +31,7 @@ export function ChatSelector({
   accessToken,
   userId,
 }: ChatSelectorProps) {
-  /**
-   * =====================================================================
-   * CHAT SELECTOR - Modal chọn Sản phẩm/Đơn hàng để gửi
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. CONTEXT AWARENESS:
-   * - Trong Support Chat, user thường cần hỏi về "Đơn hàng này" hoặc "Sản phẩm kia".
-   * - Modal này giúp user chọn nhanh đối tượng cần hỗ trợ.
-   *
-   * 2. INFINITE SCROLL:
-   * - Dùng `IntersectionObserver` để load thêm Product/Order khi scroll xuống đáy.
-   * - Giảm tải ban đầu, chỉ fetch 20 items mỗi lần.
-   * =====================================================================
-   */
+  const t = useTranslations("chat");
   const [activeTab, setActiveTab] = useState<string>("product");
   const [products, setProducts] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
@@ -53,9 +39,10 @@ export function ChatSelector({
   const [isLoading, setIsLoading] = useState(false);
 
   // Pagination
-  const [productPage, setProductPage] = useState(1);
+  // Pagination Refs (Using refs instead of state helps avoid unused vars and side-effects in render)
+  const productPageRef = useRef(1);
+  const orderPageRef = useRef(1);
   const [hasMoreProducts, setHasMoreProducts] = useState(true);
-  const [orderPage, setOrderPage] = useState(1);
   const [hasMoreOrders, setHasMoreOrders] = useState(true);
 
   const observerRef = useRef<IntersectionObserver | null>(null);
@@ -130,14 +117,14 @@ export function ChatSelector({
   // Initial load or search change
   useEffect(() => {
     if (isOpen && activeTab === "product") {
-      setProductPage(1);
+      productPageRef.current = 1;
       fetchProducts(1, debouncedSearch, true);
     }
   }, [isOpen, activeTab, debouncedSearch, fetchProducts]);
 
   useEffect(() => {
     if (isOpen && activeTab === "order") {
-      setOrderPage(1);
+      orderPageRef.current = 1;
       fetchOrders(1, true);
     }
   }, [isOpen, activeTab, fetchOrders]);
@@ -152,21 +139,17 @@ export function ChatSelector({
       (entries) => {
         if (entries[0].isIntersecting && !isFetchingRef.current) {
           if (activeTab === "product" && hasMoreProducts) {
-            setProductPage((prev) => {
-              const next = prev + 1;
-              fetchProducts(next, debouncedSearch);
-              return next;
-            });
+            const nextPage = productPageRef.current + 1;
+            productPageRef.current = nextPage;
+            fetchProducts(nextPage, debouncedSearch);
           } else if (activeTab === "order" && hasMoreOrders) {
-            setOrderPage((prev) => {
-              const next = prev + 1;
-              fetchOrders(next);
-              return next;
-            });
+            const nextPage = orderPageRef.current + 1;
+            orderPageRef.current = nextPage;
+            fetchOrders(nextPage);
           }
         }
       },
-      { threshold: 0.5 }
+      { threshold: 1.0 }
     );
 
     const target =
@@ -190,7 +173,7 @@ export function ChatSelector({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px] p-0 overflow-hidden gap-0">
         <DialogHeader className="p-4 border-b">
-          <DialogTitle>Select content to send</DialogTitle>
+          <DialogTitle>{t("selector.title")}</DialogTitle>
         </DialogHeader>
 
         <Tabs
@@ -201,10 +184,10 @@ export function ChatSelector({
           <div className="px-4 pt-2">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="product" className="gap-2">
-                <ShoppingBag size={14} /> Products
+                <ShoppingBag size={14} /> {t("selector.tabs.products")}
               </TabsTrigger>
               <TabsTrigger value="order" className="gap-2">
-                <Package size={14} /> Orders
+                <Package size={14} /> {t("selector.tabs.orders")}
               </TabsTrigger>
             </TabsList>
           </div>
@@ -214,7 +197,7 @@ export function ChatSelector({
               <div className="relative">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search products..."
+                  placeholder={t("selector.searchProducts")}
                   className="pl-8"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -276,7 +259,7 @@ export function ChatSelector({
                   {!isLoading && products.length === 0 && (
                     <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
                       <ShoppingBag size={32} className="opacity-20 mb-2" />
-                      <p className="text-sm">No products found</p>
+                      <p className="text-sm">{t("selector.noProducts")}</p>
                     </div>
                   )}
                 </div>
@@ -311,13 +294,17 @@ export function ChatSelector({
                         </Badge>
                       </div>
                       <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>{o.items?.length || 0} items</span>
+                        <span>
+                          {t("orderItems", { count: o.items?.length || 0 })}
+                        </span>
                         <span className="font-semibold text-foreground">
                           ${o.totalAmount}
                         </span>
                       </div>
                       <div className="text-[10px] text-muted-foreground mt-1">
-                        {format(new Date(o.createdAt), "dd/MM/yyyy")}
+                        {o.createdAt
+                          ? format(new Date(o.createdAt), "dd/MM/yyyy")
+                          : ""}
                       </div>
                     </div>
                   ))}
@@ -334,7 +321,7 @@ export function ChatSelector({
                   {!isLoading && orders.length === 0 && (
                     <div className="flex flex-col items-center justify-center h-[200px] text-muted-foreground">
                       <Package size={32} className="opacity-20 mb-2" />
-                      <p className="text-sm">No orders found</p>
+                      <p className="text-sm">{t("selector.noOrders")}</p>
                     </div>
                   )}
                 </div>

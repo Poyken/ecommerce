@@ -16,109 +16,16 @@
  * QUY ƯỚC ĐẶT TÊN:
  * - `CreateXxxDto`: Dữ liệu để tạo mới (thường bắt buộc nhiều field).
  * - `UpdateXxxDto`: Dữ liệu để cập nhật (thường optional `?` tất cả).
- * - `XxxResponse`: Cấu trúc dữ liệu trả về từ API (thường bọc trong `ApiResponse`).
+ * - `XxxResponse`: Cấu trúc dữ liệu trả về từ API (thường bọc trong `ApiResponse`). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Contract giữa FE & BE: Đảm bảo hai bên hiểu nhau chính xác về dữ liệu gửi/nhận, giảm thiểu bug do sai tên trường hay sai kiểu dữ liệu.
+ * - Auto-Completion & Intellisense: Giúp Developer code nhanh hơn trên VSCode nhờ gợi ý code thông minh.
+ * - Form Handling: Dùng làm Schema cho React Hook Form để validate form đăng ký, login, checkout...
+
  * =====================================================================
  */
 
-// ==================== API RESPONSE WRAPPERS ====================
-
-/**
- * Wrapper chuẩn cho tất cả API SUCCESS responses.
- * Backend NestJS TransformInterceptor wrap response trong cấu trúc này.
- *
- * @template T - Kiểu dữ liệu thực của response
- */
-export interface ApiResponse<T> {
-  /** HTTP Status Code (200, 201, etc.) */
-  statusCode: number;
-  /** Thông báo (mặc định: "Success") */
-  message: string;
-  /** Dữ liệu chính của response */
-  data: T;
-  /** Metadata phân trang (nếu có) */
-  meta?: PaginationMeta;
-}
-
-/**
- * Wrapper cho API ERROR responses.
- * Backend NestJS AllExceptionsFilter trả về cấu trúc này khi có lỗi.
- *
- * @example
- * // Response khi lỗi 404
- * {
- *   statusCode: 404,
- *   timestamp: "2025-12-14T16:30:00.000Z",
- *   path: "/api/products/invalid-id",
- *   message: "Product not found"
- * }
- */
-export interface ApiErrorResponse {
-  /** HTTP Status Code (400, 401, 404, 500, etc.) */
-  statusCode: number;
-  /** Thời điểm xảy ra lỗi (ISO string) */
-  timestamp: string;
-  /** Đường dẫn API gây lỗi */
-  path: string;
-  /** Thông báo lỗi hoặc object chứa chi tiết lỗi */
-  message: string | Record<string, unknown>;
-}
-
-/**
- * Metadata cho các API có phân trang.
- * Được dùng khi load danh sách (products, users, orders, etc.)
- */
-export interface PaginationMeta {
-  /** Tổng số items trong database */
-  total: number;
-  /** Trang hiện tại (1-indexed) */
-  page: number;
-  /** Tổng số trang */
-  lastPage: number;
-  /** Số items mỗi trang */
-  limit: number;
-}
-
-/**
- * Structure of data when it is nested in a paginated response
- */
-export interface PaginatedData<T> {
-  data: T[];
-  meta: PaginationMeta;
-}
-
-// ==================== SERVER ACTION RESULT ====================
-
-/**
- * Kết quả trả về từ Server Actions.
- * Đơn giản hóa error handling ở client.
- *
- * @template T - Kiểu dữ liệu trả về (nếu có)
- *
- * @example
- * // Trong Server Action
- * async function createProductAction(data): Promise<ActionResult> {
- *   try {
- *     await http("/products", { method: "POST", body: data });
- *     return { success: true };
- *   } catch (error) {
- *     return { error: error.message };
- *   }
- * }
- *
- * // Ở Client Component
- * const result = await createProductAction(formData);
- * if (result.error) {
- *   showToast(result.error);
- * }
- */
-export interface ActionResult<T = void> {
-  /** true nếu thành công */
-  success?: boolean;
-  /** Dữ liệu trả về (optional) */
-  data?: T;
-  /** Error message nếu thất bại */
-  error?: string;
-}
+export * from "./api"; // Re-export base API types
 
 // ==================== USER DTOs ====================
 
@@ -171,8 +78,8 @@ export interface CreateProductDto {
   slug?: string;
   /** Mô tả sản phẩm (optional) */
   description?: string;
-  /** ID danh mục (bắt buộc) */
-  categoryId: string;
+  /** Danh sách ID danh mục (nhiều danh mục) */
+  categoryIds: string[];
   /** ID thương hiệu (bắt buộc) */
   brandId: string;
   /** Danh sách options và values */
@@ -192,7 +99,7 @@ export interface UpdateProductDto {
   name?: string;
   slug?: string;
   description?: string;
-  categoryId?: string;
+  categoryIds?: string[];
   brandId?: string;
   options?: { name: string; values: string[] }[];
 
@@ -310,16 +217,16 @@ export interface AnalyticsStats {
 
 export interface SalesDataPoint {
   date: string;
-  revenue: number;
-  orders: number;
+  amount: number;
 }
 
 export interface TopProduct {
-  id: string;
-  name: string;
-  price: number;
-  sold: number;
+  skuId: string;
+  productName: string;
+  quantity: number;
   revenue: number;
+  variants?: string;
+  skuCode?: string;
 }
 
 // ==================== TENANT DTOs ====================

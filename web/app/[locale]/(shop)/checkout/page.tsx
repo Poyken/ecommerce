@@ -25,13 +25,17 @@ export const metadata: Metadata = {
  * DATA PREPARATION:
  * - Fetch Cart để hiển thị lại lần cuối trước khi đặt hàng.
  * - Fetch Addresses (Profile) để user chọn địa chỉ giao hàng.
- * - Truyền tất cả xuống `CheckoutClient` để render form.
+ * - Truyền tất cả xuống `CheckoutClient` để render form. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - High-Conversion Checkout: Tối ưu hóa luồng thanh toán một trang (One-page Checkout) để giảm thiểu tỷ lệ bỏ rơi giỏ hàng và tăng tốc độ hoành thành đơn hàng cho khách.
+ * - Multi-Gateway Payment: Cung cấp nhiều lựa chọn thanh toán linh hoạt cho khách hàng, từ COD truyền thống đến chuyển khoản ngân hàng qua mã QR tự động.
+
  * =====================================================================
  */
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
-import { EmptyState } from "@/components/shared/empty-state";
+import { ShopEmptyState } from "@/components/shared/shop-empty-state";
 import { AlertCircle } from "lucide-react";
 import { redirect } from "next/navigation";
 
@@ -53,13 +57,17 @@ async function DynamicCheckout() {
     error = e instanceof Error ? e.message : "Failed to load checkout data";
   }
 
+  if (!profileRes?.data) {
+    redirect("/login?callbackUrl=/checkout");
+  }
+
   const cart = cartRes?.data || null;
   const addresses = profileRes?.data?.addresses || [];
 
   if (error || !cart) {
     return (
       <div className="container mx-auto px-4 py-24 min-h-[60vh] flex items-center justify-center">
-        <EmptyState
+        <ShopEmptyState
           icon={AlertCircle}
           title={error ? "Error Loading Checkout" : "Cart is Empty"}
           description={

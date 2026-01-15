@@ -1,5 +1,9 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiGetOneResponse,
+  ApiListResponse,
+} from '@/common/decorators/crud.decorators';
 import { ShippingService } from './shipping.service';
 
 /**
@@ -15,7 +19,10 @@ import { ShippingService } from './shipping.service';
  *
  * 2. WEBHOOK (CỰC KỲ QUAN TRỌNG):
  * - Khi trạng thái đơn hàng thay đổi trên hệ thống GHN (Đang giao, Đã giao...), GHN sẽ gọi vào API `/webhook` này.
- * - Hệ thống tự động cập nhật trạng thái đơn hàng trong DB mà không cần Admin phải làm thủ công.
+ * - Hệ thống tự động cập nhật trạng thái đơn hàng trong DB mà không cần Admin phải làm thủ công. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @ApiTags('Shipping')
@@ -36,27 +43,36 @@ export class ShippingController {
   constructor(private readonly shippingService: ShippingService) {}
 
   @Get('provinces')
-  @ApiOperation({ summary: 'Lấy danh sách Tỉnh/Thành phố' })
-  getProvinces() {
-    return this.shippingService.getProvinces();
+  @ApiListResponse('Province', { summary: 'Lấy danh sách Tỉnh/Thành phố' })
+  async getProvinces() {
+    const data = await this.shippingService.getProvinces();
+    return { data };
   }
 
   @Get('districts/:provinceId')
-  @ApiOperation({ summary: 'Lấy danh sách Quận/Huyện theo Tỉnh' })
-  getDistricts(@Param('provinceId') provinceId: string) {
-    return this.shippingService.getDistricts(Number(provinceId));
+  @ApiListResponse('District', {
+    summary: 'Lấy danh sách Quận/Huyện theo Tỉnh',
+  })
+  async getDistricts(@Param('provinceId') provinceId: string) {
+    const data = await this.shippingService.getDistricts(Number(provinceId));
+    return { data };
   }
 
   @Get('wards/:districtId')
-  @ApiOperation({ summary: 'Lấy danh sách Phường/Xã theo Quận' })
-  getWards(@Param('districtId') districtId: string) {
-    return this.shippingService.getWards(Number(districtId));
+  @ApiListResponse('Ward', { summary: 'Lấy danh sách Phường/Xã theo Quận' })
+  async getWards(@Param('districtId') districtId: string) {
+    const data = await this.shippingService.getWards(Number(districtId));
+    return { data };
   }
 
   @Post('fee')
-  @ApiOperation({ summary: 'Tính phí vận chuyển' })
-  calculateFee(@Body() body: { districtId: number; wardCode: string }) {
-    return this.shippingService.calculateFee(body.districtId, body.wardCode);
+  @ApiGetOneResponse('Shipping Fee', { summary: 'Tính phí vận chuyển' })
+  async calculateFee(@Body() body: { districtId: number; wardCode: string }) {
+    const data = await this.shippingService.calculateFee(
+      body.districtId,
+      body.wardCode,
+    );
+    return { data };
   }
 
   @Post('webhook')

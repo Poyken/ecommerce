@@ -34,7 +34,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
  * - Điều này kích hoạt các Decorator của `class-transformer` để ẩn mật khẩu và làm phẳng (Flatten) các quan hệ phức tạp.
  *
  * 4. ERROR HANDLING:
- * - Sử dụng các Exception chuẩn của NestJS (`ConflictException`, `NotFoundException`) để trả về mã lỗi HTTP và thông báo rõ ràng cho Client.
+ * - Sử dụng các Exception chuẩn của NestJS (`ConflictException`, `NotFoundException`) để trả về mã lỗi HTTP và thông báo rõ ràng cho Client. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -66,10 +69,6 @@ export class UsersService extends BaseCrudService<
     firstName: true,
     lastName: true,
     avatarUrl: true,
-    phone: true,
-    gender: true,
-    birthday: true,
-    isActive: true,
     createdAt: true,
     permissions: {
       select: {
@@ -104,14 +103,17 @@ export class UsersService extends BaseCrudService<
   async create(createUserDto: CreateUserDto) {
     const { email, password, firstName, lastName } = createUserDto;
 
-    // [PLAN LIMIT] Check staff limit
+    // [PLAN LIMIT] Kiểm tra giới hạn nhân viên của Tenant
     const tenant = getTenant();
     if (tenant) {
       await this.planUsageService.checkStaffLimit(tenant.id);
     }
 
-    const existingUser = await this.model.findUnique({
-      where: { email },
+    const existingUser = await this.model.findFirst({
+      where: {
+        email,
+        tenantId: tenant?.id,
+      },
     });
 
     if (existingUser) {
@@ -129,6 +131,7 @@ export class UsersService extends BaseCrudService<
         password: hashedPassword,
         firstName,
         lastName,
+        tenantId: tenant!.id,
       },
     });
 
@@ -148,7 +151,7 @@ export class UsersService extends BaseCrudService<
   ) {
     const where: Prisma.UserWhereInput = {};
 
-    // [SECURITY] User Isolation
+    // [BẢO MẬT] Cô lập dữ liệu theo từng Tenant (User Isolation)
     if (tenantId) {
       where.tenantId = tenantId;
     }
@@ -202,7 +205,7 @@ export class UsersService extends BaseCrudService<
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    // Check existence
+    // Kiểm tra sự tồn tại trước khi update
     await this.findOneBase(id);
 
     if (updateUserDto.password) {
@@ -221,7 +224,7 @@ export class UsersService extends BaseCrudService<
   }
 
   async remove(id: string) {
-    // Check existence
+    // Kiểm tra sự tồn tại trước khi xóa
     await this.findOneBase(id);
 
     await this.softDeleteBase(id);
@@ -236,7 +239,7 @@ export class UsersService extends BaseCrudService<
    */
   async assignRoles(userId: string, roleNames: string[]) {
     // 1. Validate User
-    const user = await this.model.findUnique({ where: { id: userId } });
+    const user = await this.model.findFirst({ where: { id: userId } });
     if (!user) {
       throw new NotFoundException('User không tồn tại');
     }
@@ -264,7 +267,7 @@ export class UsersService extends BaseCrudService<
       });
 
       // Trả về User đã update
-      const updatedUser = await tx.user.findUnique({
+      const updatedUser = await tx.user.findFirst({
         where: { id: userId },
         select: {
           ...this.USER_FULL_SELECT,

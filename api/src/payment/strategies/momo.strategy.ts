@@ -24,7 +24,10 @@ import {
  * - Rất quan trọng vì user có thể đóng trình duyệt trước khi redirect về website. IPN đảm bảo đơn hàng vẫn được cập nhật trạng thái "Đã thanh toán".
  *
  * 3. REQUEST ID:
- * - Mỗi request gửi lên MoMo phải có một `requestId` duy nhất để tránh việc gửi trùng lặp (Idempotency).
+ * - Mỗi request gửi lên MoMo phải có một `requestId` duy nhất để tránh việc gửi trùng lặp (Idempotency). *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 @Injectable()

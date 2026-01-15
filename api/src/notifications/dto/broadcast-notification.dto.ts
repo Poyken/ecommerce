@@ -17,7 +17,10 @@ export class BroadcastNotificationDto {
    *
    * USE CASE:
    * - Gửi thông báo cho TOÀN BỘ user (VD: "Bảo trì hệ thống", "Khuyến mãi lớn").
-   * - `sendEmail`: Tùy chọn gửi kèm email hay chỉ hiện popup trên web.
+   * - `sendEmail`: Tùy chọn gửi kèm email hay chỉ hiện popup trên web. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
    * =====================================================================
    */
   @IsEnum(NotificationType)

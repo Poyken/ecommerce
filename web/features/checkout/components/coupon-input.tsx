@@ -13,7 +13,10 @@
  * - Sử dụng `AnimatePresence` để các thông báo xuất hiện/biến mất mượt mà.
  *
  * 3. FEEDBACK UI:
- * - Mã đã áp dụng thành công sẽ có màu xanh lá (`emerald`) để người dùng dễ dàng nhận biết.
+ * - Mã đã áp dụng thành công sẽ có màu xanh lá (`emerald`) để người dùng dễ dàng nhận biết. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

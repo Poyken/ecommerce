@@ -20,7 +20,11 @@ import { GHNService } from './ghn.service';
  * - Điều này giúp tránh việc spam API của GHN và tránh conflict nếu Webhook vừa mới xử lý xong.
  *
  * 3. FIFO PROCESSING:
- * - Ưu tiên xử lý những đơn hàng có `updatedAt` cũ nhất trước để đảm bảo tính công bằng.
+ * - Ưu tiên xử lý những đơn hàng có `updatedAt` cũ nhất trước để đảm bảo tính công bằng. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tự động kiểm tra và đồng bộ trạng thái đơn hàng với đơn vị vận chuyển (GHN).
+ * - Giảm thiểu sai sót dữ liệu khi Webhook của đối tác gặp sự cố.
+
  * =====================================================================
  */
 

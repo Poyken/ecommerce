@@ -15,175 +15,181 @@
  * 3. Kiểm tra trạng thái yêu thích của một sản phẩm.
  * 4. Merge Guest Wishlist vào DB sau khi user đăng nhập.
  *
- * ⚠️ LƯU Ý: Khi user đăng nhập, hệ thống sẽ tự động gọi `mergeGuestWishlistAction`.
+ * ⚠️ LƯU Ý: Khi user đăng nhập, hệ thống sẽ tự động gọi `mergeGuestWishlistAction`. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Abandoned Cart Recovery (Wishlist variant): Lưu lại các sản phẩm khách hàng thích nhưng chưa mua, dùng làm dữ liệu để gửi email khuyến mãi cá nhân hóa.
+ * - Seamless Transition: Cho phép người dùng lưu sản phẩm khi đang là khách (Guest) và tự động đồng bộ vào tài khoản sau khi đăng nhập.
+
  * =====================================================================
  */
 
 "use server";
 
 import { http } from "@/lib/http";
-import { ApiResponse } from "@/types/dtos";
+import { protectedActionClient } from "@/lib/safe-action";
+import {
+  REVALIDATE,
+  wrapServerAction,
+  createActionWrapper,
+} from "@/lib/safe-action";
+import { ApiResponse, ActionResult } from "@/types/api";
 import { Product } from "@/types/models";
-import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+import { z } from "zod";
+
+// --- VALIDATION SCHEMAS ---
+
+const ToggleWishlistSchema = z.object({
+  productId: z.string().min(1),
+});
+
+const MergeWishlistSchema = z.object({
+  productIds: z.array(z.string()),
+});
+
+// --- SAFE ACTIONS (Mutations) ---
 
 /**
-<<<<<<< HEAD:web/features/wishlist/actions.ts
- * Thêm hoặc xóa sản phẩm khỏi danh sách yêu thích (Toggle).
- *
- * @param productId - ID của sản phẩm
-=======
- * =====================================================================
- * WISHLIST ACTIONS - Quản lý yêu thích (Server Actions)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ERROR HANDLING & AUTH CHECK:
- * - Trong `getWishlistAction`, ta check `token` trước khi gọi API.
- * - Nếu không có token, trả về mảng rỗng [] ngay thay vì gọi API để rồi nhận lỗi 401.
- * - Đây là cách tối ưu hiệu năng và tránh spam log lỗi ở backend.
- *
- * 2. GUEST WISHLIST MERGING:
- * - `mergeGuestWishlistAction`: Khi user Guest đăng nhập, ta lấy danh sách ID từ localStorage gửi lên để gộp vào DB.
- * =====================================================================
+ * Toggle Wishlist Action (Thêm hoặc xóa)
  */
-
-/**
- * Toggle Wishlist Action
- * Adds or Removes item from wishlist.
->>>>>>> 7e5e004 (feat: Implement new e-commerce features including audit, coupons, blog, wishlist, payment, shipping, and various web actions.):web/actions/wishlist.ts
- */
-export async function toggleWishlistAction(productId: string) {
-  await cookies();
-  if (!productId || typeof productId !== "string") {
-    return { success: false, error: "Invalid product ID" };
-  }
-
-  try {
+const safeToggleWishlist = protectedActionClient
+  .schema(ToggleWishlistSchema)
+  .action(async ({ parsedInput }) => {
     const res = await http<ApiResponse<{ isWishlisted: boolean }>>(
       "/wishlist/toggle",
       {
         method: "POST",
-        body: JSON.stringify({ productId }),
+        body: JSON.stringify({ productId: parsedInput.productId }),
         skipRedirectOn401: true,
       }
     );
 
-    // Làm mới cache cho các trang liên quan
-    revalidatePath("/wishlist");
-    revalidatePath(`/products/${productId}`);
-    revalidatePath("/shop");
+    // Revalidate related paths
+    REVALIDATE.wishlist();
+    REVALIDATE.products(parsedInput.productId);
 
-    return { success: true, isWishlisted: res.data.isWishlisted };
-  } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : "";
-    if (msg.includes("401") || msg.includes("Unauthorized")) {
-      return { success: false, requiresAuth: true, error: "Unauthorized" };
-    }
-    console.error("toggleWishlistAction error details:", {
-      productId,
-      message: (error as Error).message,
-      stack: (error as Error).stack,
-      error,
+    return { isWishlisted: res.data.isWishlisted };
+  });
+
+/**
+ * Merge Guest Wishlist Action
+ */
+const safeMergeGuestWishlist = protectedActionClient
+  .schema(MergeWishlistSchema)
+  .action(async ({ parsedInput }) => {
+    const res = await http<ApiResponse<Product[]>>("/wishlist/merge", {
+      method: "POST",
+      body: JSON.stringify({ productIds: parsedInput.productIds }),
     });
-    return { success: false, error: "Failed to update wishlist" };
+
+    REVALIDATE.wishlist();
+    return res.data;
+  });
+
+// --- EXPORTED ACTIONS ---
+
+/**
+ * Helper wrapper cho Toggle Wishlist
+ */
+export const toggleWishlistAction = async (productId: string) => {
+  const wrapper = createActionWrapper(
+    safeToggleWishlist,
+    "Không thể cập nhật yêu thích"
+  );
+  const result = await wrapper({ productId });
+
+  // Custom return format để khớp với code cũ (trả về requiresAuth nếu lỗi 401)
+  // Tuy nhiên, logic check 401 đã được handle bởi middleware hoặc safeAction
+  // Nếu client cần check auth, nên check trước khi gọi action hoặc handle error
+  if (
+    !result.success &&
+    (result.error.includes("Unauthorized") || result.error.includes("login"))
+  ) {
+    return { success: false, requiresAuth: true, error: "Unauthorized" };
   }
-}
+
+  // Map result.data.isWishlisted ra ngoài
+  if (result.success && result.data) {
+    return { success: true, isWishlisted: (result.data as any).isWishlisted };
+  }
+
+  return result;
+};
+
+/**
+ * Wrapper cho Merge Guest Wishlist
+ */
+export const mergeGuestWishlistAction = async (productIds: string[]) => {
+  const wrapper = createActionWrapper(
+    safeMergeGuestWishlist,
+    "Không thể đồng bộ wishlist"
+  );
+  return wrapper({ productIds });
+};
+
+// --- QUERY ACTIONS (Fetch Data) ---
 
 /**
  * Lấy danh sách tất cả sản phẩm trong wishlist của user.
  */
-export async function getWishlistAction(): Promise<Product[]> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("accessToken");
-
-  if (!token) {
-    return [];
-  }
-
-  try {
-    const res = await http<ApiResponse<Product[]>>("/wishlist", {
-      skipRedirectOn401: true,
-    });
-    return res?.data || [];
-  } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : "";
-    if (msg.includes("401") || msg.includes("Unauthorized")) {
-      return [];
-    }
-    return [];
-  }
+export async function getWishlistAction(): Promise<ActionResult<Product[]>> {
+  await cookies();
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<Product[]>>("/wishlist", {
+        skipRedirectOn401: true,
+      }),
+    "Failed to fetch wishlist"
+  );
 }
 
 /**
  * Kiểm tra xem một sản phẩm có nằm trong wishlist của user không.
  */
-export async function checkWishlistStatusAction(productId: string) {
+export async function checkWishlistStatusAction(
+  productId: string
+): Promise<ActionResult<{ isWishlisted: boolean }>> {
   await cookies();
-  try {
-    const res = await http<ApiResponse<{ isWishlisted: boolean }>>(
-      `/wishlist/check?productId=${productId}`
-    );
-    return res.data.isWishlisted;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Hợp nhất danh sách yêu thích từ Guest (localStorage) vào tài khoản user.
- *
- * @param productIds - Danh sách ID sản phẩm từ localStorage
- */
-export async function mergeGuestWishlistAction(productIds: string[]) {
-  await cookies();
-  try {
-    const res = await http<ApiResponse<Product[]>>("/wishlist/merge", {
-      method: "POST",
-      body: JSON.stringify({ productIds }),
-    });
-    revalidatePath("/wishlist");
-    return { success: true, data: res.data };
-  } catch {
-    return { success: false, error: "Failed to merge wishlist" };
-  }
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<{ isWishlisted: boolean }>>(
+        `/wishlist/check?productId=${productId}`
+      ),
+    "Failed to check wishlist status"
+  );
 }
 
 /**
  * Lấy số lượng sản phẩm trong wishlist của user (đã đăng nhập).
  */
-export async function getWishlistCountAction() {
+export async function getWishlistCountAction(): Promise<
+  ActionResult<{ count: number }>
+> {
   await cookies();
-  try {
-    const res = await http<ApiResponse<{ count: number }>>("/wishlist/count");
-    return res.data.count || 0;
-  } catch {
-    return 0;
-  }
+  return wrapServerAction(
+    () => http<ApiResponse<{ count: number }>>("/wishlist/count"),
+    "Failed to fetch wishlist count"
+  );
 }
 
 /**
  * Lấy chi tiết sản phẩm cho Guest Wishlist (dựa trên danh sách IDs).
  */
-export async function getGuestWishlistDetailsAction(productIds: string[]) {
+export async function getGuestWishlistDetailsAction(
+  productIds: string[]
+): Promise<ActionResult<Product[]>> {
   if (!productIds || productIds.length === 0)
     return { success: true, data: [] };
 
-  try {
-    // Sử dụng endpoint /products với filter IDs
-    const idsString = productIds.join(",");
-    const res = await http<ApiResponse<Product[]>>(
-      `/products?ids=${idsString}&includeSkus=true&limit=50`
-    );
-
-    const items = res?.data || res || [];
-    return { success: true, data: items };
-  } catch (error: unknown) {
-    console.error("Failed to fetch guest wishlist details:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Failed to fetch details",
-    };
-  }
+  return wrapServerAction(
+    () =>
+      http<ApiResponse<Product[]>>("/products", {
+        params: {
+          ids: productIds.join(","),
+          includeSkus: true,
+          limit: 50,
+        },
+      }),
+    "Failed to fetch guest wishlist details"
+  );
 }

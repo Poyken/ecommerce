@@ -21,7 +21,10 @@ import { SitemapService } from './sitemap.service';
  * - Module này query tất cả Product/Category từ DB để tạo danh sách URL động.
  *
  * 2. CONTROLLER:
- * - `SitemapController` sẽ trả về XML (text/xml) thay vì JSON thường thấy.
+ * - `SitemapController` sẽ trả về XML (text/xml) thay vì JSON thường thấy. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 export class SitemapModule {}

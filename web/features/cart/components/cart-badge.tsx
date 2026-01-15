@@ -18,7 +18,10 @@
  * - Giúp tạo hiệu ứng xuất hiện (Entrance Animation) cực kỳ dễ dàng mà không cần viết keyframes CSS thủ công.
  *
  * 4. MEMOIZATION:
- * - Sử dụng `React.memo` để component chỉ render lại khi `count` thực sự thay đổi, tránh render thừa do cha re-render.
+ * - Sử dụng `React.memo` để component chỉ render lại khi `count` thực sự thay đổi, tránh render thừa do cha re-render. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 
@@ -33,7 +36,7 @@ interface CartBadgeProps {
   initialCount?: number;
 }
 
-export const CartBadge = memo(function CartBadge(_props: CartBadgeProps) {
+export const CartBadge = memo(function CartBadge() {
   const { count } = useCartStore();
 
   // Không hiển thị badge nếu giỏ hàng trống

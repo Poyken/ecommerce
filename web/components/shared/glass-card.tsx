@@ -22,7 +22,10 @@ import { type HTMLMotionProps } from "framer-motion";
  *
  * 3. VARIANT SYSTEM:
  * - `hover`: Khi di chuột vào, tăng shadow và độ sáng -> Tạo cảm giác thẻ "nổi lên".
- * - `heavy`: Dùng cho Modal/Popup cần che nền mạnh hơn để user tập trung nội dung.
+ * - `heavy`: Dùng cho Modal/Popup cần che nền mạnh hơn để user tập trung nội dung. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
+
  * =====================================================================
  */
 

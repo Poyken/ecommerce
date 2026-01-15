@@ -17,7 +17,12 @@ import { useEffect, useState } from "react";
  * - Đảm bảo state `debouncedValue` không bao giờ được set trên một component đã hủy.
  *
  * 3. CLOSURE:
- * - `setTimeout` tạo ra một closure "chụp ảnh" giá trị `value` tại thời điểm đó.
+ * - `setTimeout` tạo ra một closure "chụp ảnh" giá trị `value` tại thời điểm đó. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Search Suggestions: Giảm tải số lượng request tìm kiếm khi user gõ liên tục vào ô input.
+ * - Window Resize: Tránh tính toán lại layout liên tục khi user thay đổi kích thước cửa sổ trình duyệt.
+ * - Form Validation: Chỉ validate email/password sau khi user dừng gõ để tránh gây khó chịu ("Email không hợp lệ" hiện lên khi mới gõ chữ "nguy").
+
  * =====================================================================
  */
 export function useDebounce<T>(value: T, delay: number = 500): T {

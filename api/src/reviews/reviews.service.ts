@@ -1,6 +1,7 @@
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { PrismaService } from '@core/prisma/prisma.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Review } from '@prisma/client';
@@ -25,7 +26,10 @@ import { UpdateReviewDto } from './dto/update-review.dto';
  * - Dữ liệu này được lưu trực tiếp vào bảng `Product` để hiển thị nhanh ở trang danh sách mà không cần đếm lại từ đầu.
  *
  * 3. CACHE INVALIDATION:
- * - Sau khi cập nhật rating, ta phải xóa cache của sản phẩm đó (`/api/products/:id`) và các danh sách listing liên quan để khách hàng thấy thông tin mới nhất.
+ * - Sau khi cập nhật rating, ta phải xóa cache của sản phẩm đó (`/api/products/:id`) và các danh sách listing liên quan để khách hàng thấy thông tin mới nhất. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+
  * =====================================================================
  */
 
@@ -49,6 +53,11 @@ export class ReviewsService extends BaseCrudService<
   }
 
   /* ... Custom logic for invalidating cache ... */
+  /**
+   * Cập nhật Cache điểm đánh giá của sản phẩm (Rating Cache).
+   * - Tính toán lại điểm trung bình (`avgRating`) và tổng số đánh giá (`reviewCount`).
+   * - Lưu trực tiếp vào bảng `Product` để tối ưu tốc độ đọc (Read-heavy Database Optimization).
+   */
   private async updateProductRatingCache(
     productId: string,
     tx: any = this.prisma,
@@ -122,7 +131,7 @@ export class ReviewsService extends BaseCrudService<
       );
     }
 
-    /* Use Transaction for creation and cache update */
+    /* Transaction đảm bảo tính nhất quán: Tạo review -> Cập nhật điểm rating của Product ngay lập tức */
     const review = await this.prisma.$transaction(async (tx) => {
       const newReview = await tx.review.create({
         data: {
@@ -133,6 +142,7 @@ export class ReviewsService extends BaseCrudService<
           content: dto.content,
           images: dto.images || [],
           isApproved: true,
+          tenantId: getTenant()!.id,
         },
       });
 
@@ -146,6 +156,9 @@ export class ReviewsService extends BaseCrudService<
 
   /* ... checkEligibility Logic (Complex, Keep as is) ... */
   async checkEligibility(userId: string, productId: string) {
+    if (!productId) {
+      throw new BadRequestException('productId is required');
+    }
     const orderItems = await this.prisma.orderItem.findMany({
       where: {
         order: {
@@ -214,7 +227,12 @@ export class ReviewsService extends BaseCrudService<
     };
   }
 
-  /* ... Custom findAllByProduct (Cursor pagination, specific to reviews) ... */
+  /* ... Custom findAllByProduct (Cursor pagination pagination riêng cho review) ... */
+  /**
+   * Lấy danh sách đánh giá của sản phẩm cho User xem.
+   * - Sử dụng Cursor-based Pagination (thay vì Offset) để tối ưu hiệu năng cho list dài vô tận (Infinite Scroll).
+   * - Trả về kèm thông tin người dùng và biến thể sản phẩm họ đã mua.
+   */
   async findAllByProduct(productId: string, cursor?: string, limit = 10) {
     const reviews = await this.model.findMany({
       where: { productId, isApproved: true },
@@ -283,7 +301,7 @@ export class ReviewsService extends BaseCrudService<
     };
   }
 
-  /* ... Generic findAll for Admin ... */
+  /* ... Generic findAll cho Admin ... */
   async findAll(
     page: number,
     limit: number,
@@ -291,7 +309,7 @@ export class ReviewsService extends BaseCrudService<
     status?: string,
     search?: string,
   ) {
-    // Custom filter building
+    // Xây dựng bộ lọc tùy chỉnh
     const where: any = {};
     if (rating) where.rating = rating;
     if (status) {

@@ -14,7 +14,10 @@
  * 2. CLIENT-SIDE FETCHING STRATEGY:
  * - Nếu `initialUser` được provide (dù là null hoặc object), ta TIN TƯỞNG giá trị đó.
  * - CHỈ fetch khi `initialUser === undefined` (tức là component không nhận được data từ server).
- * - Điều này tránh duplicate API calls khi server đã fetch sẵn.
+ * - Điều này tránh duplicate API calls khi server đã fetch sẵn. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
+
  * =====================================================================
  */
 

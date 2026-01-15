@@ -1,13 +1,16 @@
-import { BlockData, BlockRenderer } from "@/components/cms/block-renderer";
+import {
+  BlockData,
+  BlockRenderer,
+} from "@/features/cms/components/block-renderer";
 import { ErrorBoundary } from "@/components/shared/error-boundary";
 import {
   CategoriesSkeleton,
   ProductsSkeleton,
-} from "@/components/shared/skeletons/home-skeleton";
+} from "@/features/home/components/skeletons/home-skeleton";
 import { HomeWrapper } from "@/features/home/components/home-wrapper";
-import { HeroSection } from "@/features/products/components/hero-section";
+import { HeroSection } from "@/features/home/components/hero-section";
 import { HomeContent } from "@/features/products/components/home-content";
-import { productService } from "@/services/product.service";
+import { productService } from "@/features/products/services/product.service";
 import { Brand, Category, Product } from "@/types/models";
 import { Metadata } from "next";
 import { headers } from "next/headers";
@@ -24,7 +27,9 @@ async function getPageConfig(slug: string): Promise<any | null> {
     const headersList = await headers();
     const host = headersList.get("host") || "localhost";
     const apiUrl =
-      process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+      process.env.API_URL ||
+      process.env.NEXT_PUBLIC_API_URL ||
+      "http://127.0.0.1:8080/api/v1";
 
     const res = await fetch(`${apiUrl}/pages/${slug}`, {
       headers: { "x-tenant-domain": host },
@@ -35,7 +40,7 @@ async function getPageConfig(slug: string): Promise<any | null> {
     const json = await res.json();
     // API returns { statusCode, message, data: {...} } - extract the data
     return json.data || json;
-  } catch (err) {
+  } catch {
     return null;
   }
 }
@@ -60,7 +65,11 @@ export const revalidate = 3600;
  *      các Blocks. Block nào cần dữ liệu sẽ tự `use(promise)` để hiển thị khi có kết quả.
  *
  * 3. SEO & METADATA:
- *    - Cấu hình Meta tiêu chuẩn của Next.js để tối ưu tìm kiếm Google.
+ *    - Cấu hình Meta tiêu chuẩn của Next.js để tối ưu tìm kiếm Google. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - High-Conversion Landing Page: Tạo ra trang chủ chuyên nghiệp, tốc độ cực nhanh nhờ kết hợp SSR và Hydration, giúp tăng tỷ lệ chốt đơn ngay từ cái nhìn đầu tiên.
+ * - Flexible Marketing: Cho phép bộ phận Marketing liên tục thay đổi chiến dịch Sale (Flash Sale, New Arrivals) thông qua CMS mà không cần chờ IT can thiệp vào code.
+
  * =================================================================================================
  */
 export default async function Home() {
@@ -121,14 +130,7 @@ function HomeContentSkeleton() {
   return (
     <div className="space-y-16 pb-16">
       <div className="container mx-auto px-4 mt-8">
-        <CategoriesSkeleton />
-      </div>
-
-      {/* Brands Placeholder - Minimal height to prevent shift */}
-      <div className="container mx-auto px-4 h-20 bg-foreground/5 rounded-lg animate-pulse" />
-
-      <div className="container mx-auto px-4">
-        <ProductsSkeleton count={4} />
+        <ProductsSkeleton count={8} />
       </div>
     </div>
   );
@@ -149,8 +151,8 @@ async function HomeDataFetcher() {
       productService.getCategories(),
       productService.getBrands(),
     ]);
-  } catch (_e) {
-    // console.error("Failed to fetch home data", _e);
+  } catch {
+    // Silently fail - will show empty state
   }
 
   return (

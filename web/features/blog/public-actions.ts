@@ -14,7 +14,11 @@ import { BlogWithProducts } from "@/types/models";
  * 1. SERVER ACTION FOR CLIENT COMPONENTS:
  * - Dùng để fetch data cho Client Component (VD: Load More button).
  * - `skipAuth: true`: Cho phép gọi API mà không cần Login (Public).
- * - `revalidate: 60`: Cache kết quả trong 60s để giảm tải Server.
+ * - `revalidate: 60`: Cache kết quả trong 60s để giảm tải Server. *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Organic Search Traffic: Tối ưu hóa việc tải danh sách bài viết blog cho người dùng vãng lai, giúp cải thiện chỉ số mượt mà (LCP) và SEO cho các trang tin tức.
+ * - Edge Caching: Tận dụng cơ chế `revalidate` của Next.js để phục vụ hàng nghìn lượt xem blog mỗi phút mà không làm tăng tải trọng lên cơ sở dữ liệu chính.
+
  * =====================================================================
  */
 export async function getBlogsAction(
