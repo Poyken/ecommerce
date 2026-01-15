@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import sharp from 'sharp';
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+
 import * as path from 'path';
 import * as fs from 'fs';
 import { CloudinaryService } from '@/integrations/cloudinary/cloudinary.service';

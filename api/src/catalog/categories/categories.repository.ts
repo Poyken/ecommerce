@@ -45,7 +45,7 @@ export class CategoriesRepository extends BaseRepository<Category> {
    * Lấy danh sách categories dạng tree (cho navigation)
    */
   async findAsTree(): Promise<CategoryTree[]> {
-    const categories = await (this.model as any).findMany({
+    const categories = await this.model.findMany({
       where: this.withTenantFilter({ parentId: null, deletedAt: null }),
       include: {
         children: {
@@ -67,7 +67,7 @@ export class CategoriesRepository extends BaseRepository<Category> {
    * Tìm category theo slug
    */
   async findBySlug(slug: string): Promise<Category | null> {
-    return await (this.model as any).findFirst({
+    return await this.model.findFirst({
       where: this.withTenantFilter({ slug, deletedAt: null }),
       include: {
         children: { where: { deletedAt: null } },
@@ -101,7 +101,7 @@ export class CategoriesRepository extends BaseRepository<Category> {
   async getAllChildIds(categoryId: string): Promise<string[]> {
     const result: string[] = [categoryId];
 
-    const children = await (this.model as any).findMany({
+    const children = await this.model.findMany({
       where: this.withTenantFilter({ parentId: categoryId, deletedAt: null }),
       select: { id: true },
     });

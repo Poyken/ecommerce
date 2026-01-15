@@ -18,8 +18,8 @@ export function PwaProvider({ children }: { children: React.ReactNode }) {
       window.addEventListener("load", () => {
         navigator.serviceWorker
           .register("/sw.js")
-          .then((registration) => {
-            console.log("SW registered: ", registration.scope);
+          .then(() => {
+            // SW registered successfully, no console log needed
           })
           .catch((err) => {
             console.error("SW registration failed: ", err);

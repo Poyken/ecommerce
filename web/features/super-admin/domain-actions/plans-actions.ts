@@ -23,19 +23,21 @@
 
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 import { http } from "@/lib/http";
-import { z } from "zod";
-import { ApiResponse } from "@/types/dtos";
+import { ApiResponse, ActionResult } from "@/types/dtos";
+import { Plan, PlanInput } from "@/types/feature-types/admin.types";
 
-export async function getPlansAction() {
+export async function getPlansAction(): Promise<ActionResult<Plan[]>> {
   return wrapServerAction(
-    () => http<ApiResponse<any[]>>("/plans"),
+    () => http<ApiResponse<Plan[]>>("/plans"),
     "Failed to fetch plans"
   );
 }
 
-export async function createPlanAction(data: any) {
+export async function createPlanAction(
+  data: PlanInput
+): Promise<ActionResult<Plan>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any>>("/plans", {
+    const res = await http<ApiResponse<Plan>>("/plans", {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -49,10 +51,10 @@ export async function updatePlanAction({
   data,
 }: {
   id: string;
-  data: any;
-}) {
+  data: Partial<PlanInput>;
+}): Promise<ActionResult<Plan>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any>>(`/plans/${id}`, {
+    const res = await http<ApiResponse<Plan>>(`/plans/${id}`, {
       method: "PATCH",
       body: JSON.stringify(data),
     });
@@ -61,7 +63,11 @@ export async function updatePlanAction({
   }, "Failed to update plan");
 }
 
-export async function deletePlanAction({ id }: { id: string }) {
+export async function deletePlanAction({
+  id,
+}: {
+  id: string;
+}): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await http(`/plans/${id}`, {
       method: "DELETE",

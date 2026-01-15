@@ -266,7 +266,7 @@ export class OrdersService {
         let shippingFee = 0;
         let recipientName = createOrderDto.recipientName;
         let phoneNumber = createOrderDto.phoneNumber;
-        let shippingAddressSnapshot: any = null;
+        let shippingAddressSnapshot: Record<string, unknown> | null = null;
         let shippingCity = createOrderDto.shippingCity || null;
         let shippingDistrict = createOrderDto.shippingDistrict || null;
         let shippingWard = createOrderDto.shippingWard || null;
@@ -616,7 +616,7 @@ export class OrdersService {
       ];
     }
 
-    const include: any = {
+    const include: Prisma.OrderInclude = {
       user: { select: { email: true, firstName: true, lastName: true } },
     };
 
@@ -1116,10 +1116,15 @@ export class OrdersService {
       this.logger.log(
         `Đã đồng bộ đơn hàng ${order.id} sang GHN thành công: ${ghnResponse.order_code}`,
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      const responseData =
+        error instanceof Error && 'response' in error
+          ? (error as { response?: { data?: unknown } }).response?.data
+          : undefined;
       this.logger.error(
-        `Đồng bộ GHN thất bại cho đơn ${order.id}: ${error.message}`,
-        error.response?.data || error,
+        `Đồng bộ GHN thất bại cho đơn ${order.id}: ${message}`,
+        responseData || error,
       );
       // Không throw lỗi chết app, chỉ log warning
     }
@@ -1138,4 +1143,103 @@ export class OrdersService {
 
     return { success: true };
   }
+
+  // =====================================================================
+  // #region PRIVATE HELPER METHODS
+  // =====================================================================
+
+  /**
+   * Xử lý thanh toán sau khi tạo đơn hàng thành công.
+   * Tách ra để giữ cho method create() gọn gàng hơn.
+   */
+  private async processPaymentAfterOrder(
+    order: { id: string; totalAmount: number | bigint; paymentStatus?: string },
+    paymentMethod: string | undefined,
+    returnUrl: string | undefined,
+    tenantId: string,
+  ): Promise<{ paymentUrl?: string; providerTransactionId?: string }> {
+    if (!paymentMethod) {
+      return {};
+    }
+
+    try {
+      if (paymentMethod === 'COD') {
+        // Log transaction COD
+        await (this.prisma as Prisma.TransactionClient).payment.create({
+          data: {
+            orderId: order.id,
+            amount: order.totalAmount,
+            paymentMethod,
+            status: 'PAID',
+            providerTransactionId: `COD-${order.id}`,
+            tenantId,
+          },
+        } as Prisma.PaymentCreateInput);
+        return {};
+      }
+
+      const paymentResult = await this.paymentService.processPayment(
+        paymentMethod,
+        {
+          amount: Number(order.totalAmount),
+          orderId: order.id,
+          returnUrl,
+        },
+      );
+
+      if (paymentResult.success) {
+        // Tạo bản ghi lịch sử thanh toán
+        await (this.prisma as Prisma.TransactionClient).payment.create({
+          data: {
+            orderId: order.id,
+            amount: order.totalAmount,
+            paymentMethod,
+            status: paymentResult.paymentUrl ? 'PENDING' : 'PAID',
+            providerTransactionId: paymentResult.transactionId,
+            tenantId,
+          },
+        } as Prisma.PaymentCreateInput);
+
+        if (!paymentResult.paymentUrl) {
+          await this.prisma.order.update({
+            where: { id: order.id },
+            data: {
+              paymentStatus: 'PAID',
+              transactionId: paymentResult.transactionId,
+            },
+          });
+        }
+
+        return {
+          paymentUrl: paymentResult.paymentUrl,
+          providerTransactionId: paymentResult.transactionId,
+        };
+      }
+    } catch (error) {
+      this.logger.error(`Lỗi xử lý thanh toán cho đơn hàng ${order.id}`, error);
+    }
+
+    return {};
+  }
+
+  /**
+   * Validate state machine transition cho order status.
+   * @returns true nếu transition hợp lệ
+   */
+  private isValidStatusTransition(
+    currentStatus: OrderStatus,
+    newStatus: OrderStatus,
+  ): boolean {
+    const validTransitions: Record<OrderStatus, OrderStatus[]> = {
+      [OrderStatus.PENDING]: [OrderStatus.PROCESSING, OrderStatus.CANCELLED],
+      [OrderStatus.PROCESSING]: [OrderStatus.SHIPPED, OrderStatus.CANCELLED],
+      [OrderStatus.SHIPPED]: [OrderStatus.DELIVERED],
+      [OrderStatus.DELIVERED]: [],
+      [OrderStatus.CANCELLED]: [],
+    };
+
+    return validTransitions[currentStatus]?.includes(newStatus) ?? false;
+  }
+
+  // #endregion
 }

@@ -64,13 +64,13 @@ export class ReviewsService extends BaseCrudService<
     productId: string,
     tx: any = this.prisma,
   ) {
-    const aggregate = await (tx.review as any).aggregate({
+    const aggregate = await tx.review.aggregate({
       where: { productId, isApproved: true },
       _avg: { rating: true },
       _count: true,
     });
 
-    await (tx.product as any).update({
+    await tx.product.update({
       where: { id: productId },
       data: {
         avgRating: aggregate._avg.rating || 0,

@@ -51,7 +51,7 @@ export class InventoryService {
     const prisma = tx || this.prisma;
 
     // Cập nhật nguyên tử: chỉ giảm nếu stock >= quantity
-    const result = await (prisma.sku as any).updateMany({
+    const result = await prisma.sku.updateMany({
       where: {
         id: skuId,
         stock: { gte: quantity },
@@ -78,7 +78,7 @@ export class InventoryService {
   async releaseStock(skuId: string, quantity: number, tx?: any) {
     const prisma = tx || this.prisma;
 
-    await (prisma.sku as any).update({
+    await prisma.sku.update({
       where: { id: skuId },
       data: {
         stock: { increment: quantity },
@@ -97,7 +97,7 @@ export class InventoryService {
   async deductStock(skuId: string, quantity: number, tx?: any) {
     const prisma = tx || this.prisma;
 
-    await (prisma.sku as any).update({
+    await prisma.sku.update({
       where: { id: skuId },
       data: {
         reservedStock: { decrement: quantity },

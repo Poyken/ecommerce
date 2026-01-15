@@ -3,6 +3,30 @@
 > **Context:** Dựa trên phân tích 50 commits gần nhất và Technical Debt hiện tại.
 > **Mục tiêu:** Bắt các lỗi "đặc sản" của dự án này mà Linter không thấy được.
 
+## Trigger Phrases
+
+Kích hoạt Skill này khi gặp:
+
+**Tiếng Việt:**
+
+- "Review code này", "Check PR cho tao"
+- "Code này có ổn không?", "Có vấn đề gì không?"
+- "Xem thử logic này"
+
+**English:**
+
+- "Review this code", "Check this PR"
+- "Is this code okay?", "Any issues?"
+- "Look at this implementation"
+
+**Context Detection:**
+
+- User paste một đoạn code và hỏi ý kiến
+- User mention đến "pull request", "merge", "review"
+- Đang trong context của file mới tạo hoặc sửa đổi lớn
+
+---
+
 ## 1. Top 5 "Red Flags" (Dấu hiệu nguy hiểm)
 
 Khi review code, nếu thấy các pattern này, hãy **FLAG** ngay:

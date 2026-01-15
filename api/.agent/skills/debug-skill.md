@@ -3,6 +3,30 @@
 > **Context:** NestJS, Prisma, Winston Logger, Jest.
 > **Kích hoạt:** Khi AI cần fix bug hoặc analyze lỗi.
 
+## Trigger Phrases
+
+Kích hoạt Skill này khi gặp:
+
+**Tiếng Việt:**
+
+- "Sao nó lỗi thế?", "Lỗi rồi", "Không chạy được"
+- "Check giùm cái này", "Debug function này"
+- "Tại sao bị crash?", "API trả về 500"
+
+**English:**
+
+- "Why is this failing?", "Can you debug this?"
+- "It's not working", "Getting an error"
+- "API returns 500", "Unhandled exception"
+
+**Context Detection:**
+
+- Thấy user paste error stack trace hoặc log lỗi
+- User đề cập đến "exception", "error", "fail", "crash"
+- Response có chứa `statusCode >= 400`
+
+---
+
 ## 1. Tooling & Environment
 
 - **Log Location:** `logs/error.log` (Production) hoặc Terminal Output (Dev).

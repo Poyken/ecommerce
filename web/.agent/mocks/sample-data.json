@@ -1,0 +1,201 @@
+{
+  "products": [
+    {
+      "id": "prod_001",
+      "name": "iPhone 15 Pro Max",
+      "slug": "iphone-15-pro-max",
+      "price": 29990000,
+      "originalPrice": 34990000,
+      "description": "Điện thoại Apple iPhone 15 Pro Max 256GB",
+      "categoryId": "cat_electronics",
+      "brandId": "brand_apple",
+      "images": [
+        {
+          "url": "https://example.com/iphone15.jpg",
+          "alt": "iPhone 15 Pro Max"
+        }
+      ],
+      "rating": 4.8,
+      "reviewCount": 156,
+      "stock": 50,
+      "isNew": true,
+      "isHot": true,
+      "createdAt": "2024-01-15T00:00:00Z"
+    },
+    {
+      "id": "prod_002",
+      "name": "MacBook Pro M3",
+      "slug": "macbook-pro-m3",
+      "price": 45990000,
+      "originalPrice": null,
+      "description": "Apple MacBook Pro 14 inch M3 Pro chip",
+      "categoryId": "cat_electronics",
+      "brandId": "brand_apple",
+      "images": [
+        {
+          "url": "https://example.com/macbook.jpg",
+          "alt": "MacBook Pro M3"
+        }
+      ],
+      "rating": 4.9,
+      "reviewCount": 89,
+      "stock": 25,
+      "isNew": false,
+      "isHot": true,
+      "createdAt": "2024-01-10T00:00:00Z"
+    },
+    {
+      "id": "prod_003",
+      "name": "Áo Thun Basic",
+      "slug": "ao-thun-basic",
+      "price": 199000,
+      "originalPrice": 299000,
+      "description": "Áo thun cotton 100% basic unisex",
+      "categoryId": "cat_fashion",
+      "brandId": "brand_local",
+      "images": [
+        {
+          "url": "https://example.com/tshirt.jpg",
+          "alt": "Basic T-Shirt"
+        }
+      ],
+      "rating": 4.5,
+      "reviewCount": 234,
+      "stock": 500,
+      "isNew": false,
+      "isHot": false,
+      "isSale": true,
+      "createdAt": "2024-01-05T00:00:00Z"
+    }
+  ],
+  "users": [
+    {
+      "id": "user_001",
+      "email": "admin@example.com",
+      "firstName": "Admin",
+      "lastName": "User",
+      "role": "ADMIN",
+      "avatar": null,
+      "createdAt": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": "user_002",
+      "email": "customer@example.com",
+      "firstName": "Nguyễn",
+      "lastName": "Văn A",
+      "role": "USER",
+      "avatar": "https://example.com/avatar.jpg",
+      "phone": "0901234567",
+      "createdAt": "2024-01-10T00:00:00Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "order_001",
+      "orderNumber": "ORD-2024-0001",
+      "userId": "user_002",
+      "status": "DELIVERED",
+      "totalAmount": 30189000,
+      "shippingFee": 30000,
+      "discountAmount": 0,
+      "items": [
+        {
+          "productId": "prod_001",
+          "productName": "iPhone 15 Pro Max",
+          "quantity": 1,
+          "unitPrice": 29990000,
+          "totalPrice": 29990000
+        }
+      ],
+      "shippingAddress": {
+        "fullName": "Nguyễn Văn A",
+        "phone": "0901234567",
+        "address": "123 Nguyễn Huệ",
+        "ward": "Bến Nghé",
+        "district": "Quận 1",
+        "province": "TP. Hồ Chí Minh"
+      },
+      "paymentMethod": "COD",
+      "paymentStatus": "PAID",
+      "createdAt": "2024-01-15T10:30:00Z",
+      "deliveredAt": "2024-01-18T14:00:00Z"
+    },
+    {
+      "id": "order_002",
+      "orderNumber": "ORD-2024-0002",
+      "userId": "user_002",
+      "status": "PROCESSING",
+      "totalAmount": 597000,
+      "shippingFee": 0,
+      "discountAmount": 100000,
+      "couponCode": "SALE100K",
+      "items": [
+        {
+          "productId": "prod_003",
+          "productName": "Áo Thun Basic",
+          "quantity": 3,
+          "unitPrice": 199000,
+          "totalPrice": 597000
+        }
+      ],
+      "createdAt": "2024-01-20T08:00:00Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": "cat_electronics",
+      "name": "Điện tử",
+      "slug": "dien-tu",
+      "description": "Điện thoại, laptop, tablet",
+      "image": "https://example.com/electronics.jpg",
+      "productCount": 150
+    },
+    {
+      "id": "cat_fashion",
+      "name": "Thời trang",
+      "slug": "thoi-trang",
+      "description": "Quần áo, giày dép, phụ kiện",
+      "image": "https://example.com/fashion.jpg",
+      "productCount": 500
+    }
+  ],
+  "coupons": [
+    {
+      "id": "coupon_001",
+      "code": "SALE100K",
+      "type": "FIXED",
+      "value": 100000,
+      "minOrderValue": 500000,
+      "maxUses": 1000,
+      "usedCount": 234,
+      "startDate": "2024-01-01T00:00:00Z",
+      "endDate": "2024-02-28T23:59:59Z",
+      "isActive": true
+    },
+    {
+      "id": "coupon_002",
+      "code": "FREESHIP",
+      "type": "SHIPPING",
+      "value": 100,
+      "minOrderValue": 300000,
+      "maxUses": null,
+      "usedCount": 1024,
+      "startDate": "2024-01-01T00:00:00Z",
+      "endDate": null,
+      "isActive": true
+    }
+  ],
+  "reviews": [
+    {
+      "id": "review_001",
+      "productId": "prod_001",
+      "userId": "user_002",
+      "rating": 5,
+      "title": "Sản phẩm tuyệt vời",
+      "content": "Máy đẹp, chạy mượt, camera chụp rất đẹp. Rất hài lòng với sản phẩm.",
+      "isVerifiedPurchase": true,
+      "helpfulCount": 12,
+      "createdAt": "2024-01-20T15:00:00Z"
+    }
+  ]
+}

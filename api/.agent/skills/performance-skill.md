@@ -3,6 +3,31 @@
 > **Context:** NestJS API, PostgreSQL (Prisma), Redis, BullMQ.
 > **Mục tiêu:** Tối ưu response time, throughput và resource usage.
 
+## Trigger Phrases
+
+Kích hoạt Skill này khi gặp:
+
+**Tiếng Việt:**
+
+- "Sao nó chậm thế?", "API lag quá"
+- "Optimize cái này", "Cải thiện hiệu năng"
+- "Query chạy lâu", "Timeout"
+
+**English:**
+
+- "Why is it slow?", "API is lagging"
+- "Optimize this", "Improve performance"
+- "Query takes too long", "Getting timeouts"
+
+**Context Detection:**
+
+- User đề cập đến response time, latency, throughput
+- Thấy pattern N+1 query (loop với await prisma)
+- User paste explain analyze output từ PostgreSQL
+- Mention đến "cache", "redis", "queue"
+
+---
+
 ## 1. Database Optimization (Prisma & PostgreSQL)
 
 ### A. Indexing (Critical)

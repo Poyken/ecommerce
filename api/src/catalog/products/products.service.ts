@@ -572,7 +572,7 @@ export class ProductsService {
     });
 
     const oldSkuSnapshots =
-      ((oldProductState as any)?.skus as any[])?.map((sku) => ({
+      (oldProductState?.skus as any[])?.map((sku) => ({
         id: sku.id,
         price: sku.price,
         stock: sku.stock,
@@ -985,8 +985,8 @@ export class ProductsService {
     await (this.prisma.product as any).update({
       where: { id: productId },
       data: {
-        avgRating: (aggregate as any)._avg?.rating || 0,
-        reviewCount: (aggregate as any)._count || 0,
+        avgRating: aggregate._avg?.rating || 0,
+        reviewCount: aggregate._count || 0,
       },
     });
   }

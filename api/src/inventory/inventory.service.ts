@@ -233,7 +233,7 @@ export class InventoryService {
       );
     }
 
-    await (tx as any).inventoryItem.upsert({
+    await tx.inventoryItem.upsert({
       where: {
         warehouseId_skuId: {
           warehouseId: dto.warehouseId,
@@ -259,7 +259,7 @@ export class InventoryService {
       },
     });
 
-    return (tx as any).inventoryLog.create({
+    return tx.inventoryLog.create({
       data: {
         skuId: dto.skuId,
         changeAmount: dto.quantity,

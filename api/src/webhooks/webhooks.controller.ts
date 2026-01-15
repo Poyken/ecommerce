@@ -53,6 +53,27 @@ interface GHNWebhookPayload {
   Width?: number;
 }
 
+// Interface cho GHTK Webhook Payload (placeholder)
+interface GHTKWebhookPayload {
+  label_id?: string;
+  partner_id?: string;
+  order_id?: string;
+  status_id?: number;
+  action_time?: string;
+  reason_code?: string;
+  reason?: string;
+  weight?: number;
+  fee?: number;
+  return_part_package?: boolean;
+}
+
+// Type cho Shipment update data
+interface ShipmentUpdateData {
+  status: ShipmentStatus;
+  shippedAt?: Date;
+  deliveredAt?: Date;
+}
+
 @ApiTags('Webhooks')
 @ApiExcludeController()
 @Controller('webhooks')
@@ -127,7 +148,7 @@ export class WebhooksController {
       }
 
       // Cập nhật Shipment
-      const updateData: any = { status: newStatus };
+      const updateData: ShipmentUpdateData = { status: newStatus };
 
       if (newStatus === ShipmentStatus.SHIPPED && !shipment.shippedAt) {
         updateData.shippedAt = new Date();
@@ -158,7 +179,7 @@ export class WebhooksController {
    */
   @Post('ghtk')
   @ApiOperation({ summary: 'GHTK Webhook callback' })
-  async handleGHTKWebhook(@Body() payload: any) {
+  async handleGHTKWebhook(@Body() payload: GHTKWebhookPayload) {
     this.logger.log(`[GHTK Webhook] Nhận payload: ${JSON.stringify(payload)}`);
 
     // TODO: Implement GHTK webhook handling
@@ -206,7 +227,7 @@ export class WebhooksController {
       return { success: false, message: 'Shipment not found' };
     }
 
-    const updateData: any = { status: newStatus };
+    const updateData: ShipmentUpdateData = { status: newStatus };
     if (newStatus === ShipmentStatus.SHIPPED) updateData.shippedAt = new Date();
     if (newStatus === ShipmentStatus.DELIVERED)
       updateData.deliveredAt = new Date();

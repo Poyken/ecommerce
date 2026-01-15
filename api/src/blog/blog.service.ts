@@ -65,7 +65,7 @@ export class BlogService {
                 },
               }
             : {}),
-        } as any,
+        },
         include: {
           products: {
             include: {

@@ -49,6 +49,72 @@ import { useLayoutVisibility } from "@/features/layout/providers/layout-visibili
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import { Suspense, useEffect } from "react";
+import type { CSSProperties } from "react";
+
+// =====================================================================
+// TYPE DEFINITIONS FOR CMS BLOCKS
+// =====================================================================
+
+export interface BlockStyles {
+  paddingTop?: string;
+  paddingBottom?: string;
+  paddingLeft?: string;
+  paddingRight?: string;
+  marginTop?: string;
+  marginBottom?: string;
+  marginLeft?: string;
+  marginRight?: string;
+  padding?: {
+    top?: string;
+    bottom?: string;
+    left?: string;
+    right?: string;
+  };
+  margin?: {
+    top?: string;
+    bottom?: string;
+  };
+  width?: string;
+  maxWidth?: string;
+  height?: string;
+  minHeight?: string;
+  borderRadius?: string;
+  borderWidth?: string;
+  borderStyle?: string;
+  borderColor?: string;
+  boxShadow?: string;
+  opacity?: number;
+  overflow?: string;
+  position?: CSSProperties["position"];
+  zIndex?: number;
+  backgroundColor?: string;
+  textColor?: string;
+  display?: string;
+  flexDirection?: CSSProperties["flexDirection"];
+  justifyContent?: string;
+  alignItems?: string;
+  flexWrap?: CSSProperties["flexWrap"];
+  gap?: string;
+  customClasses?: string;
+  animation?: string;
+}
+
+export interface BlockAnimation {
+  type?: string;
+}
+
+export interface BlockVisibility {
+  desktop?: boolean;
+  tablet?: boolean;
+  mobile?: boolean;
+}
+
+export interface GenericBlockProps {
+  styles?: BlockStyles;
+  visibility?: BlockVisibility;
+  animation?: BlockAnimation;
+  [key: string]: any;
+}
 
 const BlockSkeleton = () => (
   <div className="w-full py-20 px-4 animate-pulse bg-muted/5 rounded-2xl border border-dashed border-border/50">
@@ -411,7 +477,7 @@ export const BlockRenderer = ({
     return null;
   }
 
-  const { styles, visibility, animation } = (block.props as any) || {};
+  const { styles, visibility, animation } = (block.props as GenericBlockProps) || {};
 
   // Check visibility
   if (visibility) {
@@ -419,7 +485,7 @@ export const BlockRenderer = ({
     // For now, we just render based on the visibility settings
   }
 
-  const wrapperStyle = {
+  const wrapperStyle: CSSProperties = {
     paddingTop: styles?.paddingTop || styles?.padding?.top,
     paddingBottom: styles?.paddingBottom || styles?.padding?.bottom,
     paddingLeft: styles?.paddingLeft || styles?.padding?.left,
@@ -438,16 +504,16 @@ export const BlockRenderer = ({
     borderColor: styles?.borderColor,
     boxShadow: styles?.boxShadow,
     opacity: styles?.opacity,
-    overflow: styles?.overflow,
-    position: styles?.position as any,
+    overflow: styles?.overflow as CSSProperties["overflow"],
+    position: styles?.position,
     zIndex: styles?.zIndex,
     backgroundColor: styles?.backgroundColor,
     color: styles?.textColor,
-    display: styles?.display,
-    flexDirection: styles?.flexDirection as any,
+    display: styles?.display as CSSProperties["display"],
+    flexDirection: styles?.flexDirection,
     justifyContent: styles?.justifyContent,
     alignItems: styles?.alignItems,
-    flexWrap: styles?.flexWrap as any,
+    flexWrap: styles?.flexWrap,
     gap: styles?.gap,
   };
 

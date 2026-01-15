@@ -29,28 +29,36 @@ const MOCK_BRANDS: Brand[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?q=80&w=200&auto=format&fit=crop",
     _count: { products: 45 },
-  } as any,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
   {
     id: "2",
     name: "Luxe Living",
     imageUrl:
       "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?q=80&w=200&auto=format&fit=crop",
     _count: { products: 32 },
-  } as any,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
   {
     id: "3",
     name: "Artisan Wood",
     imageUrl:
       "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?q=80&w=200&auto=format&fit=crop",
     _count: { products: 28 },
-  } as any,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
   {
     id: "4",
     name: "Nordic Home",
     imageUrl:
       "https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?q=80&w=200&auto=format&fit=crop",
     _count: { products: 67 },
-  } as any,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
 ];
 
 interface BrandsBlockProps {

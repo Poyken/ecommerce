@@ -18,8 +18,19 @@ import {
   LineChart,
   PieChart,
 } from "lucide-react";
-import { memo, useMemo, Suspense, lazy } from "react";
+import { memo, useMemo } from "react";
 import { formatVND, formatNumber } from "@/lib/utils";
+import type {
+  UISchemaType,
+  UISchema,
+  StatCardData,
+  TableWidgetData,
+  ChartWidgetData,
+  AlertWidgetData,
+  ListWidgetData,
+  TableColumn,
+  AlertItem,
+} from "@/types/feature-types/chat.types";
 
 /**
  * =============================================================================
@@ -61,20 +72,8 @@ import { formatVND, formatNumber } from "@/lib/utils";
  */
 
 
-export type UISchemaType =
-  | "stat_card"
-  | "table"
-  | "bar_chart"
-  | "line_chart"
-  | "pie_chart"
-  | "alert"
-  | "list";
-
-export interface UISchema {
-  type: UISchemaType;
-  title: string;
-  data: any;
-}
+// Re-export types for backward compatibility
+export type { UISchemaType, UISchema } from "@/types/feature-types/chat.types";
 
 interface SmartWidgetProps {
   schema: UISchema;
@@ -126,7 +125,7 @@ const UnknownWidget = memo(function UnknownWidget() {
 // =============================================================================
 
 const StatCardWidget = memo(function StatCardWidget({ schema }: { schema: UISchema }) {
-  const { value, trend, trendUp } = schema.data;
+  const { value, trend, trendUp } = schema.data as StatCardData;
   
   // Memoize formatted value để tránh recalculate
   const formattedValue = useMemo(
@@ -168,7 +167,7 @@ const StatCardWidget = memo(function StatCardWidget({ schema }: { schema: UISche
 });
 
 const TableWidget = memo(function TableWidget({ schema }: { schema: UISchema }) {
-  const { columns, rows } = schema.data;
+  const { columns, rows } = schema.data as TableWidgetData;
 
   return (
     <Card>
@@ -185,20 +184,20 @@ const TableWidget = memo(function TableWidget({ schema }: { schema: UISchema }) 
             </TableRow>
           </TableHeader>
           <TableBody>
-            {rows?.map((row: any, i: number) => (
+            {rows?.map((row, i: number) => (
               <TableRow key={i}>
-                {columns?.map((col: { key: string }) => (
+                {columns?.map((col: TableColumn) => (
                   <TableCell key={col.key}>
                     {col.key === "image" && row[col.key] ? (
                       <img
-                        src={row[col.key]}
+                        src={row[col.key] as string}
                         alt=""
                         className="h-10 w-10 rounded object-cover"
                       />
                     ) : col.key === "price" ? (
-                      formatVND(row[col.key])
+                      formatVND(row[col.key] as number)
                     ) : (
-                      row[col.key]
+                      String(row[col.key] ?? "")
                     )}
                   </TableCell>
                 ))}
@@ -212,7 +211,7 @@ const TableWidget = memo(function TableWidget({ schema }: { schema: UISchema }) 
 });
 
 const BarChartWidget = memo(function BarChartWidget({ schema }: { schema: UISchema }) {
-  const { labels, values } = schema.data;
+  const { labels, values } = schema.data as ChartWidgetData;
   const maxValue = Math.max(...(values || [1]));
 
   return (
@@ -248,7 +247,7 @@ const BarChartWidget = memo(function BarChartWidget({ schema }: { schema: UISche
 });
 
 const LineChartWidget = memo(function LineChartWidget({ schema }: { schema: UISchema }) {
-  const { labels, values } = schema.data;
+  const { labels, values } = schema.data as ChartWidgetData;
   const maxValue = Math.max(...(values || [1]));
   const minValue = Math.min(...(values || [0]));
   const range = maxValue - minValue || 1;
@@ -312,7 +311,7 @@ const LineChartWidget = memo(function LineChartWidget({ schema }: { schema: UISc
 });
 
 const PieChartWidget = memo(function PieChartWidget({ schema }: { schema: UISchema }) {
-  const { labels, values } = schema.data;
+  const { labels, values } = schema.data as ChartWidgetData;
   const total = values?.reduce((a: number, b: number) => a + b, 0) || 1;
   const colors = [
     "bg-blue-500",
@@ -360,7 +359,7 @@ const PieChartWidget = memo(function PieChartWidget({ schema }: { schema: UISche
 });
 
 const AlertWidget = memo(function AlertWidget({ schema }: { schema: UISchema }) {
-  const { level, message, items } = schema.data;
+  const { level, message, items } = schema.data as AlertWidgetData;
 
   const levelStyles = {
     warning: "border-amber-200 bg-amber-50 text-amber-800",
@@ -384,7 +383,7 @@ const AlertWidget = memo(function AlertWidget({ schema }: { schema: UISchema }) 
         <p className="mb-3">{message}</p>
         {items && items.length > 0 && (
           <ul className="space-y-1 text-sm">
-            {items.map((item: any, i: number) => (
+            {items.map((item: AlertItem, i: number) => (
               <li key={i} className="flex justify-between">
                 <span>{item.product || item.name}</span>
                 <Badge variant="outline">Còn {item.stock}</Badge>
@@ -398,7 +397,7 @@ const AlertWidget = memo(function AlertWidget({ schema }: { schema: UISchema }) 
 });
 
 const ListWidget = memo(function ListWidget({ schema }: { schema: UISchema }) {
-  const { items } = schema.data;
+  const { items } = schema.data as ListWidgetData;
 
   return (
     <Card>

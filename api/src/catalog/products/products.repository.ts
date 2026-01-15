@@ -131,14 +131,14 @@ export class ProductsRepository extends BaseRepository<Product> {
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
-      (this.model as any).findMany({
+      this.model.findMany({
         where: whereConditions,
         orderBy,
         include: this.defaultIncludes,
         skip,
         take: limit,
       }),
-      (this.model as any).count({ where: whereConditions }),
+      this.model.count({ where: whereConditions }),
     ]);
 
     const lastPage = Math.ceil(total / limit) || 1;
@@ -163,7 +163,7 @@ export class ProductsRepository extends BaseRepository<Product> {
     slug: string,
     includeSkus = true,
   ): Promise<ProductWithRelations | null> {
-    return await (this.model as any).findFirst({
+    return await this.model.findFirst({
       where: this.withTenantFilter({
         slug,
         deletedAt: null,
@@ -216,7 +216,7 @@ export class ProductsRepository extends BaseRepository<Product> {
    */
   async findRelated(productId: string, limit = 4): Promise<Product[]> {
     // Lấy categories của product hiện tại
-    const product = await (this.model as any).findFirst({
+    const product = await this.model.findFirst({
       where: this.withTenantFilter({ id: productId }),
       include: { categories: true },
     });
@@ -227,7 +227,7 @@ export class ProductsRepository extends BaseRepository<Product> {
 
     const categoryIds = product.categories.map((c: any) => c.categoryId);
 
-    return (this.model as any).findMany({
+    return this.model.findMany({
       where: this.withTenantFilter({
         id: { not: productId },
         deletedAt: null,
@@ -268,7 +268,7 @@ export class ProductsRepository extends BaseRepository<Product> {
    * Lấy products cho homepage (featured, best sellers, etc.)
    */
   async findFeatured(limit = 10): Promise<Product[]> {
-    return await (this.model as any).findMany({
+    return await this.model.findMany({
       where: this.withTenantFilter({ isFeatured: true, deletedAt: null }),
       take: limit,
       orderBy: { createdAt: 'desc' },
@@ -288,7 +288,7 @@ export class ProductsRepository extends BaseRepository<Product> {
     const minPrice = skuPrices._min.salePrice ?? skuPrices._min.price ?? 0;
     const maxPrice = skuPrices._max.price ?? 0;
 
-    return (this.model as any).update({
+    return this.model.update({
       where: { id: productId },
       data: { minPrice, maxPrice },
     });

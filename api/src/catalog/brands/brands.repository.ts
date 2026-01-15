@@ -23,7 +23,7 @@ export class BrandsRepository extends BaseRepository<Brand> {
   async findAllWithProductCount(): Promise<
     (Brand & { productCount: number })[]
   > {
-    const brands = await (this.model as any).findMany({
+    const brands = await this.model.findMany({
       where: this.withTenantFilter({ deletedAt: null }),
       include: {
         _count: { select: { products: true } },
@@ -41,7 +41,7 @@ export class BrandsRepository extends BaseRepository<Brand> {
    * Tìm brand theo slug
    */
   async findBySlug(slug: string): Promise<Brand | null> {
-    return await (this.model as any).findFirst({
+    return await this.model.findFirst({
       where: this.withTenantFilter({ slug, deletedAt: null }),
     });
   }
@@ -50,7 +50,7 @@ export class BrandsRepository extends BaseRepository<Brand> {
    * Lấy top brands theo số lượng sản phẩm
    */
   async findTopBrands(limit = 10): Promise<Brand[]> {
-    const brands = await (this.model as any).findMany({
+    const brands = await this.model.findMany({
       where: this.withTenantFilter({ deletedAt: null }),
       include: {
         _count: { select: { products: true } },
