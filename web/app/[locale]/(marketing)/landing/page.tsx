@@ -235,10 +235,11 @@ function AnimatedSection({
 function HeroSection() {
   return (
     <section className="relative min-h-[90vh] flex items-center pt-8 lg:pt-16 pb-20 overflow-hidden">
-      {/* Background Effects */}
+      {/* Background Effects - Aurora Glows */}
       <div className="absolute inset-0 bg-cinematic" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-float" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-float-delayed" />
+      <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-[var(--aurora-blue)]/20 rounded-full blur-[120px] animate-pulse-glow" />
+      <div className="absolute top-[20%] -right-[10%] w-[35%] h-[35%] bg-[var(--aurora-purple)]/20 rounded-full blur-[100px] animate-float" />
+      <div className="absolute -bottom-[10%] left-[20%] w-[30%] h-[30%] bg-[var(--aurora-orange)]/10 rounded-full blur-[80px] animate-float-delayed" />
 
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
@@ -280,7 +281,8 @@ function HeroSection() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-10">
               <Button
                 size="lg"
-                className="group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/25"
+                variant="aurora"
+                className="group"
                 asChild
               >
                 <Link href="/register">
@@ -290,8 +292,8 @@ function HeroSection() {
               </Button>
               <Button
                 size="lg"
-                variant="outline"
-                className="group border-2"
+                variant="glass"
+                className="group border border-white/10"
                 asChild
               >
                 <Link href="/demo">
@@ -422,23 +424,23 @@ function CoreFeaturesSection() {
             <motion.div
               key={feature.title}
               variants={scaleIn}
-              className="group relative p-6 lg:p-8 rounded-2xl bg-card border border-border hover:border-indigo-500/50 transition-all duration-500 hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-1"
+              className="group relative p-6 lg:p-8 rounded-2xl glass-card transition-all duration-500 hover:-translate-y-2 overflow-hidden"
             >
               {/* Icon */}
               <div
-                className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.gradient} mb-4`}
+                className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${feature.gradient} mb-4 shadow-lg`}
               >
                 <feature.icon className="size-6 text-white" />
               </div>
 
               {/* Content */}
-              <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">
+              <h3 className="text-xl font-bold mb-2 font-sans tracking-tight">{feature.title}</h3>
+              <p className="text-muted-foreground leading-relaxed text-sm">
                 {feature.description}
               </p>
 
-              {/* Hover Gradient */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              {/* Decorative Glow */}
+              <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-colors" />
             </motion.div>
           ))}
         </div>
@@ -603,10 +605,10 @@ function PricingSection() {
             <motion.div
               key={plan.name}
               variants={scaleIn}
-              className={`relative p-6 lg:p-8 rounded-2xl border-2 ${
+              className={`relative p-6 lg:p-8 rounded-2xl border ${
                 plan.popular
-                  ? "border-indigo-500 bg-gradient-to-b from-indigo-500/10 to-purple-500/5"
-                  : "border-border bg-card"
+                  ? "border-[var(--aurora-purple)] bg-[var(--aurora-purple)]/5 shadow-[0_0_40px_-10px_var(--aurora-purple)]"
+                  : "glass-card"
               }`}
             >
               {/* Popular Badge */}
@@ -669,8 +671,9 @@ function CTASection() {
           className="relative rounded-3xl overflow-hidden"
         >
           {/* Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600" />
-          <div className="absolute inset-0 bg-[url('data:image/svg+xml,...')] opacity-10" />
+          <div className="absolute inset-0 bg-gradient-to-br from-[var(--aurora-blue)] via-[var(--aurora-purple)] to-[var(--aurora-orange)]" />
+          <div className="absolute inset-0 bg-cinematic opacity-50" />
+          <div className="absolute -top-[50%] -left-[50%] w-[100%] h-[100%] bg-white/10 rounded-full blur-[120px] animate-pulse-glow" />
 
           {/* Content */}
           <div className="relative z-10 py-16 lg:py-24 px-8 lg:px-16 text-center text-white">
@@ -685,7 +688,8 @@ function CTASection() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                className="bg-white text-indigo-600 hover:bg-white/90"
+                variant="premium"
+                className="hover:scale-105 transition-transform"
                 asChild
               >
                 <Link href="/register">

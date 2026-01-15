@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
  *   `<Button asChild><Link href="/">Home</Link></Button>` *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
  * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
+ *
  * =====================================================================
  */
 
@@ -44,16 +44,22 @@ const buttonVariants = cva(
       // KIỂU DÁNG (Màu sắc, viền)
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm",
+          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 shadow-sm",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent/50 hover:text-accent-foreground dark:bg-transparent dark:hover:bg-accent/30",
+          "border border-border bg-background/50 backdrop-blur-sm shadow-sm hover:bg-accent/50 hover:text-accent-foreground dark:hover:bg-white/5",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/80 shadow-sm",
         ghost:
-          "hover:bg-accent/50 hover:text-accent-foreground dark:hover:bg-accent/30",
+          "hover:bg-accent/50 hover:text-accent-foreground dark:hover:bg-white/5",
         link: "text-primary underline-offset-4 hover:underline",
+        premium:
+          "bg-white dark:bg-white text-black hover:bg-white/90 shadow-xl shadow-white/10 dark:shadow-white/5",
+        aurora:
+          "bg-gradient-to-r from-[var(--aurora-blue)] via-[var(--aurora-purple)] to-[var(--aurora-orange)] text-white hover:opacity-90 shadow-xl shadow-purple-500/20",
+        glass:
+          "glass-premium text-white hover:bg-white/10",
       },
       // KÍCH THƯỚC
       size: {

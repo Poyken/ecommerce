@@ -28,9 +28,10 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  --font-sans: var(--font-outfit), system-ui, sans-serif;
+  --font-sans: var(--font-space), var(--font-inter), system-ui, sans-serif;
   --font-body: var(--font-inter), system-ui, sans-serif;
   --font-serif: var(--font-playfair), serif;
+  --font-outfit: var(--font-outfit), system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -197,65 +198,43 @@
    * ═══════════════════════════════════════════════════════════════════ */
 
   /* Background: True Black - Cinematic depth */
-  --background: oklch(0.08 0.008 75);
+  /* Background: True Black - Cinematic depth */
+  --background: oklch(0.05 0.005 240); /* Slightly deeper blue-black */
 
   /* Foreground: Bone White */
-  --foreground: oklch(0.92 0.006 90);
+  --foreground: oklch(0.95 0.005 240);
 
-  /* Card: Elevated Charcoal */
-  --card: oklch(0.12 0.008 75);
-  --card-foreground: oklch(0.92 0.006 90);
+  /* Card: Elevated Charcoal with depth */
+  --card: oklch(0.12 0.01 240);
+  --card-foreground: oklch(0.95 0.005 240);
 
-  --popover: oklch(0.12 0.008 75);
-  --popover-foreground: oklch(0.92 0.006 90);
+  --popover: oklch(0.12 0.01 240);
+  --popover-foreground: oklch(0.95 0.005 240);
 
-  /* Primary: Pure White - Maximum contrast */
-  --primary: oklch(0.95 0.004 90);
-  --primary-foreground: oklch(0.1 0.008 75);
+  /* Primary: Vibrant Blue - Digital Action */
+  --primary: oklch(0.6 0.18 250);
+  --primary-foreground: oklch(0.99 0 0);
 
-  /* Secondary: Deep Graphite */
-  --secondary: oklch(0.16 0.008 75);
-  --secondary-foreground: oklch(0.92 0.006 90);
+  /* Secondary: Deep Blue Gray */
+  --secondary: oklch(0.18 0.02 240);
+  --secondary-foreground: oklch(0.92 0.01 240);
 
-  --muted: oklch(0.18 0.006 75);
-  --muted-foreground: oklch(0.58 0.008 85);
+  --muted: oklch(0.2 0.02 240);
+  --muted-foreground: oklch(0.65 0.02 240);
 
-  /* Accent: Champagne Glow - Warm, inviting */
-  --accent: oklch(0.75 0.08 85);
-  --accent-foreground: oklch(0.1 0.008 75);
+  /* Accent: Aurora Purple Glow */
+  --accent: oklch(0.7 0.15 300);
+  --accent-foreground: oklch(1 0 0);
 
-  /* Champagne: The signature Quiet Luxury color */
-  --champagne: oklch(0.8 0.065 85);
-  --champagne-foreground: oklch(0.15 0.01 75);
-
-  /* === SEMANTIC COLORS - Dark Luxury === */
-
-  /* Destructive: Muted Coral */
-  --destructive: oklch(0.6 0.15 20);
-  --destructive-foreground: oklch(0.98 0 0);
-
-  /* Success: Mint Sage */
-  --success: oklch(0.6 0.1 150);
-  --success-foreground: oklch(0.98 0 0);
-
-  /* Info: Soft Azure */
-  --info: oklch(0.6 0.1 240);
-  --info-foreground: oklch(0.98 0 0);
-
-  /* Warning: Warm Gold */
-  --warning: oklch(0.78 0.12 80);
-  --warning-foreground: oklch(0.1 0.008 75);
-
-  /* === DESIGN SYSTEM COLORS === */
-  --chart-1: oklch(0.75 0.08 85); /* Champagne */
-  --chart-2: oklch(0.6 0.1 150); /* Sage */
-  --chart-3: oklch(0.6 0.1 240); /* Azure */
-  --chart-4: oklch(0.78 0.12 80); /* Gold */
+  /* Aurora Glow Colors */
+  --aurora-blue: oklch(0.65 0.2 250);
+  --aurora-purple: oklch(0.7 0.15 300);
+  --aurora-orange: oklch(0.75 0.15 45);
 
   /* Borders & Rings */
-  --border: oklch(0.18 0.006 75);
-  --input: oklch(0.2 0.006 75);
-  --ring: oklch(0.75 0.08 85); /* Champagne focus ring */
+  --border: oklch(0.25 0.02 240 / 0.5);
+  --input: oklch(0.25 0.02 240 / 0.5);
+  --ring: oklch(0.6 0.18 250 / 0.5);
 }
 
 @theme inline {
@@ -297,11 +276,22 @@
 
 @layer utilities {
   .glass {
-    @apply bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg;
+    @apply bg-white/40 dark:bg-black/40 backdrop-blur-2xl border border-white/20 dark:border-white/10 shadow-xl;
   }
 
   .glass-card {
-    @apply bg-white/50 dark:bg-black/20 backdrop-blur-md border border-neutral-200/50 dark:border-white/5 shadow-xl hover:bg-white/60 dark:hover:bg-black/30 transition-all duration-300;
+    @apply bg-white/20 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-2xl hover:bg-white/30 dark:hover:bg-white/10 transition-all duration-500 ease-in-out;
+  }
+
+  .glass-premium {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.05)
+    );
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   }
 
   /* Premium Glow Effects */

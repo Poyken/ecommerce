@@ -12,7 +12,7 @@ import { PwaProvider } from "@/providers/pwa-provider";
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, Outfit, Space_Grotesk } from "next/font/google";
 import { Suspense } from "react";
 import NextTopLoader from "nextjs-toploader";
 import { NetworkStatus } from "@/components/shared/network-status";
@@ -59,6 +59,12 @@ const outfit = Outfit({
 const inter = Inter({
   subsets: ["latin", "vietnamese"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space",
   display: "swap",
 });
 
@@ -163,7 +169,7 @@ export default async function RootLayout({
   return (
     <html lang={locale} suppressHydrationWarning={true}>
       <body
-        className={`${outfit.variable} ${inter.variable} antialiased font-sans`}
+        className={`${outfit.variable} ${inter.variable} ${spaceGrotesk.variable} antialiased font-sans`}
       >
         <Suspense fallback={null}>
           <RootProviders locale={locale}>{children}</RootProviders>
