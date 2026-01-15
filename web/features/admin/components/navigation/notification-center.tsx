@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "@/i18n/routing";
+import { useTypedRouter, AppRoute, appRoutes } from "@/lib/typed-navigation";
 import { cn } from "@/lib/utils";
 import {
   AlertTriangle,
@@ -73,7 +73,7 @@ export function NotificationCenter({
 }: NotificationCenterProps) {
   const t = useTranslations("admin");
   const tCommon = useTranslations("common");
-  const router = useRouter();
+  const router = useTypedRouter();
   const [open, setOpen] = useState(false);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
@@ -93,7 +93,7 @@ export function NotificationCenter({
 
   const handleNotificationClick = (notification: Notification) => {
     if (notification.link) {
-      router.push(notification.link as any);
+      router.push((notification.link || "#") as AppRoute);
     }
     if (!notification.isRead && onMarkRead) {
       onMarkRead(notification.id);
@@ -201,7 +201,7 @@ export function NotificationCenter({
             <DropdownMenuItem
               className="justify-center text-sm text-primary"
               onClick={() => {
-                router.push("/admin/notifications" as any);
+                router.push(appRoutes.admin.notifications);
                 setOpen(false);
               }}
             >

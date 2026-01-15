@@ -3,6 +3,7 @@
 import { BreadcrumbNav } from "@/components/shared/breadcrumb-nav";
 import { ProductCard } from "@/features/products/components/product-card";
 import { Link, useRouter, usePathname } from "@/i18n/routing";
+import { TypedLink } from "@/lib/typed-navigation";
 import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { Product } from "@/types/models";
@@ -76,12 +77,12 @@ export function CollectionContent({
         <BreadcrumbNav items={breadcrumbItems} className="mb-8 text-sm" />
 
         <div className="mb-12 border-b border-foreground/5 pb-8 relative">
-          <Link
-            href={backHref as any}
+          <TypedLink
+            href={backHref as `/${string}`}
             className="text-accent hover:underline mb-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all hover:gap-3"
           >
             ← {backLabel}
-          </Link>
+          </TypedLink>
 
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mt-4">
             <div className="space-y-3">

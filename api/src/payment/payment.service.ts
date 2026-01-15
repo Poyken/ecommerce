@@ -41,6 +41,8 @@ import { WebhookPayloadDto } from './dto/webhook-payload.dto';
  * =====================================================================
  */
 
+import { OrdersRepository } from '@/orders/orders.repository';
+
 @Injectable()
 export class PaymentService {
   private strategies: Map<string, PaymentStrategy> = new Map();
@@ -48,6 +50,7 @@ export class PaymentService {
 
   constructor(
     private readonly prisma: PrismaService,
+    private readonly ordersRepo: OrdersRepository,
     private readonly codStrategy: CodPaymentStrategy,
     private readonly mockStripeStrategy: MockStripeStrategy,
     private readonly vnPayStrategy: VNPayStrategy,
@@ -91,15 +94,14 @@ export class PaymentService {
     // Giả sử nội dung chuyển khoản có dạng: "THANHTOAN <ORDER_ID>" hoặc chỉ chứa ID.
     // Logic thực tế cần Regex phức tạp hơn tùy theo cú pháp quy định với ngân hàng.
     const possibleIds = payload.content.split(/\s+/).map((s) => s.trim());
-
-    let order: Awaited<ReturnType<typeof this.prisma.order.findUnique>> = null;
+    let order: import('@prisma/client').Order | null = null;
 
     // Duyệt qua từng từ trong nội dung để tìm đơn hàng
     for (const id of possibleIds) {
       // Bỏ qua các từ quá ngắn (ID thường dài > 8 ký tự uuid/cuid)
       if (id.length < 8) continue;
 
-      const found = await this.prisma.order.findUnique({ where: { id } });
+      const found = await this.ordersRepo.findById(id);
       if (found) {
         order = found;
         break;
@@ -132,15 +134,12 @@ export class PaymentService {
     }
 
     // 3. Cập nhật trạng thái đơn hàng sang PAID và PROCESSING
-    await this.prisma.order.update({
-      where: { id: order.id },
-      data: {
-        paymentStatus: 'PAID',
-        transactionId: payload.gatewayTransactionId || `TRX-${Date.now()}`,
-        // Nếu đơn hàng đang chờ (PENDING) -> Tự động chuyển sang đang xử lý (PROCESSING)
-        status: order.status === 'PENDING' ? 'PROCESSING' : order.status,
-      },
-    });
+    await this.ordersRepo.update(order.id, {
+      paymentStatus: 'PAID',
+      transactionId: payload.gatewayTransactionId || `TRX-${Date.now()}`,
+      // Nếu đơn hàng đang chờ (PENDING) -> Tự động chuyển sang đang xử lý (PROCESSING)
+      status: order.status === 'PENDING' ? 'PROCESSING' : order.status,
+    } as any);
 
     this.logger.log(
       `Cập nhật thành công đơn hàng ${order.id} sang trạng thái ĐÃ THANH TOÁN`,

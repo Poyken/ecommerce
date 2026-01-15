@@ -2,7 +2,7 @@
 
 import { GlassButton } from "@/components/shared/glass-button";
 import { m } from "@/lib/animations";
-import Link from "next/link";
+import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 
 interface BannerSectionProps {
   title: string;
@@ -87,7 +87,7 @@ export function BannerSection({
 
         {ctaText && ctaLink && (
           <div className="pt-4">
-            <Link href={ctaLink as any}>
+            <TypedLink href={(ctaLink || "#") as AppRoute}>
               <GlassButton
                 size="lg"
                 variant="outline"
@@ -95,7 +95,7 @@ export function BannerSection({
               >
                 {ctaText}
               </GlassButton>
-            </Link>
+            </TypedLink>
           </div>
         )}
       </m.div>

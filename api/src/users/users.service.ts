@@ -45,6 +45,8 @@ import { createPaginatedResult } from '@/common/dto/base.dto';
  * =====================================================================
  */
 
+import { UsersRepository } from './users.repository';
+
 @Injectable()
 export class UsersService extends BaseCrudService<
   User,
@@ -54,6 +56,7 @@ export class UsersService extends BaseCrudService<
   constructor(
     private readonly prisma: PrismaService,
     private readonly planUsageService: PlanUsageService,
+    private readonly usersRepo: UsersRepository,
   ) {
     super(UsersService.name);
   }
@@ -108,7 +111,7 @@ export class UsersService extends BaseCrudService<
       await this.planUsageService.checkStaffLimit(tenant.id);
     }
 
-    const existingUser = await (this.model as any).findFirst({
+    const existingUser = await this.usersRepo.findFirst({
       where: {
         email,
         tenantId: tenant?.id,
@@ -124,14 +127,12 @@ export class UsersService extends BaseCrudService<
       AUTH_CONFIG.BCRYPT_ROUNDS,
     );
 
-    const user = await (this.model as any).create({
-      data: {
-        email,
-        password: hashedPassword,
-        firstName,
-        lastName,
-        tenantId: tenant!.id,
-      },
+    const user = await this.usersRepo.create({
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
+      tenantId: tenant!.id,
     });
 
     return new UserEntity(user);
@@ -173,7 +174,7 @@ export class UsersService extends BaseCrudService<
     }
 
     const [items, total] = await Promise.all([
-      (this.model as any).findMany({
+      this.usersRepo.findMany({
         where,
         skip,
         take: limit,
@@ -182,7 +183,7 @@ export class UsersService extends BaseCrudService<
         },
         orderBy: { createdAt: 'desc' },
       }),
-      (this.model as any).count({ where }),
+      this.usersRepo.count(where),
     ]);
 
     return createPaginatedResult(
@@ -214,10 +215,7 @@ export class UsersService extends BaseCrudService<
       );
     }
 
-    const updatedUser = await (this.model as any).update({
-      where: { id },
-      data: updateUserDto,
-    });
+    const updatedUser = await this.usersRepo.update(id, updateUserDto);
 
     return new UserEntity(updatedUser);
   }
@@ -238,7 +236,7 @@ export class UsersService extends BaseCrudService<
    */
   async assignRoles(userId: string, roleNames: string[]) {
     // 1. Validate User
-    const user = await (this.model as any).findFirst({ where: { id: userId } });
+    const user = await this.usersRepo.findById(userId);
     if (!user) {
       throw new NotFoundException('User không tồn tại');
     }

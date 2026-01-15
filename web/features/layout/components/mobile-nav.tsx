@@ -3,6 +3,7 @@
 import { CartBadge } from "@/features/cart/components/cart-badge";
 import { WishlistBadge } from "@/features/wishlist/components/wishlist-badge";
 import { Link, usePathname } from "@/i18n/routing";
+import { TypedLink, appRoutes } from "@/lib/typed-navigation";
 import { slideInFromBottom } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { m } from "@/lib/animations";
@@ -35,8 +36,10 @@ import { useState } from "react";
  * =====================================================================
  */
 
+import { AppRoute } from "@/lib/typed-navigation";
+
 interface NavItem {
-  href: string;
+  href: AppRoute;
   icon: React.ElementType;
   label: string;
 }
@@ -59,12 +62,12 @@ export function MobileBottomNav({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const navItems: NavItem[] = [
-    { href: "/", icon: Home, label: t("home") },
-    { href: "/shop", icon: ShoppingBag, label: t("shop") },
-    { href: "/cart", icon: ShoppingBag, label: t("cart") },
+    { href: appRoutes.home, icon: Home, label: t("home") },
+    { href: appRoutes.shop, icon: ShoppingBag, label: t("shop") },
+    { href: appRoutes.cart, icon: ShoppingBag, label: t("cart") },
     initialUser
-      ? { href: "/profile", icon: User, label: t("profile") }
-      : { href: "/login", icon: LogIn, label: t("login") || "Login" },
+      ? { href: appRoutes.profile, icon: User, label: t("profile") }
+      : { href: appRoutes.login, icon: LogIn, label: t("login") || "Login" },
   ];
 
   return (
@@ -82,9 +85,9 @@ export function MobileBottomNav({
             const Icon = item.icon;
 
             return (
-              <Link
+              <TypedLink
                 key={item.href}
-                href={item.href as any}
+                href={item.href}
                 className={cn(
                   "flex flex-col items-center justify-center gap-1.5 px-3 py-2 rounded-2xl transition-all duration-300",
                   isActive
@@ -121,7 +124,7 @@ export function MobileBottomNav({
                 >
                   {item.label}
                 </span>
-              </Link>
+              </TypedLink>
             );
           })}
 
@@ -172,8 +175,8 @@ export function MobileBottomNav({
               </h3>
 
               <div className="grid grid-cols-2 gap-4">
-                <Link
-                  href="/wishlist"
+                <TypedLink
+                  href={appRoutes.wishlist}
                   onClick={() => setIsSearchOpen(false)}
                   className="relative flex items-center justify-center p-5 rounded-2xl bg-foreground/2 border border-foreground/5 text-sm font-bold uppercase tracking-wide hover:bg-foreground/5 hover:border-primary/20 transition-all duration-300 active:scale-95"
                 >
@@ -185,29 +188,29 @@ export function MobileBottomNav({
                     initialUser={initialUser}
                     initialCount={initialWishlistCount}
                   />
-                </Link>
+                </TypedLink>
 
                 {[
-                  { href: "/shop", label: t("search") || "Search" },
+                  { href: appRoutes.shop, label: t("search") || "Search" },
                   {
-                    href: "/notifications",
+                    href: appRoutes.notifications,
                     label: t("notifications") || "Notifications",
                   },
                   ...(initialUser
-                    ? [{ href: "/orders", label: t("orders") }]
+                    ? [{ href: appRoutes.orders, label: t("orders") }]
                     : []),
-                  { href: "/about", label: t("about") },
-                  { href: "/blog", label: t("journal") },
-                  { href: "/contact", label: t("contact") },
+                  { href: appRoutes.about, label: t("about") },
+                  { href: appRoutes.blog, label: t("journal") },
+                  { href: appRoutes.contact, label: t("contact") },
                 ].map((link) => (
-                  <Link
+                  <TypedLink
                     key={link.href}
-                    href={link.href as any}
+                    href={link.href}
                     onClick={() => setIsSearchOpen(false)}
                     className="flex items-center justify-center p-5 rounded-2xl bg-foreground/2 border border-foreground/5 text-sm font-bold uppercase tracking-wide hover:bg-foreground/5 hover:border-primary/20 transition-all duration-300 active:scale-95"
                   >
                     {link.label}
-                  </Link>
+                  </TypedLink>
                 ))}
               </div>
             </m.div>

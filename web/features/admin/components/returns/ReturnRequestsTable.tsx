@@ -63,7 +63,7 @@ import {
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
-import { useRouter } from 'next/navigation';
+import { useTypedRouter, AppRoute, appRoutes } from "@/lib/typed-navigation";
 
 import { ReturnRequest, ReturnRequestPopulated, ReturnStatus } from '@/features/return-requests/types';
 import { returnRequestsApi } from '@/features/return-requests/return-requests.api';
@@ -89,7 +89,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: any }>
 };
 
 export function ReturnRequestsTable() {
-  const router = useRouter();
+  const router = useTypedRouter();
   const [requests, setRequests] = useState<ReturnRequestPopulated[]>([]);
   const [stats, setStats] = useState<Stats | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -423,7 +423,7 @@ export function ReturnRequestsTable() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() =>
-                                router.push(`/admin/returns/${request.id}` as any)
+                                router.push((`/admin/returns/${request.id}`) as AppRoute)
                               }
                             >
                               <Eye className="h-4 w-4 mr-2" />

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PaymentModule } from '@/payment/payment.module';
 import { PrismaModule } from '@core/prisma/prisma.module';
 
@@ -35,11 +35,12 @@ import { BullModule } from '@nestjs/bullmq';
 import { OrdersProcessor } from './orders.processor';
 
 import { OrdersExportService } from './orders-export.service';
+import { OrdersRepository } from './orders.repository';
 
 @Module({
   imports: [
     PrismaModule,
-    PaymentModule,
+    forwardRef(() => PaymentModule),
     NotificationsModule,
     PromotionsModule,
     ShippingModule,
@@ -52,10 +53,11 @@ import { OrdersExportService } from './orders-export.service';
   controllers: [OrdersController],
   providers: [
     OrdersService,
+    OrdersRepository,
     InvoiceService,
     OrdersProcessor,
     OrdersExportService,
   ],
-  exports: [InvoiceService, BullModule],
+  exports: [OrdersRepository, InvoiceService, BullModule],
 })
 export class OrdersModule {}

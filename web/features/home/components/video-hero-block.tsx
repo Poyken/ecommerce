@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { m } from "@/lib/animations";
 import { ArrowRight, Volume2, VolumeX } from "lucide-react";
 import { useState, useRef } from "react";
-import { Link } from "@/i18n/routing";
+import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 
 interface VideoHeroBlockProps {
   title?: string;
@@ -130,7 +130,7 @@ export function VideoHeroBlock({
           </div>
 
           <div className="flex flex-wrap items-center gap-6 justify-center">
-            <Link href={ctaLink as any}>
+            <TypedLink href={(ctaLink || "#") as AppRoute}>
               <GlassButton
                 variant="primary"
                 size="lg"
@@ -141,7 +141,7 @@ export function VideoHeroBlock({
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
                 </span>
               </GlassButton>
-            </Link>
+            </TypedLink>
 
             <button
               onClick={() => setIsMuted(!isMuted)}

@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { Link, usePathname } from "@/i18n/routing";
+import { TypedLink, appRoutes } from "@/lib/typed-navigation";
 import { cn } from "@/lib/utils";
 import {
   BookOpen,
@@ -58,19 +59,19 @@ export function HeaderNav({ permissions: propsPermissions }: HeaderNavProps) {
   };
 
   const links = [
-    { href: "/", label: t("home"), icon: Home, exact: true },
-    { href: "/shop", label: t("shop"), icon: ShoppingBag, exact: false },
-    { href: "/about", label: t("about"), icon: Info, exact: true },
-    { href: "/blog", label: t("journal"), icon: BookOpen, exact: false },
-    { href: "/contact", label: t("contact"), icon: Phone, exact: true },
+    { href: appRoutes.home, label: t("home"), icon: Home, exact: true },
+    { href: appRoutes.shop, label: t("shop"), icon: ShoppingBag, exact: false },
+    { href: appRoutes.about, label: t("about"), icon: Info, exact: true },
+    { href: appRoutes.blog, label: t("journal"), icon: BookOpen, exact: false },
+    { href: appRoutes.contact, label: t("contact"), icon: Phone, exact: true },
   ];
 
   return (
     <nav className="hidden md:flex items-center gap-6 text-base font-medium">
       {links.map((link) => (
-        <Link
+        <TypedLink
           key={link.href}
-          href={link.href as any}
+          href={link.href}
           className={cn(
             "transition-colors flex items-center gap-1 relative w-fit after:absolute after:bottom-[-2px] after:left-0 after:h-[2px] after:bg-primary after:transition-all after:duration-300",
             (
@@ -85,12 +86,12 @@ export function HeaderNav({ permissions: propsPermissions }: HeaderNavProps) {
           <span className="flex items-center gap-1">
             <link.icon size={16} /> {link.label}
           </span>
-        </Link>
+        </TypedLink>
       ))}
 
       {hasPermission("superAdmin:read") && (
-        <Link
-          href={"/super-admin" as any}
+        <TypedLink
+          href={appRoutes.admin.superAdmin}
           className={cn(
             "transition-colors flex items-center gap-1 font-semibold relative w-fit after:absolute after:bottom-[-2px] after:left-0 after:h-[2px] after:bg-primary after:transition-all after:duration-300",
             pathname?.startsWith("/super-admin")
@@ -101,12 +102,12 @@ export function HeaderNav({ permissions: propsPermissions }: HeaderNavProps) {
           <span className="flex items-center gap-1.5 text-primary">
             <ShieldCheck size={16} /> {t("superAdmin")}
           </span>
-        </Link>
+        </TypedLink>
       )}
 
       {hasPermission("admin:read") && !hasPermission("superAdmin:read") && (
-        <Link
-          href={"/admin" as any}
+        <TypedLink
+          href={appRoutes.admin.dashboard}
           className={cn(
             "transition-colors flex items-center gap-1 font-semibold relative w-fit after:absolute after:bottom-[-2px] after:left-0 after:h-[2px] after:bg-primary after:transition-all after:duration-300",
             pathname?.startsWith("/admin")
@@ -117,7 +118,7 @@ export function HeaderNav({ permissions: propsPermissions }: HeaderNavProps) {
           <span className="flex items-center gap-1">
             <ShieldCheck size={16} /> {t("admin")}
           </span>
-        </Link>
+        </TypedLink>
       )}
     </nav>
   );

@@ -29,10 +29,17 @@ import { TenantsModule } from '@/tenants/tenants.module';
 import { UsersExportService } from './users-export.service';
 import { UsersImportService } from './users-import.service';
 
+import { UsersRepository } from './users.repository';
+
 @Module({
   imports: [PrismaModule, TenantsModule],
   controllers: [UsersController],
-  providers: [UsersService, UsersExportService, UsersImportService],
-  exports: [UsersService],
+  providers: [
+    UsersService,
+    UsersExportService,
+    UsersImportService,
+    UsersRepository,
+  ],
+  exports: [UsersService, UsersRepository],
 })
 export class UsersModule {}

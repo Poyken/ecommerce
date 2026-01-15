@@ -2,6 +2,7 @@
 
 import { Logo } from "@/features/layout/components/logo";
 import { Link, usePathname } from "@/i18n/routing";
+import { TypedLink, appRoutes } from "@/lib/typed-navigation";
 import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 
 /**
@@ -57,7 +58,7 @@ export function Footer() {
             </p>
             <div className="flex gap-4">
               {[Facebook, Instagram, Twitter, Youtube].map((Icon, i) => (
-                <Link
+                <TypedLink
                   key={i}
                   href="#"
                   className="w-12 h-12 rounded-2xl border border-white/5 bg-white/5 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white/20 hover:bg-white/10 transition-all duration-300 group"
@@ -66,7 +67,7 @@ export function Footer() {
                     size={20}
                     className="group-hover:scale-110 transition-transform"
                   />
-                </Link>
+                </TypedLink>
               ))}
             </div>
           </div>
@@ -85,15 +86,15 @@ export function Footer() {
                   href: "/shop?categoryId=accessories",
                 },
                 { label: t("sale"), href: "/shop?sort=sale" },
-                { label: t("collections"), href: "/shop" },
+                { label: t("collections"), href: appRoutes.shop },
               ].map((item) => (
                 <li key={item.label}>
-                  <Link
-                    href={item.href as any}
+                  <TypedLink
+                    href={item.href as any} // Params supported via string pattern in AppRoute
                     className="text-muted-foreground hover:text-accent transition-colors text-sm font-medium"
                   >
                     {item.label}
-                  </Link>
+                  </TypedLink>
                 </li>
               ))}
             </ul>
@@ -109,16 +110,16 @@ export function Footer() {
                 { label: t("helpCenter"), href: "#" },
                 { label: t("shippingReturns"), href: "#" },
                 { label: t("careGuide"), href: "/care-guide" },
-                { label: t("trackOrder"), href: "/orders" },
+                { label: t("trackOrder"), href: appRoutes.orders }, // Was /orders, mapped to profile orders
                 { label: t("faq"), href: "#" },
               ].map((item) => (
                 <li key={item.label}>
-                  <Link
+                  <TypedLink
                     href={item.href as any}
                     className="text-muted-foreground hover:text-accent transition-colors text-sm font-medium"
                   >
                     {item.label}
-                  </Link>
+                  </TypedLink>
                 </li>
               ))}
             </ul>
@@ -131,19 +132,19 @@ export function Footer() {
             </h4>
             <ul className="space-y-4">
               {[
-                { label: t("aboutUs"), href: "/about" },
+                { label: t("aboutUs"), href: appRoutes.about },
                 { label: t("careers"), href: "#" },
                 { label: t("sustainability"), href: "#" },
                 { label: t("press"), href: "#" },
-                { label: t("contact"), href: "/contact" },
+                { label: t("contact"), href: appRoutes.contact },
               ].map((item) => (
                 <li key={item.label}>
-                  <Link
+                  <TypedLink
                     href={item.href as any}
                     className="text-muted-foreground hover:text-accent transition-colors text-sm font-medium"
                   >
                     {item.label}
-                  </Link>
+                  </TypedLink>
                 </li>
               ))}
             </ul>
@@ -154,15 +155,15 @@ export function Footer() {
         <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">
           <p>&copy; 2024 LUXE Inc. {t("rightsReserved")}</p>
           <div className="flex gap-8">
-            <Link href="#" className="hover:text-white transition-colors">
+            <TypedLink href="#" className="hover:text-white transition-colors">
               {t("privacyPolicy")}
-            </Link>
-            <Link href="#" className="hover:text-white transition-colors">
+            </TypedLink>
+            <TypedLink href="#" className="hover:text-white transition-colors">
               {t("termsOfService")}
-            </Link>
-            <Link href="#" className="hover:text-white transition-colors">
+            </TypedLink>
+            <TypedLink href="#" className="hover:text-white transition-colors">
               {t("cookiePolicy")}
-            </Link>
+            </TypedLink>
           </div>
         </div>
       </div>

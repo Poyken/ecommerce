@@ -18,7 +18,7 @@
 
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
-import { Link } from "@/i18n/routing";
+import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 import Image from "next/image";
 import { DynamicIcon } from "@/components/shared/dynamic-icon";
 import dynamicIconImports from "lucide-react/dist/esm/dynamicIconImports.js";
@@ -170,8 +170,8 @@ export function FlexLayoutBlock({
                     </p>
                   )}
                   {item.link && (
-                    <Link
-                      href={item.link as any}
+                    <TypedLink
+                      href={item.link as AppRoute}
                       className="inline-flex items-center gap-2 group/link font-bold text-xs uppercase tracking-widest text-primary hover:text-primary/80 transition-colors"
                     >
                       {item.linkText || "Learn More"}
@@ -179,7 +179,7 @@ export function FlexLayoutBlock({
                         size={14}
                         className="transition-transform group-hover/link:translate-x-1"
                       />
-                    </Link>
+                    </TypedLink>
                   )}
                 </div>
               </div>

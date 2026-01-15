@@ -6,13 +6,17 @@ import { OrderFilterDto } from './dto/order-filter.dto';
 import {
   BadRequestException,
   Injectable,
+  Inject,
+  forwardRef,
   NotFoundException,
 } from '@nestjs/common';
 import { OrderStatus, Prisma } from '@prisma/client';
 import { Queue } from 'bullmq';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
+
 import { PromotionsService } from '@/promotions/promotions.service';
+import { OrdersRepository } from './orders.repository';
 
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
@@ -66,6 +70,7 @@ export class OrdersService {
 
   constructor(
     private readonly prisma: PrismaService,
+    @Inject(forwardRef(() => PaymentService))
     private readonly paymentService: PaymentService,
     @InjectQueue('email-queue') private readonly emailQueue: Queue,
     @InjectQueue('orders-queue') private readonly ordersQueue: Queue, // Added orders-queue
@@ -76,6 +81,7 @@ export class OrdersService {
     private readonly notificationsGateway: NotificationsGateway,
     private readonly loyaltyService: LoyaltyService,
     private readonly promotionsService: PromotionsService,
+    private readonly ordersRepo: OrdersRepository,
   ) {}
 
   /**
@@ -330,8 +336,8 @@ export class OrdersService {
         totalAmount += shippingFee;
 
         // 7. Tạo đơn hàng (Order) vào Database
-        const order = await tx.order.create({
-          data: {
+        const order = await this.ordersRepo.create(
+          {
             userId,
             totalAmount,
             recipientName,
@@ -361,8 +367,9 @@ export class OrdersService {
               create: orderItemsData,
             },
           } as Prisma.OrderUncheckedCreateInput,
-          include: { items: true },
-        });
+          { include: { items: true } },
+          tx,
+        );
 
         // 8. Trừ tồn kho (Reserve Stock) cho từng sản phẩm
         for (const item of itemsToProcess) {
@@ -445,12 +452,9 @@ export class OrdersService {
 
           // Nếu thanh toán thành công ngay lập tức (không cần redirect URL) -> Update đơn thành PAID
           if (!paymentUrl) {
-            await this.prisma.order.update({
-              where: { id: order.id },
-              data: {
-                paymentStatus: 'PAID',
-                transactionId: providerTransactionId,
-              },
+            await this.ordersRepo.update(order.id, {
+              paymentStatus: 'PAID',
+              transactionId: providerTransactionId,
             });
             order.paymentStatus = 'PAID';
           }
@@ -480,7 +484,7 @@ export class OrdersService {
   async findAllByUser(userId: string, page = 1, limit = 10) {
     const skip = (page - 1) * limit;
     const [orders, total] = await Promise.all([
-      this.prisma.order.findMany({
+      this.ordersRepo.findMany({
         where: { userId },
         skip,
         take: limit,
@@ -513,7 +517,7 @@ export class OrdersService {
           },
         },
       }),
-      this.prisma.order.count({ where: { userId } }),
+      this.ordersRepo.count({ userId }),
     ]);
 
     return {
@@ -528,7 +532,7 @@ export class OrdersService {
   }
 
   async findOne(id: string, userId: string) {
-    const order = await this.prisma.order.findUnique({
+    const order = await this.ordersRepo.findFirst({
       where: { id },
       select: {
         id: true,
@@ -649,14 +653,14 @@ export class OrdersService {
     }
 
     const [orders, total] = await Promise.all([
-      this.prisma.order.findMany({
+      this.ordersRepo.findMany({
         where,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
         include,
       }),
-      this.prisma.order.count({ where }),
+      this.ordersRepo.count(where),
     ]);
 
     return {
@@ -671,7 +675,7 @@ export class OrdersService {
   }
 
   async findOneAdmin(id: string) {
-    const order = await this.prisma.order.findUnique({
+    const order = await this.ordersRepo.findFirst({
       where: { id },
       select: {
         id: true,
@@ -753,17 +757,14 @@ export class OrdersService {
       );
     }
 
-    return this.prisma.order.update({
-      where: { id: orderId },
-      data: {
-        status: OrderStatus.CANCELLED,
-        cancellationReason: reason,
-      },
+    return this.ordersRepo.update(orderId, {
+      status: OrderStatus.CANCELLED,
+      cancellationReason: reason,
     });
   }
 
   async updateStatus(id: string, dto: UpdateOrderStatusDto) {
-    const order = await this.prisma.order.findUnique({
+    const order = await this.ordersRepo.findFirst({
       where: { id },
       include: { items: true },
     });
@@ -853,27 +854,33 @@ export class OrdersService {
         }
 
         // Hoàn trả tồn kho (Release Stock)
-        for (const item of order.items) {
-          await this.inventoryService.releaseStock(
-            item.skuId,
-            item.quantity,
-            tx,
-          );
+        const orderWithItems = order as any;
+        if (orderWithItems.items) {
+          for (const item of orderWithItems.items) {
+            await this.inventoryService.releaseStock(
+              item.skuId,
+              item.quantity,
+              tx,
+            );
+          }
         }
       }
-      const updatedOrder = await tx.order.update({
-        where: { id },
-        data: {
+      const updatedOrder = await this.ordersRepo.update(
+        id,
+        {
           status: dto.status,
           cancellationReason: dto.cancellationReason,
           ...(dto.paymentStatus && { paymentStatus: dto.paymentStatus }),
         } as any,
-        include: {
-          user: true,
-          items: { include: { sku: { include: { product: true } } } },
-          address: true,
+        {
+          include: {
+            user: true,
+            items: { include: { sku: { include: { product: true } } } },
+            address: true,
+          },
         },
-      });
+        tx,
+      );
 
       if (dto.notify !== false) {
         // Gửi email thông báo (Không chặn luồng chính)
@@ -996,7 +1003,7 @@ export class OrdersService {
       // Tự động đồng bộ với GHN nếu có địa chỉ
       if (transactionResult.addressId) {
         // Fire and forget GHN sync
-        this.syncWithGHN(transactionResult).catch((e) => {
+        this.syncWithGHN(transactionResult as any).catch((e) => {
           this.logger.error(
             `Đồng bộ GHN nền thất bại cho đơn ${transactionResult.id}`,
             e,
@@ -1112,12 +1119,9 @@ export class OrdersService {
       );
 
       // Lưu mã vận đơn GHN vào Order
-      await this.prisma.order.update({
-        where: { id: order.id },
-        data: {
-          shippingCode: ghnResponse.order_code,
-        } as any,
-      });
+      await this.ordersRepo.update(order.id, {
+        shippingCode: ghnResponse.order_code,
+      } as any);
 
       this.logger.log(
         `Đã đồng bộ đơn hàng ${order.id} sang GHN thành công: ${ghnResponse.order_code}`,
@@ -1137,14 +1141,11 @@ export class OrdersService {
   }
 
   async remove(id: string) {
-    const order = await this.prisma.order.findUnique({ where: { id } });
+    const order = await this.ordersRepo.findById(id);
     if (!order) throw new NotFoundException('Order not found');
 
-    await this.prisma.order.update({
-      where: { id },
-      data: {
-        // deletedAt: new Date()
-      },
+    await this.ordersRepo.update(id, {
+      // deletedAt: new Date()
     });
 
     return { success: true };
@@ -1171,7 +1172,7 @@ export class OrdersService {
     try {
       if (paymentMethod === 'COD') {
         // Log transaction COD
-        await (this.prisma as Prisma.TransactionClient).payment.create({
+        await (this.prisma as any).payment.create({
           data: {
             orderId: order.id,
             amount: order.totalAmount,
@@ -1180,7 +1181,7 @@ export class OrdersService {
             providerTransactionId: `COD-${order.id}`,
             tenantId,
           },
-        } as Prisma.PaymentCreateInput);
+        });
         return {};
       }
 
@@ -1195,7 +1196,7 @@ export class OrdersService {
 
       if (paymentResult.success) {
         // Tạo bản ghi lịch sử thanh toán
-        await (this.prisma as Prisma.TransactionClient).payment.create({
+        await (this.prisma as any).payment.create({
           data: {
             orderId: order.id,
             amount: order.totalAmount,
@@ -1204,7 +1205,7 @@ export class OrdersService {
             providerTransactionId: paymentResult.transactionId,
             tenantId,
           },
-        } as Prisma.PaymentCreateInput);
+        } as Prisma.PaymentCreateArgs);
 
         if (!paymentResult.paymentUrl) {
           await this.prisma.order.update({
@@ -1239,9 +1240,11 @@ export class OrdersService {
     const validTransitions: Record<OrderStatus, OrderStatus[]> = {
       [OrderStatus.PENDING]: [OrderStatus.PROCESSING, OrderStatus.CANCELLED],
       [OrderStatus.PROCESSING]: [OrderStatus.SHIPPED, OrderStatus.CANCELLED],
-      [OrderStatus.SHIPPED]: [OrderStatus.DELIVERED],
-      [OrderStatus.DELIVERED]: [],
+      [OrderStatus.SHIPPED]: [OrderStatus.DELIVERED, OrderStatus.RETURNED],
+      [OrderStatus.DELIVERED]: [OrderStatus.RETURNED, OrderStatus.COMPLETED],
       [OrderStatus.CANCELLED]: [],
+      [OrderStatus.RETURNED]: [],
+      [OrderStatus.COMPLETED]: [],
     };
 
     return validTransitions[currentStatus]?.includes(newStatus) ?? false;

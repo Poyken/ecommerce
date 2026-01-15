@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/table";
 import { AdminAlerts } from "@/features/admin/components/ui/admin-alerts";
 import { Link } from "@/i18n/routing";
+import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 import { cn, formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import {
@@ -179,8 +180,8 @@ export function OperationsTab({
                     className="hover:bg-muted/30 transition-colors cursor-pointer group"
                   >
                     <TableCell className="font-medium">
-                      <Link
-                        href={`/admin/orders/${order.id}` as any}
+                      <TypedLink
+                        href={`/admin/orders/${order.id}` as AppRoute}
                         className="flex flex-col"
                       >
                         <span className="font-mono text-indigo-600 font-bold group-hover:underline">
@@ -189,7 +190,7 @@ export function OperationsTab({
                         <span className="text-xs text-muted-foreground">
                           {format(new Date(order.createdAt), "MMM dd, yyyy")}
                         </span>
-                      </Link>
+                      </TypedLink>
                     </TableCell>
                     <TableCell>
                       <span className="font-medium">

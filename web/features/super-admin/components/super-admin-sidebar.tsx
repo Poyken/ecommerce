@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/providers/auth-provider";
-import { Link, usePathname } from "@/i18n/routing";
+import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
@@ -21,6 +21,7 @@ import {
   Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 /**
@@ -238,9 +239,9 @@ export function SuperAdminSidebar() {
                 const Icon = item.icon;
 
                 return (
-                  <Link
+                  <TypedLink
                     key={item.href}
-                    href={item.href as any}
+                    href={item.href as AppRoute}
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative overflow-hidden",
                       isActive
@@ -261,7 +262,7 @@ export function SuperAdminSidebar() {
                     {!isCollapsed && (
                       <span className="whitespace-nowrap">{item.title}</span>
                     )}
-                  </Link>
+                  </TypedLink>
                 );
               })}
             </div>
@@ -270,8 +271,8 @@ export function SuperAdminSidebar() {
       </div>
 
       <div className="p-4 border-t border-border bg-muted/30">
-        <Link
-          href="/"
+        <TypedLink
+          href={"/" as AppRoute}
           className={cn(
             "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 border border-transparent hover:border-border group",
             isCollapsed && "justify-center px-2"
@@ -282,9 +283,9 @@ export function SuperAdminSidebar() {
           {!isCollapsed && (
             <span className="whitespace-nowrap">{t("backToStore")}</span>
           )}
-        </Link>
-        <Link
-          href="/admin"
+        </TypedLink>
+        <TypedLink
+          href={"/admin" as AppRoute}
           className={cn(
             "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 border border-transparent hover:border-border group mt-2",
             isCollapsed && "justify-center px-2"
@@ -297,7 +298,7 @@ export function SuperAdminSidebar() {
               {t("tenantAdmin") || "Tenant Admin"}
             </span>
           )}
-        </Link>
+        </TypedLink>
       </div>
     </aside>
   );

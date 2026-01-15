@@ -5,8 +5,8 @@ import { OptimizedImage } from "@/components/shared/optimized-image";
 import { Link } from "@/i18n/routing";
 import { m } from "@/lib/animations";
 import { cn, formatCurrency } from "@/lib/utils";
+import { useTypedRouter, appRoutes } from "@/lib/typed-navigation";
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { ReactNode, useCallback } from "react";
 
 export interface ProductCardBaseProps {
@@ -77,11 +77,11 @@ export function ProductCardBase({
   onMouseEnter,
 }: ProductCardBaseProps) {
   const t = useTranslations("productCard");
-  const router = useRouter();
+  const router = useTypedRouter();
 
   // [P10 OPTIMIZATION] Predictive prefetching on hover
   const handleMouseEnter = useCallback(() => {
-    router.prefetch(`/products/${id}` as any);
+    router.prefetch(appRoutes.product(id));
     if (onMouseEnter) onMouseEnter();
   }, [id, router, onMouseEnter]);
 

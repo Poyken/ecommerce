@@ -3,7 +3,7 @@
 import { GlassButton } from "@/components/shared/glass-button";
 import { m } from "@/lib/animations";
 import { ArrowRight } from "lucide-react";
-import Link from "next/link";
+import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 
 interface CTASectionProps {
   title: string;
@@ -77,7 +77,7 @@ export function CTASection({
           </p>
         </div>
         <div>
-          <Link href={buttonLink as any}>
+          <TypedLink href={buttonLink as AppRoute}>
             <GlassButton
               size="lg"
               className="rounded-full px-10 h-14 text-lg border-primary/20 hover:border-primary/50 transition-all duration-300 shadow-xl shadow-primary/5 hover:shadow-primary/20 group"
@@ -85,7 +85,7 @@ export function CTASection({
               {buttonText}
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </GlassButton>
-          </Link>
+          </TypedLink>
         </div>
       </m.div>
     </section>

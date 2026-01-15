@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 
 /**
  * =====================================================================
@@ -30,9 +30,10 @@ import { VNPayStrategy } from './strategies/vnpay.strategy';
 import { PaymentController } from './payment.controller';
 import { PaymentWebhookController } from './payment.webhook.controller';
 import { AnalyticsModule } from '@/analytics/analytics.module';
+import { OrdersModule } from '@/orders/orders.module';
 
 @Module({
-  imports: [AnalyticsModule],
+  imports: [AnalyticsModule, forwardRef(() => OrdersModule)],
   controllers: [PaymentController, PaymentWebhookController],
   providers: [
     PaymentService,

@@ -55,32 +55,16 @@ export const DEFAULT_MOCK_TENANT: Tenant = {
   dbUrl: null,
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
-<<<<<<< HEAD
   onboardingCompleted: false,
   onboardingStep: 0,
   trialEndsAt: null,
   trialStartedAt: null,
-=======
-  onboardingStep: 1,
-  trialEndsAt: null,
-  trialStartedAt: null,
-  // settings: null,
-  // maxUsers: 5,
-  // settings: null,
-  // maxUsers: 5,
-  currentStorageUsed: 0,
->>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
   productLimit: 100,
   storageLimit: 1024,
   staffLimit: 2,
   currentProductCount: 0,
-<<<<<<< HEAD
   currentStorageUsed: 0,
   currentStaffCount: 0,
-=======
-  currentStaffCount: 0,
-  onboardingCompleted: false,
->>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
   businessType: null,
   businessSize: null,
   monthlyRevenue: null,

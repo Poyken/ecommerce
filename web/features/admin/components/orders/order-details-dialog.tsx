@@ -4,6 +4,7 @@ import { ErrorBoundary } from "@/components/shared/error-boundary";
 import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 import {
   Dialog,
   DialogContent,
@@ -24,7 +25,6 @@ import { Order, OrderItem } from "@/types/models";
 import { Check, Copy } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getProductImage } from "@/lib/product-helper";
 
@@ -300,16 +300,16 @@ function OrderDetailsContent({
                           </div>
                         </TableCell>
                         <TableCell className="font-medium">
-                          <Link
+                          <TypedLink
                             href={
-                              `/products/${item.sku?.product?.id}?skuId=${item.sku?.id}` as any
+                              (`/products/${item.sku?.product?.id}?skuId=${item.sku?.id}`) as AppRoute
                             }
                             target="_blank"
                             className="hover:underline text-primary"
                           >
                             {item.sku?.product?.name ||
                               t("orders.unknownProduct")}
-                          </Link>
+                          </TypedLink>
                         </TableCell>
                         <TableCell className="font-mono text-xs text-gray-500">
                           {item.sku?.skuCode}

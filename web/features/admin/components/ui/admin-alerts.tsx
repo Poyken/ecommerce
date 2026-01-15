@@ -6,7 +6,7 @@ import { Product, Sku } from "@/types/models";
 import { AlertTriangle, ArrowUpRight, Package, TrendingUp } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import Link from "next/link";
+import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 import { getProductImage } from "@/lib/product-helper";
 
 /**
@@ -123,14 +123,14 @@ export function AdminAlerts({
           )}
         </div>
 
-        <Link
-          href={"/admin/skus?status=ACTIVE&stockLimit=5" as any}
+        <TypedLink
+          href={"/admin/skus?status=ACTIVE&stockLimit=5" as AppRoute}
           className="block mt-6 text-center"
         >
           <span className="text-xs font-black text-red-500 hover:text-red-400 transition-colors uppercase tracking-[0.2em] flex items-center justify-center gap-2">
             {t("alerts.manageInventory")} <ArrowUpRight className="w-4 h-4" />
           </span>
-        </Link>
+        </TypedLink>
       </GlassCard>
 
       {/* Trending Now */}

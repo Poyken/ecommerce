@@ -180,7 +180,7 @@ export class CartService {
     return await this.prisma.$transaction(
       async (tx) => {
         // 1. Kiểm tra SKU (Nguyên tử trong transaction)
-        const sku = await (tx.sku as any).findUnique({
+        const sku: any = await (tx.sku as any).findUnique({
           where: { id: dto.skuId },
           select: {
             id: true,
@@ -408,7 +408,7 @@ export class CartService {
         // 3. Xử lý từng item
         for (const item of items) {
           try {
-            const sku = skuMap.get(item.skuId);
+            const sku: any = skuMap.get(item.skuId);
             if (!sku) throw new Error('Sản phẩm (SKU) không tồn tại');
             if (sku.status !== 'ACTIVE')
               throw new Error('Sản phẩm không còn được bán');

@@ -1,6 +1,7 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { getTenant } from '@core/tenant/tenant.context';
 import { Logger, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 /**
  * =====================================================================
@@ -104,6 +105,13 @@ export abstract class BaseRepository<T = any> {
   }
 
   /**
+   * Helper để lấy model từ transaction context (nếu có) hoặc prisma service
+   */
+  protected getModel(tx?: Prisma.TransactionClient) {
+    return ((tx || this.prisma) as any)[this.modelName];
+  }
+
+  /**
    * Lấy tenantId từ context (nếu có).
    * Trả về undefined nếu không có tenant context.
    */
@@ -135,13 +143,15 @@ export abstract class BaseRepository<T = any> {
    *
    * @param id - ID của entity
    * @param options - Select/include options
+   * @param tx - Transaction client (optional)
    * @returns Entity hoặc null
    */
   async findById(
     id: string,
     options?: Pick<FindOptions, 'select' | 'include'>,
+    tx?: Prisma.TransactionClient,
   ): Promise<T | null> {
-    return await this.model.findFirst({
+    return await this.getModel(tx).findFirst({
       where: this.withTenantFilter({ id }),
       ...options,
     });
@@ -152,14 +162,16 @@ export abstract class BaseRepository<T = any> {
    *
    * @param id - ID của entity
    * @param options - Select/include options
+   * @param tx - Transaction client (optional)
    * @returns Entity
    * @throws NotFoundException
    */
   async findByIdOrThrow(
     id: string,
     options?: Pick<FindOptions, 'select' | 'include'>,
+    tx?: Prisma.TransactionClient,
   ): Promise<T> {
-    const entity = await this.findById(id, options);
+    const entity = await this.findById(id, options, tx);
     if (!entity) {
       throw new NotFoundException(`${this.modelName} with ID ${id} not found`);
     }
@@ -170,10 +182,14 @@ export abstract class BaseRepository<T = any> {
    * Tìm một entity theo điều kiện.
    *
    * @param options - Find options
+   * @param tx - Transaction client (optional)
    * @returns Entity hoặc null
    */
-  async findFirst(options?: FindOptions): Promise<T | null> {
-    return await this.model.findFirst({
+  async findFirst(
+    options?: FindOptions,
+    tx?: Prisma.TransactionClient,
+  ): Promise<T | null> {
+    return await this.getModel(tx).findFirst({
       ...options,
       where: this.withTenantFilter(options?.where),
     });
@@ -183,10 +199,14 @@ export abstract class BaseRepository<T = any> {
    * Tìm nhiều entities.
    *
    * @param options - Find options
+   * @param tx - Transaction client (optional)
    * @returns Array of entities
    */
-  async findMany(options?: FindOptions): Promise<T[]> {
-    return await this.model.findMany({
+  async findMany(
+    options?: FindOptions,
+    tx?: Prisma.TransactionClient,
+  ): Promise<T[]> {
+    return await this.getModel(tx).findMany({
       ...options,
       where: this.withTenantFilter(options?.where),
     });
@@ -197,24 +217,28 @@ export abstract class BaseRepository<T = any> {
    *
    * @param options - Find options
    * @param pagination - Pagination options
+   * @param tx - Transaction client (optional)
    * @returns Paginated result
    */
   async findManyPaginated(
     options?: FindOptions,
     pagination?: PaginationOptions,
+    tx?: Prisma.TransactionClient,
   ): Promise<PaginatedResult<T>> {
     const page = pagination?.page || 1;
     const limit = Math.min(pagination?.limit || 10, 100); // Max 100 items
     const skip = (page - 1) * limit;
 
+    const model = this.getModel(tx);
+
     const [data, total] = await Promise.all([
-      this.model.findMany({
+      model.findMany({
         ...options,
         where: this.withTenantFilter(options?.where),
         skip,
         take: limit,
       }),
-      this.model.count({
+      model.count({
         where: this.withTenantFilter(options?.where),
       }),
     ]);
@@ -238,10 +262,14 @@ export abstract class BaseRepository<T = any> {
    * Đếm số lượng entities.
    *
    * @param where - Điều kiện filter
+   * @param tx - Transaction client (optional)
    * @returns Số lượng entities
    */
-  async count(where?: Record<string, any>): Promise<number> {
-    return await this.model.count({
+  async count(
+    where?: Record<string, any>,
+    tx?: Prisma.TransactionClient,
+  ): Promise<number> {
+    return await this.getModel(tx).count({
       where: this.withTenantFilter(where),
     });
   }
@@ -250,10 +278,14 @@ export abstract class BaseRepository<T = any> {
    * Kiểm tra entity có tồn tại không.
    *
    * @param where - Điều kiện filter
+   * @param tx - Transaction client (optional)
    * @returns true nếu tồn tại
    */
-  async exists(where: Record<string, any>): Promise<boolean> {
-    const count = await this.count(where);
+  async exists(
+    where: Record<string, any>,
+    tx?: Prisma.TransactionClient,
+  ): Promise<boolean> {
+    const count = await this.count(where, tx);
     return count > 0;
   }
 
@@ -267,14 +299,16 @@ export abstract class BaseRepository<T = any> {
    *
    * @param data - Data để tạo
    * @param options - Select/include options
+   * @param tx - Transaction client (optional)
    * @returns Entity đã tạo
    */
   async create(
     data: Record<string, any>,
     options?: Pick<FindOptions, 'select' | 'include'>,
+    tx?: Prisma.TransactionClient,
   ): Promise<T> {
     const tenantId = this.tenantId;
-    return await this.model.create({
+    return await this.getModel(tx).create({
       data: tenantId ? { ...data, tenantId } : data,
       ...options,
     });
@@ -285,15 +319,19 @@ export abstract class BaseRepository<T = any> {
    * Tự động thêm tenantId vào mỗi item.
    *
    * @param data - Array of data
+   * @param tx - Transaction client (optional)
    * @returns Số lượng entities đã tạo
    */
-  async createMany(data: Record<string, any>[]): Promise<{ count: number }> {
+  async createMany(
+    data: Record<string, any>[],
+    tx?: Prisma.TransactionClient,
+  ): Promise<{ count: number }> {
     const tenantId = this.tenantId;
     const enrichedData = tenantId
       ? data.map((item) => ({ ...item, tenantId }))
       : data;
 
-    return await this.model.createMany({ data: enrichedData });
+    return await this.getModel(tx).createMany({ data: enrichedData });
   }
 
   /**
@@ -302,17 +340,19 @@ export abstract class BaseRepository<T = any> {
    * @param id - ID của entity
    * @param data - Data cần update
    * @param options - Select/include options
+   * @param tx - Transaction client (optional)
    * @returns Entity đã update
    */
   async update(
     id: string,
     data: Record<string, any>,
     options?: Pick<FindOptions, 'select' | 'include'>,
+    tx?: Prisma.TransactionClient,
   ): Promise<T> {
     // Verify entity exists and belongs to tenant
-    await this.findByIdOrThrow(id);
+    await this.findByIdOrThrow(id, undefined, tx);
 
-    return this.model.update({
+    return this.getModel(tx).update({
       where: { id },
       data,
       ...options,
@@ -324,13 +364,15 @@ export abstract class BaseRepository<T = any> {
    *
    * @param where - Điều kiện filter
    * @param data - Data cần update
+   * @param tx - Transaction client (optional)
    * @returns Số lượng entities đã update
    */
   async updateMany(
     where: Record<string, any>,
     data: Record<string, any>,
+    tx?: Prisma.TransactionClient,
   ): Promise<{ count: number }> {
-    return await this.model.updateMany({
+    return await this.getModel(tx).updateMany({
       where: this.withTenantFilter(where),
       data,
     });
@@ -340,14 +382,15 @@ export abstract class BaseRepository<T = any> {
    * Xóa một entity (soft delete nếu model có deletedAt).
    *
    * @param id - ID của entity
+   * @param tx - Transaction client (optional)
    * @returns Entity đã xóa
    */
-  async delete(id: string): Promise<T> {
+  async delete(id: string, tx?: Prisma.TransactionClient): Promise<T> {
     // Verify entity exists and belongs to tenant
-    await this.findByIdOrThrow(id);
+    await this.findByIdOrThrow(id, undefined, tx);
 
     // Extension sẽ tự động convert delete thành soft delete nếu model có deletedAt
-    return this.model.delete({
+    return this.getModel(tx).delete({
       where: { id },
     });
   }
@@ -356,10 +399,14 @@ export abstract class BaseRepository<T = any> {
    * Xóa nhiều entities.
    *
    * @param where - Điều kiện filter
+   * @param tx - Transaction client (optional)
    * @returns Số lượng entities đã xóa
    */
-  async deleteMany(where: Record<string, any>): Promise<{ count: number }> {
-    return await this.model.deleteMany({
+  async deleteMany(
+    where: Record<string, any>,
+    tx?: Prisma.TransactionClient,
+  ): Promise<{ count: number }> {
+    return await this.getModel(tx).deleteMany({
       where: this.withTenantFilter(where),
     });
   }
@@ -370,15 +417,17 @@ export abstract class BaseRepository<T = any> {
    * @param where - Điều kiện unique để tìm
    * @param create - Data nếu tạo mới
    * @param update - Data nếu update
+   * @param tx - Transaction client (optional)
    * @returns Entity
    */
   async upsert(
     where: Record<string, any>,
     create: Record<string, any>,
     update: Record<string, any>,
+    tx?: Prisma.TransactionClient,
   ): Promise<T> {
     const tenantId = this.tenantId;
-    return await this.model.upsert({
+    return await this.getModel(tx).upsert({
       where: this.withTenantFilter(where),
       create: tenantId ? { ...create, tenantId } : create,
       update,

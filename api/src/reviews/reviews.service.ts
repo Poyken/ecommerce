@@ -9,12 +9,9 @@ import type { Cache } from 'cache-manager';
 import { BaseCrudService } from '../common/base-crud.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
-<<<<<<< HEAD
 import { AiSentimentService } from './ai-sentiment.service';
-=======
 import { FilterReviewDto } from './dto/filter-review.dto';
 import { createPaginatedResult } from '@/common/dto/base.dto';
->>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
 
 /**
  * =====================================================================

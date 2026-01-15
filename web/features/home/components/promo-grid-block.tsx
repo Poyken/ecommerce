@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@/i18n/routing";
+import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 import { fadeInLeft, fadeInRight } from "@/lib/animations";
 import { m } from "framer-motion";
 import { ArrowRight } from "lucide-react";
@@ -106,8 +106,8 @@ export function PromoGridBlock({ items, styles }: PromoGridBlockProps) {
               <p className="text-sm mb-6 text-white/70 font-medium max-w-xs leading-relaxed">
                 {item.subtitle}
               </p>
-              <Link
-                href={item.link as any}
+              <TypedLink
+                href={item.link as AppRoute}
                 className="group/btn inline-flex items-center gap-3 px-8 py-4 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white/90 transition-all duration-300 shadow-xl"
               >
                 {item.buttonText}
@@ -115,7 +115,7 @@ export function PromoGridBlock({ items, styles }: PromoGridBlockProps) {
                   size={14}
                   className="group-hover/btn:translate-x-1 transition-transform"
                 />
-              </Link>
+              </TypedLink>
             </div>
           </m.div>
         ))}

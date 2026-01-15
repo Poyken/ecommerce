@@ -1,7 +1,7 @@
 "use client";
 
 import { Logo } from "@/features/layout/components/logo";
-import { Link } from "@/i18n/routing";
+import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 import { cn } from "@/lib/utils";
 import {
   Facebook,
@@ -154,9 +154,9 @@ export function FooterBlock({
               {socials.map((social, i) => {
                 const Icon = getIcon(social.platform);
                 return (
-                  <Link
+                  <TypedLink
                     key={i}
-                    href={social.url as any}
+                    href={(social.url || "#") as AppRoute}
                     className={cn(
                       "w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-300",
                       styles?.textColor
@@ -167,7 +167,7 @@ export function FooterBlock({
                     )}
                   >
                     <Icon size={18} />
-                  </Link>
+                  </TypedLink>
                 );
               })}
             </div>
@@ -190,8 +190,8 @@ export function FooterBlock({
               <ul className="space-y-4">
                 {col.links.map((link) => (
                   <li key={link.label}>
-                    <Link
-                      href={link.href as any}
+                    <TypedLink
+                      href={(link.href || "#") as AppRoute}
                       className={cn(
                         "transition-colors text-sm",
                         styles?.textColor
@@ -207,7 +207,7 @@ export function FooterBlock({
                       }}
                     >
                       {link.label}
-                    </Link>
+                    </TypedLink>
                   </li>
                 ))}
               </ul>
@@ -292,12 +292,12 @@ export function FooterBlock({
             All Rights Reserved.
           </p>
           <div className="flex gap-6">
-            <Link href="#" className="hover:text-primary transition-colors">
+            <TypedLink href={"#" as AppRoute} className="hover:text-primary transition-colors">
               Privacy Policy
-            </Link>
-            <Link href="#" className="hover:text-primary transition-colors">
+            </TypedLink>
+            <TypedLink href={"#" as AppRoute} className="hover:text-primary transition-colors">
               Terms of Service
-            </Link>
+            </TypedLink>
           </div>
         </div>
       </div>

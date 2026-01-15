@@ -26,6 +26,7 @@
 import { GlassButton } from "@/components/shared/glass-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "@/i18n/routing";
+import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 import { m } from "@/lib/animations";
 import { cn } from "@/lib/utils";
 import { AnimatePresence } from "framer-motion";
@@ -151,7 +152,7 @@ export function HeroSection({
               alignment === "center" ? "justify-center" : "justify-start"
             )}
           >
-            <Link href={displayCtaLink as any}>
+            <TypedLink href={(displayCtaLink || "#") as AppRoute}>
               <m.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -162,9 +163,9 @@ export function HeroSection({
                   <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </span>
               </m.button>
-            </Link>
+            </TypedLink>
 
-            <Link href={(secondaryCtaLink || "/about") as any}>
+            <TypedLink href={(secondaryCtaLink || "/about") as AppRoute}>
               <GlassButton
                 variant="outline"
                 size="lg"
@@ -172,7 +173,7 @@ export function HeroSection({
               >
                 {secondaryCtaText || t("ourStory")}
               </GlassButton>
-            </Link>
+            </TypedLink>
           </div>
 
           {/* Bottom Features */}

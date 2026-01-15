@@ -35,3 +35,5 @@ export * from "./schemas";
 // HTTP: Import from "@/lib/http"
 // Safe Actions: Import from "@/lib/safe-action"
 // Animations: Import from "@/lib/animations"
+// TypedNavigation: Import from "@/lib/typed-navigation"
+//   - TypedLink, useTypedRouter, appRoutes for type-safe routing

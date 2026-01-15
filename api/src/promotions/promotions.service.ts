@@ -323,7 +323,6 @@ export class PromotionsService {
       throw new BadRequestException('Mã khuyến mãi đã hết lượt sử dụng');
     }
 
-<<<<<<< HEAD
     // Kiểm tra user đã sử dụng chưa (nếu có userId)
     if (userId) {
       const userUsage = await this.prisma.promotionUsage.findFirst({
@@ -331,22 +330,6 @@ export class PromotionsService {
       });
       if (userUsage) {
         throw new BadRequestException('Bạn đã sử dụng mã khuyến mãi này rồi');
-=======
-    // Evaluate Rules
-    for (const rule of promotion.rules) {
-      let passed = false;
-      switch (rule.type) {
-        case 'MIN_ORDER_VALUE': {
-          const limit = parseFloat(rule.value);
-          if (rule.operator === 'GTE' && context.totalAmount >= limit)
-            passed = true;
-          // Add other operators if needed
-          break;
-        }
-        // TODO: Implement other rules (CATEGORY, CUSTOMER_GROUP)
-        default:
-          passed = true; // Ignore unknown rules for now or fail?
->>>>>>> af947ce73e8cad2354fd505f245c0f7cd9bf7457
       }
     }
 
