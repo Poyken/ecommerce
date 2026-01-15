@@ -8,21 +8,7 @@ import {
   SocketSendMessageResponse,
 } from "@/types/feature-types/chat.types";
 
-// Update local ChatMessage interface to match models.ts or import it.
-// Here we redefine for simplicity but should ideally import.
-export interface ChatMessage {
-  id: string;
-  conversationId: string;
-  senderId: string;
-  senderType: "USER" | "ADMIN";
-  content: string;
-  type?: "TEXT" | "IMAGE" | "PRODUCT" | "ORDER";
-  metadata?: ChatMessageMetadata;
-  sentAt: string;
-  clientTempId?: string;
-  status?: "sending" | "sent" | "error";
-  isRead?: boolean;
-}
+import { ChatMessage } from "@/types/models";
 
 export function useChatSocket(
   /**
@@ -227,7 +213,7 @@ export function useChatSocket(
       content: string,
       toUserId?: string,
       type: "TEXT" | "IMAGE" | "PRODUCT" | "ORDER" = "TEXT",
-      metadata?: ChatMessageMetadata
+      metadata?: any
     ) => {
       if (!user) return;
 

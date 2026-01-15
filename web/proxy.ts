@@ -73,12 +73,6 @@ export default async function proxy(request: NextRequest) {
     currentHost === "www" ||
     currentHost === "localhost";
 
-  // If on Root Domain and visiting Home Page '/', rewrite to Landing Page
-  if (isRootDomain && pathname === "/") {
-    const url = request.nextUrl.clone();
-    url.pathname = `/${currentLocale}/landing`;
-    return NextResponse.rewrite(url);
-  }
   // --------------------------------
 
   // ✅ Generate CSRF token ONCE at start

@@ -270,6 +270,7 @@ model Category {
 model Brand {
   id        String    @id @default(uuid()) // ID Thương hiệu
   name      String // Tên thương hiệu (VD: Samsung, Apple)
+  slug      String // Đường dẫn thân thiện SEO
   createdAt DateTime  @default(now()) // Thời gian tạo
   updatedAt DateTime  @updatedAt // Thời gian cập nhật
   deletedAt DateTime? // Xóa mềm
@@ -284,6 +285,7 @@ model Brand {
   tenant   Tenant? @relation(fields: [tenantId], references: [id])
 
   @@unique([tenantId, name]) // Tên thương hiệu duy nhất/Tenant
+  @@unique([tenantId, slug]) // Slug duy nhất trong Tenant
   @@unique([id, tenantId]) // Bảo mật ID
   @@index([tenantId]) // Index theo Tenant
   @@index([tenantId, createdAt(sort: Desc)]) // Sắp xếp

@@ -229,7 +229,7 @@ export function ReturnsClient({
         <UpdateReturnStatusDialog
           open={statusDialogOpen}
           onOpenChange={setStatusDialogOpen}
-          returnRequest={selectedReturn}
+          returnRequest={selectedReturn as any}
         />
       )}
     </div>

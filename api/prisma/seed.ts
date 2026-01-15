@@ -109,7 +109,9 @@ const ALL_PERMISSIONS = [
 ];
 
 const TENANT_NAME = 'Luxe Home';
-const TENANT_DOMAIN = process.env.FRONTEND_URL || 'localhost';
+const TENANT_DOMAIN = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.replace(/^https?:\/\//, '').split(':')[0]
+  : 'localhost';
 
 // Real Images from web/public/images
 const IMAGES = {
@@ -300,8 +302,16 @@ async function main() {
         slug: `luxury-sofa-${Date.now()}`,
         description: 'A very comfortable luxury sofa',
         tenantId: tenant.id,
-        categoryId: categoryIds[0],
+        categoryId: undefined, // Remove if it was here mistakenly
         brandId: brandIds[0],
+        categories: {
+          create: [
+            {
+              category: { connect: { id: categoryIds[0] } },
+              tenant: { connect: { id: tenant.id } },
+            },
+          ],
+        },
         images: {
           create: [
             {
@@ -318,7 +328,7 @@ async function main() {
             stock: 100,
             status: 'ACTIVE',
             tenantId: tenant.id,
-            attributes: { color: 'Black' },
+            metadata: { color: 'Black' },
           },
         },
       },

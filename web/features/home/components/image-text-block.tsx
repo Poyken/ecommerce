@@ -153,7 +153,7 @@ export function ImageTextBlock({
         <div className="flex flex-wrap gap-3">
           {ctaButton && (
             <Button size="lg" asChild>
-              <Link href={ctaButton.link}>
+              <Link href={ctaButton.link as any}>
                 {ctaButton.text}
                 <ArrowRight className="size-4 ml-2" />
               </Link>
@@ -161,7 +161,7 @@ export function ImageTextBlock({
           )}
           {secondaryButton && (
             <Button size="lg" variant="outline" asChild>
-              <Link href={secondaryButton.link}>{secondaryButton.text}</Link>
+              <Link href={secondaryButton.link as any}>{secondaryButton.text}</Link>
             </Button>
           )}
         </div>

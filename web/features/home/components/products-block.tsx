@@ -30,7 +30,7 @@ const MOCK_PRODUCTS: Product[] = [
     name: "Leather Lounge Chair",
     slug: "lounge-chair",
     minPrice: 1299,
-    compareAtPrice: 1599,
+    maxPrice: 1599,
     images: [
       "https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?q=80&w=800&auto=format&fit=crop",
     ],

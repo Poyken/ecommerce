@@ -668,6 +668,8 @@ export interface ChatMessage {
   metadata?: Record<string, unknown>;
   isRead: boolean;
   sentAt: string;
+  clientTempId?: string;
+  status?: "sending" | "sent" | "error";
   conversation?: ChatConversation;
 }
 
@@ -782,6 +784,7 @@ export interface ReturnRequest {
 
   createdAt: string;
   updatedAt: string;
+  tenantId: string;
 
   // Relations
   order?: Order;

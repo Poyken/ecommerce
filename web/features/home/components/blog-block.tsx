@@ -134,7 +134,7 @@ export function BlogBlock({
             </div>
             {ctaLink && (
               <Button variant="outline" asChild>
-                <Link href={ctaLink}>
+                <Link href={ctaLink as any}>
                   {ctaText}
                   <ArrowRight className="size-4 ml-2" />
                 </Link>
@@ -274,7 +274,7 @@ export function BlogBlock({
           </div>
           {ctaLink && (
             <Button variant="outline" asChild>
-              <Link href={ctaLink}>
+              <Link href={ctaLink as any}>
                 {ctaText}
                 <ArrowRight className="size-4 ml-2" />
               </Link>

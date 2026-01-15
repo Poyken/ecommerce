@@ -231,121 +231,10 @@ function AnimatedSection({
   );
 }
 
-function Header() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass-luxury">
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
-          <Link href="/landing" className="flex items-center gap-2">
-            <div className="size-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
-              <Store className="size-5 text-white" />
-            </div>
-            <span className="text-xl font-bold tracking-tight">Luxe SaaS</span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-8">
-            <a
-              href="#features"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Tính năng
-            </a>
-            <a
-              href="#pricing"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Bảng giá
-            </a>
-            <a
-              href="#testimonials"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Khách hàng
-            </a>
-            <a
-              href="#faq"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              FAQ
-            </a>
-          </nav>
-
-          {/* CTA Buttons */}
-          <div className="hidden lg:flex items-center gap-3">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/login">Đăng nhập</Link>
-            </Button>
-            <Button size="sm" className="group" asChild>
-              <Link href="/register">
-                Dùng thử miễn phí
-                <ArrowRight className="size-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </Button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? (
-              <X className="size-6" />
-            ) : (
-              <Menu className="size-6" />
-            )}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="lg:hidden border-t border-border/50 py-4"
-          >
-            <nav className="flex flex-col gap-4">
-              <a
-                href="#features"
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Tính năng
-              </a>
-              <a
-                href="#pricing"
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Bảng giá
-              </a>
-              <a
-                href="#testimonials"
-                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Khách hàng
-              </a>
-              <div className="flex flex-col gap-2 pt-4">
-                <Button variant="outline" asChild>
-                  <Link href="/login">Đăng nhập</Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/register">Dùng thử miễn phí</Link>
-                </Button>
-              </div>
-            </nav>
-          </motion.div>
-        )}
-      </div>
-    </header>
-  );
-}
 
 function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center pt-20 lg:pt-32 pb-20 overflow-hidden">
+    <section className="relative min-h-[90vh] flex items-center pt-8 lg:pt-16 pb-20 overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-cinematic" />
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl animate-float" />
@@ -440,38 +329,40 @@ function HeroSection() {
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
             className="relative"
           >
-            <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border/50 shadow-2xl shadow-indigo-500/10">
-              {/* Dashboard Preview */}
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 p-4">
-                {/* Top Bar */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex gap-1.5">
-                    <div className="size-3 rounded-full bg-red-500" />
-                    <div className="size-3 rounded-full bg-yellow-500" />
-                    <div className="size-3 rounded-full bg-green-500" />
+            <div className="relative group">
+              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border/50 shadow-2xl shadow-indigo-500/10">
+                {/* Dashboard Preview */}
+                <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 p-4">
+                  {/* Top Bar */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="flex gap-1.5">
+                      <div className="size-3 rounded-full bg-red-500" />
+                      <div className="size-3 rounded-full bg-yellow-500" />
+                      <div className="size-3 rounded-full bg-green-500" />
+                    </div>
+                    <div className="flex-1 h-6 bg-white/10 rounded-md mx-4" />
                   </div>
-                  <div className="flex-1 h-6 bg-white/10 rounded-md mx-4" />
-                </div>
 
-                {/* Dashboard Content */}
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="h-20 rounded-lg bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-white/10"
-                    />
-                  ))}
-                </div>
+                  {/* Dashboard Content */}
+                  <div className="grid grid-cols-3 gap-3 mb-4">
+                    {[1, 2, 3].map((i) => (
+                      <div
+                        key={i}
+                        className="h-20 rounded-lg bg-gradient-to-br from-indigo-500/20 to-purple-500/20 border border-white/10"
+                      />
+                    ))}
+                  </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="h-32 rounded-lg bg-white/5 border border-white/10" />
-                  <div className="h-32 rounded-lg bg-white/5 border border-white/10" />
-                </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="h-32 rounded-lg bg-white/5 border border-white/10" />
+                    <div className="h-32 rounded-lg bg-white/5 border border-white/10" />
+                  </div>
 
-                <div className="mt-3 h-24 rounded-lg bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-white/10" />
+                  <div className="mt-3 h-24 rounded-lg bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-white/10" />
+                </div>
               </div>
 
-              {/* Floating Elements */}
+              {/* Floating Elements - Moved outside the overflow-hidden container */}
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{
@@ -479,7 +370,7 @@ function HeroSection() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute -top-4 -right-4 p-3 rounded-xl bg-white dark:bg-slate-800 shadow-lg border border-border"
+                className="absolute -top-6 -right-6 p-3 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-border z-20"
               >
                 <Wallet className="size-6 text-green-500" />
               </motion.div>
@@ -491,7 +382,7 @@ function HeroSection() {
                   repeat: Infinity,
                   ease: "easeInOut",
                 }}
-                className="absolute -bottom-4 -left-4 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 shadow-lg border border-border flex items-center gap-2"
+                className="absolute -bottom-6 -left-6 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-border flex items-center gap-2 z-20 whitespace-nowrap"
               >
                 <Star className="size-5 text-yellow-500 fill-yellow-500" />
                 <span className="text-sm font-semibold">4.9/5 Rating</span>
@@ -818,130 +709,6 @@ function CTASection() {
   );
 }
 
-function Footer() {
-  const [email, setEmail] = useState("");
-
-  return (
-    <footer className="py-16 lg:py-20 bg-secondary/50 border-t border-border">
-      <div className="container mx-auto px-4 lg:px-8">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
-          {/* Brand */}
-          <div className="lg:col-span-1">
-            <Link href="/landing" className="flex items-center gap-2 mb-4">
-              <div className="size-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
-                <Store className="size-5 text-white" />
-              </div>
-              <span className="text-xl font-bold">Luxe SaaS</span>
-            </Link>
-            <p className="text-sm text-muted-foreground mb-4">
-              Nền tảng thương mại điện tử Multi-tenant SaaS hoàn chỉnh cho doanh
-              nghiệp Việt Nam.
-            </p>
-          </div>
-
-          {/* Links */}
-          <div>
-            <h4 className="font-semibold mb-4">Sản phẩm</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Tính năng
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Bảng giá
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Integrations
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Changelog
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-4">Hỗ trợ</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Trung tâm trợ giúp
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  API Docs
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Status
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-foreground transition-colors">
-                  Liên hệ
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div>
-            <h4 className="font-semibold mb-4">Đăng ký nhận tin</h4>
-            <p className="text-sm text-muted-foreground mb-4">
-              Nhận thông tin mới nhất về sản phẩm và ưu đãi
-            </p>
-            <form
-              className="flex gap-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                // Handle newsletter subscription
-                setEmail("");
-              }}
-            >
-              <input
-                type="email"
-                placeholder="Email của bạn"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-2 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                required
-              />
-              <Button type="submit" size="sm">
-                Đăng ký
-              </Button>
-            </form>
-          </div>
-        </div>
-
-        {/* Bottom */}
-        <div className="pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">
-            © 2026 Luxe SaaS. All rights reserved.
-          </p>
-          <div className="flex gap-6 text-sm text-muted-foreground">
-            <a href="#" className="hover:text-foreground transition-colors">
-              Điều khoản sử dụng
-            </a>
-            <a href="#" className="hover:text-foreground transition-colors">
-              Chính sách bảo mật
-            </a>
-            <a href="#" className="hover:text-foreground transition-colors">
-              Cookie Policy
-            </a>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-}
 
 // ============================================================================
 // MAIN PAGE
@@ -950,14 +717,12 @@ function Footer() {
 export default function MarketingPage() {
   return (
     <main className="min-h-screen">
-      <Header />
       <HeroSection />
       <CoreFeaturesSection />
       <GrowthToolsSection />
       <OperationsSection />
       <PricingSection />
       <CTASection />
-      <Footer />
     </main>
   );
 }

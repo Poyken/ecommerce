@@ -31,8 +31,10 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChatSelector } from "./chat-selector";
-import type {
+import {
   ChatMessage,
+} from "@/types/models";
+import type {
   ChatMessageMetadata,
   ProductMessageMetadata,
   OrderMessageMetadata,
@@ -238,31 +240,31 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
 
   // Helper to render message content based on type
   const renderMessageContent = (msg: ChatMessage) => {
-    const metadata = getMetadata(msg) as Record<string, unknown>;
+    const metadata = msg.metadata as any;
     switch (msg.type) {
       case "PRODUCT":
         return (
           <button
             onClick={() => {
-              setViewingProductId(metadata?.id);
+              setViewingProductId(metadata?.productId || metadata?.id || null);
               setViewingSkuId(metadata?.skuId);
             }}
             className="flex items-center gap-3 p-2 rounded-lg border bg-card hover:bg-muted transition-colors text-left w-full max-w-[240px]"
           >
             <div className="relative w-12 h-12 rounded overflow-hidden shrink-0 bg-muted">
               <Image
-                src={metadata?.imageUrl || "/placeholder.jpg"}
-                alt={metadata?.name || "Product"}
+                src={metadata?.productImage || metadata?.imageUrl || "/placeholder.jpg"}
+                alt={metadata?.productName || metadata?.name || "Product"}
                 fill
                 className="object-cover"
               />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold truncate">
-                {metadata?.name || "Product"}
+                {metadata?.productName || metadata?.name || "Product"}
               </p>
               <p className="text-xs text-primary font-bold">
-                {metadata?.price ? `$${metadata.price}` : "View Details"}
+                {metadata?.productPrice || metadata?.price ? `$${metadata.productPrice || metadata.price}` : "View Details"}
               </p>
             </div>
           </button>
@@ -271,19 +273,19 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
         return (
           <div className="flex flex-col gap-1 p-3 rounded-lg border bg-card w-full max-w-[240px]">
             <div className="flex justify-between items-center">
-              <span className="text-xs font-bold">#{metadata?.id}</span>
+              <span className="text-xs font-bold">#{metadata?.orderId || metadata?.id}</span>
               <Badge variant="outline" className="text-[10px] h-4 uppercase">
-                {metadata?.status}
+                {metadata?.orderStatus || metadata?.status}
               </Badge>
             </div>
             <div className="flex justify-between text-[10px] text-muted-foreground">
-              <span>{metadata?.itemCount} items</span>
+              <span>{metadata?.itemCount || 0} items</span>
               <span className="font-bold text-foreground">
-                ${metadata?.total}
+                ${metadata?.orderTotal || metadata?.total || 0}
               </span>
             </div>
             <Link
-              href={`/orders/${metadata?.id}`}
+              href={`/orders/${metadata?.orderId || metadata?.id}` as any}
               className="text-[10px] text-primary hover:underline mt-1 font-bold"
             >
               Order Details →
@@ -294,10 +296,10 @@ export function ChatWidget({ user, accessToken }: ChatWidgetProps) {
         return (
           <div
             className="relative w-48 h-48 rounded-lg overflow-hidden border cursor-zoom-in hover:opacity-90 transition-opacity"
-            onClick={() => setZoomImage(metadata?.url)}
+            onClick={() => setZoomImage(metadata?.imageUrl || metadata?.url)}
           >
             <Image
-              src={metadata?.url || "/placeholder.jpg"}
+              src={metadata?.imageUrl || metadata?.url || "/placeholder.jpg"}
               alt={metadata?.alt || "Image"}
               fill
               className="object-cover"

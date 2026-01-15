@@ -37,12 +37,12 @@ import {
 import { StatusBadge } from "@/components/shared/status-badge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { getProductImage } from "@/lib/product-helper";
-import { ReturnRequest } from "@/types/models";
+import { ReturnRequest } from "@/features/return-requests/types";
 import Image from "next/image";
 import Link from "next/link";
 import { UpdateReturnStatusDialog } from "@/features/admin/components/returns/update-return-status-dialog";
 
-export function ReturnDetailClient({ returnRequest }: { returnRequest: ReturnRequest }) {
+export function ReturnDetailClient({ returnRequest }: { returnRequest: any }) {
   const t = useTranslations("admin");
   const router = useRouter();
   const [statusDialogOpen, setStatusDialogOpen] = useState(false);
@@ -104,7 +104,7 @@ export function ReturnDetailClient({ returnRequest }: { returnRequest: ReturnReq
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {returnRequest.items?.map((item) => (
+                {returnRequest.items?.map((item: any) => (
                   <TableRow key={item.id} className="group hover:bg-slate-50 transition-colors">
                     <TableCell>
                       <div className="relative w-16 h-16 rounded-xl overflow-hidden border-2 bg-slate-100 group-hover:border-primary/50 transition-all">
@@ -164,7 +164,7 @@ export function ReturnDetailClient({ returnRequest }: { returnRequest: ReturnReq
               </h3>
               {returnRequest.images && returnRequest.images.length > 0 ? (
                 <div className="grid grid-cols-3 gap-3">
-                  {returnRequest.images.map((img, i) => (
+                  {returnRequest.images.map((img: any, i: number) => (
                     <div key={i} className="relative aspect-square rounded-xl overflow-hidden border-2 hover:border-emerald-500 transition-all cursor-zoom-in">
                       <Image src={img} alt={`Evidence ${i}`} fill className="object-cover" />
                     </div>
