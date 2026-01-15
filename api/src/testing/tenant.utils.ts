@@ -54,6 +54,21 @@ export const DEFAULT_MOCK_TENANT: Tenant = {
   dbUrl: null,
   createdAt: new Date('2024-01-01'),
   updatedAt: new Date('2024-01-01'),
+  onboardingCompleted: false,
+  onboardingStep: 0,
+  trialEndsAt: null,
+  trialStartedAt: null,
+  productLimit: 100,
+  storageLimit: 1024,
+  staffLimit: 2,
+  currentProductCount: 0,
+  currentStorageUsed: 0,
+  currentStaffCount: 0,
+  businessType: null,
+  businessSize: null,
+  monthlyRevenue: null,
+  referralCode: null,
+  referredByCode: null,
 };
 
 /**
@@ -234,7 +249,7 @@ export function resetMocks(
     if (typeof value === 'object' && value !== null) {
       Object.values(value).forEach((fn) => {
         if (typeof fn === 'function' && 'mockReset' in fn) {
-          (fn as jest.Mock).mockReset();
+          fn.mockReset();
         }
       });
     }

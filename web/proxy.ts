@@ -62,6 +62,25 @@ export default async function proxy(request: NextRequest) {
       : routing.defaultLocale
     : routing.defaultLocale;
 
+  // --- HOST-BASED ROUTING LOGIC ---
+  const hostname = request.headers.get("host"); // e.g. "localhost:3000"
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const rootDomain = appUrl.replace(/^https?:\/\//, "").split(":")[0];
+  const currentHost = hostname?.split(":")[0] || "";
+
+  const isRootDomain =
+    currentHost === rootDomain ||
+    currentHost === "www" ||
+    currentHost === "localhost";
+
+  // If on Root Domain and visiting Home Page '/', rewrite to Landing Page
+  if (isRootDomain && pathname === "/") {
+    const url = request.nextUrl.clone();
+    url.pathname = `/${currentLocale}/landing`;
+    return NextResponse.rewrite(url);
+  }
+  // --------------------------------
+
   // ✅ Generate CSRF token ONCE at start
   const currentCsrfToken = request.cookies.get(CSRF_COOKIE_NAME)?.value;
   const csrfToken = currentCsrfToken || nanoid(32);

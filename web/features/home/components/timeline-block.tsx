@@ -8,8 +8,9 @@
 
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import * as LucideIcons from "lucide-react";
 import type { BaseBlockProps, TimelineItem } from "../types/block-types";
+import { DynamicIcon } from "@/components/shared/dynamic-icon";
+import dynamicIconImports from "lucide-react/dist/esm/dynamicIconImports.js";
 
 interface TimelineBlockProps extends BaseBlockProps {
   title?: string;
@@ -26,31 +27,31 @@ const defaultItems: TimelineItem[] = [
     date: "2020",
     title: "Khởi đầu",
     description: "Ra mắt phiên bản đầu tiên với các tính năng cơ bản",
-    icon: "Rocket",
+    icon: "rocket",
   },
   {
     date: "2021",
     title: "Mở rộng",
     description: "Đạt 1,000 cửa hàng đăng ký và ra mắt gói PRO",
-    icon: "TrendingUp",
+    icon: "trending-up",
   },
   {
     date: "2022",
     title: "Tích hợp AI",
     description: "Ra mắt AI Chatbot và Auto-tagging với Gemini",
-    icon: "Bot",
+    icon: "bot",
   },
   {
     date: "2023",
     title: "B2B Launch",
     description: "Hỗ trợ bán buôn với Price Lists và Customer Groups",
-    icon: "Users",
+    icon: "users",
   },
   {
     date: "2024",
     title: "Toàn cầu hóa",
     description: "Mở rộng ra thị trường Đông Nam Á",
-    icon: "Globe",
+    icon: "globe",
   },
 ];
 
@@ -71,10 +72,11 @@ export function TimelineBlock({
 
   const getIcon = (iconName?: string) => {
     if (!iconName) return null;
-    const Icon = (LucideIcons as Record<string, LucideIcons.LucideIcon>)[
-      iconName
-    ];
-    return Icon ? <Icon className="size-5" /> : null;
+    const name = iconName.toLowerCase().replace(/([a-z0-9])([A-Z])/g, '$1-$2');
+    if (name in dynamicIconImports) {
+      return <DynamicIcon name={name as keyof typeof dynamicIconImports} className="size-5" />;
+    }
+    return null;
   };
 
   if (orientation === "horizontal") {

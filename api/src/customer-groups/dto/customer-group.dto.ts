@@ -6,13 +6,19 @@ import {
   IsArray,
   ValidateNested,
   IsNumber,
+  IsDateString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { PartialType } from '@nestjs/mapped-types';
+
+// =====================================================================
+// CUSTOMER GROUP DTOs
+// =====================================================================
 
 export class CreateCustomerGroupDto {
   @IsString()
   @IsNotEmpty()
-  name: string; // Tên nhóm (Vip, Bán buôn)
+  name: string; // Tên nhóm (VIP, Bán buôn, Đại lý C1)
 
   @IsOptional()
   @IsString()
@@ -23,7 +29,61 @@ export class CreateCustomerGroupDto {
   priceListId?: string; // ID bảng giá áp dụng
 }
 
+export class UpdateCustomerGroupDto extends PartialType(
+  CreateCustomerGroupDto,
+) {}
+
+// =====================================================================
+// PRICE LIST DTOs
+// =====================================================================
+
 export class PriceListItemDto {
+  @IsString()
+  skuId: string;
+
+  @IsNumber()
+  price: number; // Giá áp dụng
+
+  @IsOptional()
+  @IsNumber()
+  compareAtPrice?: number; // Giá gốc (gạch ngang)
+}
+
+export class CreatePriceListDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string; // Tên bảng giá (VD: Bảng giá đại lý)
+
+  @IsOptional()
+  @IsString()
+  currency?: string; // Đơn vị tiền tệ (VND)
+
+  @IsOptional()
+  @IsBoolean()
+  isDefault?: boolean; // Là bảng giá mặc định?
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean; // Đang kích hoạt?
+
+  @IsOptional()
+  @IsDateString()
+  startDate?: string; // Ngày bắt đầu áp dụng
+
+  @IsOptional()
+  @IsDateString()
+  endDate?: string; // Ngày kết thúc
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PriceListItemDto)
+  items?: PriceListItemDto[]; // Danh sách giá SKU
+}
+
+export class UpdatePriceListDto extends PartialType(CreatePriceListDto) {}
+
+export class AddPriceListItemDto {
   @IsString()
   skuId: string;
 
@@ -35,21 +95,12 @@ export class PriceListItemDto {
   compareAtPrice?: number;
 }
 
-export class CreatePriceListDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string; // Tên bảng giá
+// =====================================================================
+// PRICING QUERY DTOs
+// =====================================================================
 
-  @IsOptional()
-  @IsString()
-  currency?: string;
-
-  @IsOptional()
-  @IsBoolean()
-  isDefault?: boolean;
-
+export class GetPricesDto {
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => PriceListItemDto)
-  items: PriceListItemDto[];
+  @IsString({ each: true })
+  skuIds: string[];
 }

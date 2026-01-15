@@ -10,8 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { updateReturnStatusAction } from "@/features/admin/actions";
-import { ReturnRequest, ReturnStatus } from "@/types/models";
+import { returnRequestsApi } from "@/features/return-requests/return-requests.api";
+import { ReturnRequest, ReturnStatus } from "@/features/return-requests/types";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { AlertCircle, CheckCircle2, ClipboardList, XCircle } from "lucide-react";
@@ -35,7 +35,7 @@ export function UpdateReturnStatusDialog({
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (status === "REJECTED" && !rejectedReason.trim()) {
+    if (status === ReturnStatus.REJECTED && !rejectedReason.trim()) {
       toast({
         title: "Reason Required",
         description: "Please provide a reason for rejection.",
@@ -45,38 +45,39 @@ export function UpdateReturnStatusDialog({
     }
 
     setLoading(true);
-    const result = await updateReturnStatusAction(returnRequest.id, {
-      status,
-      inspectionNotes: status === "INSPECTING" || status === "REFUNDED" || status === "REJECTED" ? inspectionNotes : undefined,
-      rejectedReason: status === "REJECTED" ? rejectedReason : undefined,
-    });
-    setLoading(false);
+    try {
+      await returnRequestsApi.update(returnRequest.id, {
+        status,
+        inspectionNotes: status === ReturnStatus.INSPECTING || status === ReturnStatus.REFUNDED || status === ReturnStatus.REJECTED ? inspectionNotes : undefined,
+        rejectedReason: status === ReturnStatus.REJECTED ? rejectedReason : undefined,
+      });
 
-    if (result.success) {
       toast({
         title: t("success"),
         description: t("returns.successUpdate"),
       });
       onOpenChange(false);
-    } else {
+    } catch (error: any) {
       toast({
         title: t("error"),
-        description: result.error || t("error"),
+        description: error.message || t("error"),
         variant: "destructive",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   const allowedTransitions: Record<string, ReturnStatus[]> = {
-    PENDING: ["APPROVED", "REJECTED", "CANCELLED"],
-    APPROVED: ["WAITING_FOR_RETURN", "CANCELLED"],
-    WAITING_FOR_RETURN: ["IN_TRANSIT", "RECEIVED", "CANCELLED"],
-    IN_TRANSIT: ["RECEIVED"],
-    RECEIVED: ["INSPECTING"],
-    INSPECTING: ["REFUNDED", "REJECTED"],
-    REFUNDED: [],
-    REJECTED: [],
-    CANCELLED: [],
+    [ReturnStatus.PENDING]: [ReturnStatus.APPROVED, ReturnStatus.REJECTED, ReturnStatus.CANCELLED],
+    [ReturnStatus.APPROVED]: [ReturnStatus.WAITING_FOR_RETURN, ReturnStatus.CANCELLED],
+    [ReturnStatus.WAITING_FOR_RETURN]: [ReturnStatus.IN_TRANSIT, ReturnStatus.RECEIVED, ReturnStatus.CANCELLED],
+    [ReturnStatus.IN_TRANSIT]: [ReturnStatus.RECEIVED],
+    [ReturnStatus.RECEIVED]: [ReturnStatus.INSPECTING],
+    [ReturnStatus.INSPECTING]: [ReturnStatus.REFUNDED, ReturnStatus.REJECTED],
+    [ReturnStatus.REFUNDED]: [],
+    [ReturnStatus.REJECTED]: [],
+    [ReturnStatus.CANCELLED]: [],
   };
 
   const isOptionDisabled = (optionValue: string) => {
@@ -111,7 +112,7 @@ export function UpdateReturnStatusDialog({
               <SelectValue />
             </SelectTrigger>
             <SelectContent className="rounded-xl">
-              {(Object.keys(allowedTransitions) as ReturnStatus[]).concat(["REFUNDED", "REJECTED", "CANCELLED"] as ReturnStatus[]).filter((v, i, a) => a.indexOf(v) === i).map((s) => (
+              {(Object.keys(allowedTransitions) as ReturnStatus[]).concat([ReturnStatus.REFUNDED, ReturnStatus.REJECTED, ReturnStatus.CANCELLED]).filter((v, i, a) => a.indexOf(v) === i).map((s) => (
                 <SelectItem 
                   key={s} 
                   value={s} 
@@ -126,7 +127,7 @@ export function UpdateReturnStatusDialog({
         </div>
 
         {/* Inspection Notes - Show when appropriate */}
-        {(status === "INSPECTING" || status === "REFUNDED" || status === "REJECTED") && (
+        {(status === ReturnStatus.INSPECTING || status === ReturnStatus.REFUNDED || status === ReturnStatus.REJECTED) && (
           <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
             <label className="text-sm font-bold flex items-center gap-2 text-blue-600">
               <ClipboardList className="h-4 w-4" />
@@ -142,7 +143,7 @@ export function UpdateReturnStatusDialog({
         )}
 
         {/* Rejection Reason */}
-        {status === "REJECTED" && (
+        {status === ReturnStatus.REJECTED && (
           <div className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-300 p-4 rounded-xl border-2 border-red-100 bg-red-50/50">
             <label className="text-sm font-bold flex items-center gap-2 text-red-600">
               <XCircle className="h-4 w-4" />

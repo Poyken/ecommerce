@@ -181,6 +181,7 @@ model PriceListItem {
 model Role {
   id          String           @id @default(uuid()) // ID định danh duy nhất của Role (Vai trò)
   name        String // Tên của vai trò (VD: Admin, Staff, Viewer)
+  description String? // Mô tả vai trò
   createdAt   DateTime         @default(now()) // Thời gian tạo
   updatedAt   DateTime         @updatedAt // Thời gian cập nhật
   permissions RolePermission[] // Danh sách các quyền hạn thuộc vai trò này

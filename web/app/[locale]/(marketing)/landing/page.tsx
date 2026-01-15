@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { motion, useInView } from "framer-motion";
+import { m as motion, useInView, Variants } from "framer-motion";
 import {
   ArrowRight,
   Bot,
@@ -176,12 +176,12 @@ const stats = [
 // ANIMATION VARIANTS
 // ============================================================================
 
-const fadeInUp = {
+const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 40 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
 };
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -192,7 +192,7 @@ const staggerContainer = {
   },
 };
 
-const scaleIn = {
+const scaleIn: Variants = {
   hidden: { opacity: 0, scale: 0.9 },
   visible: {
     opacity: 1,
@@ -208,9 +208,11 @@ const scaleIn = {
 function AnimatedSection({
   children,
   className = "",
+  id,
 }: {
   children: React.ReactNode;
   className?: string;
+  id?: string;
 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
@@ -222,6 +224,7 @@ function AnimatedSection({
       animate={isInView ? "visible" : "hidden"}
       variants={staggerContainer}
       className={className}
+      id={id}
     >
       {children}
     </motion.section>
@@ -236,7 +239,7 @@ function Header() {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/landing" className="flex items-center gap-2">
             <div className="size-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
               <Store className="size-5 text-white" />
             </div>
@@ -824,7 +827,7 @@ function Footer() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
+            <Link href="/landing" className="flex items-center gap-2 mb-4">
               <div className="size-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center">
                 <Store className="size-5 text-white" />
               </div>

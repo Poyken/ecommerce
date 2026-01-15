@@ -1,0 +1,165 @@
+{
+  "users": {
+    "happy_path": [
+      {
+        "email": "test@example.com",
+        "password": "Password123!",
+        "firstName": "Test",
+        "lastName": "User",
+        "role": "MEMBER"
+      },
+      {
+        "email": "admin@example.com",
+        "password": "AdminPassword123!",
+        "firstName": "Super",
+        "lastName": "Admin",
+        "role": "ADMIN"
+      }
+    ],
+    "minimal_path": [
+      {
+        "email": "minimal@example.com",
+        "password": "Pass123!",
+        "_note": "Chỉ required fields"
+      }
+    ],
+    "edge_cases": [
+      {
+        "email": "",
+        "password": "ValidPass123!",
+        "_note": "Edge case: email rỗng - Expect: 400 Bad Request"
+      },
+      {
+        "email": "very-long-email-address-that-exceeds-normal-limits@extremely-long-domain-name.com",
+        "password": "Pass123!",
+        "_note": "Edge case: email quá dài"
+      }
+    ]
+  },
+  "products": {
+    "happy_path": [
+      {
+        "name": "iPhone 15 Pro Max",
+        "price": 34990000,
+        "description": "Titanium design, A17 Pro chip.",
+        "category": "Smartphone",
+        "brand": "Apple"
+      },
+      {
+        "name": "Samsung Galaxy S24 Ultra",
+        "price": 31990000,
+        "description": "Galaxy AI is here.",
+        "category": "Smartphone",
+        "brand": "Samsung"
+      }
+    ],
+    "minimal_path": [
+      {
+        "name": "Basic Product",
+        "price": 100000,
+        "_note": "Chỉ có name và price"
+      }
+    ],
+    "edge_cases": [
+      {
+        "name": "",
+        "price": 100000,
+        "_note": "Edge case: name rỗng - Expect: 400 Validation Error"
+      },
+      {
+        "name": "Free Product",
+        "price": 0,
+        "_note": "Edge case: price = 0 (sản phẩm miễn phí)"
+      },
+      {
+        "name": "Negative Price",
+        "price": -50000,
+        "_note": "Edge case: price âm - Expect: 400 Validation Error"
+      },
+      {
+        "name": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+        "price": 100000,
+        "_note": "Edge case: name cực dài (100 ký tự)"
+      }
+    ]
+  },
+  "orders": {
+    "happy_path": [
+      {
+        "userId": "uuid-user-1",
+        "totalAmount": 34990000,
+        "status": "PENDING",
+        "items": [
+          { "productId": "uuid-iphone-15", "quantity": 1 }
+        ]
+      }
+    ],
+    "minimal_path": [
+      {
+        "userId": "uuid-user-1",
+        "items": [
+          { "productId": "uuid-product-1", "quantity": 1 }
+        ],
+        "_note": "totalAmount sẽ được tính tự động bởi server"
+      }
+    ],
+    "edge_cases": [
+      {
+        "userId": "uuid-user-1",
+        "items": [],
+        "_note": "Edge case: order với items rỗng - Expect: 400 Cart is empty"
+      },
+      {
+        "userId": "uuid-user-1",
+        "items": [
+          { "productId": "uuid-product-1", "quantity": 0 }
+        ],
+        "_note": "Edge case: quantity = 0 - Expect: 400 Validation Error"
+      },
+      {
+        "userId": "uuid-user-1",
+        "items": [
+          { "productId": "uuid-product-1", "quantity": -5 }
+        ],
+        "_note": "Edge case: quantity âm - Expect: 400 Validation Error"
+      },
+      {
+        "userId": "uuid-user-1",
+        "items": [
+          { "productId": "uuid-product-1", "quantity": 999999 }
+        ],
+        "_note": "Edge case: quantity vượt quá stock - Expect: 400 Out of stock"
+      },
+      {
+        "userId": "non-existent-uuid",
+        "items": [
+          { "productId": "uuid-product-1", "quantity": 1 }
+        ],
+        "_note": "Edge case: userId không tồn tại - Expect: 404 User not found"
+      }
+    ]
+  },
+  "coupons": {
+    "happy_path": [
+      {
+        "code": "WELCOME10",
+        "discountPercent": 10,
+        "maxDiscountAmount": 100000,
+        "minOrderAmount": 500000
+      }
+    ],
+    "edge_cases": [
+      {
+        "code": "EXPIRED2024",
+        "endDate": "2024-01-01T00:00:00Z",
+        "_note": "Edge case: coupon hết hạn"
+      },
+      {
+        "code": "MAXED_OUT",
+        "usageLimit": 100,
+        "usedCount": 100,
+        "_note": "Edge case: coupon đã hết lượt dùng"
+      }
+    ]
+  }
+}

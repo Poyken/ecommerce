@@ -8,9 +8,10 @@
 
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import * as LucideIcons from "lucide-react";
 import Image from "next/image";
 import type { BaseBlockProps, StepItem } from "../types/block-types";
+import { DynamicIcon } from "@/components/shared/dynamic-icon";
+import dynamicIconImports from "lucide-react/dist/esm/dynamicIconImports.js";
 
 interface StepsBlockProps extends BaseBlockProps {
   title?: string;
@@ -29,27 +30,27 @@ const defaultItems: StepItem[] = [
     title: "Đăng ký tài khoản",
     description:
       "Tạo tài khoản miễn phí chỉ với email và mật khẩu. Không cần thẻ tín dụng.",
-    icon: "UserPlus",
+    icon: "user-plus",
   },
   {
     number: 2,
     title: "Thiết lập cửa hàng",
     description:
       "Hoàn thành wizard onboarding để cấu hình thông tin cơ bản, logo và theme.",
-    icon: "Settings",
+    icon: "settings",
   },
   {
     number: 3,
     title: "Thêm sản phẩm",
     description:
       "Upload sản phẩm thủ công hoặc import hàng loạt từ file Excel/CSV.",
-    icon: "Package",
+    icon: "package",
   },
   {
     number: 4,
     title: "Bắt đầu bán hàng",
     description: "Chia sẻ link cửa hàng và bắt đầu nhận đơn hàng đầu tiên.",
-    icon: "Rocket",
+    icon: "rocket",
   },
 ];
 
@@ -65,10 +66,11 @@ export function StepsBlock({
 }: StepsBlockProps) {
   const getIcon = (iconName?: string) => {
     if (!iconName) return null;
-    const Icon = (LucideIcons as Record<string, LucideIcons.LucideIcon>)[
-      iconName
-    ];
-    return Icon ? <Icon className="size-6" /> : null;
+    const name = iconName.toLowerCase().replace(/([a-z0-9])([A-Z])/g, '$1-$2');
+    if (name in dynamicIconImports) {
+      return <DynamicIcon name={name as keyof typeof dynamicIconImports} className="size-6" />;
+    }
+    return null;
   };
 
   const numberStyles = {

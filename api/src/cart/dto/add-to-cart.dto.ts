@@ -1,4 +1,5 @@
 import { IsNumber, IsUUID, Max, Min } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 /**
  * =====================================================================
@@ -15,16 +16,24 @@ import { IsNumber, IsUUID, Max, Min } from 'class-validator';
  * 2. CÁC LUẬT (RULES):
  * - `IsUUID('4')`: Đảm bảo `skuId` phải là mã định danh hợp lệ (UUID v4).
  * - `Min(1)`: Không ai mua 0 hoặc âm sản phẩm cả.
- * - `Max(999)`: Giới hạn số lượng một lần mua để tránh lỗi hiển thị UI hoặc Spam đơn hàng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
-
+ * - `Max(999)`: Giới hạn số lượng một lần mua để tránh lỗi hiển thị UI hoặc Spam đơn hàng.
+ *
  * =====================================================================
  */
 export class AddToCartDto {
+  @ApiProperty({
+    description: 'ID của SKU (biến thể sản phẩm)',
+    example: 'sku-uuid',
+  })
   @IsUUID('4', { message: 'SKU ID không hợp lệ' })
   skuId: string;
 
+  @ApiProperty({
+    description: 'Số lượng muốn thêm',
+    example: 1,
+    minimum: 1,
+    maximum: 999,
+  })
   @IsNumber({}, { message: 'Số lượng phải là số' })
   @Min(1, { message: 'Số lượng tối thiểu là 1' })
   @Max(999, { message: 'Số lượng tối đa là 999 sản phẩm' })

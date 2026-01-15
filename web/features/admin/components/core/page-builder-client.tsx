@@ -42,7 +42,8 @@ import { v4 as uuidv4 } from "uuid";
 
 import { BlockStyleControls } from "@/features/admin/components/ui/block-style-controls";
 import { cn } from "@/lib/utils";
-import * as LucideIcons from "lucide-react";
+import { DynamicIcon } from "@/components/shared/dynamic-icon";
+import dynamicIconImports from "lucide-react/dist/esm/dynamicIconImports.js";
 import Image from "next/image";
 
 /**
@@ -71,7 +72,6 @@ import Image from "next/image";
  *    - Tách biệt `BlockStyleControls` để tái sử dụng logic chỉnh màu/padding. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
  * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
  * =================================================================================================
  */
 
@@ -111,9 +111,12 @@ const FlexibleIcon = ({
   }
 
   // Otherwise assume Lucide Icon Name
-  const IconComponent = (LucideIcons as any)[source];
-  if (!IconComponent) return null;
-  return <IconComponent size={size} className={className} />;
+  const iconName = source.toLowerCase().replace(/([a-z0-9])([A-Z])/g, '$1-$2');
+  if (iconName in dynamicIconImports) {
+    return <DynamicIcon name={iconName as keyof typeof dynamicIconImports} size={size} className={className} />;
+  }
+  
+  return null;
 };
 
 interface Page {

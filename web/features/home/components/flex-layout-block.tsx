@@ -18,9 +18,10 @@
 
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
-import * as LucideIcons from "lucide-react";
-import Image from "next/image";
 import { Link } from "@/i18n/routing";
+import Image from "next/image";
+import { DynamicIcon } from "@/components/shared/dynamic-icon";
+import dynamicIconImports from "lucide-react/dist/esm/dynamicIconImports.js";
 
 interface FlexItem {
   title?: string;
@@ -77,6 +78,15 @@ export function FlexLayoutBlock({
     return "col-span-1";
   };
 
+  const getIcon = (iconName?: string) => {
+    if (!iconName) return null;
+    const name = iconName.toLowerCase().replace(/([a-z0-9])([A-Z])/g, '$1-$2');
+    if (name in dynamicIconImports) {
+      return <DynamicIcon name={name as keyof typeof dynamicIconImports} size={32} strokeWidth={1.5} />;
+    }
+    return null;
+  };
+
   return (
     <section
       className="w-full py-16 md:py-24"
@@ -101,8 +111,6 @@ export function FlexLayoutBlock({
 
         <div className={cn("grid", layoutClasses[layout], gapClasses[gap])}>
           {items.map((item, idx) => {
-            const Icon = item.icon ? (LucideIcons as any)[item.icon] : null;
-
             return (
               <div
                 key={idx}
@@ -139,9 +147,9 @@ export function FlexLayoutBlock({
                     item.image ? "justify-end min-h-[400px]" : "justify-center"
                   )}
                 >
-                  {Icon && (
+                  {item.icon && (
                     <div className="p-3 rounded-2xl bg-primary/10 text-primary mb-6">
-                      <Icon size={32} strokeWidth={1.5} />
+                      {getIcon(item.icon)}
                     </div>
                   )}
                   {item.title && (

@@ -102,7 +102,7 @@ export class PlatformAnalyticsController {
 
       // Active subscriptions
       this.prisma.subscription.count({
-        where: { status: 'ACTIVE' },
+        where: { isActive: true },
       }),
 
       // Pending invoices
@@ -288,7 +288,7 @@ export class PlatformAnalyticsController {
             select: { id: true, email: true, firstName: true, lastName: true },
           },
           subscription: {
-            select: { status: true, currentPeriodEnd: true },
+            select: { isActive: true, nextBillingDate: true },
           },
           _count: {
             select: { products: true, orders: true, users: true },

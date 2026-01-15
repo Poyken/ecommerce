@@ -9,15 +9,18 @@
 import { cn } from "@/lib/utils";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { motion } from "framer-motion";
+import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { ChevronDown, Plus, Minus } from "lucide-react";
-import * as LucideIcons from "lucide-react";
 import type { BaseBlockProps, IconName } from "../types/block-types";
+import { DynamicIcon } from "@/components/shared/dynamic-icon";
+// Import dynamicIconImports just for type checking if needed, or cast string to type
+import dynamicIconImports from "lucide-react/dist/esm/dynamicIconImports.js";
 
 interface AccordionItem {
   id: string;
   title: string;
   content: React.ReactNode;
-  icon?: IconName;
+  icon?: string; // Changed from IconName to string to match usage
   badge?: string;
 }
 
@@ -38,21 +41,21 @@ const defaultItems: AccordionItem[] = [
     title: "Làm thế nào để bắt đầu?",
     content:
       "Để bắt đầu, bạn chỉ cần đăng ký tài khoản miễn phí, sau đó hoàn thành wizard onboarding để thiết lập cửa hàng. Quá trình chỉ mất khoảng 5 phút.",
-    icon: "Rocket",
+    icon: "rocket", // Lowercase for dynamic imports
   },
   {
     id: "2",
     title: "Có hỗ trợ thanh toán online không?",
     content:
       "Có, chúng tôi tích hợp sẵn các cổng thanh toán phổ biến như VNPay, MoMo, ZaloPay, và Stripe cho thanh toán quốc tế.",
-    icon: "CreditCard",
+    icon: "credit-card",
   },
   {
     id: "3",
     title: "Tôi có thể dùng tên miền riêng không?",
     content:
       "Có, từ gói Pro trở lên bạn có thể kết nối tên miền riêng. Chúng tôi sẽ tự động cấp chứng chỉ SSL miễn phí cho domain của bạn.",
-    icon: "Globe",
+    icon: "globe",
     badge: "Pro",
   },
   {
@@ -60,14 +63,14 @@ const defaultItems: AccordionItem[] = [
     title: "Chính sách hoàn tiền như thế nào?",
     content:
       "Chúng tôi có chính sách hoàn tiền 100% trong 14 ngày đầu tiên nếu bạn không hài lòng với dịch vụ. Không cần giải thích lý do.",
-    icon: "RefreshCcw",
+    icon: "refresh-ccw",
   },
   {
     id: "5",
     title: "Có giới hạn số lượng sản phẩm không?",
     content:
       "Mỗi gói có giới hạn sản phẩm khác nhau. Basic: 100 sản phẩm, Pro: 1,000 sản phẩm, Enterprise: Không giới hạn.",
-    icon: "Package",
+    icon: "package",
   },
 ];
 
@@ -81,12 +84,25 @@ export function AccordionBlock({
   iconStyle = "chevron",
   showIcons = true,
 }: AccordionBlockProps) {
+  // Helper to safely get icon name
+  const getIconName = (name: string): keyof typeof dynamicIconImports | null => {
+    // Basic conversion from PascalCase to kebab-case if needed, but assuming input is correct or we fix data
+    // For now, let's assume the input is correct kebab-case or commonly used names.
+    // If usage passed "Rocket", we might need to convert to "rocket".
+    const lowerName = name.toLowerCase().replace(/([a-z0-9])([A-Z])/g, '$1-$2'); 
+    // This regex is a simple camelToKebab but let's just use lowercase for now as most lucide icons are simple.
+    // Ideally we should enforce strict types.
+    if (lowerName in dynamicIconImports) {
+      return lowerName as keyof typeof dynamicIconImports;
+    }
+    return null;
+  };
+
   const getIcon = (iconName?: string) => {
     if (!iconName) return null;
-    const Icon = (LucideIcons as Record<string, LucideIcons.LucideIcon>)[
-      iconName
-    ];
-    return Icon ? <Icon className="size-5" /> : null;
+    const name = getIconName(iconName);
+    if (!name) return null;
+    return <DynamicIcon name={name} className="size-5" />;
   };
 
   const defaultValue = defaultOpenIndex
@@ -116,6 +132,7 @@ export function AccordionBlock({
 
   const classes = variantClasses[variant];
 
+  // ... existing code
   const renderIcon = (isOpen: boolean) => {
     if (iconStyle === "plus-minus") {
       return isOpen ? (
@@ -139,9 +156,10 @@ export function AccordionBlock({
       <div className="container mx-auto px-4 lg:px-8">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true }}
+          variants={fadeInUp}
           className="text-center max-w-3xl mx-auto mb-12"
         >
           {title && (
@@ -156,67 +174,69 @@ export function AccordionBlock({
 
         {/* Accordion */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true }}
+          variants={staggerContainer}
           className="max-w-3xl mx-auto"
         >
           <AccordionPrimitive.Root
-            type={allowMultipleOpen ? "multiple" : "single"}
-            defaultValue={allowMultipleOpen ? defaultValue : defaultValue[0]}
+            type={allowMultipleOpen ? "multiple" : "single" as any}
+            defaultValue={(allowMultipleOpen ? defaultValue : defaultValue[0]) as any}
             collapsible
             className={classes.root}
           >
             {items.map((item, index) => (
-              <AccordionPrimitive.Item
-                key={item.id}
-                value={item.id}
-                className={cn(classes.item, "group")}
-              >
-                <AccordionPrimitive.Header>
-                  <AccordionPrimitive.Trigger
+              <motion.div key={item.id} variants={fadeInUp}>
+                <AccordionPrimitive.Item
+                  value={item.id}
+                  className={cn(classes.item, "group")}
+                >
+                  <AccordionPrimitive.Header>
+                    <AccordionPrimitive.Trigger
+                      className={cn(
+                        "flex w-full items-center justify-between text-left",
+                        "font-medium hover:text-primary transition-colors",
+                        classes.trigger
+                      )}
+                    >
+                      <div className="flex items-center gap-3 pr-4">
+                        {showIcons && item.icon && (
+                          <div className="flex-shrink-0 size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                            {getIcon(item.icon)}
+                          </div>
+                        )}
+                        <span className="text-base lg:text-lg">{item.title}</span>
+                        {item.badge && (
+                          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-primary text-primary-foreground">
+                            {item.badge}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex-shrink-0">{renderIcon(false)}</div>
+                    </AccordionPrimitive.Trigger>
+                  </AccordionPrimitive.Header>
+                  <AccordionPrimitive.Content
                     className={cn(
-                      "flex w-full items-center justify-between text-left",
-                      "font-medium hover:text-primary transition-colors",
-                      classes.trigger
+                      "overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up",
+                      classes.content
                     )}
                   >
-                    <div className="flex items-center gap-3 pr-4">
-                      {showIcons && item.icon && (
-                        <div className="flex-shrink-0 size-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                          {getIcon(item.icon)}
-                        </div>
+                    <div
+                      className={cn(
+                        "text-muted-foreground",
+                        showIcons && "pl-13"
                       )}
-                      <span className="text-base lg:text-lg">{item.title}</span>
-                      {item.badge && (
-                        <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-primary text-primary-foreground">
-                          {item.badge}
-                        </span>
+                    >
+                      {typeof item.content === "string" ? (
+                        <p>{item.content}</p>
+                      ) : (
+                        item.content
                       )}
                     </div>
-                    <div className="flex-shrink-0">{renderIcon(false)}</div>
-                  </AccordionPrimitive.Trigger>
-                </AccordionPrimitive.Header>
-                <AccordionPrimitive.Content
-                  className={cn(
-                    "overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up",
-                    classes.content
-                  )}
-                >
-                  <div
-                    className={cn(
-                      "text-muted-foreground",
-                      showIcons && "pl-13"
-                    )}
-                  >
-                    {typeof item.content === "string" ? (
-                      <p>{item.content}</p>
-                    ) : (
-                      item.content
-                    )}
-                  </div>
-                </AccordionPrimitive.Content>
-              </AccordionPrimitive.Item>
+                  </AccordionPrimitive.Content>
+                </AccordionPrimitive.Item>
+              </motion.div>
             ))}
           </AccordionPrimitive.Root>
         </motion.div>
@@ -224,3 +244,4 @@ export function AccordionBlock({
     </section>
   );
 }
+

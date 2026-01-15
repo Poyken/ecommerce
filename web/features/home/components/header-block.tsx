@@ -4,8 +4,9 @@ import { StickyHeader } from "@/components/shared/sticky-header";
 import { Logo } from "@/features/layout/components/logo";
 import { Link, usePathname } from "@/i18n/routing";
 import { cn } from "@/lib/utils";
-import * as LucideIcons from "lucide-react";
-import { Menu } from "lucide-react";
+import { DynamicIcon } from "@/components/shared/dynamic-icon";
+import dynamicIconImports from "lucide-react/dist/esm/dynamicIconImports.js";
+import { Menu } from "lucide-react"; // Keeping Menu as it's used later
 import Image from "next/image";
 
 interface HeaderLink {
@@ -74,9 +75,12 @@ const FlexibleIcon = ({
   }
 
   // Otherwise assume Lucide Icon Name
-  const IconComponent = (LucideIcons as any)[source];
-  if (!IconComponent) return null;
-  return <IconComponent size={size} className={className} />;
+  const iconName = source.toLowerCase().replace(/([a-z0-9])([A-Z])/g, '$1-$2');
+  if (iconName in dynamicIconImports) {
+    return <DynamicIcon name={iconName as keyof typeof dynamicIconImports} size={size} className={className} />;
+  }
+  
+  return null;
 };
 
 /**

@@ -5,7 +5,9 @@ import {
   IsString,
   Max,
   Min,
+  IsArray,
 } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 /**
  * =====================================================================
@@ -22,32 +24,53 @@ import {
  * - Nếu không có `skuId`, đánh giá sẽ được tính chung cho toàn bộ sản phẩm.
  *
  * 3. OPTIONAL CONTENT:
- * - `@IsOptional()`: Người dùng có thể chỉ chấm sao mà không cần viết nội dung bình luận. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
-
+ * - `@IsOptional()`: Người dùng có thể chỉ chấm sao mà không cần viết nội dung bình luận.
+ *
  * =====================================================================
  */
 
 export class CreateReviewDto {
+  @ApiProperty({
+    description: 'ID sản phẩm được đánh giá',
+    example: 'product-uuid',
+  })
   @IsNotEmpty()
   @IsString()
   productId: string;
 
+  @ApiProperty({
+    description: 'Số sao đánh giá (1-5)',
+    example: 5,
+    minimum: 1,
+    maximum: 5,
+  })
   @IsInt()
   @Min(1)
   @Max(5)
   rating: number;
 
+  @ApiPropertyOptional({
+    description: 'Nội dung đánh giá',
+    example: 'Sản phẩm rất tốt, giao hàng nhanh!',
+  })
   @IsOptional()
   @IsString()
   content?: string;
 
+  @ApiPropertyOptional({
+    description: 'ID SKU cụ thể (nếu đánh giá biến thể)',
+    example: 'sku-uuid',
+  })
   @IsOptional()
   @IsString()
   skuId?: string;
 
+  @ApiPropertyOptional({
+    description: 'Danh sách URL ảnh đính kèm',
+    example: ['https://example.com/review1.jpg'],
+  })
   @IsOptional()
+  @IsArray()
   @IsString({ each: true })
   images?: string[];
 }

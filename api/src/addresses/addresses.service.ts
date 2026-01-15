@@ -56,7 +56,7 @@ export class AddressesService {
         ...dto,
         userId,
         isDefault,
-        tenantId: tenant!.id,
+        tenantId: tenant.id,
       },
     });
   }

@@ -9,6 +9,7 @@ import type { Cache } from 'cache-manager';
 import { BaseCrudService } from '../common/base-crud.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { AiSentimentService } from './ai-sentiment.service';
 
 /**
  * =====================================================================
@@ -43,6 +44,7 @@ export class ReviewsService extends BaseCrudService<
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
     private readonly notificationsGateway: NotificationsGateway,
+    private readonly aiSentimentService: AiSentimentService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {
     super(ReviewsService.name);
@@ -150,6 +152,17 @@ export class ReviewsService extends BaseCrudService<
 
       return newReview;
     });
+
+    // AI Sentiment Analysis (async, không block response)
+    if (dto.content && this.aiSentimentService.enabled) {
+      this.aiSentimentService
+        .analyzeReview(review.id, dto.content, dto.rating)
+        .catch((err) => {
+          this.logger.error(
+            `AI analysis failed for review ${review.id}: ${err.message}`,
+          );
+        });
+    }
 
     return review;
   }

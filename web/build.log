@@ -1,0 +1,32 @@
+﻿Γû▓ Next.js 16.1.1 (Turbopack)
+- Environments: .env
+- Experiments (use with caution):
+  ┬╖ optimizePackageImports
+  ┬╖ serverActions
+  Γ£ô useCache
+
+  Creating an optimized production build ...
+node.exe : 
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" 
+"C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:Str 
+   ing) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+> Build error occurred
+Error: Turbopack build failed with 2 errors:
+./app/[locale]/(shop)
+You cannot have two parallel pages that resolve 
+to the same path. Please check 
+/[locale]/(marketing)/about and /[locale]/(shop).
+
+./app/[locale]/(shop)
+You cannot have two parallel pages that resolve 
+to the same path. Please check 
+/[locale]/(marketing)/contact and 
+/[locale]/(shop).
+
+    at ignore-listed frames

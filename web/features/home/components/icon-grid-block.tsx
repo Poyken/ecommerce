@@ -8,8 +8,9 @@
 
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import * as LucideIcons from "lucide-react";
 import type { BaseBlockProps, IconGridItem } from "../types/block-types";
+import { DynamicIcon } from "@/components/shared/dynamic-icon";
+import dynamicIconImports from "lucide-react/dist/esm/dynamicIconImports.js";
 
 interface IconGridBlockProps extends BaseBlockProps {
   title?: string;
@@ -26,32 +27,32 @@ interface IconGridBlockProps extends BaseBlockProps {
 
 const defaultItems: IconGridItem[] = [
   {
-    icon: "Zap",
+    icon: "zap",
     title: "Tốc độ cao",
     description: "Tối ưu hiệu suất với CDN toàn cầu",
   },
   {
-    icon: "Shield",
+    icon: "shield",
     title: "Bảo mật",
     description: "SSL miễn phí và bảo vệ DDoS",
   },
   {
-    icon: "Globe",
+    icon: "globe",
     title: "Đa ngôn ngữ",
     description: "Hỗ trợ nhiều ngôn ngữ và tiền tệ",
   },
   {
-    icon: "Smartphone",
+    icon: "smartphone",
     title: "Mobile-first",
     description: "Giao diện tối ưu cho mọi thiết bị",
   },
   {
-    icon: "LineChart",
+    icon: "line-chart",
     title: "Analytics",
     description: "Báo cáo doanh thu chi tiết",
   },
   {
-    icon: "Headphones",
+    icon: "headphones",
     title: "Hỗ trợ 24/7",
     description: "Đội ngũ support luôn sẵn sàng",
   },
@@ -109,10 +110,11 @@ export function IconGridBlock({
   };
 
   const getIcon = (iconName: string) => {
-    const Icon = (LucideIcons as Record<string, LucideIcons.LucideIcon>)[
-      iconName
-    ];
-    return Icon ? <Icon className={iconInnerSizes[iconSize]} /> : null;
+    const name = iconName.toLowerCase().replace(/([a-z0-9])([A-Z])/g, '$1-$2');
+    if (name in dynamicIconImports) {
+      return <DynamicIcon name={name as keyof typeof dynamicIconImports} className={iconInnerSizes[iconSize]} />;
+    }
+    return null;
   };
 
   return (

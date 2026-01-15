@@ -38,6 +38,7 @@ import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { ReviewsService } from './reviews.service';
+import { AiSentimentService } from './ai-sentiment.service';
 import { GetUser } from '@/auth/decorators/get-user.decorator';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
@@ -63,6 +64,7 @@ export class ReviewsController {
   constructor(
     private readonly reviewsService: ReviewsService,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly aiSentimentService: AiSentimentService,
   ) {}
 
   @Get()
@@ -129,6 +131,57 @@ export class ReviewsController {
       Number(limit),
     );
   }
+
+  // =====================================================================
+  // AI SENTIMENT ENDPOINTS
+  // =====================================================================
+
+  @Get('product/:productId/sentiment')
+  @Cached(300) // 5 minutes
+  @ApiOperation({ summary: 'Lấy thống kê sentiment của sản phẩm (AI)' })
+  async getProductSentiment(@Param('productId') productId: string) {
+    const [stats, topTags] = await Promise.all([
+      this.aiSentimentService.getProductSentimentStats(productId),
+      this.aiSentimentService.getProductTopTags(productId),
+    ]);
+    return { data: { stats, topTags } };
+  }
+
+  @Get('product/:productId/insights')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('review:read')
+  @Cached(600) // 10 minutes
+  @ApiOperation({ summary: 'Lấy AI insights cho sản phẩm (Admin)' })
+  async getProductInsights(@Param('productId') productId: string) {
+    const insights =
+      await this.aiSentimentService.generateProductInsights(productId);
+    return { data: { insights } };
+  }
+
+  @Post('analyze-batch')
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
+  @RequirePermissions('review:update')
+  @ApiOperation({
+    summary: 'Phân tích hàng loạt reviews chưa có sentiment (Admin)',
+  })
+  async analyzeUnanalyzedReviews(@Query('limit') limit = 20) {
+    const unanalyzed = await this.aiSentimentService.getUnanalyzedReviews(
+      Number(limit),
+    );
+    const results = await this.aiSentimentService.analyzeMultipleReviews(
+      unanalyzed.map((r) => r.id),
+    );
+    return {
+      data: {
+        analyzed: Object.keys(results).length,
+        remaining: unanalyzed.length - Object.keys(results).length,
+      },
+    };
+  }
+
+  // =====================================================================
+  // OTHER ENDPOINTS
+  // =====================================================================
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)

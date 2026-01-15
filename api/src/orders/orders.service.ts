@@ -227,17 +227,23 @@ export class OrdersService {
 
         // 5. Kiểm tra và Áp dụng Mã giảm giá (Promotion Engine)
         let discountAmount = 0;
-        let appliedPromotionId: string | null = null;
+        let appliedPromotionId: string | undefined = undefined;
 
         if (createOrderDto.couponCode) {
           try {
-            const promoResult = await this.promotionsService.validatePromotion(
-              createOrderDto.couponCode,
-              { totalAmount, userId, items: orderItemsData },
-            );
+            const promoResult = await this.promotionsService.validatePromotion({
+              code: createOrderDto.couponCode,
+              totalAmount,
+              userId,
+              items: orderItemsData.map((item) => ({
+                skuId: item.skuId,
+                quantity: item.quantity,
+                price: item.priceAtPurchase,
+              })),
+            });
 
             if (promoResult.valid) {
-              appliedPromotionId = promoResult.promotion.id;
+              appliedPromotionId = promoResult.promotionId;
               discountAmount = promoResult.discountAmount;
 
               // ✅ Atomic Increment: Tăng số lượt sử dụng trong transaction

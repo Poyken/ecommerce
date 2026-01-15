@@ -9,14 +9,15 @@
 import { cn } from "@/lib/utils";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { motion, AnimatePresence } from "framer-motion";
-import * as LucideIcons from "lucide-react";
 import { useState } from "react";
 import type { BaseBlockProps, IconName } from "../types/block-types";
+import { DynamicIcon } from "@/components/shared/dynamic-icon";
+import dynamicIconImports from "lucide-react/dist/esm/dynamicIconImports.js";
 
 interface TabItem {
   id: string;
   label: string;
-  icon?: IconName;
+  icon?: string;
   content: React.ReactNode;
 }
 
@@ -34,7 +35,7 @@ const defaultTabs: TabItem[] = [
   {
     id: "features",
     label: "Tính năng",
-    icon: "Sparkles",
+    icon: "sparkles",
     content: (
       <div className="prose dark:prose-invert max-w-none">
         <h3>Tính năng nổi bật</h3>
@@ -54,7 +55,7 @@ const defaultTabs: TabItem[] = [
   {
     id: "pricing",
     label: "Bảng giá",
-    icon: "CreditCard",
+    icon: "credit-card",
     content: (
       <div className="prose dark:prose-invert max-w-none">
         <h3>Bảng giá linh hoạt</h3>
@@ -73,7 +74,7 @@ const defaultTabs: TabItem[] = [
   {
     id: "support",
     label: "Hỗ trợ",
-    icon: "Headphones",
+    icon: "headphones",
     content: (
       <div className="prose dark:prose-invert max-w-none">
         <h3>Hỗ trợ 24/7</h3>
@@ -102,10 +103,11 @@ export function TabsBlock({
 
   const getIcon = (iconName?: string) => {
     if (!iconName) return null;
-    const Icon = (LucideIcons as Record<string, LucideIcons.LucideIcon>)[
-      iconName
-    ];
-    return Icon ? <Icon className="size-4" /> : null;
+    const name = iconName.toLowerCase().replace(/([a-z0-9])([A-Z])/g, '$1-$2');
+    if (name in dynamicIconImports) {
+      return <DynamicIcon name={name as keyof typeof dynamicIconImports} className="size-4" />;
+    }
+    return null;
   };
 
   const alignmentClasses = {

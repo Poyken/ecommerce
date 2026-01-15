@@ -128,7 +128,7 @@ export class DevToolsController {
         );
         earnedPoints = result?.amount ?? 0;
       } catch (error) {
-        this.logger.error(`Error earning points: ${(error as any).message}`);
+        this.logger.error(`Error earning points: ${error.message}`);
       }
     }
 

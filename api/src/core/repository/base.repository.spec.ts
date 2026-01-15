@@ -108,12 +108,12 @@ describe('BaseRepository', () => {
       (mockPrisma as any).testModel.findMany.mockResolvedValue(mockRecords);
       (mockPrisma as any).testModel.count.mockResolvedValue(25);
 
-      const result = (await withTenantContext(mockTenant, () => {
+      const result = await withTenantContext(mockTenant, () => {
         return repository.findManyPaginated(
           { where: { status: 'ACTIVE' } },
           { page: 2, limit: 10 },
         );
-      })) as PaginatedResult<any>;
+      });
 
       expect(result.data).toEqual(mockRecords);
       expect(result.meta).toEqual({

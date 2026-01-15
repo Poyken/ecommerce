@@ -8,7 +8,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m as motion, Variants } from "framer-motion";
 import {
   ArrowRight,
   Check,
@@ -22,12 +22,12 @@ import Link from "next/link";
 import { useState } from "react";
 
 // Animation variants
-const fadeInUp = {
+const fadeInUp: Variants = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
 };
 
-const staggerContainer = {
+const staggerContainer: Variants = {
   visible: {
     transition: {
       staggerChildren: 0.1,
@@ -409,7 +409,7 @@ export default function PricingPage() {
                   variant={plan.isPopular ? "secondary" : "default"}
                   asChild
                 >
-                  <Link href={plan.ctaLink}>
+                  <Link href={plan.ctaLink as "/register" | "/contact"}>
                     {plan.cta}
                     <ArrowRight className="size-4 ml-2" />
                   </Link>
