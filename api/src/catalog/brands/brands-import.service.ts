@@ -2,6 +2,7 @@ import { PrismaService } from '@core/prisma/prisma.service';
 import { getTenant } from '@core/tenant/tenant.context';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import * as ExcelJS from 'exceljs';
+import { createSlug } from '@/common/utils/string';
 
 @Injectable()
 export class BrandsImportService {
@@ -32,18 +33,20 @@ export class BrandsImportService {
       try {
         const name = String(row.getCell(2).value || '');
         const status = String(row.getCell(4).value || 'ACTIVE');
+        const slug = createSlug(name);
 
         if (!name) throw new Error('Tên thương hiệu là bắt buộc');
 
         await this.prisma.brand.upsert({
           where: {
-            name_tenantId: { name, tenantId },
-          } as any,
+            tenantId_name: { name, tenantId },
+          },
           update: {
             deletedAt: status === 'INACTIVE' ? new Date() : null,
           },
           create: {
             name,
+            slug,
             tenantId: tenantId as any,
             deletedAt: status === 'INACTIVE' ? new Date() : null,
           },
