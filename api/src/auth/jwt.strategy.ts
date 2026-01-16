@@ -100,14 +100,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     // }
 
     // 2. Validate Device Fingerprint (Binding)
-    if (fp) {
+    // Skip fingerprint check in development mode to allow testing from different clients
+    if (fp && process.env.NODE_ENV === 'production') {
       // Use SAME hash logic as AuthController via shared utility
       const currentFp = getFingerprint(req);
 
       if (fp !== currentFp) {
-        // [DEV MODE] Fingerprint mismatch is common in dev (e.g. localhost vs IP).
-        // Log warning instead of revoking token to prevent loops.
-        this.logger.warn(`[JWT] Fingerprint mismatch detected!`);
+        // [PROD MODE] Strict fingerprint validation for security
+        this.logger.warn(`[JWT] Fingerprint mismatch detected in production!`);
         this.logger.debug(`[JWT] Token FP: ${fp.substring(0, 10)}...`);
         this.logger.debug(`[JWT] Current FP: ${currentFp.substring(0, 10)}...`);
         this.logger.debug(`[JWT] UA: ${req.headers['user-agent']}`);
@@ -115,13 +115,17 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
           `[JWT] IP: ${req.ip} (X-Forwarded-For: ${req.headers['x-forwarded-for']})`,
         );
 
-        if (process.env.NODE_ENV === 'production') {
-          throw new UnauthorizedException(
-            'Device fingerprint mismatch. Please login again.',
-          );
-        }
-      } else {
-        // this.logger.debug(`[JWT] Fingerprint verified for user ${userId}`);
+        throw new UnauthorizedException(
+          'Device fingerprint mismatch. Please login again.',
+        );
+      }
+    } else if (fp && process.env.NODE_ENV !== 'production') {
+      // [DEV MODE] Log warning but allow request to proceed
+      const currentFp = getFingerprint(req);
+      if (fp !== currentFp) {
+        this.logger.debug(
+          `[JWT] Fingerprint mismatch in dev mode (allowed): Token FP: ${fp.substring(0, 10)}..., Current FP: ${currentFp.substring(0, 10)}...`,
+        );
       }
     }
 

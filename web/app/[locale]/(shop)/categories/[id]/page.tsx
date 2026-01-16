@@ -1,10 +1,10 @@
-import { productService } from "@/features/products/services/product.service";
 import { CollectionContent } from "@/features/products/components/collection-content";
 import { getTranslations } from "next-intl/server";
 
 export async function generateStaticParams() {
   try {
-    const ids = await productService.getCategoryIds();
+    const { getCategoryIdsAction } = await import("@/features/products/actions");
+    const ids = await getCategoryIdsAction();
     if (ids.length === 0) {
       return [{ id: "fallback" }];
     }
@@ -21,12 +21,13 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const products = await productService.getProducts({
+  const { getProductsAction } = await import("@/features/products/actions");
+  const productsRes = await getProductsAction({
     categoryId: id,
     limit: 1,
   });
 
-  const categoryName = products?.data?.[0]?.category?.name || "Category";
+  const categoryName = productsRes.success && productsRes.data?.data?.[0]?.category?.name || "Category";
 
   return {
     title: categoryName,
@@ -41,18 +42,22 @@ export default async function CategoryProductsPage({
 }) {
   const { id } = await params;
 
-  // Parallel fetch: get name for the UI, and promise for the grid
-  const [category, t] = await Promise.all([
-    productService.getCategory(id),
+  // Parallel fetch: get name for the UI, and promise for the grid - Using Server Actions
+  const { getCategoryAction, getProductsAction } = await import("@/features/products/actions");
+  const [categoryRes, t] = await Promise.all([
+    getCategoryAction(id),
     getTranslations("common"),
   ]);
 
-  const productsPromise = productService.getProducts({
+  const productsPromise = getProductsAction({
     categoryId: id,
     limit: 20,
-  });
+  }).then((res) => ({
+    data: res.success && res.data ? res.data.data : [],
+    meta: res.success && res.data ? res.data.meta : { page: 1, limit: 20, total: 0, lastPage: 1 },
+  }));
 
-  const categoryName = category?.name || "Category";
+  const categoryName = categoryRes.success && categoryRes.data ? categoryRes.data.name : "Category";
 
   return (
     <CollectionContent

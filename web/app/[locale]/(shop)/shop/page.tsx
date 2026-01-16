@@ -4,7 +4,6 @@ import { getTranslations } from "next-intl/server";
 // Types based on API response
 import { Product } from "@/types/models";
 import { Metadata } from "next";
-import { productService } from "@/features/products/services/product.service";
 
 /**
  * =====================================================================
@@ -51,10 +50,13 @@ export async function generateMetadata({
     title = `${t("searchResults", { query: searchQuery })} | Luxe`;
   } else if (categoryId || brandId) {
     try {
-      const [categories, brands] = await Promise.all([
-        productService.getCategories(),
-        productService.getBrands(),
+      const { getCategoriesAction, getBrandsAction } = await import("@/features/products/actions");
+      const [categoriesRes, brandsRes] = await Promise.all([
+        getCategoriesAction(),
+        getBrandsAction(),
       ]);
+      const categories = categoriesRes.success ? categoriesRes.data : [];
+      const brands = brandsRes.success ? brandsRes.data : [];
 
       if (categoryId) {
         const category = categories.find(
@@ -99,24 +101,31 @@ export default async function ShopPage({
     typeof params.search === "string" ? params.search : undefined;
 
   try {
-    const productsPromise = productService
-      .getProducts({
-        categoryId,
-        brandId,
-        search: searchQuery,
-        page: params.page ? Number(params.page) : 1,
-        limit: 20,
-        sort: typeof params.sort === "string" ? params.sort : undefined,
-        includeSkus: "true",
-      })
-      .then((res) => ({
-        data: res.data || [],
-        meta: res.meta || { page: 1, limit: 20, total: 0, lastPage: 1 },
-      }));
+    // Use server actions for all data fetching
+    const { getProductsAction, getCategoriesAction, getBrandsAction, getFeaturedProductsAction } = await import("@/features/products/actions");
+    
+    const productsPromise = getProductsAction({
+      categoryId,
+      brandId,
+      search: searchQuery,
+      page: params.page ? Number(params.page) : 1,
+      limit: 20,
+      sort: typeof params.sort === "string" ? params.sort : undefined,
+      includeSkus: "true",
+    }).then((res) => ({
+      data: res.success && res.data ? res.data.data : [],
+      meta: res.success && res.data ? res.data.meta : { page: 1, limit: 20, total: 0, lastPage: 1 },
+    }));
 
-    const categoriesPromise = productService.getCategories();
-    const brandsPromise = productService.getBrands();
-    const suggestedProductsPromise = productService.getFeaturedProducts(4);
+    const categoriesPromise = getCategoriesAction().then((res) => 
+      res.success ? res.data : []
+    );
+    const brandsPromise = getBrandsAction().then((res) => 
+      res.success ? res.data : []
+    );
+    const suggestedProductsPromise = getFeaturedProductsAction(4).then((res) =>
+      res.success ? res.data : []
+    );
 
     // Fetch wishlist items (server-side) to ensure correct initial state
     const { getWishlistAction } = await import("@/features/wishlist/actions");

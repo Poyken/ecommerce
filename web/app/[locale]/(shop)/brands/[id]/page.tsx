@@ -1,10 +1,10 @@
-import { productService } from "@/features/products/services/product.service";
 import { CollectionContent } from "@/features/products/components/collection-content";
 import { getTranslations } from "next-intl/server";
 
 export async function generateStaticParams() {
   try {
-    const ids = await productService.getBrandIds();
+    const { getBrandIdsAction } = await import("@/features/products/actions");
+    const ids = await getBrandIdsAction();
     if (ids.length === 0) {
       return [{ id: "fallback" }];
     }
@@ -21,12 +21,13 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const products = await productService.getProducts({
+  const { getProductsAction } = await import("@/features/products/actions");
+  const productsRes = await getProductsAction({
     brandId: id,
     limit: 1,
   });
 
-  const brandName = products?.data?.[0]?.brand?.name || "Brand";
+  const brandName = productsRes.success && productsRes.data?.data?.[0]?.brand?.name || "Brand";
 
   return {
     title: brandName,
@@ -46,19 +47,23 @@ export default async function BrandProductsPage({
   const page = Number(resolvedSearchParams.page) || 1;
   const limit = 20;
 
-  // Parallel fetch: get brand details and products promise
-  const [brand, t] = await Promise.all([
-    productService.getBrand(id),
+  // Parallel fetch: get brand details and products promise - Using Server Actions
+  const { getBrandAction, getProductsAction } = await import("@/features/products/actions");
+  const [brandRes, t] = await Promise.all([
+    getBrandAction(id),
     getTranslations("common"),
   ]);
 
-  const productsPromise = productService.getProducts({
+  const productsPromise = getProductsAction({
     brandId: id,
     limit,
     page,
-  });
+  }).then((res) => ({
+    data: res.success && res.data ? res.data.data : [],
+    meta: res.success && res.data ? res.data.meta : { page: 1, limit: 20, total: 0, lastPage: 1 },
+  }));
 
-  const brandName = brand?.name || "Brand";
+  const brandName = brandRes.success && brandRes.data ? brandRes.data.name : "Brand";
 
   return (
     <CollectionContent

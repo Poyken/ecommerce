@@ -23,9 +23,14 @@
 
 "use client";
 
-import { ApiResponse } from "@/types/dtos";
-import { Product } from "@/types/models";
+import { Product, Category, Brand } from "@/types/models";
 import useSWR from "swr";
+import {
+  getProductsAction,
+  getProductAction,
+  getCategoriesAction,
+  getBrandsAction,
+} from "../actions";
 
 // =============================================================================
 // 📦 TYPES
@@ -52,37 +57,58 @@ interface GetProductsParams {
 // =============================================================================
 
 /**
- * Hook để fetch danh sách sản phẩm với client-side caching.
+ * Hook để fetch danh sách sản phẩm với hybrid server/client pattern.
  *
  * @param params - Tham số filter và phân trang
- * @returns { data, error, isLoading, isValidating, mutate }
+ * @param initialData - Initial data từ server action (optional)
+ * @returns { products, meta, error, isLoading, isValidating, mutate }
  *
  * @example
- * const { data, isLoading } = useProducts({ categoryId: "abc", page: 1 });
+ * // In Server Component/Page:
+ * const initialData = await getProductsAction({ categoryId: "abc", page: 1 });
+ * 
+ * // In Client Component:
+ * const { products, isLoading } = useProducts(
+ *   { categoryId: "abc", page: 1 },
+ *   initialData.success ? initialData.data : undefined
+ * );
  */
-export function useProducts(params?: GetProductsParams) {
-  // Tạo URL với query params
-  const searchParams = new URLSearchParams();
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== "") {
-        searchParams.append(key, String(value));
+export function useProducts(
+  params?: GetProductsParams,
+  initialData?: { products: Product[]; meta: any }
+) {
+  // Create cache key from params
+  const cacheKey = params
+    ? `products-${JSON.stringify(params)}`
+    : "products-default";
+
+  // Use SWR with server action, fallback to initial data
+  const { data, error, isLoading, isValidating, mutate } = useSWR(
+    cacheKey,
+    async () => {
+      const result = await getProductsAction(params);
+      if (result.success && result.data) {
+        return {
+          products: result.data.data || [],
+          meta: result.data.meta || { total: 0, page: 1, limit: 10, lastPage: 0 },
+        };
       }
-    });
-  }
+      return { products: [], meta: { total: 0, page: 1, limit: 10, lastPage: 0 } };
+    },
+    {
+      fallbackData: initialData,
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
+    }
+  );
 
-  // Pass relative path to SWR (Global Fetcher 'http' will handle base URL)
-  const queryString = searchParams.toString();
-  const url = queryString ? `/products?${queryString}` : "/products";
-
-  const { data, error, isLoading, isValidating, mutate } =
-    useSWR<ApiResponse<Product[]>>(url);
+  const result = data || initialData || { products: [], meta: { total: 0, page: 1, limit: 10, lastPage: 0 } };
 
   return {
-    products: data?.data || [],
-    meta: data?.meta || { total: 0, page: 1, limit: 10, lastPage: 0 },
+    products: result.products,
+    meta: result.meta,
     error,
-    isLoading,
+    isLoading: isLoading && !initialData,
     isValidating,
     mutate,
   };
@@ -93,20 +119,32 @@ export function useProducts(params?: GetProductsParams) {
 // =============================================================================
 
 /**
- * Hook để fetch chi tiết sản phẩm với client-side caching.
+ * Hook để fetch chi tiết sản phẩm với hybrid server/client pattern.
  *
  * @param id - ID sản phẩm
+ * @param initialData - Initial product data từ server action (optional)
  * @returns { product, error, isLoading }
  */
-export function useProduct(id: string | null) {
-  const url = id ? `/products/${id}` : null;
+export function useProduct(id: string | null, initialData?: Product) {
+  const cacheKey = id ? `product-${id}` : null;
 
-  const { data, error, isLoading } = useSWR<{ data: Product }>(url);
+  const { data, error, isLoading } = useSWR(
+    cacheKey,
+    async () => {
+      if (!id) return null;
+      const result = await getProductAction(id);
+      return result.success ? result.data : null;
+    },
+    {
+      fallbackData: initialData,
+      revalidateOnFocus: false,
+    }
+  );
 
   return {
-    product: data?.data || null,
+    product: data || initialData || null,
     error,
-    isLoading,
+    isLoading: isLoading && !initialData,
   };
 }
 
@@ -115,19 +153,27 @@ export function useProduct(id: string | null) {
 // =============================================================================
 
 /**
- * Hook để fetch danh sách categories với client-side caching.
+ * Hook để fetch danh sách categories với hybrid server/client pattern.
+ *
+ * @param initialData - Initial categories data từ server action (optional)
  */
-export function useCategories() {
-  const url = "/categories";
-
-  const { data, error, isLoading } = useSWR<{
-    data: import("@/types/models").Category[];
-  }>(url);
+export function useCategories(initialData?: Category[]) {
+  const { data, error, isLoading } = useSWR(
+    "categories",
+    async () => {
+      const result = await getCategoriesAction();
+      return result.success ? result.data : [];
+    },
+    {
+      fallbackData: initialData,
+      revalidateOnFocus: false,
+    }
+  );
 
   return {
-    categories: data?.data || [],
+    categories: data || initialData || [],
     error,
-    isLoading,
+    isLoading: isLoading && !initialData,
   };
 }
 
@@ -136,18 +182,26 @@ export function useCategories() {
 // =============================================================================
 
 /**
- * Hook để fetch danh sách brands với client-side caching.
+ * Hook để fetch danh sách brands với hybrid server/client pattern.
+ *
+ * @param initialData - Initial brands data từ server action (optional)
  */
-export function useBrands() {
-  const url = "/brands";
-
-  const { data, error, isLoading } = useSWR<{
-    data: import("@/types/models").Brand[];
-  }>(url);
+export function useBrands(initialData?: Brand[]) {
+  const { data, error, isLoading } = useSWR(
+    "brands",
+    async () => {
+      const result = await getBrandsAction();
+      return result.success ? result.data : [];
+    },
+    {
+      fallbackData: initialData,
+      revalidateOnFocus: false,
+    }
+  );
 
   return {
-    brands: data?.data || [],
+    brands: data || initialData || [],
     error,
-    isLoading,
+    isLoading: isLoading && !initialData,
   };
 }

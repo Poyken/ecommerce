@@ -1,5 +1,4 @@
 import { Link } from "@/i18n/routing";
-import { productService } from "@/features/products/services/product.service";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
@@ -54,10 +53,12 @@ function getBrandImage(brandName: string, imageUrl?: string | null): string {
  * =================================================================================================
  */
 export default async function BrandsPage() {
-  const [brands, t] = await Promise.all([
-    productService.getBrands(),
+  const { getBrandsAction } = await import("@/features/products/actions");
+  const [brandsRes, t] = await Promise.all([
+    getBrandsAction(),
     getTranslations("common"),
   ]);
+  const brands = brandsRes.success ? brandsRes.data : [];
 
   return (
     <div className="min-h-screen bg-background pt-24 pb-16">

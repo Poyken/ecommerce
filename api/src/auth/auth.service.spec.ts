@@ -101,6 +101,7 @@ describe('AuthService', () => {
       userRole: {
         create: jest.fn(),
         deleteMany: jest.fn(),
+        upsert: jest.fn().mockResolvedValue({ userId: 'user-123', roleId: 'role-id' }),
       },
       permission: {
         upsert: jest.fn(),
@@ -286,7 +287,7 @@ describe('AuthService', () => {
       // Act & Assert
       await expect(
         service.register(registerDto, 'fingerprint'),
-      ).rejects.toThrow(BadRequestException);
+      ).rejects.toThrow('Email này đã được sử dụng');
     });
   });
 
@@ -382,7 +383,7 @@ describe('AuthService', () => {
   describe('getMe', () => {
     it('should return user profile', async () => {
       // Arrange
-      prismaService.user.findUnique = jest.fn().mockResolvedValue(mockUser);
+      prismaService.user.findFirst = jest.fn().mockResolvedValue(mockUser);
 
       // Act
       const result = await service.getMe('user-123');
@@ -395,11 +396,11 @@ describe('AuthService', () => {
 
     it('should throw BadRequestException for non-existent user', async () => {
       // Arrange
-      prismaService.user.findUnique = jest.fn().mockResolvedValue(null);
+      prismaService.user.findFirst = jest.fn().mockResolvedValue(null);
 
       // Act & Assert
       await expect(service.getMe('non-existent-id')).rejects.toThrow(
-        BadRequestException,
+        UnauthorizedException,
       );
     });
   });

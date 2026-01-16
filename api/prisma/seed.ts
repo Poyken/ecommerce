@@ -109,9 +109,14 @@ const ALL_PERMISSIONS = [
 ];
 
 const TENANT_NAME = 'Luxe Home';
-const TENANT_DOMAIN = process.env.FRONTEND_URL
-  ? process.env.FRONTEND_URL.replace(/^https?:\/\//, '').split(':')[0]
-  : 'localhost';
+// In development, always use localhost (http only)
+// In production, extract domain from FRONTEND_URL
+const TENANT_DOMAIN =
+  process.env.NODE_ENV === 'development'
+    ? 'localhost'
+    : process.env.FRONTEND_URL
+      ? process.env.FRONTEND_URL.replace(/^https?:\/\//, '').split(':')[0]
+      : 'localhost';
 
 // Real Images from web/public/images
 const IMAGES = {
@@ -302,7 +307,6 @@ async function main() {
         slug: `luxury-sofa-${Date.now()}`,
         description: 'A very comfortable luxury sofa',
         tenantId: tenant.id,
-        categoryId: undefined, // Remove if it was here mistakenly
         brandId: brandIds[0],
         categories: {
           create: [

@@ -414,7 +414,7 @@ export class CartService {
               throw new Error('Sản phẩm không còn được bán');
 
             // Atomic Upsert cho item
-            const cartItem = await (tx.cartItem as any).upsert({
+            const cartItem = await tx.cartItem.upsert({
               where: {
                 cartId_skuId: {
                   cartId: cart.id,

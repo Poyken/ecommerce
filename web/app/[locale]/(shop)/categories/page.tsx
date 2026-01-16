@@ -1,5 +1,4 @@
 import { Link } from "@/i18n/routing";
-import { productService } from "@/features/products/services/product.service";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
@@ -56,10 +55,12 @@ function getCategoryImage(
  * =================================================================================================
  */
 export default async function CategoriesPage() {
-  const [categories, t] = await Promise.all([
-    productService.getCategories(),
+  const { getCategoriesAction } = await import("@/features/products/actions");
+  const [categoriesRes, t] = await Promise.all([
+    getCategoriesAction(),
     getTranslations("common"),
   ]);
+  const categories = categoriesRes.success ? categoriesRes.data : [];
 
   return (
     <div className="min-h-screen bg-background pt-24 pb-16">

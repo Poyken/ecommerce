@@ -191,9 +191,27 @@ async function fetcher<T>(
         const errorBody = await res.json();
         if (errorBody && typeof errorBody === "object") {
           const body = errorBody as Record<string, any>;
-          errorMessage = body.message || body.error || errorMessage;
-          if (Array.isArray(errorMessage))
-            errorMessage = errorMessage.join(", ");
+          // Extract error message, handling nested objects
+          let msg: any = body.message || body.error || errorMessage;
+          
+          // If message is an object, try to extract nested message
+          if (msg && typeof msg === "object") {
+            if (typeof msg.message === "string") {
+              msg = msg.message;
+            } else if (typeof msg.error === "string") {
+              msg = msg.error;
+            } else {
+              // Fallback: stringify the object
+              msg = JSON.stringify(msg);
+            }
+          }
+          
+          // Convert to string if not already
+          if (Array.isArray(msg)) {
+            errorMessage = msg.join(", ");
+          } else {
+            errorMessage = String(msg || errorMessage);
+          }
         }
       } catch {
         // ignore
