@@ -26,7 +26,6 @@
 "use server";
 
 import { generateCsrfToken } from "@/lib/csrf";
-import { http } from "@/lib/http";
 import { getPermissionsFromToken } from "@/lib/permission-utils";
 import {
   forgotPasswordSchema,
@@ -35,9 +34,10 @@ import {
   resetPasswordSchema,
 } from "@/lib/schemas";
 import { createSession, logout } from "@/lib/session";
-import { ApiResponse } from "@/types/dtos";
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
+
+import { authService } from "./services/auth.service";
 
 /**
  * Lấy danh sách permissions từ token trong cookie.
@@ -78,19 +78,8 @@ export async function loginAction(prevState: unknown, formData: FormData) {
   }
 
   try {
-    // Gọi API đăng nhập - Trả về { data: { accessToken, refreshToken, mfaRequired, userId } }
-    const response = await http<
-      ApiResponse<{
-        accessToken?: string;
-        refreshToken?: string;
-        mfaRequired?: boolean;
-        userId?: string;
-      }>
-    >("/auth/login", {
-      method: "POST",
-      body: JSON.stringify(parsed.data),
-      skipRedirectOn401: true,
-    });
+    // Gọi API đăng nhập
+    const response = await authService.login(parsed.data);
 
     const { accessToken, refreshToken, mfaRequired, userId } = response.data;
 
@@ -130,13 +119,7 @@ export async function loginAction(prevState: unknown, formData: FormData) {
  */
 export async function login2FAAction(userId: string, token: string) {
   try {
-    const response = await http<
-      ApiResponse<{ accessToken: string; refreshToken: string }>
-    >("/auth/2fa/login", {
-      method: "POST",
-      body: JSON.stringify({ userId, token }),
-      skipRedirectOn401: true,
-    });
+    const response = await authService.login2FA(userId, token);
 
     const { accessToken, refreshToken } = response.data;
     // Lưu tokens vào Session (HttpOnly cookies)
@@ -215,15 +198,7 @@ export async function registerAction(prevState: unknown, formData: FormData) {
   }
 
   try {
-    const response = await http<
-      ApiResponse<{
-        accessToken: string;
-        refreshToken: string;
-      }>
-    >("/auth/register", {
-      method: "POST",
-      body: JSON.stringify(parsed.data),
-    });
+    const response = await authService.register(parsed.data);
 
     const { accessToken, refreshToken } = response.data;
     await createSession(accessToken, refreshToken);
@@ -261,10 +236,7 @@ export async function forgotPasswordAction(
   }
 
   try {
-    await http("/auth/forgot-password", {
-      method: "POST",
-      body: JSON.stringify(parsed.data),
-    });
+    await authService.forgotPassword(parsed.data);
     return { success: true, message: "Email sent" };
   } catch (error: unknown) {
     return { error: (error as Error).message || "Failed to send email" };
@@ -301,12 +273,9 @@ export async function resetPasswordAction(
   }
 
   try {
-    await http("/auth/reset-password", {
-      method: "POST",
-      body: JSON.stringify({
-        token: parsed.data.token,
-        newPassword: parsed.data.newPassword,
-      }),
+    await authService.resetPassword({
+      token: parsed.data.token,
+      newPassword: parsed.data.newPassword,
     });
     return { success: true, message: "Password updated" };
   } catch (error: unknown) {

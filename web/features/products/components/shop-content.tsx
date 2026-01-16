@@ -211,7 +211,11 @@ export function ShopContent({
   const isAnyPending = isFilterPending;
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-accent/30">
+    <div className="min-h-screen bg-black font-sans selection:bg-primary/30 relative overflow-hidden">
+      {/* Background Aurora Glows */}
+      <div className="absolute top-[10%] -left-[10%] w-[600px] h-[600px] bg-[var(--aurora-purple)]/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-[40%] -right-[5%] w-[500px] h-[500px] bg-[var(--aurora-blue)]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[20%] left-[20%] w-[800px] h-[800px] bg-primary/2 rounded-full blur-[200px] pointer-events-none" />
       <main className="container mx-auto px-4 md:px-8 pt-28 pb-16 space-y-8">
         {/* Breadcrumb Navigation */}
         <BreadcrumbNav items={[{ label: t("title") }]} className="text-sm" />
@@ -220,14 +224,14 @@ export function ShopContent({
           {/* Header & Controls */}
           <div className="space-y-4 border-b border-foreground/5 pb-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-              <div className="space-y-3">
-                <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
-                  Curated Selection
+              <div className="space-y-4">
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary block">
+                  LUXE.COLLECTION
                 </span>
-                <h1 className="text-4xl md:text-5xl font-serif font-normal tracking-tight">
+                <h1 className="text-4xl md:text-7xl font-black tracking-tighter uppercase italic text-white leading-none">
                   {t("title")}
                 </h1>
-                <p className="text-muted-foreground text-base font-light max-w-md">
+                <p className="text-muted-foreground text-sm font-medium max-w-md leading-relaxed opacity-60">
                   {t("subtitle")}
                 </p>
               </div>
@@ -279,44 +283,45 @@ export function ShopContent({
 
             {/* Active Active Filters / Results Count */}
             <div className="flex flex-wrap items-center justify-between gap-4">
-              <Suspense fallback={<Skeleton className="h-5 w-32" />}>
-                <ShopStats productsPromise={productsPromise} />
-              </Suspense>
+              <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 shadow-xl">
+                <Suspense fallback={<Skeleton className="h-5 w-32" />}>
+                  <ShopStats productsPromise={productsPromise} />
+                </Suspense>
+              </div>
 
               <AnimatePresence mode="popLayout">
                 {hasActiveFilters && (
                   <m.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.2 }}
-                    className="flex flex-wrap gap-3"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="flex flex-wrap gap-2"
                   >
                     {activeCategoryName && (
-                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-wider border border-primary/30 shadow-sm shadow-primary/5">
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/30 shadow-2xl backdrop-blur-md">
                         {activeCategoryName}
                         <button
                           onClick={() => handleRemoveFilter("categoryId")}
-                          className="hover:text-foreground transition-colors"
+                          className="hover:text-white transition-colors p-0.5 rounded-full hover:bg-primary/20"
                         >
-                          <X size={14} />
+                          <X size={12} />
                         </button>
                       </div>
                     )}
                     {activeBrandName && (
-                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 text-accent text-xs font-black uppercase tracking-wider border border-accent/30 shadow-sm shadow-accent/5">
+                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white text-[10px] font-black uppercase tracking-widest border border-white/20 shadow-2xl backdrop-blur-md">
                         {activeBrandName}
                         <button
                           onClick={() => handleRemoveFilter("brandId")}
-                          className="hover:text-foreground transition-colors"
+                          className="hover:text-primary transition-colors p-0.5 rounded-full hover:bg-white/20"
                         >
-                          <X size={14} />
+                          <X size={12} />
                         </button>
                       </div>
                     )}
                     <button
                       onClick={handleClearAllFilters}
-                      className="text-xs font-bold text-muted-foreground hover:text-primary underline underline-offset-4 uppercase tracking-wider transition-colors cursor-pointer"
+                      className="text-[10px] font-black text-muted-foreground hover:text-primary transition-all uppercase tracking-widest px-4 py-2 rounded-xl hover:bg-white/5"
                     >
                       {t("clearAll")}
                     </button>
@@ -340,12 +345,9 @@ export function ShopContent({
             {/* Product Grid - 80% width (4/5) */}
             <div className="lg:col-span-4 space-y-6">
               {/* View Options & Stats Row */}
-              <div className="flex flex-col sm:flex-row justify-between items-center bg-background/50 backdrop-blur-sm p-4 rounded-xl border border-border/50 gap-4">
+              <div className="flex flex-col sm:flex-row justify-between items-center glass-premium p-1.5 rounded-2xl border-white/5 gap-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground mr-2 hidden sm:inline-block">
-                    View
-                  </span>
-                  <div className="flex bg-muted/30 p-1.5 rounded-2xl border border-foreground/5 relative">
+                  <div className="flex bg-white/5 p-1 rounded-xl border border-white/5 relative">
                     {[3, 4, 5].map((col) => {
                       const isActive = columns === col;
                       return (
@@ -354,21 +356,20 @@ export function ShopContent({
                           onClick={() => setColumns(col as 3 | 4 | 5)}
                           disabled={isAnyPending}
                           className={cn(
-                            "relative px-4 py-2 rounded-xl transition-colors duration-300 z-10",
+                            "relative px-4 py-2 rounded-lg transition-all duration-500 z-10",
                             isActive
-                              ? "text-foreground"
-                              : "text-muted-foreground hover:text-foreground/70",
+                              ? "text-primary"
+                              : "text-muted-foreground/60 hover:text-white",
                             isAnyPending && "opacity-50 cursor-wait"
                           )}
-                          title={`${col} Columns`}
                         >
                           {isActive && (
                             <m.div
                               layoutId="activeLayoutGrid"
-                              className="absolute inset-0 bg-background shadow-xl shadow-black/5 rounded-xl z-0"
+                              className="absolute inset-0 bg-white/10 rounded-lg z-0"
                               transition={{
                                 type: "spring",
-                                stiffness: 380,
+                                stiffness: 400,
                                 damping: 30,
                               }}
                             />
@@ -379,10 +380,10 @@ export function ShopContent({
                                 <div
                                   key={i}
                                   className={cn(
-                                    "w-1 h-3 rounded-full transition-all duration-300",
+                                    "w-1 h-3 rounded-full transition-all duration-500",
                                     isActive
                                       ? "bg-primary"
-                                      : "bg-current opacity-40"
+                                      : "bg-current"
                                   )}
                                 />
                               )
@@ -390,10 +391,10 @@ export function ShopContent({
                             {col > 3 && (
                               <div
                                 className={cn(
-                                  "w-0.5 h-3 rounded-full transition-all duration-300",
+                                  "w-0.5 h-3 rounded-full transition-all duration-500",
                                   isActive
                                     ? "bg-primary"
-                                    : "bg-current opacity-40"
+                                    : "bg-current"
                                 )}
                               />
                             )}
@@ -404,7 +405,7 @@ export function ShopContent({
                   </div>
                 </div>
 
-                <div className="font-medium order-1 sm:order-2">
+                <div className="font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50 px-6">
                   <Suspense fallback={<Skeleton className="h-5 w-32" />}>
                     <ShopStats productsPromise={productsPromise} />
                   </Suspense>

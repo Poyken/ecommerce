@@ -25,7 +25,6 @@
 
 "use server";
 
-import { http } from "@/lib/http";
 import { protectedActionClient } from "@/lib/safe-action";
 import {
   REVALIDATE,
@@ -38,16 +37,8 @@ import { Review } from "@/types/models";
 import { cookies } from "next/headers";
 import { z } from "zod";
 
-// =============================================================================
-// 📦 TYPES - Định nghĩa kiểu dữ liệu
-// =============================================================================
-export interface ReviewEligibility {
-  canReview: boolean;
-  purchasedSkus: Array<{
-    skuId: string;
-    skuCode: string;
-  }>;
-}
+import { reviewService } from "./services/review.service";
+import { ReviewEligibility } from "@/types/models";
 
 // =============================================================================
 // 🔒 SAFE ACTIONS (INTERNAL)
@@ -56,10 +47,7 @@ export interface ReviewEligibility {
 const safeCreateReview = protectedActionClient
   .schema(ReviewSchema)
   .action(async ({ parsedInput: data }) => {
-    await http("/reviews", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    await reviewService.createReview(data);
     REVALIDATE.products(data.productId);
     return { success: true };
   });
@@ -77,10 +65,7 @@ const UpdateReviewWithIdSchema = UpdateReviewSchema.extend({
 const safeUpdateReview = protectedActionClient
   .schema(UpdateReviewWithIdSchema)
   .action(async ({ parsedInput: { reviewId, ...data } }) => {
-    await http(`/reviews/${reviewId}`, {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    });
+    await reviewService.updateReview(reviewId, data);
     return { success: true };
   });
 
@@ -89,9 +74,7 @@ const DeleteReviewSchema = z.object({ reviewId: z.string() });
 const safeDeleteReview = protectedActionClient
   .schema(DeleteReviewSchema)
   .action(async ({ parsedInput: { reviewId } }) => {
-    await http(`/reviews/mine/${reviewId}`, {
-      method: "DELETE",
-    });
+    await reviewService.deleteReview(reviewId);
     return { success: true };
   });
 
@@ -132,11 +115,7 @@ export async function checkReviewEligibilityAction(
 ): Promise<ActionResult<ReviewEligibility>> {
   await cookies();
   return wrapServerAction(
-    () =>
-      http<ApiResponse<ReviewEligibility>>(
-        `/reviews/check-eligibility?productId=${productId}`,
-        { cache: "no-store" }
-      ),
+    () => reviewService.checkEligibility(productId),
     "Không thể kiểm tra quyền đánh giá"
   );
 }
@@ -148,15 +127,8 @@ export async function getReviewsAction(
   productId: string,
   cursor?: string
 ): Promise<ActionResult<Review[]>> {
-  const url = cursor
-    ? `/reviews/product/${productId}?cursor=${cursor}&limit=5`
-    : `/reviews/product/${productId}?limit=5`;
-
   return wrapServerAction(
-    () =>
-      http<ApiResponse<Review[]>>(url, {
-        next: { tags: [`reviews:${productId}`] },
-      }),
+    () => reviewService.getReviews(productId, cursor),
     "Không thể tải đánh giá"
   );
 }
@@ -169,11 +141,7 @@ export async function uploadReviewImagesAction(
   formData: FormData
 ): Promise<ActionResult<{ urls: string[] }>> {
   return wrapServerAction(
-    () =>
-      http<{ urls: string[] }>("/reviews/upload", {
-        method: "POST",
-        body: formData,
-      }),
+    () => reviewService.uploadImages(formData),
     "Failed to upload images"
   );
 }

@@ -9,25 +9,15 @@
  * - Hiển thị danh sách các cửa hàng đang thuê hệ thống.
  * - Mỗi thẻ Tenant hiển thị các chỉ số cơ bản (User, Sản phẩm, Đơn hàng) để đánh giá nhanh quy mô.
  *
- * 2. IMPERSONATION ENTRY POINT:
- * - Nút "Log in as Owner" (khi được implement) sẽ gọi API `impersonate`
- *   để truy cập vào dashboard của tenant đó. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
+ * 2. LUXURY UI (NEW):
+ * - Sử dụng AdminTableWrapper với variant luxury để đồng bộ với Admin UI.
+ *
  * =====================================================================
  */ 
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Store,
   Globe,
@@ -37,54 +27,51 @@ import {
   LogIn,
   ExternalLink,
 } from "lucide-react";
+import { AdminTableWrapper, AdminEmptyState } from "@/features/admin/components/ui/admin-page-components";
 import { Link } from "@/i18n/routing";
 
 export function TenantsTab({ tenants }: { tenants: any[] }) {
   if (!tenants || tenants.length === 0) {
     return (
-      <Card className="rounded-3xl border-dashed">
-        <div className="flex flex-col items-center justify-center p-12 text-center">
-          <Store className="h-12 w-12 text-muted-foreground/30 mb-4" />
-          <h3 className="font-bold text-lg">No tenants yet</h3>
-          <p className="text-muted-foreground mb-4">
-            Launch your first store to see data here.
-          </p>
+      <AdminEmptyState
+        icon={Store}
+        title="No tenants yet"
+        description="Launch your first store to see data here."
+        action={
           <Link href="/super-admin/tenants">
-            <Button>Launch Tenant</Button>
+            <Button className="rounded-xl font-bold">Launch Tenant</Button>
           </Link>
-        </div>
-      </Card>
+        }
+      />
     );
   }
 
   return (
-    <Card className="rounded-3xl shadow-sm border-foreground/5">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <div>
-          <CardTitle>Recent Stores</CardTitle>
-          <CardDescription>
-            Latest tenants onboarded to the platform
-          </CardDescription>
-        </div>
+    <AdminTableWrapper
+      title="Recent Stores Pulse"
+      description="Latest tenants onboarded to the platform with real-time health metrics"
+      variant="luxury"
+      headerActions={
         <Link href="/super-admin/tenants">
           <Button
             variant="ghost"
             size="sm"
-            className="text-indigo-600 font-bold"
+            className="text-primary font-black uppercase text-[10px] tracking-widest"
           >
             Manage All Tenants <ExternalLink className="ml-2 h-4 w-4" />
           </Button>
         </Link>
-      </CardHeader>
-      <CardContent className="space-y-4">
+      }
+    >
+      <div className="p-6 space-y-4">
         {tenants.map((tenant: any) => (
           <div
             key={tenant.id}
-            className="flex flex-col md:flex-row md:items-center justify-between p-4 border rounded-2xl bg-card hover:bg-muted/30 transition-all duration-200 group gap-4"
+            className="flex flex-col md:flex-row md:items-center justify-between p-4 border border-white/5 rounded-2xl bg-white/5 hover:bg-white/10 transition-all duration-300 group gap-4 shadow-xl"
           >
             <div className="flex items-center gap-4">
               <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center font-black text-sm text-white shadow-lg transition-transform group-hover:scale-110 shrink-0"
+                className="w-14 h-14 rounded-2xl flex items-center justify-center font-black text-lg text-white shadow-2xl transition-transform group-hover:scale-110 shrink-0 border border-white/10"
                 style={{
                   backgroundColor:
                     tenant.themeConfig?.primaryColor || "#6366f1",
@@ -93,35 +80,35 @@ export function TenantsTab({ tenants }: { tenants: any[] }) {
                   } 0%, #4338ca 100%)`,
                 }}
               >
-                {(tenant.name || "Tenant").substring(0, 2).toUpperCase()}
+                {(tenant.name || "Tenant").substring(0, 1).toUpperCase()}
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <p className="font-bold text-base leading-none">
+              <div className="space-y-1">
+                <div className="flex items-center gap-3">
+                  <p className="font-black text-lg leading-none text-white tracking-tight">
                     {tenant.name}
                   </p>
                   <Badge
                     variant="secondary"
-                    className="text-[10px] h-4 font-bold uppercase tracking-widest"
+                    className="text-[10px] h-5 font-black uppercase tracking-widest bg-white/10 text-white border-0"
                   >
                     {tenant.plan}
                   </Badge>
                 </div>
-                <div className="flex items-center gap-2 mt-1.5">
-                  <Globe className="h-3 w-3 text-muted-foreground" />
-                  <p className="text-xs text-muted-foreground font-medium">
+                <div className="flex items-center gap-2">
+                  <Globe className="h-3 w-3 text-muted-foreground/60" />
+                  <p className="text-xs text-muted-foreground/80 font-bold">
                     {tenant.domain}
                   </p>
                 </div>
-                <div className="flex items-center gap-3 mt-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                  <span className="flex items-center gap-1">
+                <div className="flex items-center gap-4 pt-1">
+                  <span className="flex items-center gap-1.5 text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">
                     <Users className="h-3 w-3" /> {tenant._count?.users || 0}
                   </span>
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1.5 text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">
                     <Package className="h-3 w-3" />{" "}
                     {tenant._count?.products || 0}
                   </span>
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1.5 text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">
                     <ShoppingCart className="h-3 w-3" />{" "}
                     {tenant._count?.orders || 0}
                   </span>
@@ -129,20 +116,20 @@ export function TenantsTab({ tenants }: { tenants: any[] }) {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 self-end md:self-center">
+            <div className="flex items-center gap-3 self-end md:self-center">
               <Button
                 variant="outline"
                 size="sm"
-                className="h-9 gap-2 font-medium"
+                className="h-10 gap-2 font-black uppercase text-[10px] tracking-widest border-white/5 hover:bg-white/10"
                 onClick={() => alert("Impersonation feature coming soon!")}
               >
-                <LogIn className="h-4 w-4 text-muted-foreground" />
+                <LogIn className="h-4 w-4" />
                 <span className="hidden sm:inline">Log in as Owner</span>
               </Button>
             </div>
           </div>
         ))}
-      </CardContent>
-    </Card>
+      </div>
+    </AdminTableWrapper>
   );
 }

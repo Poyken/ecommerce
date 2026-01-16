@@ -21,7 +21,7 @@
  */
 "use server";
 
-import { http } from "@/lib/http";
+import { adminNotificationService } from "../services/admin-notification.service";
 import { ActionResult } from "@/types/dtos";
 import { wrapServerAction } from "@/lib/safe-action";
 
@@ -35,10 +35,7 @@ export async function broadcastNotificationAction(
   data: any
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http("/notifications/admin/broadcast", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    await adminNotificationService.broadcastNotification(data);
   }, "Failed to broadcast notification");
 }
 
@@ -47,9 +44,6 @@ export async function sendNotificationToUserAction(
   data: any
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http("/notifications/admin/send", {
-      method: "POST",
-      body: JSON.stringify({ ...data, userId }),
-    });
+    await adminNotificationService.sendNotificationToUser(userId, data);
   }, "Failed to send notification");
 }

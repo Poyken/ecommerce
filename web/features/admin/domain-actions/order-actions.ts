@@ -21,11 +21,11 @@
  */
 "use server";
 
-import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
-import { ApiResponse, ActionResult } from "@/types/dtos";
+import { ActionResult } from "@/types/dtos";
 import { Order } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
+
+import { adminOrderService } from "../services/admin-order.service";
 
 /**
  * =====================================================================
@@ -38,10 +38,8 @@ export async function getOrdersAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Order[]>> {
-  const params = normalizePaginationParams(paramsOrPage, limit, search);
-
   return wrapServerAction(
-    () => http<ApiResponse<Order[]>>("/orders", { params }),
+    () => adminOrderService.getOrders(paramsOrPage, limit, search),
     "Failed to fetch orders"
   );
 }
@@ -50,7 +48,7 @@ export async function getOrderDetailsAction(
   id: string
 ): Promise<ActionResult<Order>> {
   return wrapServerAction(
-    () => http<ApiResponse<Order>>(`/orders/${id}`),
+    () => adminOrderService.getOrderDetails(id),
     "Failed to fetch order details"
   );
 }
@@ -62,14 +60,12 @@ export async function updateOrderStatusAction(
   reason?: string
 ): Promise<ActionResult<Order>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Order>>(`/orders/${id}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        status,
-        notify,
-        cancellationReason: reason,
-      }),
-    });
+    const res = await adminOrderService.updateOrderStatus(
+      id,
+      status,
+      notify,
+      reason
+    );
     REVALIDATE.admin.orders();
     return res.data;
   }, "Failed to update order status");

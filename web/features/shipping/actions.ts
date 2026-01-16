@@ -25,42 +25,23 @@
 "use server";
 
 import { MOCK_DISTRICTS, MOCK_PROVINCES, MOCK_WARDS } from "./mock-data";
-import { http } from "@/lib/http";
 import { wrapServerAction } from "@/lib/safe-action";
-import { ApiResponse, ActionResult } from "@/types/api";
+import { ActionResult } from "@/types/api";
+import {
+  shippingService,
+  Province,
+  District,
+  Ward,
+} from "./services/shipping.service";
 
-/**
- * Interface cho Tỉnh/Thành phố.
- */
-export interface Province {
-  ProvinceID: number;
-  ProvinceName: string;
-}
-
-/**
- * Interface cho Quận/Huyện.
- */
-export interface District {
-  DistrictID: number;
-  DistrictName: string;
-}
-
-/**
- * Interface cho Phường/Xã.
- */
-export interface Ward {
-  WardCode: string;
-  WardName: string;
-}
+export type { Province, District, Ward };
 
 /**
  * Lấy danh sách tất cả Tỉnh/Thành phố tại Việt Nam.
  */
 export async function getProvinces(): Promise<ActionResult<Province[]>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Province[]>>("/shipping/provinces", {
-      skipAuth: true,
-    });
+    const res = await shippingService.getProvinces();
     // Fallback to mock data if API returns empty
     if (!res.data || res.data.length === 0) {
       return MOCK_PROVINCES;
@@ -79,10 +60,7 @@ export async function getDistricts(
 ): Promise<ActionResult<District[]>> {
   if (!provinceId) return { success: true, data: [] };
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<District[]>>(
-      `/shipping/districts/${provinceId}`,
-      { skipAuth: true }
-    );
+    const res = await shippingService.getDistricts(provinceId);
     if (!res.data || res.data.length === 0) {
       return MOCK_DISTRICTS.filter((d) => d.ProvinceID === provinceId);
     }
@@ -100,10 +78,7 @@ export async function getWards(
 ): Promise<ActionResult<Ward[]>> {
   if (!districtId) return { success: true, data: [] };
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Ward[]>>(
-      `/shipping/wards/${districtId}`,
-      { skipAuth: true }
-    );
+    const res = await shippingService.getWards(districtId);
     if (!res.data || res.data.length === 0) {
       return MOCK_WARDS.filter((w) => w.DistrictID === districtId);
     }
@@ -122,11 +97,7 @@ export async function calculateShippingFeeAction(
   wardCode: string
 ): Promise<ActionResult<number>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<number>>("/shipping/fee", {
-      method: "POST",
-      body: JSON.stringify({ districtId, wardCode }),
-      skipAuth: true,
-    });
+    const res = await shippingService.calculateFee(districtId, wardCode);
     return Number(res.data) || 0;
   }, "Failed to calculate shipping fee");
 }

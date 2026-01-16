@@ -1,7 +1,5 @@
 "use server";
 
-import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
 import {
   REVALIDATE,
   wrapServerAction,
@@ -58,19 +56,13 @@ const SimulationSchema = z.object({
 
 // --- SAFE ACTIONS (Internal) ---
 
+import { orderService } from "./services/order.service";
+
 // Action đặt hàng
 const safePlaceOrder = protectedActionClient
   .schema(CheckoutSchema)
   .action(async ({ parsedInput }) => {
-    const res = await http<
-      ApiResponse<{
-        id: string;
-        paymentUrl?: string;
-      }>
-    >("/orders", {
-      method: "POST",
-      body: JSON.stringify(parsedInput),
-    });
+    const res = await orderService.placeOrder(parsedInput);
 
     const paymentUrl = res.data?.paymentUrl;
     const orderId = res.data?.id;
@@ -85,10 +77,7 @@ const safePlaceOrder = protectedActionClient
 const safeCancelOrder = protectedActionClient
   .schema(CancelOrderSchema)
   .action(async ({ parsedInput }) => {
-    await http(`/orders/${parsedInput.orderId}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status: "CANCELLED" }),
-    });
+    await orderService.cancelOrder(parsedInput.orderId);
     REVALIDATE.orders();
     return { success: true };
   });
@@ -97,12 +86,10 @@ const safeCancelOrder = protectedActionClient
 const safeCancelOrderWithReason = protectedActionClient
   .schema(CancelOrderWithReasonSchema)
   .action(async ({ parsedInput }) => {
-    await http(`/orders/my-orders/${parsedInput.orderId}/cancel`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        cancellationReason: parsedInput.cancellationReason,
-      }),
-    });
+    await orderService.cancelOrderWithReason(
+      parsedInput.orderId,
+      parsedInput.cancellationReason
+    );
     REVALIDATE.orders();
     return { success: true };
   });
@@ -111,14 +98,7 @@ const safeCancelOrderWithReason = protectedActionClient
 const safeSimulatePaymentSuccess = protectedActionClient
   .schema(SimulationSchema)
   .action(async ({ parsedInput }) => {
-    await http<ApiResponse<void>>(`/orders/${parsedInput.orderId}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        status: "PROCESSING",
-        paymentStatus: "PAID",
-        notify: true,
-      }),
-    });
+    await orderService.simulatePaymentSuccess(parsedInput.orderId);
     REVALIDATE.orders();
     REVALIDATE.path(`/orders/${parsedInput.orderId}`, "page");
     return { success: true };
@@ -155,9 +135,8 @@ export async function getMyOrdersAction(
   page = 1,
   limit = 10
 ): Promise<ActionResult<Order[]>> {
-  const params = normalizePaginationParams(page, limit);
   return wrapServerAction(
-    () => http<ApiResponse<Order[]>>("/orders/my-orders", { params }),
+    () => orderService.getMyOrders(page, limit),
     "Failed to fetch orders"
   );
 }
@@ -169,7 +148,7 @@ export async function getOrderDetailsAction(
   orderId: string
 ): Promise<ActionResult<Order>> {
   return wrapServerAction(
-    () => http<ApiResponse<Order>>(`/orders/${orderId}`),
+    () => orderService.getOrderDetails(orderId),
     "Failed to fetch order details"
   );
 }

@@ -46,7 +46,8 @@ export default async function proxy(request: NextRequest) {
     pathname.includes("icon-") ||
     pathname.endsWith(".png") ||
     pathname.endsWith(".ico") ||
-    pathname.endsWith(".json")
+    pathname.endsWith(".json") ||
+    pathname.endsWith(".js") // Bypass for sw.js and other root JS files
   ) {
     return NextResponse.next();
   }
@@ -117,7 +118,7 @@ export default async function proxy(request: NextRequest) {
      * - Nếu thiếu, Backend sẽ thấy IP của Vercel/Server và coi là hacker -> Logout ngay lập tức.
      */
     try {
-      const apiUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+      const apiUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api/v1";
 
       // Lấy thông tin thiết bị thật của người dùng để Backend verify Fingerprint
       const userAgent = request.headers.get("user-agent") || "";
@@ -237,6 +238,6 @@ export default async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|manifest.webmanifest|sitemap.xml|robots.txt).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|manifest.webmanifest|sitemap.xml|robots.txt|sw.js).*)",
   ],
 };

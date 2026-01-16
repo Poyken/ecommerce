@@ -8,7 +8,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { m as motion, Variants } from "framer-motion";
+import { m, Variants } from "framer-motion";
 import {
   ArrowRight,
   Check,
@@ -307,8 +307,8 @@ export default function PricingPage() {
                   -17%
                 </span>
               </button>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         </div>
       </section>
 
@@ -317,7 +317,7 @@ export default function PricingPage() {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
             {pricingPlans.map((plan, index) => (
-              <motion.div
+              <m.div
                 key={plan.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -452,7 +452,7 @@ export default function PricingPage() {
                     </li>
                   ))}
                 </ul>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -461,7 +461,7 @@ export default function PricingPage() {
       {/* Comparison Table */}
       <section className="py-16 lg:py-24 bg-muted/30">
         <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -474,9 +474,9 @@ export default function PricingPage() {
               Xem đầy đủ các tính năng của từng gói để đưa ra lựa chọn phù hợp
               nhất
             </p>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -559,14 +559,14 @@ export default function PricingPage() {
                 ))}
               </tbody>
             </table>
-          </motion.div>
+          </m.div>
         </div>
       </section>
 
       {/* FAQ Section */}
       <section className="py-16 lg:py-24">
         <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -578,11 +578,11 @@ export default function PricingPage() {
             <p className="text-lg text-muted-foreground">
               Những thắc mắc phổ biến về pricing và billing
             </p>
-          </motion.div>
+          </m.div>
 
           <div className="max-w-3xl mx-auto space-y-4">
             {faqs.map((faq, index) => (
-              <motion.div
+              <m.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -606,7 +606,7 @@ export default function PricingPage() {
       {/* CTA Section */}
       <section className="py-16 lg:py-24 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 lg:px-8 text-center">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -634,7 +634,7 @@ export default function PricingPage() {
                 <Link href="/contact">Liên hệ tư vấn</Link>
               </Button>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </section>
     </main>

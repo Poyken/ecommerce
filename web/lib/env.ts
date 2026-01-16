@@ -30,10 +30,10 @@
 
 export const env = {
   NEXT_PUBLIC_API_URL:
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001",
+    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api/v1",
   NEXT_PUBLIC_APP_URL:
     process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   NEXT_PUBLIC_SOCKET_URL:
-    process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:8080",
+    process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:8081",
   NODE_ENV: process.env.NODE_ENV || "development",
 };

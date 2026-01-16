@@ -445,9 +445,11 @@ export function CartClient({ cart }: CartClientProps) {
   const isFreeShipping = total >= shippingThreshold;
 
   return (
-    <div className="min-h-screen bg-background pt-28 pb-16 font-sans selection:bg-accent/30 relative overflow-hidden">
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-accent/5 rounded-full blur-[200px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-secondary/30 rounded-full blur-[150px] pointer-events-none" />
+    <div className="min-h-screen bg-black pt-28 pb-16 font-sans selection:bg-primary/30 relative overflow-hidden">
+      {/* Background Aurora Glows */}
+      <div className="absolute top-[5%] -left-[10%] w-[600px] h-[600px] bg-[var(--aurora-purple)]/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-[30%] -right-[5%] w-[500px] h-[500px] bg-[var(--aurora-blue)]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[10%] left-[20%] w-[800px] h-[800px] bg-primary/2 rounded-full blur-[200px] pointer-events-none" />
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <m.div
@@ -455,14 +457,14 @@ export function CartClient({ cart }: CartClientProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="space-y-3">
-            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
-              {t("yourSelection")}
+          <div className="space-y-4">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary block">
+              LUXE.BAG
             </span>
-            <h1 className="text-4xl md:text-5xl font-serif font-normal text-foreground tracking-tight">
+            <h1 className="text-4xl md:text-7xl font-black tracking-tighter uppercase italic text-white leading-none">
               {t("title")}
             </h1>
-            <p className="text-muted-foreground text-lg font-light">
+            <p className="text-muted-foreground/60 text-sm font-medium uppercase tracking-[0.1em]">
               {localItems.length} {t("items")} {t("inCart")}
             </p>
           </div>
@@ -557,10 +559,10 @@ export function CartClient({ cart }: CartClientProps) {
               <GlassCard className="p-6 mb-6 overflow-hidden relative group">
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-success/10 rounded-lg">
-                      <Truck className="w-5 h-5 text-success" />
+                    <div className="p-2 bg-primary/20 rounded-lg">
+                      <Truck className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="font-medium text-sm md:text-base">
+                    <span className="font-black text-[10px] uppercase tracking-[0.2em] text-white">
                       {isFreeShipping
                         ? t("freeShippingUnlocked")
                         : t("addForFree", {
@@ -571,7 +573,7 @@ export function CartClient({ cart }: CartClientProps) {
                           })}
                     </span>
                   </div>
-                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                  <span className="text-[10px] font-black text-primary uppercase tracking-widest">
                     {Math.min(
                       100,
                       Math.round((total / shippingThreshold) * 100)
@@ -579,9 +581,9 @@ export function CartClient({ cart }: CartClientProps) {
                     %
                   </span>
                 </div>
-                <div className="h-2 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                <div className="h-1 bg-white/5 rounded-full overflow-hidden border border-white/5">
                   <m.div
-                    className="h-full bg-linear-to-r from-success to-info"
+                    className="h-full bg-linear-to-r from-primary to-indigo-500 shadow-[0_0_10px_rgba(var(--primary-rgb),0.5)]"
                     initial={{ width: 0 }}
                     animate={{
                       width: `${Math.min(
@@ -589,7 +591,7 @@ export function CartClient({ cart }: CartClientProps) {
                         (total / shippingThreshold) * 100
                       )}%`,
                     }}
-                    transition={{ duration: 1, ease: "easeOut" }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
                   />
                 </div>
               </GlassCard>
@@ -615,7 +617,7 @@ export function CartClient({ cart }: CartClientProps) {
                         }
                       }}
                     />
-                    <span className="text-base font-medium">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">
                       {t("selectAll")}
                     </span>
                   </div>
@@ -713,7 +715,7 @@ export function CartClient({ cart }: CartClientProps) {
                             </div>
 
                             <div className="text-right">
-                              <p className="text-xl font-bold text-primary">
+                              <p className="text-lg md:text-2xl font-black text-primary tracking-tighter">
                                 {format.number(
                                   Number(item.sku.salePrice || item.sku.price) *
                                     item.quantity,
@@ -724,7 +726,7 @@ export function CartClient({ cart }: CartClientProps) {
                                 )}
                               </p>
                               {item.sku.salePrice && (
-                                <p className="text-xs text-muted-foreground line-through">
+                                <p className="text-[10px] text-muted-foreground/40 line-through font-bold">
                                   {format.number(
                                     Number(item.sku.price) * item.quantity,
                                     {
@@ -746,28 +748,36 @@ export function CartClient({ cart }: CartClientProps) {
 
             <div className="lg:col-span-4 space-y-6">
               <GlassCard className="p-6 md:p-8 sticky top-24">
-                <h2 className="text-2xl font-bold mb-6">{t("orderSummary")}</h2>
-                <div className="space-y-4 mb-8">
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>{t("subtotal")}</span>
-                    <span className="font-medium text-foreground">
+                <h2 className="text-xs font-black uppercase tracking-[0.4em] mb-8 text-primary">
+                  {t("orderSummary")}
+                </h2>
+                <div className="space-y-6 mb-10">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                      {t("subtotal")}
+                    </span>
+                    <span className="text-sm font-black text-white">
                       {format.number(total, {
                         style: "currency",
                         currency: "VND",
                       })}
                     </span>
                   </div>
-                  <div className="flex justify-between text-muted-foreground">
-                    <span>{t("shipping")}</span>
-                    <span className="text-success font-medium">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                      {t("shipping")}
+                    </span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">
                       {isFreeShipping ? t("free") : t("calculatedAtCheckout")}
                     </span>
                   </div>
-                  <Separator className="bg-white/10" />
+                  <div className="h-px bg-white/5" />
                   <div className="flex justify-between items-end">
-                    <span className="text-lg font-bold">{t("total")}</span>
+                    <span className="text-xs font-black uppercase tracking-[0.2em] text-white">
+                      {t("total")}
+                    </span>
                     <div className="text-right">
-                      <p className="text-3xl font-black text-primary tracking-tight">
+                      <p className="text-4xl font-black text-primary tracking-tighter leading-none italic">
                         {format.number(total, {
                           style: "currency",
                           currency: "VND",

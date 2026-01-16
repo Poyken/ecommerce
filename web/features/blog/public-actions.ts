@@ -1,8 +1,6 @@
 "use server";
 
-import { http } from "@/lib/http";
-import { ApiResponse } from "@/types/dtos";
-import { BlogWithProducts } from "@/types/models";
+import { blogService } from "./services/blog.service";
 
 /**
  * =====================================================================
@@ -27,11 +25,7 @@ export async function getBlogsAction(
   category?: string
 ) {
   try {
-    const res = await http<ApiResponse<BlogWithProducts[]>>("/blogs", {
-      params: { page, limit, category },
-      skipAuth: true,
-      next: { revalidate: 60 }, // Cache ngắn hạn cho load more
-    });
+    const res = await blogService.getBlogs(page, limit, category);
 
     if (!res || !res.data) {
       return { success: false, data: [], meta: null };

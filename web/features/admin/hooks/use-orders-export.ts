@@ -1,7 +1,7 @@
 "use client";
 
 import { useToast } from "@/components/ui/use-toast";
-import { http } from "@/lib/http";
+import { adminExportService } from "../services/admin-export.service";
 import { useState } from "react";
 
 export interface OrdersService {
@@ -15,10 +15,7 @@ export const useOrdersExport = () => {
   const exportOrders = async () => {
     try {
       setLoading(true);
-      const response = await http<Blob>("/orders/export/excel", {
-        skipAuth: false,
-        responseType: "blob",
-      });
+      const response = await adminExportService.exportOrders();
 
       const url = window.URL.createObjectURL(new Blob([response as any]));
       const link = document.createElement("a");

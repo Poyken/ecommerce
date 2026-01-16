@@ -7,7 +7,7 @@
  */
 
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   ArrowRight,
   Award,
@@ -131,37 +131,37 @@ export default function AboutPage() {
         </div>
 
         <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
+          <m.div
             initial="hidden"
             animate="visible"
             variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
             className="text-center max-w-3xl mx-auto"
           >
-            <motion.div
+            <m.div
               variants={fadeInUp}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
             >
               <Building2 className="size-4" />
               <span>Về chúng tôi</span>
-            </motion.div>
+            </m.div>
 
-            <motion.h1
+            <m.h1
               variants={fadeInUp}
               className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6"
             >
               Kiến tạo tương lai của{" "}
               <span className="text-primary">thương mại điện tử</span>
-            </motion.h1>
+            </m.h1>
 
-            <motion.p
+            <m.p
               variants={fadeInUp}
               className="text-xl text-muted-foreground mb-10"
             >
               Sứ mệnh của chúng tôi là giúp mọi doanh nghiệp, từ startup đến
               enterprise, có thể bán hàng online một cách dễ dàng và hiệu quả
               nhất.
-            </motion.p>
-          </motion.div>
+            </m.p>
+          </m.div>
         </div>
       </section>
 
@@ -170,7 +170,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
-              <motion.div
+              <m.div
                 key={stat.label}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -182,7 +182,7 @@ export default function AboutPage() {
                   {stat.value}
                 </div>
                 <div className="text-primary-foreground/70">{stat.label}</div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -192,7 +192,7 @@ export default function AboutPage() {
       <section className="py-16 lg:py-24">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -215,13 +215,13 @@ export default function AboutPage() {
               </p>
               <Button size="lg" asChild>
                 <Link href="/features">
-                  Khám phá sản phẩm
+                   Khám phá sản phẩm
                   <ArrowRight className="size-4 ml-2" />
                 </Link>
               </Button>
-            </motion.div>
+            </m.div>
 
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -230,7 +230,7 @@ export default function AboutPage() {
               <div className="aspect-square rounded-3xl bg-linear-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                 <Rocket className="size-32 text-primary/30" />
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>
@@ -238,7 +238,7 @@ export default function AboutPage() {
       {/* Values Section */}
       <section className="py-16 lg:py-24 bg-muted/30">
         <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -250,11 +250,11 @@ export default function AboutPage() {
             <p className="text-lg text-muted-foreground">
               Những nguyên tắc định hướng mọi quyết định của chúng tôi
             </p>
-          </motion.div>
+          </m.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((value, index) => (
-              <motion.div
+              <m.div
                 key={value.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -269,7 +269,7 @@ export default function AboutPage() {
                 <p className="text-sm text-muted-foreground">
                   {value.description}
                 </p>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -278,7 +278,7 @@ export default function AboutPage() {
       {/* Timeline Section */}
       <section className="py-16 lg:py-24">
         <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -290,11 +290,11 @@ export default function AboutPage() {
             <p className="text-lg text-muted-foreground">
               Những cột mốc quan trọng trên con đường của chúng tôi
             </p>
-          </motion.div>
+          </m.div>
 
           <div className="max-w-3xl mx-auto">
             {milestones.map((milestone, index) => (
-              <motion.div
+              <m.div
                 key={milestone.year}
                 initial={{ opacity: 0, x: index % 2 === 0 ? -30 : 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -319,7 +319,7 @@ export default function AboutPage() {
                     {milestone.description}
                   </p>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -328,7 +328,7 @@ export default function AboutPage() {
       {/* Team Section */}
       <section className="py-16 lg:py-24 bg-muted/30">
         <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -340,11 +340,11 @@ export default function AboutPage() {
             <p className="text-lg text-muted-foreground">
               Những con người tài năng đứng sau Luxe SaaS
             </p>
-          </motion.div>
+          </m.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
             {team.map((member, index) => (
-              <motion.div
+              <m.div
                 key={member.name}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -362,7 +362,7 @@ export default function AboutPage() {
                 <p className="text-sm text-muted-foreground mt-2">
                   {member.bio}
                 </p>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -371,7 +371,7 @@ export default function AboutPage() {
       {/* CTA Section */}
       <section className="py-16 lg:py-24">
         <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -401,7 +401,7 @@ export default function AboutPage() {
                 <Link href="/contact">Liên hệ với chúng tôi</Link>
               </Button>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </section>
     </main>

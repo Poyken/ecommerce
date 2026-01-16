@@ -1,7 +1,5 @@
 import { getProfileAction } from "@/features/profile/actions";
-import { http } from "@/lib/http";
-import { ApiResponse } from "@/types/dtos";
-import { Cart } from "@/types/models";
+import { cartService } from "@/features/cart/services/cart.service";
 import { CheckoutClient } from "./checkout-client";
 
 import { Metadata } from "next";
@@ -47,7 +45,7 @@ async function DynamicCheckout() {
 
   try {
     [cartRes, profileRes] = await Promise.all([
-      http<ApiResponse<Cart>>("/cart", { skipRedirectOn401: true }),
+      cartService.getCart(),
       getProfileAction(),
     ]);
   } catch (e: any) {

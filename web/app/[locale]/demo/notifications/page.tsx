@@ -14,7 +14,7 @@
  * =====================================================================
  */
 
-import { NotificationsClient } from "@/app/[locale]/(shop)/notifications/notifications-client";
+import { NotificationsClient } from "./notifications-client";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 

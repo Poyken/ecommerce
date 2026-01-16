@@ -26,9 +26,7 @@
 
 "use server";
 
-import { http } from "@/lib/http";
 import { ProfileUpdateSchema } from "@/lib/schemas";
-import { ApiResponse } from "@/types/dtos";
 import { User } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 import { cache } from "react";
@@ -41,6 +39,8 @@ import { cookies } from "next/headers";
 // =============================================================================
 // 📝 SERVER ACTIONS - Các hành động xử lý profile
 // =============================================================================
+
+import { profileService } from "./services/profile.service";
 
 /**
  * =====================================================================
@@ -84,11 +84,7 @@ import { cookies } from "next/headers";
 export const getProfileAction = cache(async () => {
   await cookies();
   return wrapServerAction(
-    () =>
-      http<ApiResponse<User>>("/auth/me", {
-        cache: "no-store",
-        skipRedirectOn401: true,
-      }),
+    () => profileService.getProfile(),
     "Failed to fetch profile"
   );
 });
@@ -184,20 +180,14 @@ export async function updateProfileAction(formData: FormData) {
       data.append("image", avatar);
 
       return wrapServerAction(async () => {
-        const res = await http("/auth/me", {
-          method: "PATCH",
-          body: data,
-        });
+        const res = await profileService.updateProfile(data);
         REVALIDATE.profile();
         return res;
       }, "Không thể cập nhật profile");
     } else {
       // Ngược lại gửi JSON như cũ
       return wrapServerAction(async () => {
-        const res = await http("/auth/me", {
-          method: "PATCH",
-          body: JSON.stringify(payload),
-        });
+        const res = await profileService.updateProfile(payload);
         REVALIDATE.profile();
         return res;
       }, "Không thể cập nhật profile");
@@ -215,13 +205,7 @@ export async function updateProfileAction(formData: FormData) {
 export async function generateTwoFactorAction() {
   await cookies();
   return wrapServerAction(
-    () =>
-      http<ApiResponse<{ secret: string; qrCode: string }>>(
-        "/auth/2fa/generate",
-        {
-          method: "POST",
-        }
-      ),
+    () => profileService.generateTwoFactor(),
     "Failed to generate 2FA"
   );
 }
@@ -232,10 +216,7 @@ export async function generateTwoFactorAction() {
 export async function enableTwoFactorAction(token: string, secret: string) {
   await cookies();
   return wrapServerAction(async () => {
-    const res = await http("/auth/2fa/enable", {
-      method: "POST",
-      body: JSON.stringify({ token, secret }),
-    });
+    const res = await profileService.enableTwoFactor(token, secret);
     REVALIDATE.profile();
     return res;
   }, "Failed to enable 2FA");
@@ -247,10 +228,7 @@ export async function enableTwoFactorAction(token: string, secret: string) {
 export async function disableTwoFactorAction(token: string) {
   await cookies();
   return wrapServerAction(async () => {
-    const res = await http("/auth/2fa/disable", {
-      method: "POST",
-      body: JSON.stringify({ token }),
-    });
+    const res = await profileService.disableTwoFactor(token);
     REVALIDATE.profile();
     return res;
   }, "Failed to disable 2FA");

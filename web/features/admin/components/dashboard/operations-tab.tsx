@@ -37,6 +37,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AdminAlerts } from "@/features/admin/components/ui/admin-alerts";
+import { AdminTableWrapper } from "@/features/admin/components/ui/admin-page-components";
 import { Link } from "@/i18n/routing";
 import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 import { cn, formatCurrency } from "@/lib/utils";
@@ -139,85 +140,83 @@ export function OperationsTab({
       </div>
 
       {/* Recent Orders List */}
-      <Card className="rounded-2xl shadow-sm">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>Recent Orders</CardTitle>
-            <CardDescription>
-              Latest transactions from your store
-            </CardDescription>
-          </div>
+      <AdminTableWrapper
+        title="Recent Orders Pulse"
+        description="Latest transactions from your store with real-time tracking"
+        variant="luxury"
+        headerActions={
           <Link href="/admin/orders">
-            <Button variant="ghost" className="text-indigo-600 font-bold">
+            <Button variant="ghost" className="text-primary font-black uppercase text-[10px] tracking-widest">
               View All Orders <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </Link>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-muted/50 hover:bg-muted/50">
-                <TableHead className="w-[180px]">Order ID</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Total</TableHead>
+        }
+      >
+        <Table>
+          <TableHeader>
+            <TableRow className="border-white/5 hover:bg-transparent">
+              <TableHead className="w-[180px] text-[10px] font-black uppercase tracking-widest text-muted-foreground">Order ID</TableHead>
+              <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Customer</TableHead>
+              <TableHead className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Status</TableHead>
+              <TableHead className="text-right text-[10px] font-black uppercase tracking-widest text-muted-foreground">Total</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {recentOrders.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="h-24 text-center text-muted-foreground"
+                >
+                  No orders found.
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentOrders.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={4}
-                    className="h-24 text-center text-muted-foreground"
-                  >
-                    No orders found.
+            ) : (
+              recentOrders.map((order: any) => (
+                <TableRow
+                  key={order.id}
+                  className="border-white/5 hover:bg-white/5 transition-colors cursor-pointer group"
+                >
+                  <TableCell className="font-medium">
+                    <TypedLink
+                      href={`/admin/orders/${order.id}` as AppRoute}
+                      className="flex flex-col"
+                    >
+                      <span className="font-black text-primary group-hover:underline tracking-tight">
+                        #{order.id.slice(0, 8).toUpperCase()}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground/60 font-bold">
+                        {format(new Date(order.createdAt), "MMM dd, yyyy")}
+                      </span>
+                    </TypedLink>
                   </TableCell>
-                </TableRow>
-              ) : (
-                recentOrders.map((order: any) => (
-                  <TableRow
-                    key={order.id}
-                    className="hover:bg-muted/30 transition-colors cursor-pointer group"
-                  >
-                    <TableCell className="font-medium">
-                      <TypedLink
-                        href={`/admin/orders/${order.id}` as AppRoute}
-                        className="flex flex-col"
-                      >
-                        <span className="font-mono text-indigo-600 font-bold group-hover:underline">
-                          #{order.id.slice(0, 8).toUpperCase()}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {format(new Date(order.createdAt), "MMM dd, yyyy")}
-                        </span>
-                      </TypedLink>
-                    </TableCell>
-                    <TableCell>
-                      <span className="font-medium">
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <span className="font-bold text-sm text-white">
                         {order.user?.firstName} {order.user?.lastName}
                       </span>
-                      <div className="text-xs text-muted-foreground">
+                      <span className="text-[10px] text-muted-foreground/60">
                         {order.user?.email}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={cn("border", getStatusStyle(order.status))}
-                      >
-                        {order.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-bold">
-                      {formatCurrency(order.totalAmount)}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="outline"
+                      className={cn("border px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest", getStatusStyle(order.status))}
+                    >
+                      {order.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right font-black text-white">
+                    {formatCurrency(order.totalAmount)}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </AdminTableWrapper>
     </div>
   );
 }

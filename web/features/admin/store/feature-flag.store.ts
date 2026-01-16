@@ -1,4 +1,4 @@
-import { http } from "@/lib/http";
+import { featureFlagService } from "../services/admin-feature-flag.service";
 /**
  * =====================================================================
  * FEATURE FLAG STORE - Quản lý tính năng động
@@ -40,9 +40,7 @@ export const useFeatureFlagStore = create<FeatureFlagState>()((set, get) => ({
   fetchFlags: async () => {
     set({ isLoading: true });
     try {
-      const response = await http<string[]>("/feature-flags/my-flags", {
-        skipAuth: true,
-      });
+      const response = await featureFlagService.getMyFlags();
 
       let flags: string[] = [];
       if (Array.isArray(response)) {

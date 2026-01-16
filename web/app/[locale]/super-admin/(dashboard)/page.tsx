@@ -8,10 +8,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
-  getAnalyticsStatsAction,
   getSecurityStatsAction,
   getTenantsAction,
 } from "@/features/admin/actions";
+import { AdminPageHeader, AdminStatsCard } from "@/features/admin/components/ui/admin-page-components";
+import { getPlatformStatsAction } from "@/features/super-admin/actions";
 import { format } from "date-fns";
 import { Link } from "@/i18n/routing";
 import {
@@ -68,7 +69,7 @@ export default async function SuperAdminDashboardPage() {
   const tenantsData = tenantsRes?.data || [];
   const recentTenants = tenantsData.slice(0, 5);
 
-  const statsRes = await getAnalyticsStatsAction();
+  const statsRes = await getPlatformStatsAction();
   const stats = statsRes?.data;
 
   // Security stats reused inside TechOps logic or passed if needed
@@ -76,30 +77,28 @@ export default async function SuperAdminDashboardPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700 pb-10">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-4xl font-black tracking-tight text-foreground">
-            {t("title") || "Command Center"}
-          </h1>
-          <p className="text-muted-foreground mt-1 font-medium">
-            {t("subtitle") || "Platform overview and operations."}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link href="/super-admin/security">
-            <Button variant="outline" className="rounded-xl font-bold h-10">
-              <Shield className="mr-2 h-4 w-4" />
-              Security Hub
-            </Button>
-          </Link>
-          <Link href="/super-admin/tenants">
-            <Button className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 h-10">
-              <Plus className="mr-2 h-4 w-4" />
-              Launch Tenant
-            </Button>
-          </Link>
-        </div>
-      </div>
+      <AdminPageHeader
+        title={t("title") || "Command Center"}
+        subtitle={t("subtitle") || "Platform-wide operations & infrastructure monitoring."}
+        icon={<Shield className="text-primary fill-primary/10" />}
+        layout="luxury"
+        actions={
+          <div className="flex items-center gap-3">
+            <Link href="/super-admin/security">
+              <Button variant="outline" className="rounded-xl font-bold h-10 border-white/10 hover:bg-white/5">
+                <Shield className="mr-2 h-4 w-4" />
+                Security Hub
+              </Button>
+            </Link>
+            <Link href="/super-admin/tenants">
+              <Button className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 font-bold shadow-lg shadow-primary/20 h-10">
+                <Plus className="mr-2 h-4 w-4" />
+                Launch Tenant
+              </Button>
+            </Link>
+          </div>
+        }
+      />
 
       <Tabs defaultValue="business" className="space-y-6">
         <div className="flex items-center justify-between">

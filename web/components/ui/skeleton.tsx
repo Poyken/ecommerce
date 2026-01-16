@@ -14,25 +14,31 @@ import { cn } from "@/lib/utils";
  * - Giảm bớt sự khó chịu của người dùng khi phải chờ đợi dữ liệu từ API.
  *
  * 2. ANIMATION:
- * - `animate-pulse`: Hiệu ứng nhấp nháy mờ dần.
+ * - Shimmer effect: Hiệu ứng luồng sáng chạy qua để báo hiệu đang tải.
  *
- * 3. FLEXIBILITY:
- * - Truyền `className` để thay đổi hình dáng (tròn, vuông, dài) tùy ý. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
+ * 3. FLEXIBILITY (NEW):
+ * - Thêm các variant `glass` và `luxury` để phù hợp với hệ thống Quiet Luxury mới.
+ *
  * =====================================================================
  */
 
+interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
+  variant?: "default" | "glass" | "luxury";
+}
+
 function Skeleton({
   className,
+  variant = "default",
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: SkeletonProps) {
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-md bg-muted/50",
-        "after:absolute after:inset-0 after:-translate-x-full after:animate-shimmer after:bg-linear-to-r after:from-transparent after:via-white/10 after:to-transparent dark:after:via-white/5",
+        "relative overflow-hidden rounded-md transition-all duration-300",
+        variant === "default" && "bg-muted/50",
+        variant === "glass" && "bg-white/5 backdrop-blur-md border border-white/5",
+        variant === "luxury" && "bg-gradient-to-r from-white/5 via-white/10 to-white/5",
+        "after:absolute after:inset-0 after:-translate-x-full after:animate-[shimmer_2s_infinite] after:bg-linear-to-r after:from-transparent after:via-white/10 after:to-transparent dark:after:via-white/5",
         className
       )}
       {...props}

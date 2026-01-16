@@ -1,40 +1,20 @@
 "use client";
 
-/**
- * =====================================================================
- * ADMIN PAGE HEADER - Header component cho các trang Admin
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Component này tái sử dụng style header cho các trang admin.
- * Bao gồm: Title, Subtitle/Stats, và Action buttons.
- *
- * USAGE:
- * <AdminPageHeader
- *   title="Order Management"
- *   subtitle="Manage all customer orders"
- *   icon={<ShoppingBag className="h-6 w-6" />}
- *   stats={[
- *     { label: "Total", value: 150 },
- *     { label: "Pending", value: 5, variant: "warning" },
- *   ]}
- *   actions={<Button>Create New</Button>}
- * /> *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */
-
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
 import React from "react";
+import { m } from "@/lib/animations";
+
+/**
+ * =====================================================================
+ * ADMIN PAGE COMPONENTS - Thư viện UI cực kỳ linh hoạt cho Admin
+ * =====================================================================
+ */
 
 interface StatItem {
   label: string;
   value: string | number;
-  variant?: "default" | "success" | "warning" | "danger" | "info";
+  variant?: "default" | "success" | "warning" | "danger" | "info" | "aurora";
 }
 
 interface AdminPageHeaderProps {
@@ -44,14 +24,16 @@ interface AdminPageHeaderProps {
   stats?: StatItem[];
   actions?: React.ReactNode;
   className?: string;
+  layout?: "default" | "luxury" | "minimalist" | "glass";
 }
 
 const statVariants = {
-  default: "bg-muted text-muted-foreground",
-  success: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  warning: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  danger: "bg-red-500/10 text-red-600 dark:text-red-400",
-  info: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  default: "bg-white/5 text-muted-foreground border-white/5",
+  success: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+  warning: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+  danger: "bg-red-500/10 text-red-400 border-red-500/20",
+  info: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+  aurora: "bg-[var(--aurora-purple)]/20 text-white border-[var(--aurora-purple)]/30 shadow-[0_0_15px_-5px_var(--aurora-purple)]",
 };
 
 export function AdminPageHeader({
@@ -61,32 +43,118 @@ export function AdminPageHeader({
   stats,
   actions,
   className,
+  layout = "default",
 }: AdminPageHeaderProps) {
+  if (layout === "minimalist") {
+    return (
+      <div className={cn("flex items-center justify-between mb-8 animate-in fade-in slide-in-from-left-4 duration-500", className)}>
+        <div className="flex items-center gap-4">
+          {icon && (
+             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/5 text-primary border border-primary/10">
+              {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { className: "h-6 w-6" }) : icon}
+             </div>
+          )}
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-white">{title}</h1>
+            {subtitle && <p className="text-xs text-muted-foreground/60">{subtitle}</p>}
+          </div>
+        </div>
+        {actions && <div className="flex items-center gap-2">{actions}</div>}
+      </div>
+    );
+  }
+
+  if (layout === "luxury") {
+    return (
+      <div className={cn("relative p-8 md:p-12 rounded-[2.5rem] bg-black/40 backdrop-blur-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden mb-12 animate-in fade-in zoom-in duration-1000", className)}>
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-linear-to-bl from-primary/20 via-transparent to-transparent opacity-50 pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-accent/10 rounded-full blur-[100px] pointer-events-none animate-pulse" />
+        
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="space-y-6">
+            {icon && (
+              <m.div 
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-accent p-[1px] shadow-2xl"
+              >
+                <div className="w-full h-full rounded-2xl bg-black/80 flex items-center justify-center backdrop-blur-xl text-white">
+                  {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { className: "h-10 w-10" }) : icon}
+                </div>
+              </m.div>
+            )}
+            <div className="space-y-2">
+              <m.h1 
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="text-4xl md:text-6xl font-black tracking-tighter text-white font-sans"
+              >
+                {title}
+              </m.h1>
+              {subtitle && (
+                <m.p 
+                   initial={{ y: 10, opacity: 0 }}
+                   animate={{ y: 0, opacity: 1 }}
+                   transition={{ delay: 0.4 }}
+                   className="text-lg text-muted-foreground/80 font-medium tracking-wide"
+                >
+                  {subtitle}
+                </m.p>
+              )}
+            </div>
+          </div>
+
+          <div className="flex flex-col items-start lg:items-end gap-6">
+            {stats && stats.length > 0 && (
+              <div className="flex flex-wrap items-center justify-start lg:justify-end gap-3">
+                {stats.map((stat, index) => (
+                  <m.div
+                    key={index}
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.5 + index * 0.1 }}
+                    className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md flex flex-col items-start lg:items-end min-w-[120px] transition-all hover:bg-white/10"
+                  >
+                    <span className="text-[10px] uppercase tracking-widest text-muted-foreground/60 font-black">
+                      {stat.label}
+                    </span>
+                    <span className="text-xl font-black text-white">
+                      {stat.value}
+                    </span>
+                  </m.div>
+                ))}
+              </div>
+            )}
+            {actions && <div className="flex items-center gap-4">{actions}</div>}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(
-        "flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 md:p-8 bg-white dark:bg-slate-950 rounded-2xl border border-white/20 shadow-sm backdrop-blur-xl mb-8 animate-in fade-in slide-in-from-top-4 duration-500",
+        "flex flex-col md:flex-row md:items-center justify-between gap-6 p-6 md:p-8 glass-premium rounded-3xl border border-white/10 shadow-2xl mb-8 animate-in fade-in slide-in-from-top-4 duration-700 relative overflow-hidden",
         className
       )}
     >
-      <div className="flex flex-col md:flex-row md:items-center gap-6">
-        <div className="flex items-center gap-4">
-          {icon && React.isValidElement(icon) && (
-            <div className="flex h-14 w-14 items-center justify-center rounded-[1.25rem] bg-slate-100 dark:bg-slate-900 text-primary shadow-inner border border-slate-200/50 dark:border-slate-800/50">
-              {React.cloneElement(icon as React.ReactElement<any>, {
-                className: cn(
-                  (icon as React.ReactElement<any>).props.className,
-                  "h-7 w-7 stroke-[2.5px]"
-                ),
-              })}
+      <div className="absolute -top-10 -right-10 w-32 h-32 bg-[var(--aurora-blue)]/10 rounded-full blur-3xl pointer-events-none" />
+      
+      <div className="flex flex-col md:flex-row md:items-center gap-6 relative z-10">
+        <div className="flex items-center gap-5">
+          {icon && (
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/5 text-white shadow-2xl border border-white/10 backdrop-blur-md">
+              {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { className: "h-8 w-8 stroke-[2px]" }) : icon}
             </div>
           )}
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-3xl font-black tracking-tight text-white font-sans">
               {title}
             </h1>
             {subtitle && (
-              <p className="text-base text-muted-foreground font-medium mt-0.5">
+              <p className="text-sm text-muted-foreground font-medium mt-1 tracking-wide">
                 {subtitle}
               </p>
             )}
@@ -99,7 +167,7 @@ export function AdminPageHeader({
               <span
                 key={index}
                 className={cn(
-                  "px-4 py-1.5 rounded-2xl text-xs font-black uppercase tracking-widest shadow-sm border border-transparent",
+                  "px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] border transition-all hover:scale-105",
                   statVariants[stat.variant || "default"]
                 )}
               >
@@ -111,7 +179,7 @@ export function AdminPageHeader({
       </div>
 
       {actions && (
-        <div className="flex items-center gap-3 self-end md:self-center">
+        <div className="flex items-center gap-3 self-end md:self-center relative z-10">
           {actions}
         </div>
       )}
@@ -121,10 +189,7 @@ export function AdminPageHeader({
 
 /**
  * =====================================================================
- * ADMIN TABLE WRAPPER - Wrapper component cho Table trong Admin
- * =====================================================================
- *
- * Style đồng nhất cho các table trong admin pages.
+ * ADMIN TABLE WRAPPER - Wrapper cho Table với khả năng tùy biến cao
  * =====================================================================
  */
 
@@ -135,6 +200,7 @@ interface AdminTableWrapperProps {
   headerActions?: React.ReactNode;
   className?: string;
   isLoading?: boolean;
+  variant?: "glass" | "solid" | "luxury";
 }
 
 export function AdminTableWrapper({
@@ -144,46 +210,59 @@ export function AdminTableWrapper({
   headerActions,
   className,
   isLoading,
+  variant = "glass",
 }: AdminTableWrapperProps) {
+  const variantClasses = {
+    glass: "bg-background/40 backdrop-blur-3xl border-white/5 shadow-3xl",
+    solid: "bg-card border-border shadow-md",
+    luxury: "bg-black/60 backdrop-blur-3xl border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]",
+  };
+
   return (
     <div
       className={cn(
-        "rounded-2xl border border-slate-200/60 dark:border-slate-800/60 bg-white/70 dark:bg-slate-950/70 backdrop-blur-xl shadow-xl shadow-slate-200/20 dark:shadow-none overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700",
+        "rounded-[2rem] border overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700",
+        variantClasses[variant],
         className
       )}
     >
       {(title || description || headerActions) && (
-        <div className="flex items-center justify-between px-8 py-6 border-b border-slate-200/60 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/30">
+        <div className={cn(
+          "flex flex-col sm:flex-row sm:items-center justify-between px-8 py-7 border-b gap-4",
+          variant === "luxury" ? "border-white/10 bg-white/5" : "border-white/5 bg-white/5"
+        )}>
           <div>
             {title && (
-              <h3 className="text-lg font-black text-slate-900 dark:text-white">
+              <h3 className="text-xl font-black text-white tracking-tight">
                 {title}
               </h3>
             )}
             {description && (
-              <p className="text-sm text-muted-foreground font-medium">
+              <p className="text-xs text-muted-foreground font-medium mt-1 tracking-wide">
                 {description}
               </p>
             )}
           </div>
-          {headerActions}
+          {headerActions && <div className="flex items-center gap-2">{headerActions}</div>}
         </div>
       )}
       <div className="relative">
         {isLoading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 dark:bg-slate-950/60 backdrop-blur-[1px] transition-all duration-300">
-            <div className="flex flex-col items-center gap-4 p-6 rounded-2xl bg-white/80 dark:bg-slate-900/80 shadow-2xl border border-white/20 dark:border-slate-800/50 backdrop-blur-md">
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-all duration-300">
+            <div className="flex flex-col items-center gap-4 p-8 rounded-3xl glass-premium border border-white/10 shadow-2xl">
               <div className="relative">
-                <div className="h-12 w-12 rounded-full border-[3px] border-primary/20" />
-                <div className="absolute top-0 left-0 h-12 w-12 rounded-full border-[3px] border-primary border-t-transparent animate-spin" />
+                <div className="h-14 w-14 rounded-full border-[3px] border-white/5" />
+                <div className="absolute top-0 left-0 h-14 w-14 rounded-full border-[3px] border-[var(--aurora-blue)] border-t-transparent animate-spin shadow-[0_0_15px_var(--aurora-blue)]" />
               </div>
-              <span className="text-xs font-black text-primary tracking-[0.2em] uppercase animate-pulse">
-                Synchronizing
+              <span className="text-[10px] font-black text-white tracking-[0.3em] uppercase animate-pulse">
+                Processing
               </span>
             </div>
           </div>
         )}
-        {children}
+        <div className="p-2 overflow-x-auto">
+          {children}
+        </div>
       </div>
     </div>
   );
@@ -191,7 +270,7 @@ export function AdminTableWrapper({
 
 /**
  * =====================================================================
- * ADMIN STATS CARD - Card hiển thị thống kê nhanh
+ * ADMIN STATS CARD - Card thống kê đa dạng layout
  * =====================================================================
  */
 
@@ -204,7 +283,7 @@ interface AdminStatsCardProps {
     value: number;
     isPositive: boolean;
   };
-  variant?: "default" | "success" | "warning" | "danger" | "info";
+  variant?: "default" | "success" | "warning" | "danger" | "info" | "aurora" | "neon";
 }
 
 export function AdminStatsCard({
@@ -216,119 +295,120 @@ export function AdminStatsCard({
   variant = "default",
 }: AdminStatsCardProps) {
   const iconVariants = {
-    default: "bg-muted text-muted-foreground",
-    success: "bg-emerald-500/10 text-emerald-600",
-    warning: "bg-amber-500/10 text-amber-600",
-    danger: "bg-red-500/10 text-red-600",
-    info: "bg-blue-500/10 text-blue-600",
+    default: "bg-white/5 text-muted-foreground",
+    success: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    warning: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+    danger: "bg-red-500/10 text-red-400 border-red-500/20",
+    info: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    aurora: "bg-[var(--aurora-purple)]/20 text-white shadow-[0_0_15px_var(--aurora-purple)] border-white/20",
+    neon: "bg-primary text-white shadow-[0_0_20px_rgba(var(--primary),0.6)] border-none",
   };
 
   return (
-    <div className="rounded-xl border border-border bg-card p-6">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-muted-foreground">
-          {title}
-        </span>
+    <m.div 
+      whileHover={{ y: -5, scale: 1.02 }}
+      className={cn(
+        "rounded-[2rem] border border-white/5 bg-white/5 backdrop-blur-xl p-7 transition-all duration-500 group relative overflow-hidden",
+        variant === "neon" && "border-primary/20 bg-primary/5"
+      )}
+    >
+      {variant === "aurora" && (
+        <div className="absolute -right-10 -top-10 w-24 h-24 bg-[var(--aurora-purple)]/20 rounded-full blur-2xl group-hover:bg-[var(--aurora-purple)]/30 transition-all" />
+      )}
+
+      <div className="flex items-start justify-between relative z-10">
+        <div className="space-y-1">
+          <span className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.2em]">
+            {title}
+          </span>
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-3xl font-black text-white tracking-tighter">{value}</h2>
+            {trend && (
+              <span
+                className={cn(
+                  "text-[10px] font-black px-2 py-0.5 rounded-full border flex items-center gap-0.5",
+                  trend.isPositive 
+                    ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" 
+                    : "text-red-400 bg-red-500/10 border-red-500/20"
+                )}
+              >
+                {trend.isPositive ? "↑" : "↓"}{trend.value}%
+              </span>
+            )}
+          </div>
+        </div>
         {Icon && (
           <div
             className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-lg",
+              "flex h-12 w-12 items-center justify-center rounded-2xl transition-all group-hover:rotate-12 duration-500 shadow-xl border border-white/10",
               iconVariants[variant]
             )}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className="h-6 w-6 stroke-[2.5px]" />
           </div>
         )}
       </div>
-      <div className="mt-2">
-        <span className="text-3xl font-bold">{value}</span>
-        {trend && (
-          <span
-            className={cn(
-              "ml-2 text-sm font-medium",
-              trend.isPositive ? "text-emerald-600" : "text-red-600"
-            )}
-          >
-            {trend.isPositive ? "+" : ""}
-            {trend.value}%
-          </span>
-        )}
-      </div>
       {description && (
-        <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+        <p className="mt-4 text-xs text-muted-foreground/60 font-medium tracking-wide leading-relaxed relative z-10">
+          {description}
+        </p>
       )}
-    </div>
+    </m.div>
   );
 }
 
 /**
  * =====================================================================
- * ADMIN EMPTY STATE - Component hiển thị khi không có dữ liệu
+ * ADMIN ACTION BADGE & EMPTY STATE (PRO)
  * =====================================================================
  */
-
-interface AdminEmptyStateProps {
-  icon?: LucideIcon;
-  title: string;
-  description?: string;
-  action?: React.ReactNode;
-}
 
 export function AdminEmptyState({
   icon: Icon,
   title,
   description,
   action,
-}: AdminEmptyStateProps) {
+}: {
+  icon?: LucideIcon;
+  title: string;
+  description?: string;
+  action?: React.ReactNode;
+}) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
+    <div className="flex flex-col items-center justify-center py-20 text-center glass-card rounded-[3rem] border border-white/5 mx-4 my-4 group">
       {Icon && (
-        <div className="mb-4 rounded-full bg-muted/50 p-4">
-          <Icon className="h-8 w-8 text-muted-foreground/50" />
-        </div>
+        <m.div 
+          whileHover={{ rotate: [0, -10, 10, 0] }}
+          className="mb-8 rounded-[2rem] bg-white/5 p-8 shadow-2xl border border-white/10 group-hover:bg-white/10 transition-all"
+        >
+          <Icon className="h-12 w-12 text-primary" />
+        </m.div>
       )}
-      <h3 className="text-lg font-medium">{title}</h3>
+      <h3 className="text-2xl font-black text-white tracking-tight">{title}</h3>
       {description && (
-        <p className="mt-1 text-sm text-muted-foreground max-w-sm">
+        <p className="mt-2 text-sm text-muted-foreground/60 max-w-sm font-medium leading-relaxed">
           {description}
         </p>
       )}
-      {action && <div className="mt-4">{action}</div>}
+      {action && <div className="mt-10">{action}</div>}
     </div>
   );
 }
-
-/**
- * =====================================================================
- * ADMIN ACTION BADGE - Badge cho các status/type tags
- * =====================================================================
- */
-
-interface AdminActionBadgeProps {
-  label: string;
-  variant?: "default" | "success" | "warning" | "danger" | "info" | "purple";
-  className?: string;
-}
-
-const badgeVariants = {
-  default: "bg-muted text-muted-foreground",
-  success: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-  warning: "bg-amber-500/10 text-amber-600 dark:text-amber-400",
-  danger: "bg-red-500/10 text-red-600 dark:text-red-400",
-  info: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
-  purple: "bg-purple-500/10 text-purple-600 dark:text-purple-400",
-};
 
 export function AdminActionBadge({
   label,
   variant = "default",
   className,
-}: AdminActionBadgeProps) {
+}: {
+  label: string;
+  variant?: "default" | "success" | "warning" | "danger" | "info" | "purple" | "aurora";
+  className?: string;
+}) {
   return (
     <span
       className={cn(
-        "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium",
-        badgeVariants[variant],
+        "inline-flex items-center px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border shadow-sm",
+        statVariants[variant === "purple" ? "aurora" : variant],
         className
       )}
     >

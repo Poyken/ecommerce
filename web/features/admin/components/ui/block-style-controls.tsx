@@ -16,7 +16,7 @@
  * - Hỗ trợ cả các thuộc tính nâng cao như `zIndex`, `boxShadow`, `animation`. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
  * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
+ *
  * =====================================================================
  */ 
 /**
@@ -29,7 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { Maximize2, BoxSelect, Layers } from "lucide-react";
+import { Maximize2, BoxSelect, Layers, Sparkles, Zap } from "lucide-react";
 
 interface BlockStyleControlsProps {
   styles?: {
@@ -75,6 +75,16 @@ interface BlockStyleControlsProps {
     position?: string;
     zIndex?: string;
     overflow?: string;
+
+    // Digital Premium
+    auroraPreset?: string;
+    glassPreset?: string;
+    glowIntensity?: string;
+
+    // Motion
+    hoverEffect?: string;
+    animationDuration?: string;
+    animationDelay?: string;
   };
   onChange: (newStyles: any) => void;
 }
@@ -135,6 +145,55 @@ export function BlockStyleControls({
                 value={styles?.textColor || "#000000"}
                 onChange={(e) => updateStyle("textColor", e.target.value)}
                 className="absolute left-1 top-1 w-6 h-6 p-0 border-0 bg-transparent overflow-hidden rounded-full"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Digital Premium Effects */}
+        <div className="space-y-3 pt-2 border-t border-dashed">
+          <Label className="text-[10px] font-bold uppercase text-primary flex items-center gap-2">
+            <Sparkles className="w-3 h-3" /> Digital Premium Effects
+          </Label>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label className="text-[9px] text-muted-foreground">Aurora Preset</Label>
+              <select
+                className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
+                value={styles?.auroraPreset || "none"}
+                onChange={(e) => updateStyle("auroraPreset", e.target.value)}
+              >
+                <option value="none">None</option>
+                <option value="blue">Aurora Blue</option>
+                <option value="purple">Aurora Purple</option>
+                <option value="orange">Aurora Orange</option>
+                <option value="cinematic">Cinematic Mix</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <Label className="text-[9px] text-muted-foreground">Glass Preset</Label>
+              <select
+                className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
+                value={styles?.glassPreset || "none"}
+                onChange={(e) => updateStyle("glassPreset", e.target.value)}
+              >
+                <option value="none">None</option>
+                <option value="frosted">Frosted Glass</option>
+                <option value="premium">Premium Glass</option>
+              </select>
+            </div>
+            <div className="space-y-1 col-span-2">
+              <div className="flex justify-between items-center">
+                <Label className="text-[9px] text-muted-foreground">Glow Intensity</Label>
+                <span className="text-[9px] font-mono">{styles?.glowIntensity || 0}%</span>
+              </div>
+              <Input
+                type="range"
+                min="0"
+                max="100"
+                value={styles?.glowIntensity || "0"}
+                onChange={(e) => updateStyle("glowIntensity", e.target.value)}
+                className="h-4 accent-primary"
               />
             </div>
           </div>
@@ -586,22 +645,67 @@ export function BlockStyleControls({
             </div>
           </div>
 
-          <div className="space-y-1">
-            <Label className="text-[9px] text-muted-foreground">
-              Animation
+          {/* Motion & Interaction */}
+          <div className="space-y-3 pt-2 border-t border-dashed">
+            <Label className="text-[10px] font-bold uppercase text-orange-500 flex items-center gap-2">
+              <Zap className="w-3 h-3" /> Motion & Interaction
             </Label>
-            <select
-              className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-              value={styles?.animation || ""}
-              onChange={(e) => updateStyle("animation", e.target.value)}
-            >
-              <option value="">None</option>
-              <option value="fade-in">Fade In</option>
-              <option value="slide-up">Slide Up</option>
-              <option value="zoom-in">Zoom In</option>
-              <option value="bounce">Bounce</option>
-              <option value="pulse">Pulse</option>
-            </select>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <Label className="text-[9px] text-muted-foreground">Entrance Preset</Label>
+                <select
+                  className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
+                  value={styles?.animation || ""}
+                  onChange={(e) => updateStyle("animation", e.target.value)}
+                >
+                  <option value="">None</option>
+                  <option value="fade-in">Fade In</option>
+                  <option value="slide-up">Slide Up</option>
+                  <option value="slide-down">Slide Down</option>
+                  <option value="slide-left">Slide Left</option>
+                  <option value="slide-right">Slide Right</option>
+                  <option value="zoom-in">Zoom In</option>
+                  <option value="bounce">Bounce</option>
+                  <option value="float">Floating</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[9px] text-muted-foreground">Hover Effect</Label>
+                <select
+                  className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
+                  value={styles?.hoverEffect || "none"}
+                  onChange={(e) => updateStyle("hoverEffect", e.target.value)}
+                >
+                  <option value="none">None</option>
+                  <option value="lift">Lift Up</option>
+                  <option value="scale">Scale Up</option>
+                  <option value="glow">Inner Glow</option>
+                  <option value="shine">Shine Highlight</option>
+                </select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[9px] text-muted-foreground">Duration (s)</Label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  value={styles?.animationDuration || "0.5"}
+                  onChange={(e) => updateStyle("animationDuration", e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[9px] text-muted-foreground">Delay (s)</Label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  min="0"
+                  value={styles?.animationDelay || "0"}
+                  onChange={(e) => updateStyle("animationDelay", e.target.value)}
+                  className="h-8 text-xs"
+                />
+              </div>
+            </div>
           </div>
         </div>
 

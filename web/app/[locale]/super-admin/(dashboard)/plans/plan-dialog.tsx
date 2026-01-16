@@ -74,11 +74,13 @@ const planSchema = z.object({
 
 type PlanFormValues = z.infer<typeof planSchema>;
 
+import { Plan } from "@/types/feature-types/admin.types";
+
 interface PlanDialogProps {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  planToEdit?: any; // Replace with proper type later
+  planToEdit?: Plan; 
 }
 
 export function PlanDialog({

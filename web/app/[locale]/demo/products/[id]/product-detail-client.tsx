@@ -243,18 +243,18 @@ export function ProductDetailClient({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold tracking-widest uppercase text-purple-600 dark:text-purple-400">
+          <div className="flex items-center gap-4">
+            <span className="text-[10px] font-black tracking-[0.4em] uppercase text-primary">
               {product.brand?.name || "Premium Brand"}
             </span>
-            <div className="h-px w-8 bg-purple-600/30 dark:bg-purple-400/30"></div>
-            <span className="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+            <div className="h-[1px] w-12 bg-white/10"></div>
+            <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
               {product.category?.name || "Collection"}
             </span>
           </div>
 
-          <div className="flex justify-between items-start">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-foreground leading-[1.1]">
+          <div className="flex justify-between items-start gap-6">
+            <h1 className="text-4xl md:text-5xl lg:text-8xl font-black tracking-tighter text-white uppercase italic leading-[0.9]">
               {product.name}
             </h1>
             <WishlistButton
@@ -285,13 +285,14 @@ export function ProductDetailClient({
             </span>
           </div>
 
-          <p className="text-lg text-muted-foreground leading-relaxed border-l-2 border-emerald-500/20 pl-6">
+          <p className="text-sm text-muted-foreground/60 leading-relaxed font-medium border-l border-white/10 pl-6 max-w-xl">
             {product.description}
           </p>
         </m.div>
 
-        <div>
-          <GlassCard className="p-6 md:p-8 space-y-4 backdrop-blur-xl bg-linear-to-br from-emerald-500/5 via-blue-500/5 to-purple-500/5 border-emerald-500/10">
+        <div className="mt-4">
+          <div className="glass-premium p-8 md:p-10 space-y-4 border-white/5 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-linear-to-r from-transparent via-white/10 to-transparent" />
             <ProductVariantSelector
               options={product.options || []}
               skus={product.skus || []}
@@ -303,27 +304,28 @@ export function ProductDetailClient({
               isAdding={isAdding}
             />
 
-            <div className="grid grid-cols-2 gap-y-4 gap-x-2 pt-6 border-t border-white/5">
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <Truck className="h-5 w-5 text-primary stroke-[1.5]" />
+            <div className="grid grid-cols-2 gap-y-6 gap-x-4 pt-8 border-t border-white/5">
+              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                <Truck className="h-4 w-4 text-primary" />
                 <span>{t("freeGlobalShipping")}</span>
               </div>
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <Shield className="h-5 w-5 text-primary stroke-[1.5]" />
+              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                <Shield className="h-4 w-4 text-primary" />
                 <span>{t("warranty")}</span>
               </div>
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                <Check className="h-5 w-5 text-primary stroke-[1.5]" />
+              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                <Check className="h-4 w-4 text-primary" />
                 <span>{t("authenticityVerified")}</span>
               </div>
             </div>
-          </GlassCard>
+          </div>
         </div>
 
         <div className="pt-8 border-t border-white/5">
-          <div className="flex items-center justify-between mb-8">
-            <h3 className="text-2xl font-bold tracking-tight">
+          <div className="flex items-center justify-between mb-12">
+            <h3 className="text-3xl font-black tracking-tighter uppercase italic text-white flex items-center gap-4">
               {t("customerReviews")}
+              <div className="h-px w-24 bg-white/10" />
             </h3>
           </div>
           <ProductReviews

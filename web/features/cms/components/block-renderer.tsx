@@ -97,6 +97,12 @@ export interface BlockStyles {
   gap?: string;
   customClasses?: string;
   animation?: string;
+  auroraPreset?: string;
+  glassPreset?: string;
+  glowIntensity?: string;
+  hoverEffect?: string;
+  animationDuration?: string;
+  animationDelay?: string;
 }
 
 export interface BlockAnimation {
@@ -218,6 +224,13 @@ export const PARAM_MAP = {
       ),
     { loading: () => <BlockSkeleton /> }
   ),
+  PromoBanner: dynamic(
+    () =>
+      import("@/features/home/components/promo-banner-block").then(
+        (mod) => mod.PromoBannerBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
+  ),
   Gallery: dynamic(
     () =>
       import("@/features/home/components/gallery-block").then(
@@ -327,6 +340,13 @@ export const PARAM_MAP = {
         </div>
       ),
     }
+  ),
+  FeaturedCollection: dynamic(
+    () =>
+      import("@/features/home/components/featured-collection-block").then(
+        (mod) => mod.FeaturedCollectionBlock
+      ),
+    { loading: () => <BlockSkeleton /> }
   ),
   Deal: dynamic(
     () =>
@@ -525,11 +545,32 @@ export const BlockRenderer = ({
 
   return (
     <div
-      style={wrapperStyle}
+      style={{
+        ...wrapperStyle,
+        ["--glow-opacity" as any]: styles?.glowIntensity ? Number(styles.glowIntensity) / 100 : 0,
+        animationDuration: styles?.animationDuration ? `${styles.animationDuration}s` : undefined,
+        animationDelay: styles?.animationDelay ? `${styles.animationDelay}s` : undefined,
+        transitionDuration: styles?.hoverEffect && styles.hoverEffect !== "none" ? "300ms" : undefined,
+      }}
       className={cn(
         styles?.customClasses,
         animationClass,
-        styles?.animation && `animate-${styles.animation}`
+        styles?.animation && `animate-${styles.animation}`,
+        // Aurora Presets
+        styles?.auroraPreset === "blue" && "bg-blue-500/5 shadow-[0_0_100px_-20px_rgba(59,130,246,0.3)]",
+        styles?.auroraPreset === "purple" && "bg-purple-500/5 shadow-[0_0_100px_-20px_rgba(168,85,247,0.3)]",
+        styles?.auroraPreset === "orange" && "bg-orange-500/5 shadow-[0_0_100px_-20px_rgba(249,115,22,0.3)]",
+        styles?.auroraPreset === "cinematic" && "bg-gradient-to-br from-blue-500/5 to-purple-500/5 shadow-[0_0_100px_-20px_rgba(59,130,246,0.3),0_0_100px_-20px_rgba(168,85,247,0.3)]",
+        // Glass Presets
+        styles?.glassPreset === "frosted" && "glass backdrop-blur-md border border-white/10",
+        styles?.glassPreset === "premium" && "glass-premium backdrop-blur-2xl border border-white/20 shadow-2xl",
+        // Glow Effect
+        styles?.glowIntensity && Number(styles.glowIntensity) > 0 && "after:absolute after:inset-0 after:rounded-[inherit] after:shadow-[0_0_20px_0_rgba(255,255,255,0.1)] after:opacity-50 after:pointer-events-none",
+        // Hover Effects
+        styles?.hoverEffect === "lift" && "hover:-translate-y-2 hover:shadow-2xl",
+        styles?.hoverEffect === "scale" && "hover:scale-105",
+        styles?.hoverEffect === "glow" && "hover:shadow-[0_0_30px_rgba(59,130,246,0.4)]",
+        styles?.hoverEffect === "shine" && "relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:-translate-x-full hover:before:animate-shine"
       )}
     >
       <Suspense fallback={<BlockSkeleton />}>

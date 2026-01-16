@@ -25,7 +25,6 @@
 
 "use server";
 
-import { http } from "@/lib/http";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 import { ActionResult } from "@/types/api";
 
@@ -33,24 +32,16 @@ import { ActionResult } from "@/types/api";
 // 📦 TYPES - Định nghĩa kiểu dữ liệu
 // =============================================================================
 
+import { addressService } from "./services/address.service";
+
+// =============================================================================
+// 📦 TYPES - Định nghĩa kiểu dữ liệu
+// =============================================================================
+
 /**
- * Dữ liệu địa chỉ được trích xuất từ FormData.
- * Tất cả fields là optional vì FormData.get() có thể trả về null.
+ * Re-export AddressData interface from service for consistency
  */
-interface AddressFormData {
-  recipientName?: string;
-  phoneNumber?: string;
-  street?: string;
-  city?: string;
-  district?: string;
-  ward?: string;
-  postalCode?: string;
-  country?: string;
-  isDefault: boolean;
-  districtId?: number;
-  provinceId?: number;
-  wardCode?: string;
-}
+type AddressFormData = import("./services/address.service").AddressData;
 
 // =============================================================================
 // 🔧 HELPER FUNCTIONS - Hàm hỗ trợ
@@ -140,10 +131,7 @@ export async function createAddressAction(
   }
 
   return wrapServerAction(async () => {
-    await http("/addresses", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    await addressService.createAddress(data);
     revalidateAddressPaths();
   }, "Không thể tạo địa chỉ");
 }
@@ -169,10 +157,7 @@ export async function updateAddressAction(
   }
 
   return wrapServerAction(async () => {
-    await http(`/addresses/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    });
+    await addressService.updateAddress(id, data);
     revalidateAddressPaths();
   }, "Không thể cập nhật địa chỉ");
 }
@@ -189,9 +174,7 @@ export async function deleteAddressAction(
   id: string
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http(`/addresses/${id}`, {
-      method: "DELETE",
-    });
+    await addressService.deleteAddress(id);
     revalidateAddressPaths();
   }, "Không thể xóa địa chỉ");
 }
@@ -211,12 +194,7 @@ export async function setDefaultAddressAction(
   id: string
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http(`/addresses/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({
-        isDefault: true,
-      }),
-    });
+    await addressService.setDefaultAddress(id);
     revalidateAddressPaths();
   }, "Không thể đặt địa chỉ mặc định");
 }

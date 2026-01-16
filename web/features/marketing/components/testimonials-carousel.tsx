@@ -32,22 +32,26 @@ import { useCallback, useEffect } from "react";
  * =====================================================================
  */
 
+interface Testimonial {
+  text: string;
+  author: string;
+  role: string;
+  rating?: number;
+  avatar?: string;
+}
+
 interface TestimonialsCarouselProps {
-  items?: Array<{ text: string; author: string; role: string; rating?: number; avatar?: string }>;
+  items?: Testimonial[];
 }
 
 export function TestimonialsCarousel({ items }: TestimonialsCarouselProps) {
   const t = useTranslations("home.testimonials");
-  const testimonialsRaw = items || (t.raw("items") as {
-    text: string;
-    author: string;
-    role: string;
-  }[]);
+  const testimonialsRaw = items || (t.raw("items") as Testimonial[]);
 
-  const testimonials = testimonialsRaw.map((item: any, index: number) => ({
+  const testimonials = testimonialsRaw.map((item, index) => ({
     ...item,
     id: index + 1,
-    rating: item.rating || 5, // Default rating as it's not in translation for now
+    rating: item.rating || 5,
     avatar: item.avatar || `/images/testimonials/person-${(index % 6) + 1}.webp`,
   }));
 
@@ -95,37 +99,41 @@ export function TestimonialsCarousel({ items }: TestimonialsCarouselProps) {
       passive: false,
     });
 
+
     return () => {
       viewport.removeEventListener("wheel", wheelListener as EventListener);
     };
   }, [emblaApi]);
 
   return (
-    <div className="relative group overflow-hidden">
+    <div className="relative group overflow-hidden py-12">
       {/* Navigation Buttons - Positioned Inside */}
-      <div className="absolute top-1/2 -translate-y-1/2 left-4 z-20 hidden md:block">
+      <div className="absolute top-1/2 -translate-y-1/2 left-8 z-20 hidden md:block">
         <GlassButton
           size="icon"
           onClick={scrollPrev}
-          className="w-12 h-12 rounded-full bg-foreground/5 hover:bg-accent/10 border-foreground/10 hover:border-accent/30 backdrop-blur-xl shadow-2xl hover:shadow-accent/10 transition-all duration-300"
+          className="w-16 h-16 rounded-full bg-black/20 hover:bg-black/40 border-white/10 hover:border-primary/30 backdrop-blur-xl shadow-2xl hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] transition-all duration-300 group/btn"
         >
-          <ChevronLeft className="text-foreground" size={20} />
+          <ChevronLeft className="text-white group-hover/btn:scale-125 transition-transform" size={24} />
         </GlassButton>
       </div>
 
-      <div className="absolute top-1/2 -translate-y-1/2 right-4 z-20 hidden md:block">
+      <div className="absolute top-1/2 -translate-y-1/2 right-8 z-20 hidden md:block">
         <GlassButton
           size="icon"
           onClick={scrollNext}
-          className="w-12 h-12 rounded-full bg-foreground/5 hover:bg-accent/10 border-foreground/10 hover:border-accent/30 backdrop-blur-xl shadow-2xl hover:shadow-accent/10 transition-all duration-300"
+          className="w-16 h-16 rounded-full bg-black/20 hover:bg-black/40 border-white/10 hover:border-primary/30 backdrop-blur-xl shadow-2xl hover:shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] transition-all duration-300 group/btn"
         >
-          <ChevronRight className="text-foreground" size={20} />
+          <ChevronRight className="text-white group-hover/btn:scale-125 transition-transform" size={24} />
         </GlassButton>
       </div>
 
       {/* Gradient Masks */}
-      <div className="absolute left-0 top-0 bottom-0 w-12 bg-linear-to-r from-background to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-12 bg-linear-to-l from-background to-transparent z-10 pointer-events-none" />
+      <div className="absolute left-0 top-0 bottom-0 w-32 bg-linear-to-r from-black via-black/80 to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-32 bg-linear-to-l from-black via-black/80 to-transparent z-10 pointer-events-none" />
+
+      {/* Aurora Glow Background */}
+       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[var(--aurora-purple)]/5 blur-[100px] pointer-events-none -z-10" />
 
       {/* Embla Viewport */}
       <div className="overflow-hidden" ref={emblaRef}>
@@ -135,26 +143,26 @@ export function TestimonialsCarousel({ items }: TestimonialsCarouselProps) {
               key={item.id}
               className="flex-none w-[85vw] md:w-[400px] min-w-0 cursor-grab active:cursor-grabbing"
             >
-              <GlassCard className="h-full p-10 space-y-6 bg-foreground/2 border-foreground/5 hover:border-accent/20 transition-all duration-500 rounded-4xl hover:shadow-2xl hover:shadow-accent/10">
-                <div className="flex gap-1.5">
+              <div className="glass-premium h-full p-10 space-y-8 bg-white/5 hover:bg-white/10 border-white/5 hover:border-white/10 transition-all duration-500 rounded-[2.5rem] hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2 group/card">
+                <div className="flex gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <span
                       key={i}
                       className={
                         i < item.rating
-                          ? "text-accent text-2xl"
-                          : "text-muted-foreground/10 text-2xl"
+                          ? "text-primary text-xl"
+                          : "text-white/10 text-xl"
                       }
                     >
                       ★
                     </span>
                   ))}
                 </div>
-                <p className="text-base text-foreground/80 leading-relaxed font-medium">
+                <p className="text-lg text-white/80 leading-relaxed font-medium italic">
                   &ldquo;{item.text}&rdquo;
                 </p>
-                <div className="flex items-center gap-4 pt-4 border-t border-foreground/5">
-                  <div className="relative w-12 h-12 rounded-2xl overflow-hidden border border-foreground/10 shadow-sm">
+                <div className="flex items-center gap-5 pt-6 border-t border-white/5">
+                  <div className="relative w-14 h-14 rounded-2xl overflow-hidden border border-white/10 shadow-lg group-hover/card:scale-110 transition-transform duration-500">
                     <UserAvatar
                       src={item.avatar}
                       alt={item.author}
@@ -162,15 +170,15 @@ export function TestimonialsCarousel({ items }: TestimonialsCarouselProps) {
                     />
                   </div>
                   <div>
-                    <div className="font-black text-foreground tracking-tight">
+                    <div className="font-black text-white text-lg tracking-tight uppercase">
                       {item.author}
                     </div>
-                    <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/80">
                       {item.role}
                     </div>
                   </div>
                 </div>
-              </GlassCard>
+              </div>
             </div>
           ))}
         </div>

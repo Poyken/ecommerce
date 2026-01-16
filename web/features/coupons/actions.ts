@@ -17,9 +17,9 @@
 
 "use server";
 
-import { http } from "@/lib/http";
+import { couponService } from "./services/coupon.service";
 import { wrapServerAction } from "@/lib/safe-action";
-import { ActionResult, ApiResponse } from "@/types/api";
+import { ActionResult } from "@/types/api";
 import { Coupon } from "@/types/models";
 
 /**
@@ -29,10 +29,7 @@ export async function getAvailableCouponsAction(): Promise<
   ActionResult<Coupon[]>
 > {
   return wrapServerAction(
-    () =>
-      http<ApiResponse<Coupon[]>>("/coupons/available", {
-        skipAuth: true,
-      }),
+    () => couponService.getAvailableCoupons(),
     "Không thể lấy mã giảm giá"
   );
 }
@@ -51,13 +48,7 @@ export async function validateCouponAction(
   }>
 > {
   return wrapServerAction(async () => {
-    const res = await http<
-      ApiResponse<{
-        isValid: boolean;
-        discountAmount: number;
-        message?: string;
-      }>
-    >(`/coupons/validate?code=${code}&amount=${amount}`);
+    const res = await couponService.validateCoupon(code, amount);
 
     return {
       isValid: res.data.isValid,

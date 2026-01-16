@@ -25,9 +25,9 @@
 "use server";
 
 import { protectedActionClient } from "@/lib/safe-action";
-import { http } from "@/lib/http";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { superAdminInvoiceService } from "../services/super-admin-invoice.service";
 
 const getInvoicesSchema = z.object({
   page: z.number().default(1),
@@ -37,7 +37,7 @@ const getInvoicesSchema = z.object({
 export const getInvoicesAction = protectedActionClient
   .schema(getInvoicesSchema)
   .action(async ({ parsedInput: { page, limit } }) => {
-    return http(`/invoices?page=${page}&limit=${limit}`);
+    return superAdminInvoiceService.getInvoices(page, limit);
   });
 
 const updateStatusSchema = z.object({
@@ -48,10 +48,7 @@ const updateStatusSchema = z.object({
 export const updateInvoiceStatusAction = protectedActionClient
   .schema(updateStatusSchema)
   .action(async ({ parsedInput: { id, status } }) => {
-    const res = await http(`/invoices/${id}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    });
+    const res = await superAdminInvoiceService.updateInvoiceStatus(id, status);
     revalidatePath("/super-admin/invoices");
     return res;
   });

@@ -57,6 +57,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
                 const key = parts[0];
                 const value = parts.slice(1).join('=');
                 acc[key] = value;
+                return acc;
               }, {});
 
             return cookies['accessToken'];

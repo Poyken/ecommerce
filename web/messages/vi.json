@@ -830,6 +830,7 @@
     }
   },
   "admin": {
+    "adminPanel": "Bảng quản trị",
     "import": "Nhập dữ liệu",
     "export": "Xuất dữ liệu",
     "exportExcel": "Xuất ra Excel (.xlsx)",
@@ -1432,6 +1433,8 @@
       "brand": "Quản trị Hệ thống",
       "tenantAdmin": "Quản trị Cửa hàng",
       "chatSupport": "Hỗ trợ Trực tuyến",
+      "chat": "Chat",
+      "plans": "Gói dịch vụ",
       "platformControl": "Quản trị Nền tảng",
       "billing": "Thanh toán"
     },

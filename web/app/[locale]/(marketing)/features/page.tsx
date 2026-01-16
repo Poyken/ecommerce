@@ -8,7 +8,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   ArrowRight,
   BarChart3,
@@ -305,7 +305,7 @@ export default function FeaturesPage() {
         </div>
 
         <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
+          <m.div
             initial="hidden"
             animate="visible"
             variants={{
@@ -313,31 +313,31 @@ export default function FeaturesPage() {
             }}
             className="text-center max-w-3xl mx-auto"
           >
-            <motion.div
+            <m.div
               variants={fadeInUp}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
             >
               <Zap className="size-4" />
               <span>50+ tính năng mạnh mẽ</span>
-            </motion.div>
+            </m.div>
 
-            <motion.h1
+            <m.h1
               variants={fadeInUp}
               className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6"
             >
               Tất cả công cụ bạn cần để{" "}
               <span className="text-primary">bán hàng thành công</span>
-            </motion.h1>
+            </m.h1>
 
-            <motion.p
+            <m.p
               variants={fadeInUp}
               className="text-xl text-muted-foreground mb-10"
             >
               Từ quản lý kho đến AI chatbot, từ B2B pricing đến affiliate - tất
               cả trong một nền tảng.
-            </motion.p>
+            </m.p>
 
-            <motion.div
+            <m.div
               variants={fadeInUp}
               className="flex flex-wrap justify-center gap-4"
             >
@@ -350,8 +350,8 @@ export default function FeaturesPage() {
               <Button size="lg" variant="outline" asChild>
                 <Link href="/demo">Xem demo</Link>
               </Button>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         </div>
       </section>
 
@@ -363,7 +363,7 @@ export default function FeaturesPage() {
         >
           <div className="container mx-auto px-4 lg:px-8">
             {/* Category Header */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -378,12 +378,12 @@ export default function FeaturesPage() {
               <p className="text-lg text-muted-foreground">
                 {category.description}
               </p>
-            </motion.div>
+            </m.div>
 
             {/* Feature Cards */}
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
               {category.features.map((feature, index) => (
-                <motion.div
+                <m.div
                   key={feature.title}
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -400,7 +400,7 @@ export default function FeaturesPage() {
                   <p className="text-sm text-muted-foreground">
                     {feature.description}
                   </p>
-                </motion.div>
+                </m.div>
               ))}
             </div>
           </div>
@@ -410,7 +410,7 @@ export default function FeaturesPage() {
       {/* CTA Section */}
       <section className="py-16 lg:py-24 bg-primary text-primary-foreground">
         <div className="container mx-auto px-4 lg:px-8 text-center">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -440,7 +440,7 @@ export default function FeaturesPage() {
                 <Link href="/pricing">Xem bảng giá</Link>
               </Button>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </section>
     </main>

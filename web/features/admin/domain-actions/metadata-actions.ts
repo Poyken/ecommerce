@@ -21,8 +21,6 @@
  */
 "use server";
 
-import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
 import {
   ApiResponse,
   ActionResult,
@@ -36,6 +34,14 @@ import {
 import { Brand, Category, Coupon } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 
+import { adminMetadataService } from "../services/admin-metadata.service";
+
+/**
+ * =====================================================================
+ * METADATA ACTIONS - Quản lý Danh mục, Thương hiệu, Coupon
+ * =====================================================================
+ */
+
 // --- BRANDS ---
 
 export async function getBrandsAction(
@@ -43,9 +49,8 @@ export async function getBrandsAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Brand[]>> {
-  const params = normalizePaginationParams(paramsOrPage, limit, search);
   return wrapServerAction(
-    () => http<ApiResponse<Brand[]>>("/brands", { params }),
+    () => adminMetadataService.getBrands(paramsOrPage, limit, search),
     "Failed to fetch brands"
   );
 }
@@ -54,10 +59,7 @@ export async function createBrandAction(
   data: CreateBrandDto | FormData
 ): Promise<ActionResult<Brand>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Brand>>("/brands", {
-      method: "POST",
-      body: data instanceof FormData ? data : JSON.stringify(data),
-    });
+    const res = await adminMetadataService.createBrand(data);
     REVALIDATE.admin.brands();
     return res.data;
   }, "Failed to create brand");
@@ -68,10 +70,7 @@ export async function updateBrandAction(
   data: UpdateBrandDto | FormData
 ): Promise<ActionResult<Brand>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Brand>>(`/brands/${id}`, {
-      method: "PATCH",
-      body: data instanceof FormData ? data : JSON.stringify(data),
-    });
+    const res = await adminMetadataService.updateBrand(id, data);
     REVALIDATE.admin.brands();
     return res.data;
   }, "Failed to update brand");
@@ -81,7 +80,7 @@ export async function deleteBrandAction(
   id: string
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http(`/brands/${id}`, { method: "DELETE" });
+    await adminMetadataService.deleteBrand(id);
     REVALIDATE.admin.brands();
   }, "Failed to delete brand");
 }
@@ -93,9 +92,8 @@ export async function getCategoriesAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Category[]>> {
-  const params = normalizePaginationParams(paramsOrPage, limit, search);
   return wrapServerAction(
-    () => http<ApiResponse<Category[]>>("/categories", { params }),
+    () => adminMetadataService.getCategories(paramsOrPage, limit, search),
     "Failed to fetch categories"
   );
 }
@@ -104,10 +102,7 @@ export async function createCategoryAction(
   data: CreateCategoryDto | FormData
 ): Promise<ActionResult<Category>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Category>>("/categories", {
-      method: "POST",
-      body: data instanceof FormData ? data : JSON.stringify(data),
-    });
+    const res = await adminMetadataService.createCategory(data);
     REVALIDATE.admin.categories();
     return res.data;
   }, "Failed to create category");
@@ -118,10 +113,7 @@ export async function updateCategoryAction(
   data: UpdateCategoryDto | FormData
 ): Promise<ActionResult<Category>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Category>>(`/categories/${id}`, {
-      method: "PATCH",
-      body: data instanceof FormData ? data : JSON.stringify(data),
-    });
+    const res = await adminMetadataService.updateCategory(id, data);
     REVALIDATE.admin.categories();
     return res.data;
   }, "Failed to update category");
@@ -131,7 +123,7 @@ export async function deleteCategoryAction(
   id: string
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http(`/categories/${id}`, { method: "DELETE" });
+    await adminMetadataService.deleteCategory(id);
     REVALIDATE.admin.categories();
   }, "Failed to delete category");
 }
@@ -143,9 +135,8 @@ export async function getCouponsAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Coupon[]>> {
-  const params = normalizePaginationParams(paramsOrPage, limit, search);
   return wrapServerAction(
-    () => http<ApiResponse<Coupon[]>>("/coupons", { params }),
+    () => adminMetadataService.getCoupons(paramsOrPage, limit, search),
     "Failed to fetch coupons"
   );
 }
@@ -154,10 +145,7 @@ export async function createCouponAction(
   data: CreateCouponDto
 ): Promise<ActionResult<Coupon>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Coupon>>("/coupons", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    const res = await adminMetadataService.createCoupon(data);
     REVALIDATE.admin.coupons();
     return res.data;
   }, "Failed to create coupon");
@@ -168,10 +156,7 @@ export async function updateCouponAction(
   data: UpdateCouponDto
 ): Promise<ActionResult<Coupon>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Coupon>>(`/coupons/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    });
+    const res = await adminMetadataService.updateCoupon(id, data);
     REVALIDATE.admin.coupons();
     return res.data;
   }, "Failed to update coupon");
@@ -181,7 +166,7 @@ export async function deleteCouponAction(
   id: string
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http(`/coupons/${id}`, { method: "DELETE" });
+    await adminMetadataService.deleteCoupon(id);
     REVALIDATE.admin.coupons();
   }, "Failed to delete coupon");
 }
@@ -192,7 +177,7 @@ export async function exportCategoriesAction(): Promise<
   ActionResult<{ base64: string; filename: string }>
 > {
   return wrapServerAction(async () => {
-    const res = await http<any>("/categories/export/excel");
+    const res = await adminMetadataService.exportCategories();
     return {
       base64: res.base64,
       filename: res.filename || "categories_export.xlsx",
@@ -204,10 +189,7 @@ export async function importCategoriesAction(
   formData: FormData
 ): Promise<ActionResult<any>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any>>("/categories/import/excel", {
-      method: "POST",
-      body: formData,
-    });
+    const res = await adminMetadataService.importCategories(formData);
     REVALIDATE.admin.categories();
     return res.data;
   }, "Failed to import categories");
@@ -217,10 +199,7 @@ export async function previewCategoriesImportAction(
   formData: FormData
 ): Promise<ActionResult<any[]>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any[]>>("/categories/import/preview", {
-      method: "POST",
-      body: formData,
-    });
+    const res = await adminMetadataService.previewCategoriesImport(formData);
     return res.data;
   }, "Failed to preview categories import");
 }
@@ -229,7 +208,7 @@ export async function downloadCategoryTemplateAction(): Promise<
   ActionResult<{ base64: string; filename: string }>
 > {
   return wrapServerAction(async () => {
-    const res = await http<any>("/categories/import/template");
+    const res = await adminMetadataService.downloadCategoryTemplate();
     return {
       base64: res.base64,
       filename: res.filename || "categories_import_template.xlsx",
@@ -243,7 +222,7 @@ export async function exportBrandsAction(): Promise<
   ActionResult<{ base64: string; filename: string }>
 > {
   return wrapServerAction(async () => {
-    const res = await http<any>("/brands/export/excel");
+    const res = await adminMetadataService.exportBrands();
     return {
       base64: res.base64,
       filename: res.filename || "brands_export.xlsx",
@@ -255,10 +234,7 @@ export async function importBrandsAction(
   formData: FormData
 ): Promise<ActionResult<any>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any>>("/brands/import/excel", {
-      method: "POST",
-      body: formData,
-    });
+    const res = await adminMetadataService.importBrands(formData);
     REVALIDATE.admin.brands();
     return res.data;
   }, "Failed to import brands");
@@ -268,10 +244,7 @@ export async function previewBrandsImportAction(
   formData: FormData
 ): Promise<ActionResult<any[]>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any[]>>("/brands/import/preview", {
-      method: "POST",
-      body: formData,
-    });
+    const res = await adminMetadataService.previewBrandsImport(formData);
     return res.data;
   }, "Failed to preview brands import");
 }
@@ -280,7 +253,7 @@ export async function downloadBrandTemplateAction(): Promise<
   ActionResult<{ base64: string; filename: string }>
 > {
   return wrapServerAction(async () => {
-    const res = await http<any>("/brands/import/template");
+    const res = await adminMetadataService.downloadBrandTemplate();
     return {
       base64: res.base64,
       filename: res.filename || "brands_import_template.xlsx",

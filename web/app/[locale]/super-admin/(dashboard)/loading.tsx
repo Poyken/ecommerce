@@ -1,5 +1,5 @@
 import { LoadingScreen } from "@/components/shared/loading-screen";
 
 export default function SuperAdminLoading() {
-  return <LoadingScreen fullScreen={false} />;
+  return <LoadingScreen variant="luxury" fullScreen={false} />;
 }

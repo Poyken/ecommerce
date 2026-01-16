@@ -8,7 +8,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import {
   ArrowRight,
   Calendar,
@@ -99,7 +99,7 @@ export default function DemoPage() {
   if (isSuccess) {
     return (
       <main className="min-h-screen bg-background flex items-center justify-center py-20">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           className="text-center max-w-md mx-auto px-4"
@@ -124,7 +124,7 @@ export default function DemoPage() {
               Gửi yêu cầu khác
             </Button>
           </div>
-        </motion.div>
+        </m.div>
       </main>
     );
   }
@@ -139,43 +139,43 @@ export default function DemoPage() {
         </div>
 
         <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
+          <m.div
             initial="hidden"
             animate="visible"
             variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
             className="text-center max-w-3xl mx-auto"
           >
-            <motion.div
+            <m.div
               variants={fadeInUp}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
             >
               <Play className="size-4" />
               <span>Xem trước sản phẩm</span>
-            </motion.div>
+            </m.div>
 
-            <motion.h1
+            <m.h1
               variants={fadeInUp}
               className="text-4xl md:text-5xl font-bold tracking-tight mb-6"
             >
               Trải nghiệm <span className="text-primary">Luxe SaaS</span> ngay
               hôm nay
-            </motion.h1>
+            </m.h1>
 
-            <motion.p
+            <m.p
               variants={fadeInUp}
               className="text-xl text-muted-foreground mb-10"
             >
               Khám phá các cửa hàng demo hoặc đặt lịch để được hướng dẫn chi
               tiết 1-on-1
-            </motion.p>
-          </motion.div>
+            </m.p>
+          </m.div>
         </div>
       </section>
 
       {/* Live Demo Stores */}
       <section className="py-16 lg:py-24 bg-muted/30">
         <div className="container mx-auto px-4 lg:px-8">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -187,11 +187,11 @@ export default function DemoPage() {
             <p className="text-lg text-muted-foreground">
               Truy cập ngay các cửa hàng mẫu để xem tính năng thực tế
             </p>
-          </motion.div>
+          </m.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {demoStores.map((store, index) => (
-              <motion.div
+              <m.div
                 key={store.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -234,7 +234,7 @@ export default function DemoPage() {
                     ))}
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
@@ -245,7 +245,7 @@ export default function DemoPage() {
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 max-w-6xl mx-auto">
             {/* Left: Info */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -295,10 +295,10 @@ export default function DemoPage() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </m.div>
 
             {/* Right: Form */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -443,7 +443,7 @@ export default function DemoPage() {
                   không cần demo
                 </p>
               </form>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>

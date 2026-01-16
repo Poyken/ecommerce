@@ -16,7 +16,7 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { motion, AnimatePresence } from "framer-motion";
+import { m, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
@@ -215,7 +215,11 @@ export default function OnboardingPage() {
   };
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-black relative overflow-hidden font-sans selection:bg-primary/30">
+      {/* Background Aurora Glows */}
+      <div className="absolute top-0 -left-[10%] w-[600px] h-[600px] bg-[var(--aurora-purple)]/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-[30%] -right-[5%] w-[500px] h-[500px] bg-[var(--aurora-blue)]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-0 left-[20%] w-[800px] h-[800px] bg-primary/2 rounded-full blur-[200px] pointer-events-none" />
       {/* Progress Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b">
         <div className="container mx-auto px-4 py-4">
@@ -223,7 +227,7 @@ export default function OnboardingPage() {
             {/* Logo */}
             <div className="flex items-center gap-2">
               <Sparkles className="size-6 text-primary" />
-              <span className="font-bold text-lg">Luxe SaaS</span>
+              <span className="font-black text-xs uppercase tracking-[0.4em] text-white">LUXE.SAAS</span>
             </div>
 
             {/* Steps Progress */}
@@ -232,25 +236,25 @@ export default function OnboardingPage() {
                 <div key={step.id} className="flex items-center">
                   <div
                     className={cn(
-                      "flex items-center justify-center size-8 rounded-full text-sm font-medium transition-all",
+                      "flex items-center justify-center size-10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-500",
                       currentStep === step.id
-                        ? "bg-primary text-primary-foreground"
+                        ? "bg-primary text-white shadow-[0_0_20px_rgba(var(--primary-rgb),0.3)] scale-110"
                         : currentStep > step.id
-                        ? "bg-primary/20 text-primary"
-                        : "bg-muted text-muted-foreground"
+                        ? "bg-primary/10 text-primary"
+                        : "bg-white/5 text-white/20"
                     )}
                   >
                     {currentStep > step.id ? (
                       <Check className="size-4" />
                     ) : (
-                      step.id
+                      step.id.toString().padStart(2, '0')
                     )}
                   </div>
                   {index < steps.length - 1 && (
                     <div
                       className={cn(
-                        "w-8 h-0.5 mx-1",
-                        currentStep > step.id ? "bg-primary" : "bg-muted"
+                        "w-12 h-[1px] mx-2",
+                        currentStep > step.id ? "bg-primary/50" : "bg-white/5"
                       )}
                     />
                   )}
@@ -259,8 +263,8 @@ export default function OnboardingPage() {
             </div>
 
             {/* Mobile Progress */}
-            <div className="sm:hidden text-sm text-muted-foreground">
-              Bước {currentStep}/4
+            <div className="sm:hidden text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+              {currentStep} / {steps.length}
             </div>
           </div>
         </div>
@@ -273,19 +277,22 @@ export default function OnboardingPage() {
             <AnimatePresence mode="wait">
               {/* Step 1: Store Info */}
               {currentStep === 1 && (
-                <motion.div
+                <m.div
                   key="step1"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   className="space-y-8"
                 >
-                  <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold mb-2">
-                      Thiết lập cửa hàng của bạn
+                  <div className="text-center mb-12">
+                    <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em] mb-4 block">
+                      GETTING STARTED
+                    </span>
+                    <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic text-white leading-none">
+                      Thiết lập cửa hàng
                     </h1>
-                    <p className="text-muted-foreground">
-                      Hãy bắt đầu với những thông tin cơ bản
+                    <p className="text-muted-foreground/40 text-sm font-medium mt-4">
+                      Hãy bắt đầu với những thông tin cơ bản nhất
                     </p>
                   </div>
 
@@ -335,18 +342,18 @@ export default function OnboardingPage() {
                     <label className="block text-sm font-medium">
                       Tên cửa hàng <span className="text-destructive">*</span>
                     </label>
-                    <input
-                      type="text"
-                      value={formData.storeName}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          storeName: e.target.value,
-                        }))
-                      }
-                      className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      placeholder="VD: Shop Thời Trang ABC"
-                    />
+                      <input
+                        type="text"
+                        value={formData.storeName}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            storeName: e.target.value,
+                          }))
+                        }
+                        className="w-full px-5 py-4 rounded-2xl border border-white/5 bg-white/5 text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all font-medium"
+                        placeholder="VD: Shop Thời Trang ABC"
+                      />
                   </div>
 
                   {/* Contact Info */}
@@ -403,12 +410,12 @@ export default function OnboardingPage() {
                       placeholder="Số nhà, đường, quận/huyện, tỉnh/thành"
                     />
                   </div>
-                </motion.div>
+                </m.div>
               )}
 
               {/* Step 2: Categories */}
               {currentStep === 2 && (
-                <motion.div
+                <m.div
                   key="step2"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -430,10 +437,10 @@ export default function OnboardingPage() {
                         key={category.id}
                         onClick={() => toggleCategory(category.id)}
                         className={cn(
-                          "p-4 rounded-xl border text-left transition-all",
+                          "p-6 rounded-2xl border transition-all duration-500 text-left relative overflow-hidden group/cat",
                           formData.categories.includes(category.id)
-                            ? "border-primary bg-primary/5 ring-2 ring-primary/20"
-                            : "border-border hover:border-primary/50"
+                            ? "border-primary bg-primary/10 ring-4 ring-primary/5"
+                            : "border-white/5 bg-white/2 hover:border-white/20 hover:bg-white/5"
                         )}
                       >
                         <span className="text-3xl mb-2 block">
@@ -454,12 +461,12 @@ export default function OnboardingPage() {
                       Đã chọn: {formData.categories.length} ngành hàng
                     </p>
                   )}
-                </motion.div>
+                </m.div>
               )}
 
               {/* Step 3: Theme */}
               {currentStep === 3 && (
-                <motion.div
+                <m.div
                   key="step3"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -516,12 +523,12 @@ export default function OnboardingPage() {
                       </button>
                     ))}
                   </div>
-                </motion.div>
+                </m.div>
               )}
 
               {/* Step 4: Complete */}
               {currentStep === 4 && (
-                <motion.div
+                <m.div
                   key="step4"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -571,18 +578,18 @@ export default function OnboardingPage() {
                     size="lg"
                     onClick={handleComplete}
                     disabled={isSubmitting}
-                    className="min-w-[200px]"
+                    className="min-w-[240px] bg-linear-to-r from-primary to-indigo-600 font-black uppercase tracking-[0.2em] shadow-2xl shadow-primary/20 py-8 rounded-2xl border-white/10"
                   >
                     {isSubmitting ? (
-                      "Đang khởi tạo..."
+                      "BẮT ĐẦU KHỞI TẠO..."
                     ) : (
                       <>
                         <Sparkles className="size-4 mr-2" />
-                        Vào Dashboard
+                        VÀO DASHBOARD
                       </>
                     )}
                   </Button>
-                </motion.div>
+                </m.div>
               )}
             </AnimatePresence>
           </div>

@@ -43,10 +43,11 @@ export function Footer() {
   }
 
   return (
-    <footer className="relative bg-[#1A1612] text-white pt-24 pb-12 overflow-hidden">
-      {/* Background Depth - Refined Bronze warm glow effects */}
-      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-accent/6 rounded-full blur-[150px] pointer-events-none opacity-40" />
-      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-accent/4 rounded-full blur-[150px] pointer-events-none opacity-30" />
+    <footer className="relative bg-black text-white pt-24 pb-12 overflow-hidden border-t border-white/5">
+      {/* Background Depth - Deep Aurora Glows */}
+      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-[var(--aurora-purple)]/5 rounded-full blur-[150px] pointer-events-none opacity-40 shrink-0" />
+      <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-[var(--aurora-blue)]/5 rounded-full blur-[150px] pointer-events-none opacity-30 shrink-0" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/2 rounded-full blur-[200px] pointer-events-none shrink-0" />
 
       <div className="container mx-auto px-4 md:px-8 relative z-10 max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 lg:gap-8 mb-20">
@@ -61,7 +62,7 @@ export function Footer() {
                 <TypedLink
                   key={i}
                   href="#"
-                  className="w-12 h-12 rounded-2xl border border-white/5 bg-white/5 flex items-center justify-center text-neutral-400 hover:text-white hover:border-white/20 hover:bg-white/10 transition-all duration-300 group"
+                  className="w-12 h-12 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-center text-neutral-400 hover:text-white hover:border-primary/50 hover:bg-primary/10 transition-all duration-500 group shadow-xl"
                 >
                   <Icon
                     size={20}
@@ -152,16 +153,16 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">
-          <p>&copy; 2024 LUXE Inc. {t("rightsReserved")}</p>
+        <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
+          <p className="font-sans italic">&copy; 2024 LUXE.STYLING. {t("rightsReserved")}</p>
           <div className="flex gap-8">
-            <TypedLink href="#" className="hover:text-white transition-colors">
+            <TypedLink href="#" className="hover:text-primary transition-colors duration-300">
               {t("privacyPolicy")}
             </TypedLink>
-            <TypedLink href="#" className="hover:text-white transition-colors">
+            <TypedLink href="#" className="hover:text-primary transition-colors duration-300">
               {t("termsOfService")}
             </TypedLink>
-            <TypedLink href="#" className="hover:text-white transition-colors">
+            <TypedLink href="#" className="hover:text-primary transition-colors duration-300">
               {t("cookiePolicy")}
             </TypedLink>
           </div>

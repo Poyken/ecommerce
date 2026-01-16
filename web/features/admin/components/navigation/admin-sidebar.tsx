@@ -230,7 +230,7 @@ export function AdminSidebar() {
   return (
     <aside
       className={cn(
-        "z-20 border-r border-border bg-card flex flex-col h-screen sticky top-0 transition-all duration-300",
+        "z-20 border-r border-white/5 bg-background/60 backdrop-blur-2xl flex flex-col h-screen sticky top-0 transition-all duration-300",
         isCollapsed ? "w-20" : "w-72"
       )}
     >
@@ -283,10 +283,10 @@ export function AdminSidebar() {
                     key={item.href}
                     href={item.href as AppRoute}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group relative overflow-hidden",
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 group relative overflow-hidden mb-1",
                       isActive
-                        ? "text-primary-foreground bg-primary shadow-sm"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted",
+                        ? "text-white bg-[var(--aurora-purple)] shadow-[0_0_15px_-3px_var(--aurora-purple)]"
+                        : "text-muted-foreground hover:text-white hover:bg-white/5",
                       isCollapsed && "justify-center px-2"
                     )}
                     title={isCollapsed ? item.title : undefined}

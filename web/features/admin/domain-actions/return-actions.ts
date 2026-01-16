@@ -16,24 +16,21 @@
  */
 "use server";
 
-import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
-import { ApiResponse, ActionResult } from "@/types/dtos";
+import { adminReturnService } from "../services/admin-return.service";
+import { ActionResult } from "@/types/dtos";
 import { ReturnRequest } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 
 /**
- * Lấy danh sách yêu cầu trả hàng cho Admin
+ * Láy danh sách yêu cầu trả hàng cho Admin
  */
 export async function getAdminReturnsAction(
   paramsOrPage: any = {},
   limit?: number,
   search?: string
 ): Promise<ActionResult<ReturnRequest[]>> {
-  const params = normalizePaginationParams(paramsOrPage, limit, search);
-
   return wrapServerAction(
-    () => http<ApiResponse<ReturnRequest[]>>("/return-requests", { params }),
+    () => adminReturnService.getReturns(paramsOrPage, limit, search),
     "Failed to fetch return requests"
   );
 }
@@ -50,13 +47,7 @@ export async function updateReturnStatusAction(
   }
 ): Promise<ActionResult<ReturnRequest>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<ReturnRequest>>(
-      `/return-requests/${id}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify(data),
-      }
-    );
+    const res = await adminReturnService.updateReturnStatus(id, data);
     REVALIDATE.returns();
     return res.data;
   }, "Failed to update return request");
@@ -69,7 +60,7 @@ export async function getReturnDetailsAction(
   id: string
 ): Promise<ActionResult<ReturnRequest>> {
   return wrapServerAction(
-    () => http<ApiResponse<ReturnRequest>>(`/return-requests/${id}`),
+    () => adminReturnService.getReturnDetails(id),
     "Failed to fetch return request details"
   );
 }

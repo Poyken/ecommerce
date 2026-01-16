@@ -22,7 +22,7 @@
 
 "use server";
 
-import { http } from "@/lib/http";
+import { reviewService } from "./services/review.service";
 
 /**
  * Tải lên các hình ảnh cho đánh giá sản phẩm.
@@ -32,10 +32,7 @@ import { http } from "@/lib/http";
  */
 export async function uploadReviewImagesAction(formData: FormData) {
   try {
-    const res = await http<{ urls: string[] }>("/reviews/upload", {
-      method: "POST",
-      body: formData,
-    });
+    const res = await reviewService.uploadImages(formData);
     return { urls: res.urls, success: true };
   } catch (error: unknown) {
     console.error("uploadReviewImagesAction error:", error);

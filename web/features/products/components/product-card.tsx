@@ -1,23 +1,3 @@
-/**
- * =====================================================================
- * PRODUCT CARD - Thẻ hiển thị sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SMART/DUMB COMPONENT PATTERN:
- * - `ProductCard` (Smart): Kết nối với Hooks (Stock, Feature Flags, etc).
- * - `ProductCardBase` (Dumb): Chỉ nhận props và hiển thị UI.
- * - Giúp dễ dàng reuse UI ở các chỗ khác (VD: trong Storybook hoặc Admin Preview).
- *
- * 2. COMPOSITION:
- * - Các nút bấm (QuickView, Wishlist) được truyền vào `ProductCardBase` qua prop `actions`. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */
-
 "use client";
 
 import { MotionButton } from "@/components/shared/motion-button";
@@ -52,6 +32,7 @@ interface ProductCardProps {
   initialIsWishlisted?: boolean; // Trạng thái yêu thích ban đầu (tối ưu UI optimistic)
   isCompact?: boolean; // Chế độ hiển thị nhỏ gọn (cho Mobile hoặc Sidebar)
   options?: ProductOption[]; // Các tùy chọn của sản phẩm
+  variant?: "default" | "luxury" | "glass";
 }
 
 /**
@@ -74,6 +55,7 @@ export const ProductCard = memo(function ProductCard({
   reviewCount,
   initialIsWishlisted = false,
   isCompact = false,
+  variant = "default",
 }: ProductCardProps) {
   // 1. HOOKS KHỞI TẠO
   const t = useTranslations("productCard");
@@ -159,6 +141,7 @@ export const ProductCard = memo(function ProductCard({
         isLowStock={isLowStock}
         isCompact={isCompact}
         className={className}
+        variant={variant}
         actions={{
           wishlist: wishlistAction,
           quickView: quickViewAction,

@@ -26,7 +26,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowUpRight } from "lucide-react";
+import { AdminStatsCard } from "@/features/admin/components/ui/admin-page-components";
+import { ArrowUpRight, DollarSign, Users, Store, TrendingDown, TrendingUp } from "lucide-react";
 import {
   XAxis,
   YAxis,
@@ -69,81 +70,51 @@ export function BusinessTab({ stats }: { stats: any }) {
        * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
        */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="rounded-2xl shadow-sm border-l-4 border-l-emerald-500">
-          <CardHeader className="pb-2">
-            <CardDescription className="font-bold text-xs uppercase tracking-wider text-muted-foreground">
-              Calculated MRR
-            </CardDescription>
-            <CardTitle className="text-3xl font-black flex items-baseline gap-2">
-              $24,000
-              <span className="text-sm font-bold text-emerald-500 flex items-center bg-emerald-500/10 px-2 py-0.5 rounded-full">
-                <ArrowUpRight className="h-3 w-3 mr-1" />
-                12.5%
-              </span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground font-medium">
-              Monthly Recurring Revenue
-            </p>
-          </CardContent>
-        </Card>
+        <AdminStatsCard
+          title="Calculated MRR"
+          value={stats?.mrrFormatted || "$0"}
+          description="Monthly Recurring Revenue"
+          icon={DollarSign}
+          variant="neon"
+          trend={stats?.tenantGrowthRate > 0 ? { value: stats.tenantGrowthRate, isPositive: true } : undefined}
+        />
 
-        <Card className="rounded-2xl shadow-sm border-l-4 border-l-blue-500">
-          <CardHeader className="pb-2">
-            <CardDescription className="font-bold text-xs uppercase tracking-wider text-muted-foreground">
-              Total Revenue (YTD)
-            </CardDescription>
-            <CardTitle className="text-3xl font-black">
-              ${(stats?.totalRevenue || 0).toLocaleString()}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground font-medium">
-              Gross Volume processed
-            </p>
-          </CardContent>
-        </Card>
+        <AdminStatsCard
+          title="Revenue (YTD)"
+          value={stats?.mrrFormatted || "$0"}
+          description="Gross Volume processed"
+          icon={TrendingUp}
+          variant="info"
+        />
 
-        <Card className="rounded-2xl shadow-sm border-l-4 border-l-indigo-500">
-          <CardHeader className="pb-2">
-            <CardDescription className="font-bold text-xs uppercase tracking-wider text-muted-foreground">
-              Active Tenants
-            </CardDescription>
-            <CardTitle className="text-3xl font-black">
-              {stats?.totalTenants || 142}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground font-medium">
-              Total paying stores
-            </p>
-          </CardContent>
-        </Card>
+        <AdminStatsCard
+          title="Active Tenants"
+          value={stats?.activeTenants || stats?.totalTenants || 0}
+          description="Total active stores"
+          icon={Store}
+          variant="aurora"
+        />
 
-        <Card className="rounded-2xl shadow-sm border-l-4 border-l-rose-500">
-          <CardHeader className="pb-2">
-            <CardDescription className="font-bold text-xs uppercase tracking-wider text-muted-foreground">
-              Churn Rate
-            </CardDescription>
-            <CardTitle className="text-3xl font-black text-rose-600">
-              0.8%
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-xs text-muted-foreground font-medium">
-              Lower is better (Target: &lt; 1%)
-            </p>
-          </CardContent>
-        </Card>
+        <AdminStatsCard
+          title="Churn Rate"
+          value={`${stats?.churnRate || 0}%`}
+          description="Target: < 1%"
+          icon={TrendingDown}
+          variant="danger"
+        />
       </div>
 
       {/* Main Charts */}
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-2 rounded-2xl shadow-sm">
+        <Card className="md:col-span-2 rounded-3xl glass-premium border-white/5 shadow-2xl overflow-hidden">
           <CardHeader>
-            <CardTitle>MRR Growth Trajectory</CardTitle>
-            <CardDescription>
+            <CardTitle className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <TrendingUp className="h-5 w-5 text-emerald-500" />
+              </div>
+              <span className="font-black tracking-tight uppercase text-sm tracking-[0.1em]">MRR Growth Trajectory</span>
+            </CardTitle>
+            <CardDescription className="text-muted-foreground/60">
               Revenue growth over the last 12 months
             </CardDescription>
           </CardHeader>
@@ -196,10 +167,15 @@ export function BusinessTab({ stats }: { stats: any }) {
           </CardContent>
         </Card>
 
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="rounded-3xl glass-premium border-white/5 shadow-2xl overflow-hidden">
           <CardHeader>
-            <CardTitle>Churn Trend</CardTitle>
-            <CardDescription>Weekly churn rate %</CardDescription>
+            <CardTitle className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
+                <TrendingDown className="h-5 w-5 text-rose-500" />
+              </div>
+              <span className="font-black tracking-tight uppercase text-sm tracking-[0.1em]">Churn Trend</span>
+            </CardTitle>
+            <CardDescription className="text-muted-foreground/60">Weekly churn rate %</CardDescription>
           </CardHeader>
           <CardContent className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">

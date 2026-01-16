@@ -1,5 +1,4 @@
-import { http } from "@/lib/http";
-import { ApiResponse } from "@/types/dtos";
+import { cartService } from "@/features/cart/services/cart.service";
 import { getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
@@ -49,7 +48,7 @@ async function DynamicCart() {
 
     if (accessToken) {
       const [cartRes] = await Promise.all([
-        http<ApiResponse<Cart>>("/cart", { skipRedirectOn401: true }),
+        cartService.getCart(),
       ]);
       cart = cartRes.data;
     }

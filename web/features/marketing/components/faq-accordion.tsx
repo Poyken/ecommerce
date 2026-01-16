@@ -29,6 +29,8 @@ import { useState } from "react";
  * =====================================================================
  */
 
+
+
 interface FAQAccordionProps {
   items?: Array<{ question: string; answer: string }>;
 }
@@ -39,47 +41,48 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
     items || (t.raw("items") as { question: string; answer: string }[]);
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const getColorClasses = () => {
-    return {
-      activeBg: "bg-accent/5",
-      activeBorder: "border-accent/20 shadow-2xl shadow-accent/5",
-      activeText: "text-accent",
-      hover: "hover:bg-accent/[0.02] hover:border-accent/10",
-      badge: "bg-accent/10 text-accent",
-    };
-  };
-
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {faqs.map((faq, i) => {
-        const colors = getColorClasses();
         const isOpen = openIndex === i;
 
         return (
-          <GlassCard
+          <div
             key={i}
             className={cn(
-              "px-8 py-6 cursor-pointer transition-all duration-300 border rounded-4xl",
+              "group rounded-[2rem] border transition-all duration-500 overflow-hidden relative isolate",
               isOpen
-                ? `${colors.activeBg} ${colors.activeBorder}`
-                : `bg-foreground/2 border-foreground/5 ${colors.hover}`
+                ? "bg-white/5 border-primary/30 shadow-[0_0_30px_rgba(var(--primary-rgb),0.1)]"
+                : "bg-white/2 border-white/5 hover:border-white/10 hover:bg-white/5"
             )}
-            onClick={() => setOpenIndex(isOpen ? null : i)}
           >
-            <div className="flex justify-between items-center gap-6">
-              <div className="flex items-center gap-5 flex-1">
+            {/* Active Glow Background */}
+            <div
+              className={cn(
+                "absolute inset-0 bg-linear-to-r from-primary/10 via-transparent to-transparent opacity-0 transition-opacity duration-500 -z-10",
+                isOpen && "opacity-100"
+              )}
+            />
+
+            <div
+              className="px-8 py-6 cursor-pointer flex justify-between items-center gap-6"
+              onClick={() => setOpenIndex(isOpen ? null : i)}
+            >
+              <div className="flex items-center gap-6 flex-1">
                 <span
                   className={cn(
-                    "flex items-center justify-center w-10 h-10 rounded-xl text-sm font-black transition-all duration-500",
-                    colors.badge
+                    "flex items-center justify-center w-12 h-12 rounded-2xl text-sm font-black transition-all duration-500 shadow-inner",
+                    isOpen
+                      ? "bg-primary text-white shadow-primary/20 scale-110"
+                      : "bg-white/5 text-white/40 group-hover:bg-white/10 group-hover:text-white/60"
                   )}
                 >
-                  {i + 1}
+                  {(i + 1).toString().padStart(2, '0')}
                 </span>
                 <span
                   className={cn(
-                    "transition-colors duration-500 font-bold text-base",
-                    isOpen ? colors.activeText : "text-foreground"
+                    "transition-all duration-500 font-bold text-lg md:text-xl tracking-tight",
+                    isOpen ? "text-white" : "text-white/70 group-hover:text-white"
                   )}
                 >
                   {faq.question}
@@ -87,10 +90,10 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
               </div>
               <span
                 className={cn(
-                  "transition-transform duration-500 text-xl font-bold shrink-0",
+                  "transition-all duration-500 text-2xl font-black shrink-0 flex items-center justify-center w-10 h-10 rounded-full",
                   isOpen
-                    ? `rotate-180 ${colors.activeText}`
-                    : "text-muted-foreground/40"
+                    ? "rotate-180 text-primary bg-primary/10"
+                    : "text-white/20 group-hover:text-white/40"
                 )}
               >
                 ▼
@@ -98,17 +101,17 @@ export function FAQAccordion({ items }: FAQAccordionProps) {
             </div>
             <div
               className={cn(
-                "grid transition-all duration-300 ease-out",
+                "grid transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]",
                 isOpen
-                  ? "grid-rows-[1fr] opacity-100 mt-4 pt-4 border-t border-foreground/5"
+                  ? "grid-rows-[1fr] opacity-100 pb-8 px-8 md:pl-[6.5rem]"
                   : "grid-rows-[0fr] opacity-0"
               )}
             >
-              <div className="overflow-hidden leading-relaxed text-muted-foreground/80 font-medium">
+              <div className="overflow-hidden leading-relaxed text-muted-foreground/80 font-medium text-lg border-t border-white/5 pt-6">
                 {faq.answer}
               </div>
             </div>
-          </GlassCard>
+          </div>
         );
       })}
     </div>

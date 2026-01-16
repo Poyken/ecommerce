@@ -8,7 +8,6 @@
  * Trang này giúp Super Admin kiểm soát dòng tiền và trạng thái gói của các Tenant. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
  * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
-
  * =====================================================================
  */
 
@@ -20,16 +19,15 @@ export default async function SubscriptionsPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  // Await searchParams in Next.js 15+ convention (though Next 14 is sync mostly, but good practice if params is a Promise in newer canary types, checking project version... next 16.1.1! Yes, searchParams IS a promise in Next 15/16).
-  // Wait, in Next 15 searchParams is a promise. In Next 14 it isn't.
-  // The package.json showed "next": "^16.1.1".
-  // So searchParams is a Promise.
-
   const resolvedParams = await searchParams;
   const page = Number(resolvedParams?.page) || 1;
   const limit = Number(resolvedParams?.limit) || 10;
   const search = (resolvedParams?.search as string) || "";
-  const status = (resolvedParams?.status as string) || "";
+  
+  const statusParam = resolvedParams?.status as string;
+  const status = ["active", "cancelled", "expired"].includes(statusParam) 
+    ? (statusParam as "active" | "cancelled" | "expired") 
+    : undefined;
 
   const res = await getSubscriptionsAction({
     page,

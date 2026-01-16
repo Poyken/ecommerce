@@ -137,8 +137,8 @@ export const productService = {
         // Create a unique cache key based on params
         const cacheKey = JSON.stringify(params || {});
 
-        const response = await http<ApiResponse<Product[]>>("/products", {
-          params: params as Record<string, string | number | boolean>,
+        const response = await http.get<ApiResponse<Product[]>>("/products", {
+          params: params as any, // Cast to any temporarily to avoid strict type mismatch with FetchOptions params
           skipAuth: true,
           next: {
             revalidate: 60,
@@ -210,10 +210,10 @@ export const productService = {
       const fetcher = unstable_cache(
         async () => {
           try {
-            const response = await http<
+            const response = await http.get<
               ApiResponse<Category[]> | ApiResponse<PaginatedData<Category>>
             >("/categories", {
-              params: params as Record<string, string | number | boolean>,
+              params: params as any,
               skipAuth: true,
               next: {
                 revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - categories change very rarely
@@ -268,11 +268,11 @@ export const productService = {
       const fetcher = unstable_cache(
         async () => {
           try {
-            const response = await http<
+            const response = await http.get<
               | ApiResponse<import("@/types/models").Brand[]>
               | ApiResponse<PaginatedData<import("@/types/models").Brand>>
             >("/brands", {
-              params: params as Record<string, string | number | boolean>,
+              params: params as any,
               skipAuth: true,
               next: {
                 revalidate: 86400, // [P11 OPTIMIZATION] Cache 24h - brands change very rarely
@@ -324,7 +324,7 @@ export const productService = {
    */
   getProduct: cache(async (id: string): Promise<Product | null> => {
     try {
-      const response = await http<ApiResponse<Product>>(`/products/${id}`, {
+      const response = await http.get<ApiResponse<Product>>(`/products/${id}`, {
         skipAuth: true,
         next: {
           revalidate: 0, // Disable cache to ensure real-time stock
@@ -385,7 +385,7 @@ export const productService = {
    */
   async getNewArrivals(limit = 8): Promise<Product[]> {
     try {
-      const response = await http<ApiResponse<Product[]>>("/products", {
+      const response = await http.get<ApiResponse<Product[]>>("/products", {
         params: { limit, sort: "-createdAt" },
         skipAuth: true,
         next: { revalidate: 300, tags: ["products"] },
@@ -402,10 +402,13 @@ export const productService = {
    */
   async getCategory(id: string): Promise<Category | null> {
     try {
-      const response = await http<ApiResponse<Category>>(`/categories/${id}`, {
-        skipAuth: true,
-        next: { revalidate: 3600, tags: [`category-${id}`] },
-      });
+      const response = await http.get<ApiResponse<Category>>(
+        `/categories/${id}`,
+        {
+          skipAuth: true,
+          next: { revalidate: 3600, tags: [`category-${id}`] },
+        }
+      );
       return response?.data || null;
     } catch {
       return null;
@@ -417,7 +420,7 @@ export const productService = {
    */
   async getBrand(id: string): Promise<Brand | null> {
     try {
-      const response = await http<ApiResponse<Brand>>(`/brands/${id}`, {
+      const response = await http.get<ApiResponse<Brand>>(`/brands/${id}`, {
         skipAuth: true,
         next: { revalidate: 3600, tags: [`brand-${id}`] },
       });
@@ -432,7 +435,7 @@ export const productService = {
    */
   async getSku(id: string): Promise<Sku | null> {
     try {
-      const response = await http<ApiResponse<Sku>>(`/skus/${id}`, {
+      const response = await http.get<ApiResponse<Sku>>(`/skus/${id}`, {
         skipAuth: true,
         next: { revalidate: 60, tags: [`sku-${id}`] },
       });
@@ -447,7 +450,7 @@ export const productService = {
    */
   async getRelatedProducts(productId: string, limit = 4): Promise<Product[]> {
     try {
-      const response = await http<ApiResponse<Product[]>>(
+      const response = await http.get<ApiResponse<Product[]>>(
         `/products/${productId}/related`,
         {
           params: { limit },
@@ -467,7 +470,7 @@ export const productService = {
    */
   async exportToExcel(): Promise<void> {
     try {
-      const response = await http<Blob>("/products/export/excel", {
+      const response = await http.get<Blob>("/products/export/excel", {
         skipAuth: false, // Cần quyền Admin
         responseType: "blob",
       });
@@ -494,7 +497,7 @@ export const productService = {
    */
   async downloadTemplate(): Promise<void> {
     try {
-      const response = await http<Blob>("/products/import/template", {
+      const response = await http.get<Blob>("/products/import/template", {
         skipAuth: false,
         responseType: "blob",
       });
@@ -519,13 +522,8 @@ export const productService = {
     const formData = new FormData();
     formData.append("file", file);
 
-    return http("/products/import/excel", {
-      method: "POST",
-      body: formData,
+    return http.post("/products/import/excel", formData, {
       skipAuth: false,
-      headers: {
-        // Content-Type được browser tự động set khi dùng FormData
-      },
     });
   },
 };

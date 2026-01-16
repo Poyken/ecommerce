@@ -25,7 +25,6 @@
 
 "use server";
 
-import { http } from "@/lib/http";
 import { protectedActionClient } from "@/lib/safe-action";
 import {
   REVALIDATE,
@@ -47,6 +46,8 @@ const MergeWishlistSchema = z.object({
   productIds: z.array(z.string()),
 });
 
+import { wishlistService } from "./services/wishlist.service";
+
 // --- SAFE ACTIONS (Mutations) ---
 
 /**
@@ -55,14 +56,7 @@ const MergeWishlistSchema = z.object({
 const safeToggleWishlist = protectedActionClient
   .schema(ToggleWishlistSchema)
   .action(async ({ parsedInput }) => {
-    const res = await http<ApiResponse<{ isWishlisted: boolean }>>(
-      "/wishlist/toggle",
-      {
-        method: "POST",
-        body: JSON.stringify({ productId: parsedInput.productId }),
-        skipRedirectOn401: true,
-      }
-    );
+    const res = await wishlistService.toggleWishlist(parsedInput.productId);
 
     // Revalidate related paths
     REVALIDATE.wishlist();
@@ -77,10 +71,9 @@ const safeToggleWishlist = protectedActionClient
 const safeMergeGuestWishlist = protectedActionClient
   .schema(MergeWishlistSchema)
   .action(async ({ parsedInput }) => {
-    const res = await http<ApiResponse<Product[]>>("/wishlist/merge", {
-      method: "POST",
-      body: JSON.stringify({ productIds: parsedInput.productIds }),
-    });
+    const res = await wishlistService.mergeGuestWishlist(
+      parsedInput.productIds
+    );
 
     REVALIDATE.wishlist();
     return res.data;
@@ -98,19 +91,11 @@ export const toggleWishlistAction = async (productId: string) => {
   );
   const result = await wrapper({ productId });
 
-  // Custom return format để khớp với code cũ (trả về requiresAuth nếu lỗi 401)
-  // Tuy nhiên, logic check 401 đã được handle bởi middleware hoặc safeAction
-  // Nếu client cần check auth, nên check trước khi gọi action hoặc handle error
   if (
     !result.success &&
     (result.error.includes("Unauthorized") || result.error.includes("login"))
   ) {
     return { success: false, requiresAuth: true, error: "Unauthorized" };
-  }
-
-  // Map result.data.isWishlisted ra ngoài
-  if (result.success && result.data) {
-    return { success: true, isWishlisted: (result.data as any).isWishlisted };
   }
 
   return result;
@@ -135,10 +120,7 @@ export const mergeGuestWishlistAction = async (productIds: string[]) => {
 export async function getWishlistAction(): Promise<ActionResult<Product[]>> {
   await cookies();
   return wrapServerAction(
-    () =>
-      http<ApiResponse<Product[]>>("/wishlist", {
-        skipRedirectOn401: true,
-      }),
+    () => wishlistService.getWishlist(),
     "Failed to fetch wishlist"
   );
 }
@@ -151,10 +133,7 @@ export async function checkWishlistStatusAction(
 ): Promise<ActionResult<{ isWishlisted: boolean }>> {
   await cookies();
   return wrapServerAction(
-    () =>
-      http<ApiResponse<{ isWishlisted: boolean }>>(
-        `/wishlist/check?productId=${productId}`
-      ),
+    () => wishlistService.checkWishlistStatus(productId),
     "Failed to check wishlist status"
   );
 }
@@ -167,7 +146,7 @@ export async function getWishlistCountAction(): Promise<
 > {
   await cookies();
   return wrapServerAction(
-    () => http<ApiResponse<{ count: number }>>("/wishlist/count"),
+    () => wishlistService.getWishlistCount(),
     "Failed to fetch wishlist count"
   );
 }
@@ -182,14 +161,7 @@ export async function getGuestWishlistDetailsAction(
     return { success: true, data: [] };
 
   return wrapServerAction(
-    () =>
-      http<ApiResponse<Product[]>>("/products", {
-        params: {
-          ids: productIds.join(","),
-          includeSkus: true,
-          limit: 50,
-        },
-      }),
+    () => wishlistService.getGuestWishlistDetails(productIds),
     "Failed to fetch guest wishlist details"
   );
 }

@@ -87,10 +87,10 @@ export function NewArrivals({
         variants={fadeInRight}
       >
         <div className="space-y-3">
-          <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block">
+          <span className="text-secondary font-black uppercase tracking-[0.4em] text-[10px] block mb-2">
             {t("justLaunched")}
           </span>
-          <h2 className="text-4xl md:text-6xl font-serif tracking-tight text-foreground leading-tight">
+          <h2 className="text-4xl md:text-7xl font-black tracking-tighter text-foreground leading-tight uppercase italic">
             {title || t("newArrivalsBold")}
           </h2>
           {subtitle && (
@@ -149,6 +149,7 @@ export function NewArrivals({
               isNew={true}
               skus={product.skus}
               options={product.options}
+              variant="glass"
             />
           </m.div>
         ))}

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { getTranslations } from "next-intl/server";
-import { http } from "@/lib/http";
+import { orderService } from "@/features/orders/services/order.service";
 import { redirect } from "next/navigation";
 import { ReturnRequestForm } from "@/features/returns/components/return-request-form";
 import { ApiResponse } from "@/types/dtos";
@@ -34,7 +34,7 @@ export default async function ReturnRequestPage({
 
   let order: Order | null = null;
   try {
-    const res = await http<ApiResponse<Order>>(`/orders/my-orders/${id}`);
+    const res = await orderService.getMyOrderDetails(id);
     order = res.data;
   } catch (error) {
     redirect("/orders");

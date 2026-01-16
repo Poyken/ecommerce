@@ -26,31 +26,17 @@ import { useRouter } from "next/navigation";
 import { AdminTableWrapper } from "@/features/admin/components/ui/admin-page-components";
 import { useTranslations } from "next-intl";
 
-// Type definition matching Prisma Model
-interface SubscriptionPlan {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  priceMonthly: number; // Decimal comes as string or number depending on Serializer
-  priceYearly: number;
-  currency: string;
-  maxProducts: number;
-  maxStorage: number;
-  isActive: boolean;
-  isPublic: boolean;
-  features?: string | any; // JSON
-}
+import { Plan } from "@/types/feature-types/admin.types";
 
 interface PlansClientProps {
-  initialPlans: SubscriptionPlan[];
+  initialPlans: Plan[];
 }
 
 export function PlansClient({ initialPlans }: PlansClientProps) {
   const t = useTranslations("superAdmin.plans");
   const tDialog = useTranslations("superAdmin.planDialog");
-  const [plans, setPlans] = useState<SubscriptionPlan[]>(initialPlans);
-  const [editingPlan, setEditingPlan] = useState<SubscriptionPlan | null>(null);
+  const [plans, setPlans] = useState<Plan[]>(initialPlans);
+  const [editingPlan, setEditingPlan] = useState<Plan | undefined>(undefined);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
@@ -243,7 +229,7 @@ export function PlansClient({ initialPlans }: PlansClientProps) {
         open={isEditOpen}
         onOpenChange={(open) => {
           setIsEditOpen(open);
-          if (!open) setEditingPlan(null);
+          if (!open) setEditingPlan(undefined);
         }}
         planToEdit={editingPlan}
       />

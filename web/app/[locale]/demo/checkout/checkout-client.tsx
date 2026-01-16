@@ -397,10 +397,11 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-12 font-sans selection:bg-primary/30 relative overflow-hidden">
-      {/* Background Gradients */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-success/10 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-info/10 rounded-full blur-[150px] pointer-events-none" />
+    <div className="min-h-screen bg-black pt-24 pb-12 font-sans selection:bg-primary/30 relative overflow-hidden">
+      {/* Background Aurora Glows */}
+      <div className="absolute top-[5%] -left-[10%] w-[600px] h-[600px] bg-[var(--aurora-purple)]/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-[30%] -right-[5%] w-[500px] h-[500px] bg-[var(--aurora-blue)]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[10%] left-[20%] w-[800px] h-[800px] bg-primary/2 rounded-full blur-[200px] pointer-events-none" />
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <div className="mb-6">
@@ -414,18 +415,18 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
         </div>
 
         <m.div
-          className="text-center mb-10"
+          className="text-center mb-16"
           initial="hidden"
           animate="visible"
           variants={sectionVariants}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-4">
-            <Lock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+          <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-xl shadow-2xl">
+            <Lock className="w-3 h-3 text-primary animate-pulse" />
+            <span className="text-[10px] text-white font-black uppercase tracking-[0.4em]">
               {t("secureCheckout")}
             </span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight">
+          <h1 className="text-4xl md:text-7xl font-black tracking-tighter uppercase italic text-white leading-none">
             {t("title")}
           </h1>
         </m.div>
@@ -502,7 +503,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
                 }
                 actionSlot={
                   <GlassButton
-                    className="w-full bg-linear-to-r from-success to-success/80 font-bold text-white shadow-lg shadow-success/20"
+                    className="w-full bg-linear-to-r from-primary to-indigo-600 font-black uppercase tracking-[0.2em] text-white shadow-2xl shadow-primary/20 py-8 rounded-[2rem] border-white/10"
                     size="lg"
                     onClick={handlePlaceOrder}
                     disabled={isPending || !cart || items.length === 0}
@@ -515,9 +516,11 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
                   </GlassButton>
                 }
                 footerSlot={
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-                    <span>{t("secureTransaction")}</span>
+                  <div className="flex items-center justify-center gap-3 py-4 bg-white/5 rounded-2xl border border-white/5">
+                    <ShieldCheck className="w-4 h-4 text-primary" />
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                      {t("secureTransaction")}
+                    </span>
                   </div>
                 }
               />

@@ -1,7 +1,5 @@
 "use server";
 
-import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
 import { protectedActionClient } from "@/lib/safe-action";
 import {
   REVALIDATE,
@@ -38,6 +36,8 @@ import { z } from "zod";
  * =====================================================================
  */
 
+import { notificationService } from "./services/notification.service";
+
 // --- VALIDATION SCHEMAS ---
 
 const MarkReadSchema = z.object({
@@ -63,14 +63,14 @@ const SendUserSchema = BroadcastSchema.extend({
 const safeMarkAsRead = protectedActionClient
   .schema(MarkReadSchema)
   .action(async ({ parsedInput }) => {
-    await http(`/notifications/${parsedInput.id}/read`, { method: "PATCH" });
+    await notificationService.markAsRead(parsedInput.id);
     REVALIDATE.admin.notifications();
     return { success: true };
   });
 
 // Đánh dấu đọc hết
 const safeMarkAllAsRead = protectedActionClient.action(async () => {
-  await http("/notifications/read-all", { method: "PATCH" });
+  await notificationService.markAllAsRead();
   REVALIDATE.admin.notifications();
   return { success: true };
 });
@@ -79,10 +79,7 @@ const safeMarkAllAsRead = protectedActionClient.action(async () => {
 const safeBroadcast = protectedActionClient
   .schema(BroadcastSchema)
   .action(async ({ parsedInput }) => {
-    await http("/notifications/admin/broadcast", {
-      method: "POST",
-      body: JSON.stringify(parsedInput),
-    });
+    await notificationService.broadcast(parsedInput);
     return { success: true };
   });
 
@@ -90,10 +87,7 @@ const safeBroadcast = protectedActionClient
 const safeSendUser = protectedActionClient
   .schema(SendUserSchema)
   .action(async ({ parsedInput }) => {
-    await http("/notifications/admin/send", {
-      method: "POST",
-      body: JSON.stringify(parsedInput),
-    });
+    await notificationService.sendToUser(parsedInput);
     return { success: true };
   });
 
@@ -129,10 +123,7 @@ export async function getNotificationsAction(
 ): Promise<ActionResult<Notification[]>> {
   await cookies();
   return wrapServerAction(
-    () =>
-      http<ApiResponse<Notification[]>>(`/notifications?limit=${limit}`, {
-        skipRedirectOn401: true,
-      }),
+    () => notificationService.getNotifications(limit),
     "Failed to fetch notifications"
   );
 }
@@ -145,9 +136,7 @@ export async function getUnreadCountAction(): Promise<
 > {
   await cookies();
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<number>>("/notifications/unread-count", {
-      skipRedirectOn401: true,
-    });
+    const res = await notificationService.getUnreadCount();
     return { count: typeof res.data === "number" ? res.data : 0 };
   }, "Failed to fetch unread count");
 }
@@ -162,13 +151,8 @@ export async function getAdminNotificationsAction(
   type?: string
 ): Promise<ActionResult<Notification[]>> {
   await cookies();
-  const params = normalizePaginationParams(page, limit);
-  if (userId) params.userId = userId;
-  if (type) params.type = type;
-
   return wrapServerAction(
-    () =>
-      http<ApiResponse<Notification[]>>("/notifications/admin/all", { params }),
+    () => notificationService.getAdminNotifications(page, limit, userId, type),
     "Failed to fetch admin notifications"
   );
 }

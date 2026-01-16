@@ -1,6 +1,5 @@
 "use server";
 
-import { http } from "@/lib/http";
 import { protectedActionClient } from "@/lib/safe-action";
 import {
   createActionWrapper,
@@ -59,6 +58,8 @@ const ReorderSchema = z.object({
 // Schema gộp giỏ hàng
 const MergeCartSchema = z.array(CartItemSchema);
 
+import { cartService } from "./services/cart.service";
+
 // --- 2. DEFINING SAFE ACTIONS (Logic) ---
 
 /**
@@ -67,11 +68,7 @@ const MergeCartSchema = z.array(CartItemSchema);
 const safeAddToCart = protectedActionClient
   .schema(CartItemSchema)
   .action(async ({ parsedInput }) => {
-    await http("/cart", {
-      method: "POST",
-      body: JSON.stringify(parsedInput),
-      skipRedirectOn401: true,
-    });
+    await cartService.addItem(parsedInput.skuId, parsedInput.quantity);
     REVALIDATE.cart();
     return { success: true };
   });
@@ -82,11 +79,7 @@ const safeAddToCart = protectedActionClient
 const safeUpdateCartItem = protectedActionClient
   .schema(UpdateCartItemSchema)
   .action(async ({ parsedInput }) => {
-    await http(`/cart/items/${parsedInput.itemId}`, {
-      method: "PATCH",
-      body: JSON.stringify({ quantity: parsedInput.quantity }),
-      skipRedirectOn401: true,
-    });
+    await cartService.updateQuantity(parsedInput.itemId, parsedInput.quantity);
     REVALIDATE.cart();
     return { success: true };
   });
@@ -97,10 +90,7 @@ const safeUpdateCartItem = protectedActionClient
 const safeRemoveFromCart = protectedActionClient
   .schema(RemoveCartItemSchema)
   .action(async ({ parsedInput }) => {
-    await http(`/cart/items/${parsedInput.itemId}`, {
-      method: "DELETE",
-      skipRedirectOn401: true,
-    });
+    await cartService.removeItem(parsedInput.itemId);
     REVALIDATE.cart();
     return { success: true };
   });
@@ -109,10 +99,7 @@ const safeRemoveFromCart = protectedActionClient
  * Action xóa toàn bộ giỏ hàng.
  */
 const safeClearCart = protectedActionClient.action(async () => {
-  await http("/cart", {
-    method: "DELETE",
-    skipRedirectOn401: true,
-  });
+  await cartService.clearCart();
   REVALIDATE.cart();
   return { success: true };
 });
@@ -124,25 +111,17 @@ const safeReorder = protectedActionClient
   .schema(ReorderSchema)
   .action(async ({ parsedInput }) => {
     // B1: Lấy chi tiết đơn hàng cũ
-    const orderRes = await http<
-      ApiResponse<{ items?: { skuId: string; quantity: number }[] }>
-    >(`/orders/my-orders/${parsedInput.orderId}`);
+    const orderRes = await cartService.getOrderForReorder(parsedInput.orderId);
 
     const order = orderRes.data;
     if (!order || !order.items) {
       throw new Error("Order not found or has no items");
     }
 
-    // B2: Thêm từng sản phẩm vào giỏ hàng
+    // B2: Thêm từng sản phẩm vào giỏ hàng using cartService
     const promises = order.items.map(
       (item: { skuId: string; quantity: number }) =>
-        http("/cart", {
-          method: "POST",
-          body: JSON.stringify({
-            skuId: item.skuId,
-            quantity: item.quantity,
-          }),
-        })
+        cartService.addItem(item.skuId, item.quantity)
     );
 
     // Đợi tất cả request hoàn tất
@@ -157,10 +136,7 @@ const safeReorder = protectedActionClient
 const safeMergeGuestCart = protectedActionClient
   .schema(MergeCartSchema)
   .action(async ({ parsedInput }) => {
-    const res = await http<unknown[]>("/cart/merge", {
-      method: "POST",
-      body: JSON.stringify(parsedInput),
-    });
+    const res = await cartService.mergeGuestCart(parsedInput);
     REVALIDATE.cart();
     return res;
   });
@@ -202,18 +178,12 @@ export const mergeGuestCartAction = createActionWrapper(
 /**
  * Lấy chi tiết thông tin sản phẩm cho Guest Cart.
  */
-export async function getGuestCartDetailsAction(
-  skuIds: string[]
-): Promise<ActionResult<Sku[]>> {
+export const getGuestCartDetailsAction = async (skuIds: string[]) => {
   return wrapServerAction(
-    () =>
-      http<ApiResponse<Sku[]>>("/products/skus/details", {
-        method: "POST",
-        body: JSON.stringify({ skuIds }),
-      }),
+    () => cartService.getGuestCartDetails(skuIds),
     "Không thể lấy thông tin"
   );
-}
+};
 
 /**
  * Lấy số lượng item trong giỏ (hiển thị badge trên icon giỏ hàng).
@@ -223,25 +193,7 @@ export async function getCartCountAction(): Promise<
 > {
   await cookies();
   return wrapServerAction(async () => {
-    const response = await http<
-      ApiResponse<{
-        items: { quantity: number }[];
-        totalItems: number;
-      }>
-    >("/cart", {
-      next: { revalidate: 0 },
-      skipRedirectOn401: true,
-    });
-
-    const cartData = response.data;
-    const totalItems =
-      cartData.totalItems ??
-      cartData.items?.reduce(
-        (acc: number, item: { quantity: number }) => acc + (item.quantity || 0),
-        0
-      ) ??
-      0;
-
+    const totalItems = await cartService.getCartCount();
     return { totalItems };
   }, "Không thể lấy số lượng giỏ hàng");
 }

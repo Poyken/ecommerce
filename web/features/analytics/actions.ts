@@ -20,7 +20,7 @@
 
 "use server";
 
-import { http } from "@/lib/http";
+import { analyticsService } from "./services/analytics.service";
 
 export async function savePerformanceMetricAction(data: {
   name: string;
@@ -31,11 +31,7 @@ export async function savePerformanceMetricAction(data: {
   navigationType?: string;
 }) {
   try {
-    await http("/analytics/vitals", {
-      method: "POST",
-      body: JSON.stringify(data),
-      skipAuth: true, // Cho phép khách gửi telemetry để đo LCP/CLS thực tế
-    });
+    await analyticsService.savePerformanceMetric(data);
     return { success: true };
   } catch (error) {
     // Không cần log lỗi rầm rộ vì đây là background task

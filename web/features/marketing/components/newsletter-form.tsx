@@ -5,6 +5,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { useAction } from "next-safe-action/hooks";
+import { subscribeNewsletter } from "../actions";
 
 /**
  * =====================================================================
@@ -13,19 +15,17 @@ import { useState } from "react";
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * 1. FORM HANDLING:
- * - Sử dụng `useState` để quản lý `email` và `status` (idle, loading, success, error).
- * - `noValidate`: Tắt validation mặc định của trình duyệt để dùng custom validation bằng JS.
+ * 1. FORM HANDLING (NEXT-SAFE-ACTION):
+ * - Sử dụng `useAction` hook để quản lý trạng thái action (isExecuting, result).
+ * - Tự động hóa quá trình validation ở client thông qua schema.
  *
  * 2. API INTEGRATION:
- * - Sử dụng `httpClient` để gửi request POST lên server.
- * - Hiển thị `Loader2` (spinner) khi đang gửi request để báo hiệu cho người dùng.
+ * - Thay thế `fetch` thủ công bằng Server Action `subscribeNewsletter`.
+ * - Đảm bảo tính nhất quán về xử lý lỗi và hiển thị thông báo.
  *
  * 3. SUCCESS STATE:
- * - Khi đăng ký thành công, ẩn form và hiển thị thông báo cảm ơn với hiệu ứng `animate-in`. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
+ * - Khi đăng ký thành công, `result.data?.success` sẽ là true, UI tự động cập nhật.
+ *
  * =====================================================================
  */
 
@@ -33,103 +33,85 @@ export function NewsletterForm() {
   const t = useTranslations("newsletter");
   const tToast = useTranslations("common.toast");
   const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<
-    "idle" | "loading" | "success" | "error"
-  >("idle");
   const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Custom Validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
-      toast({
-        variant: "destructive",
-        title: t("invalidInput"),
-        description: t("invalidEmail"),
-      });
-      return;
-    }
-
-    setStatus("loading");
-
-    try {
-      const response = await fetch("/api/v1/newsletter/subscribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to subscribe");
+  const { execute, isExecuting, result } = useAction(subscribeNewsletter, {
+    onSuccess: ({ data }) => {
+      if (data?.success) {
+        toast({
+          variant: "success",
+          title: tToast("success"),
+          description: t(data.message),
+        });
+        setEmail("");
       }
-
-      setStatus("success");
-      setEmail("");
-      toast({
-        variant: "success",
-        title: tToast("success"),
-        description: t("successDesc"),
-      });
-    } catch (error: any) {
-      setStatus("error");
+    },
+    onError: ({ error }) => {
       toast({
         variant: "destructive",
         title: tToast("error"),
-        description: error.message || t("errorDesc"),
+        description: error.serverError || t("errorDesc"),
       });
-    }
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    execute({ email });
   };
 
+  const isSuccess = result.data?.success;
+
   return (
-    <div className="relative z-10 max-w-2xl mx-auto space-y-8">
-      <div className="space-y-4 text-center">
-        <h2 className="text-4xl md:text-5xl font-black tracking-tighter uppercase italic text-foreground">
+    <div className="relative z-10 max-w-2xl mx-auto space-y-10 py-12">
+      {/* Background Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-primary/5 blur-[80px] rounded-full pointer-events-none -z-10" />
+
+      <div className="space-y-6 text-center">
+        <h2 className="text-4xl md:text-6xl font-editorial-bold tracking-tighter uppercase italic text-foreground leading-[0.9]">
           {t("title")}
         </h2>
-        <p className="text-muted-foreground/80 text-lg font-medium max-w-lg mx-auto">
+        <p className="text-muted-foreground/80 text-lg font-medium max-w-lg mx-auto leading-relaxed">
           {t("subtitle")}
         </p>
       </div>
 
-      {status === "success" ? (
-        <div className="bg-primary/5 border border-primary/10 text-primary p-8 rounded-[2rem] flex flex-col items-center justify-center gap-4 text-lg font-black animate-in fade-in zoom-in duration-500">
-          <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-2">
-            <CheckCircle2 size={32} />
+      {isSuccess ? (
+        <div className="bg-primary/5 border border-primary/20 text-primary p-12 rounded-[2.5rem] flex flex-col items-center justify-center gap-6 animate-in fade-in zoom-in duration-500 backdrop-blur-xl shadow-2xl shadow-primary/10">
+          <div className="h-20 w-20 rounded-3xl bg-primary/10 flex items-center justify-center mb-2 shadow-inner border border-primary/20">
+            <CheckCircle2 size={40} className="text-primary animate-pulse" />
           </div>
-          <span className="uppercase tracking-widest">{t("thankYou")}</span>
-          <span className="text-sm font-bold opacity-60 uppercase tracking-tighter">
+          <span className="text-xl font-black uppercase tracking-[0.2em]">
+            {t("thankYou")}
+          </span>
+          <span className="text-sm font-bold opacity-60 uppercase tracking-widest">
             {t("checkInbox")}
           </span>
         </div>
       ) : (
         <form
           onSubmit={handleSubmit}
-          className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto items-center"
+          className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto items-center relative"
           noValidate
         >
-          <div className="w-full flex-1">
+          <div className="w-full flex-1 relative group">
             <input
               type="email"
               placeholder={t("placeholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              disabled={status === "loading"}
-              className="w-full bg-foreground/[0.03] dark:bg-white/[0.03] border border-foreground/5 dark:border-white/5 text-foreground placeholder:text-muted-foreground/40 rounded-full px-8 py-5 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/30 transition-all disabled:opacity-50 text-sm font-bold"
+              disabled={isExecuting}
+              className="w-full h-16 bg-white/5 border border-white/10 text-foreground placeholder:text-muted-foreground/40 rounded-2xl px-8 focus:outline-none focus:bg-white/10 focus:border-primary/50 transition-all disabled:opacity-50 text-base font-bold shadow-lg focus:shadow-primary/20 hover:border-white/20"
             />
           </div>
           <GlassButton
             type="submit"
             size="lg"
-            className="w-full sm:w-auto font-black uppercase tracking-widest rounded-full px-12 py-5 bg-primary text-primary-foreground hover:opacity-90 transition-all duration-300 shadow-2xl shadow-primary/20"
-            disabled={status === "loading"}
+            className="w-full sm:w-auto h-16 font-black uppercase tracking-[0.2em] rounded-2xl px-10 bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all duration-300 shadow-xl shadow-primary/20 border-white/10"
+            disabled={isExecuting}
           >
-            {status === "loading" ? (
-              <Loader2 className="animate-spin" />
+            {isExecuting ? (
+              <Loader2 className="animate-spin w-5 h-5" />
             ) : (
               t("subscribe")
             )}
@@ -139,3 +121,4 @@ export function NewsletterForm() {
     </div>
   );
 }
+

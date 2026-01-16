@@ -163,7 +163,7 @@ async function RecommendationsStreamer({ id }: { id: string }) {
       currentProductId={id}
       categoryId={product.category.id}
       maxItems={8}
-      title="Có thể bạn cũng thích"
+      title="COMPLETE THE LOOK"
     />
   );
 }
@@ -180,7 +180,11 @@ export default async function ProductDetailPage({
   const { id } = await params;
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30">
+    <div className="min-h-screen bg-black font-sans selection:bg-primary/30 relative overflow-hidden">
+      {/* Background Aurora Glows */}
+      <div className="absolute top-[5%] -left-[10%] w-[600px] h-[600px] bg-[var(--aurora-purple)]/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-[30%] -right-[5%] w-[500px] h-[500px] bg-[var(--aurora-blue)]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[10%] left-[20%] w-[800px] h-[800px] bg-primary/2 rounded-full blur-[200px] pointer-events-none" />
       <div className="container mx-auto px-4 md:px-8 py-8 lg:py-12">
         {/* Breadcrumb: Load độc lập */}
         <div className="mb-6 lg:mb-8">

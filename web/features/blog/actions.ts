@@ -24,10 +24,9 @@
 
 "use server";
 
-import { http } from "@/lib/http";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
-import { BlogWithProducts } from "@/types/models";
 import { getTranslations } from "next-intl/server";
+import { blogService } from "./services/blog.service";
 
 /**
  * Tạo bài viết blog mới.
@@ -52,12 +51,7 @@ export async function createBlogAction(
     | FormData
 ) {
   return wrapServerAction(async () => {
-    const isFormData = data instanceof FormData;
-    const res = await http("/blogs", {
-      method: "POST",
-      body: isFormData ? data : JSON.stringify(data),
-    });
-
+    const res = await blogService.createBlog(data);
     REVALIDATE.admin.blogs();
     return res;
   }, "Failed to create blog post");
@@ -87,12 +81,7 @@ export async function updateBlogAction(
     | FormData
 ) {
   return wrapServerAction(async () => {
-    const isFormData = data instanceof FormData;
-    const res = await http(`/blogs/${id}`, {
-      method: "PATCH",
-      body: isFormData ? data : JSON.stringify(data),
-    });
-
+    const res = await blogService.updateBlog(id, data);
     REVALIDATE.admin.blogs();
     return res;
   }, "Failed to update blog post");
@@ -105,7 +94,7 @@ export async function updateBlogAction(
  */
 export async function deleteBlogAction(id: string) {
   return wrapServerAction(async () => {
-    const res = await http(`/blogs/${id}`, { method: "DELETE" });
+    const res = await blogService.deleteBlog(id);
     REVALIDATE.admin.blogs();
     return res;
   }, "Failed to delete blog post");
@@ -118,7 +107,7 @@ export async function deleteBlogAction(id: string) {
  */
 export async function toggleBlogPublishAction(id: string) {
   return wrapServerAction(async () => {
-    const res = await http(`/blogs/${id}/toggle-publish`, { method: "PATCH" });
+    const res = await blogService.togglePublish(id);
     REVALIDATE.admin.blogs();
     return res;
   }, "Failed to update blog status");
@@ -126,12 +115,5 @@ export async function toggleBlogPublishAction(id: string) {
 
 export async function getMyBlogsAction() {
   const t = await getTranslations("admin.blogs");
-  return wrapServerAction(
-    () =>
-      http(`/blogs/my-blogs`, {
-        method: "GET",
-        next: { tags: ["my-blogs"] },
-      }),
-    t("error")
-  );
+  return wrapServerAction(() => blogService.getMyBlogs(), t("error"));
 }

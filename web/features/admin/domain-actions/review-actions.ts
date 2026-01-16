@@ -21,9 +21,8 @@
  */
 "use server";
 
-import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
-import { ApiResponse, ActionResult } from "@/types/dtos";
+import { adminReviewService } from "../services/admin-review.service";
+import { ActionResult } from "@/types/dtos";
 import { Review } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 
@@ -38,10 +37,8 @@ export async function getReviewsAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Review[]>> {
-  const params = normalizePaginationParams(paramsOrPage, limit, search);
-
   return wrapServerAction(
-    () => http<ApiResponse<Review[]>>("/reviews", { params }),
+    () => adminReviewService.getReviews(paramsOrPage, limit, search),
     "Failed to fetch reviews"
   );
 }
@@ -50,7 +47,7 @@ export async function deleteReviewAction(
   id: string
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http(`/reviews/${id}`, { method: "DELETE" });
+    await adminReviewService.deleteReview(id);
     REVALIDATE.admin.reviews();
   }, "Failed to delete review");
 }
@@ -60,10 +57,7 @@ export async function replyToReviewAction(
   reply: string
 ): Promise<ActionResult<Review>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Review>>(`/reviews/${id}/reply`, {
-      method: "POST",
-      body: JSON.stringify({ reply }),
-    });
+    const res = await adminReviewService.replyToReview(id, reply);
     REVALIDATE.admin.reviews();
     return res.data;
   }, "Failed to reply to review");
@@ -74,10 +68,7 @@ export async function updateReviewStatusAction(
   isApproved: boolean
 ): Promise<ActionResult<Review>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Review>>(`/reviews/${id}/status`, {
-      method: "PATCH",
-      body: JSON.stringify({ isApproved }),
-    });
+    const res = await adminReviewService.updateReviewStatus(id, isApproved);
     REVALIDATE.admin.reviews();
     return res.data;
   }, "Failed to update review status");
@@ -87,13 +78,7 @@ export async function analyzeReviewSentimentAction(
   text: string
 ): Promise<ActionResult<any>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any>>(
-      "/ai-automation/analyze-review-sentiment",
-      {
-        method: "POST",
-        body: JSON.stringify({ text }),
-      }
-    );
+    const res = await adminReviewService.analyzeSentiment(text);
     REVALIDATE.admin.reviews();
     return res.data;
   }, "Failed to analyze sentiment");

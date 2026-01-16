@@ -299,6 +299,21 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
     },
   },
   {
+    type: "PromoBanner",
+    label: "Digital Promo Banner",
+    description: "High-impact promo banner with Aurora & Glass effects",
+    icon: <Megaphone className="size-6" />,
+    category: "hero-media",
+    defaultProps: {
+      title: "Midnight Edition",
+      subtitle: "Exclusive drops available only for 24 hours.",
+      discountText: "70% OFF SITEWIDE",
+      auroraVariant: "cinematic",
+      ctaText: "Join the Drop",
+      ctaLink: "/shop",
+    },
+  },
+  {
     type: "Gallery",
     label: "Image Gallery",
     description: "Masonry-style image grid with lightbox",
@@ -472,6 +487,21 @@ export const AVAILABLE_BLOCKS: BlockType[] = [
   // =====================================================================
   // COMMERCE BLOCKS
   // =====================================================================
+  {
+    type: "FeaturedCollection",
+    label: "Featured Collection",
+    description: "Premium product grid tied to a specific collection",
+    icon: <Sparkles className="size-6" />,
+    category: "commerce",
+    defaultProps: {
+      title: "The Autumn Edit",
+      subtitle: "Warm tones and textures for the changing season",
+      collectionName: "Fall 2024",
+      count: 4,
+      columns: 4,
+      cardStyle: "glass",
+    },
+  },
   {
     type: "Products",
     label: "Products Grid",

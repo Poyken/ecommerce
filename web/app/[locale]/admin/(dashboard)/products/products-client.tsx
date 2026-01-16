@@ -224,29 +224,29 @@ export function ProductsClient({
           onValueChange={(v) => handleStatusChange(v as FilterType)}
           className="w-full"
         >
-          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
+          <TabsList className="bg-white/5 p-1 rounded-2xl h-14 border border-white/5 shadow-inner flex-wrap w-fit backdrop-blur-md">
             <TabsTrigger
               value="all"
-              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-[0_0_20px_rgba(255,255,255,0.2)] dark:data-[state=active]:bg-white dark:data-[state=active]:text-black transition-all gap-2"
             >
               <Box className="h-4 w-4" />
               All
               <Badge
                 variant="outline"
-                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black"
+                className="ml-1 h-5 px-1.5 bg-white/10 text-[10px] font-black border-transparent"
               >
                 {products.length}
               </Badge>
             </TabsTrigger>
             <TabsTrigger
               value="recent"
-              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-[var(--aurora-blue)] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(var(--aurora-blue),0.3)] transition-all gap-2"
             >
-              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              <div className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
               Recent
               <Badge
                 variant="outline"
-                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black"
+                className="ml-1 h-5 px-1.5 bg-white/10 text-white text-[10px] font-black border-transparent"
               >
                 {recentCount}
               </Badge>
@@ -254,13 +254,13 @@ export function ProductsClient({
             {noCategoryCount > 0 && (
               <TabsTrigger
                 value="no-category"
-                className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-amber-600 transition-all gap-2"
+                className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-[var(--aurora-orange)] data-[state=active]:text-white transition-all gap-2"
               >
-                <div className="h-2 w-2 rounded-full bg-amber-500" />
+                <div className="h-2 w-2 rounded-full bg-amber-400" />
                 No Category
                 <Badge
                   variant="outline"
-                  className="ml-1 h-5 px-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-600 text-[10px] font-black"
+                  className="ml-1 h-5 px-1.5 bg-white/10 text-white text-[10px] font-black border-transparent"
                 >
                   {noCategoryCount}
                 </Badge>
@@ -277,7 +277,7 @@ export function ProductsClient({
             })}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+            className="pl-11 h-12 rounded-2xl border-white/10 bg-white/5 backdrop-blur-md shadow-xl focus:ring-primary/40 focus:border-primary/50 transition-all font-medium text-white placeholder:text-muted-foreground/50"
           />
           {isPending && (
             <div className="absolute right-4 top-1/2 -translate-y-1/2">

@@ -21,7 +21,7 @@ import { cn } from "@/lib/utils";
  * - Kết hợp với hiệu ứng Pulse ở tâm để tạo cảm giác "sống". *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
  * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
+ *
  * =====================================================================
  */
 
@@ -29,76 +29,141 @@ interface LoadingScreenProps {
   message?: string;
   fullScreen?: boolean;
   className?: string;
+  variant?: "classic" | "luxury" | "minimal" | "creative";
+  size?: "sm" | "md" | "lg";
 }
 
 export function LoadingScreen({
   message,
   fullScreen = true,
   className,
+  variant = "classic",
+  size = "md",
 }: LoadingScreenProps) {
   const t = useTranslations("loading");
   const displayMessage = message || t("message");
 
+  const sizeClasses = {
+    sm: "w-12 h-12",
+    md: "w-24 h-24",
+    lg: "w-40 h-40",
+  };
+
+  const renderAnimation = () => {
+    switch (variant) {
+      case "luxury":
+        return (
+          <div className={cn("relative flex items-center justify-center", sizeClasses[size])}>
+            <m.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-0 rounded-full border border-primary/20"
+            />
+            <m.div
+              animate={{ rotate: -360 }}
+              transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-2 rounded-full border border-accent/20 border-dashed"
+            />
+            <m.div
+              animate={{
+                scale: [1, 1.1, 1],
+                rotate: [0, 90, 0],
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="w-1/3 h-1/3 bg-gradient-to-tr from-primary to-accent rounded-lg shadow-[0_0_30px_rgba(var(--primary),0.5)]"
+            />
+          </div>
+        );
+      case "minimal":
+        return (
+          <div className="flex gap-2">
+            {[0, 1, 2].map((i) => (
+              <m.div
+                key={i}
+                animate={{
+                  y: [0, -10, 0],
+                  opacity: [0.3, 1, 0.3],
+                }}
+                transition={{
+                  duration: 1,
+                  repeat: Infinity,
+                  delay: i * 0.2,
+                }}
+                className="w-2 h-8 bg-primary rounded-full"
+              />
+            ))}
+          </div>
+        );
+      case "creative":
+        return (
+          <div className={cn("relative", sizeClasses[size])}>
+            <m.div
+              animate={{
+                scale: [1, 1.5, 1],
+                rotate: [0, 180, 360],
+                borderRadius: ["20%", "50%", "20%"],
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+              className="w-full h-full border-4 border-primary/30 flex items-center justify-center"
+            >
+              <m.div
+                animate={{ scale: [1, 0.5, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+                className="w-4 h-4 bg-accent rounded-full"
+              />
+            </m.div>
+          </div>
+        );
+      default:
+        return (
+          <div className={cn("relative flex items-center justify-center", sizeClasses[size])}>
+            <div className="absolute -inset-8 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+            <m.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-0 rounded-full border-t-2 border-r-2 border-primary/40"
+            />
+            <m.div
+              animate={{ rotate: -360 }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+              className="absolute inset-4 rounded-full border-b-2 border-l-2 border-accent/40"
+            />
+            <m.div
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.5, 1, 0.5],
+              }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="w-4 h-4 rounded-full bg-primary shadow-[0_0_15px_rgba(var(--primary),0.6)]"
+            />
+          </div>
+        );
+    }
+  };
+
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center",
+        "flex flex-col items-center justify-center transition-all duration-500",
         fullScreen
           ? "fixed inset-0 z-100 bg-background/80 backdrop-blur-xl"
           : "w-full min-h-[60vh] bg-transparent",
         className
       )}
     >
-      <div className="relative">
-        {/* Outer Glow - Subtle */}
-        <div className="absolute -inset-8 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-
-        {/* Main Animation Container */}
-        <div className="relative w-24 h-24 flex items-center justify-center">
-          {/* Outer Orbiting Ring */}
-          <m.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 rounded-full border-t-2 border-r-2 border-primary/40"
-          />
-
-          {/* Inner Orbiting Ring (Faster & Reverse) */}
-          <m.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-4 rounded-full border-b-2 border-l-2 border-accent/40"
-          />
-
-          {/* Center Pulsing Core */}
-          <m.div
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.5, 1, 0.5],
-            }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="w-4 h-4 rounded-full bg-primary shadow-[0_0_15px_rgba(var(--primary),0.6)]"
-          />
-
-          {/* Floating Particles around the core */}
-          <m.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0"
-          >
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary" />
-          </m.div>
-        </div>
-      </div>
+      {renderAnimation()}
 
       {/* Text Content */}
       <div className="mt-12 flex flex-col items-center gap-3">
-        <m.h2
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold tracking-[0.4em] text-foreground uppercase"
-        >
-          Luxe
-        </m.h2>
+        {variant !== "minimal" && (
+          <m.h2
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-2xl font-bold tracking-[0.4em] text-foreground uppercase"
+          >
+            Luxe
+          </m.h2>
+        )}
 
         <m.div
           initial={{ opacity: 0 }}

@@ -6,7 +6,7 @@ import { BuyAgainButton } from "@/features/orders/components/buy-again-button";
 import { CancelOrderButton } from "@/features/orders/components/cancel-order-button";
 import { RequestReturnButton } from "@/features/orders/components/request-return-button";
 import { Link } from "@/i18n/routing";
-import { http } from "@/lib/http";
+import { orderService } from "@/features/orders/services/order.service";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { getTranslations } from "next-intl/server";
@@ -114,10 +114,8 @@ async function DynamicOrderDetail({ id }: { id: string }) {
   const t = await getTranslations("orders");
 
   try {
-    const res = await http<{ data: Order }>(`/orders/my-orders/${id}`, {
-      skipRedirectOn401: true, // Handle explicitly to avoid NEXT_REDIRECT in catch block
-    });
-    order = res.data;
+    const res = await orderService.getMyOrderDetails(id);
+    order = res.data as Order;
   } catch (e: any) {
     if (e?.status === 401) {
       redirect("/login");

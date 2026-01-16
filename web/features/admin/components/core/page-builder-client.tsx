@@ -686,6 +686,120 @@ export function PageBuilderClient({
           </div>
         );
 
+      case "FeaturedCollection":
+        return (
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <Label className="text-xs font-bold uppercase text-muted-foreground">Collection Settings</Label>
+              <div className="space-y-2">
+                <Label className="text-[10px]">Collection Filter Name</Label>
+                <Input
+                  value={block.props.collectionName || ""}
+                  onChange={(e) => updateBlockProps(block.id, { collectionName: e.target.value })}
+                  placeholder="Fall 2024"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-2">
+                  <Label className="text-[10px]">Product Count</Label>
+                  <Input
+                    type="number"
+                    value={block.props.count || 4}
+                    onChange={(e) => updateBlockProps(block.id, { count: parseInt(e.target.value) })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-[10px]">Columns</Label>
+                  <select
+                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
+                    value={block.props.columns || 4}
+                    onChange={(e) => updateBlockProps(block.id, { columns: parseInt(e.target.value) })}
+                  >
+                    <option value={2}>2 Columns</option>
+                    <option value={3}>3 Columns</option>
+                    <option value={4}>4 Columns</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-3 pt-4 border-t">
+              <Label className="text-xs font-bold uppercase text-muted-foreground">Card Aesthetic</Label>
+              <div className="space-y-2">
+                <Label className="text-[10px]">Card Style</Label>
+                <div className="grid grid-cols-3 gap-1">
+                  {["default", "luxury", "glass"].map((s) => (
+                    <Button
+                      key={s}
+                      variant={block.props.cardStyle === s ? "default" : "outline"}
+                      size="sm"
+                      className="text-[9px] capitalize h-8"
+                      onClick={() => updateBlockProps(block.id, { cardStyle: s })}
+                    >
+                      {s}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <BlockStyleControls
+              styles={block.props.styles}
+              onChange={(newStyles) => updateBlockProps(block.id, { styles: newStyles })}
+            />
+          </div>
+        );
+      case "PromoBanner":
+        return (
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <Label className="text-xs font-bold uppercase text-muted-foreground">Promo Content</Label>
+              <div className="space-y-2">
+                <Label className="text-[10px]">Title</Label>
+                <Input
+                  value={block.props.title || ""}
+                  onChange={(e) => updateBlockProps(block.id, { title: e.target.value })}
+                  placeholder="Midnight Edition"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px]">Subtitle</Label>
+                <Textarea
+                  value={block.props.subtitle || ""}
+                  onChange={(e) => updateBlockProps(block.id, { subtitle: e.target.value })}
+                  placeholder="Exclusive drops..."
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px]">Discount Text</Label>
+                <Input
+                  value={block.props.discountText || ""}
+                  onChange={(e) => updateBlockProps(block.id, { discountText: e.target.value })}
+                  placeholder="70% OFF"
+                />
+              </div>
+            </div>
+            <div className="space-y-3 pt-4 border-t">
+              <Label className="text-xs font-bold uppercase text-muted-foreground">Digital Premium</Label>
+              <div className="space-y-2">
+                <Label className="text-[10px]">Aurora Variant</Label>
+                <select
+                  className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
+                  value={block.props.auroraVariant || "cinematic"}
+                  onChange={(e) => updateBlockProps(block.id, { auroraVariant: e.target.value })}
+                >
+                  <option value="blue">Blue Aurora</option>
+                  <option value="purple">Purple Aurora</option>
+                  <option value="orange">Orange Aurora</option>
+                  <option value="cinematic">Cinematic Mix</option>
+                </select>
+              </div>
+            </div>
+            <BlockStyleControls
+              styles={block.props.styles}
+              onChange={(newStyles) => updateBlockProps(block.id, { styles: newStyles })}
+            />
+          </div>
+        );
+
       case "Features":
         return (
           <div className="space-y-4">
@@ -1887,6 +2001,49 @@ export function PageBuilderClient({
               onChange={(newStyles) =>
                 updateBlockProps(block.id, { styles: newStyles })
               }
+            />
+          </div>
+        );
+
+      case "Products":
+        return (
+          <div className="space-y-4">
+            <div className="space-y-3">
+              <Label className="text-xs font-bold uppercase text-muted-foreground">Product Filtering</Label>
+              <div className="space-y-2">
+                <Label className="text-[10px]">Filter Type</Label>
+                <select
+                  className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
+                  value={block.props.filter || "trending"}
+                  onChange={(e) => updateBlockProps(block.id, { filter: e.target.value })}
+                >
+                  <option value="trending">Trending Products</option>
+                  <option value="new">New Arrivals</option>
+                </select>
+              </div>
+            </div>
+            <div className="space-y-3 pt-4 border-t">
+              <Label className="text-xs font-bold uppercase text-muted-foreground">Card Aesthetic</Label>
+              <div className="space-y-2">
+                <Label className="text-[10px]">Card Style</Label>
+                <div className="grid grid-cols-3 gap-1">
+                  {["default", "luxury", "glass"].map((s) => (
+                    <Button
+                      key={s}
+                      variant={block.props.cardStyle === s ? "default" : "outline"}
+                      size="sm"
+                      className="text-[9px] capitalize h-8"
+                      onClick={() => updateBlockProps(block.id, { cardStyle: s })}
+                    >
+                      {s}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <BlockStyleControls
+              styles={block.props.styles}
+              onChange={(newStyles) => updateBlockProps(block.id, { styles: newStyles })}
             />
           </div>
         );

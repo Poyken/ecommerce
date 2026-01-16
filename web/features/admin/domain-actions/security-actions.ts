@@ -21,9 +21,8 @@
  */
 "use server";
 
-import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
-import { ApiResponse, ActionResult, SecurityStats } from "@/types/dtos";
+import { adminSecurityService } from "../services/admin-security.service";
+import { ActionResult, SecurityStats } from "@/types/dtos";
 import { AuditLog } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 
@@ -37,7 +36,7 @@ export async function getSecurityStatsAction(): Promise<
   ActionResult<SecurityStats>
 > {
   return wrapServerAction(
-    () => http<ApiResponse<SecurityStats>>("/admin/security/stats"),
+    () => adminSecurityService.getSecurityStats(),
     "Failed to fetch security stats"
   );
 }
@@ -46,10 +45,7 @@ export async function getLockdownStatusAction(): Promise<
   ActionResult<{ isLockdown: boolean }>
 > {
   return wrapServerAction(
-    () =>
-      http<ApiResponse<{ isLockdown: boolean }>>(
-        "/admin/security/lockdown-status"
-      ),
+    () => adminSecurityService.getLockdownStatus(),
     "Failed to fetch lockdown status"
   );
 }
@@ -58,10 +54,7 @@ export async function toggleLockdownAction(
   isEnabled: boolean
 ): Promise<ActionResult<any>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any>>("/admin/security/lockdown", {
-      method: "POST",
-      body: JSON.stringify({ isEnabled }),
-    });
+    const res = await adminSecurityService.toggleLockdown(isEnabled);
     REVALIDATE.superAdmin.security();
     REVALIDATE.path("/", "page");
     return res.data;
@@ -72,7 +65,7 @@ export async function getSuperAdminWhitelistAction(): Promise<
   ActionResult<string[]>
 > {
   return wrapServerAction(
-    () => http<ApiResponse<string[]>>("/admin/security/whitelist"),
+    () => adminSecurityService.getWhitelist(),
     "Failed to fetch whitelist"
   );
 }
@@ -81,17 +74,14 @@ export async function updateSuperAdminWhitelistAction(
   ips: string[]
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http("/admin/security/whitelist", {
-      method: "POST",
-      body: JSON.stringify({ ips }),
-    });
+    await adminSecurityService.updateWhitelist(ips);
     REVALIDATE.superAdmin.security();
   }, "Failed to update whitelist");
 }
 
 export async function getMyIpAction(): Promise<ActionResult<{ ip: string }>> {
   return wrapServerAction(
-    () => http<ApiResponse<{ ip: string }>>("/admin/security/my-ip"),
+    () => adminSecurityService.getMyIp(),
     "Failed to fetch IP"
   );
 }
@@ -99,13 +89,8 @@ export async function getMyIpAction(): Promise<ActionResult<{ ip: string }>> {
 export async function getAuditLogsAction(
   paramsOrPage: any = {}
 ): Promise<ActionResult<AuditLog[]>> {
-  const { roles, ...rest } = paramsOrPage;
-  const params = normalizePaginationParams(rest);
-  if (roles) {
-    params.roles = Array.isArray(roles) ? roles.join(",") : roles;
-  }
   return wrapServerAction(
-    () => http<ApiResponse<AuditLog[]>>("/audit", { params }),
+    () => adminSecurityService.getAuditLogs(paramsOrPage),
     "Failed to fetch audit logs"
   );
 }

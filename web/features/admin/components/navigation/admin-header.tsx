@@ -32,34 +32,6 @@ interface AdminHeaderProps {
   title?: string;
 }
 
-/**
- * =====================================================================
- * ADMIN HEADER - Header cho trang quản trị
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * FEATURES:
- * 1. Theme Toggle:
- *    - Sử dụng `useTheme` hook từ `next-themes`.
- *    - Cho phép chuyển đổi Light/Dark/System mode.
- *
- * 2. Language Switcher:
- *    - Cho phép chuyển đổi giữa EN/VI trong admin panel.
- *
- * 3. User Dropdown:
- *    - Sử dụng `DropdownMenu` từ Shadcn UI.
- *    - Hiển thị thông tin user và nút Logout.
- *    - `logoutAction` được gọi khi click Logout (Server Action).
- *
- * STYLING:
- * - `sticky top-0`: Giữ header luôn ở trên cùng khi scroll.
- * - `backdrop-blur-md`: Tạo hiệu ứng mờ nền (Glassmorphism). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */
 export function AdminHeader({ user, title }: AdminHeaderProps) {
   const { setTheme } = useTheme();
   const t = useTranslations("admin");
@@ -67,24 +39,23 @@ export function AdminHeader({ user, title }: AdminHeaderProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-foreground/5 bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60">
+    <header className="sticky top-0 z-40 w-full border-b border-white/5 bg-background/20 backdrop-blur-3xl">
       <div className="flex h-16 items-center justify-between px-8">
         <div className="flex items-center gap-4">
-          {/* Page Title / Breadcrumbs - Refined */}
-          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-muted-foreground/80">
+          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-white">
             {title || t("adminPanel")}
           </h2>
         </div>
 
         <div className="flex items-center gap-2 md:gap-5">
-          <div className="flex items-center gap-2 pr-4 border-r border-foreground/10">
+          <div className="flex items-center gap-2 pr-4 border-r border-white/10">
             <AdminNotificationBell />
             <LanguageSwitcher />
           </div>
 
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-9 w-9 rounded-full">
+              <Button variant="ghost" className="relative h-9 w-9 rounded-full ring-1 ring-white/10">
                   <UserAvatar 
                     src={user?.avatar} 
                     alt={user?.firstName} 
@@ -92,10 +63,10 @@ export function AdminHeader({ user, title }: AdminHeaderProps) {
                   />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-56 glass-premium">
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
-                  <p className="text-sm font-medium leading-none">
+                  <p className="text-sm font-bold leading-none">
                     {user.firstName} {user.lastName}
                   </p>
                   <p className="text-xs leading-none text-muted-foreground truncate">
@@ -103,7 +74,7 @@ export function AdminHeader({ user, title }: AdminHeaderProps) {
                   </p>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator className="bg-white/5" />
 
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
@@ -111,7 +82,7 @@ export function AdminHeader({ user, title }: AdminHeaderProps) {
                   <span>{tCommon("theme")}</span>
                 </DropdownMenuSubTrigger>
                 <DropdownMenuPortal>
-                  <DropdownMenuSubContent>
+                  <DropdownMenuSubContent className="glass-premium">
                     <DropdownMenuItem onClick={() => setTheme("light")}>
                       <Sun className="h-4 w-4" />
                       <span>{tCommon("light")}</span>
@@ -128,10 +99,11 @@ export function AdminHeader({ user, title }: AdminHeaderProps) {
                 </DropdownMenuPortal>
               </DropdownMenuSub>
 
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator className="bg-white/5" />
 
               <DropdownMenuItem
                 disabled={isLoggingOut}
+                className="text-destructive focus:text-destructive"
                 onClick={async (e) => {
                   e.preventDefault();
                   if (isLoggingOut) return;
@@ -139,7 +111,6 @@ export function AdminHeader({ user, title }: AdminHeaderProps) {
                   try {
                     await logoutAction();
                   } finally {
-                    // Redirect will handle it
                   }
                 }}
               >

@@ -94,16 +94,11 @@ export function WishlistButton({
 
       if (!res.success) {
         if ("requiresAuth" in res && res.requiresAuth) {
-          // Fallback to Guest Wishlist mechanism but keep UI state consistent
-          // In reality, if we are here, isAuthenticated might need check, but we proceed with fallback logic
           if (previousState) {
             removeFromWishlist(productId);
           } else {
             addToWishlist(productId);
           }
-
-          // Since we updated localIsWishlisted, and we are still "authenticated" in client view,
-          // the UI shows the new state. If we eventually logout, isWishlisted will switch to guest state (which we just updated).
 
           toast({
             title: !previousState ? t("added") : t("removed"),
@@ -121,9 +116,16 @@ export function WishlistButton({
         });
       } else {
         dismiss(); // Dismiss previous toasts
+        // res.data is expected to be { isWishlisted: boolean } on success
+        let isWishlistedResult = false;
+        if ("data" in res && res.data) {
+          const data = res.data as { isWishlisted: boolean };
+          isWishlistedResult = data.isWishlisted;
+        }
+
         toast({
-          title: (res as any).isWishlisted ? t("added") : t("removed"),
-          variant: (res as any).isWishlisted ? "success" : "info",
+          title: isWishlistedResult ? t("added") : t("removed"),
+          variant: isWishlistedResult ? "success" : "info",
         });
 
         // Update Global Store directly (faster than waiting for window event)

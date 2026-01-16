@@ -34,6 +34,7 @@ export interface ProductCardBaseProps {
     overlay?: ReactNode;
   };
 
+  variant?: "default" | "luxury" | "glass";
   className?: string;
   onMouseEnter?: () => void;
 }
@@ -73,6 +74,7 @@ export function ProductCardBase({
   isLowStock,
   isCompact = false,
   actions,
+  variant = "default",
   className,
   onMouseEnter,
 }: ProductCardBaseProps) {
@@ -96,13 +98,19 @@ export function ProductCardBase({
     <m.div
       layout="position"
       className={cn(
-        "group relative bg-white dark:bg-card rounded-3xl overflow-hidden border border-neutral-100 dark:border-white/5",
-        "hover:shadow-xl hover:shadow-accent/5 dark:hover:shadow-accent/10",
-        "hover:border-accent/30 dark:hover:border-accent/20",
+        "group relative rounded-3xl overflow-hidden transition-all duration-500",
+        // Default variant
+        variant === "default" && "bg-white dark:bg-card border border-neutral-100 dark:border-white/5 shadow-sm",
+        // Luxury variant
+        variant === "luxury" && "bg-neutral-900 text-white border border-white/10 shadow-2xl",
+        // Glass variant
+        variant === "glass" && "glass-premium backdrop-blur-2xl border border-white/20 text-foreground dark:text-white shadow-2xl",
+        "hover:shadow-2xl hover:shadow-accent/10",
+        variant !== "luxury" && "hover:border-accent/30 dark:hover:border-accent/20",
         className
       )}
       onMouseEnter={handleMouseEnter}
-      whileHover={!isCompact ? { y: -8 } : {}}
+      whileHover={!isCompact ? { y: -12 } : {}}
       transition={{
         type: "spring",
         stiffness: 400,
@@ -226,7 +234,8 @@ export function ProductCardBase({
               <h3
                 className={cn(
                   "font-sans font-bold leading-tight truncate group-hover:text-primary transition-colors duration-300",
-                  isCompact ? "text-sm" : "text-lg"
+                  isCompact ? "text-sm" : "text-lg",
+                  variant === "luxury" && "text-white"
                 )}
               >
                 {name}

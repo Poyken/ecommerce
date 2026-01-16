@@ -9,7 +9,8 @@ import {
 import { QuickActions } from "@/features/admin/components/widgets/quick-actions";
 import { getProfileAction } from "@/features/profile/actions";
 import { Link } from "@/i18n/routing";
-import { http } from "@/lib/http";
+import { adminOrderService } from "@/features/admin/services/admin-order.service";
+import { adminProductService } from "@/features/admin/services/admin-product.service";
 import { AnalyticsStats } from "@/types/dtos";
 import { format } from "date-fns";
 import { LayoutDashboard, Package, TrendingUp, Users } from "lucide-react";
@@ -84,10 +85,8 @@ export default async function AdminDashboardPage() {
     getAnalyticsStatsAction(),
     getSalesDataAction("7"),
     getTopProductsAction(),
-    http<{ data: Order[] }>("/orders?limit=5&includeItems=true"),
-    http<{ data: any[]; meta: { total: number } }>(
-      "/skus?limit=5&stockLimit=5&includeProduct=true"
-    ),
+    adminOrderService.getRecentOrders(5),
+    adminProductService.getLowStockSkus(5, 5),
     getReviewsAction({ page: 1, limit: 4 }), // 4 recent reviews
     getPagesAction(),
     getBlogStatsAction(),
@@ -132,6 +131,7 @@ export default async function AdminDashboardPage() {
         subtitle={`Welcome back, ${user.firstName}! Here's your store command center.`}
         icon={<LayoutDashboard className="text-primary fill-primary/10" />}
         actions={<QuickActions />}
+        layout="luxury"
       />
 
       <Tabs defaultValue="business" className="space-y-6">

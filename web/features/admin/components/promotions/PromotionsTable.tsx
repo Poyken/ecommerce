@@ -336,7 +336,7 @@ export function PromotionsTable() {
                               variant="ghost"
                               size="icon"
                               className="h-6 w-6"
-                              onClick={() => copyCode(promotion.code)}
+                              onClick={() => copyCode(promotion.code!)}
                             >
                               <Copy className="h-3 w-3" />
                             </Button>

@@ -52,6 +52,7 @@ export function TrendingProducts({
   columns = 5,
   layout = "grid",
   alignment = "center",
+  cardStyle = "default",
 }: TrendingProductsProps) {
   const t = useTranslations("home");
   const inStockProducts = products.filter((product) =>
@@ -85,10 +86,10 @@ export function TrendingProducts({
         variants={fadeInUp}
       >
         <div className="space-y-3">
-          <span className="text-accent font-bold uppercase tracking-[0.3em] text-[10px] block">
+          <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] block mb-2">
             {t("popularItems")}
           </span>
-          <h2 className="text-4xl md:text-6xl font-serif tracking-tight text-foreground leading-tight">
+          <h2 className="text-4xl md:text-7xl font-black tracking-tighter text-foreground leading-tight uppercase italic">
             {title || t("trendingNowBold")}
           </h2>
           {subtitle && (
@@ -152,6 +153,7 @@ export function TrendingProducts({
               isHot={true}
               skus={product.skus}
               options={product.options}
+              variant="luxury"
             />
           </m.div>
         ))}

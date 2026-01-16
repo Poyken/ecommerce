@@ -215,6 +215,20 @@ export interface AnalyticsStats {
   lifetimeCustomers: number;
 }
 
+export interface SuperAdminAnalyticsStats {
+  totalTenants: number;
+  activeTenants: number;
+  newTenantsThisMonth: number;
+  tenantGrowthRate: number;
+  churnRate: number;
+  mrr: number;
+  mrrFormatted: string;
+  activeSubscriptions: number;
+  pendingInvoices: number;
+  planDistribution: Array<{ plan: string; count: number }>;
+  recentTenants: Array<any>;
+}
+
 export interface SalesDataPoint {
   date: string;
   amount: number;
@@ -380,3 +394,26 @@ export interface RegisterDto {
   lastName: string;
   password: string;
 }
+
+// ==================== RETURN REQUEST DTOs ====================
+
+// These types should ideally be in `models.ts` or derived from schemas,
+// but we define them here for DTO usage if not already present.
+// `ReturnRequest` is typically a model, so we might just re-export or define a DTO version.
+
+export interface CreateReturnRequestInput {
+  orderId: string;
+  items: { orderItemId: string; quantity: number }[];
+  reason: string;
+  description?: string;
+  images?: string[];
+  returnMethod: "AT_COUNTER" | "PICKUP" | "SELF_SHIP";
+  pickupAddress?: any;
+  refundMethod: "ORIGINAL_PAYMENT" | "BANK_TRANSFER" | "WALLET";
+  bankAccount?: any;
+}
+
+// Re-export ReturnRequest from models or define a simplified DTO version if needed.
+// For now, assuming ReturnRequest is needed as a return type from API response.
+import { ReturnRequest as ReturnRequestModel } from "./models";
+export type ReturnRequest = ReturnRequestModel;

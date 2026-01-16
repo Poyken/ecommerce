@@ -337,6 +337,18 @@ export interface Review {
   autoTags?: string[];
 }
 
+export interface ReviewEligibility {
+  isEligible?: boolean;
+  canReview?: boolean;
+  reason?: "ALREADY_REVIEWED" | "NO_PURCHASE" | "RETURNED" | "CANCELLED";
+  orderId?: string;
+  orderDate?: string;
+  purchasedSkus?: Array<{
+    skuId: string;
+    skuCode: string;
+  }>;
+}
+
 // =============================================================================
 // 📍 ADDRESS - Địa chỉ giao hàng
 // =============================================================================

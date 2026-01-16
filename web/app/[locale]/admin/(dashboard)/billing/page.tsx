@@ -15,7 +15,7 @@
  */
 
 import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
-import { http } from "@/lib/http";
+import { adminBillingService } from "@/features/admin/services/admin-billing.service";
 import { format } from "date-fns";
 import { CreditCard, Zap } from "lucide-react";
 import { getTranslations } from "next-intl/server";
@@ -26,9 +26,9 @@ export default async function BillingPage() {
   const t = await getTranslations("admin.billing");
 
   // Fetch current subscription from Backend API
-  const { data: subscription } = await http<any>(
-    "/subscriptions/current"
-  ).catch(() => ({ data: null }));
+  const { data: subscription } = await adminBillingService
+    .getCurrentSubscription()
+    .catch(() => ({ data: null }));
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">

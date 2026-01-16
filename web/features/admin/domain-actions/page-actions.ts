@@ -21,10 +21,9 @@
  */
 "use server";
 
-import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
-import { ApiResponse, ActionResult } from "@/types/dtos";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
+import { adminPageService } from "../services/admin-page.service";
+import { ActionResult } from "@/types/dtos";
 
 /**
  * =====================================================================
@@ -35,9 +34,8 @@ import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 export async function getPagesAction(
   paramsOrPage: any = {}
 ): Promise<ActionResult<any[]>> {
-  const params = normalizePaginationParams(paramsOrPage);
   return wrapServerAction(
-    () => http<ApiResponse<any[]>>("/pages/admin/list", { params }),
+    () => adminPageService.getPages(paramsOrPage),
     "Failed to fetch pages"
   );
 }
@@ -46,17 +44,14 @@ export async function getPageByIdAction(
   id: string
 ): Promise<ActionResult<any>> {
   return wrapServerAction(
-    () => http<ApiResponse<any>>(`/pages/admin/${id}`),
+    () => adminPageService.getPageById(id),
     "Failed to fetch page"
   );
 }
 
 export async function createPageAction(data: any): Promise<ActionResult<any>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any>>("/pages/admin", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    const res = await adminPageService.createPage(data);
     REVALIDATE.admin.pages();
     return res.data;
   }, "Failed to create page");
@@ -67,10 +62,7 @@ export async function updatePageAction(
   data: any
 ): Promise<ActionResult<any>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any>>(`/pages/admin/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    });
+    const res = await adminPageService.updatePage(id, data);
     REVALIDATE.admin.pages();
     return res.data;
   }, "Failed to update page");
@@ -80,7 +72,7 @@ export async function deletePageAction(
   id: string
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http(`/pages/admin/${id}`, { method: "DELETE" });
+    await adminPageService.deletePage(id);
     REVALIDATE.admin.pages();
   }, "Failed to delete page");
 }

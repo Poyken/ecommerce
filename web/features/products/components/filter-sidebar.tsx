@@ -99,33 +99,27 @@ export const FilterSidebar = memo(function FilterSidebar({
     // Nếu id != null -> Active khi activeId match id
     const isActive = id === null ? !activeId : activeId === id;
 
-    // Style riêng cho Brand (Màu Amber) và Category (Màu Primary)
-    const activeClass = isBrand
-      ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shadow-lg shadow-amber-500/5"
-      : "bg-primary/10 text-primary border border-primary/20 shadow-lg shadow-primary/5";
+    // Standard Luxury style for both
+    const activeClass = "bg-primary/20 text-primary border border-primary/30 shadow-2xl shadow-primary/10 scale-[1.02]";
 
     return (
       <button
         key={id || "all"}
         onClick={() => handleFilter(type, id)}
-        // PREFETCHING STRATEGY:
         onMouseEnter={() => {
           if (!isActive && !isPending) {
-            // Giả lập URL mới
             const params = new URLSearchParams(searchParams.toString());
             if (id === null) params.delete(type);
             else params.set(type, id);
-
-            // Tải trước dữ liệu
             router.prefetch(`${pathname}?${params.toString()}`);
           }
         }}
         disabled={isPending}
         className={cn(
-          "block w-full text-left text-sm px-4 py-3 rounded-xl transition-all duration-300 font-bold transform-gpu will-change-[transform,background-color]",
+          "block w-full text-left text-[10px] px-4 py-3 rounded-xl transition-all duration-500 font-black uppercase tracking-[0.1em] transform-gpu will-change-[transform,background-color,border-color]",
           isActive
             ? activeClass
-            : "text-muted-foreground/60 hover:text-foreground hover:bg-foreground/2 hover:translate-x-1"
+            : "text-muted-foreground/40 hover:text-white hover:bg-white/5 hover:translate-x-1 border border-transparent"
         )}
       >
         {name}
@@ -137,10 +131,12 @@ export const FilterSidebar = memo(function FilterSidebar({
     <aside className={cn("space-y-6", className)}>
       {/* 1. Header Sidebar */}
       {!hideTitle && (
-        <div className="flex items-center justify-between pb-6 border-b border-foreground/5">
+        <div className="flex items-center justify-between pb-6 border-b border-white/5">
           <div className="flex items-center gap-3">
-            <Filter className="w-5 h-5 text-primary" />
-            <h2 className="font-black text-lg uppercase tracking-wider">
+            <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+              <Filter className="w-4 h-4 text-primary" />
+            </div>
+            <h2 className="font-black text-xs uppercase tracking-[0.2em] text-white">
               {t("filters")}
             </h2>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { m as motion, useInView, Variants } from "framer-motion";
+import { m, useInView, Variants } from "framer-motion";
 import {
   ArrowRight,
   Bot,
@@ -218,7 +218,7 @@ function AnimatedSection({
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <motion.section
+    <m.section
       ref={ref}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
@@ -227,7 +227,7 @@ function AnimatedSection({
       id={id}
     >
       {children}
-    </motion.section>
+    </m.section>
   );
 }
 
@@ -244,14 +244,14 @@ function HeroSection() {
       <div className="container mx-auto px-4 lg:px-8 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left: Content */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="text-center lg:text-left"
           >
             {/* Badge */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
@@ -259,7 +259,7 @@ function HeroSection() {
             >
               <Sparkles className="size-4" />
               <span>Tích hợp AI Gemini mới nhất</span>
-            </motion.div>
+            </m.div>
 
             {/* Headline */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.1] mb-6">
@@ -306,7 +306,7 @@ function HeroSection() {
             {/* Stats */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {stats.map((stat, index) => (
-                <motion.div
+                <m.div
                   key={stat.label}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -319,13 +319,13 @@ function HeroSection() {
                   <div className="text-sm text-muted-foreground">
                     {stat.label}
                   </div>
-                </motion.div>
+                </m.div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Right: Hero Image / Dashboard Mockup */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
@@ -365,7 +365,7 @@ function HeroSection() {
               </div>
 
               {/* Floating Elements - Moved outside the overflow-hidden container */}
-              <motion.div
+              <m.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{
                   duration: 3,
@@ -375,9 +375,9 @@ function HeroSection() {
                 className="absolute -top-6 -right-6 p-3 rounded-xl bg-white dark:bg-slate-800 shadow-xl border border-border z-20"
               >
                 <Wallet className="size-6 text-green-500" />
-              </motion.div>
+              </m.div>
 
-              <motion.div
+              <m.div
                 animate={{ y: [0, 10, 0] }}
                 transition={{
                   duration: 2.5,
@@ -388,9 +388,9 @@ function HeroSection() {
               >
                 <Star className="size-5 text-yellow-500 fill-yellow-500" />
                 <span className="text-sm font-semibold">4.9/5 Rating</span>
-              </motion.div>
+              </m.div>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </section>
@@ -402,7 +402,7 @@ function CoreFeaturesSection() {
     <AnimatedSection className="py-20 lg:py-32 bg-secondary/30" id="features">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Section Header */}
-        <motion.div
+        <m.div
           variants={fadeInUp}
           className="text-center max-w-3xl mx-auto mb-16"
         >
@@ -416,12 +416,12 @@ function CoreFeaturesSection() {
             Mọi thứ bạn cần để xây dựng và vận hành một cửa hàng thương mại điện
             tử chuyên nghiệp
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Features Grid */}
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
           {coreFeatures.map((feature, index) => (
-            <motion.div
+            <m.div
               key={feature.title}
               variants={scaleIn}
               className="group relative p-6 lg:p-8 rounded-2xl glass-card transition-all duration-500 hover:-translate-y-2 overflow-hidden"
@@ -441,7 +441,7 @@ function CoreFeaturesSection() {
 
               {/* Decorative Glow */}
               <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-colors" />
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>
@@ -455,7 +455,7 @@ function GrowthToolsSection() {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
           {/* Left: Content */}
-          <motion.div variants={fadeInUp}>
+          <m.div variants={fadeInUp}>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6">
               Giải pháp{" "}
               <span className="bg-gradient-to-r from-emerald-500 to-teal-500 bg-clip-text text-transparent">
@@ -469,7 +469,7 @@ function GrowthToolsSection() {
 
             <div className="space-y-6">
               {growthFeatures.map((feature, index) => (
-                <motion.div
+                <m.div
                   key={feature.title}
                   variants={fadeInUp}
                   className="flex gap-4"
@@ -483,19 +483,19 @@ function GrowthToolsSection() {
                       {feature.description}
                     </p>
                   </div>
-                </motion.div>
+                </m.div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Right: Illustration */}
-          <motion.div variants={scaleIn} className="relative">
+          <m.div variants={scaleIn} className="relative">
             <div className="aspect-square rounded-3xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 p-8 lg:p-12">
               {/* Growth Chart Mockup */}
               <div className="h-full flex flex-col justify-end gap-3">
                 <div className="flex items-end gap-3 h-full">
                   {[40, 55, 45, 70, 60, 85, 75, 95].map((height, i) => (
-                    <motion.div
+                    <m.div
                       key={i}
                       initial={{ height: 0 }}
                       whileInView={{ height: `${height}%` }}
@@ -517,7 +517,7 @@ function GrowthToolsSection() {
               </div>
 
               {/* Floating Stats */}
-              <motion.div
+              <m.div
                 animate={{ y: [0, -8, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
                 className="absolute -top-4 right-8 px-4 py-3 rounded-xl bg-card border shadow-lg"
@@ -526,9 +526,9 @@ function GrowthToolsSection() {
                   <div className="size-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span className="text-sm font-medium">+127% Doanh thu</span>
                 </div>
-              </motion.div>
+              </m.div>
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </AnimatedSection>
@@ -540,7 +540,7 @@ function OperationsSection() {
     <AnimatedSection className="py-20 lg:py-32 bg-secondary/30">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Section Header */}
-        <motion.div
+        <m.div
           variants={fadeInUp}
           className="text-center max-w-3xl mx-auto mb-16"
         >
@@ -553,12 +553,12 @@ function OperationsSection() {
           <p className="text-lg text-muted-foreground">
             Tự động hóa quy trình, tối ưu hiệu suất và bảo mật dữ liệu
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Features Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {operationFeatures.map((feature, index) => (
-            <motion.div
+            <m.div
               key={feature.title}
               variants={scaleIn}
               className="p-6 rounded-2xl bg-card border border-border text-center hover:border-orange-500/50 transition-all duration-300"
@@ -570,7 +570,7 @@ function OperationsSection() {
               <p className="text-sm text-muted-foreground">
                 {feature.description}
               </p>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>
@@ -583,7 +583,7 @@ function PricingSection() {
     <AnimatedSection className="py-20 lg:py-32" id="pricing">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Section Header */}
-        <motion.div
+        <m.div
           variants={fadeInUp}
           className="text-center max-w-3xl mx-auto mb-16"
         >
@@ -597,12 +597,12 @@ function PricingSection() {
             Chọn gói phù hợp với quy mô kinh doanh của bạn. Không phí ẩn, hủy
             bất kỳ lúc nào.
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-5xl mx-auto">
           {pricingPlans.map((plan, index) => (
-            <motion.div
+            <m.div
               key={plan.name}
               variants={scaleIn}
               className={`relative p-6 lg:p-8 rounded-2xl border ${
@@ -654,7 +654,7 @@ function PricingSection() {
               >
                 <Link href="/register">{plan.cta}</Link>
               </Button>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>
@@ -666,7 +666,7 @@ function CTASection() {
   return (
     <AnimatedSection className="py-20 lg:py-32">
       <div className="container mx-auto px-4 lg:px-8">
-        <motion.div
+        <m.div
           variants={scaleIn}
           className="relative rounded-3xl overflow-hidden"
         >
@@ -707,7 +707,7 @@ function CTASection() {
               </Button>
             </div>
           </div>
-        </motion.div>
+        </m.div>
       </div>
     </AnimatedSection>
   );

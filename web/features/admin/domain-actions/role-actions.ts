@@ -22,11 +22,11 @@
  */
 "use server";
 
-import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
-import { ApiResponse, ActionResult } from "@/types/dtos";
+import { ActionResult } from "@/types/dtos";
 import { Permission, Role } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
+
+import { adminRoleService } from "../services/admin-role.service";
 
 /**
  * =====================================================================
@@ -40,10 +40,7 @@ export async function createPermissionAction(
   name: string
 ): Promise<ActionResult<Permission>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Permission>>("/roles/permissions", {
-      method: "POST",
-      body: JSON.stringify({ name }),
-    });
+    const res = await adminRoleService.createPermission(name);
     REVALIDATE.admin.roles();
     return res.data;
   }, "Failed to create permission");
@@ -54,13 +51,7 @@ export async function updatePermissionAction(
   name: string
 ): Promise<ActionResult<Permission>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Permission>>(
-      `/roles/permissions/${id}`,
-      {
-        method: "PATCH",
-        body: JSON.stringify({ name }),
-      }
-    );
+    const res = await adminRoleService.updatePermission(id, name);
     REVALIDATE.admin.roles();
     return res.data;
   }, "Failed to update permission");
@@ -70,7 +61,7 @@ export async function deletePermissionAction(
   id: string
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http(`/roles/permissions/${id}`, { method: "DELETE" });
+    await adminRoleService.deletePermission(id);
     REVALIDATE.admin.roles();
   }, "Failed to delete permission");
 }
@@ -79,7 +70,7 @@ export async function getPermissionsAction(): Promise<
   ActionResult<Permission[]>
 > {
   return wrapServerAction(
-    () => http<ApiResponse<Permission[]>>("/roles/permissions"),
+    () => adminRoleService.getPermissions(),
     "Failed to fetch permissions"
   );
 }
@@ -89,10 +80,7 @@ export async function assignPermissionsAction(
   permissionIds: string[]
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http(`/roles/${roleId}/permissions`, {
-      method: "POST",
-      body: JSON.stringify({ permissions: permissionIds }),
-    });
+    await adminRoleService.assignPermissions(roleId, permissionIds);
     REVALIDATE.admin.roles();
   }, "Failed to assign permissions");
 }
@@ -104,10 +92,8 @@ export async function getRolesAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Role[]>> {
-  const params = normalizePaginationParams(paramsOrPage, limit, search);
-
   return wrapServerAction(
-    () => http<ApiResponse<Role[]>>("/roles", { params }),
+    () => adminRoleService.getRoles(paramsOrPage, limit, search),
     "Failed to fetch roles"
   );
 }
@@ -117,10 +103,7 @@ export async function createRoleAction(data: {
   permissions?: string[];
 }): Promise<ActionResult<Role>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Role>>("/roles", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    const res = await adminRoleService.createRole(data);
     REVALIDATE.admin.roles();
     return res.data;
   }, "Failed to create role");
@@ -131,10 +114,7 @@ export async function updateRoleAction(
   data: { name: string; permissions?: string[] }
 ): Promise<ActionResult<Role>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Role>>(`/roles/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    });
+    const res = await adminRoleService.updateRole(id, data);
     REVALIDATE.admin.roles();
     return res.data;
   }, "Failed to update role");
@@ -144,7 +124,7 @@ export async function deleteRoleAction(
   id: string
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http(`/roles/${id}`, { method: "DELETE" });
+    await adminRoleService.deleteRole(id);
     REVALIDATE.admin.roles();
   }, "Failed to delete role");
 }

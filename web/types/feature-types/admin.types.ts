@@ -104,19 +104,16 @@ export interface TenantInput {
  */
 export interface PlanInput {
   name: string;
-  code: string;
-  price: number;
-  billingFrequency: "MONTHLY" | "YEARLY";
-  features: string[];
-  limits: PlanLimits;
+  slug: string;
+  description?: string;
+  priceMonthly: number;
+  priceYearly: number;
+  currency?: string;
+  maxProducts: number;
+  maxStorage: number;
   isActive?: boolean;
-}
-
-export interface PlanLimits {
-  maxProducts?: number;
-  maxOrders?: number;
-  maxUsers?: number;
-  maxStorage?: number; // in MB
+  isPublic?: boolean;
+  features?: any;
 }
 
 // =============================================================================
@@ -140,6 +137,7 @@ export interface SubscriptionUpdateInput {
   billingFrequency?: "MONTHLY" | "YEARLY";
   isActive?: boolean;
   cancelAtPeriodEnd?: boolean;
+  nextBillingDate?: string;
 }
 
 // =============================================================================
@@ -152,12 +150,16 @@ export interface SubscriptionUpdateInput {
 export interface Plan {
   id: string;
   name: string;
-  code: string;
-  price: number | string;
-  billingFrequency: "MONTHLY" | "YEARLY";
-  features: string[];
-  limits?: PlanLimits;
+  slug: string;
+  description?: string;
+  priceMonthly: number | string;
+  priceYearly: number | string;
+  currency: string;
+  maxProducts: number;
+  maxStorage: number;
   isActive: boolean;
+  isPublic: boolean;
+  features?: any;
   createdAt: string;
   updatedAt: string;
 }

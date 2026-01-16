@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDebounce } from "@/lib/hooks/use-debounce";
-import { http } from "@/lib/http";
+import { chatService } from "../services/chat.service";
 import { format } from "date-fns";
 import { Loader2, Package, Search, ShoppingBag } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -59,9 +59,7 @@ export function ChatSelector({
       isFetchingRef.current = true;
       setIsLoading(true);
       try {
-        const resData = await http<any>(
-          `/products?search=${currentSearch}&page=${page}&limit=20`
-        );
+        const resData = await chatService.getProducts(currentSearch, page);
         const newProducts = resData.data || [];
         setProducts((prev) => {
           const combined = isNew ? newProducts : [...prev, ...newProducts];
@@ -92,9 +90,7 @@ export function ChatSelector({
         : `/orders/my-orders?page=${page}&limit=20`;
 
       try {
-        const resData = await http<any>(url, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
+        const resData = await chatService.getOrders(page, userId, accessToken);
         const newOrders = resData.data || [];
         setOrders((prev) => {
           const combined = isNew ? newOrders : [...prev, ...newOrders];

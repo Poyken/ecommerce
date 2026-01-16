@@ -25,8 +25,6 @@
  */
 "use server";
 
-import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
 import {
   ApiResponse,
   ActionResult,
@@ -37,6 +35,8 @@ import {
 import { Product, ProductTranslation, Sku } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 
+import { adminProductService } from "../services/admin-product.service";
+
 // --- PRODUCTS ---
 
 export async function getProductsAction(
@@ -44,9 +44,8 @@ export async function getProductsAction(
   limit?: number,
   search?: string
 ): Promise<ActionResult<Product[]>> {
-  const params = normalizePaginationParams(paramsOrPage, limit, search);
   return wrapServerAction(
-    () => http<ApiResponse<Product[]>>("/products", { params }),
+    () => adminProductService.getProducts(paramsOrPage, limit, search),
     "Failed to fetch products"
   );
 }
@@ -55,10 +54,7 @@ export async function createProductAction(
   data: CreateProductDto
 ): Promise<ActionResult<Product>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Product>>("/products", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    const res = await adminProductService.createProduct(data);
     REVALIDATE.admin.products();
     return res.data;
   }, "Failed to create product");
@@ -69,10 +65,7 @@ export async function updateProductAction(
   data: UpdateProductDto
 ): Promise<ActionResult<Product>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<Product>>(`/products/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(data),
-    });
+    const res = await adminProductService.updateProduct(id, data);
     REVALIDATE.admin.products();
     REVALIDATE.products(id);
     return res.data;
@@ -83,7 +76,7 @@ export async function deleteProductAction(
   id: string
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
-    await http(`/products/${id}`, { method: "DELETE" });
+    await adminProductService.deleteProduct(id);
     REVALIDATE.admin.products();
   }, "Failed to delete product");
 }
@@ -97,12 +90,15 @@ export async function getSkusAction(
   search?: string,
   stockLimit?: number
 ): Promise<ActionResult<Sku[]>> {
-  const params = normalizePaginationParams(paramsOrPage, limit, search);
-  if (status) params.status = status;
-  if (stockLimit) params.stockLimit = stockLimit;
-
   return wrapServerAction(
-    () => http<ApiResponse<Sku[]>>("/skus", { params }),
+    () =>
+      adminProductService.getSkus(
+        paramsOrPage,
+        limit,
+        status,
+        search,
+        stockLimit
+      ),
     "Failed to fetch SKUs"
   );
 }
@@ -112,10 +108,7 @@ export async function updateSkuAction(
   data: UpdateSkuDto | FormData
 ): Promise<ActionResult<any>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any>>(`/skus/${id}`, {
-      method: "PATCH",
-      body: data instanceof FormData ? data : JSON.stringify(data),
-    });
+    const res = await adminProductService.updateSku(id, data);
     REVALIDATE.admin.products();
     return res.data;
   }, "Failed to update SKU");
@@ -127,10 +120,7 @@ export async function getProductTranslationsAction(
   productId: string
 ): Promise<ActionResult<ProductTranslation[]>> {
   return wrapServerAction(
-    () =>
-      http<ApiResponse<ProductTranslation[]>>(
-        `/products/${productId}/translations`
-      ),
+    () => adminProductService.getProductTranslations(productId),
     "Failed to fetch translations"
   );
 }
@@ -140,13 +130,7 @@ export async function updateProductTranslationAction(
   data: any
 ): Promise<ActionResult<ProductTranslation>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<ProductTranslation>>(
-      `/products/${id}/translations`,
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-      }
-    );
+    const res = await adminProductService.updateProductTranslation(id, data);
     REVALIDATE.admin.products();
     return res.data;
   }, "Failed to update translation");
@@ -160,11 +144,7 @@ export async function generateProductContentAction(data: {
   brandName?: string;
 }): Promise<ActionResult<any>> {
   return wrapServerAction(
-    () =>
-      http<ApiResponse<any>>("/ai-automation/generate-product-content", {
-        method: "POST",
-        body: JSON.stringify(data),
-      }),
+    () => adminProductService.generateProductContent(data),
     "Failed to generate content"
   );
 }
@@ -173,15 +153,10 @@ export async function translateTextAction(data: {
   text: string;
   targetLocale: string;
 }): Promise<ActionResult<{ text: string; locale: string }>> {
-  return wrapServerAction(() =>
-    http<ApiResponse<{ text: string; locale: string }>>(
-      "/ai-automation/translate",
-      {
-        method: "POST",
-        body: JSON.stringify(data),
-      }
-    )
-  );
+  return wrapServerAction(async () => {
+    const res = await adminProductService.translateText(data);
+    return res.data;
+  });
 }
 
 // --- IMPORT & EXPORT ---
@@ -190,7 +165,7 @@ export async function exportProductsAction(): Promise<
   ActionResult<{ base64: string; filename: string }>
 > {
   return wrapServerAction(async () => {
-    const res = await http<any>("/products/export/excel");
+    const res = await adminProductService.exportProducts();
     return {
       base64: res.base64,
       filename: res.filename || "products_export.xlsx",
@@ -202,10 +177,7 @@ export async function importProductsAction(
   formData: FormData
 ): Promise<ActionResult<any>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any>>("/products/import/excel", {
-      method: "POST",
-      body: formData,
-    });
+    const res = await adminProductService.importProducts(formData);
     REVALIDATE.admin.products();
     return res.data;
   }, "Failed to import products");
@@ -215,10 +187,7 @@ export async function previewProductsImportAction(
   formData: FormData
 ): Promise<ActionResult<any[]>> {
   return wrapServerAction(async () => {
-    const res = await http<ApiResponse<any[]>>("/products/import/preview", {
-      method: "POST",
-      body: formData,
-    });
+    const res = await adminProductService.previewProductsImport(formData);
     return res.data;
   }, "Failed to preview product import");
 }
@@ -227,7 +196,7 @@ export async function downloadProductTemplateAction(): Promise<
   ActionResult<{ base64: string; filename: string }>
 > {
   return wrapServerAction(async () => {
-    const res = await http<any>("/products/import/template");
+    const res = await adminProductService.downloadProductTemplate();
     return {
       base64: res.base64,
       filename: res.filename || "product_import_template.xlsx",

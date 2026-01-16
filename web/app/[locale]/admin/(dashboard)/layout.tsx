@@ -40,11 +40,18 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-muted/40 dark:bg-background text-foreground font-sans">
+    <div className="flex min-h-screen bg-background relative overflow-hidden font-sans">
+      {/* Aurora Glows for Admin Area */}
+      <div className="absolute -top-[10%] -left-[10%] w-[400px] h-[400px] bg-[var(--aurora-blue)]/10 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-[20%] -right-[5%] w-[350px] h-[350px] bg-[var(--aurora-purple)]/10 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-[40%] left-[20%] w-[300px] h-[300px] bg-[var(--aurora-orange)]/5 rounded-full blur-[80px] pointer-events-none" />
+      
       <AdminSidebar />
       <main className="relative z-10 flex-1 flex flex-col min-w-0">
         <AdminHeader user={user} />
-        <div className="max-w-7xl mx-auto p-4 md:p-8 w-full">{children}</div>
+        <div className="max-w-7xl mx-auto p-4 md:p-8 w-full relative">
+          {children}
+        </div>
       </main>
     </div>
   );

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserAvatar } from "@/components/shared/user-avatar";
-import { http } from "@/lib/http";
+import { chatService } from "@/features/chat/services/chat.service";
 import { formatDistanceToNow } from "date-fns";
 import { MessageSquare, ExternalLink } from "lucide-react";
 import { Link } from "@/i18n/routing";
@@ -47,10 +47,9 @@ interface Conversation {
 export async function RecentChatsWidget() {
   // Fetch recent conversations
   // Assuming API endpoint exists. If not, this serves as the frontend implementation requirement.
-  const { data: conversations } = await http<{ data: Conversation[] }>(
-    "/chat/conversations?limit=5",
-    { skipRedirectOn401: true }
-  ).catch(() => ({ data: [] }));
+  const { data: conversations } = await chatService
+    .getRecentConversations(5)
+    .catch(() => ({ data: [] }));
 
   return (
     <Card className="col-span-1">

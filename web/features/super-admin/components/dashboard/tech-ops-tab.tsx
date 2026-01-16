@@ -11,13 +11,10 @@
  *
  * 2. JOB QUEUES (BullMQ):
  * - Hiển thị trạng thái các hàng đợi xử lý ngầm (Gửi mail, Resize ảnh...).
- * - Nếu `waiting` tăng cao đột biến -> Hệ thống đang bị tắc nghẽn (Bottleneck).
  *
- * 3. ERROR LOGS:
- * - Feed lỗi thời gian thực (giả lập) để phát hiện sự cố nhanh. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
+ * 3. LUXURY UI (NEW):
+ * - Sử dụng AdminStatsCard và Glassmorphism để đồng bộ với toàn bộ hệ thống.
+ *
  * =====================================================================
  */ 
 "use client";
@@ -38,6 +35,7 @@ import {
   Activity,
   AlertTriangle,
 } from "lucide-react";
+import { AdminStatsCard } from "@/features/admin/components/ui/admin-page-components";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const queueStats = [
@@ -108,86 +106,50 @@ export function TechOpsTab() {
     <div className="space-y-6 animate-in fade-in duration-500">
       {/* Infrastructure Health Status */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="rounded-2xl border-emerald-500/20 bg-emerald-500/5">
-          <CardContent className="p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-500/10 rounded-lg">
-                <Globe className="h-5 w-5 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase">
-                  API Gateway
-                </p>
-                <p className="font-extrabold text-emerald-700">Operational</p>
-              </div>
-            </div>
-            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-          </CardContent>
-        </Card>
+        <AdminStatsCard
+          title="API Gateway"
+          value="Operational"
+          description="99.99% uptime"
+          icon={Globe}
+          variant="success"
+        />
 
-        <Card className="rounded-2xl border-emerald-500/20 bg-emerald-500/5">
-          <CardContent className="p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-500/10 rounded-lg">
-                <Database className="h-5 w-5 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase">
-                  Database
-                </p>
-                <p className="font-extrabold text-emerald-700">
-                  Healthy (12ms)
-                </p>
-              </div>
-            </div>
-            <div className="h-2 w-2 rounded-full bg-emerald-500" />
-          </CardContent>
-        </Card>
+        <AdminStatsCard
+          title="Database"
+          value="Healthy"
+          description="Latency: 12ms"
+          icon={Database}
+          variant="success"
+        />
 
-        <Card className="rounded-2xl border-amber-500/20 bg-amber-500/5">
-          <CardContent className="p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-500/10 rounded-lg">
-                <Cpu className="h-5 w-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase">
-                  Worker Nodes
-                </p>
-                <p className="font-extrabold text-amber-700">High Load (82%)</p>
-              </div>
-            </div>
-            <div className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
-          </CardContent>
-        </Card>
+        <AdminStatsCard
+          title="Worker Nodes"
+          value="High Load"
+          description="Usage: 82%"
+          icon={Cpu}
+          variant="warning"
+        />
 
-        <Card className="rounded-2xl border-blue-500/20 bg-blue-500/5">
-          <CardContent className="p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <Server className="h-5 w-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-muted-foreground uppercase">
-                  Storage
-                </p>
-                <p className="font-extrabold text-blue-700">45% Used</p>
-              </div>
-            </div>
-            <div className="h-2 w-2 rounded-full bg-blue-500" />
-          </CardContent>
-        </Card>
+        <AdminStatsCard
+          title="Storage"
+          value="45% Used"
+          description="Availability: High"
+          icon={Server}
+          variant="info"
+        />
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Queue Monitoring */}
-        <Card className="rounded-2xl shadow-sm">
+        <Card className="rounded-3xl glass-premium border-white/5 shadow-2xl overflow-hidden">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-indigo-500" />
-              Job Queues (BullMQ)
+            <CardTitle className="flex items-center gap-3">
+              <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+                <Activity className="h-5 w-5 text-indigo-500" />
+              </div>
+              <span className="font-black tracking-tight uppercase text-sm tracking-[0.1em]">Job Queues (BullMQ)</span>
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-muted-foreground/60">
               Real-time worker processing status
             </CardDescription>
           </CardHeader>
@@ -196,34 +158,34 @@ export function TechOpsTab() {
               {queueStats.map((queue) => (
                 <div
                   key={queue.name}
-                  className="flex items-center justify-between p-3 border rounded-xl hover:bg-muted/30 transition-colors"
+                  className="flex items-center justify-between p-3 border border-white/5 rounded-xl hover:bg-white/5 transition-colors"
                 >
                   <div>
-                    <p className="font-bold text-sm tracking-tight">
+                    <p className="font-bold text-sm tracking-tight text-white">
                       {queue.name}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline" className="text-[10px] h-5">
+                      <Badge variant="outline" className="text-[10px] h-5 border-white/10 text-muted-foreground">
                         {queue.active} active
                       </Badge>
-                      <Badge variant="outline" className="text-[10px] h-5">
+                      <Badge variant="outline" className="text-[10px] h-5 border-white/10 text-muted-foreground">
                         {queue.waiting} waiting
                       </Badge>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     {queue.status === "healthy" && (
-                      <Badge className="bg-emerald-500 text-white border-0">
+                      <Badge className="bg-emerald-500 text-white border-0 text-[10px] font-black uppercase tracking-widest">
                         Healthy
                       </Badge>
                     )}
                     {queue.status === "warning" && (
-                      <Badge className="bg-amber-500 text-white border-0">
+                      <Badge className="bg-amber-500 text-white border-0 text-[10px] font-black uppercase tracking-widest">
                         Slow
                       </Badge>
                     )}
                     {queue.status === "idle" && (
-                      <Badge variant="secondary">Idle</Badge>
+                      <Badge variant="secondary" className="text-[10px] font-black uppercase tracking-widest">Idle</Badge>
                     )}
                   </div>
                 </div>
@@ -233,13 +195,15 @@ export function TechOpsTab() {
         </Card>
 
         {/* Live Error Logs */}
-        <Card className="rounded-2xl shadow-sm border-rose-100 dark:border-rose-900/20">
+        <Card className="rounded-3xl glass-premium border-rose-500/10 shadow-2xl overflow-hidden">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
-              <AlertTriangle className="h-5 w-5" />
-              Live Error Feed
+            <CardTitle className="flex items-center gap-3 text-rose-500">
+              <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
+                <AlertTriangle className="h-5 w-5" />
+              </div>
+              <span className="font-black tracking-tight uppercase text-sm tracking-[0.1em]">Live Error Feed</span>
             </CardTitle>
-            <CardDescription>Recent system exceptions & alerts</CardDescription>
+            <CardDescription className="text-muted-foreground/60">Recent system exceptions & alerts</CardDescription>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-[300px] pr-4">
@@ -247,18 +211,18 @@ export function TechOpsTab() {
                 {errorLogs.map((log) => (
                   <div
                     key={log.id}
-                    className="p-3 rounded-lg border-l-4 border-l-rose-500 bg-muted/20 text-sm"
+                    className="p-3 rounded-lg border-l-4 border-l-rose-500 bg-white/5 text-sm"
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-bold text-xs px-1.5 py-0.5 rounded bg-muted text-muted-foreground">
+                      <span className="font-black text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-muted-foreground uppercase tracking-widest">
                         {log.service}
                       </span>
-                      <span className="text-[10px] text-muted-foreground font-mono">
+                      <span className="text-[10px] text-muted-foreground/60 font-mono">
                         {log.time}
                       </span>
                     </div>
-                    <p className="font-medium text-foreground">{log.message}</p>
-                    <p className="text-[10px] text-muted-foreground mt-1 font-mono">
+                    <p className="font-bold text-white">{log.message}</p>
+                    <p className="text-[10px] text-muted-foreground/40 mt-1 font-mono">
                       {log.id}
                     </p>
                   </div>
