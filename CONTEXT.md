@@ -74,33 +74,19 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
 - **ADR-005**: API Scalable với Docker Compose `replicas: 2`.
 - **ADR-006**: Frontend dùng **Next.js Server Actions** thay cho REST calls khi có thể.
 - **ADR-007**: **Transactional Outbox** (`OutboxEvent` table) cho Event Sourcing.
+- **ADR-008**: **Domain Modules Consilidation** (`SalesModule`, `CatalogModule`, `AiModule`) to reduce `AppModule` noise.
 
 ---
 
 ## 5. Các API Modules Hiện Có
 
-| Module                                         | Chức năng                           |
-| ---------------------------------------------- | ----------------------------------- |
-| `auth`                                         | Đăng nhập, Đăng ký, OAuth, 2FA, JWT |
-| `users`                                        | CRUD User, Profile                  |
-| `tenants`                                      | CRUD Tenant, Settings, Onboarding   |
-| `catalog` (categories, brands, products, skus) | Quản lý sản phẩm                    |
-| `cart`                                         | Giỏ hàng                            |
-| `orders`                                       | Đơn hàng                            |
-| `payment`                                      | Thanh toán (Momo, VNPay, COD)       |
-| `shipping`                                     | Tích hợp GHN/GHTK                   |
-| `promotions`                                   | Khuyến mãi nâng cao                 |
-| `return-requests`                              | RMA/Đổi trả                         |
-| `inventory`, `inventory-alerts`                | Kho hàng                            |
-| `reviews`                                      | Đánh giá sản phẩm                   |
-| `notifications`                                | Push/Email                          |
-| `blog`, `pages`                                | CMS                                 |
-| `ai` (ai-chat, agent, insights, rag, images)   | AI features                         |
-| `analytics`, `reports`                         | Thống kê                            |
-| `roles`, `admin`, `super-admin`                | Quản trị & Phân quyền               |
-| `loyalty`                                      | Điểm thưởng                         |
-| `tax`                                          | Thuế                                |
-| `webhooks`                                     | Webhooks cho bên thứ 3              |
+| Domain       | Modules                                                                                         |
+| ------------ | ----------------------------------------------------------------------------------------------- |
+| **Catalog**  | `catalog` (categories, brands, products, skus)                                                  |
+| **Sales**    | `orders`, `cart`, `payment`, `invoices`, `shipping`                                             |
+| **AI**       | `ai-chat`, `agent`, `insights`, `rag`, `images`                                                 |
+| **Identity** | `auth`, `users`, `tenants`, `roles`                                                             |
+| **Others**   | `promotions`, `return-requests`, `inventory`, `loyalty`, `reviews`, `webhooks`, `blog`, `pages` |
 
 ---
 
@@ -115,4 +101,5 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
 
 ## Changelog
 
-- [2026-01-19] API Validation Refactoring: Removed class-validator/class-transformer, migrated to Zod (nestjs-zod), fixed build errors (Joi, twoFactorSecret), and stabilized tests for Loyalty, Payment, Procurement, and TenantGuard.
+- [2026-01-19] API Validation Refactoring: Removed class-validator/class-transformer, migrated to Zod (nestjs-zod), fixed build errors.
+- [2026-01-19] Architecture Refactoring: Consolidated API modules into Domain Modules (Sales, Catalog, AI), and optimized Web Products Hooks (SWR).

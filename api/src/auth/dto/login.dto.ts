@@ -1,20 +1,7 @@
 import { createZodDto } from 'nestjs-zod';
-import { z } from 'zod';
+import { z } from 'zod'; // Keep only one import
 
-/**
- * =====================================================================
- * LOGIN DTO - Đối tượng dữ liệu đăng nhập
- * =====================================================================
- *
- * 1. ZOD SCHEMA:
- * - Define validation rules using Zod.
- * - `z.string().email()`: Email validation.
- * - `z.string().min(6)`: Password min length.
- *
- * 2. NESTJS-ZOD:
- * - `createZodDto`: Automatically generates the class and Swagger docs.
- * =====================================================================
- */
+// Removed duplicate imports
 
 const LoginSchema = z.object({
   email: z

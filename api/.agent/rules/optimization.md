@@ -39,27 +39,20 @@ export const CreateUserSchema = z.object({ ... });
 
 ---
 
-## 3. Shared Package First
+## 3. Advanced Patterns (Adhere to these)
 
-**Vấn đề**: Không có shared types giữa API và Web.
-**Giải pháp**: Tạo `packages/shared` với Zod schemas.
-
-```
-packages/
-  shared/
-    src/
-      schemas/
-        user.schema.ts
-        product.schema.ts
-        order.schema.ts
-      constants/
-        order-status.ts
-      index.ts
-```
+- **Manual Batching**: Use `where: { id: { in: ids } }` instead of loops for DB queries. (See `OrdersService`, `ProductsService`).
+- **Smart Data Migration**: When updating complex entities (like Product with SKUs), capture snapshot before update to minimize destructive changes. (See `ProductsService.update`).
+- **Dynamic Imports**: Use `await import('lib')` for heavy libraries used infrequently (e.g., AI/Image processing).
+- **Denormalization**: Cache computed values (avgRating, minPrice) in the main table to avoid expensive aggregations during read.
 
 ---
 
-## 4. Core Before Features
+## 5. Caching Strategy (Multi-layer)
+
+- **L1 In-Memory**: Use `cache-manager` for high-frequency, low-consistency data (e.g., Filtering Lists). TTL: ~60s.
+- **L2 Redis**: Use `RedisService` for shared object caching (e.g., Product Details, Sessions). TTL: ~5m+.
+- **Canonicalization**: Always sort query parameters (keys) before creating cache keys to maximize Cache Hit Rate. (See `ProductsService.findAll`).
 
 **Vấn đề**: AI modules triển khai sớm khi Core chưa ổn.
 **Giải pháp**: Ưu tiên theo thứ tự:

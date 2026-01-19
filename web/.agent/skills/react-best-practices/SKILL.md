@@ -84,10 +84,11 @@ import { Button } from "@/components/ui/button";
 
 ### 4. Client-Side Data Fetching (MEDIUM-HIGH)
 
-| Rule                     | Mô tả                                        |
-| ------------------------ | -------------------------------------------- |
-| `client-swr-dedup`       | Dùng SWR cho automatic request deduplication |
-| `client-event-listeners` | Deduplicate global event listeners           |
+| Rule                     | Mô tả                                                                                      |
+| ------------------------ | ------------------------------------------------------------------------------------------ |
+| `client-swr-dedup`       | Dùng SWR cho automatic request deduplication                                               |
+| `client-event-listeners` | Deduplicate global event listeners                                                         |
+| `client-prefetch-hover`  | Dùng `preload` (SWR) hoặc `router.prefetch` khi hover vào links/cards. (See `ProductCard`) |
 
 ### 5. Re-render Optimization (MEDIUM)
 

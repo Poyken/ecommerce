@@ -66,7 +66,7 @@ interface GetProductsParams {
  * @example
  * // In Server Component/Page:
  * const initialData = await getProductsAction({ categoryId: "abc", page: 1 });
- * 
+ *
  * // In Client Component:
  * const { products, isLoading } = useProducts(
  *   { categoryId: "abc", page: 1 },
@@ -75,34 +75,52 @@ interface GetProductsParams {
  */
 export function useProducts(
   params?: GetProductsParams,
-  initialData?: { products: Product[]; meta: any }
+  initialData?: { products: Product[]; meta: any },
 ) {
-  // Create cache key from params
-  const cacheKey = params
-    ? `products-${JSON.stringify(params)}`
-    : "products-default";
+  // Create stable SWR key from params
+  // Using array key allows SWR to handle object serialization properly (if deep compare enabled)
+  // or we can just spread values. For simplicity/stability with SWR default shallow,
+  // we can use the params object directly IF we trust SWR's serialization or custom compare.
+  // But safest is to flatten or keep object if SWR config handles it.
+  // Default SWR matches by reference for objects unless customized.
+  // We'll use specific parts of params to ensure uniqueness.
+  const cacheKey = params ? ["products", params] : ["products", "default"];
 
   // Use SWR with server action, fallback to initial data
   const { data, error, isLoading, isValidating, mutate } = useSWR(
     cacheKey,
-    async () => {
-      const result = await getProductsAction(params);
+    async ([_, p]) => {
+      // p is inferred as the params type from the key
+      const result = await getProductsAction(p as GetProductsParams);
       if (result.success && result.data) {
         return {
           products: result.data.data || [],
-          meta: result.data.meta || { total: 0, page: 1, limit: 10, lastPage: 0 },
+          meta: result.data.meta || {
+            total: 0,
+            page: 1,
+            limit: 10,
+            lastPage: 0,
+          },
         };
       }
-      return { products: [], meta: { total: 0, page: 1, limit: 10, lastPage: 0 } };
+      return {
+        products: [],
+        meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
+      };
     },
     {
       fallbackData: initialData,
       revalidateOnFocus: false,
       revalidateOnReconnect: true,
-    }
+      keepPreviousData: true, // Keep showing previous data while loading new filter
+    },
   );
 
-  const result = data || initialData || { products: [], meta: { total: 0, page: 1, limit: 10, lastPage: 0 } };
+  const result = data ||
+    initialData || {
+      products: [],
+      meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
+    };
 
   return {
     products: result.products,
@@ -138,7 +156,7 @@ export function useProduct(id: string | null, initialData?: Product) {
     {
       fallbackData: initialData,
       revalidateOnFocus: false,
-    }
+    },
   );
 
   return {
@@ -167,7 +185,7 @@ export function useCategories(initialData?: Category[]) {
     {
       fallbackData: initialData,
       revalidateOnFocus: false,
-    }
+    },
   );
 
   return {
@@ -196,7 +214,7 @@ export function useBrands(initialData?: Brand[]) {
     {
       fallbackData: initialData,
       revalidateOnFocus: false,
-    }
+    },
   );
 
   return {

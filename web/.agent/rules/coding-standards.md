@@ -19,6 +19,16 @@ Bộ quy tắc này đảm bảo mọi đoạn code bạn viết đều đạt t
 - **Bất biến (Immutability)**: Ưu tiên sử dụng `const` và các phương thức không làm thay đổi dữ liệu gốc (map, filter, reduce).
 - **Error Handling**: Luôn sử dụng `StandardResponse` (Success/Error) để Frontend dễ dàng xử lý.
 
+## 3. Server Actions & Security
+
+- **Safe Actions**: Không gọi trực tiếp Server Actions. **PHẢI** dùng wrapper `next-safe-action` (`protectedActionClient`) để đảm bảo Auth & Validation (Zod).
+- **No Sensitive Data**: Không truyền object DB raw (có password, internal ID) xuống Client.
+
+## 4. Feature Management
+
+- **Feature Flags**: Mọi tính năng mới hoặc không ổn định phải được bọc trong `useFeatureFlags()`.
+- **Graceful Degradation**: UI phải có fallback nếu Feature Flag tắt.
+
 ## 3. Performance & Security
 
 - **N+1 Prevention**: Luôn sử dụng `include` hoặc DataLoaders khi query liên kết trong Prisma.
