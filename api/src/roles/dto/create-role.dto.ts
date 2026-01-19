@@ -1,34 +1,12 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-/**
- * =====================================================================
- * CREATE ROLE DTO - Đối tượng tạo vai trò mới
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ROLE IDENTIFICATION:
- * - `name`: Tên của vai trò (VD: `ADMIN`, `MANAGER`, `CUSTOMER`).
- * - Nên dùng chữ hoa (Uppercase) cho tên vai trò để dễ phân biệt với các dữ liệu khác.
- *
- * 2. VALIDATION:
- * - `@IsNotEmpty()`: Đảm bảo không tạo ra một vai trò không có tên. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+const CreateRoleSchema = z.object({
+  name: z.string().min(1, 'Name is required').describe('EDITOR'),
+  permissions: z
+    .array(z.string())
+    .optional()
+    .describe('List of permission strings'),
+});
 
- * =====================================================================
- */
-
-export class CreateRoleDto {
-  @ApiProperty({ example: 'EDITOR' })
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @ApiProperty({ example: ['user:read'], required: false })
-  @IsOptional()
-  @IsArray()
-  @IsString({ each: true })
-  permissions?: string[];
-}
+export class CreateRoleDto extends createZodDto(CreateRoleSchema) {}

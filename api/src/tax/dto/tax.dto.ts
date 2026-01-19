@@ -1,51 +1,18 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsNumber,
-  IsBoolean,
-  IsOptional,
-  Min,
-  Max,
-} from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class CreateTaxRateDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string; // Ví dụ: VAT 10%, VAT 5%
+const CreateTaxRateSchema = z.object({
+  name: z.string().min(1).describe('Ví dụ: VAT 10%, VAT 5%'),
+  rate: z.number().min(0).max(100).describe('Tỷ lệ phần trăm (0-100)'),
+  isActive: z.boolean().optional(),
+});
+export class CreateTaxRateDto extends createZodDto(CreateTaxRateSchema) {}
 
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  rate: number; // Tỷ lệ phần trăm (0-100)
+const UpdateTaxRateSchema = CreateTaxRateSchema.partial();
+export class UpdateTaxRateDto extends createZodDto(UpdateTaxRateSchema) {}
 
-  @IsBoolean()
-  @IsOptional()
-  isActive?: boolean;
-}
-
-export class UpdateTaxRateDto {
-  @IsString()
-  @IsOptional()
-  name?: string;
-
-  @IsNumber()
-  @Min(0)
-  @Max(100)
-  @IsOptional()
-  rate?: number;
-
-  @IsBoolean()
-  @IsOptional()
-  isActive?: boolean;
-}
-
-// DTO cho việc áp dụng thuế vào đơn hàng
-export class ApplyTaxDto {
-  @IsString()
-  @IsNotEmpty()
-  orderId: string;
-
-  @IsString()
-  @IsNotEmpty()
-  taxRateId: string;
-}
+const ApplyTaxSchema = z.object({
+  orderId: z.string().min(1),
+  taxRateId: z.string().min(1),
+});
+export class ApplyTaxDto extends createZodDto(ApplyTaxSchema) {}

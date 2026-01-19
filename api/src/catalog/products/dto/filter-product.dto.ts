@@ -1,7 +1,6 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type, Transform } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
-import { PaginationQueryDto, stringToBoolean } from '@/common/dto/base.dto';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
+import { PaginationQuerySchema } from '@/common/dto/base.dto';
 
 export enum SortOption {
   PRICE_ASC = 'price_asc',
@@ -11,74 +10,23 @@ export enum SortOption {
   RATING_DESC = 'rating_desc',
 }
 
-export class FilterProductDto extends PaginationQueryDto {
-  /**
-   * =====================================================================
-   * FILTER PRODUCT DTO - Bộ lọc sản phẩm nâng cao
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. API PROPERTY (@ApiPropertyOptional):
-   * - Dùng để generate Swagger/OpenAPI documentation tự động.
-   *
-   * 2. TYPE TRANSFORMATION (@Type):
-   * - Query Params trên URL luôn là string (?minPrice=100).
-   * - Cần `@Type(() => Number)` để convert sang số trước khi validate `@IsNumber`.
-   *
-   * 3. FILTER LOGIC:
-   * - Hỗ trợ tìm kiếm, lọc theo Category/Brand, và khoảng giá (Min/Max).
-   * - `includeSkus`: Tùy chọn để lấy luôn danh sách biến thể (Màu/Size) hay không. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+const FilterProductSchema = PaginationQuerySchema.extend({
+  search: z.string().optional().describe('Tìm theo tên hoặc mô tả'),
+  categoryId: z.string().optional().describe('Lọc theo ID danh mục'),
+  brandId: z.string().optional().describe('Lọc theo ID thương hiệu'),
+  ids: z
+    .string()
+    .optional()
+    .describe('Lọc theo danh sách ID sản phẩm (phân tách bằng dấu phẩy)'),
+  minPrice: z.coerce.number().min(0).optional().describe('Giá thấp nhất'),
+  maxPrice: z.coerce.number().min(0).optional().describe('Giá cao nhất'),
+  sort: z.nativeEnum(SortOption).optional().describe('Sắp xếp theo'),
+  includeSkus: z
+    .boolean()
+    .optional() // nestjs-zod handles string->boolean coercion if configured, else use transform
+    .or(z.string().transform((val) => val === 'true'))
+    .optional()
+    .describe('Có bao gồm đầy đủ thông tin SKU không (true/false)'),
+});
 
-   * =====================================================================
-   */
-  @ApiPropertyOptional({ description: 'Tìm theo tên hoặc mô tả' })
-  @IsOptional()
-  @IsString()
-  search?: string;
-
-  @ApiPropertyOptional({ description: 'Lọc theo ID danh mục' })
-  @IsOptional()
-  @IsString()
-  categoryId?: string;
-
-  @ApiPropertyOptional({ description: 'Lọc theo ID thương hiệu' })
-  @IsOptional()
-  @IsString()
-  brandId?: string;
-
-  @ApiPropertyOptional({
-    description: 'Lọc theo danh sách ID sản phẩm (phân tách bằng dấu phẩy)',
-  })
-  @IsOptional()
-  @IsString()
-  ids?: string;
-
-  @ApiPropertyOptional({ description: 'Giá thấp nhất' })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  minPrice?: number;
-
-  @ApiPropertyOptional({ description: 'Giá cao nhất' })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(0)
-  maxPrice?: number;
-
-  @ApiPropertyOptional({ enum: SortOption, description: 'Sắp xếp theo' })
-  @IsOptional()
-  @IsEnum(SortOption)
-  sort?: SortOption;
-
-  @ApiPropertyOptional({
-    description: 'Có bao gồm đầy đủ thông tin SKU không (true/false)',
-  })
-  @IsOptional()
-  @Transform(({ value }) => stringToBoolean(value))
-  includeSkus?: boolean;
-}
+export class FilterProductDto extends createZodDto(FilterProductSchema) {}

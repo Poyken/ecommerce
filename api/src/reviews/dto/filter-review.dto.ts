@@ -1,30 +1,23 @@
-import { PaginationQueryDto } from '@/common/dto/base.dto';
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, IsNumber, Min, Max } from 'class-validator';
-import { Type } from 'class-transformer';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
+import { PaginationQuerySchema } from '@/common/dto/base.dto';
 
-export class FilterReviewDto extends PaginationQueryDto {
-  @ApiPropertyOptional({ example: 5, description: 'Lọc theo số sao (1-5)' })
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(1)
-  @Max(5)
-  rating?: number;
+const FilterReviewSchema = PaginationQuerySchema.extend({
+  rating: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(5)
+    .optional()
+    .describe('Lọc theo số sao (1-5)'),
+  status: z
+    .enum(['published', 'hidden', 'all'])
+    .optional()
+    .describe('Trạng thái hiển thị'),
+  search: z
+    .string()
+    .optional()
+    .describe('Tìm kiếm theo nội dung, email hoặc tên'),
+});
 
-  @ApiPropertyOptional({
-    example: 'published',
-    enum: ['published', 'hidden', 'all'],
-    description: 'Trạng thái hiển thị',
-  })
-  @IsOptional()
-  @IsString()
-  status?: string;
-
-  @ApiPropertyOptional({
-    description: 'Tìm kiếm theo nội dung, email hoặc tên',
-  })
-  @IsOptional()
-  @IsString()
-  search?: string;
-}
+export class FilterReviewDto extends createZodDto(FilterReviewSchema) {}

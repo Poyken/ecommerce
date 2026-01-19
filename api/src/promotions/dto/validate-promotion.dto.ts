@@ -1,54 +1,27 @@
-import {
-  IsString,
-  IsNumber,
-  IsOptional,
-  IsArray,
-  ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class CartItemDto {
-  @IsString()
-  skuId: string;
+export const CartItemSchema = z.object({
+  skuId: z.string(),
+  quantity: z.number(),
+  price: z.number(),
+  categoryId: z.string().optional(),
+  productId: z.string().optional(),
+});
+export class CartItemDto extends createZodDto(CartItemSchema) {}
 
-  @IsNumber()
-  quantity: number;
+export const ValidatePromotionSchema = z.object({
+  code: z.string(),
+  totalAmount: z.number(),
+  userId: z.string().optional(),
+  customerGroupId: z.string().optional(),
+  items: z.array(CartItemSchema).optional(),
+});
+export class ValidatePromotionDto extends createZodDto(
+  ValidatePromotionSchema,
+) {}
 
-  @IsNumber()
-  price: number;
-
-  @IsOptional()
-  @IsString()
-  categoryId?: string;
-
-  @IsOptional()
-  @IsString()
-  productId?: string;
-}
-
-export class ValidatePromotionDto {
-  @IsString()
-  code: string;
-
-  @IsNumber()
-  totalAmount: number;
-
-  @IsOptional()
-  @IsString()
-  userId?: string;
-
-  @IsOptional()
-  @IsString()
-  customerGroupId?: string;
-
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CartItemDto)
-  items?: CartItemDto[];
-}
-
-export class ApplyPromotionDto extends ValidatePromotionDto {
-  @IsString()
-  orderId: string;
-}
+export const ApplyPromotionSchema = ValidatePromotionSchema.extend({
+  orderId: z.string(),
+});
+export class ApplyPromotionDto extends createZodDto(ApplyPromotionSchema) {}

@@ -270,7 +270,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiCreateResponse('Object', { summary: 'Tạo mã 2FA secret & QR Code' })
   async generate2FA(@Request() req: any) {
-    const user = await this.authService.getMe(req.user.userId);
+    const user = await this.authService.getUserWithSecrets(req.user.userId);
     const { secret, otpauthUrl } = this.twoFactorService.generateSecret(
       user.email,
     );
@@ -303,7 +303,7 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiCreateResponse('Boolean', { summary: 'Vô hiệu hóa 2FA' })
   async disable2FA(@Request() req: any, @Body() body: { token: string }) {
-    const user = await this.authService.getMe(req.user.userId);
+    const user = await this.authService.getUserWithSecrets(req.user.userId);
     if (!user.twoFactorSecret) {
       throw new UnauthorizedException('2FA chưa được kích hoạt');
     }

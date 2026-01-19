@@ -14,6 +14,8 @@ describe('LoyaltyService', () => {
       findMany: jest.fn(),
       findFirst: jest.fn(),
       aggregate: jest.fn(),
+      count: jest.fn(),
+      groupBy: jest.fn(),
     },
     order: {
       findUnique: jest.fn(),
@@ -99,27 +101,37 @@ describe('LoyaltyService', () => {
 
       const result = await service.earnPointsFromOrder('tenant-1', 'order-1');
 
-      expect(result.amount).toBe(500);
+      expect(result?.amount).toBe(500);
     });
   });
 
   describe('redeemPoints', () => {
     it('should throw BadRequestException when insufficient balance', async () => {
-      mockPrismaService.loyaltyPoint.aggregate.mockResolvedValue({
+      // First call for EARNED points
+      mockPrismaService.loyaltyPoint.aggregate.mockResolvedValueOnce({
         _sum: { amount: 50 },
+      });
+      // Second call for REDEEMED/REFUNDED points (0 used)
+      mockPrismaService.loyaltyPoint.aggregate.mockResolvedValueOnce({
+        _sum: { amount: 0 },
       });
 
       await expect(
         service.redeemPoints('tenant-1', {
           userId: 'user-1',
-          amount: 100, // Trying to redeem more than balance
+          amount: 100, // Trying to redeem more than balance (50)
         }),
       ).rejects.toThrow(BadRequestException);
     });
 
     it('should redeem points successfully when balance is sufficient', async () => {
-      mockPrismaService.loyaltyPoint.aggregate.mockResolvedValue({
+      // First call for EARNED points
+      mockPrismaService.loyaltyPoint.aggregate.mockResolvedValueOnce({
         _sum: { amount: 200 },
+      });
+      // Second call for REDEEMED/REFUNDED points (0 used)
+      mockPrismaService.loyaltyPoint.aggregate.mockResolvedValueOnce({
+        _sum: { amount: 0 },
       });
 
       mockPrismaService.loyaltyPoint.create.mockResolvedValue({
@@ -140,6 +152,15 @@ describe('LoyaltyService', () => {
 
   describe('getUserPointBalance', () => {
     it('should return sum of all points for user', async () => {
+      // Mocking aggregate is tricky because getUserPointBalance calls it only once
+      // BUT getAvailableBalance calls it twice.
+      // Wait, getUserPointBalance code:
+      // const result = await (this.prisma as any).loyaltyPoint.aggregate({ ... _sum: { amount: true } });
+      // It only calls ONCE. So previous mockResolvedValue was correct for this method?
+      // Let's check the code for getUserPointBalance. Yes, it calls aggregate once.
+      // BUT, if other tests run before/after, we need to be careful.
+      // Resetting mocks in beforeEach/afterEach helps.
+
       mockPrismaService.loyaltyPoint.aggregate.mockResolvedValue({
         _sum: { amount: 150 },
       });
@@ -171,7 +192,7 @@ describe('LoyaltyService', () => {
 
       const result = await service.getUserPointHistory('tenant-1', 'user-1');
 
-      expect(result).toEqual(history);
+      expect(result.data).toEqual(history); // getUserPointHistory returns { data, meta }
     });
   });
 });

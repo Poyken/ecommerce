@@ -1,20 +1,14 @@
-import { PartialType } from '@nestjs/swagger';
-import { CreateReturnRequestDto } from './create-return-request.dto';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 import { ReturnStatus } from '@prisma/client';
+import { CreateReturnRequestSchema } from './create-return-request.dto';
 
-export class UpdateReturnRequestDto extends PartialType(
-  CreateReturnRequestDto,
-) {
-  @IsOptional()
-  @IsEnum(ReturnStatus)
-  status?: ReturnStatus;
+const UpdateReturnRequestSchema = CreateReturnRequestSchema.partial().extend({
+  status: z.nativeEnum(ReturnStatus).optional(),
+  inspectionNotes: z.string().optional(),
+  rejectedReason: z.string().optional(),
+});
 
-  @IsOptional()
-  @IsString()
-  inspectionNotes?: string;
-
-  @IsOptional()
-  @IsString()
-  rejectedReason?: string;
-}
+export class UpdateReturnRequestDto extends createZodDto(
+  UpdateReturnRequestSchema,
+) {}

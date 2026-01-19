@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, Min } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
 /**
  * =====================================================================
@@ -20,9 +20,8 @@ import { IsInt, Min } from 'class-validator';
  * =====================================================================
  */
 
-export class UpdateCartItemDto {
-  @ApiProperty({ example: 2 })
-  @IsInt()
-  @Min(1)
-  quantity: number;
-}
+const UpdateCartItemSchema = z.object({
+  quantity: z.number().int().min(1).describe('2'),
+});
+
+export class UpdateCartItemDto extends createZodDto(UpdateCartItemSchema) {}

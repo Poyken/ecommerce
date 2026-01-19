@@ -16,7 +16,7 @@ import './core/sentry/instrument';
  *    - Performance (Compression): Nén Gzip response để giảm dung lượng tải.
  *    - Logging: Ghi log chuẩn format JSON để dễ debug và trace.
  * 3. Cấu hình Pipes & Interceptors toàn cục:
- *    - ValidationPipe: Tự động kiểm tra và convert dữ liệu đầu vào (DTO).
+ *    - ZodValidationPipe: Tự động kiểm tra và convert dữ liệu đầu vào (DTO) dùng Zod schema.
  *    - TransformInterceptor: Chuẩn hóa format trả về { data, message, statusCode }.
  *    - AllExceptionsFilter: Bắt lỗi tập trung và trả về lỗi đẹp thay vì stack trace thô.
  * 4. Tạo tài liệu API (Swagger) tự động tại `/docs`.
@@ -26,16 +26,13 @@ import './core/sentry/instrument';
 
 import { SECURITY_HEADERS } from '@core/config/constants';
 import { LoggerService } from '@core/logger/logger.service';
-import {
-  ClassSerializerInterceptor,
-  ValidationPipe,
-  VersioningType,
-} from '@nestjs/common';
-import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
+import { VersioningType } from '@nestjs/common';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+import { ZodValidationPipe } from 'nestjs-zod';
 import { AppModule } from './app.module';
 
 /**
@@ -173,9 +170,9 @@ async function bootstrap() {
   const httpAdapter = app.get(HttpAdapterHost);
   app.useGlobalFilters(new AllExceptionsFilter(httpAdapter));
 
-  // 6.2. ClassSerializerInterceptor - Ẩn các field nhạy cảm
-  // Tự động loại bỏ các field có @Exclude() (như password, salt) khỏi response
-  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  // 6.2. ClassSerializerInterceptor - REMOVED (User Zod primarily)
+  // If we need serialization, we should use Zod transformation or interceptors explicitly.
+  // app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   // 6.3. TransformInterceptor - Format response chuẩn
   // Bọc mọi response thành { success: true, data: ..., message: ... }
@@ -184,23 +181,17 @@ async function bootstrap() {
   // ============================================================================
   // 7. VALIDATION - Validate dữ liệu đầu vào (DTO)
   // ============================================================================
-  // Tự động validate và transform dữ liệu từ request body/params
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true, // Tự động loại bỏ các field không khai báo trong DTO (Bảo mật)
-      forbidNonWhitelisted: true, // Báo lỗi nếu gửi field thừa (Chặt chẽ)
-      transform: true, // Tự động convert kiểu dữ liệu (VD: string '1' -> number 1)
-      transformOptions: {
-        enableImplicitConversion: true, // Cho phép convert ngầm định
-      },
-      disableErrorMessages: false, // Hiển thị thông báo lỗi chi tiết (Dev friendly)
-    }),
-  );
+  // Tự động validate và transform dữ liệu từ request body/params sử dụng Zod
+  app.useGlobalPipes(new ZodValidationPipe());
 
   // ============================================================================
   // 8. SWAGGER - API Documentation (Tài liệu API tự động)
   // ============================================================================
   // Cấu hình Swagger để tạo tài liệu API tự động, giúp Frontend/Mobile team dễ tích hợp
+
+  // Patch NestJS Swagger to support Zod schemas
+  // patchNestJsSwagger();
+
   const config = new DocumentBuilder()
     .setTitle('E-commerce API') // Tiêu đề
     .setDescription(

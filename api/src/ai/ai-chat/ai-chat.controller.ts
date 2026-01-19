@@ -37,17 +37,15 @@ import { AiChatService } from './ai-chat.service';
  * =====================================================================
  */
 
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-class SendMessageDto {
-  @IsString()
-  @IsNotEmpty()
-  message: string;
+const SendMessageSchema = z.object({
+  message: z.string().min(1),
+  guestId: z.string().optional(),
+});
 
-  @IsString()
-  @IsOptional()
-  guestId?: string; // UUID from localStorage for guest users
-}
+class SendMessageDto extends createZodDto(SendMessageSchema) {}
 
 @ApiTags('AI Chat')
 @Controller('ai-chat')

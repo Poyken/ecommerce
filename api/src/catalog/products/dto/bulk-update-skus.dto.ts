@@ -1,40 +1,17 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsNotEmpty,
-  ValidateNested,
-} from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class UpdateSkuDto {
-  @ApiProperty({ example: 'uuid-sku-id' })
-  @IsString()
-  @IsNotEmpty()
-  id: string;
+const UpdateSkuSchema = z.object({
+  id: z.string().min(1).describe('uuid-sku-id'),
+  price: z.number().optional().describe('100000'),
+  salePrice: z.number().optional().describe('90000'),
+  stock: z.number().optional().describe('50'),
+});
 
-  @ApiProperty({ example: 100000 })
-  @IsNumber()
-  @IsOptional()
-  price?: number;
+export class UpdateSkuDto extends createZodDto(UpdateSkuSchema) {}
 
-  @ApiProperty({ example: 90000 })
-  @IsNumber()
-  @IsOptional()
-  salePrice?: number;
+const BulkUpdateSkusSchema = z.object({
+  skus: z.array(UpdateSkuSchema),
+});
 
-  @ApiProperty({ example: 50 })
-  @IsNumber()
-  @IsOptional()
-  stock?: number;
-}
-
-export class BulkUpdateSkusDto {
-  @ApiProperty({ type: [UpdateSkuDto] })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => UpdateSkuDto)
-  skus: UpdateSkuDto[];
-}
+export class BulkUpdateSkusDto extends createZodDto(BulkUpdateSkusSchema) {}

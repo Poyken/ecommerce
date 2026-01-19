@@ -1,17 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsString,
-  IsOptional,
-  IsBoolean,
-  IsInt,
-  IsDateString,
-  ValidateNested,
-  IsNumber,
-  IsArray,
-  IsEnum,
-  Min,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
 /**
  * Định nghĩa các loại Rule cho promotion
@@ -49,136 +37,34 @@ export enum PromotionActionType {
   BUY_X_GET_Y = 'BUY_X_GET_Y',
 }
 
-export class PromotionRuleDto {
-  @ApiProperty({
-    enum: PromotionRuleType,
-    description: 'Loại điều kiện áp dụng',
-    example: PromotionRuleType.MIN_ORDER_VALUE,
-  })
-  @IsEnum(PromotionRuleType)
-  type: PromotionRuleType;
+export const PromotionRuleSchema = z.object({
+  type: z.nativeEnum(PromotionRuleType),
+  operator: z.nativeEnum(RuleOperator),
+  value: z.string(),
+});
+export class PromotionRuleDto extends createZodDto(PromotionRuleSchema) {}
 
-  @ApiProperty({
-    enum: RuleOperator,
-    description: 'Toán tử so sánh',
-    example: RuleOperator.GTE,
-  })
-  @IsEnum(RuleOperator)
-  operator: RuleOperator;
+export const PromotionActionSchema = z.object({
+  type: z.nativeEnum(PromotionActionType),
+  value: z.string(),
+  maxDiscountAmount: z.number().min(0).optional(),
+});
+export class PromotionActionDto extends createZodDto(PromotionActionSchema) {}
 
-  @ApiProperty({
-    description: 'Giá trị so sánh (string để hỗ trợ nhiều kiểu dữ liệu)',
-    example: '500000',
-  })
-  @IsString()
-  value: string;
-}
+export const CreatePromotionSchema = z.object({
+  name: z.string().min(1).describe('Tên chương trình khuyến mãi'),
+  code: z
+    .string()
+    .optional()
+    .describe('Mã khuyến mãi (để trống nếu tự động áp dụng)'),
+  description: z.string().optional(),
+  startDate: z.string().datetime(),
+  endDate: z.string().datetime(),
+  isActive: z.boolean().optional().default(true),
+  priority: z.number().int().min(0).optional().default(0),
+  usageLimit: z.number().int().min(1).optional(),
+  rules: z.array(PromotionRuleSchema),
+  actions: z.array(PromotionActionSchema),
+});
 
-export class PromotionActionDto {
-  @ApiProperty({
-    enum: PromotionActionType,
-    description: 'Loại hành động giảm giá',
-    example: PromotionActionType.DISCOUNT_PERCENT,
-  })
-  @IsEnum(PromotionActionType)
-  type: PromotionActionType;
-
-  @ApiProperty({
-    description: 'Giá trị giảm (số tiền hoặc phần trăm)',
-    example: '10',
-  })
-  @IsString()
-  value: string;
-
-  @ApiPropertyOptional({
-    description: 'Số tiền giảm tối đa (cho loại phần trăm)',
-    example: 100000,
-  })
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  maxDiscountAmount?: number;
-}
-
-export class CreatePromotionDto {
-  @ApiProperty({
-    description: 'Tên chương trình khuyến mãi',
-    example: 'Giảm 10% đơn hàng đầu tiên',
-  })
-  @IsString()
-  name: string;
-
-  @ApiPropertyOptional({
-    description: 'Mã khuyến mãi (để trống nếu tự động áp dụng)',
-    example: 'WELCOME10',
-  })
-  @IsOptional()
-  @IsString()
-  code?: string;
-
-  @ApiPropertyOptional({
-    description: 'Mô tả chi tiết chương trình',
-    example: 'Áp dụng cho khách hàng mới, đơn tối thiểu 500k',
-  })
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @ApiProperty({
-    description: 'Ngày bắt đầu (ISO 8601)',
-    example: '2025-01-01T00:00:00.000Z',
-  })
-  @IsDateString()
-  startDate: string;
-
-  @ApiProperty({
-    description: 'Ngày kết thúc (ISO 8601)',
-    example: '2025-12-31T23:59:59.000Z',
-  })
-  @IsDateString()
-  endDate: string;
-
-  @ApiPropertyOptional({
-    description: 'Trạng thái kích hoạt',
-    default: true,
-  })
-  @IsOptional()
-  @IsBoolean()
-  isActive?: boolean;
-
-  @ApiPropertyOptional({
-    description: 'Độ ưu tiên (số lớn = ưu tiên cao)',
-    default: 0,
-  })
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  priority?: number;
-
-  @ApiPropertyOptional({
-    description: 'Giới hạn số lần sử dụng tổng cộng',
-    example: 100,
-  })
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  usageLimit?: number;
-
-  @ApiProperty({
-    type: [PromotionRuleDto],
-    description: 'Danh sách điều kiện áp dụng',
-  })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => PromotionRuleDto)
-  rules: PromotionRuleDto[];
-
-  @ApiProperty({
-    type: [PromotionActionDto],
-    description: 'Danh sách hành động khi thỏa điều kiện',
-  })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => PromotionActionDto)
-  actions: PromotionActionDto[];
-}
+export class CreatePromotionDto extends createZodDto(CreatePromotionSchema) {}

@@ -8,81 +8,51 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { TenantsService } from './tenants.service';
 import { AuthService } from '@/auth/auth.service';
 import { PrismaService } from '@core/prisma/prisma.service';
+
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
 /**
  * =================================================================================================
  * REGISTER TENANT DTO - DTO đăng ký tenant mới
  * =================================================================================================
  */
-export class RegisterTenantDto {
-  @ApiProperty({ example: 'Shop Thời Trang ABC' })
-  @IsNotEmpty({ message: 'Vui lòng nhập tên cửa hàng' })
-  storeName: string;
-
-  @ApiProperty({ example: 'shop-abc' })
-  @IsNotEmpty({ message: 'Vui lòng nhập subdomain' })
-  subdomain: string;
-
-  @ApiProperty({ example: 'owner@shop.com' })
-  @IsEmail({}, { message: 'Email không hợp lệ' })
-  email: string;
-
-  @ApiProperty({ example: 'password123' })
-  @MinLength(6, { message: 'Mật khẩu tối thiểu 6 ký tự' })
-  password: string;
-
-  @ApiProperty({ example: 'basic', required: false })
-  @IsOptional()
-  plan?: 'basic' | 'pro' | 'enterprise';
-
-  @ApiProperty({ example: 'REF123', required: false })
-  @IsOptional()
-  referralCode?: string;
-}
+const RegisterTenantSchema = z.object({
+  storeName: z
+    .string()
+    .min(1, 'Vui lòng nhập tên cửa hàng')
+    .describe('Shop Thời Trang ABC'),
+  subdomain: z.string().min(1, 'Vui lòng nhập subdomain').describe('shop-abc'),
+  email: z.string().email('Email không hợp lệ').describe('owner@shop.com'),
+  password: z
+    .string()
+    .min(6, 'Mật khẩu tối thiểu 6 ký tự')
+    .describe('password123'),
+  plan: z.enum(['basic', 'pro', 'enterprise']).optional().describe('basic'),
+  referralCode: z.string().optional().describe('REF123'),
+});
+export class RegisterTenantDto extends createZodDto(RegisterTenantSchema) {}
 
 /**
  * =================================================================================================
  * ONBOARDING DTO - DTO cập nhật onboarding
  * =================================================================================================
  */
-export class UpdateOnboardingDto {
-  @ApiProperty({ required: false })
-  @IsOptional()
-  logoUrl?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  contactEmail?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  contactPhone?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  address?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  businessType?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  themeConfig?: Record<string, any>;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  onboardingStep?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  onboardingCompleted?: boolean;
-}
+const UpdateOnboardingSchema = z.object({
+  logoUrl: z.string().optional(),
+  contactEmail: z.string().optional(),
+  contactPhone: z.string().optional(),
+  address: z.string().optional(),
+  businessType: z.string().optional(),
+  themeConfig: z.record(z.string(), z.any()).optional(),
+  onboardingStep: z.number().int().optional(),
+  onboardingCompleted: z.boolean().optional(),
+});
+export class UpdateOnboardingDto extends createZodDto(UpdateOnboardingSchema) {}
 
 /**
  * =================================================================================================

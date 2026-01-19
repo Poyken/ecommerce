@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
 /**
  * =====================================================================
@@ -20,12 +20,12 @@ import { IsEmail, IsNotEmpty } from 'class-validator';
  * =====================================================================
  */
 
-export class SubscribeDto {
-  @ApiProperty({
-    example: 'user@example.com',
-    description: 'Email đăng ký nhận tin',
-  })
-  @IsEmail({}, { message: 'Email không hợp lệ' })
-  @IsNotEmpty({ message: 'Email không được để trống' })
-  email: string;
-}
+const SubscribeSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'Email không được để trống')
+    .email('Email không hợp lệ')
+    .describe('Email đăng ký nhận tin'),
+});
+
+export class SubscribeDto extends createZodDto(SubscribeSchema) {}

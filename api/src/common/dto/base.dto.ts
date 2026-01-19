@@ -20,85 +20,43 @@
  */
 
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
-import { IsIn, IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
 // =============================================================================
 // PAGINATION DTO
 // =============================================================================
 
-/**
- * Base DTO cho pagination queries.
- * Extend class này để thêm các filter fields khác.
- *
- * @example
- * class GetProductsDto extends PaginationQueryDto {
- *   @IsOptional()
- *   @IsString()
- *   categoryId?: string;
- * }
- */
-export class PaginationQueryDto {
-  @ApiPropertyOptional({ default: 1, minimum: 1 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  page?: number = 1;
+export const PaginationQuerySchema = z.object({
+  page: z.coerce.number().min(1).default(1),
+  limit: z.coerce.number().min(1).max(100).default(10),
+});
 
-  @ApiPropertyOptional({ default: 10, minimum: 1, maximum: 100 })
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
-  @Max(100)
-  limit?: number = 10;
-}
+export class PaginationQueryDto extends createZodDto(PaginationQuerySchema) {}
 
-/**
- * Pagination DTO với search.
- */
-export class SearchQueryDto extends PaginationQueryDto {
-  @ApiPropertyOptional({ description: 'Search keyword' })
-  @IsOptional()
-  @IsString()
-  @Transform(({ value }) => value?.trim())
-  search?: string;
-}
+export const SearchQuerySchema = PaginationQuerySchema.extend({
+  search: z.string().trim().optional().describe('Search keyword'),
+});
 
-/**
- * Full query DTO với search và sort.
- */
-export class FullQueryDto extends SearchQueryDto {
-  @ApiPropertyOptional({ description: 'Sort field', example: 'createdAt' })
-  @IsOptional()
-  @IsString()
-  sort?: string;
+export class SearchQueryDto extends createZodDto(SearchQuerySchema) {}
 
-  @ApiPropertyOptional({ enum: ['asc', 'desc'], default: 'desc' })
-  @IsOptional()
-  @IsIn(['asc', 'desc'])
-  order?: 'asc' | 'desc' = 'desc';
-}
+export const FullQuerySchema = SearchQuerySchema.extend({
+  sort: z.string().optional().describe('Sort field'),
+  order: z.enum(['asc', 'desc']).default('desc').describe('Sort order'),
+});
+
+export class FullQueryDto extends createZodDto(FullQuerySchema) {}
 
 // =============================================================================
 // DATE FILTER DTO
 // =============================================================================
 
-/**
- * DTO cho date range filtering.
- */
-export class DateRangeDto {
-  @ApiPropertyOptional({ description: 'Start date (ISO string)' })
-  @IsOptional()
-  @IsString()
-  startDate?: string;
+export const DateRangeSchema = z.object({
+  startDate: z.string().optional().describe('Start date (ISO string)'),
+  endDate: z.string().optional().describe('End date (ISO string)'),
+});
 
-  @ApiPropertyOptional({ description: 'End date (ISO string)' })
-  @IsOptional()
-  @IsString()
-  endDate?: string;
-}
+export class DateRangeDto extends createZodDto(DateRangeSchema) {}
 
 // =============================================================================
 // PAGINATION RESPONSE TYPE

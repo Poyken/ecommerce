@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { ArrayNotEmpty, IsArray, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
 /**
  * =====================================================================
@@ -21,10 +21,13 @@ import { ArrayNotEmpty, IsArray, IsString } from 'class-validator';
  * =====================================================================
  */
 
-export class AssignPermissionsDto {
-  @ApiProperty({ example: ['user:read', 'product:create'] })
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsString({ each: true })
-  permissions: string[];
-}
+const AssignPermissionsSchema = z.object({
+  permissions: z
+    .array(z.string())
+    .min(1, 'Permissions list cannot be empty')
+    .describe('List of permission IDs'),
+});
+
+export class AssignPermissionsDto extends createZodDto(
+  AssignPermissionsSchema,
+) {}

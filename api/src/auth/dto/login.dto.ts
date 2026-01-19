@@ -1,36 +1,31 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, MinLength, IsNotEmpty, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
 /**
  * =====================================================================
  * LOGIN DTO - Đối tượng dữ liệu đăng nhập
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ * 1. ZOD SCHEMA:
+ * - Define validation rules using Zod.
+ * - `z.string().email()`: Email validation.
+ * - `z.string().min(6)`: Password min length.
  *
- * 1. INPUT VALIDATION:
- * - `@IsEmail()`: Đảm bảo người dùng nhập đúng định dạng email (VD: abc@gmail.com).
- * - `@MinLength(6)`: Ràng buộc mật khẩu tối thiểu 6 ký tự để đảm bảo độ bảo mật cơ bản.
- *
- * 2. SWAGGER DOCUMENTATION:
- * - `@ApiProperty`: Giúp tự động tạo tài liệu API. Người dùng có thể nhìn thấy ví dụ (`example`) và mô tả (`description`) ngay trên giao diện Swagger.
- *
- * 3. DATA TRANSFER OBJECT (DTO):
- * - Đóng vai trò là "hợp đồng" giữa Frontend và Backend. Frontend phải gửi đúng các trường này thì Backend mới xử lý. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
-
+ * 2. NESTJS-ZOD:
+ * - `createZodDto`: Automatically generates the class and Swagger docs.
  * =====================================================================
  */
 
-export class LoginDto {
-  @ApiProperty({ example: 'admin@example.com' })
-  @IsEmail({}, { message: 'Email không hợp lệ' })
-  @IsNotEmpty({ message: 'Email không được để trống' })
-  email: string;
+const LoginSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'Email không được để trống')
+    .email('Email không hợp lệ')
+    .describe('admin@example.com'),
+  password: z
+    .string()
+    .min(1, 'Mật khẩu không được để trống')
+    .describe('password123'),
+});
 
-  @ApiProperty({ example: 'password123' })
-  @IsString()
-  @IsNotEmpty({ message: 'Mật khẩu không được để trống' })
-  password: string;
-}
+export class LoginDto extends createZodDto(LoginSchema) {}

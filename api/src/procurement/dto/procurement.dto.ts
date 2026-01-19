@@ -1,71 +1,39 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsOptional,
-  IsEmail,
-  IsArray,
-  ValidateNested,
-  IsNumber,
-  IsEnum,
-  Min,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 import { PurchaseOrderStatus } from '@prisma/client';
 
-export class CreateSupplierDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+const CreateSupplierSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email().optional(),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+  notes: z.string().optional(),
+});
+export class CreateSupplierDto extends createZodDto(CreateSupplierSchema) {}
 
-  @IsEmail()
-  @IsOptional()
-  email?: string;
+export class UpdateSupplierDto extends createZodDto(CreateSupplierSchema) {}
 
-  @IsString()
-  @IsOptional()
-  phone?: string;
+const CreatePurchaseOrderItemSchema = z.object({
+  skuId: z.string().min(1),
+  quantity: z.number().min(1),
+  costPrice: z.number().min(0),
+});
+export class CreatePurchaseOrderItemDto extends createZodDto(
+  CreatePurchaseOrderItemSchema,
+) {}
 
-  @IsString()
-  @IsOptional()
-  address?: string;
+const CreatePurchaseOrderSchema = z.object({
+  supplierId: z.string().min(1),
+  notes: z.string().optional(),
+  items: z.array(CreatePurchaseOrderItemSchema),
+});
+export class CreatePurchaseOrderDto extends createZodDto(
+  CreatePurchaseOrderSchema,
+) {}
 
-  @IsString()
-  @IsOptional()
-  notes?: string;
-}
-
-export class UpdateSupplierDto extends CreateSupplierDto {}
-
-export class CreatePurchaseOrderItemDto {
-  @IsString()
-  @IsNotEmpty()
-  skuId: string;
-
-  @IsNumber()
-  @Min(1)
-  quantity: number;
-
-  @IsNumber()
-  @Min(0)
-  costPrice: number;
-}
-
-export class CreatePurchaseOrderDto {
-  @IsString()
-  @IsNotEmpty()
-  supplierId: string;
-
-  @IsString()
-  @IsOptional()
-  notes?: string;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreatePurchaseOrderItemDto)
-  items: CreatePurchaseOrderItemDto[];
-}
-
-export class UpdatePurchaseOrderStatusDto {
-  @IsEnum(PurchaseOrderStatus)
-  status: PurchaseOrderStatus;
-}
+const UpdatePurchaseOrderStatusSchema = z.object({
+  status: z.nativeEnum(PurchaseOrderStatus),
+});
+export class UpdatePurchaseOrderStatusDto extends createZodDto(
+  UpdatePurchaseOrderStatusSchema,
+) {}

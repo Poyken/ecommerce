@@ -69,7 +69,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule } from '@nestjs/throttler';
-import * as Joi from 'joi';
 import { HealthController } from './health.controller';
 
 import { WorkerModule } from '@/worker/worker.module';
@@ -107,39 +106,51 @@ import { SubscriptionModule } from './subscription/subscription.module';
 import { ReportsModule } from './reports/reports.module';
 import { InventoryAlertsModule } from './inventory-alerts/inventory-alerts.module';
 
+import { z } from 'zod';
+
+// Zod Schema for Environment Variables
+const envSchema = z.object({
+  NODE_ENV: z
+    .enum(['development', 'production', 'test', 'provision'])
+    .default('development'),
+  PORT: z.coerce.number().default(8080),
+
+  // Database
+  DATABASE_URL: z.string().min(1),
+
+  // Authentication
+  JWT_ACCESS_SECRET: z.string().min(1),
+  JWT_ACCESS_EXPIRED: z.string().default('15m'),
+  JWT_REFRESH_SECRET: z.string().min(1),
+  JWT_REFRESH_EXPIRED: z.string().default('7d'),
+
+  // Redis
+  REDIS_URL: z.string().min(1),
+
+  // Frontend
+  FRONTEND_URL: z.string().min(1),
+});
+
+function validate(config: Record<string, unknown>) {
+  const result = envSchema.safeParse(config);
+  if (!result.success) {
+    throw new Error('Config validation error: ' + result.error.message);
+  }
+  return result.data;
+}
+
 @Module({
   imports: [
     JwtModule.register({}),
     CacheModule.register({
       isGlobal: true,
-      ttl: CACHE_CONFIG.DEFAULT_TTL * 1000, // Convert seconds to milliseconds
+      ttl: CACHE_CONFIG.DEFAULT_TTL * 1000,
       max: CACHE_CONFIG.MAX_ITEMS,
     }),
     // 1. ConfigModule - Quản lý biến môi trường (.env)
-    // isGlobal: true => Có thể inject ConfigService ở bất kỳ module nào
     ConfigModule.forRoot({
       isGlobal: true,
-      validationSchema: Joi.object({
-        NODE_ENV: Joi.string()
-          .valid('development', 'production', 'test', 'provision')
-          .default('development'),
-        PORT: Joi.number().default(8080),
-
-        // Database
-        DATABASE_URL: Joi.string().required(),
-
-        // Authentication
-        JWT_ACCESS_SECRET: Joi.string().required(),
-        JWT_ACCESS_EXPIRED: Joi.string().default('15m'),
-        JWT_REFRESH_SECRET: Joi.string().required(),
-        JWT_REFRESH_EXPIRED: Joi.string().default('7d'),
-
-        // Redis
-        REDIS_URL: Joi.string().required(),
-
-        // Frontend
-        FRONTEND_URL: Joi.string().required(),
-      }),
+      validate,
     }),
 
     // 2. ThrottlerModule - Rate Limiting (Chống spam request)

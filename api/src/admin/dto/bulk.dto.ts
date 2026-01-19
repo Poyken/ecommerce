@@ -1,102 +1,36 @@
-import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsArray,
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-/**
- * =====================================================================
- * BULK IMPORT/UPDATE DTO - Xử lý dữ liệu hàng loạt
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. BULK UPDATE LÀ GÌ?
- * - Thay vì gọi API update cho từng sản phẩm (1000 requests = chết server),
- *   ta gửi một mảng (Array) gồm 1000 items trong 1 request duy nhất.
- *
- * 2. NESTED VALIDATION:
- * - `ImportSkusDto` chứa một mảng `rows`. Mỗi item trong mảng đó phải tuân thủ `ImportRowDto`.
- * - Decorator `@Type(() => ImportRowDto)` (của class-transformer - cần thêm nếu chưa có)
- *   thường được dùng để validate nested object. Ở đây ta đang trust array.
- *
- * 3. DRY RUN:
- * - Chế độ "Chạy thử". Server sẽ validate dữ liệu, kiểm tra lỗi logic nhưng KHÔNG lưu vào DB.
- * - Giúp User biết file Excel của họ có lỗi gì không trước khi import thật. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+export const ImportRowSchema = z.object({
+  skuCode: z.string(),
+  price: z.number().optional(),
+  salePrice: z.number().optional(),
+  stock: z.number().optional(),
+  status: z.string().optional(),
+});
+export class ImportRowDto extends createZodDto(ImportRowSchema) {}
 
- * =====================================================================
- */
-export class ImportRowDto {
-  @ApiProperty()
-  @IsString()
-  skuCode: string;
+export const ImportSkusSchema = z.object({
+  rows: z.array(ImportRowSchema),
+  dryRun: z.boolean().optional().default(false),
+});
+export class ImportSkusDto extends createZodDto(ImportSkusSchema) {}
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  price?: number;
+export const PriceChangeSchema = z.object({
+  type: z.enum(['fixed', 'percentage']),
+  value: z.number(),
+});
+export class PriceChangeDto extends createZodDto(PriceChangeSchema) {}
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  salePrice?: number;
+export const StockChangeSchema = z.object({
+  type: z.enum(['set', 'add', 'subtract']),
+  value: z.number(),
+});
+export class StockChangeDto extends createZodDto(StockChangeSchema) {}
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  stock?: number;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  status?: string;
-}
-
-export class ImportSkusDto {
-  @ApiProperty({ type: [ImportRowDto] })
-  @IsArray()
-  rows: ImportRowDto[];
-
-  @ApiProperty({ required: false, default: false })
-  @IsOptional()
-  dryRun?: boolean;
-}
-
-export class PriceChangeDto {
-  @ApiProperty({ enum: ['fixed', 'percentage'] })
-  @IsEnum(['fixed', 'percentage'])
-  type: 'fixed' | 'percentage';
-
-  @ApiProperty()
-  @IsNumber()
-  value: number;
-}
-
-export class StockChangeDto {
-  @ApiProperty({ enum: ['set', 'add', 'subtract'] })
-  @IsEnum(['set', 'add', 'subtract'])
-  type: 'set' | 'add' | 'subtract';
-
-  @ApiProperty()
-  @IsNumber()
-  value: number;
-}
-
-export class BulkUpdateDto {
-  @ApiProperty()
-  @IsArray()
-  skuIds: string[];
-
-  @ApiProperty({ required: false, type: PriceChangeDto })
-  @IsOptional()
-  priceChange?: PriceChangeDto;
-
-  @ApiProperty({ required: false, type: StockChangeDto })
-  @IsOptional()
-  stockChange?: StockChangeDto;
-}
+export const BulkUpdateSchema = z.object({
+  skuIds: z.array(z.string()),
+  priceChange: PriceChangeSchema.optional(),
+  stockChange: StockChangeSchema.optional(),
+});
+export class BulkUpdateDto extends createZodDto(BulkUpdateSchema) {}

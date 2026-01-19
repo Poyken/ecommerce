@@ -25,36 +25,26 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags, ApiBody } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { GeminiService } from './gemini.service';
-import { IsNotEmpty, IsOptional, IsString, IsArray } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class GenerateProductContentDto {
-  @IsString()
-  @IsNotEmpty()
-  productName: string;
+const GenerateProductContentSchema = z.object({
+  productName: z.string().min(1),
+  categoryName: z.string().min(1),
+  brandName: z.string().optional(),
+  features: z.array(z.string()).optional(),
+});
 
-  @IsString()
-  @IsNotEmpty()
-  categoryName: string;
+export class GenerateProductContentDto extends createZodDto(
+  GenerateProductContentSchema,
+) {}
 
-  @IsString()
-  @IsOptional()
-  brandName?: string;
+const TranslateTextSchema = z.object({
+  text: z.string().min(1),
+  targetLocale: z.string().min(1),
+});
 
-  @IsArray()
-  @IsString({ each: true })
-  @IsOptional()
-  features?: string[];
-}
-
-export class TranslateTextDto {
-  @IsString()
-  @IsNotEmpty()
-  text: string;
-
-  @IsString()
-  @IsNotEmpty()
-  targetLocale: string;
-}
+export class TranslateTextDto extends createZodDto(TranslateTextSchema) {}
 
 @ApiTags('AI Automation')
 @Controller('ai-automation')

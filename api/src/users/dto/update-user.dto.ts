@@ -1,34 +1,22 @@
-import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
-import {
-  IsArray,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MinLength,
-} from 'class-validator';
-import { CreateUserDto } from './create-user.dto';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
+import { CreateUserSchema } from './create-user.dto';
+import { AssignRolesDto } from './assign-roles.dto';
 
 /**
  * =====================================================================
- * UPDATE USER DTO - Đối tượng cập nhật người dùng
+ * UPDATE USER DTO
  * =====================================================================
  */
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {
-  @ApiPropertyOptional({ example: 'newpassword123', minLength: 6 })
-  @IsString()
-  @IsOptional()
-  @MinLength(6, { message: 'Mật khẩu phải ít nhất 6 ký tự' })
-  password?: string;
-}
+const UpdateUserSchema = CreateUserSchema.partial().extend({
+  password: z
+    .string()
+    .min(6, 'Mật khẩu phải ít nhất 6 ký tự')
+    .optional()
+    .describe('newpassword123'),
+});
 
-export class AssignRolesDto {
-  @ApiProperty({
-    example: ['ADMIN', 'MANAGER'],
-    description: 'Danh sách tên Roles cần gán',
-  })
-  @IsArray()
-  @IsString({ each: true })
-  @IsNotEmpty({ each: true })
-  roles: string[];
-}
+export class UpdateUserDto extends createZodDto(UpdateUserSchema) {}
+
+export { AssignRolesDto };

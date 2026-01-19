@@ -25,19 +25,14 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { AgentService } from './agent.service';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-/**
- * =============================================================================
- * AGENT CONTROLLER - API ENDPOINT CHO AI AGENT
- * =============================================================================
- */
+const ExecuteCommandSchema = z.object({
+  command: z.string().min(1),
+});
 
-export class ExecuteCommandDto {
-  @IsString()
-  @IsNotEmpty()
-  command: string;
-}
+export class ExecuteCommandDto extends createZodDto(ExecuteCommandSchema) {}
 
 @ApiTags('AI Agent')
 @Controller('agent')

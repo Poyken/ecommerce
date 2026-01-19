@@ -1,46 +1,24 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsArray,
-  ValidateNested,
-  IsInt,
-  Min,
-  IsOptional,
-  IsEnum,
-} from 'class-validator';
-import { Type } from 'class-transformer';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 import { ShipmentStatus } from '@prisma/client';
 
-export class ShipmentItemDto {
-  @IsString()
-  @IsNotEmpty()
-  orderItemId: string;
+const ShipmentItemSchema = z.object({
+  orderItemId: z.string().min(1),
+  quantity: z.number().int().min(1),
+});
+export class ShipmentItemDto extends createZodDto(ShipmentItemSchema) {}
 
-  @IsInt()
-  @Min(1)
-  quantity: number;
-}
+const CreateShipmentSchema = z.object({
+  orderId: z.string().min(1),
+  carrier: z.string().optional(),
+  trackingCode: z.string().optional(),
+  items: z.array(ShipmentItemSchema),
+});
+export class CreateShipmentDto extends createZodDto(CreateShipmentSchema) {}
 
-export class CreateShipmentDto {
-  @IsString()
-  @IsNotEmpty()
-  orderId: string;
-
-  @IsString()
-  @IsOptional()
-  carrier?: string;
-
-  @IsString()
-  @IsOptional()
-  trackingCode?: string;
-
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ShipmentItemDto)
-  items: ShipmentItemDto[];
-}
-
-export class UpdateShipmentStatusDto {
-  @IsEnum(ShipmentStatus)
-  status: ShipmentStatus;
-}
+const UpdateShipmentStatusSchema = z.object({
+  status: z.nativeEnum(ShipmentStatus),
+});
+export class UpdateShipmentStatusDto extends createZodDto(
+  UpdateShipmentStatusSchema,
+) {}

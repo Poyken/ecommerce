@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
 /**
  * =====================================================================
@@ -20,12 +20,8 @@ import { IsNotEmpty, IsString } from 'class-validator';
  * =====================================================================
  */
 
-export class CreatePermissionDto {
-  @ApiProperty({
-    description: 'Permission name in format resource:action',
-    example: 'product:create',
-  })
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-}
+const CreatePermissionSchema = z.object({
+  name: z.string().min(1, 'Name is required').describe('product:create'),
+});
+
+export class CreatePermissionDto extends createZodDto(CreatePermissionSchema) {}

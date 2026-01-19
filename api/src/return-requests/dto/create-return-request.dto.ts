@@ -1,158 +1,56 @@
-import {
-  IsArray,
-  IsEnum,
-  IsInt,
-  IsNumber,
-  IsObject,
-  IsOptional,
-  IsString,
-  IsUUID,
-  Min,
-  ValidateNested,
-} from 'class-validator';
-import { Type } from 'class-transformer';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-/**
- * Loại yêu cầu đổi trả
- */
 export enum ReturnType {
   REFUND_ONLY = 'REFUND_ONLY',
   RETURN_AND_REFUND = 'RETURN_AND_REFUND',
   EXCHANGE = 'EXCHANGE',
 }
 
-/**
- * Phương thức gửi trả hàng
- */
 export enum ReturnMethod {
   AT_COUNTER = 'AT_COUNTER',
   PICKUP = 'PICKUP',
   SELF_SHIP = 'SELF_SHIP',
 }
 
-/**
- * Phương thức hoàn tiền
- */
 export enum RefundMethod {
   ORIGINAL_PAYMENT = 'ORIGINAL_PAYMENT',
   BANK_TRANSFER = 'BANK_TRANSFER',
   WALLET = 'WALLET',
 }
 
-class ReturnItemDto {
-  @ApiProperty({
-    description: 'ID của OrderItem cần trả',
-    example: 'uuid-of-order-item',
-  })
-  @IsUUID()
-  orderItemId: string;
+const ReturnItemSchema = z.object({
+  orderItemId: z.string().uuid().describe('ID của OrderItem cần trả'),
+  quantity: z.number().int().min(1).describe('Số lượng trả'),
+});
+class ReturnItemDto extends createZodDto(ReturnItemSchema) {}
 
-  @ApiProperty({ description: 'Số lượng trả', example: 1, minimum: 1 })
-  @IsInt()
-  @Min(1)
-  quantity: number;
-}
+const BankAccountSchema = z.object({
+  bankName: z.string().describe('Tên ngân hàng'),
+  number: z.string().describe('Số tài khoản'),
+  owner: z.string().describe('Chủ tài khoản'),
+});
+class BankAccountDto extends createZodDto(BankAccountSchema) {}
 
-class BankAccountDto {
-  @ApiProperty({ description: 'Tên ngân hàng', example: 'Vietcombank' })
-  @IsString()
-  bankName: string;
+export const CreateReturnRequestSchema = z.object({
+  orderId: z.string().uuid().describe('ID đơn hàng cần đổi trả'),
+  reason: z.string().describe('Lý do đổi trả'),
+  description: z.string().optional().describe('Mô tả chi tiết'),
+  type: z.nativeEnum(ReturnType).describe('Loại yêu cầu'),
+  returnMethod: z.nativeEnum(ReturnMethod).describe('Phương thức gửi trả'),
+  pickupAddress: z
+    .record(z.string(), z.any())
+    .optional()
+    .describe('Địa chỉ lấy hàng (nếu chọn PICKUP)'),
+  refundMethod: z.nativeEnum(RefundMethod).describe('Phương thức hoàn tiền'),
+  bankAccount: BankAccountSchema.optional().describe(
+    'Thông tin tài khoản ngân hàng (nếu chọn BANK_TRANSFER)',
+  ),
+  refundAmount: z.number().optional().describe('Số tiền hoàn lại dự kiến'),
+  images: z.array(z.string()).describe('Danh sách ảnh bằng chứng (URLs)'),
+  items: z.array(ReturnItemSchema).describe('Danh sách sản phẩm cần trả'),
+});
 
-  @ApiProperty({ description: 'Số tài khoản', example: '1234567890' })
-  @IsString()
-  number: string;
-
-  @ApiProperty({ description: 'Chủ tài khoản', example: 'NGUYEN VAN A' })
-  @IsString()
-  owner: string;
-}
-
-export class CreateReturnRequestDto {
-  @ApiProperty({
-    description: 'ID đơn hàng cần đổi trả',
-    example: 'uuid-of-order',
-  })
-  @IsUUID()
-  orderId: string;
-
-  @ApiProperty({ description: 'Lý do đổi trả', example: 'Sản phẩm bị lỗi' })
-  @IsString()
-  reason: string;
-
-  @ApiPropertyOptional({
-    description: 'Mô tả chi tiết',
-    example: 'Màn hình bị vỡ góc phải',
-  })
-  @IsOptional()
-  @IsString()
-  description?: string;
-
-  @ApiProperty({
-    enum: ReturnType,
-    description: 'Loại yêu cầu',
-    example: ReturnType.RETURN_AND_REFUND,
-  })
-  @IsEnum(ReturnType)
-  type: ReturnType;
-
-  // LOGISTICS
-  @ApiProperty({
-    enum: ReturnMethod,
-    description: 'Phương thức gửi trả',
-    example: ReturnMethod.SELF_SHIP,
-  })
-  @IsEnum(ReturnMethod)
-  returnMethod: ReturnMethod;
-
-  @ApiPropertyOptional({
-    description: 'Địa chỉ lấy hàng (nếu chọn PICKUP)',
-    type: Object,
-  })
-  @IsOptional()
-  @IsObject()
-  pickupAddress?: Record<string, any>;
-
-  // FINANCE
-  @ApiProperty({
-    enum: RefundMethod,
-    description: 'Phương thức hoàn tiền',
-    example: RefundMethod.BANK_TRANSFER,
-  })
-  @IsEnum(RefundMethod)
-  refundMethod: RefundMethod;
-
-  @ApiPropertyOptional({
-    description: 'Thông tin tài khoản ngân hàng (nếu chọn BANK_TRANSFER)',
-    type: BankAccountDto,
-  })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => BankAccountDto)
-  bankAccount?: BankAccountDto;
-
-  @ApiPropertyOptional({
-    description: 'Số tiền hoàn lại dự kiến',
-    example: 500000,
-  })
-  @IsOptional()
-  @IsNumber()
-  refundAmount?: number;
-
-  @ApiProperty({
-    description: 'Danh sách ảnh bằng chứng (URLs)',
-    example: ['https://example.com/image1.jpg'],
-  })
-  @IsArray()
-  @IsString({ each: true })
-  images: string[];
-
-  @ApiProperty({
-    description: 'Danh sách sản phẩm cần trả',
-    type: [ReturnItemDto],
-  })
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ReturnItemDto)
-  items: ReturnItemDto[];
-}
+export class CreateReturnRequestDto extends createZodDto(
+  CreateReturnRequestSchema,
+) {}

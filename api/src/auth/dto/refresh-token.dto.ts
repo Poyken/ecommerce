@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
 /**
  * =====================================================================
@@ -21,12 +21,11 @@ import { IsNotEmpty, IsString } from 'class-validator';
  * =====================================================================
  */
 
-export class RefreshTokenDto {
-  @ApiProperty({
-    example: 'refresh-token-string',
-    description: 'The refresh token',
-  })
-  @IsString()
-  @IsNotEmpty()
-  refreshToken: string;
-}
+const RefreshTokenSchema = z.object({
+  refreshToken: z
+    .string()
+    .min(1, 'Refresh token cannot be empty')
+    .describe('refresh-token-string'),
+});
+
+export class RefreshTokenDto extends createZodDto(RefreshTokenSchema) {}

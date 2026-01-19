@@ -19,48 +19,20 @@
 
  * =====================================================================
  */
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class CreateVitalDto {
-  @ApiProperty({ description: 'Metric ID (v2-...)', required: false })
-  @IsString()
-  @IsOptional()
-  id?: string;
+const CreateVitalSchema = z.object({
+  id: z.string().optional().describe('Metric ID (v2-...)'),
+  name: z.string().describe('Metric Name (FCP, LCP, CLS, TTFB, FID, INP)'),
+  value: z.number().describe('Metric Value'),
+  rating: z.string().describe('Metric Rating (good, needs-improvement, poor)'),
+  navigationType: z
+    .string()
+    .optional()
+    .describe('Navigation Type (navigate, reload, back_forward)'),
+  userAgent: z.string().optional().describe('User Agent'),
+  url: z.string().optional().describe('Page URL'),
+});
 
-  @ApiProperty({
-    description: 'Metric Name (FCP, LCP, CLS, TTFB, FID, INP)',
-    example: 'FCP',
-  })
-  @IsString()
-  name: string;
-
-  @ApiProperty({ description: 'Metric Value', example: 123.45 })
-  @IsNumber()
-  value: number;
-
-  @ApiProperty({
-    description: 'Metric Rating (good, needs-improvement, poor)',
-    example: 'good',
-  })
-  @IsString()
-  rating: string;
-
-  @ApiProperty({
-    description: 'Navigation Type (navigate, reload, back_forward)',
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  navigationType?: string;
-
-  @ApiProperty({ description: 'User Agent', required: false })
-  @IsString()
-  @IsOptional()
-  userAgent?: string;
-
-  @ApiProperty({ description: 'Page URL', required: false })
-  @IsString()
-  @IsOptional()
-  url?: string;
-}
+export class CreateVitalDto extends createZodDto(CreateVitalSchema) {}

@@ -112,3 +112,7 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
 - [ ] AI Chatbot Integration
 - [ ] SEO Optimization for Storefront
 - [ ] Admin Dashboard UI/UX Enhancement
+
+## Changelog
+
+- [2026-01-19] API Validation Refactoring: Removed class-validator/class-transformer, migrated to Zod (nestjs-zod), fixed build errors (Joi, twoFactorSecret), and stabilized tests for Loyalty, Payment, Procurement, and TenantGuard.

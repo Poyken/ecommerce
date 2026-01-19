@@ -642,6 +642,19 @@ export class AuthService {
     }
   }
 
+  /**
+   * Internal Helper: Retrieve raw user by ID with secrets (password, 2FA secret).
+   * DO NOT Expose this to Controller Response.
+   */
+  async getUserWithSecrets(userId: string) {
+    const user = await this.prisma.user.findFirst({
+      where: { id: userId },
+      select: this.USER_PERMISSION_SELECT,
+    });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
+  }
+
   async forgotPassword(email: string) {
     const tenant = getTenant();
     const user = await this.prisma.user.findFirst({

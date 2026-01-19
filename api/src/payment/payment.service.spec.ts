@@ -6,6 +6,7 @@ import { MockStripeStrategy } from './strategies/mock-stripe.strategy';
 import { VNPayStrategy } from './strategies/vnpay.strategy';
 import { MoMoStrategy } from './strategies/momo.strategy';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { OrdersRepository } from '@/orders/orders.repository';
 
 /**
  * =====================================================================
@@ -30,6 +31,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 describe('PaymentService', () => {
   let service: PaymentService;
   let prismaService: jest.Mocked<PrismaService>;
+  let ordersRepo: jest.Mocked<OrdersRepository>; // Add Type
   let codStrategy: jest.Mocked<CodPaymentStrategy>;
   let mockStripeStrategy: jest.Mocked<MockStripeStrategy>;
   let vnpayStrategy: jest.Mocked<VNPayStrategy>;
@@ -55,6 +57,12 @@ describe('PaymentService', () => {
         findUnique: jest.fn(),
         update: jest.fn(),
       },
+    };
+
+    // Mock Orders Repository
+    const mockOrdersRepository = {
+      findById: jest.fn(),
+      update: jest.fn(),
     };
 
     const mockCodStrategy = {
@@ -92,6 +100,7 @@ describe('PaymentService', () => {
       providers: [
         PaymentService,
         { provide: PrismaService, useValue: mockPrismaService },
+        { provide: OrdersRepository, useValue: mockOrdersRepository }, // Provide Mock
         { provide: CodPaymentStrategy, useValue: mockCodStrategy },
         { provide: MockStripeStrategy, useValue: mockMockStripeStrategy },
         { provide: VNPayStrategy, useValue: mockVnpayStrategy },
@@ -101,6 +110,7 @@ describe('PaymentService', () => {
 
     service = module.get<PaymentService>(PaymentService);
     prismaService = module.get(PrismaService);
+    ordersRepo = module.get(OrdersRepository); // Get Mock
     codStrategy = module.get(CodPaymentStrategy);
     mockStripeStrategy = module.get(MockStripeStrategy);
     vnpayStrategy = module.get(VNPayStrategy);
@@ -199,11 +209,12 @@ describe('PaymentService', () => {
 
     it('should process valid webhook and update order', async () => {
       // Arrange
-      prismaService.order.findUnique = jest.fn().mockResolvedValue(mockOrder);
-      prismaService.order.update = jest.fn().mockResolvedValue({
+      // UPDATE: mock ordersRepo instead of prismaService.order
+      ordersRepo.findById.mockResolvedValue(mockOrder as any);
+      ordersRepo.update.mockResolvedValue({
         ...mockOrder,
         paymentStatus: 'PAID',
-      });
+      } as any);
 
       // Act
       const result = await service.handleWebhook(validWebhookPayload);
@@ -211,20 +222,21 @@ describe('PaymentService', () => {
       // Assert
       expect(result.success).toBe(true);
       expect(result.orderId).toBe('order-123');
-      expect(prismaService.order.update).toHaveBeenCalledWith({
-        where: { id: 'order-123' },
-        data: expect.objectContaining({
+      expect(ordersRepo.update).toHaveBeenCalledWith(
+        'order-123',
+        expect.objectContaining({
           paymentStatus: 'PAID',
         }),
-      });
+      );
     });
 
     it('should skip processing for already paid orders', async () => {
       // Arrange
-      prismaService.order.findUnique = jest.fn().mockResolvedValue({
+      // UPDATE: mock ordersRepo
+      ordersRepo.findById.mockResolvedValue({
         ...mockOrder,
         paymentStatus: 'PAID',
-      });
+      } as any);
 
       // Act
       const result = await service.handleWebhook(validWebhookPayload);
@@ -232,12 +244,13 @@ describe('PaymentService', () => {
       // Assert
       expect(result.success).toBe(true);
       expect(result.message).toContain('đã được thanh toán');
-      expect(prismaService.order.update).not.toHaveBeenCalled();
+      expect(ordersRepo.update).not.toHaveBeenCalled();
     });
 
     it('should throw NotFoundException for non-existent order', async () => {
       // Arrange
-      prismaService.order.findUnique = jest.fn().mockResolvedValue(null);
+      // UPDATE: mock ordersRepo
+      ordersRepo.findById.mockResolvedValue(null);
 
       // Act & Assert
       await expect(
@@ -247,7 +260,8 @@ describe('PaymentService', () => {
 
     it('should throw BadRequestException for insufficient payment amount', async () => {
       // Arrange
-      prismaService.order.findUnique = jest.fn().mockResolvedValue(mockOrder);
+      // UPDATE: mock ordersRepo
+      ordersRepo.findById.mockResolvedValue(mockOrder as any);
 
       // Act & Assert
       await expect(
@@ -260,8 +274,9 @@ describe('PaymentService', () => {
 
     it('should parse order ID from various content formats', async () => {
       // Arrange
-      prismaService.order.findUnique = jest.fn().mockResolvedValue(mockOrder);
-      prismaService.order.update = jest.fn().mockResolvedValue(mockOrder);
+      // UPDATE: mock ordersRepo
+      ordersRepo.findById.mockResolvedValue(mockOrder as any);
+      ordersRepo.update.mockResolvedValue(mockOrder as any);
 
       const payloads = [
         { content: 'order-123', amount: 500000 },

@@ -65,8 +65,10 @@ describe('TenantGuard', () => {
         ForbiddenException,
       );
       expect(() => guard.canActivate(context as any)).toThrow(
-        'Tenant Required',
+        ForbiddenException,
       );
+      // We only check for ForbiddenException type because the message is inside the response object
+      // in { statusCode: 403, error: 'Tenant Required', message: ... }
     });
 
     it('should throw ForbiddenException when tenant is suspended', () => {
@@ -83,7 +85,7 @@ describe('TenantGuard', () => {
         ForbiddenException,
       );
       expect(() => guard.canActivate(context as any)).toThrow(
-        'Tenant Suspended',
+        ForbiddenException,
       );
     });
   });

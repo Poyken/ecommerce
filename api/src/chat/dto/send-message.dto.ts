@@ -1,41 +1,12 @@
-import { IsEnum, IsObject, IsOptional, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class SendMessageDto {
-  /**
-   * =====================================================================
-   * SEND MESSAGE DTO
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. POLYMORPHIC MESSAGES:
-   * - Chat không chỉ có text mà còn có hình ảnh, sản phẩm, đơn hàng.
-   * - `type`: Xác định loại tin nhắn để Client biết cách render (hiển thị ảnh hay thẻ sản phẩm).
-   * - `metadata`: Chứa thông tin bổ sung (VD: ID đơn hàng, URL ảnh).
-   *
-   * 2. CLIENT TEMP ID:
-   * - Dùng để Optimistic UI (Hiển thị tin nhắn ngay lập tức trước khi Server phản hồi). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+const SendMessageSchema = z.object({
+  content: z.string().min(1),
+  toUserId: z.string().optional(),
+  clientTempId: z.string().optional(),
+  type: z.enum(['TEXT', 'IMAGE', 'PRODUCT', 'ORDER']).optional(),
+  metadata: z.any().optional(),
+});
 
-   * =====================================================================
-   */
-  @IsString()
-  content: string;
-
-  @IsString()
-  @IsOptional()
-  toUserId?: string;
-
-  @IsString()
-  @IsOptional()
-  clientTempId?: string;
-
-  @IsEnum(['TEXT', 'IMAGE', 'PRODUCT', 'ORDER'])
-  @IsOptional()
-  type?: 'TEXT' | 'IMAGE' | 'PRODUCT' | 'ORDER';
-
-  @IsObject()
-  @IsOptional()
-  metadata?: any;
-}
+export class SendMessageDto extends createZodDto(SendMessageSchema) {}

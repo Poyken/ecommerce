@@ -1,12 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class AssignRolesDto {
-  @ApiProperty({
-    description: 'Danh sách các role cần gán cho user',
-    example: ['admin', 'manager'],
-  })
-  @IsArray()
-  @IsString({ each: true })
-  roles: string[];
-}
+export const AssignRolesSchema = z.object({
+  roles: z
+    .array(z.string())
+    .min(1, 'Roles must not be empty')
+    .describe('List of role names required to assign'),
+});
+
+export class AssignRolesDto extends createZodDto(AssignRolesSchema) {}

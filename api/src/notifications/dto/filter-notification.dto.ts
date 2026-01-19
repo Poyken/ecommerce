@@ -1,22 +1,17 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
-import { PaginationQueryDto, stringToBoolean } from '@/common/dto/base.dto';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
+import { PaginationQuerySchema } from '@/common/dto/base.dto';
 
-export class FilterNotificationDto extends PaginationQueryDto {
-  @ApiPropertyOptional({ description: 'ID User' })
-  @IsOptional()
-  @IsString()
-  userId?: string;
+const FilterNotificationSchema = PaginationQuerySchema.extend({
+  userId: z.string().optional().describe('ID User'),
+  type: z.string().optional().describe('Loại thông báo (VD: ORDER, SYSTEM)'),
+  isRead: z
+    .boolean()
+    .optional()
+    .or(z.string().transform((val) => val === 'true'))
+    .describe('Trình trạng đã đọc'),
+});
 
-  @ApiPropertyOptional({ description: 'Loại thông báo (VD: ORDER, SYSTEM)' })
-  @IsOptional()
-  @IsString()
-  type?: string;
-
-  @ApiPropertyOptional({ description: 'Trình trạng đã đọc' })
-  @IsOptional()
-  @Transform(({ value }) => stringToBoolean(value))
-  @IsBoolean()
-  isRead?: boolean;
-}
+export class FilterNotificationDto extends createZodDto(
+  FilterNotificationSchema,
+) {}

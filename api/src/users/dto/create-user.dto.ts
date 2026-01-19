@@ -1,11 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MinLength,
-} from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
 /**
  * =====================================================================
@@ -13,30 +7,20 @@ import {
  * =====================================================================
  */
 
-export class CreateUserDto {
-  @ApiProperty({ example: 'admin@example.com' })
-  @IsEmail({}, { message: 'Email không hợp lệ' })
-  @IsNotEmpty({ message: 'Email không được để trống' })
-  email: string;
+export const CreateUserSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'Email không được để trống')
+    .email('Email không hợp lệ')
+    .describe('admin@example.com'),
+  password: z
+    .string()
+    .min(1, 'Mật khẩu không được để trống')
+    .min(6, 'Mật khẩu phải ít nhất 6 ký tự')
+    .describe('password123'),
+  firstName: z.string().min(1, 'Tên không được để trống').describe('Admin'),
+  lastName: z.string().min(1, 'Họ không được để trống').describe('System'),
+  avatarUrl: z.string().optional().describe('https://avatar-url.com'),
+});
 
-  @ApiProperty({ example: 'password123', minLength: 6 })
-  @IsString()
-  @IsNotEmpty({ message: 'Mật khẩu không được để trống' })
-  @MinLength(6, { message: 'Mật khẩu phải ít nhất 6 ký tự' })
-  password: string;
-
-  @ApiProperty({ example: 'Admin' })
-  @IsString()
-  @IsNotEmpty({ message: 'Tên không được để trống' })
-  firstName: string;
-
-  @ApiProperty({ example: 'System' })
-  @IsString()
-  @IsNotEmpty({ message: 'Họ không được để trống' })
-  lastName: string;
-
-  @ApiPropertyOptional({ example: 'https://avatar-url.com' })
-  @IsString()
-  @IsOptional()
-  avatarUrl?: string;
-}
+export class CreateUserDto extends createZodDto(CreateUserSchema) {}

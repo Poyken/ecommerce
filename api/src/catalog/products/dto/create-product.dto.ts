@@ -1,117 +1,49 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import {
-  IsArray,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  IsUUID,
-  ValidateNested,
-} from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
 /**
  * =====================================================================
- * CREATE PRODUCT DTO - Đối tượng tạo sản phẩm mới
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. NESTED VALIDATION (Kiểm tra lồng nhau):
- * - `@ValidateNested()`: Cho phép kiểm tra các object con nằm trong object cha.
- * - `@Type(() => CreateOptionDto)`: Cần thiết để `class-transformer` biết cách chuyển đổi dữ liệu thô sang class tương ứng trước khi validate.
- *
- * 2. PRODUCT OPTIONS:
- * - `options`: Cho phép định nghĩa các thuộc tính của sản phẩm (VD: Màu sắc, Kích thước) ngay khi tạo sản phẩm.
- * - Đây là bước chuẩn bị dữ liệu để sau này tạo ra các SKU (Biến thể) tương ứng.
- *
- * 3. RELATIONSHIPS:
- * - `categoryId` và `brandId`: Sử dụng `@IsUUID()` để đảm bảo sản phẩm luôn được gắn vào một danh mục và thương hiệu hợp lệ. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
-
+ * CREATE PRODUCT DTO
  * =====================================================================
  */
 
-export class CreateOptionDto {
-  @ApiProperty({ example: 'Color' })
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+export const CreateOptionSchema = z.object({
+  name: z.string().min(1, 'Name is required').describe('Color'),
+  values: z
+    .array(z.string())
+    .min(1)
+    .describe('List of values e.g. ["Red", "Blue"]'),
+});
 
-  @ApiProperty({ example: ['Red', 'Blue'] })
-  @IsArray()
-  @IsString({ each: true })
-  values: string[];
-}
+export class CreateOptionDto extends createZodDto(CreateOptionSchema) {}
 
-export class CreateProductImageDto {
-  @ApiProperty({ example: 'https://image-url.com' })
-  @IsString()
-  url: string;
+export const CreateProductImageSchema = z.object({
+  url: z.string().min(1).describe('https://image-url.com'),
+  alt: z.string().optional().describe('Front view'),
+  displayOrder: z.number().optional().describe('0'),
+});
 
-  @ApiProperty({ example: 'Front view', required: false })
-  @IsString()
-  @IsOptional()
-  alt?: string;
+export class CreateProductImageDto extends createZodDto(
+  CreateProductImageSchema,
+) {}
 
-  @ApiProperty({ example: 0, required: false })
-  @IsOptional()
-  displayOrder?: number;
-}
+export const CreateProductSchema = z.object({
+  name: z.string().min(1, 'Name is required').describe('iPhone 15 Pro Max'),
+  slug: z.string().optional().describe('iphone-15-pro-max'),
+  description: z.string().optional().describe('Flagship phone from Apple...'),
+  categoryIds: z
+    .array(z.string().uuid())
+    .min(1, 'At least one category is required')
+    .describe('List of category UUIDs'),
+  brandId: z.string().uuid().describe('Brand UUID'),
+  options: z.array(CreateOptionSchema).optional().describe('Product options'),
+  images: z
+    .array(CreateProductImageSchema)
+    .optional()
+    .describe('Product images'),
+  metaTitle: z.string().optional().describe('SEO Title'),
+  metaDescription: z.string().optional().describe('SEO Description'),
+  metaKeywords: z.string().optional().describe('SEO Keywords'),
+});
 
-export class CreateProductDto {
-  @ApiProperty({ example: 'iPhone 15 Pro Max' })
-  @IsString()
-  @IsNotEmpty()
-  name: string;
-
-  @ApiProperty({ example: 'iphone-15-pro-max', required: false })
-  @IsString()
-  @IsOptional()
-  slug?: string;
-
-  @ApiProperty({ example: 'Flagship phone from Apple...' })
-  @IsString()
-  @IsOptional()
-  description?: string;
-
-  @ApiProperty({ example: ['uuid-category-id'] })
-  @IsArray()
-  @IsUUID('all', { each: true })
-  @IsNotEmpty()
-  categoryIds: string[];
-
-  @ApiProperty({ example: 'uuid-brand-id' })
-  @IsUUID()
-  @IsNotEmpty()
-  brandId: string;
-
-  @ApiProperty({ type: [CreateOptionDto], required: false })
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateOptionDto)
-  options?: CreateOptionDto[];
-
-  @ApiProperty({ type: [CreateProductImageDto], required: false })
-  @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => CreateProductImageDto)
-  images?: CreateProductImageDto[];
-
-  @ApiProperty({ example: 'SEO Title', required: false })
-  @IsString()
-  @IsOptional()
-  metaTitle?: string;
-
-  @ApiProperty({ example: 'SEO Description', required: false })
-  @IsString()
-  @IsOptional()
-  metaDescription?: string;
-
-  @ApiProperty({ example: 'iphone, apple, phone', required: false })
-  @IsString()
-  @IsOptional()
-  metaKeywords?: string;
-}
+export class CreateProductDto extends createZodDto(CreateProductSchema) {}

@@ -2,6 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProcurementService } from './procurement.service';
 import { PrismaService } from '@/core/prisma/prisma.service';
 import { InventoryService } from '@/inventory/inventory.service';
+import { PurchaseOrderStatus } from '@prisma/client';
+
+jest.mock('@/core/tenant/tenant.context', () => ({
+  getTenant: jest.fn().mockReturnValue({ id: 'tenant-1' }),
+}));
 
 describe('ProcurementService', () => {
   let service: ProcurementService;
@@ -94,11 +99,15 @@ describe('ProcurementService', () => {
       const expectedPO = {
         id: 'po-1',
         supplierId: dto.supplierId,
-        status: 'PENDING',
+        status: PurchaseOrderStatus.PENDING,
         totalAmount: 2000000,
         items: dto.items,
       };
 
+      mockPrismaService.supplier.findUnique.mockResolvedValue({
+        id: dto.supplierId,
+        tenantId: 'tenant-1',
+      });
       mockPrismaService.purchaseOrder.create.mockResolvedValue(expectedPO);
 
       const result = await service.createPurchaseOrder(userId, dto);

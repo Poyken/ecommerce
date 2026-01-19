@@ -22,39 +22,15 @@
  * =====================================================================
  */
 
-import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class WebhookPayloadDto {
-  @ApiProperty({
-    example: 'VQ-12345678',
-    description: 'Transaction ID from bank',
-  })
-  @IsString()
-  @IsOptional()
-  gatewayTransactionId?: string;
+const WebhookPayloadSchema = z.object({
+  gatewayTransactionId: z.string().optional().describe('VQ-12345678'),
+  content: z.string().describe('Transaction description'),
+  amount: z.number().describe('500000'),
+  transactionDate: z.string().optional().describe('ISO Date String'),
+  accountNumber: z.string().optional().describe('123456'),
+});
 
-  @ApiProperty({
-    example: 'THANHTOAN clr...',
-    description: 'Transaction content/description',
-  })
-  @IsString()
-  content: string; // The content usually contains the Order ID
-
-  @ApiProperty({ example: 500000, description: 'Amount transferred' })
-  @IsNumber()
-  amount: number;
-
-  @ApiProperty({
-    example: '2023-10-27T10:00:00Z',
-    description: 'Transaction date',
-  })
-  @IsString()
-  @IsOptional()
-  transactionDate?: string;
-
-  @ApiProperty({ example: '123456', description: 'Account number of sender' })
-  @IsString()
-  @IsOptional()
-  accountNumber?: string;
-}
+export class WebhookPayloadDto extends createZodDto(WebhookPayloadSchema) {}
