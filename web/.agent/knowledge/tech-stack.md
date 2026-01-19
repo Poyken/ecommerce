@@ -73,18 +73,18 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 
 | Package     | Version | Mục đích        |
 | ----------- | ------- | --------------- |
-| `next`      | 16.x    | React Framework |
-| `react`     | 19.x    | UI Library      |
-| `react-dom` | 19.x    | DOM Rendering   |
+| `next`      | 16.1.x  | React Framework |
+| `react`     | 19.2.x  | UI Library      |
+| `react-dom` | 19.2.x  | DOM Rendering   |
 
 ### State & Data
 
-| Package     | Mục đích                             |
-| ----------- | ------------------------------------ |
-| `zustand`   | Global State Management              |
-| `swr`       | Data Fetching & Caching              |
-| `nuqs`      | URL State Management (Search Params) |
-| `next-intl` | Internationalization (i18n)          |
+| Package     | Version | Mục đích                             |
+| ----------- | ------- | ------------------------------------ |
+| `zustand`   |         | Global State Management              |
+| `swr`       |         | Data Fetching & Caching              |
+| `nuqs`      | 2.8.x   | URL State Management (Search Params) |
+| `next-intl` | 4.6.x   | Internationalization (i18n)          |
 
 ### Forms
 
@@ -116,7 +116,7 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 | `@radix-ui/*`              | Headless UI (Accessible) |
 | `lucide-react`             | Icons                    |
 | `framer-motion`            | Animations               |
-| `tailwindcss`              | Styling                  |
+| `tailwindcss`              | 4.x (CSS-first)          |
 | `class-variance-authority` | Variant Styling          |
 | `tailwind-merge`           | Class Merging            |
 

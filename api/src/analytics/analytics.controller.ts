@@ -8,6 +8,28 @@ import { getTenant } from '@/core/tenant/tenant.context';
 
 import { AppPermission } from '@/common/enums/permissions.enum';
 
+/**
+ * =====================================================================
+ * ANALYTICS CONTROLLER - Hệ thống Báo cáo & Thống kê
+ * =====================================================================
+ *
+ * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
+ *
+ * 1. DATA VISUALIZATION:
+ * - Tập trung các API cung cấp dữ liệu cho Dashboard của Admin.
+ * - Dữ liệu thường được tổng hợp (Aggregate) từ nhiều bảng (Orders, Users, Payments).
+ *
+ * 2. TENANT ISOLATION:
+ * - Quan trọng: Luôn lấy `tenantId` từ context để đảm bảo Admin cửa hàng A không xem được doanh thu cửa hàng B.
+ *
+ * 3. PERMISSIONS:
+ * - Sử dụng `AppPermission.ANALYTICS_READ` để giới hạn quyền truy cập.
+ *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Hiển thị biểu đồ doanh thu, top sản phẩm và thống kê đơn hàng theo thời gian thực.
+ *
+ * =====================================================================
+ */
 @ApiTags('Admin Analytics')
 @ApiBearerAuth()
 @Controller('admin/analytics')

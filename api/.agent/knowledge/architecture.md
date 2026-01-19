@@ -65,10 +65,28 @@ Dựa vào `schema.prisma` hiện tại, đây là lộ trình khuyến nghị:
 
 **Kiến trúc:** Modular Monolith (Tách biệt Logical).
 
+- **Domain Module Consolidation**: Gom nhóm các module nhỏ thành Feature Modules để dễ quản lý và module hóa:
+  - `CatalogModule`: Categories, Brands, Products, Skus.
+  - `SalesModule`: Orders, Cart, Payment, Invoices, Shipping.
+  - `AiModule`: Chat, Agent, Insights, RAG, ImageProcessor.
 - **Database:**
   - Sử dụng **Read Replicas**: Đẩy các query đọc (Catalog, Listing) sang Replica, Master chỉ để ghi (Order, Inventory).
   - Tối ưu bảng `AuditLog`, `InventoryLog`: Partitioning bảng theo thời gian (ví dụ: mỗi tháng 1 partition) để giữ bảng chính nhẹ.
-- **Application:** Tách `Worker Service` để xử lý background jobs (gửi email, xử lý ảnh, tính toán report) để API chính không bị block.
+- **Application:** Tách `Worker Service` để xử lý background jobs (gửi email, xử lý ảnh, tính toán report) thông qua BullMQ + Outbox Pattern.
+
+---
+
+## 4. Quyết định Kiến trúc (ADR)
+
+- **ADR-008: Domain Module Consolidation**
+  - Lý do: Giảm số lượng module rời rạc (35+), tăng tính đóng gói của các domain lớn.
+  - Trade-offs: Cần quản lý kỹ circular dependencies bằng `forwardRef`.
+
+- **ADR-009: Transactional Outbox Pattern**
+  - Lý do: Đảm bảo tính nhất quán dữ liệu giữa Database và Message Queue (Zero Data Loss).
+  - Giải pháp: Lưu event vào bảng `OutboxEvent` trong cùng transaction với nghiệp vụ chính. Một background process (Poll worker) sẽ quét table này để đẩy sang BullMQ.
+
+---
 
 ### Cấp độ 3: Scale (1,000+ Tenants, Enterprise Customers)
 

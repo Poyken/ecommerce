@@ -4,9 +4,20 @@ Tài liệu này đánh giá kiến trúc hiện tại của dự án Ecommerce 
 
 ## 1. Đánh giá Kiến trúc Hiện tại
 
-**Kiến trúc:** Modular Monolith (NestJS) + Shared Database Multi-tenancy (Discriminator Column).
+**Kiến trúc:** Next.js 16 (App Router) + TailwindCSS 4 + SWR.
 
-Dựa trên cấu trúc file và `schema.prisma`, hệ thống đang sử dụng chung một cơ sở dữ liệu cho tất cả Tenant, phân biệt bằng trường `tenantId`.
+## 1. Frontend Patterns (Next.js 16)
+
+- **Server-First Data Fetching**: Ưu tiên Server Component để fetch data ban đầu (SEO & Speed).
+- **Type-Safe Actions**: Mọi thao tác mutate data (POST/PATCH/DELETE) PHẢI qua `next-safe-action`.
+- **SWR for Client Logic**: Dùng SWR cho các phần cần real-time, optimistic UI hoặc background revalidation (Cart, Wishlist, Product Live Filter).
+- **Zustand for App State**: Quản lý UI state nhẹ (Sidebar, Modals, Local Settings).
+
+## 2. Component System (Shadcn/UI)
+
+- **Rich Aesthetics**: Sử dụng Tailwind 4 với CSS variables cho dynamic theming (Tenant-specific primary colors).
+- **Micro-animations**: Framer Motion cho các tương tác premium.
+- **Responsive-First**: Mobile-first design sử dụng flex/grid utilities.
 
 ### Ưu điểm:
 

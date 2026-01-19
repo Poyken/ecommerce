@@ -17,10 +17,10 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 | `@nestjs/swagger`       | 11.x    | API Documentation                  |
 | `@nestjs/throttler`     | 6.x     | Rate Limiting                      |
 | `@nestjs/bullmq`        | 11.x    | Job Queue                          |
-| `@nestjs/event-emitter` | 3.x     | Domain Events                      |
 | `@nestjs/schedule`      | 6.x     | Cron Jobs                          |
 | `@nestjs/websockets`    | 11.x    | Real-time                          |
 | `@nestjs/cache-manager` | 3.x     | Caching                            |
+| `nestjs-zod`            | 5.1.x   | Zod Integration for NestJS         |
 | `nestjs-cls`            | 6.x     | Tenant Context Storage             |
 | `nestjs-i18n`           | 10.x    | Backend Internationalization       |
 
@@ -28,8 +28,8 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 
 | Package          | Version | Mục đích        |
 | ---------------- | ------- | --------------- |
-| `prisma`         | 5.22.0  | ORM CLI         |
-| `@prisma/client` | 5.22.0  | Database Client |
+| `prisma`         | 6.2.1   | ORM CLI         |
+| `@prisma/client` | 6.2.1   | Database Client |
 | `ioredis`        | 5.x     | Redis Client    |
 
 ### Validation (Zod-First Standard)
@@ -38,20 +38,21 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 | ----------------- | ---------- | --------------------------- |
 | `joi`             | ❌ REMOVED | Đã loại bỏ hoàn toàn        |
 | `class-validator` | ❌ REMOVED | Đã loại bỏ hoàn toàn        |
-| `zod`             | 3.x        | ✅ Chuẩn duy nhất API + Web |
+| `zod`             | 4.x        | ✅ Chuẩn duy nhất API + Web |
 
 ### Utilities
 
-| Package      | Mục đích            |
-| ------------ | ------------------- |
-| `bcrypt`     | Password hashing    |
-| `nodemailer` | Email sending       |
-| `otplib`     | 2FA OTP generation  |
-| `cloudinary` | Image upload        |
-| `sharp`      | Image processing    |
-| `slugify`    | URL slug generation |
-| `exceljs`    | Excel export        |
-| `winston`    | Logging             |
+| Package      | Mục đích                  |
+| ------------ | ------------------------- |
+| `bcrypt`     | Password hashing (Legacy) |
+| `argon2`     | Password hashing (Modern) |
+| `nodemailer` | Email sending             |
+| `otplib`     | 2FA OTP generation        |
+| `cloudinary` | Image upload              |
+| `sharp`      | Image processing          |
+| `slugify`    | URL slug generation       |
+| `exceljs`    | Excel export              |
+| `winston`    | Logging                   |
 
 ### AI
 
