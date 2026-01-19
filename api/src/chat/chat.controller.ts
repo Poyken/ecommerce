@@ -24,7 +24,7 @@ import { ChatService } from './chat.service';
  * 2. USER VIEW:
  * - API `/my-history` giúp khách hàng load lại tin nhắn của chính họ khi F5 trang web hoặc chuyển đổi thiết bị. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

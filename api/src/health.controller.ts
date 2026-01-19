@@ -22,7 +22,7 @@ import type { Response } from 'express';
  * - Hàm `info` trả về các thông số kỹ thuật như: Lượng RAM đang dùng, CPU, Uptime (thời gian server đã chạy liên tục).
  * - Giúp phát hiện sớm các lỗi tràn bộ nhớ (Memory Leak). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

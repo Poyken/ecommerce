@@ -15,7 +15,7 @@ import { z } from 'zod';
  * 2. GRANULARITY (Độ chi tiết):
  * - Mỗi Permission nên đại diện cho một hành động duy nhất trên một tài nguyên duy nhất. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

@@ -32,7 +32,7 @@ import { WishlistService } from './wishlist.service';
  * 2. MERGE WISHLIST (Hợp nhất dữ liệu):
  * - Khi khách hàng vãng lai (Guest) đăng nhập, ta gọi API `merge` để đưa các sản phẩm họ đã thích ở Client vào tài khoản chính thức trong DB. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

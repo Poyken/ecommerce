@@ -39,7 +39,7 @@ import { UpdateAddressDto } from './dto/update-address.dto';
  * 3. RESTFUL API:
  * - Sử dụng đầy đủ các phương thức: `POST` (Tạo), `GET` (Lấy), `PATCH` (Cập nhật), `DELETE` (Xóa). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Cho phép người dùng đầu cuối (Customer) quản lý danh sách địa chỉ nhận hàng của họ một cách an toàn.
 
  * =====================================================================
  */

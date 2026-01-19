@@ -21,7 +21,7 @@ import { ShippingService } from './shipping.service';
  * - Khi trạng thái đơn hàng thay đổi trên hệ thống GHN (Đang giao, Đã giao...), GHN sẽ gọi vào API `/webhook` này.
  * - Hệ thống tự động cập nhật trạng thái đơn hàng trong DB mà không cần Admin phải làm thủ công. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

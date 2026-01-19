@@ -15,7 +15,7 @@ import { CreateAddressDto } from './create-address.dto';
  * 2. FLEXIBILITY:
  * - Cho phép người dùng chỉ cập nhật một vài thông tin (VD: chỉ đổi số điện thoại) mà không cần gửi lại toàn bộ địa chỉ. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

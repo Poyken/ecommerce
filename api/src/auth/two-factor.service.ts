@@ -23,7 +23,7 @@ import { toDataURL } from 'qrcode';
  * - Bước 2: User quét mã bằng app điện thoại.
  * - Bước 3: User nhập mã từ app để xác nhận -> Server lưu Secret và bật `twoFactorEnabled`. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

@@ -69,7 +69,7 @@ export class CustomerGroupsController {
 
   @Get('groups')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('CUSTOMER_GROUP_READ')
+  @RequirePermissions('customer-group:read')
   @ApiOperation({ summary: 'Danh sách nhóm khách hàng' })
   findAllGroups() {
     return this.service.findAllGroups();
@@ -77,7 +77,7 @@ export class CustomerGroupsController {
 
   @Post('groups')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('CUSTOMER_GROUP_CREATE')
+  @RequirePermissions('customer-group:create')
   @ApiOperation({ summary: 'Tạo nhóm khách hàng mới' })
   createGroup(@Body() dto: CreateCustomerGroupDto) {
     return this.service.createGroup(dto);
@@ -85,7 +85,7 @@ export class CustomerGroupsController {
 
   @Get('groups/:id')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('CUSTOMER_GROUP_READ')
+  @RequirePermissions('customer-group:read')
   @ApiOperation({ summary: 'Chi tiết nhóm khách hàng' })
   findOneGroup(@Param('id') id: string) {
     return this.service.findOneGroup(id);
@@ -93,7 +93,7 @@ export class CustomerGroupsController {
 
   @Put('groups/:id')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('CUSTOMER_GROUP_UPDATE')
+  @RequirePermissions('customer-group:update')
   @ApiOperation({ summary: 'Cập nhật nhóm khách hàng' })
   updateGroup(@Param('id') id: string, @Body() dto: UpdateCustomerGroupDto) {
     return this.service.updateGroup(id, dto);
@@ -101,7 +101,7 @@ export class CustomerGroupsController {
 
   @Delete('groups/:id')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('CUSTOMER_GROUP_DELETE')
+  @RequirePermissions('customer-group:delete')
   @ApiOperation({ summary: 'Xóa nhóm khách hàng' })
   deleteGroup(@Param('id') id: string) {
     return this.service.deleteGroup(id);
@@ -109,7 +109,7 @@ export class CustomerGroupsController {
 
   @Post('groups/:id/users/:userId')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('CUSTOMER_GROUP_UPDATE')
+  @RequirePermissions('customer-group:update')
   @ApiOperation({ summary: 'Thêm user vào nhóm' })
   addUserToGroup(
     @Param('id') groupId: string,
@@ -120,7 +120,7 @@ export class CustomerGroupsController {
 
   @Delete('groups/users/:userId')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('CUSTOMER_GROUP_UPDATE')
+  @RequirePermissions('customer-group:update')
   @ApiOperation({ summary: 'Xóa user khỏi nhóm' })
   removeUserFromGroup(@Param('userId') userId: string) {
     return this.service.removeUserFromGroup(userId);
@@ -132,7 +132,7 @@ export class CustomerGroupsController {
 
   @Get('price-lists')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('PRICE_LIST_READ')
+  @RequirePermissions('price-list:read')
   @ApiOperation({ summary: 'Danh sách bảng giá' })
   findAllPriceLists() {
     return this.service.findAllPriceLists();
@@ -140,7 +140,7 @@ export class CustomerGroupsController {
 
   @Post('price-lists')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('PRICE_LIST_CREATE')
+  @RequirePermissions('price-list:create')
   @ApiOperation({ summary: 'Tạo bảng giá mới' })
   createPriceList(@Body() dto: CreatePriceListDto) {
     return this.service.createPriceList(dto);
@@ -148,7 +148,7 @@ export class CustomerGroupsController {
 
   @Get('price-lists/:id')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('PRICE_LIST_READ')
+  @RequirePermissions('price-list:read')
   @ApiOperation({ summary: 'Chi tiết bảng giá' })
   findOnePriceList(@Param('id') id: string) {
     return this.service.findOnePriceList(id);
@@ -156,7 +156,7 @@ export class CustomerGroupsController {
 
   @Put('price-lists/:id')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('PRICE_LIST_UPDATE')
+  @RequirePermissions('price-list:update')
   @ApiOperation({ summary: 'Cập nhật bảng giá' })
   updatePriceList(@Param('id') id: string, @Body() dto: UpdatePriceListDto) {
     return this.service.updatePriceList(id, dto);
@@ -164,7 +164,7 @@ export class CustomerGroupsController {
 
   @Delete('price-lists/:id')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('PRICE_LIST_DELETE')
+  @RequirePermissions('price-list:delete')
   @ApiOperation({ summary: 'Xóa bảng giá' })
   deletePriceList(@Param('id') id: string) {
     return this.service.deletePriceList(id);
@@ -172,7 +172,7 @@ export class CustomerGroupsController {
 
   @Post('price-lists/:id/items')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('PRICE_LIST_UPDATE')
+  @RequirePermissions('price-list:update')
   @ApiOperation({ summary: 'Thêm/Cập nhật giá SKU trong bảng giá' })
   addPriceListItem(
     @Param('id') priceListId: string,
@@ -183,7 +183,7 @@ export class CustomerGroupsController {
 
   @Delete('price-lists/:id/items/:skuId')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('PRICE_LIST_UPDATE')
+  @RequirePermissions('price-list:update')
   @ApiOperation({ summary: 'Xóa giá SKU khỏi bảng giá' })
   removePriceListItem(
     @Param('id') priceListId: string,
@@ -194,7 +194,7 @@ export class CustomerGroupsController {
 
   @Post('price-lists/:id/assign/:groupId')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('PRICE_LIST_UPDATE')
+  @RequirePermissions('price-list:update')
   @ApiOperation({ summary: 'Gán bảng giá cho nhóm khách hàng' })
   assignPriceListToGroup(
     @Param('id') priceListId: string,
@@ -230,7 +230,7 @@ export class CustomerGroupsController {
 
   @Get('stats')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('CUSTOMER_GROUP_READ')
+  @RequirePermissions('customer-group:read')
   @ApiOperation({ summary: 'Thống kê B2B' })
   getStats() {
     return this.service.getB2BStats();

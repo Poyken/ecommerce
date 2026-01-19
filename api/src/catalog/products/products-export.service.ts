@@ -17,7 +17,7 @@ import * as ExcelJS from 'exceljs';
  * - Ta dùng kỹ thuật `Cursor-based batching`: Lấy từng 100 sản phẩm một, ghi vào file, rồi lấy tiếp 100 cái tiếp theo.
  * - `cursor` giúp Prisma biết cần bắt đầu lấy dữ liệu từ vị trí nào trong DB mà không cần dùng `offset` (chậm khi dữ liệu lớn). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

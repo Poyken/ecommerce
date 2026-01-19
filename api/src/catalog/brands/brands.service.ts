@@ -24,7 +24,7 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
  * - Trước khi tạo mới: Kiểm tra trùng tên thương hiệu (Conflict check).
  * - Trước khi xóa: Phải kiểm tra xem thương hiệu đó có đang chứa sản phẩm nào không. Nếu có -> KHÔNG được xóa để đảm bảo toàn vẹn dữ liệu (Integrity). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Quản lý các đối tác cung cấp, nhãn hiệu sản phẩm và xây dựng uy tín cho shop thông qua các thương hiệu nổi tiếng.
 
  * =====================================================================
  */

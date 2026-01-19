@@ -44,7 +44,7 @@ import { getTenant } from '@core/tenant/tenant.context';
  *    - Một "Tenant" tương ứng với một "Cửa hàng" độc lập.
  *    - Controller này không xử lý logic bán hàng, mà chỉ xử lý việc Cấp phép (Provisioning) cửa hàng mới. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Cung cấp giao diện quản trị cho Super Admin để giám sát, cấp phép và điều phối hoạt động của toàn bộ hệ thống Multi-tenant.
 
  * =================================================================================================
  */

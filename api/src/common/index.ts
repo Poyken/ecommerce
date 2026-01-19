@@ -9,7 +9,7 @@
  * - Đây là một "thùng chứa" (Barrel) giúp gom tất cả các export từ các file khác nhau trong cùng thư mục vào một nơi.
  * - Giúp việc import ở các file khác trở nên gọn gàng hơn (VD: `import { LoggerService, CacheService } from '@/common'`). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

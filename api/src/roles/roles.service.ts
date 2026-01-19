@@ -35,7 +35,7 @@ import { getTenant } from '@core/tenant/tenant.context';
  * 4. XÓA LAN TRUYỀN (Cascade Delete):
  * - Khi xóa một Role hoặc Permission, các liên kết trong bảng `RolePermission` cũng cần được xử lý (thường là DB tự động xóa nhờ `ON DELETE CASCADE`). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

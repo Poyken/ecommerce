@@ -16,7 +16,7 @@
  * - `cancelMyOrder`: User tự hủy đơn (nếu đơn chưa được xử lý).
  * - `getInvoice`: Xuất dữ liệu hóa đơn. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Cổng tiếp nhận đơn hàng từ khách hàng, cho phép admin theo dõi trạng thái thanh toán và điều phối quá trình đóng gói/giao hàng.
 
  * =====================================================================
  */

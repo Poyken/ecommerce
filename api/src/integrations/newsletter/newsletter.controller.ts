@@ -15,7 +15,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
  * 2. HTTP STATUS CODES:
  * - `@HttpCode(HttpStatus.OK)`: Mặc định POST trả về 201 (Created), nhưng ở đây ta dùng 200 (OK) vì hành động này giống như một yêu cầu xử lý hơn là tạo mới một tài nguyên phức tạp. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

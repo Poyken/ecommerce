@@ -23,7 +23,7 @@ import { SitemapService } from './sitemap.service';
  * 2. CONTROLLER:
  * - `SitemapController` sẽ trả về XML (text/xml) thay vì JSON thường thấy. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

@@ -30,7 +30,7 @@ import * as streamifier from 'streamifier';
  * 3. FOLDERS:
  * - Ảnh được phân loại vào các folder: `ecommerce-skus`, `ecommerce-products`, `ecommerce-reviews` để dễ quản lý. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

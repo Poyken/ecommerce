@@ -20,7 +20,7 @@ import { Strategy, VerifyCallback } from 'passport-google-oauth20';
  * 3. VALIDATE:
  * - Sau khi lấy được dữ liệu từ Google, ta "đóng gói" lại thành một Object User chuẩn của hệ thống để chuyển giao cho AuthService xử lý tiếp (Tạo mới hoặc đăng nhập). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

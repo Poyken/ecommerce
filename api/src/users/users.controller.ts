@@ -49,7 +49,7 @@ import { UsersService } from './users.service';
  * 4. PAGINATION & SEARCH:
  * - Hỗ trợ phân trang và tìm kiếm để Admin dễ dàng quản lý khi số lượng người dùng lên đến hàng ngàn. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

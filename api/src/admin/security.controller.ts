@@ -6,7 +6,7 @@
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
  * Controller này cung cấp các API cho trang Security Dashboard của Super Admin.
- * Tất cả endpoint đều yêu cầu quyền 'superAdmin:read' hoặc 'superAdmin:write'.
+ * Tất cả endpoint đều yêu cầu quyền 'super-admin:read' hoặc 'super-admin:update'.
  *
  * 1. CÁC ENDPOINT:
  *    - GET /admin/security/stats
@@ -30,7 +30,7 @@
  *    - JwtAuthGuard: Kiểm tra access token hợp lệ
  *    - PermissionsGuard + @Permissions(): Kiểm tra quyền superAdmin *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */
@@ -50,7 +50,7 @@ export class SecurityController {
   constructor(private readonly securityService: SecurityService) {}
 
   @Get('stats')
-  @RequirePermissions('superAdmin:read')
+  @RequirePermissions('super-admin:read')
   @ApiOperation({ summary: 'Lấy thống kê bảo mật (Super Admin)' })
   async getStats() {
     const result = await this.securityService.getSecurityStats();
@@ -58,7 +58,7 @@ export class SecurityController {
   }
 
   @Get('lockdown-status')
-  @RequirePermissions('superAdmin:read')
+  @RequirePermissions('super-admin:read')
   @ApiOperation({ summary: 'Kiểm tra trạng thái khóa hệ thống' })
   async getLockdownStatus() {
     const isLockdown = await this.securityService.getLockdownStatus();
@@ -66,7 +66,7 @@ export class SecurityController {
   }
 
   @Post('lockdown')
-  @RequirePermissions('superAdmin:write')
+  @RequirePermissions('super-admin:update')
   @ApiOperation({ summary: 'Bật/tắt chế độ khóa hệ thống khẩn cấp' })
   async toggleLockdown(@Req() req: any, @Body() body: { isEnabled: boolean }) {
     const result = await this.securityService.setSystemLockdown(
@@ -78,7 +78,7 @@ export class SecurityController {
   }
 
   @Get('whitelist')
-  @RequirePermissions('superAdmin:read')
+  @RequirePermissions('super-admin:read')
   @ApiOperation({ summary: 'Lấy danh sách IP whitelist của user' })
   async getWhitelist(@Req() req: any) {
     const result = await this.securityService.getWhitelistedIps(req.user.id);
@@ -86,7 +86,7 @@ export class SecurityController {
   }
 
   @Post('whitelist')
-  @RequirePermissions('superAdmin:write')
+  @RequirePermissions('super-admin:update')
   @ApiOperation({ summary: 'Cập nhật danh sách IP whitelist' })
   async updateWhitelist(@Req() req: any, @Body() body: { ips: string[] }) {
     const result = await this.securityService.updateWhitelistedIps(
@@ -97,7 +97,7 @@ export class SecurityController {
   }
 
   @Get('my-ip')
-  @RequirePermissions('superAdmin:read')
+  @RequirePermissions('super-admin:read')
   @ApiOperation({ summary: 'Lấy IP hiện tại của user' })
   getMyIp(@Req() req: any) {
     // In a production environment with a proxy, you might need to check x-forwarded-for

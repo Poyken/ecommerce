@@ -33,7 +33,7 @@ import { AuditService } from './audit.service';
  * - User bấm nút -> API trả về ngay -> Worker âm thầm ghi log sau.
  * -> Giúp API phản hồi nhanh hơn. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

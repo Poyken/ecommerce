@@ -27,7 +27,7 @@ import { maskSensitiveData } from '@/common/utils/masking';
  * 3. RESOURCE EXTRACTION:
  * - Logic trong hàm `intercept` tự động bóc tách URL để biết User đang tương tác với tài nguyên nào (Sản phẩm, Đơn hàng, Người dùng...) và lưu lại kèm theo Body của request. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

@@ -13,7 +13,7 @@
  * - Hỗ trợ nhập liệu từ Excel. Có chế độ `dryRun` (chạy thử) để validate dữ liệu
  *   trước khi ghi thật vào DB. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

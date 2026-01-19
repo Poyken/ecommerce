@@ -32,7 +32,7 @@ import { NotificationsGateway } from './notifications.gateway';
  * - `deleteOldReadNotifications`: Một Cron-job chạy ngầm mỗi đêm.
  * - Nhiệm vụ: Xóa các thông báo đã đọc và cũ hơn 30 ngày để giảm tải cho DB. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Gửi thông báo thời gian thực (Websocket) hoặc Email tới người dùng khi có sự kiện quan trọng như đơn hàng mới, cập nhật kho hoặc phản hồi review.
 
  * =====================================================================
  */

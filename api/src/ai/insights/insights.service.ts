@@ -1,17 +1,24 @@
 /**
  * =====================================================================
- * OUTBOX-CLEANUP PROCESSOR - DỌN DẸP DỮ LIỆU TỰ ĐỘNG (BULLMQ)
+ * AI INSIGHTS SERVICE - PHÂN TÍCH DỮ LIỆU KINH DOANH THÔNG MINH
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- *      dùng Redis (CACHE_MANAGER).
+ * 1. QUY TRÌNH TỔNG HỢP (Aggregation Flow):
+ * - Hệ thống quét qua các bảng dữ liệu quan trọng: `Orders` (Doanh thu), `Sku` (Tồn kho), `User` (Khách hàng).
+ * - Sử dụng các hàm `count`, `aggregate` của Prisma để tính toán chỉ số sức khỏe của cửa hàng.
  *
- * 3. LƯU Ý KHI SỬ DỤNG:
- *    - Khi có thay đổi lớn (VD: Đơn hàng mới, Nhập hàng), có thể gọi refreshInsights(). *
+ * 2. CHIẾN LƯỢC CACHING (4-Hour Window):
+ * - Do việc truy vấn và tính toán trên hàng ngàn đơn hàng rất tốn tài nguyên (Performance Heavy).
+ * - Kết quả được lưu vào Redis (`CACHE_MANAGER`) với thời gian sống (TTL) là 4 tiếng.
+ * - Admin chỉ tốn công tính toán 1 lần, các lần vào Dashboard sau sẽ lấy "vèo" từ Cache ra.
+ *
+ * 3. NGƯỠNG CẢNH BÁO (Thresholds):
+ * - Hệ thống đặt ra các mốc cứng (VD: Tồn kho < 5 là Warning) để AI đưa ra khuyến nghị chính xác.
+ *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
-
+ * - Cung cấp "trợ lý ảo" cho chủ shop, tự động nhắc nhở nhập hàng khi sắp hết hoặc chúc mừng khi doanh thu vượt mục tiêu.
  * =====================================================================
  */
 

@@ -42,7 +42,7 @@ import { GHNService } from './ghn.service';
  * - Phí vận chuyển được tính dựa trên DistrictID và WardCode.
  * - Mặc định tính theo gói 1kg để có giá dự kiến nhanh nhất cho khách. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tích hợp với GHN/GHTK để lấy mã vận đơn, tính phí ship thời gian thực và tự động cập nhật trạng thái đơn hàng qua Webhook.
 
  * =====================================================================
  */

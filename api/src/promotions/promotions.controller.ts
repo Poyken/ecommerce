@@ -53,7 +53,7 @@ export class PromotionsController {
 
   @Post()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('PROMOTION_CREATE')
+  @RequirePermissions('promotion:create')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Tạo chương trình khuyến mãi mới' })
   @ApiResponse({ status: 201, description: 'Tạo thành công' })
@@ -69,7 +69,7 @@ export class PromotionsController {
 
   @Get()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('PROMOTION_READ')
+  @RequirePermissions('promotion:read')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Lấy danh sách chương trình khuyến mãi' })
   @ApiQuery({
@@ -163,7 +163,7 @@ export class PromotionsController {
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('PROMOTION_READ')
+  @RequirePermissions('promotion:read')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Lấy chi tiết chương trình khuyến mãi' })
   @ApiParam({ name: 'id', description: 'ID khuyến mãi' })
@@ -175,7 +175,7 @@ export class PromotionsController {
 
   @Get(':id/stats')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('PROMOTION_READ')
+  @RequirePermissions('promotion:read')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Thống kê sử dụng khuyến mãi' })
   @ApiParam({ name: 'id', description: 'ID khuyến mãi' })
@@ -189,7 +189,7 @@ export class PromotionsController {
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('PROMOTION_UPDATE')
+  @RequirePermissions('promotion:update')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Cập nhật chương trình khuyến mãi' })
   @ApiParam({ name: 'id', description: 'ID khuyến mãi' })
@@ -201,7 +201,7 @@ export class PromotionsController {
 
   @Patch(':id/toggle')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('PROMOTION_UPDATE')
+  @RequirePermissions('promotion:update')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Bật/Tắt chương trình khuyến mãi' })
   @ApiParam({ name: 'id', description: 'ID khuyến mãi' })
@@ -213,7 +213,7 @@ export class PromotionsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @RequirePermissions('PROMOTION_DELETE')
+  @RequirePermissions('promotion:delete')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Xóa chương trình khuyến mãi' })
   @ApiParam({ name: 'id', description: 'ID khuyến mãi' })

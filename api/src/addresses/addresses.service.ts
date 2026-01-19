@@ -24,7 +24,7 @@ import { UpdateAddressDto } from './dto/update-address.dto';
  * 3. HỨNG DỮ LIỆU (Data Ordering):
  * - Luôn đưa địa chỉ mặc định lên đầu danh sách (`orderBy: { isDefault: 'desc' }`) để khi vào trang Checkout user thấy ngay. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tự động điền thông tin giao hàng khi đặt hàng, tính toán phí vận chuyển (GHN/GHTK) và quản lý sổ địa chỉ của khách hàng.
 
  * =====================================================================
  */

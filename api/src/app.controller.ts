@@ -14,7 +14,7 @@ import { Controller } from '@nestjs/common';
  * 2. ROUTING:
  * - `@Controller()` không có tham số nghĩa là nó sẽ lắng nghe ở đường dẫn gốc (`/`). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

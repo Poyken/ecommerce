@@ -37,7 +37,7 @@ import { NotificationsService } from './notifications.service';
  * - Thông báo khuyến mãi
  * - Chat support (nếu mở rộng) *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Cầu nối Websocket thời gian thực, giúp đẩy thông báo quan trọng đến trình duyệt của người dùng ngay lập tức mà không cần F5 trang.
 
  * =====================================================================
  */

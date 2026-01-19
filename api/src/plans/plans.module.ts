@@ -9,7 +9,7 @@
  * - Module này export `PlansService` để các module khác (VD: `SubscriptionModule`)
  *   có thể gọi hàm lấy thông tin gói cước (giá, giới hạn features) để xử lý đăng ký. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

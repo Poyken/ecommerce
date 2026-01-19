@@ -21,7 +21,7 @@ import { SenderType } from '@prisma/client';
  * 3. DỌN DẸP DỮ LIỆU (Data Pruning):
  * - Chat sinh ra rất nhiều dữ liệu rác. Hàm `pruneOldMessages` chạy định kỳ hàng tuần để xóa các tin nhắn cũ hơn 180 ngày, giữ cho DB luôn nhẹ nhàng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

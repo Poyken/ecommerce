@@ -23,7 +23,7 @@ import { EncryptionService } from '@core/security/encryption.service';
  * 3. REUSABILITY:
  * - Giúp code tuân thủ nguyên lý DRY (Don't Repeat Yourself), tránh việc khởi tạo lại các dịch vụ cơ bản ở nhiều nơi. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

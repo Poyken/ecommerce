@@ -18,7 +18,7 @@ import { Injectable } from '@nestjs/common';
  * 3. ASYNCHRONOUS:
  * - Mặc dù không xử lý gì phức tạp, hàm vẫn trả về `Promise` để tương thích với các chiến lược thanh toán online (như Stripe) cần gọi mạng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

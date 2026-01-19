@@ -15,7 +15,7 @@ import { CreateRoleDto } from './create-role.dto';
  * 2. OPTIONAL FIELDS:
  * - Tất cả các trường kế thừa đều trở thành tùy chọn, cho phép cập nhật từng phần (Patch) thông tin vai trò. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

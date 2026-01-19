@@ -16,7 +16,7 @@ import { z } from 'zod';
  * 2. ZOD VALIDATOR:
  * - Thư viện này tự động kiểm tra dữ liệu đầu vào trước khi đến Controller. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
  *
  * =====================================================================
  */

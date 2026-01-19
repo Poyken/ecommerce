@@ -17,7 +17,7 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  * 3. PRISMA INTEGRATION:
  * - Sử dụng `PrismaModule` để thực hiện các truy vấn CRUD trên bảng `User`. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

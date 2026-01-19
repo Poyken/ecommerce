@@ -21,7 +21,7 @@ import { getTenant } from '@core/tenant/tenant.context';
  * 3. BULK UPDATE:
  * - Cập nhật giá/tồn kho hàng loạt theo phần trăm hoặc số cố định. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

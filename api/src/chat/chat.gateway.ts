@@ -28,7 +28,7 @@ import { ChatService } from './chat.service';
  * 3. SURGICAL EMITS:
  * - Thay vì gửi nguyên object DB cồng kềnh, ta chỉ gửi những field cần thiết (Sanitization) qua socket để tiết kiệm băng thông. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

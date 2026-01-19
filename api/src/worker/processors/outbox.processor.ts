@@ -27,7 +27,7 @@ import { Queue } from 'bullmq';
  * - Nó lấy Event từ DB -> Đẩy vào BullMQ thật sự -> Đánh dấu là COMPLETED.
  * - Cơ chế này đảm bảo "At-least-once delivery" (Gửi ít nhất 1 lần). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Đảm bảo các tác vụ nền (gửi email, sync kho) luôn được thực hiện thành công bằng cách quét và xử lý các sự kiện trong bảng Outbox định kỳ.
 
  * =====================================================================
  */

@@ -22,7 +22,7 @@ import * as crypto from 'crypto';
  * 3. JTI (JWT ID):
  * - Mỗi Token sinh ra có một mã `jti` duy nhất để tránh việc tái sử dụng Token (Replay Attack). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Quản lý vòng đời của mã định danh (JWT), xử lý cấp mới (Rotation) và thu hồi (Revoke) quyền truy cập để đảm bảo an toàn cho tài khoản người dùng.
 
  * =====================================================================
  */

@@ -21,7 +21,7 @@ import { Queue } from 'bullmq';
  * 3. IP & USER-AGENT:
  * - Luôn lưu lại IP và thiết bị của người dùng để phục vụ việc điều tra khi có sự cố bảo mật. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

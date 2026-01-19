@@ -21,6 +21,9 @@
  * 3. TENANCY:
  *    - Các kho hàng tách biệt hoàn toàn theo TenantId.
  *    - Shipper/Nhân viên kho chỉ thấy kho của cửa hàng họ.
+ *
+ * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
+ * - Quản lý mạng lưới kho hàng, điều phối hàng hóa giữa các kho (Transfer) và đảm bảo số lượng tồn kho luôn chính xác khi có đơn hàng mới.
  * =====================================================================
  */
 

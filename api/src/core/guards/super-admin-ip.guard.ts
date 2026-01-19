@@ -5,7 +5,7 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * [Mô tả ngắn gọn mục đích của file]
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
  *
  * 1. CHỨC NĂNG:
  *    - [Mô tả các chức năng chính]
@@ -35,7 +35,7 @@ export class SuperAdminIpGuard implements CanActivate {
     const user = request.user as any;
 
     // 1. Chỉ áp dụng cho PLATFORM ADMIN
-    if (!user || !user.permissions?.includes('superAdmin:read')) {
+    if (!user || !user.permissions?.includes('super-admin:read')) {
       return true;
     }
 

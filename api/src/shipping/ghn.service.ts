@@ -21,7 +21,7 @@ import { CircuitBreaker } from '@/common/utils/circuit-breaker';
  * 3. TOKEN & SHOP ID:
  * - Mọi request gửi lên GHN đều phải kèm `Token` định danh và `ShopId` để GHN biết đơn hàng thuộc về shop nào. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

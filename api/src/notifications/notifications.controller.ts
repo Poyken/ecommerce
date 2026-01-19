@@ -50,7 +50,7 @@ import { NotificationsService } from './notifications.service';
  * - GET /admin : Xem tất cả thông báo (với filters)
  * - GET /admin/:id : Xem chi tiết thông báo *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

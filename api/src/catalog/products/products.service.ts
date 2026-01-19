@@ -35,7 +35,7 @@
  *    - update(): Smart migration SKUs khi đổi options
  *    - getRelatedProducts(): Sản phẩm liên quan cùng category *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Hiển thị danh mục sản phẩm, quản lý biến thể (SKU), tối ưu tìm kiếm và đồng bộ dữ liệu với hệ thống kho hàng.
 
  * =====================================================================
  */

@@ -17,7 +17,7 @@ import { Injectable, Logger } from '@nestjs/common';
  * 3. PROMISE WRAPPER:
  * - Việc bọc trong `new Promise` cho phép ta kiểm soát chính xác khi nào kết quả được trả về, mô phỏng đúng hành vi bất đồng bộ của các cổng thanh toán online. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

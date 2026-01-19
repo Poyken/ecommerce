@@ -18,7 +18,7 @@
  * - Sử dụng các Decorators tùy chỉnh (`@RequirePermissions`, `@ApiListResponse`...) để chuẩn hóa code.
  * *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

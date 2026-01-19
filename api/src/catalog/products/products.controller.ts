@@ -21,7 +21,7 @@
  * 5. Xóa sản phẩm - Soft delete (DELETE /products/:id)
  * 6. Lấy thông tin SKUs cho Guest Cart (POST /products/skus/details) *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Cung cấp các API công khai để khách hàng xem sản phẩm và API admin để quản lý kho hàng.
 
  * =====================================================================
  */

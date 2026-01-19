@@ -38,7 +38,7 @@ import { GeminiService } from './gemini.service';
  *         để tiết kiệm chi phí và đảm bảo tốc độ.
  * *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =================================================================================================
  */

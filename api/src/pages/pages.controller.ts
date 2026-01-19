@@ -40,7 +40,7 @@ import { PagesService } from './pages.service';
  *    - `@Get(':slug')` cho phép bắt mọi đường dẫn như `/about`, `/contact`, `/shipping-policy`.
  *    - Lưu ý: Endpoint này nên đặt cuối cùng hoặc cẩn thận để không "ăn" mất các route khác. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =================================================================================================
  */

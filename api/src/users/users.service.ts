@@ -40,7 +40,7 @@ import { createPaginatedResult } from '@/common/dto/base.dto';
  * 4. ERROR HANDLING:
  * - Sử dụng các Exception chuẩn của NestJS (`ConflictException`, `NotFoundException`) để trả về mã lỗi HTTP và thông báo rõ ràng cho Client. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Quản lý thông tin hồ sơ, phân quyền truy cập (RBAC) và theo dõi lịch sử hoạt động của khách hàng/nhân viên.
 
  * =====================================================================
  */

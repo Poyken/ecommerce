@@ -19,7 +19,7 @@ import { z } from 'zod';
  * - `@IsNotEmpty()`: Tên danh mục là bắt buộc.
  * - `@IsOptional()`: Slug và ParentId là tùy chọn, giúp API linh hoạt hơn. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

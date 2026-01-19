@@ -18,7 +18,7 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  * 3. DATABASE ACCESS:
  * - Import `PrismaModule` để thực hiện các thao tác truy vấn và lưu trữ thông tin sản phẩm, danh mục, thương hiệu. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

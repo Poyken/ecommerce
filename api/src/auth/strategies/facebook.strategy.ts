@@ -20,7 +20,7 @@ import { Strategy } from 'passport-facebook';
  * 3. VALIDATE:
  * - Trả về một object User chuẩn. Lưu ý: Một số User Facebook không công khai Email, nên ta cần xử lý logic `emails ? emails[0].value : null` để tránh crash app. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

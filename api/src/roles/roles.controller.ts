@@ -47,7 +47,7 @@ import { RolesService } from './roles.service';
  * - Các API trả về object được wrap trong `{ data: ... }` để đồng bộ với Frontend.
  * - Ngoại trừ API List có phân trang trả về `{ data, meta }` trực tiếp. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

@@ -14,7 +14,7 @@ import { CreateBlogDto } from './create-blog.dto';
  * - Nó tự động tạo ra một class mới kế thừa từ class cũ, nhưng biến TẤT CẢ các trường thành Optional.
  * - Rất tiện lợi và giúp code không bị lặp lại (DRY - Don't Repeat Yourself). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

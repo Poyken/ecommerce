@@ -16,7 +16,7 @@ import { CreateCategoryDto } from './create-category.dto';
  * - `PartialType` tự động biến tất cả các trường thành tùy chọn (`optional`).
  * - Phù hợp cho hành động PATCH, nơi ta chỉ muốn cập nhật một vài thông tin cụ thể (VD: chỉ đổi tên danh mục). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

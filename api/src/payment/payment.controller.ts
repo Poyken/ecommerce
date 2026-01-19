@@ -35,7 +35,7 @@ import { VNPayUtils } from './vnpay.utils';
  * 3. CHECKSUM VALIDATION:
  * - Mọi dữ liệu đối tác gửi về đều phải được xác thực chữ ký (`vnp_SecureHash` hoặc `signature`) để đảm bảo không bị kẻ xấu giả mạo gói tin thanh toán. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

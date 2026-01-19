@@ -18,7 +18,7 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  * 3. GLOBAL IMPACT:
  * - Mặc dù là một module riêng biệt, nhưng dữ liệu từ module này được sử dụng bởi `PermissionsGuard` trên toàn bộ ứng dụng để kiểm soát truy cập. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

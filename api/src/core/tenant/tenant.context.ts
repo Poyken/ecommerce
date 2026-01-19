@@ -5,7 +5,7 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * [Mô tả ngắn gọn mục đích của file]
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
  *
  * 1. CHỨC NĂNG:
  *    - [Mô tả các chức năng chính]

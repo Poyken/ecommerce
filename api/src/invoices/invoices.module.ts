@@ -14,7 +14,7 @@
  * - Export `InvoicesService` để các module khác (như `WebhookModule` của Stripe)
  *   có thể gọi hàm tạo hóa đơn khi thanh toán thành công. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

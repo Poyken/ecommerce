@@ -53,7 +53,7 @@ import { Logger } from '@nestjs/common';
  * - Denormalization: Thông tin Product Name, Image được lưu cứng vào `OrderItem` ngay lúc mua.
  *   -> Giúp xem lại lịch sử siêu nhanh mà không cần JOIN 5-6 bảng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý quy trình thanh toán, trừ tồn kho kho hàng, tính toán khuyến mãi và điều phối giao vận (Fulfillment).
 
  * =====================================================================
  */

@@ -20,7 +20,7 @@ import { FeatureFlagsService } from './feature-flags.service';
  * - `FeatureFlagsPublicController`: Dành cho Client App (Check xem tính năng bật hay tắt). Không cần Auth (hoặc Auth lỏng).
  * - -> Tách biệt rõ ràng quyền hạn ngay từ lớp Controller. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

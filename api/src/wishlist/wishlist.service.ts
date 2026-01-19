@@ -19,7 +19,7 @@ import { getTenant } from '@core/tenant/tenant.context';
  * - Trong DB, `userId` và `productId` tạo thành một Unique Constraint.
  * - Điều này ngăn chặn việc một User thêm trùng 1 sản phẩm vào Wishlist nhiều lần. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Lưu giữ danh sách sản phẩm yêu thích của người dùng, hỗ trợ các chiến dịch Remarketing và thông báo đẩy khi sản phẩm giảm giá.
 
  * =====================================================================
  */

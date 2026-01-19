@@ -28,7 +28,7 @@ import { JwtModule } from '@nestjs/jwt';
  * - Export `NotificationsService` để các module khác có thể tạo thông báo.
  * - Export `NotificationsGateway` để có thể push thông báo real-time. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

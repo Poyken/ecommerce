@@ -17,7 +17,7 @@ import { Module, forwardRef } from '@nestjs/common';
  * 3. EXPORTS:
  * - `PaymentService` được export để các module khác (như OrderModule) có thể sử dụng để thực hiện thanh toán. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

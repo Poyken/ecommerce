@@ -12,7 +12,7 @@
  * 2. PERMISSIONS:
  * - Chỉ user có quyền `auditLog:read` mới được xem. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

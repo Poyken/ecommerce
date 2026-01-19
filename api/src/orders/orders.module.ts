@@ -18,7 +18,7 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  * 2. CENTRALIZED LOGIC:
  * - Gom nhóm tất cả logic liên quan đến vòng đời của một đơn hàng (từ lúc tạo đến lúc giao thành công). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

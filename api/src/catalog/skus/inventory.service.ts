@@ -25,7 +25,7 @@ import { StockGateway } from './stock.gateway';
  * 3. FOMO EFFECT (Low Stock Alert):
  * - Khi hàng sắp hết (< 5), hệ thống tự động tìm những ai đang để hàng trong giỏ (Pending Cart) và gửi thông báo thúc giục mua hàng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Giám sát chặt chẽ số lượng hàng trong kho, điều phối xuất nhập kho và cảnh báo khi sản phẩm sắp hết hàng.
 
  * =====================================================================
  */

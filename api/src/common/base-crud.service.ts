@@ -43,7 +43,7 @@ export interface CrudDelegate<T> {
  * 3. STANDARDIZED PAGINATION:
  * - Tự động tính toán `skip`, `take` và trả về metadata (total, lastPage) theo một format nhất định cho mọi API. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

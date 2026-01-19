@@ -28,7 +28,7 @@ import { SecurityService } from './security.service';
  * - `exports: [BulkService]` có nghĩa là nếu module khác import `AdminModule`,
  *   họ sẽ dùng được `BulkService` (dependency injection) mà không bị lỗi. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

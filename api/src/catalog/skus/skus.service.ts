@@ -29,7 +29,7 @@ import { UpdateSkuDto } from './dto/update-sku.dto';
  * 4. SEARCHING:
  * - Hỗ trợ tìm kiếm theo cả mã SKU và tên sản phẩm gốc, giúp việc quản lý trở nên linh hoạt và nhanh chóng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

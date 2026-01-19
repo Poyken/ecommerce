@@ -21,7 +21,7 @@ import { PrismaService } from '@core/prisma/prisma.service';
  * - Sitemap được tạo động từ dữ liệu trong database.
  * - Bao gồm: Trang chính, Sản phẩm, Danh mục. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

@@ -24,7 +24,7 @@ import { Server, Socket } from 'socket.io';
  * - Client vào trang sản phẩm sẽ join room `product:id`.
  * - Tiết kiệm băng thông cho client không quan tâm sản phẩm đó. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

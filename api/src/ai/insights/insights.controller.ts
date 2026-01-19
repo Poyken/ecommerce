@@ -1,23 +1,20 @@
 /**
  * =====================================================================
- * INSIGHTS.CONTROLLER CONTROLLER
+ * AI INSIGHTS CONTROLLER - ĐIỀU HƯỚNG BÁO CÁO THÔNG MINH
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * Controller này xử lý các HTTP request từ client.
+ * 1. DASHBOARD DATA (Dữ liệu bảng điều khiển):
+ * - Controller này cung cấp "linh hồn" cho trang Dashboard của Admin.
+ * - Thay vì trả về hàng ngàn dòng log, nó trả về các Insight đã được cô đọng.
  *
- * 1. NHIỆM VỤ CHÍNH:
- *    - Nhận request từ client
- *    - Validate dữ liệu đầu vào
- *    - Gọi service xử lý logic
- *    - Trả về response cho client
+ * 2. FORCE REFRESH (Làm mới thủ công):
+ * - Endpoint `@Post('refresh')` cho phép Admin chủ động tính toán lại dữ liệu
+ *   ngay lập tức (VD: sau khi vừa chốt một đợt Flash Sale lớn) thay vì đợi Cache hết hạn.
  *
- * 2. CÁC ENDPOINT:
- *    - [Liệt kê các endpoint] *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
-
+ * - Giúp Admin đưa ra quyết định kinh doanh dựa trên dữ liệu thực tế (Data-driven decisions) một cách nhanh chóng.
  * =====================================================================
  */
 

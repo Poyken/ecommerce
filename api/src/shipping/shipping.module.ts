@@ -29,7 +29,7 @@ import { EmailModule } from '@integrations/email/email.module';
  * - Service này chứa các tác vụ chạy ngầm định kỳ (VD: quét đơn hàng đang giao để cập nhật trạng thái).
  * - Được đăng ký trong `providers` để NestJS khởi tạo instance của nó. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

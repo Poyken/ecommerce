@@ -13,7 +13,7 @@ import { NotificationType } from './create-notification.dto';
  * - Gửi thông báo cho 1 USER CỤ THỂ (VD: "Đơn hàng của bạn đã được giao").
  * - `userId`: Bắt buộc phải có ID người nhận. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

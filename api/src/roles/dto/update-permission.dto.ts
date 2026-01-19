@@ -12,7 +12,7 @@ import { CreatePermissionDto } from './create-permission.dto';
  * - Cho phép Admin thay đổi tên hoặc mô tả của một quyền hạn đã có.
  * - Sử dụng `PartialType` để giữ tính linh hoạt: Chỉ cần gửi lên những trường cần thay đổi. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

@@ -5,7 +5,7 @@
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * [Mô tả ngắn gọn mục đích của file]
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
  *
  * 1. CHỨC NĂNG:
  *    - [Mô tả các chức năng chính]
@@ -57,8 +57,8 @@ export class LockdownGuard implements CanActivate {
 
         if (payload && Array.isArray(payload.permissions)) {
           if (
-            payload.permissions.includes('superAdmin:read') ||
-            payload.permissions.includes('superAdmin:write')
+            payload.permissions.includes('super-admin:read') ||
+            payload.permissions.includes('super-admin:update')
           ) {
             return true;
           }

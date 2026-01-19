@@ -27,7 +27,7 @@
  *    - Tất cả endpoint được bảo vệ bởi @Permissions('superAdmin:read/write')
  *    - IP whitelist được encrypt để tránh lộ thông tin nếu DB bị xâm nhập *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Giám sát an ninh hệ thống, phát hiện các đợt tấn công Brute-force và quản lý cấu hình Lockdown khẩn cấp.
 
  * =====================================================================
  */

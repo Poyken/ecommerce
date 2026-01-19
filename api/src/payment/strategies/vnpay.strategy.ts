@@ -26,7 +26,7 @@ import { VNPayUtils } from '../vnpay.utils';
  * - `TmnCode` là mã định danh website của mình trên VNPay.
  * - `SecretKey` dùng để tạo chữ ký. TUYỆT ĐỐI không được để lộ key này ở phía Client. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

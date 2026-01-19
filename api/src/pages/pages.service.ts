@@ -23,7 +23,7 @@ import type { Cache } from 'cache-manager';
  *    - Hàm `getTenant()` lấy ID cửa hàng hiện tại.
  *    - Mọi query DB đều phải có `where: { tenantId }` (Dù Prisma Extension đã hỗ trợ, nhưng viết rõ ở đây giúp dễ hiểu hơn). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =================================================================================================
  */

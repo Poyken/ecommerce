@@ -23,7 +23,7 @@ import { getTenant } from '@core/tenant/tenant.context';
  * 3. LOGGING:
  * - Sử dụng `Logger` của NestJS để ghi lại các sự kiện quan trọng, giúp theo dõi hoạt động của hệ thống trong môi trường Production. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

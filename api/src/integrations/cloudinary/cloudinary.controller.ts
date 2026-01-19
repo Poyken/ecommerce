@@ -18,7 +18,7 @@ import { CloudinaryService } from './cloudinary.service';
  * 2. FOLDER MANAGEMENT:
  * - Ảnh sẽ được tổ chức theo các folder (VD: `products`, `blogs`) để dễ quản lý trên giao diện Cloudinary dashboard. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

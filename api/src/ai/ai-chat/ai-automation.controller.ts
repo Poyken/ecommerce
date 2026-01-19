@@ -1,23 +1,20 @@
 /**
  * =====================================================================
- * AI-AUTOMATION.CONTROLLER CONTROLLER
+ * AI AUTOMATION CONTROLLER - TỰ ĐỘNG HÓA NỘI DUNG (AI-ASSIST)
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * Controller này xử lý các HTTP request từ client.
+ * 1. AI WRITER (Người viết lách AI):
+ * - Controller này cung cấp các công cụ trợ giúp Admin viết nội dung bán hàng nhanh hơn.
+ * - Thay vì Admin phải tự nghĩ mô tả sản phẩm hay email marketing, AI sẽ "nháp" hộ.
  *
- * 1. NHIỆM VỤ CHÍNH:
- *    - Nhận request từ client
- *    - Validate dữ liệu đầu vào
- *    - Gọi service xử lý logic
- *    - Trả về response cho client
+ * 2. CÔNG CỤ HỖ TRỢ:
+ *    - Tạo mô tả sản phẩm (Product Description) từ danh sách thuộc tính.
+ *    - Tạo email marketing/newsletter dựa trên chương trình khuyến mãi.
  *
- * 2. CÁC ENDPOINT:
- *    - [Liệt kê các endpoint] *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
-
+ * - Giảm 80% thời gian đăng sản phẩm mới. Chỉ cần nhập tên và vài gạch đầu dòng, AI sẽ viết thành một bài mô tả chuyên nghiệp, chuẩn SEO.
  * =====================================================================
  */
 

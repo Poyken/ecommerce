@@ -34,7 +34,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
  * - Ngăn chặn việc xóa danh mục nếu nó vẫn còn chứa sản phẩm hoặc danh mục con.
  * - Đảm bảo tính nhất quán của dữ liệu (Data Integrity). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tổ chức hệ thống phân loại sản phẩm đa tầng, giúp người dùng dễ dàng duyệt qua danh mục hàng hóa khổng lồ.
 
  * =====================================================================
  */

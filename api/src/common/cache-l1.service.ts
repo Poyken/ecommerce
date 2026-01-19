@@ -19,7 +19,7 @@ import { Injectable } from '@nestjs/common';
  * 3. SHORT TTL:
  * - Dữ liệu ở L1 chỉ nên sống rất ngắn (vd: 10-30s) để đảm bảo không bị "lệch" quá lâu so với L2. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

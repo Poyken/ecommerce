@@ -16,7 +16,7 @@
  * 3. ABSTRACTION:
  * - `PaymentStrategy`: Interface chính chứa hàm `processPayment`. Đây là cốt lõi của Strategy Pattern, cho phép ta gọi hàm thanh toán mà không cần biết cụ thể nó là loại nào. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

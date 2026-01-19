@@ -113,7 +113,7 @@ export class ReturnRequestsController {
 
   @Get('stats')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('RETURN_REQUEST_READ')
+  @RequirePermissions('return-request:read')
   @ApiOperation({ summary: 'Get Return Request Statistics (Admin)' })
   getStats(@Req() req) {
     return this.returnRequestsService.getStats(req.user.tenantId);
@@ -121,7 +121,7 @@ export class ReturnRequestsController {
 
   @Get()
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('RETURN_REQUEST_READ')
+  @RequirePermissions('return-request:read')
   @ApiOperation({ summary: 'List all Return Requests (Admin)' })
   @ApiQuery({ name: 'status', required: false, enum: ReturnStatus })
   findAll(
@@ -141,7 +141,7 @@ export class ReturnRequestsController {
 
   @Get(':id')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('RETURN_REQUEST_READ')
+  @RequirePermissions('return-request:read')
   @ApiOperation({ summary: 'Get Return Request Details (Admin)' })
   findOne(@Param('id') id: string, @Req() req) {
     return this.returnRequestsService.findOne(id, req.user.tenantId);
@@ -149,7 +149,7 @@ export class ReturnRequestsController {
 
   @Patch(':id')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('RETURN_REQUEST_UPDATE')
+  @RequirePermissions('return-request:update')
   @ApiOperation({ summary: 'Update Return Request (Admin)' })
   update(
     @Param('id') id: string,
@@ -161,7 +161,7 @@ export class ReturnRequestsController {
 
   @Patch(':id/approve')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('RETURN_REQUEST_UPDATE')
+  @RequirePermissions('return-request:update')
   @ApiOperation({ summary: 'Approve Return Request (Admin)' })
   approve(
     @Param('id') id: string,
@@ -177,7 +177,7 @@ export class ReturnRequestsController {
 
   @Patch(':id/reject')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('RETURN_REQUEST_UPDATE')
+  @RequirePermissions('return-request:update')
   @ApiOperation({ summary: 'Reject Return Request (Admin)' })
   reject(
     @Param('id') id: string,
@@ -193,7 +193,7 @@ export class ReturnRequestsController {
 
   @Patch(':id/received')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('RETURN_REQUEST_UPDATE')
+  @RequirePermissions('return-request:update')
   @ApiOperation({ summary: 'Confirm Item Received (Admin)' })
   confirmReceived(@Param('id') id: string, @Req() req) {
     return this.returnRequestsService.confirmReceived(id, req.user.tenantId);
@@ -201,7 +201,7 @@ export class ReturnRequestsController {
 
   @Patch(':id/refund')
   @UseGuards(PermissionsGuard)
-  @RequirePermissions('RETURN_REQUEST_UPDATE')
+  @RequirePermissions('return-request:update')
   @ApiOperation({ summary: 'Process Refund (Admin)' })
   processRefund(
     @Param('id') id: string,

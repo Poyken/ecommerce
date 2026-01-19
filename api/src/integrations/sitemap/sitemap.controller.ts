@@ -15,7 +15,7 @@ import { SitemapService } from './sitemap.service';
  * 2. DYNAMIC GENERATION:
  * - Thay vì dùng file tĩnh (tốn công sửa), hệ thống sẽ QUERY trực tiếp từ DB để đảm bảo mọi sản phẩm mới đều có trong Sitemap ngay lập tức. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

@@ -13,7 +13,7 @@ import { CreateProductSchema } from './create-product.dto';
  * - Cho phép Admin chỉ cập nhật một vài thông tin (VD: chỉ đổi tên sản phẩm) mà không cần gửi lại toàn bộ dữ liệu.
  *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

@@ -25,7 +25,7 @@ import { BlogService } from './blog.service';
  * - Chỉ tập trung vào việc CRUD bài viết.
  * - Phần Comment của bài viết có thể nằm ở đây hoặc tách ra module riêng (tùy độ phức tạp). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

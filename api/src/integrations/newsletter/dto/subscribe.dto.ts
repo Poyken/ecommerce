@@ -15,7 +15,7 @@ import { z } from 'zod';
  * 2. CUSTOM ERROR MESSAGES:
  * - Sử dụng thuộc tính `message` để trả về thông báo lỗi thân thiện bằng tiếng Việt cho người dùng Frontend. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

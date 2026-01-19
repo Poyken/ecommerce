@@ -12,7 +12,7 @@ import { z } from 'zod';
  * - Chỉ yêu cầu trường `name` là chuỗi và không được để trống.
  * - Các thông tin khác (như Logo) có thể được bổ sung sau hoặc xử lý qua một API tải ảnh riêng. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

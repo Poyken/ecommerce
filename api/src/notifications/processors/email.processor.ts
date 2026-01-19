@@ -23,7 +23,7 @@ import { Job } from 'bullmq';
  * 4. SIMULATION:
  * - Trong code này, ta sử dụng `setTimeout` để mô phỏng độ trễ của việc gửi email thật qua các dịch vụ như AWS SES hay SendGrid. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Chịu trách nhiệm gửi hàng loạt email marketing và email giao dịch (Transactional Email) thông qua các nhà cung cấp như Resend/SendGrid.
 
  * =====================================================================
  */

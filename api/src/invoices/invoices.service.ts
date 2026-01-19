@@ -13,7 +13,7 @@
  * - Trong trường hợp Tenant chuyển khoản ngân hàng (Bank Transfer) thay vì
  *   cổng thanh toán tự động, Admin cần nút bấm để "Duyệt" (Mark as Paid). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

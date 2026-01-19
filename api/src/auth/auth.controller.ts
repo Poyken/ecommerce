@@ -14,7 +14,7 @@
  * - Social Login: Google/Facebook OAuth2 callback xử lý ở đây.
  * - Throttling: `@Throttle` giới hạn số lần thử login để chống Brute Force. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Cổng giao tiếp cho các hành động đăng nhập, đăng ký và xác thực hai lớp (2FA).
 
  * =====================================================================
  */

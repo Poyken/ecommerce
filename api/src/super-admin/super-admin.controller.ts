@@ -10,7 +10,7 @@
  * - Endpoint này cực kỳ nhạy cảm vì chứa số liệu tài chính toàn hệ thống
  *   và quyền truy cập vào bất kỳ tenant nào. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
 
  * =====================================================================
  */

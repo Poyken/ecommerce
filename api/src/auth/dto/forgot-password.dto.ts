@@ -18,7 +18,7 @@ import { z } from 'zod';
  * 3. PROCESS FLOW:
  * - Sau khi nhận được email hợp lệ, server sẽ tạo một Token và gửi vào email này để người dùng có thể thực hiện bước `reset-password`. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
 
  * =====================================================================
  */

@@ -32,7 +32,7 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
  * - Hỗ trợ gộp giỏ hàng từ khách (Guest Cart - lưu ở LocalStorage) vào tài khoản khi họ đăng nhập.
  * - Logic gộp được xử lý từng item một để đảm bảo validation tồn kho cho từng sản phẩm. *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Duy trì giỏ hàng tạm thời cho người dùng, tính toán giá trị đơn hàng và áp dụng các chương trình khuyến mãi tự động.
 
  * =====================================================================
  */

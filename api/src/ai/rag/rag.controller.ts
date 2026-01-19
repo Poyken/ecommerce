@@ -1,23 +1,19 @@
 /**
  * =====================================================================
- * RAG.CONTROLLER CONTROLLER
+ * RAG CONTROLLER - CỔNG TRUY XUẤT KIẾN THỨC NÂNG CAO
  * =====================================================================
  *
  * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
  *
- * Controller này xử lý các HTTP request từ client.
+ * 1. RAG (Retrieval-Augmented Generation):
+ * - Đây là kỹ thuật giúp AI trả lời dựa trên "kiến thức riêng" của cửa hàng (Policy, FAQ) thay vì chỉ dựa trên kiến thức chung của nó.
+ * - Controller này quản lý việc nạp kiến thức (`refresh`) và trả lời câu hỏi (`chat`).
  *
- * 1. NHIỆM VỤ CHÍNH:
- *    - Nhận request từ client
- *    - Validate dữ liệu đầu vào
- *    - Gọi service xử lý logic
- *    - Trả về response cho client
+ * 2. KNOWLEDGE MANAGEMENT (Quản lý tri thức):
+ * - Admin có thể cập nhật các chính sách (`policy`) như: Giao hàng, Đổi trả. AI sẽ đọc các chính sách này để trả lời khách hàng chính xác nhất.
  *
- * 2. CÁC ENDPOINT:
- *    - [Liệt kê các endpoint] *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
-
+ * - Tự động trả lời các câu hỏi lặp đi lặp lại về chính sách shop (VD: "Bao lâu thì nhận được hàng?", "Đổi trả thế nào?"). Giảm tải 60-70% công việc cho đội ngũ Support.
  * =====================================================================
  */
 

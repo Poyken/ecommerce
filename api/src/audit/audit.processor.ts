@@ -19,7 +19,7 @@ import { Job } from 'bullmq';
  * - `create-log`: Lưu nhật ký mới.
  * - `cleanup`: Xóa các nhật ký cũ (Job này thường được schedule chạy tự động hàng ngày). *
  * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
+ * - Worker chạy ngầm chuyên trách việc ghi nhật ký hệ thống và tự động dọn dẹp (cleanup) các bản ghi cũ để tối ưu dung lượng DB.
 
  * =====================================================================
  */
