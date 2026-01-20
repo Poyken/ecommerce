@@ -47,29 +47,13 @@ import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 
-interface Invoice {
-  id: string;
-  tenant: {
-    name: string;
-    domain: string;
-  };
-  amount: string;
-  currency: string;
-  status: "PENDING" | "PAID" | "OVERDUE" | "CANCELLED" | "VOID";
-  createdAt: string;
-  dueDate: string;
-  description?: string;
-}
+import { Invoice } from "@/types/models";
+import { PaginationMeta } from "@/types/dtos";
 
 interface InvoicesClientProps {
   initialData: {
     data: Invoice[];
-    meta: {
-      total: number;
-      page: number;
-      limit: number;
-      totalPages: number;
-    };
+    meta: PaginationMeta;
   };
 }
 
@@ -155,9 +139,9 @@ export function InvoicesClient({ initialData }: InvoicesClientProps) {
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-col">
-                    <span className="font-medium">{invoice.tenant.name}</span>
+                    <span className="font-medium">{invoice.tenant?.name || "N/A"}</span>
                     <span className="text-xs text-muted-foreground">
-                      {invoice.tenant.domain}
+                      {invoice.tenant?.domain || "no-domain"}
                     </span>
                   </div>
                 </TableCell>

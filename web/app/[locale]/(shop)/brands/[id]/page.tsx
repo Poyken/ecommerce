@@ -27,7 +27,7 @@ export async function generateMetadata({
     limit: 1,
   });
 
-  const brandName = productsRes.success && productsRes.data?.data?.[0]?.brand?.name || "Brand";
+  const brandName = productsRes.success && productsRes.data?.[0]?.brand?.name || "Brand";
 
   return {
     title: brandName,
@@ -59,8 +59,8 @@ export default async function BrandProductsPage({
     limit,
     page,
   }).then((res) => ({
-    data: res.success && res.data ? res.data.data : [],
-    meta: res.success && res.data ? res.data.meta : { page: 1, limit: 20, total: 0, lastPage: 1 },
+    data: res.success && res.data ? res.data : [],
+    meta: res.success && res.meta ? res.meta : { page: 1, limit: 20, total: 0, lastPage: 1 },
   }));
 
   const brandName = brandRes.success && brandRes.data ? brandRes.data.name : "Brand";

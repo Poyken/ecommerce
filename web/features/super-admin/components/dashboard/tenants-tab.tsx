@@ -50,7 +50,7 @@ export function TenantsTab({ tenants }: { tenants: any[] }) {
     <AdminTableWrapper
       title="Recent Stores Pulse"
       description="Latest tenants onboarded to the platform with real-time health metrics"
-      variant="luxury"
+      variant="glass"
       headerActions={
         <Link href="/super-admin/tenants">
           <Button

@@ -247,14 +247,14 @@ export function ProductDetailClient({
             <span className="text-[10px] font-black tracking-[0.4em] uppercase text-primary">
               {product.brand?.name || "Premium Brand"}
             </span>
-            <div className="h-[1px] w-12 bg-white/10"></div>
-            <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
+            <div className="h-[1px] w-12 bg-border/20"></div>
+            <span className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.3em]">
               {product.category?.name || "Collection"}
             </span>
           </div>
 
           <div className="flex justify-between items-start gap-6">
-            <h1 className="text-4xl md:text-5xl lg:text-8xl font-black tracking-tighter text-white uppercase italic leading-[0.9]">
+            <h1 className="text-4xl md:text-5xl lg:text-8xl font-black tracking-tighter text-foreground uppercase italic leading-[0.9]">
               {product.name}
             </h1>
             <WishlistButton
@@ -285,14 +285,14 @@ export function ProductDetailClient({
             </span>
           </div>
 
-          <p className="text-sm text-muted-foreground/60 leading-relaxed font-medium border-l border-white/10 pl-6 max-w-xl">
+          <p className="text-sm text-muted-foreground leading-relaxed font-medium border-l border-border/20 pl-6 max-w-xl">
             {product.description}
           </p>
         </m.div>
 
         <div className="mt-4">
-          <div className="glass-premium p-8 md:p-10 space-y-4 border-white/5 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-[1px] bg-linear-to-r from-transparent via-white/10 to-transparent" />
+          <div className="glass-premium p-8 md:p-10 space-y-4 border-border/10 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-linear-to-r from-transparent via-border/20 to-transparent" />
             <ProductVariantSelector
               options={product.options || []}
               skus={product.skus || []}
@@ -304,16 +304,16 @@ export function ProductDetailClient({
               isAdding={isAdding}
             />
 
-            <div className="grid grid-cols-2 gap-y-6 gap-x-4 pt-8 border-t border-white/5">
-              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+            <div className="grid grid-cols-2 gap-y-6 gap-x-4 pt-8 border-t border-border/10">
+              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
                 <Truck className="h-4 w-4 text-primary" />
                 <span>{t("freeGlobalShipping")}</span>
               </div>
-              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
                 <Shield className="h-4 w-4 text-primary" />
                 <span>{t("warranty")}</span>
               </div>
-              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+              <div className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
                 <Check className="h-4 w-4 text-primary" />
                 <span>{t("authenticityVerified")}</span>
               </div>
@@ -321,11 +321,11 @@ export function ProductDetailClient({
           </div>
         </div>
 
-        <div className="pt-8 border-t border-white/5">
+        <div className="pt-8 border-t border-border/10">
           <div className="flex items-center justify-between mb-12">
-            <h3 className="text-3xl font-black tracking-tighter uppercase italic text-white flex items-center gap-4">
+            <h3 className="text-3xl font-black tracking-tighter uppercase italic text-foreground flex items-center gap-4">
               {t("customerReviews")}
-              <div className="h-px w-24 bg-white/10" />
+              <div className="h-px w-24 bg-border/20" />
             </h3>
           </div>
           <ProductReviews
@@ -337,7 +337,7 @@ export function ProductDetailClient({
         </div>
 
         {/* Recently Viewed Section */}
-        <div className="pt-8 border-t border-white/5">
+        <div className="pt-8 border-t border-border/10">
           <RecentlyViewedSection
             currentProductId={product.id}
             maxDisplay={6}

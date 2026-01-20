@@ -745,6 +745,7 @@ export interface Invoice {
   dueDate: string;
   createdAt: string;
   updatedAt: string;
+  tenant?: Tenant;
 }
 // =============================================================================
 // 🔄 RMA - Return Merchandise Authorization

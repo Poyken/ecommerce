@@ -105,9 +105,11 @@ export function Header({
     // StickyHeader: Wrapper xử lý sự kiện cuộn trang (ẩn hiện header)
     <StickyHeader
       isInline={isInline}
-      className="border-b bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60 z-50 transition-all duration-500"
+      className={
+        "border-b border-border/40 bg-background/60 backdrop-blur-xl supports-[backdrop-filter]:bg-background/20 z-50 transition-all duration-500"
+      }
     >
-      <div className="container flex h-20 items-center justify-between max-w-7xl mx-auto px-4 md:px-8">
+      <div className="container flex h-16 lg:h-20 items-center justify-between max-w-7xl mx-auto px-4 md:px-8">
         {/* 1. Logo Brand */}
         <Logo />
 
@@ -115,17 +117,17 @@ export function Header({
         <HeaderNav initialUser={initialUser} permissions={permissions} />
 
         {/* 3. Right Actions (Wishlist, Cart, Profile) */}
-        <div className="flex items-center gap-2 md:gap-4">
+        <div className="flex items-center gap-2 md:gap-3">
           {/* Wishlist Button */}
           <Link
             href="/wishlist"
-            className="hidden md:flex transition-all hover:text-primary text-foreground/70 relative w-10 h-10 items-center justify-center hover:bg-neutral-100 dark:hover:bg-white/5 rounded-full group"
+            className="hidden md:flex transition-all hover:text-primary text-muted-foreground relative size-10 items-center justify-center hover:bg-secondary rounded-full group"
             title={t("wishlist")}
           >
             <span className="relative inline-flex">
               <Heart
-                size={22}
-                className="group-hover:scale-110 transition-transform"
+                size={20}
+                className="group-hover:scale-110 transition-transform stroke-[1.5px]"
               />
               <WishlistBadge
                 initialUser={initialUser}
@@ -137,19 +139,19 @@ export function Header({
           {/* Cart Button with Prefetching */}
           <Link
             href="/cart"
-            prefetch={true} // Tải trước trang Cart ngay khi hover -> Tăng tốc độ chuyển trang
-            className="hidden md:flex transition-all hover:text-primary text-foreground/70 relative w-10 h-10 items-center justify-center hover:bg-neutral-100 dark:hover:bg-white/5 rounded-full group"
+            prefetch={true}
+            className="hidden md:flex transition-all hover:text-primary text-muted-foreground relative size-10 items-center justify-center hover:bg-secondary rounded-full group"
           >
             <span className="relative inline-flex">
               <ShoppingCart
-                size={22}
-                className="group-hover:scale-110 transition-transform"
+                size={20}
+                className="group-hover:scale-110 transition-transform stroke-[1.5px]"
               />
               <CartBadge />
             </span>
           </Link>
 
-          <div className="hidden md:block h-6 w-px bg-foreground/10 mx-1" />
+          <div className="hidden md:block h-6 w-px bg-border/50 mx-2" />
 
           {/* Notification & User Actions */}
           <NotificationBell />

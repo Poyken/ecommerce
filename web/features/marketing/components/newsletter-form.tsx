@@ -41,7 +41,7 @@ export function NewsletterForm() {
         toast({
           variant: "success",
           title: tToast("success"),
-          description: t(data.message),
+          description: t(data.message || "success"),
         });
         setEmail("");
       }

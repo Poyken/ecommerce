@@ -94,8 +94,8 @@ export function useProducts(
       const result = await getProductsAction(p as GetProductsParams);
       if (result.success && result.data) {
         return {
-          products: result.data.data || [],
-          meta: result.data.meta || {
+          products: result.data || [],
+          meta: result.meta || {
             total: 0,
             page: 1,
             limit: 10,

@@ -56,7 +56,7 @@ export function ProfileBlogsTab() {
       setIsLoading(true);
       const res = await getMyBlogsAction();
       if (res.success && res.data) {
-        setBlogs(res.data);
+        setBlogs(res.data as BlogWithProducts[]);
       } else if (res.error) {
         toast({
           variant: "destructive",

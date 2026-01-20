@@ -211,7 +211,12 @@ export function ShopContent({
   const isAnyPending = isFilterPending;
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-accent/30">
+    <div className="min-h-screen bg-background font-sans selection:bg-accent/30 relative overflow-hidden transition-colors duration-500">
+      {/* Cinematic Backgrounds */}
+      <div className="fixed inset-0 bg-cinematic mix-blend-multiply opacity-20 pointer-events-none z-0" />
+      <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[var(--aurora-purple)]/10 rounded-full blur-[120px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-[var(--aurora-blue)]/10 rounded-full blur-[120px] animate-pulse-glow delay-1000 z-0 pointer-events-none" />
+
       <main className="container mx-auto px-4 md:px-8 pt-28 pb-16 space-y-8">
         {/* Breadcrumb Navigation */}
         <BreadcrumbNav items={[{ label: t("title") }]} className="text-sm" />

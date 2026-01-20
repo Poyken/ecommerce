@@ -24,9 +24,9 @@ export default async function InvoicesPage() {
   const { data: invoicesRes } = await getInvoicesAction({ page: 1, limit: 20 });
 
   // Default structure if API returns null/error
-  const initialData = invoicesRes || {
+  const initialData = (invoicesRes as any) || {
     data: [],
-    meta: { total: 0, page: 1, limit: 20, totalPages: 0 },
+    meta: { total: 0, page: 1, limit: 20, lastPage: 0 },
   };
 
   return (
@@ -38,7 +38,7 @@ export default async function InvoicesPage() {
         stats={[
           {
             label: "Total Invoices",
-            value: initialData.meta.total,
+            value: initialData?.meta?.total || 0,
             variant: "default",
           },
           { label: "Revenue", value: "$42.5k", variant: "success" },

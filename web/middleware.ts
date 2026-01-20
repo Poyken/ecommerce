@@ -38,8 +38,8 @@ const CSRF_COOKIE_NAME = "csrf-token";
 
 export default async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
-  console.log(`[MIDDLEWARE] Incoming request: ${request.method} ${pathname}`);
-  console.log(`[MIDDLEWARE] Host: ${request.headers.get("host")}`);
+  // console.log(`[MIDDLEWARE] Incoming request: ${request.method} ${pathname}`);
+  // console.log(`[MIDDLEWARE] Host: ${request.headers.get("host")}`);
 
   // Bypass i18n routing for static assets (images, fonts, pwa icons, etc.)
   if (

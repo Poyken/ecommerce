@@ -47,15 +47,9 @@ export async function getProductsAction(
     maxPrice?: number;
     includeSkus?: string;
   }
-): Promise<ActionResult<{ data: Product[]; meta: any }>> {
+): Promise<ActionResult<Product[]>> {
   return wrapServerAction(
-    async () => {
-      const response = await productService.getProducts(params);
-      return {
-        data: response.data || [],
-        meta: response.meta || { total: 0, page: 1, limit: 10, lastPage: 0 },
-      };
-    },
+    () => productService.getProducts(params),
     "Failed to fetch products"
   );
 }
@@ -97,7 +91,7 @@ export async function getNewestProductsAction(
   limit: number = 12
 ): Promise<ActionResult<Product[]>> {
   return wrapServerAction(
-    () => productService.getNewestProducts(limit),
+    () => productService.getNewArrivals(limit),
     "Failed to fetch newest products"
   );
 }
@@ -109,7 +103,7 @@ export async function getBestSellingProductsAction(
   limit: number = 12
 ): Promise<ActionResult<Product[]>> {
   return wrapServerAction(
-    () => productService.getBestSellingProducts(limit),
+    () => productService.getFeaturedProducts(limit), // Use featured as fallback for best selling
     "Failed to fetch best selling products"
   );
 }

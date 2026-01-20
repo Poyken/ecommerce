@@ -286,13 +286,13 @@ export function LoginPageContent() {
         variant="default"
       >
         <div className="mb-8 text-center space-y-3">
-          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
+          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary block">
             Account Access
           </span>
-          <h1 className="text-3xl font-serif font-normal tracking-tight text-foreground">
+          <h1 className="text-3xl font-black italic tracking-tighter text-foreground uppercase">
             {t("title")}
           </h1>
-          <p className="text-muted-foreground font-light">{t("subtitle")}</p>
+          <p className="text-muted-foreground font-medium text-sm">{t("subtitle")}</p>
         </div>
 
         <m.form layout action={handleAction} className="space-y-6" noValidate>

@@ -58,7 +58,7 @@ export default function AuthLayout({
           <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-white/70 block">
             Luxe Furniture
           </span>
-          <h2 className="text-4xl font-serif font-normal tracking-tight">
+          <h2 className="text-4xl font-black font-sans uppercase tracking-tighter italic">
             {t("heroTitle")}
           </h2>
           <p className="text-lg text-white/70 font-light">

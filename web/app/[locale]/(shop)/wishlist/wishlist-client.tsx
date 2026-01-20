@@ -118,24 +118,48 @@ export function WishlistClient({
   };
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30 pt-24 pb-24 relative overflow-hidden">
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-pink-500/10 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[150px] pointer-events-none" />
-      <div className="container mx-auto px-4 max-w-6xl relative z-10">
+    <div className="min-h-screen bg-background relative overflow-hidden selection:bg-primary/30 pb-24">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="absolute top-0 inset-x-0 h-[50vh] bg-cinematic pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-(--aurora-purple)/10 rounded-full blur-[120px] animate-pulse-glow pointer-events-none" />
+      <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-(--aurora-blue)/10 rounded-full blur-[100px] animate-float pointer-events-none" />
+
+      <div className="container mx-auto px-4 max-w-6xl relative z-10 pt-32">
         <m.div
-          className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10"
+          className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16"
           initial="hidden"
           animate="visible"
           variants={sectionVariants}
         >
-          <div className="space-y-2">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">
+          <div className="space-y-4">
+            <m.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]"
+            >
+              <Heart className="size-3 fill-accent" />
               {t("title")}
+            </m.div>
+
+            <h1 className="text-5xl md:text-7xl font-bold text-foreground tracking-tighter">
+              {t("title").split(" ")[0]}{" "}
+              <span className="font-serif italic font-normal text-muted-foreground/60">
+                {t("title").split(" ").slice(1).join(" ")}
+              </span>
             </h1>
-            <p className="text-muted-foreground text-lg">
+            
+            <p className="text-muted-foreground text-lg font-medium">
               {t("subtitle", { count: items.length })}
             </p>
           </div>
+
+          {!isInitializing && items.length > 0 && (
+            <Link href="/shop">
+               <GlassButton className="rounded-full px-8 py-6 font-black uppercase tracking-widest text-xs hover:scale-105 transition-transform">
+                 {t("browseShop")}
+               </GlassButton>
+            </Link>
+          )}
         </m.div>
 
         <div>
@@ -143,7 +167,7 @@ export function WishlistClient({
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="space-y-4">
-                  <Skeleton className="aspect-3/4 w-full rounded-2xl" />
+                  <Skeleton className="aspect-3/4 w-full rounded-4xl" />
                   <div className="space-y-2">
                     <Skeleton className="h-4 w-3/4" />
                     <Skeleton className="h-4 w-1/2" />
@@ -179,7 +203,13 @@ export function WishlistClient({
                       : 5;
 
                   return (
-                    <div key={item.id} className="min-h-[400px] flex flex-col">
+                    <m.div 
+                      key={item.id} 
+                      className="min-h-[400px] flex flex-col"
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                    >
                       <ProductCard
                         id={item.product.id}
                         name={item.product.name}
@@ -199,30 +229,38 @@ export function WishlistClient({
                         reviewCount={reviewCount}
                         initialIsWishlisted={true}
                       />
-                    </div>
+                    </m.div>
                   );
                 })}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-24 px-4 text-center space-y-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm">
-              <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
-                <Heart className="w-12 h-12 text-muted-foreground" />
+            <m.div 
+               className="flex flex-col items-center justify-center py-32 px-4 text-center space-y-8 glass-card rounded-4xl border-none shadow-2xl relative overflow-hidden group"
+               initial={{ opacity: 0, scale: 0.95 }}
+               animate={{ opacity: 1, scale: 1 }}
+            >
+              <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent pointer-events-none" />
+              
+              <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform duration-500">
+                <Heart className="w-10 h-10 text-muted-foreground/40 group-hover:text-accent group-hover:fill-accent transition-all animate-pulse" />
               </div>
-              <div className="space-y-2">
-                <h2 className="text-2xl font-bold">{t("empty")}</h2>
-                <p className="text-muted-foreground max-w-md mx-auto">
+
+              <div className="space-y-3 relative z-10">
+                <h2 className="text-3xl font-bold tracking-tighter">{t("empty")}</h2>
+                <p className="text-muted-foreground max-w-md mx-auto font-medium">
                   {t("emptyDesc")}
                 </p>
               </div>
-              <Link href="/shop">
+
+              <Link href="/shop" className="relative z-10">
                 <GlassButton
                   size="lg"
-                  className="bg-primary text-primary-foreground font-bold px-8"
+                  className="bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs px-12 py-8 rounded-full shadow-xl hover:shadow-primary/20 transition-all"
                 >
                   {t("browseShop")}
                 </GlassButton>
               </Link>
-            </div>
+            </m.div>
           )}
         </div>
       </div>

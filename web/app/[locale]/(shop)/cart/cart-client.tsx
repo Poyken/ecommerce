@@ -445,22 +445,36 @@ export function CartClient({ cart }: CartClientProps) {
   const isFreeShipping = total >= shippingThreshold;
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30 pt-24 pb-24 relative overflow-hidden">
-      {/* Background Gradients (Matched with Wishlist) */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-pink-500/10 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[150px] pointer-events-none" />
+    <div className="min-h-screen bg-background relative overflow-hidden selection:bg-primary/30 pb-24">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="absolute top-0 inset-x-0 h-[50vh] bg-cinematic pointer-events-none" />
+      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-(--aurora-blue)/10 rounded-full blur-[120px] animate-pulse-glow pointer-events-none" />
+      <div className="absolute top-[10%] right-[-5%] w-[30%] h-[30%] bg-(--aurora-orange)/10 rounded-full blur-[100px] animate-float pointer-events-none" />
 
-      <div className="container mx-auto px-4 max-w-6xl relative z-10">
+      <div className="container mx-auto px-4 max-w-6xl relative z-10 pt-32">
         <m.div
-          className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10"
+          className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="space-y-2">
-            <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">
+          <div className="space-y-4">
+            <m.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]"
+            >
+              <ShoppingBag className="size-3" />
               {t("title")}
+            </m.div>
+
+            <h1 className="text-5xl md:text-7xl font-bold text-foreground tracking-tighter">
+              {t("title").split(" ")[0]}{" "}
+              <span className="font-serif italic font-normal text-muted-foreground/60">
+                {t("title").split(" ").slice(1).join(" ")}
+              </span>
             </h1>
-            <p className="text-muted-foreground text-lg">
+            
+            <p className="text-muted-foreground text-lg font-medium">
               {localItems.length} {t("items")} {t("inCart")}
             </p>
           </div>
@@ -470,7 +484,7 @@ export function CartClient({ cart }: CartClientProps) {
               <AlertDialogTrigger asChild>
                 <GlassButton
                   variant="ghost"
-                  className="text-destructive hover:text-destructive/90 hover:bg-destructive/10"
+                  className="rounded-full px-6 py-3 text-destructive hover:text-destructive/90 hover:bg-destructive/10 border-destructive/20 font-bold text-xs uppercase tracking-widest"
                 >
                   <span className="flex items-center">
                     <Trash2 className="w-4 h-4 mr-2" />
@@ -478,20 +492,20 @@ export function CartClient({ cart }: CartClientProps) {
                   </span>
                 </GlassButton>
               </AlertDialogTrigger>
-              <AlertDialogContent className="bg-background/95 backdrop-blur-xl border-border shadow-2xl">
+              <AlertDialogContent className="bg-background/95 backdrop-blur-xl border-border shadow-2xl rounded-4xl">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>{t("clearConfirmTitle")}</AlertDialogTitle>
-                  <AlertDialogDescription className="text-muted-foreground">
+                  <AlertDialogTitle className="text-2xl font-bold tracking-tighter">{t("clearConfirmTitle")}</AlertDialogTitle>
+                  <AlertDialogDescription className="text-muted-foreground font-medium">
                     {t("clearConfirmDesc")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="bg-transparent border border-input text-foreground hover:bg-black/5 hover:text-foreground">
+                <AlertDialogFooter className="mt-6">
+                  <AlertDialogCancel className="rounded-full border-border font-bold">
                     {t("cancel")}
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleClearCart}
-                    className="bg-destructive hover:bg-destructive/90 text-destructive-foreground border-none"
+                    className="bg-destructive hover:bg-destructive/90 text-white rounded-full font-bold px-8"
                   >
                     {t("clearCart")}
                   </AlertDialogAction>
@@ -505,45 +519,42 @@ export function CartClient({ cart }: CartClientProps) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-8 space-y-4">
               {[1, 2].map((i) => (
-                <div key={i} className="p-4 border rounded-xl flex gap-4 bg-card/50">
-                  <Skeleton className="w-24 h-32 rounded-lg" />
+                <div key={i} className="p-4 glass-card rounded-4xl flex gap-6 border-none">
+                  <Skeleton className="w-24 h-40 rounded-2xl" />
                   <div className="flex-1 space-y-3">
-                    <Skeleton className="h-6 w-3/4" />
+                    <Skeleton className="h-8 w-3/4" />
                     <Skeleton className="h-4 w-1/2" />
                   </div>
                 </div>
               ))}
             </div>
             <div className="lg:col-span-4">
-              <div className="p-6 border rounded-xl space-y-4 bg-card/50">
-                <Skeleton className="h-8 w-1/2 mb-4" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <div className="pt-4 border-t">
-                  <Skeleton className="h-10 w-full" />
-                </div>
-              </div>
+              <Skeleton className="h-[400px] w-full rounded-4xl" />
             </div>
           </div>
         ) : localItems.length === 0 ? (
           <m.div
-            className="flex flex-col items-center justify-center py-24 px-4 text-center space-y-6 bg-card/50 rounded-3xl border border-border/50 backdrop-blur-sm"
+            className="flex flex-col items-center justify-center py-32 px-4 text-center space-y-8 glass-card rounded-4xl border-none shadow-2xl relative overflow-hidden group"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
-            <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
-              <ShoppingBag className="w-12 h-12 text-muted-foreground" />
+            <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent pointer-events-none" />
+
+            <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center relative z-10 group-hover:scale-110 transition-transform duration-500">
+              <ShoppingBag className="w-10 h-10 text-muted-foreground/40 group-hover:text-accent transition-all animate-pulse" />
             </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-foreground">{t("empty")}</h2>
-              <p className="text-muted-foreground max-w-md mx-auto">
+
+            <div className="space-y-3 relative z-10">
+              <h2 className="text-3xl font-bold tracking-tighter">{t("empty")}</h2>
+              <p className="text-muted-foreground max-w-md mx-auto font-medium">
                 {t("emptyDesc")}
               </p>
             </div>
-            <Link href="/shop">
+
+            <Link href="/shop" className="relative z-10">
               <GlassButton
                 size="lg"
-                className="bg-primary text-primary-foreground font-bold px-8 hover:bg-primary/90"
+                className="bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs px-12 py-8 rounded-full shadow-xl hover:shadow-primary/20 transition-all"
               >
                 {t("startShopping")}
               </GlassButton>
@@ -551,15 +562,15 @@ export function CartClient({ cart }: CartClientProps) {
           </m.div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-8 space-y-4">
+            <div className="lg:col-span-8 space-y-6">
               {/* Free Shipping Bar */}
-              <div className="p-6 mb-6 rounded-2xl bg-card border border-border shadow-sm overflow-hidden relative group">
+              <div className="p-8 rounded-4xl glass-card border-none shadow-xl overflow-hidden relative group">
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
                       <Truck className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="font-semibold text-xs uppercase tracking-wider text-card-foreground">
+                    <span className="font-black text-[10px] uppercase tracking-[0.2em] text-foreground/60">
                       {isFreeShipping
                         ? t("freeShippingUnlocked")
                         : t("addForFree", {
@@ -570,7 +581,7 @@ export function CartClient({ cart }: CartClientProps) {
                           })}
                     </span>
                   </div>
-                  <span className="text-xs font-bold text-primary">
+                  <span className="text-xs font-black text-primary">
                     {Math.min(
                       100,
                       Math.round((total / shippingThreshold) * 100)
@@ -595,17 +606,17 @@ export function CartClient({ cart }: CartClientProps) {
 
               {/* Cart Items */}
               <m.div
-                className="space-y-4"
+                className="space-y-6"
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
               >
-                <div className="flex items-center justify-between px-4 py-2 text-sm text-muted-foreground">
+                <div className="flex items-center justify-between px-6 py-2">
                   <div className="flex items-center gap-3">
                     <Checkbox
                       checked={
-                        selectedItems.length === localItems.length &&
-                        localItems.length > 0
+                        localItems.length > 0 && 
+                        selectedItems.length === localItems.length
                       }
                       onCheckedChange={() => {
                         if (selectedItems.length === localItems.length) {
@@ -614,8 +625,9 @@ export function CartClient({ cart }: CartClientProps) {
                           setSelectedItems(localItems.map((i) => i.id));
                         }
                       }}
+                      className="rounded-md"
                     />
-                    <span className="text-xs font-semibold uppercase tracking-wider">
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
                       {t("selectAll")}
                     </span>
                   </div>
@@ -623,18 +635,19 @@ export function CartClient({ cart }: CartClientProps) {
 
                 {localItems.map((item) => (
                   <m.div key={item.id} variants={itemVariants}>
-                    <div className="p-4 md:p-6 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-all duration-300 group">
-                      <div className="flex gap-4 md:gap-6">
+                    <div className="p-6 md:p-8 rounded-4xl glass-card border-none shadow-xl hover:shadow-2xl transition-all duration-300 group">
+                      <div className="flex gap-6 md:gap-8">
                         <div className="flex items-center">
                           <Checkbox
                             checked={selectedItems.includes(item.id)}
                             onCheckedChange={() => toggleSelectItem(item.id)}
+                            className="rounded-md"
                           />
                         </div>
 
                         <Link
                           href={`/products/${item.sku.product.id}`}
-                          className="relative w-24 h-32 md:w-32 md:h-40 rounded-xl overflow-hidden bg-muted shrink-0 border border-border block group/img"
+                          className="relative w-28 h-36 md:w-40 md:h-52 rounded-3xl overflow-hidden bg-muted shrink-0 border border-white/10 block group/img shadow-lg"
                         >
                           <OptimizedImage
                             src={
@@ -644,43 +657,43 @@ export function CartClient({ cart }: CartClientProps) {
                             }
                             alt={item.sku.product.name}
                             fill
-                            sizes="(max-width: 768px) 96px, 128px"
-                            className="object-cover transition-transform duration-500 group-hover/img:scale-110"
+                            sizes="(max-width: 768px) 112px, 160px"
+                            className="object-cover transition-transform duration-1000 group-hover/img:scale-110"
                           />
                         </Link>
 
-                        <div className="flex-1 flex flex-col justify-between py-1">
-                          <div className="space-y-1">
+                        <div className="flex-1 flex flex-col justify-between py-2">
+                          <div className="space-y-2">
                             <div className="flex justify-between items-start gap-4">
                               <Link
                                 href={`/products/${item.sku.product.id}`}
-                                className="font-bold text-lg md:text-xl text-foreground hover:text-primary transition-colors line-clamp-2"
+                                className="font-bold text-2xl md:text-3xl text-foreground hover:text-accent transition-colors tracking-tighter line-clamp-2"
                               >
                                 {item.sku.product.name}
                               </Link>
                               <button
                                 onClick={() => handleRemoveItem(item.id)}
-                                className="text-muted-foreground hover:text-destructive transition-colors p-1"
+                                className="text-muted-foreground/40 hover:text-destructive transition-colors p-2 glass-premium rounded-full"
                               >
-                                <X size={20} />
+                                <X size={18} />
                               </button>
                             </div>
 
-                            <div className="flex flex-wrap gap-2 mt-2">
+                            <div className="flex flex-wrap gap-2 mt-4">
                               {item.sku.optionValues?.map((ov) => (
                                 <span
                                   key={ov.optionValue.id}
-                                  className="px-2 py-0.5 rounded-md bg-muted border border-border text-[10px] md:text-xs font-medium text-muted-foreground"
+                                  className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-muted-foreground"
                                 >
                                   {ov.optionValue.option.name}:{" "}
-                                  {ov.optionValue.value}
+                                  <span className="text-foreground">{ov.optionValue.value}</span>
                                 </span>
                               ))}
                             </div>
                           </div>
 
-                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4">
-                            <div className="flex items-center bg-muted/50 rounded-full border border-border p-1 w-fit">
+                          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mt-8">
+                            <div className="flex items-center glass-premium rounded-full border border-white/10 p-1.5 w-fit">
                               <button
                                 onClick={() =>
                                   handleUpdateQuantity(
@@ -689,11 +702,11 @@ export function CartClient({ cart }: CartClientProps) {
                                   )
                                 }
                                 disabled={item.quantity <= 1 || isPending}
-                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-background shadow-sm disabled:opacity-30 transition-all text-foreground"
+                                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 shadow-sm disabled:opacity-30 transition-all text-foreground"
                               >
-                                <Minus size={14} />
+                                <Minus size={16} />
                               </button>
-                              <span className="w-10 text-center font-bold text-sm text-foreground">
+                              <span className="w-12 text-center font-black text-lg text-foreground">
                                 {item.quantity}
                               </span>
                               <button
@@ -706,14 +719,17 @@ export function CartClient({ cart }: CartClientProps) {
                                 disabled={
                                   isPending || item.quantity >= item.sku.stock
                                 }
-                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-background shadow-sm transition-all text-foreground"
+                                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 shadow-sm transition-all text-foreground"
                               >
-                                <Plus size={14} />
+                                <Plus size={16} />
                               </button>
                             </div>
 
                             <div className="text-right">
-                              <p className="text-lg md:text-2xl font-bold text-primary tracking-tight">
+                               <p className="text-xs font-black uppercase tracking-[0.2em] text-accent mb-1">
+                                 {t("subtotal")}
+                               </p>
+                              <p className="text-2xl md:text-4xl font-bold text-primary tracking-tighter leading-none">
                                 {format.number(
                                   Number(item.sku.salePrice || item.sku.price) *
                                     item.quantity,
@@ -724,7 +740,7 @@ export function CartClient({ cart }: CartClientProps) {
                                 )}
                               </p>
                               {item.sku.salePrice && (
-                                <p className="text-xs text-muted-foreground line-through font-medium">
+                                <p className="text-xs text-muted-foreground/60 line-through font-bold mt-1">
                                   {format.number(
                                     Number(item.sku.price) * item.quantity,
                                     {
@@ -746,37 +762,42 @@ export function CartClient({ cart }: CartClientProps) {
 
             {/* Order Summary */}
             <div className="lg:col-span-4 space-y-6">
-              <div className="p-6 md:p-8 sticky top-24 rounded-2xl bg-card border border-border shadow-sm">
-                <h2 className="text-xs font-bold uppercase tracking-widest mb-8 text-foreground/80">
+              <div className="p-8 md:p-10 sticky top-24 rounded-4xl glass-premium border-none shadow-2xl overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-accent/5 rounded-full blur-3xl -mr-16 -mt-16" />
+                
+                <h2 className="text-[10px] font-black uppercase tracking-[0.3em] mb-10 text-accent">
                   {t("orderSummary")}
                 </h2>
-                <div className="space-y-6 mb-10">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-muted-foreground">
+                
+                <div className="space-y-6 mb-12 relative z-10">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="font-medium text-muted-foreground">
                       {t("subtotal")}
                     </span>
-                    <span className="text-base font-bold text-foreground">
+                    <span className="font-bold text-foreground">
                       {format.number(total, {
                         style: "currency",
                         currency: "VND",
                       })}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium text-muted-foreground">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="font-medium text-muted-foreground">
                       {t("shipping")}
                     </span>
-                    <span className="text-xs font-bold uppercase tracking-wider text-primary">
+                    <span className="font-bold uppercase tracking-widest text-[#10b981] text-[10px]">
                       {isFreeShipping ? t("free") : t("calculatedAtCheckout")}
                     </span>
                   </div>
-                  <div className="h-px bg-border" />
-                  <div className="flex justify-between items-end">
-                    <span className="text-sm font-bold uppercase tracking-wide text-foreground">
-                      {t("total")}
+                  
+                  <div className="h-px bg-white/10" />
+                  
+                  <div className="flex justify-between items-end pt-4">
+                    <span className="text-xs font-black uppercase tracking-widest text-foreground">
+                      {t("totalAmount")}
                     </span>
                     <div className="text-right">
-                      <p className="text-3xl font-bold text-primary tracking-tight leading-none">
+                      <p className="text-4xl font-bold text-primary tracking-tighter leading-none">
                         {format.number(total, {
                           style: "currency",
                           currency: "VND",
@@ -786,7 +807,7 @@ export function CartClient({ cart }: CartClientProps) {
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-4 relative z-10">
                   {isGuest ? (
                     <Link
                       href={`/login?callbackUrl=${encodeURIComponent(

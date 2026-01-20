@@ -117,7 +117,7 @@ async function DynamicShopContent({ children }: { children: React.ReactNode }) {
         initialUser={user}
         initialWishlistCount={initialWishlistCount}
       />
-      <ClientOnlyWidgets user={user} accessToken={token} />
+      <ClientOnlyWidgets user={user as any} accessToken={token} />
     </>
   );
 }

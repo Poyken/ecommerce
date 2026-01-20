@@ -23,12 +23,53 @@ export interface BlogInput {
 
 export const blogService = {
   // Public
-  getBlogs: async (page = 1, limit = 12, category?: string) => {
+  getBlogs: async (
+    paramsOrPage: number | { page?: number; limit?: number; category?: string } = 1,
+    limit = 12,
+    category?: string
+  ) => {
+    let finalPage = 1;
+    let finalLimit = 12;
+    let finalCategory = category;
+
+    if (typeof paramsOrPage === "object") {
+      finalPage = paramsOrPage.page ?? 1;
+      finalLimit = paramsOrPage.limit ?? 12;
+      finalCategory = paramsOrPage.category;
+    } else {
+      finalPage = paramsOrPage;
+      finalLimit = limit;
+    }
+
     return http.get<ApiResponse<BlogWithProducts[]>>("/blogs", {
-      params: { page, limit, category },
+      params: { page: finalPage, limit: finalLimit, category: finalCategory },
       skipAuth: true,
       next: { revalidate: 60 },
     });
+  },
+
+  getCategoryStats: async () => {
+    const res = await http.get<ApiResponse<any>>("/blogs/stats", {
+      skipAuth: true,
+      next: { revalidate: 3600 },
+    });
+    return res?.data || null;
+  },
+
+  getBlogBySlug: async (slug: string) => {
+    const res = await http.get<ApiResponse<BlogWithProducts>>(`/blogs/${slug}`, {
+      skipAuth: true,
+      next: { revalidate: 60 },
+    });
+    return res?.data || null;
+  },
+
+  getBlogIds: async () => {
+    const res = await http.get<ApiResponse<BlogWithProducts[]>>("/blogs", {
+      params: { limit: 100 },
+      skipAuth: true,
+    });
+    return res?.data?.map((blog) => blog.id) || [];
   },
 
   // Admin / CRUD
@@ -57,7 +98,7 @@ export const blogService = {
   },
 
   getMyBlogs: async () => {
-    return http.get("/blogs/my-blogs", {
+    return http.get<ApiResponse<BlogWithProducts[]>>("/blogs/my-blogs", {
       next: { tags: ["my-blogs"] },
     });
   },

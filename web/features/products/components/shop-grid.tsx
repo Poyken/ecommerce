@@ -253,7 +253,7 @@ export function ShopGrid({
                     <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">
                       {t("mightLike")}
                     </span>
-                    <h4 className="text-2xl font-serif">
+                    <h4 className="text-2xl font-black uppercase italic tracking-tighter">
                       {t("curatedForYou")}
                     </h4>
                     <div className="w-12 h-0.5 bg-primary/20 rounded-full" />

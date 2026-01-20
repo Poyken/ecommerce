@@ -320,7 +320,7 @@ interface AdminTableWrapperProps {
   className?: string;
   isLoading?: boolean;
   loadingMessage?: string;
-
+  variant?: "default" | "glass";
 }
 
 export function AdminTableWrapper({
@@ -331,12 +331,13 @@ export function AdminTableWrapper({
   className,
   isLoading,
   loadingMessage,
+  variant = "default",
 }: AdminTableWrapperProps) {
   return (
     <div
       className={cn(
         "rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700",
-        "glass-premium border border-border/80",
+        variant === "glass" ? "glass-card border-none" : "glass-premium border border-border/80",
         className
       )}
     >
