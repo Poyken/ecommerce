@@ -25,22 +25,35 @@ export const metadata: Metadata = {
 async function getPageConfig(slug: string): Promise<any | null> {
   try {
     const headersList = await headers();
-    const host = headersList.get("host") || "localhost";
+    let host = headersList.get("host") || "localhost";
+    
+    // In local dev, strip port if needed or handling for localhost
+    if (host.includes(":")) {
+      host = host.split(":")[0];
+    }
+
     const apiUrl =
       process.env.API_URL ||
       process.env.NEXT_PUBLIC_API_URL ||
       "http://127.0.0.1:8080/api/v1";
 
+    console.log(`[Shop] Fetching CMS config for host: ${host}, slug: ${slug}`);
+
     const res = await fetch(`${apiUrl}/pages/${slug}`, {
       headers: { "x-tenant-domain": host },
       next: { revalidate: 60 },
+      cache: 'no-store' // Disable cache temporarily to ensure we see fresh errors
     });
 
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.warn(`[Shop] CMS Config not found for ${slug} on ${host} (Status: ${res.status})`);
+      return null;
+    }
+
     const json = await res.json();
-    // API returns { statusCode, message, data: {...} } - extract the data
     return json.data || json;
-  } catch {
+  } catch (err) {
+    console.error(`[Shop] Error fetching CMS config:`, err);
     return null;
   }
 }
@@ -153,9 +166,9 @@ async function HomeDataFetcher() {
       getCategoriesAction(),
       getBrandsAction(),
     ]);
-    products = productsRes.success ? productsRes.data : [];
-    categories = categoriesRes.success ? categoriesRes.data : [];
-    brands = brandsRes.success ? brandsRes.data : [];
+    products = (productsRes.success && productsRes.data ? productsRes.data : []) as Product[];
+    categories = (categoriesRes.success && categoriesRes.data ? categoriesRes.data : []) as Category[];
+    brands = (brandsRes.success && brandsRes.data ? brandsRes.data : []) as Brand[];
   } catch {
     // Silently fail - will show empty state
   }

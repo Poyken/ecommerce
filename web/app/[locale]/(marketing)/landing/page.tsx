@@ -25,7 +25,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { useRef, useState } from "react";
 
 // ============================================================================
@@ -293,7 +293,7 @@ function HeroSection() {
               <Button
                 size="lg"
                 variant="glass"
-                className="group border border-white/10"
+                className="group"
                 asChild
               >
                 <Link href="/demo">

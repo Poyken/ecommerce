@@ -46,22 +46,22 @@ export function BusinessTab({
         />
         <AdminStatsCard
           title="Total Orders"
-          value={stats.totalOrders}
-          description={`${stats.todayOrders} new orders today`}
+          value={stats?.totalOrders || 0}
+          description={`${stats?.todayOrders || 0} new orders today`}
           icon={ShoppingCart}
           variant="info"
           trend={{ value: 8, isPositive: true }}
         />
         <AdminStatsCard
           title="Total Customers"
-          value={stats.totalCustomers}
+          value={stats?.totalCustomers || 0}
           description="Active registered users"
           icon={Users}
           variant="aurora"
         />
         <AdminStatsCard
           title="Products"
-          value={stats.totalProducts}
+          value={stats?.totalProducts || 0}
           description="Live SKUs in inventory"
           icon={Package}
           variant="warning"

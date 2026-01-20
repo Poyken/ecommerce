@@ -66,29 +66,29 @@ export function AdminPageHeader({
 
   if (layout === "luxury") {
     return (
-      <div className={cn("relative p-8 md:p-12 rounded-[2.5rem] bg-black/40 backdrop-blur-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden mb-12 animate-in fade-in zoom-in duration-1000", className)}>
+      <div className={cn("relative p-6 md:p-10 rounded-[2rem] bg-black/40 backdrop-blur-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden mb-8 animate-in fade-in zoom-in duration-1000", className)}>
         <div className="absolute top-0 right-0 w-1/2 h-full bg-linear-to-bl from-primary/20 via-transparent to-transparent opacity-50 pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-accent/10 rounded-full blur-[100px] pointer-events-none animate-pulse" />
         
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-          <div className="space-y-6">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+          <div className="space-y-4">
             {icon && (
               <m.div 
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-accent p-[1px] shadow-2xl"
+                className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent p-[1px] shadow-2xl"
               >
                 <div className="w-full h-full rounded-2xl bg-black/80 flex items-center justify-center backdrop-blur-xl text-white">
-                  {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { className: "h-10 w-10" }) : icon}
+                  {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { className: "h-8 w-8" }) : icon}
                 </div>
               </m.div>
             )}
-            <div className="space-y-2">
+            <div className="space-y-1">
               <m.h1 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-4xl md:text-6xl font-black tracking-tighter text-white font-sans"
+                className="text-3xl md:text-5xl font-black tracking-tighter text-white font-sans"
               >
                 {title}
               </m.h1>
@@ -97,7 +97,7 @@ export function AdminPageHeader({
                    initial={{ y: 10, opacity: 0 }}
                    animate={{ y: 0, opacity: 1 }}
                    transition={{ delay: 0.4 }}
-                   className="text-lg text-muted-foreground/80 font-medium tracking-wide"
+                   className="text-base text-muted-foreground/80 font-medium tracking-wide"
                 >
                   {subtitle}
                 </m.p>
@@ -308,8 +308,8 @@ export function AdminStatsCard({
     <m.div 
       whileHover={{ y: -5, scale: 1.02 }}
       className={cn(
-        "rounded-[2rem] border border-white/5 bg-white/5 backdrop-blur-xl p-7 transition-all duration-500 group relative overflow-hidden",
-        variant === "neon" && "border-primary/20 bg-primary/5"
+        "rounded-[2rem] border border-white/10 bg-white/10 backdrop-blur-xl p-7 transition-all duration-500 group relative overflow-hidden",
+        variant === "neon" && "border-primary/30 bg-primary/10"
       )}
     >
       {variant === "aurora" && (

@@ -325,7 +325,7 @@ export function AdminSidebar() {
           )}
         </TypedLink>
 
-        {hasPermission("superAdmin:read") && (
+        {hasPermission("super-admin:read") && (
           <TypedLink
             href={"/super-admin" as AppRoute}
             className={cn(

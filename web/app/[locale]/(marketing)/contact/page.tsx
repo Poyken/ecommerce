@@ -20,6 +20,7 @@ import {
   Phone,
   Send,
 } from "lucide-react";
+import { Link } from "@/i18n/routing";
 import { useState } from "react";
 
 const fadeInUp = {
@@ -378,13 +379,13 @@ export default function ContactPage() {
 
                 <p className="text-sm text-muted-foreground text-center">
                   Bằng việc gửi form, bạn đồng ý với{" "}
-                  <a href="/privacy" className="text-primary hover:underline">
+                  <Link href="/privacy" className="text-primary hover:underline">
                     Chính sách bảo mật
-                  </a>{" "}
+                  </Link>{" "}
                   của chúng tôi.
                 </p>
               </form>
-            </motion.div>
+            </m.div>
           </div>
         </div>
       </section>

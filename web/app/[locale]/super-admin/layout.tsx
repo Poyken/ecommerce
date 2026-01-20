@@ -52,7 +52,7 @@ export default async function SuperAdminLayout({
   const permissions = getPermissionsFromToken(token);
 
   // Quick initial check for SSR
-  const hasSuperAdminAccess = permissions.includes("superAdmin:read");
+  const hasSuperAdminAccess = permissions.includes("super-admin:read");
 
   if (!hasSuperAdminAccess) {
     redirect("/admin");

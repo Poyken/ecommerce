@@ -30,7 +30,7 @@ import {
   Warehouse,
   Zap,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },

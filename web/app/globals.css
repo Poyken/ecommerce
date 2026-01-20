@@ -188,6 +188,11 @@
   --border: oklch(0.92 0.003 85);
   --input: oklch(0.94 0.003 85);
   --ring: oklch(0.82 0.055 85); /* Champagne focus ring */
+
+  /* Aurora Glow Colors (Base for both modes) */
+  --aurora-blue: oklch(0.6 0.18 250);
+  --aurora-purple: oklch(0.65 0.15 300);
+  --aurora-orange: oklch(0.7 0.15 45);
 }
 
 .dark {
@@ -286,17 +291,53 @@
   .glass-premium {
     background: linear-gradient(
       135deg,
-      rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0.05)
+      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.02)
     );
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    border: 1px solid rgba(15, 15, 15, 0.1);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .dark .glass-premium {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.03)
+    );
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  }
+
+  /* Premium Scrollbar */
+  .no-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .no-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .no-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    transition: background 0.3s ease;
+  }
+  .no-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .dark .no-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .dark .no-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.15);
   }
 
   /* Premium Glow Effects */
   .glow-accent {
-    box-shadow: 0 0 40px -10px var(--accent), 0 0 80px -20px var(--accent);
+    box-shadow:
+      0 0 40px -10px var(--accent),
+      0 0 80px -20px var(--accent);
   }
 
   .glow-accent-soft {
@@ -306,8 +347,8 @@
   /* Animated Border Gradient */
   .border-gradient {
     position: relative;
-    background: linear-gradient(var(--background), var(--background))
-        padding-box,
+    background:
+      linear-gradient(var(--background), var(--background)) padding-box,
       linear-gradient(
           135deg,
           var(--accent) 0%,
@@ -440,7 +481,8 @@
     );
     backdrop-filter: blur(24px) saturate(1.2);
     border: 1px solid oklch(0.88 0.045 85 / 0.3);
-    box-shadow: 0 8px 32px oklch(0.82 0.055 85 / 0.1),
+    box-shadow:
+      0 8px 32px oklch(0.82 0.055 85 / 0.1),
       inset 0 1px 0 oklch(1 0 0 / 0.1);
   }
 
@@ -451,7 +493,9 @@
       oklch(0.12 0.008 75 / 0.4) 100%
     );
     border: 1px solid oklch(0.75 0.08 85 / 0.2);
-    box-shadow: 0 8px 32px oklch(0 0 0 / 0.3), inset 0 1px 0 oklch(1 0 0 / 0.05);
+    box-shadow:
+      0 8px 32px oklch(0 0 0 / 0.3),
+      inset 0 1px 0 oklch(1 0 0 / 0.05);
   }
 
   /* Editorial Text Gradient - Champagne Shimmer */
@@ -481,7 +525,8 @@
 
   .bento-cell:hover {
     border-color: oklch(0.82 0.055 85 / 0.5);
-    box-shadow: 0 24px 48px -12px oklch(0.82 0.055 85 / 0.15),
+    box-shadow:
+      0 24px 48px -12px oklch(0.82 0.055 85 / 0.15),
       inset 0 1px 0 oklch(1 0 0 / 0.1);
     transform: translateY(-4px);
   }

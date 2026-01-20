@@ -34,25 +34,29 @@ export function cn(...inputs: ClassValue[]) {
 // ============================================================================
 
 export function formatNumber(amount: number, locale = "vi-VN"): string {
-  return new Intl.NumberFormat(locale).format(amount);
+  const value =
+    isNaN(amount) || amount === null || amount === undefined ? 0 : amount;
+  return new Intl.NumberFormat(locale).format(value);
 }
 
 export function formatCurrency(
   amount: number,
   locale = "vi-VN",
   currency = "VND",
-  options: Intl.NumberFormatOptions = {}
+  options: Intl.NumberFormatOptions = {},
 ): string {
+  const value =
+    isNaN(amount) || amount === null || amount === undefined ? 0 : amount;
   return new Intl.NumberFormat(locale, {
     style: "currency",
     currency,
     ...options,
-  }).format(amount);
+  }).format(value);
 }
 
 export function formatVND(
   amount: number,
-  options: Intl.NumberFormatOptions = {}
+  options: Intl.NumberFormatOptions = {},
 ): string {
   return formatCurrency(amount, "vi-VN", "VND", options);
 }
@@ -116,7 +120,7 @@ export interface PaginationParams {
 export function normalizePaginationParams(
   paramsOrPage?: number | PaginationParams,
   limit?: number,
-  search?: string
+  search?: string,
 ): Record<string, string | number | boolean | undefined> {
   // If first argument is an object, use its properties
   if (typeof paramsOrPage === "object" && paramsOrPage !== null) {

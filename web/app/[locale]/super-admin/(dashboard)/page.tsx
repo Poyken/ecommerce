@@ -70,7 +70,19 @@ export default async function SuperAdminDashboardPage() {
   const recentTenants = tenantsData.slice(0, 5);
 
   const statsRes = await getPlatformStatsAction();
-  const stats = statsRes?.data;
+  const stats = statsRes?.data || {
+    totalTenants: 0,
+    activeTenants: 0,
+    newTenantsThisMonth: 0,
+    tenantGrowthRate: 0,
+    churnRate: 0,
+    mrr: 0,
+    mrrFormatted: "0 ₫",
+    activeSubscriptions: 0,
+    pendingInvoices: 0,
+    planDistribution: [],
+    recentTenants: [],
+  };
 
   // Security stats reused inside TechOps logic or passed if needed
   // const securityRes = await getSecurityStatsAction();

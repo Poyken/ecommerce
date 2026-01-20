@@ -371,7 +371,7 @@ export class AuthService {
     permissions: string[],
   ) {
     const isSuperAdmin = roles.includes('SUPERADMIN');
-    const hasPlatformControl = permissions.includes('superAdmin:read');
+    const hasPlatformControl = permissions.includes('super-admin:read');
 
     // PLATFORM ADMIN = Super Admin + Có quyền hệ thống.
     // Được phép truy cập mọi Tenant và trang quản trị tổng (Global Portal).

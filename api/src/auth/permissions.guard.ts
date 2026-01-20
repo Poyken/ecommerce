@@ -58,7 +58,7 @@ export class PermissionsGuard implements CanActivate {
     // Regular tenant admins MUST have explicit permissions in their token.
     if (
       user?.roles?.includes('SUPERADMIN') &&
-      user?.permissions?.includes('superAdmin:read')
+      user?.permissions?.includes('super-admin:read')
     ) {
       return true;
     }

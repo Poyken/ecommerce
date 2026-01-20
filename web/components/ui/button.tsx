@@ -59,7 +59,7 @@ const buttonVariants = cva(
         aurora:
           "bg-gradient-to-r from-[var(--aurora-blue)] via-[var(--aurora-purple)] to-[var(--aurora-orange)] text-white hover:opacity-90 shadow-xl shadow-purple-500/20",
         glass:
-          "glass-premium text-white hover:bg-white/10",
+          "glass-premium text-foreground dark:text-white hover:bg-black/5 dark:hover:bg-white/10 border-foreground/10 dark:border-white/10",
       },
       // KÍCH THƯỚC
       size: {

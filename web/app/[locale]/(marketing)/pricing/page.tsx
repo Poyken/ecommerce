@@ -18,7 +18,8 @@ import {
   X,
   Zap,
 } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
+import * as React from "react";
 import { useState } from "react";
 
 // Animation variants
@@ -248,37 +249,37 @@ export default function PricingPage() {
         </div>
 
         <div className="container mx-auto px-4 lg:px-8 text-center">
-          <motion.div
+          <m.div
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
             className="max-w-3xl mx-auto"
           >
-            <motion.div
+            <m.div
               variants={fadeInUp}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
             >
               <Sparkles className="size-4" />
               <span>Bắt đầu miễn phí, nâng cấp khi cần</span>
-            </motion.div>
+            </m.div>
 
-            <motion.h1
+            <m.h1
               variants={fadeInUp}
               className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6"
             >
               Chọn gói phù hợp với{" "}
               <span className="text-primary">doanh nghiệp của bạn</span>
-            </motion.h1>
+            </m.h1>
 
-            <motion.p
+            <m.p
               variants={fadeInUp}
               className="text-xl text-muted-foreground mb-10"
             >
               Linh hoạt nâng cấp theo nhu cầu. Không phí ẩn. Hủy bất cứ lúc nào.
-            </motion.p>
+            </m.p>
 
             {/* Billing Toggle */}
-            <motion.div
+            <m.div
               variants={fadeInUp}
               className="inline-flex items-center gap-4 p-1 rounded-full bg-muted"
             >
@@ -504,8 +505,8 @@ export default function PricingPage() {
               </thead>
               <tbody>
                 {comparisonFeatures.map((category) => (
-                  <>
-                    <tr key={category.category} className="bg-muted/50">
+                  <React.Fragment key={category.category}>
+                    <tr className="bg-muted/50">
                       <td
                         colSpan={4}
                         className="py-3 px-6 font-semibold text-sm"
@@ -555,7 +556,7 @@ export default function PricingPage() {
                         </td>
                       </tr>
                     ))}
-                  </>
+                  </React.Fragment>
                 ))}
               </tbody>
             </table>
@@ -597,7 +598,7 @@ export default function PricingPage() {
                     <p className="text-muted-foreground">{faq.answer}</p>
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>
