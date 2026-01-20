@@ -46,7 +46,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import type { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
+import type { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
 import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';

@@ -86,6 +86,18 @@ export const revalidate = 3600;
  * =================================================================================================
  */
 export default async function Home() {
+  // 0. Handle Domain Redirects
+  const headersList = await headers();
+  const host = headersList.get("host") || "localhost";
+  const isMarketingDomain = host.includes("luxesaas.com") || 
+                            host.includes("platform") ||
+                            host.includes("marketing");
+  
+  if (isMarketingDomain) {
+    const { redirect } = await import("next/navigation");
+    redirect("/landing");
+  }
+
   // 1. Fetch CMS Config (Blocked)
   const cmsPage = await getPageConfig("home");
 

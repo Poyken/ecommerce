@@ -6,7 +6,7 @@ import { MockStripeStrategy } from './strategies/mock-stripe.strategy';
 import { VNPayStrategy } from './strategies/vnpay.strategy';
 import { MoMoStrategy } from './strategies/momo.strategy';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { OrdersRepository } from '@/orders/orders.repository';
+import { OrdersRepository } from '@/sales/orders/orders.repository';
 
 /**
  * =====================================================================

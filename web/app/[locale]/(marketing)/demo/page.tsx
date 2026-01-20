@@ -49,29 +49,8 @@ export default function DemoPage() {
       id: "local",
       name: t("local.name"),
       description: t("local.description"),
-      url: "/",
+      url: "http://demo.localhost:3000",
       features: ["Seeded Data", "Full Access", "Debug Mode"],
-    },
-    {
-      id: "fashion",
-      name: t("fashion.name"),
-      description: t("fashion.description"),
-      url: "https://fashion-demo.luxesaas.com",
-      features: ["Product Variants", "Wishlist", "Quick View"],
-    },
-    {
-      id: "electronics",
-      name: t("electronics.name"),
-      description: t("electronics.description"),
-      url: "https://tech-demo.luxesaas.com",
-      features: ["Comparison", "Reviews", "Specifications"],
-    },
-    {
-      id: "food",
-      name: t("food.name"),
-      description: t("food.description"),
-      url: "https://food-demo.luxesaas.com",
-      features: ["Scheduled Delivery", "Subscription Box", "Local Pickup"],
     },
   ];
 

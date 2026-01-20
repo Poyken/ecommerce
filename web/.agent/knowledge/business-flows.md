@@ -6,17 +6,23 @@ Tài liệu này mô tả chi tiết các luồng nghiệp vụ của hệ thố
 
 ## 1. Multi-Tenancy & Auth Flow
 
-### 1.1 Tenant Resolution
+### 1.1 Tenant Resolution Ecosystem
 
-Mọi Request tới API đều phải xác định Context Tenant:
+Mọi Request tới Frontend đều được định tuyến thông qua `middleware.ts` (Proxy) dựa trên Hostname:
 
-1.  **Public Storefront**: Dựa vào `Host` Header (Subdomain hoặc Custom Domain).
-    - `shop1.platform.com` -> Tenant A
-    - `mystore.com` (CNAME) -> Tenant A
-2.  **Platform Admin**: Dựa vào đường dẫn hoặc subdomain quản trị (`admin.platform.com`).
-3.  **API Requests**:
+1.  **Platform Mode** (`localhost:3000`):
+    - Dành cho khách vãng lai, hiển thị Landing Page.
+    - Không load `TenantProvider`.
+2.  **Demo Mode** (`demo.localhost:3000`):
+    - Cho phép truy cập `/demo` route.
+    - Load dữ liệu từ Tenant Demo.
+3.  **Tenant Mode** (`<slug>.localhost` hoặc Custom Domain):
+    - **Storefront**: Root path `/` hiển thị trang chủ Shop.
+    - **Admin**: Path `/admin` hiển thị Dashboard quản lý.
+    - Tự động gọi API lấy cấu hình Tenant (Theme, Logo) để render giao diện.
+4.  **API Requests**:
     - Header `x-tenant-id`: Bắt buộc cho các tác vụ quản trị.
-    - Nếu thiếu -> Trả về 400 (Bad Request).
+    - Middleware tự động inject header này khi gọi từ Server Components của Tenant Domain.
 
 ### 1.2 Permission-based RBAC
 

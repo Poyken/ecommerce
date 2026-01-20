@@ -132,6 +132,8 @@ async function bootstrap() {
         process.env.FRONTEND_URL,
         'http://localhost:3000',
         'http://localhost:8080',
+        'http://127.0.0.1:3000', // Localhost IP
+        'http://127.0.0.1:8080', // Localhost IP
         'https://web-five-gilt-79.vercel.app', // Production Domain
       ].filter(Boolean); // Lọc bỏ giá trị undefined/null
 

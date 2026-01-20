@@ -2136,6 +2136,83 @@
       }
     },
     "demo": {
+      "badge": "Luxe SaaS Demo",
+      "title": "Experience {brand}",
+      "subtitle": "Explore our powerful features through live demo stores or request a personalized walkthrough.",
+      "storesTitle": "Live Demo Stores",
+      "storesSubtitle": "Choose a category to explore specialized features",
+      "viewStore": "View Store",
+      "scheduleDemo": "Schedule Demo",
+      "scheduleDemoTitle": "Personalized Walkthrough",
+      "scheduleDemoSubtitle": "Get a guided tour from our experts tailored to your business needs.",
+      "testimonial": "The demo convinced us completely. The multi-tenant architecture is exactly what we needed to scale our franchise.",
+      "includes": {
+        "title": "What's included:",
+        "admin": "Full Admin Access",
+        "oneOnOne": "1-on-1 Consultation",
+        "qa": "Technical Q&A",
+        "custom": "Customization Preview"
+      },
+      "local": {
+        "name": "Local Demo Store",
+        "description": "Default store with seeded data on Local Environment",
+        "recommended": "Recommended",
+        "launch": "Launch Local Store"
+      },
+      "fashion": {
+        "name": "Fashion Boutique",
+        "description": "Fashion store with full features"
+      },
+      "electronics": {
+        "name": "Tech Store",
+        "description": "Electronics store with product comparison"
+      },
+      "food": {
+        "name": "Fresh Market",
+        "description": "Food & Beverage store with delivery scheduling"
+      },
+      "form": {
+        "name": "Full Name",
+        "namePlaceholder": "John Doe",
+        "email": "Work Email",
+        "emailPlaceholder": "john@company.com",
+        "phone": "Phone Number",
+        "phonePlaceholder": "+1 234 567 890",
+        "company": "Company Name",
+        "companyPlaceholder": "Acme Corp",
+        "businessType": "Business Type",
+        "businessTypePlaceholder": "Select business type",
+        "preferredTime": "Preferred Time",
+        "preferredTimePlaceholder": "Select time slot",
+        "message": "Message (Optional)",
+        "messagePlaceholder": "Tell us about your requirements...",
+        "submitting": "Submitting...",
+        "submit": "Request Demo",
+        "orStart": "Or",
+        "startFree": "Start Free Trial",
+        "noDemo": "without a demo",
+        "businessTypes": {
+          "fashion": "Fashion & Apparel",
+          "electronics": "Electronics",
+          "food": "Food & Beverage",
+          "beauty": "Beauty & Cosmetics",
+          "home": "Home & Garden",
+          "other": "Other"
+        },
+        "times": {
+          "morning": "Morning (9AM - 12PM)",
+          "afternoon": "Afternoon (1PM - 5PM)",
+          "evening": "Evening (After 5PM)"
+        }
+      },
+      "success": {
+        "title": "Request Received!",
+        "description": "Thank you for your interest. Our team will contact you shortly to schedule your personalized demo.",
+        "startNow": "Start Free Trial Now",
+        "sendAnother": "Send Another Request"
+      }
+    },
+    "demo": {
       "badge": "Preview the Product",
       "title": "Experience {brand} Today",
       "subtitle": "Explore demo stores or schedule a personalized 1-on-1 walkthrough",

@@ -155,6 +155,7 @@ export default function OnboardingPage() {
     contactEmail: "",
     contactPhone: "",
     address: "",
+    password: "",
     categories: [] as string[],
     theme: "modern",
   });
@@ -194,11 +195,47 @@ export default function OnboardingPage() {
   const handleComplete = async () => {
     setIsSubmitting(true);
 
-    // Simulate API call to save onboarding data
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // 1. Generate Slug/Domain
+      const slug = formData.storeName
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "")
+        .replace(/^-+|-+$/g, "");
+      
+      const domain = `${slug}.localhost`; // Dev environment assumption
 
-    // Redirect to admin dashboard
-    router.push("/admin");
+      // 2. Call API
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/tenants/public-register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+           name: formData.storeName,
+           domain: domain,
+           plan: "BASIC",
+           adminEmail: formData.contactEmail,
+           adminPassword: formData.password,
+           themeConfig: {
+             theme: formData.theme,
+             categories: formData.categories
+           }
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create tenant");
+      }
+
+      // 3. Redirect to Tenant Admin
+      // Force hard navigation to new domain
+      window.location.href = `http://${domain}:3000/en/login`;
+      
+    } catch (error) {
+      console.error("Registration failed:", error);
+      setIsSubmitting(false);
+      // Show toast error here if toast is available
+    }
   };
 
   const canProceed = () => {
@@ -356,11 +393,30 @@ export default function OnboardingPage() {
                       />
                   </div>
 
+                  {/* Password for Admin */}
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium">
+                      Mật khẩu quản trị <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="password"
+                      value={formData.password}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          password: e.target.value,
+                        }))
+                      }
+                      className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  
                   {/* Contact Info */}
                   <div className="grid sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="block text-sm font-medium">
-                        Email liên hệ
+                        Email liên hệ <span className="text-destructive">*</span>
                       </label>
                       <input
                         type="email"

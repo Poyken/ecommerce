@@ -51,6 +51,15 @@ import { getTenant } from '@core/tenant/tenant.context';
 export class TenantsController {
   constructor(private readonly tenantsService: TenantsService) {}
 
+  @Post('public-register')
+  @ApiCreateResponse('Tenant', {
+    summary: 'Public Register new Tenant',
+  })
+  async publicRegister(@Body() createTenantDto: CreateTenantDto) {
+    const data = await this.tenantsService.create(createTenantDto);
+    return { data };
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('tenant:create')

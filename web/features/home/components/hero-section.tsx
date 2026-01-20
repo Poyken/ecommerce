@@ -127,7 +127,7 @@ export function HeroSection({
           )}
 
           <div className="space-y-6">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-serif font-normal tracking-[-0.03em] leading-[0.9]">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-sans font-normal tracking-[-0.03em] leading-[0.9]">
               <span className="block text-foreground">{displayTitle}</span>
               <span className="relative inline-block mt-2 w-full">
                 <span className="text-gradient-champagne italic w-full block pb-4">
@@ -252,7 +252,7 @@ export function HeroSection({
                       <p className="text-[10px] text-accent font-bold uppercase tracking-[0.3em]">
                         {t("featuredLook")}
                       </p>
-                      <p className="text-xl md:text-2xl font-serif text-foreground leading-tight">
+                      <p className="text-xl md:text-2xl font-sans text-foreground leading-tight">
                         {displayFeaturedTitle}
                       </p>
                     </div>

@@ -30,7 +30,7 @@ import { VNPayStrategy } from './strategies/vnpay.strategy';
 import { PaymentController } from './payment.controller';
 import { PaymentWebhookController } from './payment.webhook.controller';
 import { AnalyticsModule } from '@/analytics/analytics.module';
-import { OrdersModule } from '@/orders/orders.module';
+import { OrdersModule } from '@/sales/orders/orders.module';
 
 @Module({
   imports: [AnalyticsModule, forwardRef(() => OrdersModule)],

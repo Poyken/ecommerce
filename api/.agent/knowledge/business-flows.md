@@ -6,17 +6,28 @@ Tài liệu này mô tả chi tiết các luồng nghiệp vụ của hệ thố
 
 ## 1. Multi-Tenancy & Auth Flow
 
-### 1.1 Tenant Resolution
+### 1.1 Tenant Resolution Ecosystem
 
-Hệ thống sử dụng cơ chế **Isolated Context** để quản lý dữ liệu đa cửa hàng:
+Hệ thống hoạt động theo mô hình 4-Tier Resolution để định tuyến request:
 
-1.  **Context Identification**:
-    - **Header `x-tenant-id`**: Bắt buộc cho các tác vụ quản trị (Admin Dashboard).
-    - **Host Identification**: Tự động nhận diện tenant qua `Host` header (Subdomain/CNAME) cho Storefront.
-2.  **Implementation**:
-    - `TenantMiddleware` trích xuất `tenantId` và lưu vào `AsyncLocalStorage` (thông qua `getTenant()`).
-    - Mọi truy vấn database đều được tự động gắn thêm điều kiện `{ tenantId }` nhằm đảm bảo tính cô lập dữ liệu tuyệt đối (Data Isolation).
-    - Nếu không xác định được Tenant Context cho các endpoint yêu cầu -> Trả về 400 (Bad Request).
+1.  **Platform / Marketing** (`localhost:3000`):
+    - **Mục đích**: Landing Page giới thiệu, Bảng giá, và Luồng đăng ký Tenant mới.
+    - **Resolution**: Host là root domain (ví dụ `luxesaas.com` hoặc `localhost`). Không có `tenantId`.
+2.  **Tenant Demo** (`demo.localhost:3000`):
+    - **Mục đích**: Môi trường trải nghiệm cho khách hàng với dữ liệu mẫu (Seeded Data).
+    - **Resolution**: Host có subdomain `demo`. `tenantId` trỏ về Tenant Demo mặc định.
+3.  **Tenant Store** (`<slug>.localhost:3000`):
+    - **Mục đích**: Cửa hàng hoạt động của Tenant (Storefront & Admin).
+    - **Resolution**:
+      - **Subdomain**: Nhận diện qua slug (ví dụ `noithat`).
+      - **Custom Domain**: Lookup từ bảng `Tenants` (ví dụ `noithat.com` -> `tenant_id_123`).
+4.  **Auth System**:
+    - **Mục đích**: Login/Register tập trung nhưng phân quyền theo Tenant (Context-aware).
+
+**Cơ chế thực thi**:
+
+- `TenantMiddleware` trích xuất thông tin host và lookup trong Redis/DB để gán `tenantId` vào `AsyncLocalStorage`.
+- Nếu không tìm thấy Tenant hợp lệ cho request dạng store -> Trả về 404.
 
 ### 1.2 Permission-based RBAC & Security
 

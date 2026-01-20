@@ -1,5 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
-import { PaymentModule } from '@/payment/payment.module';
+import { PaymentModule } from '@/sales/payment/payment.module';
 import { PrismaModule } from '@core/prisma/prisma.module';
 
 /**
@@ -24,7 +24,7 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  */
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { ProductsModule } from '@/catalog/products/products.module';
-import { ShippingModule } from '@/shipping/shipping.module';
+import { ShippingModule } from '@/sales/shipping/shipping.module';
 import { LoyaltyModule } from '@/loyalty/loyalty.module';
 import { PromotionsModule } from '@/promotions/promotions.module';
 import { InvoiceService } from './invoice.service';

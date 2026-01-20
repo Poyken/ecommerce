@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { OrdersModule } from '@/orders/orders.module';
-import { CartModule } from '@/cart/cart.module';
-import { PaymentModule } from '@/payment/payment.module';
-import { InvoicesModule } from '@/invoices/invoices.module';
-import { ShippingModule } from '@/shipping/shipping.module';
+import { OrdersModule } from './orders/orders.module';
+import { CartModule } from './cart/cart.module';
+import { PaymentModule } from './payment/payment.module';
+import { InvoicesModule } from './invoices/invoices.module';
+import { ShippingModule } from './shipping/shipping.module';
 
 /**
  * =====================================================================

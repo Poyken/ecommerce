@@ -41,7 +41,7 @@ import { WebhookPayloadDto } from './dto/webhook-payload.dto';
  * =====================================================================
  */
 
-import { OrdersRepository } from '@/orders/orders.repository';
+import { OrdersRepository } from '@/sales/orders/orders.repository';
 
 @Injectable()
 export class PaymentService {

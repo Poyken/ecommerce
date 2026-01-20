@@ -5,7 +5,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { PrismaService } from '@/core/prisma/prisma.service';
-import { PaymentService } from '@/payment/payment.service';
+import { PaymentService } from '@/sales/payment/payment.service';
 import { BillingFrequency, TenantPlan } from '@prisma/client';
 
 @Injectable()

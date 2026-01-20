@@ -1,4 +1,4 @@
-import { PaymentService } from '@/payment/payment.service';
+import { PaymentService } from '@/sales/payment/payment.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { getTenant } from '@core/tenant/tenant.context';
 import { InjectQueue } from '@nestjs/bullmq';
@@ -20,7 +20,7 @@ import { OrdersRepository } from './orders.repository';
 
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
-import { ShippingService } from '@/shipping/shipping.service';
+import { ShippingService } from '@/sales/shipping/shipping.service';
 import { InventoryService } from '@/catalog/skus/inventory.service';
 import { EmailService } from '@integrations/email/email.service';
 import { LoyaltyService } from '@/loyalty/loyalty.service';

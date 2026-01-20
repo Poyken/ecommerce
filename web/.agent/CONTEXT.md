@@ -185,3 +185,17 @@ The project has reached its target enterprise maturity level. All core modules a
   - Fully internationalized Demo page with `useTranslations("marketing.demo")`
   - Mobile-responsive nav menu in marketing layout
   - Verified language switching works correctly (`/vi/demo` ↔ `/en/demo`)
+
+## Changelog
+
+- [2026-01-20] Marketing Layout & Shop Styling Fixes
+  - Removed footer language switcher from marketing layout
+  - Added conditional "My Shop" / "Admin" buttons for tenant owners
+  - Fixed Shop UI: Restored elegant design from git history (removed hardcoded dark mode)
+  - Fixed Shop Routing: Local dev now redirects to usage shop catalog
+
+- [2026-01-20] Typography & Navigation Fixes
+  - Restored 'Playfair Display' for Shop Headings (Elegant style)
+  - Prioritized 'Inter' as primary Sans font (Clean style)
+  - Fixed Header 'Home' link (now points to /shop to avoid redirect loop)
+  - Removed redundant 'Shop' link from Header

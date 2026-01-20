@@ -213,7 +213,7 @@ export function TenantDialog({
             <div className="relative">
               <Input
                 id="domain"
-                placeholder="VD: noithat.local"
+                placeholder="VD: demo.local"
                 className="bg-slate-50 border-slate-200 focus:ring-indigo-500 pr-12 text-slate-900"
                 disabled={isView}
                 {...register("domain", { required: true })}

@@ -75,6 +75,24 @@ export default async function proxy(request: NextRequest) {
     currentHost === "localhost";
 
   // --------------------------------
+  // FORCE LOCALHOST (DX)
+  // --------------------------------
+  if (hostname?.includes("127.0.0.1")) {
+     const newUrl = new URL(request.url);
+     newUrl.hostname = "localhost";
+     return NextResponse.redirect(newUrl);
+  }
+  // --------------------------------
+  
+  // --------------------------------
+  // TENANT ROUTING LOGIC
+  // --------------------------------
+  // Allow /demo on tenants
+  if (!isRootDomain && pathname.includes("/demo")) {
+      // Pass through (allow tenant to see demo page info if desired, or handle specifically)
+      // For now, we just ensure it doesn't get blocked or redirected incorrectly.
+  }
+  // --------------------------------
 
   // ✅ Generate CSRF token ONCE at start
   const currentCsrfToken = request.cookies.get(CSRF_COOKIE_NAME)?.value;
