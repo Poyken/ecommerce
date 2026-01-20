@@ -243,7 +243,7 @@
     }
   },
   "loading": {
-    "message": "Initializing Luxury Environment",
+    "message": "Initializing Luxury Environment...",
     "admin": "Accessing Platform Control",
     "dashboard": "Syncing Real-time Analytics",
     "wishlist": "Loading your wishlist...",
@@ -850,6 +850,7 @@
     "pages": {
       "title": "Pages",
       "subtitle": "Manage your store's static pages and landing pages",
+      "searchPlaceholder": "Search pages...",
       "createNew": "Create New Page",
       "allPages": "All Pages",
       "table": {
@@ -1366,6 +1367,7 @@
       "totalLabel": "Total",
       "statusLabel": "Status",
       "nameLabel": "Name",
+      "recipientNameLabel": "Recipient Name",
       "emailLabel": "Email",
       "phoneLabel": "Phone",
       "addressLabel": "Address",

@@ -136,11 +136,12 @@ export function AgentClient() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <AdminPageHeader
         title="AI Agent"
         subtitle="Control your store with natural language commands and generative UI."
         icon={<Bot className="text-violet-600 fill-violet-600/10" />}
+        variant="aurora"
         stats={[
           { label: "Status", value: "Beta", variant: "info" },
           { label: "Speed", value: "Instant", variant: "success" },

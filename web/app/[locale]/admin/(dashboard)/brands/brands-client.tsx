@@ -32,6 +32,7 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
+import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { CreateBrandDialog } from "@/features/admin/components/taxonomy/create-brand-dialog";
 import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
 import { EditBrandDialog } from "@/features/admin/components/taxonomy/edit-brand-dialog";
@@ -161,19 +162,20 @@ export function BrandsPageClient({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("brands.title")}
         subtitle={`${total} brands in total`}
-        icon={<Award className="text-purple-500 fill-purple-500/10" />}
-        stats={[{ label: "total", value: total, variant: "default" }]}
+        icon={<Award className="text-emerald-500 fill-emerald-500/10" />}
+        variant="emerald"
+        stats={[{ label: "total", value: total, variant: "slate" }]}
         actions={
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              size="sm"
               onClick={exportBrands}
+              className="rounded-xl"
               disabled={importExportLoading}
             >
               <Download className="mr-2 h-4 w-4" />
@@ -183,14 +185,17 @@ export function BrandsPageClient({
               <>
                 <Button
                   variant="outline"
-                  size="sm"
+                  className="rounded-xl"
                   onClick={() => setImportDialogOpen(true)}
                   disabled={importExportLoading}
                 >
                   <Upload className="mr-2 h-4 w-4" />
                   {t("import")}
                 </Button>
-                <Button onClick={() => setCreateDialogOpen(true)}>
+                <Button 
+                  onClick={() => setCreateDialogOpen(true)}
+                  className="rounded-xl shadow-lg shadow-primary/20"
+                >
                   <Plus className="mr-2 h-4 w-4" />
                   {t("brands.createNew")}
                 </Button>
@@ -202,13 +207,11 @@ export function BrandsPageClient({
 
       {/* Search and Total */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
+        <div className="w-full md:w-80">
+          <AdminSearchInput
             placeholder={t("search", { item: t("brands.title").toLowerCase() })}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+            onChange={setSearchTerm}
           />
         </div>
 
@@ -221,7 +224,7 @@ export function BrandsPageClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isValidating}>
+      <AdminTableWrapper isLoading={isValidating} variant="emerald">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

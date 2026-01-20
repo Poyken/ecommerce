@@ -14,9 +14,10 @@ import { useTranslations } from "next-intl";
 
 interface ExportButtonProps {
   onExport: (format: "excel" | "csv") => Promise<void>;
+  size?: "default" | "sm" | "lg" | "icon";
 }
 
-export function ExportButton({ onExport }: ExportButtonProps) {
+export function ExportButton({ onExport, size = "default" }: ExportButtonProps) {
   const t = useTranslations("admin");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -43,7 +44,7 @@ export function ExportButton({ onExport }: ExportButtonProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="gap-2" disabled={isLoading}>
+        <Button variant="outline" size={size} className="gap-2 rounded-xl" disabled={isLoading}>
           <Download className="h-4 w-4" />
           {t("export")}
         </Button>

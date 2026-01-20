@@ -33,10 +33,12 @@ import {
   getCategoriesAction,
 } from "@/features/admin/actions";
 import {
+  AdminActionBadge,
   AdminEmptyState,
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
+import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { CreateCategoryDialog } from "@/features/admin/components/taxonomy/create-category-dialog";
 import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
 import { EditCategoryDialog } from "@/features/admin/components/taxonomy/edit-category-dialog";
@@ -180,23 +182,24 @@ export function CategoriesPageClient({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("categories.title")}
         subtitle={`${total} categories in total`}
         icon={<FolderTree className="text-emerald-500 fill-emerald-500/10" />}
+        variant="emerald"
         stats={[
-          { label: "total", value: total, variant: "default" },
-          { label: "parents", value: parentCount, variant: "info" },
-          { label: "children", value: childCount, variant: "success" },
+          { label: "total", value: total, variant: "slate" },
+          { label: "parents", value: parentCount, variant: "amber" },
+          { label: "children", value: childCount, variant: "cyan" },
         ]}
         actions={
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              size="sm"
               onClick={exportCategories}
+              className="rounded-xl"
               disabled={importExportLoading}
             >
               <Download className="mr-2 h-4 w-4" />
@@ -206,14 +209,17 @@ export function CategoriesPageClient({
               <>
                 <Button
                   variant="outline"
-                  size="sm"
+                  className="rounded-xl"
                   onClick={() => setImportDialogOpen(true)}
                   disabled={importExportLoading}
                 >
                   <Upload className="mr-2 h-4 w-4" />
                   {t("import")}
                 </Button>
-                <Button onClick={() => setCreateDialogOpen(true)}>
+                <Button 
+                  onClick={() => setCreateDialogOpen(true)}
+                  className="rounded-xl shadow-lg shadow-primary/20"
+                >
                   <Plus className="mr-2 h-4 w-4" />
                   {t("categories.createNew")}
                 </Button>
@@ -224,15 +230,13 @@ export function CategoriesPageClient({
       />
       {/* Search and Filters */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
+        <div className="w-full md:w-80">
+          <AdminSearchInput
             placeholder={t("search", {
               item: t("categories.title").toLowerCase(),
             })}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+            onChange={setSearchTerm}
           />
         </div>
 
@@ -253,7 +257,7 @@ export function CategoriesPageClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isValidating}>
+      <AdminTableWrapper isLoading={isValidating} variant="emerald">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

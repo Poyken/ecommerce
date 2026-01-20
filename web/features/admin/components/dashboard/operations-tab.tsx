@@ -91,7 +91,7 @@ export function OperationsTab({
         <Card className="lg:col-span-2 rounded-2xl shadow-sm border-l-4 border-l-indigo-500">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Truck className="h-5 w-5 text-indigo-600" />
+              <Truck className="h-5 w-5 text-sky-600" />
               Order Fulfillment Pulse
             </CardTitle>
             <CardDescription>Real-time order processing status</CardDescription>
@@ -143,7 +143,7 @@ export function OperationsTab({
       <AdminTableWrapper
         title="Recent Orders Pulse"
         description="Latest transactions from your store with real-time tracking"
-        variant="luxury"
+        variant="glass"
         headerActions={
           <Link href="/admin/orders">
             <Button variant="ghost" className="text-primary font-black uppercase text-[10px] tracking-widest">
@@ -192,7 +192,7 @@ export function OperationsTab({
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span className="font-bold text-sm text-white">
+                      <span className="font-bold text-sm text-foreground">
                         {order.user?.firstName} {order.user?.lastName}
                       </span>
                       <span className="text-[10px] text-muted-foreground/60">
@@ -208,7 +208,7 @@ export function OperationsTab({
                       {order.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right font-black text-white">
+                  <TableCell className="text-right font-black text-foreground">
                     {formatCurrency(order.totalAmount)}
                   </TableCell>
                 </TableRow>

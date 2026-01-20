@@ -32,7 +32,7 @@ import {
   DeleteConfirmDialog,
   EditPermissionDialog,
 } from "@/features/admin/components";
-import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
+import { AdminPageHeader, AdminTableWrapper, AdminEmptyState } from "@/features/admin/components/ui/admin-page-components";
 import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { deletePermissionAction } from "@/features/admin/actions";
 import { Permission } from "@/types/models";
@@ -84,7 +84,7 @@ export function PermissionsPageClient({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <CreatePermissionDialog
         open={isCreateOpen}
         onOpenChange={setIsCreateOpen}
@@ -93,6 +93,10 @@ export function PermissionsPageClient({
         title="Permissions"
         subtitle="Manage system permissions."
         icon={<Shield className="text-cyan-500 fill-cyan-500/10" />}
+        variant="cyan"
+        stats={[
+          { label: "Total Permissions", value: initialPermissions.length, variant: "slate" }
+        ]}
         actions={
           <GlassButton
             className="bg-primary text-primary-foreground"
@@ -104,25 +108,16 @@ export function PermissionsPageClient({
         }
       />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
-          <Input
+        <div className="w-full md:w-80">
+          <AdminSearchInput
             placeholder="Search permissions..."
             value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+            onChange={onSearchChange}
           />
-        </div>
-
-        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl border-none shadow-inner h-14">
-          <div className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
-            <Shield className="h-3 w-3" />
-            Total Permissions: {initialPermissions.length}
-          </div>
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-card/50 backdrop-blur-sm overflow-hidden">
+      <AdminTableWrapper variant="cyan">
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
@@ -134,11 +129,13 @@ export function PermissionsPageClient({
           <TableBody>
             {initialPermissions.length === 0 ? (
               <TableRow>
-                <TableCell
-                  colSpan={3}
-                  className="h-24 text-center text-muted-foreground"
-                >
-                  No permissions found.
+                <TableCell colSpan={3}>
+                  <AdminEmptyState
+                    icon={Shield}
+                    title="No permissions found"
+                    description="No permissions match your search criteria."
+                    variant="minimal"
+                  />
                 </TableCell>
               </TableRow>
             ) : (
@@ -186,7 +183,7 @@ export function PermissionsPageClient({
             )}
           </TableBody>
         </Table>
-      </div>
+      </AdminTableWrapper>
       {selectedPermission && (
         <EditPermissionDialog
           key={selectedPermission.id}

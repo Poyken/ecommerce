@@ -38,6 +38,7 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
+import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { EditSkuDialog } from "@/features/admin/components/products/edit-sku-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useDebounce } from "@/lib/hooks/use-debounce";
@@ -143,7 +144,7 @@ export function SkusClient({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("skus.management")}
@@ -151,11 +152,12 @@ export function SkusClient({
           count: skus.length,
           total: totalCount,
         })}
-        icon={<Barcode className="text-slate-500 fill-slate-500/10" />}
+        icon={<Barcode className="text-cyan-500 fill-cyan-500/10" />}
+        variant="cyan"
         stats={[
-          { label: "total", value: totalCount, variant: "default" },
-          { label: "active", value: activeCount, variant: "success" },
-          { label: "inactive", value: inactiveCount, variant: "warning" },
+          { label: "total", value: totalCount, variant: "slate" },
+          { label: "active", value: activeCount, variant: "emerald" },
+          { label: "inactive", value: inactiveCount, variant: "cyan" },
           { label: "lowStock", value: lowStockCount, variant: "danger" },
         ]}
       />
@@ -239,25 +241,19 @@ export function SkusClient({
           </div>
 
           {/* Search */}
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
+          <div className="w-full md:w-80">
+            <AdminSearchInput
               placeholder={t("skus.searchPlaceholder")}
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+              onChange={setSearchTerm}
+              isLoading={isPending}
             />
-            {isPending && (
-              <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-              </div>
-            )}
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending}>
+      <AdminTableWrapper isLoading={isPending} variant="cyan">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

@@ -606,9 +606,12 @@ export function ChatAdminClient({ user, accessToken }: ChatAdminClientProps) {
               <TabsTrigger value="team">Team (Internal)</TabsTrigger>
             </TabsList>
 
-            <div className="relative">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Search..." className="pl-8" />
+            <div className="relative group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground transition-colors group-focus-within:text-primary" />
+              <Input 
+                placeholder="Search..." 
+                className="pl-10 h-11 rounded-xl bg-muted/20 border-border/40 focus-visible:ring-primary/20 transition-all" 
+              />
             </div>
           </Tabs>
         </div>

@@ -57,6 +57,7 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
+import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useNotificationStore } from "@/features/notifications/store/notification.store";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
@@ -241,7 +242,7 @@ export function OrdersClient({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("orders.management")}
@@ -249,9 +250,10 @@ export function OrdersClient({
           count: orders.length,
           total: totalCount,
         })}
-        icon={<ShoppingBag className="text-blue-600 fill-blue-600/10" />}
+        icon={<ShoppingBag className="text-sky-500 fill-sky-500/10" />}
+        variant="sky"
         stats={[
-          { label: "total", value: totalCount, variant: "default" },
+          { label: "total", value: totalCount, variant: "slate" },
           { label: "pending", value: pendingCount, variant: "warning" },
           { label: "processing", value: processingCount, variant: "info" },
           { label: "delivered", value: deliveredCount, variant: "success" },
@@ -384,24 +386,18 @@ export function OrdersClient({
           </TabsList>
         </Tabs>
 
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
+        <div className="w-full md:w-80">
+          <AdminSearchInput
             placeholder={t("orders.searchPlaceholder")}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+            onChange={setSearchTerm}
+            isLoading={isPending || isTablePending}
           />
-          {(isPending || isTablePending) && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              <Loader2 className="h-4 w-4 animate-spin text-primary" />
-            </div>
-          )}
         </div>
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending || isTablePending}>
+      <AdminTableWrapper isLoading={isPending || isTablePending} variant="sky">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

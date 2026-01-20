@@ -31,6 +31,14 @@ const fadeInUp = {
 // Demo stores
 const demoStores = [
   {
+    id: "local",
+    name: "Local Demo Store",
+    description: "Cửa hàng mặc định (Seeded Data) trên môi trường Local",
+    url: "/",
+    image: "/images/demos/fashion.jpg", // Reusing existing image
+    features: ["Seeded Data", "Full Access", "Debug Mode"],
+  },
+  {
     id: "fashion",
     name: "Fashion Boutique",
     description: "Cửa hàng thời trang với đầy đủ tính năng",
@@ -190,52 +198,79 @@ export default function DemoPage() {
           </m.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            {demoStores.map((store, index) => (
-              <m.div
-                key={store.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-lg transition-all"
-              >
-                {/* Preview Image */}
-                <div className="aspect-video bg-muted flex items-center justify-center relative overflow-hidden">
-                  <Store className="size-12 text-muted-foreground/30" />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Button variant="secondary" size="sm" asChild>
-                      <a
-                        href={store.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        <ExternalLink className="size-4 mr-2" />
-                        Xem Store
-                      </a>
-                    </Button>
-                  </div>
-                </div>
+            {demoStores.map((store, index) => {
+              const isLocal = store.id === "local";
+              return (
+                <m.div
+                  key={store.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.1 }}
+                  className={cn(
+                    "group relative bg-card border rounded-2xl overflow-hidden hover:shadow-lg transition-all",
+                    isLocal
+                      ? "border-primary/50 ring-1 ring-primary/20 shadow-2xl shadow-primary/10"
+                      : "border-border"
+                  )}
+                >
+                  {isLocal && (
+                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary via-accent to-primary animate-shimmer" />
+                  )}
+                  
+                  {/* Preview Image */}
+                  <div className="aspect-video bg-muted flex items-center justify-center relative overflow-hidden">
+                    <Store className="size-12 text-muted-foreground/30" />
+                    
+                    {isLocal && (
+                       <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                         RECOMMENDED
+                       </div>
+                    )}
 
-                <div className="p-6">
-                  <h3 className="font-semibold text-lg mb-1">{store.name}</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    {store.description}
-                  </p>
-
-                  {/* Features Tags */}
-                  <div className="flex flex-wrap gap-2">
-                    {store.features.map((feature) => (
-                      <span
-                        key={feature}
-                        className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary font-medium"
-                      >
-                        {feature}
-                      </span>
-                    ))}
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Button variant={isLocal ? "default" : "secondary"} size="sm" asChild>
+                        <a
+                          href={store.url}
+                          target={isLocal ? "_self" : "_blank"}
+                          rel="noopener noreferrer"
+                        >
+                          <ExternalLink className="size-4 mr-2" />
+                          {isLocal ? "Launch Demo" : "Xem Store"}
+                        </a>
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </m.div>
-            ))}
+
+                  <div className="p-6">
+                    <h3 className="font-semibold text-lg mb-1 flex items-center gap-2">
+                       {store.name}
+                       {isLocal && <Sparkles className="size-4 text-primary fill-primary/20" />}
+                    </h3>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      {store.description}
+                    </p>
+
+                    {/* Features Tags */}
+                    <div className="flex flex-wrap gap-2">
+                      {store.features.map((feature) => (
+                        <span
+                          key={feature}
+                          className={cn(
+                            "px-2 py-1 text-xs rounded-full font-medium",
+                             isLocal 
+                               ? "bg-primary/10 text-primary border border-primary/20" 
+                               : "bg-secondary text-secondary-foreground"
+                          )}
+                        >
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </m.div>
+              );
+            })}
           </div>
         </div>
       </section>

@@ -35,6 +35,7 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
+import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { CreateUserDialog } from "@/features/admin/components/users/create-user-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { UserActions } from "@/features/layout/components/user-actions";
@@ -111,7 +112,7 @@ export function UsersPageClient({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("users.management")}
@@ -119,18 +120,18 @@ export function UsersPageClient({
           count: initialUsers.length,
           total: totalCount,
         })}
-        icon={<Users className="text-indigo-600 fill-indigo-600/10" />}
+        icon={<Users className="text-violet-600 fill-violet-600/10" />}
+        variant="violet"
         stats={[
-          { label: "Total", value: totalCount, variant: "default" },
-          { label: "Admins", value: adminCount, variant: "info" },
-          { label: "Users", value: userCount, variant: "success" },
+          { label: "Total", value: totalCount, variant: "slate" },
+          { label: "Admins", value: adminCount, variant: "sky" },
+          { label: "Users", value: userCount, variant: "emerald" },
         ]}
         actions={
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              size="sm"
-              className="gap-2"
+              className="gap-2 rounded-xl"
               onClick={() => setImportDialogOpen(true)}
             >
               <Upload className="h-4 w-4" />
@@ -209,24 +210,18 @@ export function UsersPageClient({
           </TabsList>
         </Tabs>
 
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
+        <div className="w-full md:w-80">
+          <AdminSearchInput
             placeholder={t("users.searchPlaceholder")}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+            onChange={setSearchTerm}
+            isLoading={isPending}
           />
-          {isPending && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-            </div>
-          )}
         </div>
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending}>
+      <AdminTableWrapper isLoading={isPending} variant="violet">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -257,6 +252,7 @@ export function UsersPageClient({
                     icon={Users}
                     title={t("noFound", { item: t("users.title") })}
                     description="No users found matching your criteria."
+                    variant="minimal"
                     action={
                       canCreate ? (
                         <Button onClick={() => setCreateDialogOpen(true)}>

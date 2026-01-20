@@ -37,6 +37,7 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
+import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useAdminTable } from "@/lib/hooks/use-admin-table";
 import { Product } from "@/types/models";
@@ -170,7 +171,7 @@ export function ProductsClient({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("products.title")}
@@ -179,18 +180,19 @@ export function ProductsClient({
           total: total,
           item: t("products.title").toLowerCase(),
         })}
-        icon={<Package className="text-blue-500 fill-blue-500/10" />}
+        icon={<Package className="text-emerald-500 fill-emerald-500/10" />}
+        variant="emerald"
         stats={[
-          { label: "total", value: total, variant: "default" },
-          { label: "recent", value: recentCount, variant: "success" },
-          { label: "categories", value: categoriesSet.size, variant: "info" },
+          { label: "total", value: total, variant: "slate" },
+          { label: "recent", value: recentCount, variant: "sky" },
+          { label: "categories", value: categoriesSet.size, variant: "indigo" },
         ]}
         actions={
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              size="sm"
               onClick={exportProducts}
+              className="rounded-xl"
               disabled={importExportLoading}
             >
               <Download className="mr-2 h-4 w-4" />
@@ -200,14 +202,17 @@ export function ProductsClient({
               <>
                 <Button
                   variant="outline"
-                  size="sm"
+                  className="rounded-xl"
                   onClick={() => setImportDialogOpen(true)}
                   disabled={importExportLoading}
                 >
                   <Upload className="mr-2 h-4 w-4" />
                   {t("import")}
                 </Button>
-                <Button onClick={() => setCreateDialogOpen(true)}>
+                <Button 
+                  onClick={() => setCreateDialogOpen(true)}
+                  className="rounded-xl shadow-lg shadow-primary/20"
+                >
                   <Plus className="mr-2 h-4 w-4" />
                   {t("products.createNew")}
                 </Button>
@@ -224,29 +229,29 @@ export function ProductsClient({
           onValueChange={(v) => handleStatusChange(v as FilterType)}
           className="w-full"
         >
-          <TabsList className="bg-white/5 p-1 rounded-2xl h-14 border border-white/5 shadow-inner flex-wrap w-fit backdrop-blur-md">
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner flex-wrap w-fit">
             <TabsTrigger
               value="all"
-              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-[0_0_20px_rgba(255,255,255,0.2)] dark:data-[state=active]:bg-white dark:data-[state=active]:text-black transition-all gap-2"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all gap-2"
             >
               <Box className="h-4 w-4" />
               All
               <Badge
                 variant="outline"
-                className="ml-1 h-5 px-1.5 bg-white/10 text-[10px] font-black border-transparent"
+                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black border-transparent"
               >
                 {products.length}
               </Badge>
             </TabsTrigger>
             <TabsTrigger
               value="recent"
-              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-[var(--aurora-blue)] data-[state=active]:text-white data-[state=active]:shadow-[0_0_20px_rgba(var(--aurora-blue),0.3)] transition-all gap-2"
+              className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
             >
-              <div className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+              <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
               Recent
               <Badge
                 variant="outline"
-                className="ml-1 h-5 px-1.5 bg-white/10 text-white text-[10px] font-black border-transparent"
+                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black border-transparent"
               >
                 {recentCount}
               </Badge>
@@ -254,13 +259,13 @@ export function ProductsClient({
             {noCategoryCount > 0 && (
               <TabsTrigger
                 value="no-category"
-                className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-[var(--aurora-orange)] data-[state=active]:text-white transition-all gap-2"
+                className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-amber-600 transition-all gap-2"
               >
-                <div className="h-2 w-2 rounded-full bg-amber-400" />
+                <div className="h-2 w-2 rounded-full bg-amber-500" />
                 No Category
                 <Badge
                   variant="outline"
-                  className="ml-1 h-5 px-1.5 bg-white/10 text-white text-[10px] font-black border-transparent"
+                  className="ml-1 h-5 px-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-600 text-[10px] font-black border-transparent"
                 >
                   {noCategoryCount}
                 </Badge>
@@ -269,26 +274,19 @@ export function ProductsClient({
           </TabsList>
         </Tabs>
 
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
+        <div className="w-full md:w-80">
+          <AdminSearchInput
             placeholder={t("search", {
               item: t("products.title").toLowerCase(),
             })}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-11 h-12 rounded-2xl border-white/10 bg-white/5 backdrop-blur-md shadow-xl focus:ring-primary/40 focus:border-primary/50 transition-all font-medium text-white placeholder:text-muted-foreground/50"
+            onChange={setSearchTerm}
           />
-          {isPending && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-            </div>
-          )}
         </div>
       </div>
 
       {/* Table without virtual scrolling */}
-      <AdminTableWrapper isLoading={isPending}>
+      <AdminTableWrapper isLoading={isPending} variant="emerald">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50 hover:bg-muted/50">

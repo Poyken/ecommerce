@@ -130,9 +130,10 @@ export default async function AdminDashboardPage() {
         title={t("dashboard")}
         subtitle={`Welcome back, ${user.firstName}! Here's your store command center.`}
         icon={<LayoutDashboard className="text-primary fill-primary/10" />}
-        actions={<QuickActions />}
-        layout="luxury"
-      />
+        variant="indigo"
+      >
+        <QuickActions />
+      </AdminPageHeader>
 
       <Tabs defaultValue="business" className="space-y-6">
         <div className="flex items-center justify-between overflow-x-auto pb-2 md:pb-0">

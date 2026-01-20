@@ -27,8 +27,8 @@
 import { MOCK_DISTRICTS, MOCK_PROVINCES, MOCK_WARDS } from "./mock-data";
 import { wrapServerAction } from "@/lib/safe-action";
 import { ActionResult } from "@/types/api";
-import {
-  shippingService,
+import { shippingService } from "./services/shipping.service";
+import type {
   Province,
   District,
   Ward,

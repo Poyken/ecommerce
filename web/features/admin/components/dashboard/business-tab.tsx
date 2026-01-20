@@ -41,7 +41,8 @@ export function BusinessTab({
           value={formatCurrency(stats.totalRevenue)}
           description={`Today: ${formatCurrency(stats.todayRevenue)}`}
           icon={DollarSign}
-          variant="neon"
+          // Revenue = Growth/Money = Emerald
+          variant="emerald"
           trend={{ value: 12, isPositive: true }}
         />
         <AdminStatsCard
@@ -49,7 +50,8 @@ export function BusinessTab({
           value={stats?.totalOrders || 0}
           description={`${stats?.todayOrders || 0} new orders today`}
           icon={ShoppingCart}
-          variant="info"
+          // Orders = Operations = Sky
+          variant="sky"
           trend={{ value: 8, isPositive: true }}
         />
         <AdminStatsCard
@@ -57,14 +59,16 @@ export function BusinessTab({
           value={stats?.totalCustomers || 0}
           description="Active registered users"
           icon={Users}
-          variant="aurora"
+          // Customers = People = Violet
+          variant="violet"
         />
         <AdminStatsCard
           title="Products"
           value={stats?.totalProducts || 0}
           description="Live SKUs in inventory"
           icon={Package}
-          variant="warning"
+          // Products = Inventory = Teal
+          variant="teal"
         />
       </div>
 
@@ -72,11 +76,11 @@ export function BusinessTab({
       <div className="grid gap-6 md:grid-cols-2">
         <div className="glass-premium rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-3 text-white">
-              <div className="p-2 rounded-xl bg-[var(--aurora-blue)]/20 border border-[var(--aurora-blue)]/30">
-                <TrendingUp className="h-5 w-5 text-white" />
+            <CardTitle className="flex items-center gap-3 text-foreground">
+              <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <TrendingUp className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <span className="font-black tracking-tight uppercase text-sm tracking-[0.1em]">Sales Trajectory</span>
+              <span className="font-black tracking-tight uppercase text-sm tracking-widest">Sales Trajectory</span>
             </CardTitle>
             <CardDescription className="text-muted-foreground/70">Revenue over the last 7 days</CardDescription>
           </CardHeader>
@@ -87,11 +91,11 @@ export function BusinessTab({
 
         <div className="glass-premium rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-3 text-white">
-              <div className="p-2 rounded-xl bg-[var(--aurora-purple)]/20 border border-[var(--aurora-purple)]/30">
-                <ShoppingCart className="h-5 w-5 text-white" />
+            <CardTitle className="flex items-center gap-3 text-foreground">
+              <div className="p-2 rounded-xl bg-sky-500/10 border border-sky-500/20">
+                <ShoppingCart className="h-5 w-5 text-sky-600 dark:text-sky-400" />
               </div>
-              <span className="font-black tracking-tight uppercase text-sm tracking-[0.1em]">Best Sellers</span>
+              <span className="font-black tracking-tight uppercase text-sm tracking-widest">Best Sellers</span>
             </CardTitle>
             <CardDescription className="text-muted-foreground/70">Top performing by quantity</CardDescription>
           </CardHeader>

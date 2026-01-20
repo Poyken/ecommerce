@@ -100,3 +100,25 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
 - [2026-01-19] API Validation Refactoring: Removed class-validator/class-transformer, migrated to Zod (nestjs-zod), fixed build errors.
 - [2026-01-19] Architecture Refactoring: Consolidated API modules into Domain Modules (Sales, Catalog, AI), and optimized Web Products Hooks (SWR).
 - [2026-01-20] Build Fixes: Resolved `nestjs-zod` peer dependencies and removed legacy `ValidationPipe` usage in `NotificationsController` to enforce Zod-only policy. Build is now passing.
+- [2026-01-20] Design System Overhaul: Implemented **"Cosmic Glass" Unified Design System** (Deep Cosmic Blue / Electric Indigo). Synchronized Admin, Shop, and Marketing themes to trending 2025 SaaS aesthetics (OkLCH based).
+- [2026-01-20] Hotfix: Resolved 404 error for `/api/v1/platform/stats` by registering `PlatformAnalyticsController`.
+- [2026-01-20] UI Polish: Fixed Admin Sidebar hover states where text was invisible in Light Mode. Enhanced contrast and theme adaptability.
+- [2026-01-20] UI Standardization: Unified Admin Dashboard style with Audit Logs by removing the "Luxury" dark header layout. Now uses a clean, theme-aware glass header for better consistency in Light Mode.
+- [2026-01-20] Design System Update: **Monochrome Shift**. Replaced "Cosmic" colors with a strict Zinc (Black/White/Gray) palette. Removed all neon/aurora effects in favor of high-contrast borders and typography, matching Shadcn UI aesthetics.
+- [2026-01-20] UI Polish: Deepened contrast for Stats Cards and Quick Actions. Eliminated muddy background tints and enforced strict Black/White active states.
+- [2026-01-20] Feature: **Unified Octal Color System**. Implemented 8-color domain coding for Admin Navigation (Emerald/Sky/Violet/Rose/Amber/Indigo/Teal/Orange) to intuitively distinguish functional areas like Analytics, Inventory, and Security.
+- [2026-01-20] Fix: **Restored Initial Loading Screen**. Fixed CSS syntax errors (`rgba` with OKLCH) and contrast issues in `LoadingScreen` that made the spinner invisible. It now uses a high-contrast Monochrome 'Luxury' spinner.
+- [2026-01-20] Revert: **Restored Classic Loading**. Switched Dashboard loading back to the "Classic" variant (Orbiting Rings) as requested by the user.
+- [2026-01-20] Fix: **Quick Actions Layout**. Changed the 8-column grid to a 4-column x 2-row grid to prevent UI squeezing and ensure readability on all screens.
+- [2026-01-20] UI Polish: **Monochrome Sidebar Link**. Fixed "Platform Control" link in Admin Sidebar which was hardcoded to Purple. Now uses standard Monochrome (Gray/Black) styling to match the design system.
+- [2026-01-20] Feature: **Octal Dashboard Integration**. Extended the 8-color domain system to Dashboard Stats Cards. Now Revenue (Emerald), Orders (Sky), Customers (Violet), and Inventory (Teal) are color-coded to match the Quick Actions navigation.
+- [2026-01-20] UI Polish: **Dashboard Visual Fixes**. Corrected the "Recent Orders" table background to match the theme (removed hardcoded black) and added ellipses "..." to the loading screen for better visual feedback.
+- [2026-01-20] Fix: **Stats Card Visibility**. Fixed `AdminStatsCard` text color (was hardcoded white) to adapt to light/dark mode (`text-foreground`).
+- [2026-01-20] UI Polish: **Chart Container Styling**. Updated "Sales Trajectory" and "Best Sellers" chart containers to use the standard 8-Color System (Emerald/Sky) and removed legacy "Aurora" glass effects.
+- [2026-01-20] Fix: **AI Agent Aesthetics**. Restored the colorful "Aurora" gradient style for the AI Agent page header by re-enabling the `aurora` variant in `AdminPageHeader`.
+- [2026-01-20] Fix: **AI Agent Aesthetics**. Restored the colorful "Aurora" gradient style for the AI Agent page header by re-enabling the `aurora` variant in `AdminPageHeader`.
+- [2026-01-20] UI Polish: **Table Loading State**. Replaced the dark "luxury" loading overlay with a theme-aware `bg-background/50` overlay to prevent visual clashes in Light Mode.
+- [2026-01-20] Feature: **Custom Loading Text**. Added `loadingMessage` prop to `AdminTableWrapper` to allow customizable loading text (e.g. "Loading Pages...") instead of generic "Processing".
+- [2026-01-20] UI Polish: **Unified Color System**. Applied the 8-Color Octal System to all Admin Page Headers (Brands (Emerald), Orders (Sky), Users (Violet), etc.) to ensure consistent visual coding across the dashboard.
+- [2026-01-20] Fix: **Logo Visibility**. Fixed Sidebar Logo disappearing on hover by enforcing high-contrast `bg-foreground text-background` style.
+- [2026-01-20] Fix: **Missing Translation & Imports**. Added `admin.pages.searchPlaceholder` translation and fixed missing `AdminSearchInput` import in `Users` page. Standardized button sizes and styles (Import/Export/Create) across major Admin pages for visual consistency.

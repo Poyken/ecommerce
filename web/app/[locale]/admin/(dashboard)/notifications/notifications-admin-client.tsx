@@ -214,33 +214,33 @@ export function NotificationsAdminClient({
     }
   };
 
-  // ... imports moved to top ...
-  // ... inside NotificationsAdminClient component ...
-
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <AdminPageHeader
         title={t("title")}
         subtitle={t("subtitle")}
-        icon={<Bell className="text-amber-500 fill-amber-500/20" />}
+        icon={<Bell className="text-indigo-500 fill-indigo-500/20" />}
+        variant="indigo"
         stats={[
-          { label: "Active Users", value: users.length, variant: "info" },
-          { label: "Broadcasts", value: "48", variant: "default" },
+          { label: "Active Users", value: users.length, variant: "amber" },
+          { label: "Broadcasts", value: "48", variant: "info" },
         ]}
       />
 
       <Tabs defaultValue="send" className="w-full">
-        <TabsList className="grid w-[400px] grid-cols-2 mb-8 bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner">
+        <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-14 border-none shadow-inner mb-8">
           <TabsTrigger
             value="send"
-            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all font-black uppercase tracking-widest text-xs"
+            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-rose-500 transition-all font-black uppercase tracking-widest text-xs gap-2"
           >
+            <Send className="w-4 h-4" />
             {t("send")}
           </TabsTrigger>
           <TabsTrigger
             value="history"
-            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-primary transition-all font-black uppercase tracking-widest text-xs"
+            className="rounded-xl data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-slate-600 transition-all font-black uppercase tracking-widest text-xs gap-2"
           >
+            <Bell className="w-4 h-4" />
             {t("history")}
           </TabsTrigger>
         </TabsList>

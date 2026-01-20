@@ -254,9 +254,9 @@ export function NotificationHistoryTab() {
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
-    <GlassCard className="p-6">
+    <div className="space-y-6">
       {/* Header with Stats */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <h2 className="text-xl font-bold flex items-center gap-2">
             <Bell className="h-5 w-5 text-primary" />
@@ -291,18 +291,19 @@ export function NotificationHistoryTab() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-col md:flex-row md:items-center gap-4 mb-6">
+      <div className="flex flex-col md:flex-row md:items-center gap-4">
         <Tabs value={filter} onValueChange={(v) => setFilter(v as FilterType)}>
-          <TabsList>
-            <TabsTrigger value="all" className="gap-2">
-              <Bell className="h-4 w-4" />
+          <TabsList className="bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl h-12 border-none shadow-inner">
+             <TabsTrigger value="all" className="gap-2 rounded-xl h-10 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm">
+              <Bell className="h-3.5 w-3.5" />
               All
             </TabsTrigger>
-            <TabsTrigger value="order" className="gap-2">
-              <Package className="h-4 w-4" />
+            <TabsTrigger value="order" className="gap-2 rounded-xl h-10 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm">
+              <Package className="h-3.5 w-3.5" />
               Orders ({orderCount})
             </TabsTrigger>
-            <TabsTrigger value="system" className="gap-2">
+            <TabsTrigger value="system" className="gap-2 rounded-xl h-10 data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-sm">
+              <RefreshCw className="h-3.5 w-3.5" />
               System
             </TabsTrigger>
           </TabsList>
@@ -314,13 +315,13 @@ export function NotificationHistoryTab() {
             placeholder="Search notifications..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="pl-10"
+            className="pl-10 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm"
           />
         </div>
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={loading}>
+      <AdminTableWrapper isLoading={loading} variant="rose">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -488,6 +489,6 @@ export function NotificationHistoryTab() {
           </div>
         </div>
       )}
-    </GlassCard>
+    </div>
   );
 }

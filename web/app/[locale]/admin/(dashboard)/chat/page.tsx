@@ -35,7 +35,7 @@ export default async function AdminChatPage() {
   if (token) {
     try {
       const profile = await getProfileAction();
-      user = profile.data;
+      user = profile.data || null;
     } catch {
       // Ignore error
     }
@@ -46,8 +46,9 @@ export default async function AdminChatPage() {
       <AdminPageHeader
         title="Customer Support Chat"
         icon={
-          <MessageCircle className="text-emerald-500 fill-emerald-500/10" />
+          <MessageCircle className="text-blue-500 fill-blue-500/10" />
         }
+        variant="blue"
         subtitle="Manage live conversations with customers"
       />
       <ChatAdminClient user={user} accessToken={token || ""} />

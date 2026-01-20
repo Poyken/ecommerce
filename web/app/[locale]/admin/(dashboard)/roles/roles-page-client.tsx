@@ -37,7 +37,7 @@ import {
   DeleteConfirmDialog,
   EditRoleDialog,
 } from "@/features/admin/components";
-import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
+import { AdminPageHeader, AdminTableWrapper, AdminEmptyState } from "@/features/admin/components/ui/admin-page-components";
 import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { deleteRoleAction } from "@/features/admin/actions";
 import { Role } from "@/types/models";
@@ -100,11 +100,15 @@ export function RolesPageClient({ initialRoles }: RolesPageClientProps) {
     : initialRoles;
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <AdminPageHeader
         title="Roles"
         subtitle="Manage system roles."
-        icon={<Shield className="text-sky-500 fill-sky-500/10" />}
+        icon={<Shield className="text-blue-500 fill-blue-500/10" />}
+        variant="blue"
+        stats={[
+          { label: "Total Roles", value: filteredRoles.length, variant: "slate" }
+        ]}
         actions={
           <>
             <GlassButton
@@ -122,25 +126,16 @@ export function RolesPageClient({ initialRoles }: RolesPageClientProps) {
         }
       />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10" />
-          <Input
+        <div className="w-full md:w-80">
+          <AdminSearchInput
             placeholder="Search roles..."
             value={searchTerm}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+            onChange={onSearchChange}
           />
-        </div>
-
-        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-900 p-1 rounded-2xl border-none shadow-inner h-14">
-          <div className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 shadow-sm text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
-            <Shield className="h-3 w-3" />
-            Total Roles: {filteredRoles.length}
-          </div>
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-card/50 backdrop-blur-sm overflow-hidden">
+      <AdminTableWrapper variant="blue">
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
@@ -152,11 +147,13 @@ export function RolesPageClient({ initialRoles }: RolesPageClientProps) {
           <TableBody>
             {filteredRoles.length === 0 ? (
               <TableRow>
-                <TableCell
-                  colSpan={3}
-                  className="h-24 text-center text-muted-foreground"
-                >
-                  No roles found.
+                <TableCell colSpan={3}>
+                  <AdminEmptyState
+                    icon={Shield}
+                    title="No roles found"
+                    description="No roles match your search criteria."
+                    variant="minimal"
+                  />
                 </TableCell>
               </TableRow>
             ) : (
@@ -204,7 +201,7 @@ export function RolesPageClient({ initialRoles }: RolesPageClientProps) {
             )}
           </TableBody>
         </Table>
-      </div>
+      </AdminTableWrapper>
       {selectedRole && (
         <EditRoleDialog
           key={selectedRole.id}

@@ -53,6 +53,7 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
+import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useRouter } from "@/i18n/routing";
@@ -287,7 +288,7 @@ export function ReviewsClient({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("reviews.management")}
@@ -296,8 +297,9 @@ export function ReviewsClient({
           total: totalCount,
         })}
         icon={<Star className="text-amber-500 fill-amber-500/10" />}
+        variant="amber"
         stats={[
-          { label: "total", value: totalCount, variant: "default" },
+          { label: "total", value: totalCount, variant: "slate" },
           { label: "published", value: publishedCount, variant: "success" },
           { label: "hidden", value: hiddenCount, variant: "warning" },
           ...(avgRating !== "N/A"
@@ -305,7 +307,7 @@ export function ReviewsClient({
                 {
                   label: "avg rating",
                   value: `⭐ ${avgRating}`,
-                  variant: "info" as const,
+                  variant: "amber" as const,
                 },
               ]
             : []),
@@ -364,24 +366,18 @@ export function ReviewsClient({
           </TabsList>
         </Tabs>
 
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
+        <div className="w-full md:w-80">
+          <AdminSearchInput
             placeholder={t("reviews.searchPlaceholder")}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+            onChange={setSearchTerm}
+            isLoading={isPending}
           />
-          {isPending && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-            </div>
-          )}
         </div>
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending}>
+      <AdminTableWrapper isLoading={isPending} variant="amber">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

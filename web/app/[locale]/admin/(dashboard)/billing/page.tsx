@@ -31,11 +31,12 @@ export default async function BillingPage() {
     .catch(() => ({ data: null }));
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <AdminPageHeader
         title="Billing & Subscription"
         subtitle="Manage your plan and billing details"
-        icon={<CreditCard className="text-blue-500 fill-blue-500/10" />}
+        icon={<CreditCard className="text-emerald-500 fill-emerald-500/10" />}
+        variant="emerald"
       />
 
       <div className="grid gap-6 md:grid-cols-2">

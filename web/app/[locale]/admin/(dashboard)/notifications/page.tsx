@@ -33,6 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AdminNotificationsPage() {
+  const t = await getTranslations("admin.notifications");
   const usersResult = await getUsersAction({ page: 1, limit: 100 }).catch(
     () => {
       return { data: [] };

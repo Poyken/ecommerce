@@ -36,6 +36,7 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
+import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { DeleteConfirmDialog } from "@/features/admin/components/shared/delete-confirm-dialog";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import {
@@ -179,20 +180,24 @@ export function BlogsClient({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("title") || "Blog Management"}
         subtitle={t("management") || "Manage blog posts"}
-        icon={<BookOpen className="text-orange-500 fill-orange-500/10" />}
+        icon={<BookOpen className="text-teal-500 fill-teal-500/10" />}
+        variant="teal"
         stats={[
-          { label: "total", value: totalCount, variant: "default" },
-          { label: "published", value: publishedCount, variant: "success" },
-          { label: "drafts", value: draftCount, variant: "warning" },
+          { label: "total", value: totalCount, variant: "slate" },
+          { label: "published", value: publishedCount, variant: "emerald" },
+          { label: "drafts", value: draftCount, variant: "amber" },
         ]}
         actions={
           canCreate ? (
-            <Button onClick={handleCreate}>
+            <Button 
+                onClick={handleCreate}
+                className="rounded-xl shadow-lg shadow-primary/20"
+            >
               <Plus className="mr-2 h-4 w-4" />
               {t("create")}
             </Button>
@@ -216,7 +221,7 @@ export function BlogsClient({
               All
               <Badge
                 variant="outline"
-                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black"
+                className="ml-1 h-5 px-1.5 bg-slate-200 dark:bg-slate-700 text-[10px] font-black border-transparent"
               >
                 {totalCount}
               </Badge>
@@ -226,11 +231,11 @@ export function BlogsClient({
               className="rounded-xl px-4 h-12 font-black uppercase tracking-widest text-xs data-[state=active]:bg-white dark:data-[state=active]:bg-slate-800 data-[state=active]:shadow-lg data-[state=active]:text-emerald-600 transition-all gap-2"
               disabled={isPending}
             >
-              <div className="h-2 w-2 rounded-full bg-emerald-500" />
+              <div className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
               Published
               <Badge
                 variant="outline"
-                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black"
+                className="ml-1 h-5 px-1.5 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 text-[10px] font-black border-transparent"
               >
                 {publishedCount}
               </Badge>
@@ -244,7 +249,7 @@ export function BlogsClient({
               Drafts
               <Badge
                 variant="outline"
-                className="ml-1 h-5 px-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-600 text-[10px] font-black"
+                className="ml-1 h-5 px-1.5 bg-amber-100 dark:bg-amber-900/40 text-amber-600 text-[10px] font-black border-transparent"
               >
                 {draftCount}
               </Badge>
@@ -252,24 +257,18 @@ export function BlogsClient({
           </TabsList>
         </Tabs>
 
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
+        <div className="w-full md:w-80">
+          <AdminSearchInput
             placeholder={t("searchPlaceholder")}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+            onChange={setSearchTerm}
+            isLoading={isPending}
           />
-          {isPending && (
-            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-              <div className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-            </div>
-          )}
         </div>
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending}>
+      <AdminTableWrapper isLoading={isPending} variant="amber">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -306,6 +305,7 @@ export function BlogsClient({
                   <AdminEmptyState
                     icon={BookOpen}
                     title={t("noFound") || "No posts found"}
+                    variant="minimal"
                     description={
                       currentStatus === "draft"
                         ? "No draft posts found."

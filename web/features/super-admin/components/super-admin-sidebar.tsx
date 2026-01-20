@@ -186,7 +186,7 @@ export function SuperAdminSidebar() {
   return (
     <aside
       className={cn(
-        "z-20 border-r border-white/5 bg-background/60 backdrop-blur-2xl flex flex-col h-screen sticky top-0 transition-all duration-300",
+        "z-20 border-r border-border bg-background/60 backdrop-blur-2xl flex flex-col h-screen sticky top-0 transition-all duration-300",
         isCollapsed ? "w-20" : "w-72"
       )}
     >
@@ -241,8 +241,8 @@ export function SuperAdminSidebar() {
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 group relative overflow-hidden mb-1",
                       isActive
-                        ? "text-white bg-[var(--aurora-purple)] shadow-[0_0_15px_-3px_var(--aurora-purple)]"
-                        : "text-muted-foreground hover:text-white hover:bg-white/5",
+                        ? "text-primary-foreground bg-primary shadow-sm"
+                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
                       isCollapsed && "justify-center px-2"
                     )}
                     title={isCollapsed ? item.title : undefined}

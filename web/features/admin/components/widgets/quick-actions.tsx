@@ -2,7 +2,7 @@
 
 import { GlassCard } from "@/components/shared/glass-card";
 import { Link } from "@/i18n/routing";
-import { Package, Palette, ShoppingBag, Ticket, Users } from "lucide-react";
+import { BarChart3, Box, FileText, Package, Palette, ShieldAlert, ShoppingBag, Ticket, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 /**
@@ -72,10 +72,34 @@ export function QuickActions() {
       bg: "bg-amber-500/10",
       border: "border-amber-500/20 hover:border-amber-500/40",
     },
+    {
+      label: "Analytics",
+      icon: BarChart3,
+      href: "/admin/analytics",
+      color: "text-indigo-600 dark:text-indigo-400",
+      bg: "bg-indigo-500/10",
+      border: "border-indigo-500/20 hover:border-indigo-500/40",
+    },
+    {
+      label: "Inventory",
+      icon: Box,
+      href: "/admin/inventory",
+      color: "text-teal-600 dark:text-teal-400",
+      bg: "bg-teal-500/10",
+      border: "border-teal-500/20 hover:border-teal-500/40",
+    },
+    {
+      label: "Audit & Security",
+      icon: ShieldAlert,
+      href: "/admin/audit-logs",
+      color: "text-orange-600 dark:text-orange-400",
+      bg: "bg-orange-500/10",
+      border: "border-orange-500/20 hover:border-orange-500/40",
+    },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       {actions.map((action) => (
         <Link key={action.label} href={action.href}>
           <GlassCard
@@ -83,7 +107,7 @@ export function QuickActions() {
           >
             <div className="flex items-center gap-3">
               <div
-                className={`p-2 rounded-lg ${action.bg} ${action.color} group-hover:scale-110 transition-transform`}
+                className={`p-2 rounded-lg ${action.bg} ${action.color} transition-transform`}
               >
                 <action.icon size={20} />
               </div>

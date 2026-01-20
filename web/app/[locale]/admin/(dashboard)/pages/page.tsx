@@ -27,11 +27,16 @@ export default async function AdminPagesPage() {
   const pages = "data" in pagesRes ? pagesRes.data || [] : [];
 
   return (
-    <div className="space-y-10 px-4 md:px-0 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <AdminPageHeader
         title="Page Management"
         subtitle="Manage your store's dynamic pages and CMS content with our real-time builder."
-        icon={<Layout className="text-indigo-500 fill-indigo-500/10" />}
+        icon={<Layout className="text-sky-500 fill-sky-500/10" />}
+        variant="sky"
+        stats={[
+            { label: "Total Pages", value: pages.length, variant: "slate" },
+            { label: "Published", value: pages.filter((p: any) => p.isPublished).length, variant: "emerald" }
+        ]}
       />
 
       <PagesListClient initialPages={pages} />

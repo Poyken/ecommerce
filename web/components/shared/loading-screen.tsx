@@ -57,12 +57,12 @@ export function LoadingScreen({
             <m.div
               animate={{ rotate: 360 }}
               transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-0 rounded-full border border-primary/20"
+              className="absolute inset-0 rounded-full border border-primary/20 dark:border-primary/20"
             />
             <m.div
               animate={{ rotate: -360 }}
               transition={{ duration: 12, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-2 rounded-full border border-accent/20 border-dashed"
+              className="absolute inset-2 rounded-full border border-foreground/30 border-dashed"
             />
             <m.div
               animate={{
@@ -70,7 +70,7 @@ export function LoadingScreen({
                 rotate: [0, 90, 0],
               }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="w-1/3 h-1/3 bg-gradient-to-tr from-primary to-accent rounded-lg shadow-[0_0_30px_rgba(var(--primary),0.5)]"
+              className="w-1/3 h-1/3 bg-primary rounded-lg shadow-lg shadow-primary/20"
             />
           </div>
         );
@@ -134,7 +134,7 @@ export function LoadingScreen({
                 opacity: [0.5, 1, 0.5],
               }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-              className="w-4 h-4 rounded-full bg-primary shadow-[0_0_15px_rgba(var(--primary),0.6)]"
+              className="w-4 h-4 rounded-full bg-primary shadow-lg shadow-primary/40"
             />
           </div>
         );

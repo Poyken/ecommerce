@@ -845,6 +845,7 @@
     "pages": {
       "title": "Trang",
       "subtitle": "Quản lý các trang tĩnh và trang đích của cửa hàng",
+      "searchPlaceholder": "Tìm kiếm các trang...",
       "createNew": "Tạo trang mới",
       "allPages": "Tất cả các trang",
       "table": {
@@ -1293,6 +1294,7 @@
       "totalLabel": "Tổng cộng",
       "statusLabel": "Trạng thái",
       "nameLabel": "Tên",
+      "recipientNameLabel": "Tên người nhận",
       "emailLabel": "Email",
       "phoneLabel": "Số điện thoại",
       "addressLabel": "Địa chỉ",

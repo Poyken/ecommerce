@@ -1,22 +1,3 @@
-/**
- * =====================================================================
- * LOGO - Thành phần hiển thị biểu tượng thương hiệu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. BRAND IDENTITY:
- * - Hiển thị tên thương hiệu "LUXE" với phong cách hiện đại (font-black, tracking-tighter).
- * - Sử dụng `m.div` để tạo hiệu ứng xoay nhẹ khi hover, tăng tính sinh động.
- *
- * 2. VARIANTS & SIZES:
- * - Hỗ trợ nhiều kích thước (sm, md, lg) và biến thể màu sắc (light, dark) để linh hoạt sử dụng ở Header, Footer hoặc Sidebar. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */
-
 "use client";
 
 import { Link } from "@/i18n/routing";
@@ -45,7 +26,7 @@ export function Logo({
   };
 
   const variants = {
-    default: "bg-black dark:bg-white text-white dark:text-black",
+    default: "bg-foreground text-background", // Simplified for high contrast
     light: "bg-white text-black",
     dark: "bg-black text-white",
   };
@@ -67,7 +48,7 @@ export function Logo({
       {!collapsed && (
         <span
           className={cn(
-            "font-black tracking-tighter uppercase font-sans transition-colors duration-300 group-hover:text-accent",
+            "font-black tracking-tighter uppercase font-sans transition-colors duration-300",
             sizes[size].text
           )}
         >

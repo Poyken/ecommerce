@@ -41,6 +41,7 @@ import {
   AdminPageHeader,
   AdminTableWrapper,
 } from "@/features/admin/components/ui/admin-page-components";
+import { AdminSearchInput } from "@/features/admin/components/ui/admin-search-input";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { useRouter } from "@/i18n/routing";
 import { useDebounce } from "@/lib/hooks/use-debounce";
@@ -182,7 +183,7 @@ export function AuditLogsClient({
   ).length;
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       {/* Page Header */}
       <AdminPageHeader
         title={t("audit.management")}
@@ -191,12 +192,13 @@ export function AuditLogsClient({
           total: filter === "all" ? total : filteredLogs.length,
           item: t("audit.title").toLowerCase(),
         })}
-        icon={<Activity className="text-rose-500 fill-rose-500/10" />}
+        icon={<Activity className="text-slate-500 fill-slate-500/10" />}
+        variant="slate"
         stats={[
-          { label: "total", value: total, variant: "default" },
-          { label: "creates", value: createCount, variant: "success" },
-          { label: "updates", value: updateCount, variant: "info" },
-          { label: "deletes", value: deleteCount, variant: "danger" },
+          { label: "total", value: total, variant: "slate" },
+          { label: "creates", value: createCount, variant: "emerald" },
+          { label: "updates", value: updateCount, variant: "sky" },
+          { label: "deletes", value: deleteCount, variant: "rose" },
         ]}
       />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -250,19 +252,17 @@ export function AuditLogsClient({
           </TabsList>
         </Tabs>
 
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
+        <div className="w-full md:w-80">
+          <AdminSearchInput
             placeholder={t("audit.searchPlaceholder")}
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-11 h-12 rounded-2xl border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm focus:ring-primary/20 transition-all font-medium"
+            onChange={setSearchTerm}
           />
         </div>
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending}>
+      <AdminTableWrapper isLoading={isPending} variant="secondary">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -307,6 +307,7 @@ export function AuditLogsClient({
                     icon={Activity}
                     title={t("audit.noFound")}
                     description="No activity logs found matching your criteria."
+                    variant="minimal"
                   />
                 </TableCell>
               </TableRow>
