@@ -99,3 +99,4 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
 
 - [2026-01-19] API Validation Refactoring: Removed class-validator/class-transformer, migrated to Zod (nestjs-zod), fixed build errors.
 - [2026-01-19] Architecture Refactoring: Consolidated API modules into Domain Modules (Sales, Catalog, AI), and optimized Web Products Hooks (SWR).
+- [2026-01-20] Build Fixes: Resolved `nestjs-zod` peer dependencies and removed legacy `ValidationPipe` usage in `NotificationsController` to enforce Zod-only policy. Build is now passing.

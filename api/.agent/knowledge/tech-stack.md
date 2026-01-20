@@ -154,7 +154,7 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 
 | Service    | Image                  | Port              | Env (Local)    |
 | ---------- | ---------------------- | ----------------- | -------------- |
-| `postgres` | ankane/pgvector:v0.4.1 | 5433              | Docker         |
+| `postgres` | ankane/pgvector:v0.4.1 | 5432              | Docker         |
 | `redis`    | redis:7-alpine         | 6385              | Docker         |
 | `api`      | Custom (NestJS)        | 8080 (2 replicas) | Local / Docker |
 | `web`      | Custom (Next.js)       | 3000              | Local          |

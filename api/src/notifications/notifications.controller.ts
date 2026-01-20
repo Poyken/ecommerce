@@ -21,7 +21,6 @@ import {
   Query,
   Request,
   UseGuards,
-  ValidationPipe,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BroadcastNotificationDto } from './dto/broadcast-notification.dto';
@@ -152,7 +151,7 @@ export class NotificationsController {
   @RequirePermissions('notification:create')
   @ApiCreateResponse('Notification')
   @ApiOperation({ summary: 'Gửi thông báo cho TẤT CẢ users (Broadcast)' })
-  async broadcast(@Body(ValidationPipe) data: BroadcastNotificationDto) {
+  async broadcast(@Body() data: BroadcastNotificationDto) {
     const result = await this.notificationsService.broadcast({
       type: data.type,
       title: data.title,
@@ -176,7 +175,7 @@ export class NotificationsController {
   @RequirePermissions('notification:create')
   @ApiCreateResponse('Notification')
   @ApiOperation({ summary: 'Gửi thông báo cho user cụ thể' })
-  async sendToUser(@Body(ValidationPipe) data: SendToUserDto) {
+  async sendToUser(@Body() data: SendToUserDto) {
     try {
       const result = await this.notificationsService.create({
         userId: data.userId,

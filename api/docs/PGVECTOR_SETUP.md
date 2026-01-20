@@ -22,7 +22,7 @@ docker compose logs -f postgres
 Sau khi container chạy, update `.env`:
 
 ```
-DATABASE_URL="postgresql://postgres:123456@localhost:5433/ecommerce?schema=public"
+DATABASE_URL="postgresql://postgres:123456@localhost:5432/ecommerce?schema=public"
 ```
 
 ---

@@ -144,7 +144,7 @@ The project has reached its target enterprise maturity level. All core modules a
   - Database Schema (30+ models) với Prisma 6
   - Auth System (JWT, Refresh Token, RBAC)
   - Core Modules (Prisma, Redis, Guards, Interceptors)
-  - Resolved port conflicts (DB: 5433, Redis: 6385)
+  - Resolved port conflicts (DB: 5432, Redis: 6385)
 
 - [2026-01-16] **Phase 3 Business Logic completed**:
   - Modules: Catalog, Cart, Orders, Payment (Stubbed)
