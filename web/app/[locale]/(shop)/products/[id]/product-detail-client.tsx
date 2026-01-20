@@ -236,63 +236,67 @@ export function ProductDetailClient({
       </div>
 
       {/* Product Info (Scrollable) */}
-      <div className="lg:col-span-5 flex flex-col gap-6">
+      <div className="lg:col-span-5 flex flex-col gap-10">
         <m.div
-          className="space-y-2"
-          initial={{ opacity: 0, y: 0 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          className="space-y-6"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
         >
-          <div className="flex items-center gap-4">
-            <span className="text-[10px] font-black tracking-[0.4em] uppercase text-primary">
-              {product.brand?.name || "Premium Brand"}
-            </span>
-            <div className="h-[1px] w-12 bg-border/20"></div>
-            <span className="text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.3em]">
+          <div className="flex items-center gap-6">
+            <div className="flex flex-col items-start gap-1">
+              <span className="text-[10px] font-black tracking-[0.4em] uppercase text-accent">
+                {product.brand?.name || "Premium Brand"}
+              </span>
+              <div className="h-px w-full bg-accent/30" />
+            </div>
+            <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.3em]">
               {product.category?.name || "Collection"}
             </span>
           </div>
 
-          <div className="flex justify-between items-start gap-6">
-            <h1 className="text-4xl md:text-5xl lg:text-8xl font-black tracking-tighter text-foreground uppercase italic leading-[0.9]">
+          <div className="space-y-4">
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-white uppercase leading-[0.85] wrap-break-word">
               {product.name}
+              <span className="block font-serif italic font-normal text-white/20 text-4xl md:text-5xl lg:text-6xl tracking-tighter mt-4 normal-case">
+                Exquisite Design
+              </span>
             </h1>
-            <WishlistButton
-              productId={product.id}
-              initialIsWishlisted={false}
-              className="mt-2 text-foreground"
-            />
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex text-amber-400 gap-0.5">
+          <div className="flex items-center gap-6">
+            <div className="flex text-accent gap-1">
               {Array.from({ length: 5 }).map((_, i) => (
                 <span
                   key={i}
                   className={cn(
-                    "text-lg",
+                    "text-xl",
                     i < Math.round(averageRating)
-                      ? "text-amber-400"
-                      : "text-gray-300"
+                      ? "text-accent"
+                      : "text-white/10"
                   )}
                 >
                   ★
                 </span>
               ))}
             </div>
-            <span className="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400">
               {t("verifiedReviews", { count: reviewCount })}
             </span>
           </div>
 
-          <p className="text-sm text-muted-foreground leading-relaxed font-medium border-l border-border/20 pl-6 max-w-xl">
-            {product.description}
-          </p>
+          <div className="relative">
+            <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent/20 rounded-full" />
+            <p className="text-lg text-muted-foreground/80 leading-relaxed font-medium pl-8 max-w-xl">
+              {product.description}
+            </p>
+          </div>
         </m.div>
 
         <div className="mt-4">
-          <div className="glass-premium p-8 md:p-10 space-y-4 border-border/10 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-[1px] bg-linear-to-r from-transparent via-border/20 to-transparent" />
+          <div className="glass-premium p-10 md:p-14 space-y-8 border-white/10 rounded-4xl shadow-[0_0_100px_rgba(0,0,0,0.2)] relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-accent/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+            
             <ProductVariantSelector
               options={product.options || []}
               skus={product.skus || []}

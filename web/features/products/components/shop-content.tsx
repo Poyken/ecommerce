@@ -213,41 +213,43 @@ export function ShopContent({
   return (
     <div className="min-h-screen bg-background font-sans selection:bg-accent/30 relative overflow-hidden transition-colors duration-500">
       {/* Cinematic Backgrounds */}
-      <div className="fixed inset-0 bg-cinematic mix-blend-multiply opacity-20 pointer-events-none z-0" />
-      <div className="fixed top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-[var(--aurora-purple)]/10 rounded-full blur-[120px] animate-pulse-glow z-0 pointer-events-none" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-[var(--aurora-blue)]/10 rounded-full blur-[120px] animate-pulse-glow delay-1000 z-0 pointer-events-none" />
+      <div className="fixed inset-0 bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="fixed top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-purple)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-(--aurora-blue)/15 rounded-full blur-[150px] animate-float z-0 pointer-events-none" />
 
-      <main className="container mx-auto px-4 md:px-8 pt-28 pb-16 space-y-8">
+      <main className="container relative mx-auto px-4 md:px-8 pt-32 pb-24 space-y-12 z-10">
         {/* Breadcrumb Navigation */}
-        <BreadcrumbNav items={[{ label: t("title") }]} className="text-sm" />
+        <BreadcrumbNav items={[{ label: t("title") }]} className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60" />
 
-        <section id="collection" className="space-y-6">
+        <section id="collection" className="space-y-8">
           {/* Header & Controls */}
-          <div className="space-y-4 border-b border-foreground/5 pb-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-              <div className="space-y-3">
-                <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
-                  Curated Selection
-                </span>
-                <h1 className="text-4xl md:text-5xl font-serif font-normal tracking-tight">
-                  {t("title")}
+          <div className="space-y-8 border-b border-white/5 pb-10">
+            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]">
+                   <div className="size-1.5 rounded-full bg-accent animate-pulse" />
+                   <span>Curated Selection</span>
+                </div>
+                <h1 className="text-6xl md:text-8xl font-bold tracking-tighter leading-none bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/40">
+                  <span className="block">{t("title")}</span>
+                  <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4">Luxury Essentials</span>
                 </h1>
-                <p className="text-muted-foreground text-base font-light max-w-md">
+                <p className="text-xl text-muted-foreground/80 font-medium max-w-xl">
                   {t("subtitle")}
                 </p>
               </div>
-              <div className="w-full md:w-auto flex flex-col sm:flex-row gap-4">
-                <div className="flex gap-2">
-                  <SearchInput />
+              <div className="w-full lg:w-auto flex flex-col sm:flex-row gap-6">
+                <div className="flex gap-4">
+                  <SearchInput className="h-14! rounded-2xl!" />
                   {/* Mobile Filter Button */}
                   <Sheet>
                     <SheetTrigger asChild>
                       <Button
                         variant="outline"
                         size="icon"
-                        className="lg:hidden shrink-0 h-10 w-10"
+                        className="lg:hidden shrink-0 h-14 w-14 rounded-2xl glass-premium border-white/10"
                       >
-                        <Filter size={18} />
+                        <Filter size={20} />
                       </Button>
                     </SheetTrigger>
                     <SheetContent
@@ -269,60 +271,62 @@ export function ShopContent({
                   </Sheet>
                 </div>
                 <Select value={currentSort} onValueChange={handleSortChange}>
-                  <SelectTrigger className="w-full sm:w-[180px] h-12! bg-foreground/2 dark:bg-white/2 border-foreground/5 dark:border-white/5 rounded-2xl text-foreground font-medium shadow-sm hover:shadow-md hover:border-foreground/10 transition-all focus:ring-primary/20 focus:border-primary/30">
+                  <SelectTrigger className="w-full sm:w-[220px] h-14! bg-white/5 border-white/10 rounded-2xl text-foreground font-black uppercase text-[10px] tracking-widest shadow-2xl hover:bg-white/10 transition-all focus:ring-accent/20">
                     <SelectValue placeholder={t("sortBy")} />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="newest">{t("newest")}</SelectItem>
-                    <SelectItem value="price_asc">{t("priceAsc")}</SelectItem>
-                    <SelectItem value="price_desc">{t("priceDesc")}</SelectItem>
-                    <SelectItem value="oldest">{t("oldest")}</SelectItem>
+                  <SelectContent className="glass-premium border-white/10">
+                    <SelectItem value="newest" className="font-medium">{t("newest")}</SelectItem>
+                    <SelectItem value="price_asc" className="font-medium">{t("priceAsc")}</SelectItem>
+                    <SelectItem value="price_desc" className="font-medium">{t("priceDesc")}</SelectItem>
+                    <SelectItem value="oldest" className="font-medium">{t("oldest")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             {/* Active Active Filters / Results Count */}
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 shadow-xl">
-                <Suspense fallback={<Skeleton className="h-5 w-32" />}>
-                  <ShopStats productsPromise={productsPromise} />
+            <div className="flex flex-wrap items-center justify-between gap-6">
+              <div className="px-5 py-2 rounded-full glass-premium border border-white/10 shadow-2xl">
+                <Suspense fallback={<Skeleton className="h-4 w-32 bg-white/5" />}>
+                  <div className="text-[10px] font-black uppercase tracking-[0.3em] text-accent">
+                    <ShopStats productsPromise={productsPromise} />
+                  </div>
                 </Suspense>
               </div>
 
               <AnimatePresence mode="popLayout">
                 {hasActiveFilters && (
                   <m.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    className="flex flex-wrap gap-2"
+                    initial={{ opacity: 0, scale: 0.9, x: 20 }}
+                    animate={{ opacity: 1, scale: 1, x: 0 }}
+                    exit={{ opacity: 0, scale: 0.9, x: 20 }}
+                    className="flex flex-wrap gap-3"
                   >
                     {activeCategoryName && (
-                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/30 shadow-2xl backdrop-blur-md">
+                      <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl glass-premium bg-accent/20 text-accent text-[10px] font-black uppercase tracking-widest border border-accent/20 shadow-2xl">
                         {activeCategoryName}
                         <button
                           onClick={() => handleRemoveFilter("categoryId")}
-                          className="hover:text-white transition-colors p-0.5 rounded-full hover:bg-primary/20"
+                          className="hover:text-white transition-colors p-1 rounded-full hover:bg-accent/40"
                         >
-                          <X size={12} />
+                          <X size={14} />
                         </button>
                       </div>
                     )}
                     {activeBrandName && (
-                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 text-white text-[10px] font-black uppercase tracking-widest border border-white/20 shadow-2xl backdrop-blur-md">
+                      <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl glass-premium border border-white/10 text-white text-[10px] font-black uppercase tracking-widest shadow-2xl">
                         {activeBrandName}
                         <button
                           onClick={() => handleRemoveFilter("brandId")}
-                          className="hover:text-primary transition-colors p-0.5 rounded-full hover:bg-white/20"
+                          className="hover:text-accent transition-colors p-1 rounded-full hover:bg-white/10"
                         >
-                          <X size={12} />
+                          <X size={14} />
                         </button>
                       </div>
                     )}
                     <button
                       onClick={handleClearAllFilters}
-                      className="text-[10px] font-black text-muted-foreground hover:text-primary transition-all uppercase tracking-widest px-4 py-2 rounded-xl hover:bg-white/5"
+                      className="text-[10px] font-black text-muted-foreground/60 hover:text-accent transition-all uppercase tracking-[0.3em] px-5 py-2.5 rounded-2xl hover:bg-white/5"
                     >
                       {t("clearAll")}
                     </button>
@@ -346,7 +350,7 @@ export function ShopContent({
             {/* Product Grid - 80% width (4/5) */}
             <div className="lg:col-span-4 space-y-6">
               {/* View Options & Stats Row */}
-              <div className="flex flex-col sm:flex-row justify-between items-center glass-premium p-1.5 rounded-2xl border-white/5 gap-4">
+              <div className="flex flex-col sm:flex-row justify-between items-center glass-card p-2 rounded-2xl border-white/5 gap-4 shadow-2xl">
                 <div className="flex items-center gap-2">
                   <div className="flex bg-white/5 p-1 rounded-xl border border-white/5 relative">
                     {[3, 4, 5].map((col) => {
@@ -357,10 +361,10 @@ export function ShopContent({
                           onClick={() => setColumns(col as 3 | 4 | 5)}
                           disabled={isAnyPending}
                           className={cn(
-                            "relative px-4 py-2 rounded-lg transition-all duration-500 z-10",
+                            "relative px-5 py-2.5 rounded-lg transition-all duration-500 z-10",
                             isActive
-                              ? "text-primary"
-                              : "text-muted-foreground/60 hover:text-white",
+                              ? "text-primary shadow-xl"
+                              : "text-muted-foreground/40 hover:text-white",
                             isAnyPending && "opacity-50 cursor-wait"
                           )}
                         >
@@ -375,7 +379,7 @@ export function ShopContent({
                               }}
                             />
                           )}
-                          <div className="relative z-10 flex gap-0.5 items-center justify-center">
+                          <div className="relative z-10 flex gap-1 items-center justify-center">
                             {Array.from({ length: Math.min(col, 3) }).map(
                               (_, i) => (
                                 <div
@@ -383,7 +387,7 @@ export function ShopContent({
                                   className={cn(
                                     "w-1 h-3 rounded-full transition-all duration-500",
                                     isActive
-                                      ? "bg-primary"
+                                      ? "bg-primary shadow-[0_0_10px_rgba(var(--accent-rgb),0.5)]"
                                       : "bg-current"
                                   )}
                                 />
@@ -392,9 +396,9 @@ export function ShopContent({
                             {col > 3 && (
                               <div
                                 className={cn(
-                                  "w-0.5 h-3 rounded-full transition-all duration-500",
+                                  "w-1 h-3 rounded-full transition-all duration-500",
                                   isActive
-                                    ? "bg-primary"
+                                    ? "bg-primary shadow-[0_0_10px_rgba(var(--accent-rgb),0.5)]"
                                     : "bg-current"
                                 )}
                               />
@@ -406,8 +410,8 @@ export function ShopContent({
                   </div>
                 </div>
 
-                <div className="font-black text-[10px] uppercase tracking-[0.2em] text-muted-foreground/50 px-6">
-                  <Suspense fallback={<Skeleton className="h-5 w-32" />}>
+                <div className="font-black text-[10px] uppercase tracking-[0.3em] text-muted-foreground/40 px-8">
+                  <Suspense fallback={<Skeleton className="h-4 w-32 bg-white/5" />}>
                     <ShopStats productsPromise={productsPromise} />
                   </Suspense>
                 </div>

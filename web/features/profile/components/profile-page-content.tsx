@@ -34,30 +34,33 @@ interface ProfilePageContentProps {
 
 export function ProfilePageContent({ user }: ProfilePageContentProps) {
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30 pt-24 pb-12 relative overflow-hidden">
-      {/* Ambient Background - Luxe Theme */}
-      <div className="fixed inset-0 bg-linear-to-br from-primary/5 via-accent/5 to-primary/5 -z-20" />
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[150px] -z-10" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-accent/10 rounded-full blur-[150px] -z-10" />
-      <div className="absolute top-1/2 left-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[180px] -translate-x-1/2 -translate-y-1/2 -z-10" />
+    <div className="min-h-screen bg-background font-sans selection:bg-accent/30 pt-32 pb-24 relative overflow-hidden">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="fixed inset-0 bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="fixed top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-purple)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-(--aurora-blue)/15 rounded-full blur-[150px] animate-float z-0 pointer-events-none" />
+
       <m.div
-        className="container mx-auto px-4 max-w-7xl"
+        className="container relative mx-auto px-4 md:px-8 max-w-7xl z-10"
         initial="hidden"
         animate="visible"
         variants={staggerContainer}
       >
-        <m.div className="mb-10" variants={fadeInUp}>
-          <div>
-            <h1 className="text-3xl md:text-4xl font-black tracking-tight">
-              Account Settings
-            </h1>
-            <p className="text-muted-foreground/70 mt-2 text-sm md:text-base font-medium">
-              Manage your profile and preferences
-            </p>
+        <m.div className="mb-16 space-y-6" variants={fadeInUp}>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]">
+             <div className="size-1.5 rounded-full bg-accent animate-pulse" />
+             <span>User Account</span>
           </div>
+          <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase leading-none bg-clip-text text-transparent bg-linear-to-b from-white to-white/40">
+            <span className="block">Account Settings</span>
+            <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4 normal-case tracking-tight">Personal Workspace</span>
+          </h1>
+          <p className="text-xl text-muted-foreground/80 font-medium max-w-xl">
+            Manage your profile, security settings and preferences
+          </p>
         </m.div>
 
-        <m.div variants={fadeInUp}>
+        <m.div variants={fadeInUp} className="relative z-10">
           <ProfileForm user={user} />
         </m.div>
       </m.div>

@@ -83,42 +83,42 @@ const milestones = [
 
 export default function ShopAboutPage() {
   return (
-    <main className="min-h-screen bg-background text-foreground overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative py-24 lg:py-32 overflow-hidden">
-        {/* Abstract Backgrounds */}
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
-        <div className="absolute top-1/4 -right-20 w-80 h-80 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
-        <div className="absolute bottom-1/4 -left-20 w-60 h-60 bg-secondary/30 rounded-full blur-[80px] pointer-events-none" />
+    <main className="min-h-screen bg-background relative overflow-hidden transition-colors duration-500 pb-24 font-sans text-foreground">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="fixed inset-0 bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="fixed top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-blue)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-(--aurora-purple)/15 rounded-full blur-[150px] animate-float z-0 pointer-events-none" />
 
-        <div className="container mx-auto px-4 lg:px-8">
+      {/* Hero Section */}
+      <section className="relative py-32 lg:py-48 overflow-hidden z-10">
+        <div className="container mx-auto px-4 lg:px-8 max-w-7xl">
           <m.div
             initial="hidden"
             animate="visible"
             variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
-            className="text-center max-w-4xl mx-auto"
+            className="text-left"
           >
             <m.div
               variants={fadeInUp}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-bold tracking-wider uppercase mb-8"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em] mb-8"
             >
-              <ShoppingBag className="size-4" />
-              <span>Câu chuyện thương hiệu</span>
+              <ShoppingBag className="size-3" />
+              <span>Brand Story</span>
             </m.div>
 
             <m.h1
               variants={fadeInUp}
-              className="text-5xl md:text-6xl lg:text-7xl font-sans font-bold tracking-tight mb-8"
+              className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter uppercase leading-none bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/40 mb-10"
             >
-              Kiến tạo không gian <br />
-              <span className="text-primary italic">Sống Đẳng Cấp</span>
+              Architecting <br />
+              <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4 normal-case tracking-tight">Luxury Spaces</span>
             </m.h1>
 
             <m.p
               variants={fadeInUp}
-              className="text-xl md:text-2xl text-muted-foreground mb-10 leading-relaxed max-w-2xl mx-auto font-light"
+              className="text-xl md:text-2xl text-muted-foreground/80 font-medium max-w-2xl leading-relaxed"
             >
-              Chúng tôi không chỉ bán nội thất. Chúng tôi mang đến linh hồn cho ngôi nhà của bạn bằng những thiết kế tinh tế và độc bản.
+              We don't just sell furniture. We bring soul to your home through exquisite and unique designs.
             </m.p>
           </m.div>
         </div>
@@ -137,7 +137,7 @@ export default function ShopAboutPage() {
                 transition={{ delay: index * 0.1, duration: 0.6 }}
                 className="text-center group"
               >
-                <div className="text-5xl lg:text-6xl font-bold mb-3 bg-linear-to-b from-primary to-primary/50 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-500">
+                <div className="text-5xl lg:text-6xl font-bold mb-3 bg-linear-to-b from-background to-background/60 bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-500">
                   {stat.value}
                 </div>
                 <div className="text-white/60 font-medium tracking-wide uppercase text-sm">{stat.label}</div>

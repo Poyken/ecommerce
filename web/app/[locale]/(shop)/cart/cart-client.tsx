@@ -445,36 +445,36 @@ export function CartClient({ cart }: CartClientProps) {
   const isFreeShipping = total >= shippingThreshold;
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden selection:bg-primary/30 pb-24">
+    <div className="min-h-screen bg-background relative overflow-hidden transition-colors duration-500 pb-24 font-sans">
       {/* Cinematic Background & Aurora Glow */}
-      <div className="absolute top-0 inset-x-0 h-[50vh] bg-cinematic pointer-events-none" />
-      <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-(--aurora-blue)/10 rounded-full blur-[120px] animate-pulse-glow pointer-events-none" />
-      <div className="absolute top-[10%] right-[-5%] w-[30%] h-[30%] bg-(--aurora-orange)/10 rounded-full blur-[100px] animate-float pointer-events-none" />
+      <div className="fixed inset-0 bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="fixed top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-blue)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-(--aurora-purple)/15 rounded-full blur-[150px] animate-float z-0 pointer-events-none" />
 
-      <div className="container mx-auto px-4 max-w-6xl relative z-10 pt-32">
+      <div className="container relative mx-auto px-4 md:px-8 max-w-7xl z-10 pt-32">
         <m.div
-          className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16"
+          className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mb-16"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="space-y-4">
+          <div className="space-y-6">
             <m.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]"
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]"
             >
               <ShoppingBag className="size-3" />
-              {t("title")}
+              <span>{t("title")}</span>
             </m.div>
 
-            <h1 className="text-5xl md:text-7xl font-bold text-foreground tracking-tighter">
-              {t("title").split(" ")[0]}{" "}
-              <span className="font-serif italic font-normal text-muted-foreground/60">
+            <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase leading-none bg-clip-text text-transparent bg-linear-to-b from-white to-white/40">
+              <span className="block">{t("title").split(" ")[0]}</span>
+              <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4 normal-case tracking-tight">
                 {t("title").split(" ").slice(1).join(" ")}
               </span>
             </h1>
             
-            <p className="text-muted-foreground text-lg font-medium">
+            <p className="text-xl text-muted-foreground/80 font-medium max-w-xl">
               {localItems.length} {t("items")} {t("inCart")}
             </p>
           </div>
@@ -484,28 +484,26 @@ export function CartClient({ cart }: CartClientProps) {
               <AlertDialogTrigger asChild>
                 <GlassButton
                   variant="ghost"
-                  className="rounded-full px-6 py-3 text-destructive hover:text-destructive/90 hover:bg-destructive/10 border-destructive/20 font-bold text-xs uppercase tracking-widest"
+                  className="rounded-2xl px-8 py-4 text-destructive hover:bg-destructive/10 border border-destructive/20 font-black text-[10px] uppercase tracking-[0.2em] transition-all duration-500 hover:scale-105"
                 >
-                  <span className="flex items-center">
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    {t("clearCart")}
-                  </span>
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  {t("clearCart")}
                 </GlassButton>
               </AlertDialogTrigger>
-              <AlertDialogContent className="bg-background/95 backdrop-blur-xl border-border shadow-2xl rounded-4xl">
+              <AlertDialogContent className="glass-premium border-white/10 shadow-2xl rounded-4xl backdrop-blur-3xl">
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="text-2xl font-bold tracking-tighter">{t("clearConfirmTitle")}</AlertDialogTitle>
-                  <AlertDialogDescription className="text-muted-foreground font-medium">
+                  <AlertDialogTitle className="text-4xl font-black tracking-tighter uppercase leading-none">{t("clearConfirmTitle")}</AlertDialogTitle>
+                  <AlertDialogDescription className="text-muted-foreground/60 font-serif italic text-lg mt-2">
                     {t("clearConfirmDesc")}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter className="mt-6">
-                  <AlertDialogCancel className="rounded-full border-border font-bold">
+                <AlertDialogFooter className="mt-10 gap-4">
+                  <AlertDialogCancel className="rounded-2xl border-white/10 font-black text-[10px] uppercase tracking-widest h-14 px-8">
                     {t("cancel")}
                   </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={handleClearCart}
-                    className="bg-destructive hover:bg-destructive/90 text-white rounded-full font-bold px-8"
+                    className="bg-destructive hover:bg-destructive/90 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest h-14 px-8 shadow-xl shadow-destructive/20 border-none"
                   >
                     {t("clearCart")}
                   </AlertDialogAction>

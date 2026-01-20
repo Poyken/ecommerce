@@ -397,37 +397,38 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
   };
 
   return (
-    <div className="min-h-screen bg-black pt-24 pb-12 font-sans selection:bg-primary/30 relative overflow-hidden">
-      {/* Background Aurora Glows */}
-      <div className="absolute top-[5%] -left-[10%] w-[600px] h-[600px] bg-[var(--aurora-purple)]/5 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute top-[30%] -right-[5%] w-[500px] h-[500px] bg-[var(--aurora-blue)]/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[10%] left-[20%] w-[800px] h-[800px] bg-primary/2 rounded-full blur-[200px] pointer-events-none" />
+    <div className="min-h-screen bg-transparent pt-32 pb-24 font-sans relative overflow-hidden transition-colors duration-500 selection:bg-accent/30">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="fixed inset-0 bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="fixed top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-purple)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-(--aurora-blue)/15 rounded-full blur-[150px] animate-float z-0 pointer-events-none" />
 
-      <div className="container mx-auto px-4 max-w-6xl relative z-10">
-        <div className="mb-6">
+      <div className="container relative mx-auto px-4 md:px-8 max-w-7xl z-10">
+        <div className="mb-12">
           <Link
             href="/cart"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors font-medium"
+            className="group inline-flex items-center gap-4 text-muted-foreground/60 hover:text-accent transition-all duration-300 font-black uppercase text-[10px] tracking-[0.3em]"
           >
-            <ArrowLeft size={20} />
+            <div className="size-10 rounded-xl glass-premium border border-white/10 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+              <ArrowLeft size={16} />
+            </div>
             <span>{t("backToCart")}</span>
           </Link>
         </div>
 
         <m.div
-          className="text-center mb-16"
+          className="text-left mb-20 space-y-6"
           initial="hidden"
           animate="visible"
           variants={sectionVariants}
         >
-          <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/5 border border-white/10 mb-6 backdrop-blur-xl shadow-2xl">
-            <Lock className="w-3 h-3 text-primary animate-pulse" />
-            <span className="text-[10px] text-white font-black uppercase tracking-[0.4em]">
-              {t("secureCheckout")}
-            </span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]">
+            <Lock className="w-3 h-3 text-accent animate-pulse" />
+            <span>{t("secureCheckout")}</span>
           </div>
-          <h1 className="text-4xl md:text-7xl font-black tracking-tighter uppercase italic text-white leading-none">
-            {t("title")}
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter uppercase leading-none bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/40">
+            <span className="block">{t("title")}</span>
+            <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4 normal-case tracking-tight">Final Step to Luxury</span>
           </h1>
         </m.div>
 
@@ -503,7 +504,7 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
                 }
                 actionSlot={
                   <GlassButton
-                    className="w-full bg-linear-to-r from-primary to-indigo-600 font-black uppercase tracking-[0.2em] text-white shadow-2xl shadow-primary/20 py-8 rounded-[2rem] border-white/10"
+                    className="w-full bg-linear-to-r from-primary to-indigo-600 font-black uppercase tracking-[0.2em] text-white shadow-2xl shadow-primary/20 py-8 rounded-4xl border-white/10"
                     size="lg"
                     onClick={handlePlaceOrder}
                     disabled={isPending || !cart || items.length === 0}

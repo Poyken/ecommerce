@@ -1,6 +1,5 @@
 "use client";
 
-import { BackgroundBlob } from "@/components/shared/background-blob";
 import { GlassButton } from "@/components/shared/glass-button";
 import { GlassCard } from "@/components/shared/glass-card";
 import { FeaturedProducts } from "@/features/products/components/featured-products";
@@ -9,7 +8,7 @@ import { fadeInRight, fadeInUp, m, staggerContainer } from "@/lib/animations";
 import { BlogWithProducts } from "@/types/models";
 import { format } from "date-fns";
 import DOMPurify from "isomorphic-dompurify";
-import { ArrowLeft, Calendar, Clock, Share2, User } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Share2, ShoppingBag, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { AnimatedError } from "@/components/shared/animated-error";
 import Image from "next/image";
@@ -94,80 +93,49 @@ export function BlogPostContent({ post }: BlogPostContentProps) {
   }, [post.image]);
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-accent/30 pt-28 pb-24 relative overflow-hidden">
-      {/* Ambient Background - Quiet Luxury */}
-      <div className="fixed inset-0 bg-linear-to-br from-accent/3 via-secondary/5 to-accent/3 -z-20" />
-      <BackgroundBlob
-        variant="primary"
-        position="top-left"
-        size="xl"
-        opacity="low"
-      />
-      <BackgroundBlob
-        variant="warning"
-        position="bottom-right"
-        size="xl"
-        opacity="low"
-      />
-      <BackgroundBlob
-        variant="primary"
-        position="center"
-        size="lg"
-        opacity="low"
-        className="blur-[100px]"
-      />
+    <div className="min-h-screen bg-background font-sans selection:bg-accent/30 pt-32 pb-24 relative overflow-hidden transition-colors duration-500">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="fixed inset-0 bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="fixed top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-blue)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-(--aurora-purple)/15 rounded-full blur-[150px] animate-float z-0 pointer-events-none" />
 
-      <div className="container mx-auto px-4 max-w-6xl relative z-10">
-        <m.div initial="hidden" animate="visible" variants={staggerContainer}>
+      <div className="container relative mx-auto px-4 md:px-8 max-w-7xl z-10">
+        <m.div initial="hidden" animate="visible" variants={staggerContainer} className="space-y-12">
           <Link
             href="/blog"
-            className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-8"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-accent transition-colors mb-8 text-xs font-black uppercase tracking-widest"
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={16} />
             <span>{tCommon("backToJournal")}</span>
           </Link>
 
-          <div className="space-y-6 mb-12 text-center">
-            <div className="flex items-center justify-center gap-2">
-              {(() => {
-                const colors = [
-                  "bg-primary/10 text-primary border-primary/30",
-                  "bg-warning/10 text-warning border-warning/30",
-                  "bg-primary/10 text-primary border-primary/30",
-                  "bg-warning/10 text-warning border-warning/30",
-                ];
-                const colorClass = colors[(post.category?.length || 0) % 4];
-                return (
-                  <span
-                    className={`px-3 py-1 rounded-full backdrop-blur-md text-[10px] font-medium uppercase tracking-[0.2em] border shadow-sm ${colorClass}`}
-                  >
-                    {post.category || "Uncategorized"}
-                  </span>
-                );
-              })()}
+          <div className="space-y-8 text-left max-w-4xl">
+            <div className="flex items-center gap-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]">
+                 <ShoppingBag className="size-3" />
+                 <span>{post.category || "Uncategorized"}</span>
+              </div>
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-normal tracking-tight text-foreground leading-tight">
+            <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase leading-none bg-clip-text text-transparent bg-linear-to-b from-white to-white/40">
               {post.title || "Untitled Post"}
             </h1>
 
-            <div className="flex items-center justify-center gap-6 text-muted-foreground text-sm md:text-base">
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-4 text-muted-foreground/60 text-xs font-black uppercase tracking-[0.2em]">
               <div className="flex items-center gap-2">
-                <User size={16} />
+                <User size={14} className="text-accent" />
                 <span>{post.author || "Unknown Author"}</span>
               </div>
-              <div className="w-1 h-1 rounded-full bg-foreground/20" />
               <div className="flex items-center gap-2">
-                <Calendar size={16} />
+                <Calendar size={14} className="text-accent" />
                 <span>
                   {post.createdAt
-                    ? format(new Date(post.createdAt), "dd/MM/yyyy")
+                    ? format(new Date(post.createdAt), "dd MMMM yyyy")
                     : "Unknown Date"}
                 </span>
               </div>
-              <div className="w-1 h-1 rounded-full bg-foreground/20" />
               <div className="flex items-center gap-2">
-                <Clock size={16} />
+                <Clock size={14} className="text-accent" />
                 <span>{post.readTime || "1 min read"}</span>
               </div>
             </div>

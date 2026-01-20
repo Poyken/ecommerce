@@ -72,32 +72,41 @@ export function CollectionContent({
   const isAnyPending = isFilterPending;
 
   return (
-    <div className="min-h-screen bg-background pt-28 pb-16 font-sans selection:bg-accent/30">
-      <div className="container mx-auto px-4 md:px-8">
-        <BreadcrumbNav items={breadcrumbItems} className="mb-8 text-sm" />
+    <div className="min-h-screen bg-transparent pt-28 pb-16 font-sans selection:bg-accent/30 relative overflow-hidden transition-colors duration-500">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="fixed inset-0 bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="fixed top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-blue)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-(--aurora-purple)/15 rounded-full blur-[150px] animate-float z-0 pointer-events-none" />
 
-        <div className="mb-12 border-b border-foreground/5 pb-8 relative">
+      <div className="container relative mx-auto px-4 md:px-8 max-w-7xl z-10">
+        <BreadcrumbNav items={breadcrumbItems} className="mb-8 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60" />
+
+        <div className="mb-12 border-b border-white/5 pb-12 relative">
           <TypedLink
             href={backHref as `/${string}`}
-            className="text-accent hover:underline mb-6 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest transition-all hover:gap-3"
+            className="group text-accent hover:text-accent/80 mb-8 inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] transition-all"
           >
-            ← {backLabel}
+            <div className="size-8 rounded-lg glass-premium border border-white/10 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+              <Search className="size-3 rotate-180" />
+            </div>
+            <span>{backLabel}</span>
           </TypedLink>
 
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mt-4">
-            <div className="space-y-3">
-              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary block">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mt-6">
+            <div className="space-y-6">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]">
                 {collectionLabel}
               </span>
-              <h1 className="text-4xl md:text-6xl font-serif font-normal tracking-tight">
-                {title}
+              <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase leading-none bg-clip-text text-transparent bg-linear-to-b from-white to-white/40">
+                <span className="block">{title}</span>
+                <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4 normal-case tracking-tight">Curated Selection</span>
               </h1>
-              <p className="text-muted-foreground text-base font-light max-w-md">
+              <p className="text-xl text-muted-foreground/80 font-medium max-w-xl">
                 {subtitle}
               </p>
             </div>
 
-            <div className="flex bg-muted/30 p-1.5 rounded-2xl border border-foreground/5 relative">
+            <div className="flex glass-premium p-1.5 rounded-2xl border border-white/10 relative">
               {[3, 4, 5].map((col) => {
                 const isActive = columns === col;
                 return (

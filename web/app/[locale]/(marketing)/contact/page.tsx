@@ -136,41 +136,42 @@ export default function ContactPage() {
   }
 
   return (
-    <main className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative py-20 lg:py-28 overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-background to-background" />
-          <div className="absolute top-0 right-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        </div>
+    <main className="min-h-screen bg-background relative overflow-hidden selection:bg-accent/30">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="absolute top-0 inset-x-0 h-[70vh] bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-blue)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-(--aurora-purple)/10 rounded-full blur-[120px] animate-float z-0 pointer-events-none" />
 
+      {/* Hero Section */}
+      <section className="relative pt-32 lg:pt-48 pb-20 overflow-hidden z-10">
         <div className="container mx-auto px-4 lg:px-8">
           <m.div
             initial="hidden"
             animate="visible"
-            variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
-            className="text-center max-w-3xl mx-auto"
+            variants={{ visible: { transition: { staggerChildren: 0.15 } } }}
+            className="text-center max-w-4xl mx-auto space-y-8"
           >
             <m.div
               variants={fadeInUp}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]"
             >
-              <Headphones className="size-4" />
+              <Headphones className="size-3" />
               <span>Đội ngũ hỗ trợ sẵn sàng</span>
             </m.div>
 
             <m.h1
               variants={fadeInUp}
-              className="text-4xl md:text-5xl font-bold tracking-tight mb-6"
+              className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter uppercase leading-none bg-clip-text text-transparent bg-linear-to-b from-white to-white/40"
             >
-              Chúng tôi ở đây để <span className="text-primary">giúp bạn</span>
+              <span className="block">Chúng tôi ở đây</span>
+              <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4 normal-case tracking-tight">Support & Assistance</span>
             </m.h1>
 
             <m.p
               variants={fadeInUp}
-              className="text-xl text-muted-foreground"
+              className="text-xl md:text-2xl text-muted-foreground/80 font-medium max-w-2xl mx-auto leading-relaxed"
             >
-              Có câu hỏi? Muốn demo? Cần hỗ trợ kỹ thuật? Liên hệ ngay!
+              Có câu hỏi? Muốn demo? Cần hỗ trợ kỹ thuật? <br className="hidden md:block" /> Chúng tôi luôn sẵn sàng đồng hành cùng sự phát triển của bạn.
             </m.p>
           </m.div>
         </div>
@@ -204,78 +205,82 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Contact Form Section */}
-      <section className="py-16 lg:py-24">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 max-w-6xl mx-auto">
+      {/* Contact Section */}
+      <section className="py-24 relative z-10">
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 max-w-7xl mx-auto">
             {/* Left: Info */}
             <m.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
+              className="space-y-10"
             >
-              <h2 className="text-3xl font-bold tracking-tight mb-4">
-                Gửi tin nhắn cho chúng tôi
-              </h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Điền form bên dưới và đội ngũ của chúng tôi sẽ liên hệ lại trong
-                thời gian sớm nhất.
-              </p>
+              <div className="space-y-6">
+                <h2 className="text-4xl md:text-5xl font-bold tracking-tight uppercase">
+                   Gửi tin nhắn <br /> cho chúng tôi
+                </h2>
+                <p className="text-xl text-muted-foreground/70 font-medium max-w-md leading-relaxed">
+                  Điền form bên dưới và đội ngũ của chúng tôi sẽ liên hệ lại trong thời gian sớm nhất.
+                </p>
+              </div>
 
               {/* Response Time */}
-              <div className="space-y-4 mb-8">
-                <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/50">
-                  <Clock className="size-5 text-primary" />
-                  <div>
-                    <p className="font-medium">Thời gian phản hồi</p>
-                    <p className="text-sm text-muted-foreground">
-                      Thường trong 2-4 giờ làm việc
-                    </p>
-                  </div>
+              <div className="flex items-center gap-5 p-6 rounded-3xl glass-premium border border-white/5 shadow-2xl">
+                <div className="size-14 rounded-2xl bg-accent/10 flex items-center justify-center">
+                  <Clock className="size-6 text-accent" />
+                </div>
+                <div>
+                  <p className="font-bold uppercase tracking-tight">Thời gian phản hồi</p>
+                  <p className="text-sm text-muted-foreground/60 font-medium">
+                    Thường trong 2-4 giờ làm việc
+                  </p>
                 </div>
               </div>
 
               {/* Department Selection */}
-              <div className="space-y-3">
-                <p className="font-medium mb-3">Chọn bộ phận:</p>
-                {departments.map((dept) => (
-                  <label
-                    key={dept.value}
-                    className={cn(
-                      "flex items-center gap-3 p-4 rounded-xl border cursor-pointer transition-all",
-                      formData.department === dept.value
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
-                    )}
-                  >
-                    <input
-                      type="radio"
-                      name="department"
-                      value={dept.value}
-                      checked={formData.department === dept.value}
-                      onChange={handleChange}
-                      className="sr-only"
-                    />
-                    <div
+              <div className="space-y-4">
+                <p className="font-black text-[10px] uppercase tracking-[0.4em] text-muted-foreground/40 mb-6">Chọn bộ phận:</p>
+                <div className="space-y-3">
+                  {departments.map((dept) => (
+                    <label
+                      key={dept.value}
                       className={cn(
-                        "size-5 rounded-full border-2 flex items-center justify-center",
+                        "flex items-center gap-4 p-5 rounded-3xl border transition-all duration-500 cursor-pointer group shadow-2xl",
                         formData.department === dept.value
-                          ? "border-primary"
-                          : "border-muted-foreground"
+                          ? "border-accent bg-accent/5 ring-1 ring-accent/20"
+                          : "border-white/5 bg-white/2 hover:bg-white/5"
                       )}
                     >
-                      {formData.department === dept.value && (
-                        <div className="size-2.5 rounded-full bg-primary" />
-                      )}
-                    </div>
-                    <div>
-                      <p className="font-medium">{dept.label}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {dept.description}
-                      </p>
-                    </div>
-                  </label>
-                ))}
+                      <input
+                        type="radio"
+                        name="department"
+                        value={dept.value}
+                        checked={formData.department === dept.value}
+                        onChange={handleChange}
+                        className="sr-only"
+                      />
+                      <div
+                        className={cn(
+                          "size-6 rounded-full border-2 flex items-center justify-center transition-all duration-500",
+                          formData.department === dept.value
+                            ? "border-accent scale-110"
+                            : "border-muted-foreground/20"
+                        )}
+                      >
+                        {formData.department === dept.value && (
+                          <div className="size-3 rounded-full bg-accent shadow-[0_0_10px_rgba(var(--accent-rgb),0.5)]" />
+                        )}
+                      </div>
+                      <div>
+                        <p className={cn("font-bold uppercase tracking-tight transition-colors duration-500", formData.department === dept.value ? "text-white" : "text-muted-foreground/80")}>{dept.label}</p>
+                        <p className="text-sm text-muted-foreground/40 font-medium">
+                          {dept.description}
+                        </p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
               </div>
             </m.div>
 
@@ -285,106 +290,107 @@ export default function ContactPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Họ và tên <span className="text-destructive">*</span>
+              <div className="p-10 md:p-14 rounded-4xl glass-premium border-white/5 shadow-[0_0_100px_rgba(0,0,0,0.2)]">
+                <form onSubmit={handleSubmit} className="space-y-8">
+                  <div className="grid sm:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="font-black text-[10px] uppercase tracking-[0.4em] text-muted-foreground/40">
+                         Họ và tên
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-6 py-4 rounded-2xl glass-premium border-white/5 bg-white/2 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 placeholder:text-muted-foreground/20 font-medium"
+                        placeholder="Nguyễn Văn A"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="font-black text-[10px] uppercase tracking-[0.4em] text-muted-foreground/40">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-6 py-4 rounded-2xl glass-premium border-white/5 bg-white/2 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 placeholder:text-muted-foreground/20 font-medium"
+                        placeholder="email@company.com"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                      <label className="font-black text-[10px] uppercase tracking-[0.4em] text-muted-foreground/40">
+                        Số điện thoại
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 rounded-2xl glass-premium border-white/5 bg-white/2 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 placeholder:text-muted-foreground/20 font-medium"
+                        placeholder="0912 345 678"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      <label className="font-black text-[10px] uppercase tracking-[0.4em] text-muted-foreground/40">
+                         Công ty
+                      </label>
+                      <input
+                        type="text"
+                        name="company"
+                        value={formData.company}
+                        onChange={handleChange}
+                        className="w-full px-6 py-4 rounded-2xl glass-premium border-white/5 bg-white/2 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 placeholder:text-muted-foreground/20 font-medium"
+                        placeholder="Tên công ty"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <label className="font-black text-[10px] uppercase tracking-[0.4em] text-muted-foreground/40">
+                      Nội dung tin nhắn
                     </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
+                    <textarea
+                      name="message"
+                      value={formData.message}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      placeholder="Nguyễn Văn A"
+                      rows={5}
+                      className="w-full px-6 py-4 rounded-2xl glass-premium border-white/5 bg-white/2 focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all duration-300 placeholder:text-muted-foreground/20 font-medium resize-none"
+                      placeholder="Mô tả chi tiết nhu cầu của bạn..."
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Email <span className="text-destructive">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      placeholder="email@company.com"
-                    />
-                  </div>
-                </div>
 
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Số điện thoại
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      placeholder="0912 345 678"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">
-                      Công ty
-                    </label>
-                    <input
-                      type="text"
-                      name="company"
-                      value={formData.company}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      placeholder="Tên công ty"
-                    />
-                  </div>
-                </div>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    className="w-full h-16 rounded-2xl bg-accent text-white font-black uppercase tracking-[0.3em] hover:bg-accent/90 transition-all duration-500 shadow-2xl shadow-accent/20 flex items-center justify-center gap-3 disabled:opacity-50"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      "Đang gửi..."
+                    ) : (
+                      <>
+                        <Send className="size-4" />
+                        <span>Gửi tin nhắn</span>
+                      </>
+                    )}
+                  </Button>
 
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Nội dung <span className="text-destructive">*</span>
-                  </label>
-                  <textarea
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={5}
-                    className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
-                    placeholder="Mô tả chi tiết nhu cầu của bạn..."
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    "Đang gửi..."
-                  ) : (
-                    <>
-                      <Send className="size-4 mr-2" />
-                      Gửi tin nhắn
-                    </>
-                  )}
-                </Button>
-
-                <p className="text-sm text-muted-foreground text-center">
-                  Bằng việc gửi form, bạn đồng ý với{" "}
-                  <Link href="/privacy" className="text-primary hover:underline">
-                    Chính sách bảo mật
-                  </Link>{" "}
-                  của chúng tôi.
-                </p>
-              </form>
+                  <p className="text-[10px] text-muted-foreground/40 text-center font-black uppercase tracking-[0.2em]">
+                    Bằng việc gửi form, bạn đồng ý với{" "}
+                    <Link href="/privacy" className="text-accent hover:underline">
+                      Chính sách bảo mật
+                    </Link>
+                  </p>
+                </form>
+              </div>
             </m.div>
           </div>
         </div>

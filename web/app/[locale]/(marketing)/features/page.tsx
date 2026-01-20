@@ -296,58 +296,56 @@ const featureCategories = [
 
 export default function FeaturesPage() {
   return (
-    <main className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative py-20 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-background to-background" />
-          <div className="absolute top-1/4 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        </div>
+    <main className="min-h-screen bg-background relative overflow-hidden selection:bg-accent/30">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="absolute top-0 inset-x-0 h-[70vh] bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-blue)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="absolute top-[20%] -right-[10%] w-[50vw] h-[50vw] bg-(--aurora-purple)/10 rounded-full blur-[120px] animate-float z-0 pointer-events-none" />
 
+      {/* Hero Section */}
+      <section className="relative pt-32 lg:pt-48 pb-20 overflow-hidden z-10">
         <div className="container mx-auto px-4 lg:px-8">
           <m.div
             initial="hidden"
             animate="visible"
             variants={{
-              visible: { transition: { staggerChildren: 0.1 } },
+              visible: { transition: { staggerChildren: 0.15 } },
             }}
-            className="text-center max-w-3xl mx-auto"
+            className="text-center max-w-4xl mx-auto space-y-8"
           >
             <m.div
               variants={fadeInUp}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]"
             >
-              <Zap className="size-4" />
+              <Zap className="size-3" />
               <span>50+ tính năng mạnh mẽ</span>
             </m.div>
 
             <m.h1
               variants={fadeInUp}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6"
+              className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter uppercase leading-none bg-clip-text text-transparent bg-linear-to-b from-white to-white/40"
             >
-              Tất cả công cụ bạn cần để{" "}
-              <span className="text-primary">bán hàng thành công</span>
+              <span className="block">Công cụ tối cao</span>
+              <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4 normal-case tracking-tight">The Ultimate Commerce Toolkit</span>
             </m.h1>
 
             <m.p
               variants={fadeInUp}
-              className="text-xl text-muted-foreground mb-10"
+              className="text-xl md:text-2xl text-muted-foreground/80 font-medium max-w-2xl mx-auto leading-relaxed"
             >
-              Từ quản lý kho đến AI chatbot, từ B2B pricing đến affiliate - tất
-              cả trong một nền tảng.
+              Từ quản lý kho đồng bộ đến AI chatbot thế hệ mới, Luxe SaaS cung cấp cho bạn một hệ sinh thái hoàn chỉnh để thống trị thị trường.
             </m.p>
 
             <m.div
               variants={fadeInUp}
-              className="flex flex-wrap justify-center gap-4"
+              className="flex flex-wrap justify-center gap-6 pt-6"
             >
-              <Button size="lg" asChild>
+              <Button size="lg" className="rounded-2xl px-10 h-16 bg-accent text-white font-black uppercase tracking-[0.3em] hover:bg-accent/90 transition-all duration-500 shadow-2xl shadow-accent/20" asChild>
                 <Link href="/register">
-                  Bắt đầu miễn phí
-                  <ArrowRight className="size-4 ml-2" />
+                  Bắt đầu ngay
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild>
+              <Button size="lg" variant="outline" className="rounded-2xl px-10 h-16 glass-premium border-white/10 text-white font-black uppercase tracking-[0.3em] hover:bg-white/5" asChild>
                 <Link href="/demo">Xem demo</Link>
               </Button>
             </m.div>

@@ -231,6 +231,18 @@
     "saveForLater": "Save for Later",
     "addToWishlist": "Add to Wishlist"
   },
+  "productDetail": {
+    "verifiedReviews": "{count} Verified Reviews",
+    "selectOptions": "Select Options",
+    "selectOptionsDesc": "Please select your preferred options to continue.",
+    "outOfStock": "Out of Stock",
+    "outOfStockDesc": "This item is currently out of stock.",
+    "freeGlobalShipping": "Free Global Shipping",
+    "authenticityVerified": "Authenticity Verified",
+    "warranty": "Lifetime Warranty",
+    "customerReviews": "Customer Reviews",
+    "recentlyViewed": "Recently Viewed"
+  },
   "blog": {
     "title": "The Journal",
     "subtitle": "Stories, style guides, and news from the world of fashion.",
@@ -607,7 +619,11 @@
     "fastShipping": "Fast Shipping",
     "checkingStock": "Checking stock...",
     "yourSelection": "Your Selection",
-    "quantityMax": "Quantity updated to maximum."
+    "quantityMax": "Quantity updated to maximum.",
+    "totalAmount": "Total Amount",
+    "checkout": "Proceed to Checkout",
+    "checkoutSecureDesc": "Guaranteed safe & secure checkout",
+    "processing": "Processing..."
   },
   "checkout": {
     "backToCart": "Back to Cart",

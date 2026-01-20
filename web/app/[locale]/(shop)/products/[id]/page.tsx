@@ -188,20 +188,24 @@ export default async function ProductDetailPage({
   const { id } = await params;
 
   return (
-    <div className="min-h-screen bg-background font-sans selection:bg-primary/30 relative overflow-hidden transition-colors duration-500">
-      {/* Background Aurora Glows */}
-      <div className="absolute top-[5%] -left-[10%] w-[600px] h-[600px] bg-[var(--aurora-purple)]/5 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute top-[30%] -right-[5%] w-[500px] h-[500px] bg-[var(--aurora-blue)]/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[10%] left-[20%] w-[800px] h-[800px] bg-primary/2 rounded-full blur-[200px] pointer-events-none" />
-      <div className="container mx-auto px-4 md:px-8 py-8 lg:py-12 relative z-10">
+    <div className="min-h-screen bg-background font-sans selection:bg-accent/30 relative overflow-hidden transition-colors duration-500">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="absolute top-0 inset-x-0 h-full bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-purple)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="absolute top-[30%] -right-[10%] w-[50vw] h-[50vw] bg-(--aurora-blue)/10 rounded-full blur-[120px] animate-float z-0 pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[20%] w-[40vw] h-[40vw] bg-(--aurora-orange)/5 rounded-full blur-[100px] z-0 pointer-events-none" />
+
+      <div className="container relative mx-auto px-4 md:px-8 py-12 lg:py-20 z-10">
         {/* Breadcrumb: Load độc lập */}
-        <div className="mb-6 lg:mb-8">
+        <div className="mb-10 lg:mb-16">
           <Suspense
             fallback={
-              <div className="h-5 w-32 bg-muted animate-pulse rounded" />
+              <div className="h-5 w-32 bg-white/5 animate-pulse rounded-full" />
             }
           >
-            <BreadcrumbStreamer id={id} />
+            <div className="text-[10px] font-black uppercase tracking-[0.3em] opacity-60">
+              <BreadcrumbStreamer id={id} />
+            </div>
           </Suspense>
         </div>
 

@@ -84,14 +84,17 @@ export function ForgotPasswordPageContent() {
         className="p-8 border-none shadow-none bg-transparent"
         variant="default"
       >
-        <div className="mb-8 text-center space-y-3">
-          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent block">
-            Password Recovery
-          </span>
-          <h1 className="text-4xl font-serif font-normal tracking-tight text-foreground">
+        <div className="mb-10 text-center space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em] mx-auto">
+            <div className="size-1.5 rounded-full bg-accent animate-pulse" />
+            <span>Identity Request</span>
+          </div>
+          <h1 className="text-5xl font-bold tracking-tighter text-foreground uppercase leading-none">
             {t("title")}
           </h1>
-          <p className="text-muted-foreground font-light">{t("subtitle")}</p>
+          <p className="text-muted-foreground/60 font-serif italic text-lg leading-none">
+            Restoring your luxury access
+          </p>
         </div>
 
         {state?.success ? (

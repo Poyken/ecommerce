@@ -89,12 +89,8 @@ export function HeroSection({
   const displayBadge = badge || t("newCollection");
 
   return (
-    <section className="relative w-full min-h-screen flex items-center bg-background overflow-hidden pt-20  ">
-      {/* Background Decor */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-[50vh] h-[50vh] bg-accent/5 rounded-full blur-[120px] -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-[40vh] h-[40vh] bg-secondary/30 rounded-full blur-[100px] translate-y-1/3 -translate-x-1/3" />
-      </div>
+    <section className="relative min-h-[95vh] flex items-center bg-transparent overflow-hidden pt-20 selection:bg-accent/30">
+      {/* Background is handled by HomeWrapper (fixed) */}
 
       <div
         className={cn(
@@ -108,7 +104,7 @@ export function HeroSection({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
           className={cn(
-            "space-y-8 lg:space-y-10 order-2 lg:order-1",
+            "space-y-8 lg:space-y-12 order-2 lg:order-1",
             alignment === "center" && "mx-auto max-w-4xl"
           )}
         >
@@ -117,28 +113,24 @@ export function HeroSection({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.8 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/50 backdrop-blur-md border border-border/50"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]"
             >
-              <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
-              <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.25em]">
-                {displayBadge}
-              </span>
+              <Sparkles className="size-3 animate-pulse" />
+              <span>{displayBadge}</span>
             </m.div>
           )}
 
-          <div className="space-y-6">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-sans font-normal tracking-[-0.03em] leading-[0.9]">
-              <span className="block text-foreground">{displayTitle}</span>
-              <span className="relative inline-block mt-2 w-full">
-                <span className="text-gradient-champagne italic w-full block pb-4">
-                  {t("luxuryStyle")}
-                </span>
+          <div className="space-y-8">
+            <h1 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tighter leading-[0.85] bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/40">
+              <span className="block">{displayTitle}</span>
+              <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4 px-1">
+                {t("luxuryStyle")}
               </span>
             </h1>
 
             <p
               className={cn(
-                "text-lg text-muted-foreground leading-relaxed font-light max-w-xl",
+                "text-xl text-muted-foreground/80 leading-relaxed font-medium max-w-2xl",
                 alignment === "center" && "mx-auto"
               )}
             >
@@ -148,28 +140,24 @@ export function HeroSection({
 
           <div
             className={cn(
-              "flex flex-col sm:flex-row gap-4 pt-4",
+              "flex flex-col sm:flex-row gap-6 pt-6",
               alignment === "center" ? "justify-center" : "justify-start"
             )}
           >
             <TypedLink href={(displayCtaLink || "#") as AppRoute}>
-              <m.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="group h-14 px-10 rounded-full bg-primary text-primary-foreground font-bold text-sm tracking-mid uppercase transition-all duration-300 hover:shadow-2xl hover:shadow-primary/20 cursor-pointer"
+              <button
+                className="group h-18 px-12 rounded-2xl bg-foreground text-background font-black text-xs uppercase tracking-widest transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/10 cursor-pointer flex items-center gap-4"
               >
-                <span className="flex items-center gap-3">
-                  {displayCtaText}
-                  <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </span>
-              </m.button>
+                {displayCtaText}
+                <ArrowRight className="size-4 transition-transform duration-500 group-hover:translate-x-1" />
+              </button>
             </TypedLink>
 
             <TypedLink href={(secondaryCtaLink || "/about") as AppRoute}>
               <GlassButton
                 variant="outline"
                 size="lg"
-                className="h-14 px-10 rounded-full border border-border text-foreground hover:bg-secondary font-bold text-sm tracking-mid uppercase"
+                className="h-18 px-12 rounded-2xl border-white/10 text-foreground hover:bg-white/5 font-black text-xs uppercase tracking-widest transition-all duration-500 hover:scale-[1.03]"
               >
                 {secondaryCtaText || t("ourStory")}
               </GlassButton>
@@ -179,7 +167,7 @@ export function HeroSection({
           {/* Bottom Features */}
           <m.div
             className={cn(
-              "flex flex-wrap items-center gap-x-12 gap-y-4 pt-10 border-t border-border/30",
+              "flex flex-wrap items-center gap-x-16 gap-y-4 pt-12 border-t border-white/5",
               alignment === "center" ? "justify-center" : "justify-start"
             )}
             initial={{ opacity: 0 }}
@@ -187,13 +175,14 @@ export function HeroSection({
             transition={{ duration: 0.8, delay: 0.8 }}
           >
             {[
-              { label: t("freeShipping"), value: "Free Shipping" },
-              { label: t("premiumQuality"), value: "Premium Quality" },
+              { label: t("freeShipping"), value: "Standard 0 VND" },
+              { label: t("premiumQuality"), value: "Grade A++ Luxury" },
             ].map((item, idx) => (
               <div key={idx} className="flex flex-col items-start gap-1">
-                <span className="text-[10px] uppercase tracking-[0.25em] text-accent font-bold">
+                <span className="text-[10px] uppercase tracking-[0.4em] text-accent font-black">
                   {item.label}
                 </span>
+                <span className="text-xs font-medium text-muted-foreground/60">{item.value}</span>
               </div>
             ))}
           </m.div>
@@ -209,9 +198,9 @@ export function HeroSection({
               delay: 0.2,
               ease: [0.16, 1, 0.3, 1],
             }}
-            className="relative h-[60vh] lg:h-[85vh] min-h-[500px] w-full order-1 lg:order-2 group"
+            className="relative h-[65vh] lg:h-[90vh] min-h-[550px] w-full order-1 lg:order-2 group"
           >
-            <div className="relative z-10 w-full h-full rounded-4xl lg:rounded-[3rem] overflow-hidden shadow-2xl shadow-accent/10 border border-border/10">
+            <div className="relative z-10 w-full h-full rounded-[3rem] lg:rounded-[4rem] overflow-hidden shadow-[0_0_100px_rgba(255,255,255,0.02)] border border-white/5 bg-cinematic/50 backdrop-blur-sm">
               <AnimatePresence mode="wait">
                 {!isImageReady && (
                   <m.div
@@ -219,7 +208,7 @@ export function HeroSection({
                     exit={{ opacity: 0 }}
                     className="absolute inset-0 z-20"
                   >
-                    <Skeleton className="w-full h-full rounded-none" />
+                    <Skeleton className="size-full rounded-none bg-white/5" />
                   </m.div>
                 )}
               </AnimatePresence>
@@ -229,7 +218,7 @@ export function HeroSection({
                 alt="Hero Focus"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-105"
+                className="object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-110"
                 priority
                 onLoad={() => setIsImageReady(true)}
               />
@@ -245,19 +234,22 @@ export function HeroSection({
                     duration: 0.8,
                     ease: [0.16, 1, 0.3, 1],
                   }}
-                  className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10"
+                  className="absolute bottom-8 left-8 right-8"
                 >
-                  <div className="glass-luxury p-6 md:p-8 rounded-3xl flex items-center justify-between border border-white/10 backdrop-blur-2xl">
-                    <div className="space-y-1.5">
-                      <p className="text-[10px] text-accent font-bold uppercase tracking-[0.3em]">
-                        {t("featuredLook")}
-                      </p>
-                      <p className="text-xl md:text-2xl font-sans text-foreground leading-tight">
+                  <div className="glass-premium p-8 rounded-4xl flex items-center justify-between border border-white/10 backdrop-blur-3xl shadow-2xl transition-all duration-500 hover:scale-[1.02] group/card">
+                    <div className="space-y-2">
+                      <div className="inline-flex items-center gap-2">
+                        <div className="size-2 rounded-full bg-accent animate-pulse" />
+                        <p className="text-[10px] text-accent font-black uppercase tracking-[0.3em]">
+                          {t("featuredLook")}
+                        </p>
+                      </div>
+                      <p className="text-2xl font-bold tracking-tight text-foreground/90">
                         {displayFeaturedTitle}
                       </p>
                     </div>
-                    <div className="text-right pl-4">
-                      <span className="text-2xl md:text-3xl font-light text-foreground tracking-tight">
+                    <div className="text-right pl-6">
+                      <span className="text-3xl font-black text-foreground italic tracking-tighter">
                         {displayFeaturedPrice}
                       </span>
                     </div>
@@ -267,8 +259,8 @@ export function HeroSection({
             </div>
 
             {/* Decorative Elements */}
-            <div className="absolute -z-10 -top-8 -right-8 w-40 h-40 border border-accent/20 rounded-full blur-sm" />
-            <div className="absolute -z-10 -bottom-8 -left-8 w-32 h-32 border border-accent/10 rounded-full blur-[1px]" />
+            <div className="absolute -z-10 -top-12 -right-12 size-64 border border-white/5 rounded-full blur-[2px] animate-pulse-glow" />
+            <div className="absolute -z-10 -bottom-12 -left-12 size-48 border border-white/10 rounded-full blur-[1px] animate-float" />
           </m.div>
         )}
       </div>
@@ -278,15 +270,15 @@ export function HeroSection({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 pointer-events-none"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 pointer-events-none"
       >
-        <span className="text-[10px] uppercase tracking-[0.4em] text-muted-foreground/60 font-bold">
-          Scroll
+        <span className="text-[10px] uppercase tracking-[0.5em] text-muted-foreground/40 font-black">
+          Scrolldown
         </span>
         <m.div
-          animate={{ y: [0, 10, 0], opacity: [0.3, 0.7, 0.3] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="w-px h-12 bg-linear-to-b from-accent/50 to-transparent"
+          animate={{ y: [0, 15, 0], opacity: [0.2, 0.6, 0.2] }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          className="w-px h-16 bg-linear-to-b from-accent to-transparent"
         />
       </m.div>
     </section>

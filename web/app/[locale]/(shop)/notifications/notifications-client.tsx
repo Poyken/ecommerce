@@ -136,18 +136,24 @@ export function NotificationsClient() {
   };
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-24 relative overflow-hidden">
-      {/* Background Blobs */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-success/5 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-info/5 rounded-full blur-[150px] pointer-events-none" />
+    <div className="min-h-screen bg-background pt-32 pb-24 relative overflow-hidden transition-colors duration-500 font-sans">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="fixed inset-0 bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="fixed top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-blue)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-(--aurora-purple)/15 rounded-full blur-[150px] animate-float z-0 pointer-events-none" />
 
-      <div className="container mx-auto px-4 max-w-4xl relative z-10">
-        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-          <div className="space-y-2">
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-foreground">
-              {t("title")}
+      <div className="container relative mx-auto px-4 md:px-8 max-w-7xl z-10">
+        <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-10 mb-16">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]">
+               <Bell className="size-3" />
+               <span>Alerts</span>
+            </div>
+            <h1 className="text-6xl md:text-8xl font-bold tracking-tighter uppercase leading-none bg-clip-text text-transparent bg-linear-to-b from-white to-white/40">
+              <span className="block">{t("title")}</span>
+              <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4 normal-case tracking-tight">Stay Updated</span>
             </h1>
-            <p className="text-muted-foreground text-lg max-w-md">
+            <p className="text-xl text-muted-foreground/80 font-medium max-w-xl">
               {t("subtitle")}
             </p>
           </div>

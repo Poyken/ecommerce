@@ -76,47 +76,60 @@ export default function CheckoutSuccessPage() {
   if (!orderId) return null;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Gradients */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-success/10 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-info/10 rounded-full blur-[150px] pointer-events-none" />
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 relative overflow-hidden transition-colors duration-500">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="fixed inset-0 bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="fixed top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-blue)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-(--aurora-orange)/10 rounded-full blur-[150px] animate-float z-0 pointer-events-none" />
 
       <m.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md bg-card/50 backdrop-blur-xl border border-border/50 rounded-3xl p-8 shadow-2xl relative z-10 text-center"
+        className="w-full max-w-lg glass-premium border-none rounded-4xl p-10 md:p-16 shadow-2xl relative z-10 text-center space-y-8"
       >
-        <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/30">
-          <Check className="w-10 h-10 text-white" strokeWidth={3} />
+        <div className="w-24 h-24 bg-emerald-500 rounded-2xl flex items-center justify-center mx-auto shadow-2xl shadow-emerald-500/40 rotate-12 group hover:rotate-0 transition-transform duration-500">
+          <Check className="w-12 h-12 text-white" strokeWidth={3} />
         </div>
 
-        <h1 className="text-3xl font-bold mb-2">{t("title")}</h1>
-        <p className="text-muted-foreground mb-8">{t("description")}</p>
+        <div className="space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-black uppercase tracking-[0.3em] mx-auto">
+             <div className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+             <span>Payment Confirmed</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold tracking-tighter uppercase leading-none bg-clip-text text-transparent bg-linear-to-b from-white to-white/40">
+            {t("title")}
+          </h1>
+          <p className="text-muted-foreground/60 font-serif italic text-lg leading-relaxed max-w-xs mx-auto">
+            {t("description")}
+          </p>
+        </div>
 
-        <div className="bg-muted/30 rounded-xl p-4 mb-8 border border-border/50">
-          <p className="text-sm text-muted-foreground mb-1">
+        <div className="glass-premium rounded-2xl p-6 border border-white/5 bg-white/5 space-y-2">
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">
             {t("orderNumber")}
           </p>
-          <p className="text-xl font-mono font-bold tracking-wider">
-            #{orderId.slice(0, 8).toUpperCase()}
+          <p className="text-3xl font-black tracking-tighter text-primary uppercase">
+            #{orderId.slice(0, 8)}
           </p>
         </div>
 
-        <div className="space-y-3">
-          <Link href={`/orders/${orderId}`} className="block w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+          <Link href={`/orders/${orderId}`}>
             <GlassButton
-              className="w-full bg-primary/10 hover:bg-primary/20 text-primary border-primary/20"
-              size="lg"
+              className="w-full h-14 text-xs font-black uppercase tracking-widest bg-primary text-primary-foreground border-none shadow-xl shadow-primary/20"
             >
-              <Package className="mr-2 h-5 w-5" />
+              <Package className="mr-2 h-4 w-4" />
               {t("viewOrder")}
             </GlassButton>
           </Link>
 
-          <Link href="/" className="block w-full">
-            <GlassButton className="w-full" variant="outline" size="lg">
-              <ShoppingBag className="mr-2 h-5 w-5" />
+          <Link href="/">
+            <GlassButton 
+              className="w-full h-14 text-xs font-black uppercase tracking-widest glass-premium border-white/10" 
+              variant="outline"
+            >
+              <ShoppingBag className="mr-2 h-4 w-4" />
               {t("continueShopping")}
             </GlassButton>
           </Link>

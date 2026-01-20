@@ -122,66 +122,67 @@ const milestones = [
 
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="relative py-20 lg:py-32 overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-background to-background" />
-          <div className="absolute top-1/3 left-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        </div>
+    <main className="min-h-screen bg-background relative overflow-hidden selection:bg-accent/30">
+      {/* Cinematic Background & Aurora Glow */}
+      <div className="absolute top-0 inset-x-0 h-[70vh] bg-cinematic pointer-events-none z-0 opacity-40" />
+      <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-(--aurora-purple)/15 rounded-full blur-[150px] animate-pulse-glow z-0 pointer-events-none" />
+      <div className="absolute top-[20%] -right-[10%] w-[50vw] h-[50vw] bg-(--aurora-blue)/10 rounded-full blur-[120px] animate-float z-0 pointer-events-none" />
 
-        <div className="container mx-auto px-4 lg:px-8">
+      {/* Hero Section */}
+      <section className="relative pt-32 lg:pt-48 pb-20 overflow-hidden z-10">
+        <div className="container mx-auto px-4 md:px-8">
           <m.div
             initial="hidden"
             animate="visible"
-            variants={{ visible: { transition: { staggerChildren: 0.1 } } }}
-            className="text-center max-w-3xl mx-auto"
+            variants={{ visible: { transition: { staggerChildren: 0.15 } } }}
+            className="text-center max-w-4xl mx-auto space-y-8"
           >
             <m.div
               variants={fadeInUp}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]"
             >
-              <Building2 className="size-4" />
-              <span>Về chúng tôi</span>
+              <Building2 className="size-3" />
+              <span>Thương hiệu của chúng tôi</span>
             </m.div>
 
             <m.h1
               variants={fadeInUp}
-              className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6"
+              className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter uppercase leading-none bg-clip-text text-transparent bg-linear-to-b from-white to-white/40"
             >
-              Kiến tạo tương lai của{" "}
-              <span className="text-primary">thương mại điện tử</span>
+              <span className="block">Kiến tạo tương lai</span>
+              <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4 normal-case tracking-tight">E-commerce Revolution</span>
             </m.h1>
 
             <m.p
               variants={fadeInUp}
-              className="text-xl text-muted-foreground mb-10"
+              className="text-xl md:text-2xl text-muted-foreground/80 font-medium max-w-2xl mx-auto leading-relaxed"
             >
-              Sứ mệnh của chúng tôi là giúp mọi doanh nghiệp, từ startup đến
-              enterprise, có thể bán hàng online một cách dễ dàng và hiệu quả
-              nhất.
+              Sứ mệnh của chúng tôi là giúp mọi doanh nghiệp có thể vận hành và phát triển rực rỡ trong kỷ nguyên số thông qua sức mạnh của thiết kế và công nghệ.
             </m.p>
           </m.div>
         </div>
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
+      <section className="py-24 relative z-10">
+        <div className="container mx-auto px-4 md:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-10">
             {stats.map((stat, index) => (
               <m.div
                 key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="text-center"
+                transition={{ delay: index * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="group relative p-12 text-center rounded-4xl glass-premium border-white/5 hover:bg-white/5 transition-all duration-700 shadow-2xl hover:scale-[1.05]"
               >
-                <div className="text-4xl lg:text-5xl font-bold mb-2">
+                 <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-accent/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+                <div className="text-5xl lg:text-7xl font-black mb-4 tracking-tighter text-transparent bg-clip-text bg-linear-to-b from-accent to-accent/40 font-serif italic">
                   {stat.value}
                 </div>
-                <div className="text-primary-foreground/70">{stat.label}</div>
+                <div className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground/40 group-hover:text-muted-foreground/80 transition-colors duration-700">
+                  {stat.label}
+                </div>
               </m.div>
             ))}
           </div>
@@ -236,37 +237,39 @@ export default function AboutPage() {
       </section>
 
       {/* Values Section */}
-      <section className="py-16 lg:py-24 bg-muted/30">
-        <div className="container mx-auto px-4 lg:px-8">
+      <section className="py-24 relative z-10">
+        <div className="container mx-auto px-4 md:px-8">
           <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center max-w-2xl mx-auto mb-12"
+            className="text-center max-w-2xl mx-auto mb-20 space-y-6"
           >
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Giá trị cốt lõi
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]">
+               <Sparkles className="size-3" />
+               <span>Giá trị cốt lõi</span>
+            </div>
+            <h2 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none bg-clip-text text-transparent bg-linear-to-b from-white to-white/40">
+              <span className="block">Nguyên tắc định hướng</span>
+              <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4 normal-case tracking-tight">Our Philosophy</span>
             </h2>
-            <p className="text-lg text-muted-foreground">
-              Những nguyên tắc định hướng mọi quyết định của chúng tôi
-            </p>
           </m.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((value, index) => (
               <m.div
                 key={value.title}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-card border border-border text-center"
+                transition={{ delay: index * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="group p-10 rounded-4xl glass-premium border-white/5 hover:bg-white/5 transition-all duration-700 shadow-2xl hover:scale-[1.03] text-center"
               >
-                <div className="size-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto mb-4">
+                <div className="size-16 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mx-auto mb-8 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-6">
                   {value.icon}
                 </div>
-                <h3 className="text-lg font-semibold mb-2">{value.title}</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="text-xl font-bold mb-4 tracking-tight uppercase">{value.title}</h3>
+                <p className="text-base text-muted-foreground/70 font-medium leading-relaxed">
                   {value.description}
                 </p>
               </m.div>
@@ -326,42 +329,48 @@ export default function AboutPage() {
       </section>
 
       {/* Team Section */}
-      <section className="py-16 lg:py-24 bg-muted/30">
-        <div className="container mx-auto px-4 lg:px-8">
+      <section className="py-24 relative z-10">
+        <div className="container mx-auto px-4 md:px-8">
           <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center max-w-2xl mx-auto mb-12"
+            className="text-center max-w-2xl mx-auto mb-20 space-y-6"
           >
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Đội ngũ lãnh đạo
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]">
+               <Users className="size-3" />
+               <span>Đội ngũ lãnh đạo</span>
+            </div>
+            <h2 className="text-5xl md:text-7xl font-bold tracking-tighter leading-none">
+              <span className="block">Những con người tài năng</span>
+              <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4">The Visionaries</span>
             </h2>
-            <p className="text-lg text-muted-foreground">
-              Những con người tài năng đứng sau Luxe SaaS
-            </p>
           </m.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
             {team.map((member, index) => (
               <m.div
                 key={member.name}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="text-center"
+                transition={{ delay: index * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                className="group text-center space-y-6"
               >
-                <div className="aspect-square rounded-2xl bg-muted mb-4 flex items-center justify-center">
-                  <Users className="size-16 text-muted-foreground/30" />
+                <div className="aspect-square rounded-4xl glass-premium border border-white/5 overflow-hidden relative shadow-2xl transition-transform duration-700 group-hover:scale-[1.03]">
+                   <div className="absolute inset-0 bg-accent/2 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                   <Users className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 size-24 text-white/5" />
+                   {/* Placeholder for actual image if available */}
                 </div>
-                <h3 className="font-semibold">{member.name}</h3>
-                <p className="text-sm text-primary font-medium">
-                  {member.role}
-                </p>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {member.bio}
-                </p>
+                <div className="space-y-2">
+                  <h3 className="text-2xl font-bold tracking-tight uppercase">{member.name}</h3>
+                  <p className="text-[10px] text-accent font-black uppercase tracking-[0.3em]">
+                    {member.role}
+                  </p>
+                  <p className="text-sm text-muted-foreground/60 font-medium leading-relaxed max-w-[200px] mx-auto">
+                    {member.bio}
+                  </p>
+                </div>
               </m.div>
             ))}
           </div>

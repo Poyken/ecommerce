@@ -285,14 +285,17 @@ export function LoginPageContent() {
         className="p-8 border-none shadow-none bg-transparent"
         variant="default"
       >
-        <div className="mb-8 text-center space-y-3">
-          <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary block">
-            Account Access
-          </span>
-          <h1 className="text-3xl font-black italic tracking-tighter text-foreground uppercase">
+        <div className="mb-10 text-center space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em] mx-auto">
+            <div className="size-1.5 rounded-full bg-accent animate-pulse" />
+            <span>Secure Access</span>
+          </div>
+          <h1 className="text-5xl font-bold tracking-tighter text-foreground uppercase leading-none">
             {t("title")}
           </h1>
-          <p className="text-muted-foreground font-medium text-sm">{t("subtitle")}</p>
+          <p className="text-muted-foreground/60 font-serif italic text-lg leading-none">
+            Welcome back to luxury
+          </p>
         </div>
 
         <m.form layout action={handleAction} className="space-y-6" noValidate>

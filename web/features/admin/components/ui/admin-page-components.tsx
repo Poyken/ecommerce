@@ -57,7 +57,7 @@ const colorPalette: Record<string, { bg: string; border: string; text: string; i
   warning: { bg: "bg-amber-500/15", border: "border-amber-500/20", text: "text-amber-700 dark:text-amber-400", icon: "text-amber-600" },
   danger: { bg: "bg-rose-500/15", border: "border-rose-500/20", text: "text-rose-700 dark:text-rose-400", icon: "text-rose-600" },
   info: { bg: "bg-blue-500/15", border: "border-blue-500/20", text: "text-blue-700 dark:text-blue-400", icon: "text-blue-600" },
-  aurora: { bg: "bg-[var(--aurora-purple)]/15", border: "border-[var(--aurora-blue)]/20", text: "text-[var(--aurora-purple)]", icon: "text-[var(--aurora-purple)]" },
+  aurora: { bg: "bg-(--aurora-purple)/15", border: "border-(--aurora-blue)/20", text: "text-(--aurora-purple)", icon: "text-(--aurora-purple)" },
   emerald: { bg: "bg-emerald-500/15", border: "border-emerald-500/20", text: "text-emerald-700 dark:text-emerald-400", icon: "text-emerald-600" },
   sky: { bg: "bg-sky-500/15", border: "border-sky-500/20", text: "text-sky-700 dark:text-sky-400", icon: "text-sky-600" },
   violet: { bg: "bg-violet-500/15", border: "border-violet-500/20", text: "text-violet-700 dark:text-violet-400", icon: "text-violet-600" },
@@ -152,7 +152,7 @@ export function AdminPageHeader({
 
   if (layout === "luxury") {
     return (
-      <div className={cn("relative p-6 md:p-10 rounded-[2rem] bg-card/40 backdrop-blur-3xl border border-border/10 shadow-[0_0_50px_rgba(0,0,0,0.1)] overflow-hidden mb-8 animate-in fade-in zoom-in duration-1000", className)}>
+      <div className={cn("relative p-6 md:p-10 rounded-4xl bg-card/40 backdrop-blur-3xl border border-border/10 shadow-[0_0_50px_rgba(0,0,0,0.1)] overflow-hidden mb-8 animate-in fade-in zoom-in duration-1000", className)}>
         <div className="absolute top-0 right-0 w-1/2 h-full bg-linear-to-bl from-primary/20 via-transparent to-transparent opacity-50 pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-accent/10 rounded-full blur-[100px] pointer-events-none animate-pulse" />
         
@@ -225,7 +225,7 @@ export function AdminPageHeader({
         className
       )}
     >
-      <div className="absolute -top-10 -right-10 w-32 h-32 bg-[var(--aurora-blue)]/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -top-10 -right-10 w-32 h-32 bg-(--aurora-blue)/10 rounded-full blur-3xl pointer-events-none" />
       
       <div className="flex flex-col md:flex-row md:items-center gap-6 relative z-10">
         <div className="flex items-center gap-5">
@@ -437,13 +437,13 @@ export function AdminStatsCard({
     <m.div 
       whileHover={{ y: -5, scale: 1.02 }}
       className={cn(
-        "rounded-[2rem] border bg-card/50 backdrop-blur-xl p-7 transition-all duration-500 group relative overflow-hidden shadow-sm hover:shadow-md",
+        "rounded-4xl border bg-card/50 backdrop-blur-xl p-7 transition-all duration-500 group relative overflow-hidden shadow-sm hover:shadow-md",
         variant === "default" && "border-border hover:border-foreground/20",
         statVariants[variant]
       )}
     >
       {variant === "aurora" && (
-        <div className="absolute -right-10 -top-10 w-24 h-24 bg-[var(--aurora-purple)]/20 rounded-full blur-2xl group-hover:bg-[var(--aurora-purple)]/30 transition-all" />
+        <div className="absolute -right-10 -top-10 w-24 h-24 bg-(--aurora-purple)/20 rounded-full blur-2xl group-hover:bg-(--aurora-purple)/30 transition-all" />
       )}
 
       <div className="flex items-start justify-between relative z-10">
@@ -519,7 +519,7 @@ export function AdminEmptyState({
         <m.div 
           whileHover={{ rotate: [0, -10, 10, 0] }}
           className={cn(
-            "rounded-[2rem] bg-white/5 border border-white/10 group-hover:bg-white/10 transition-all",
+            "rounded-4xl bg-white/5 border border-white/10 group-hover:bg-white/10 transition-all",
             isMinimal ? "mb-4 p-6" : "mb-8 p-8"
           )}
         >

@@ -1,0 +1,42 @@
+
+Running 1 test using 1 worker
+
+Navigating to Shop Page...
+Selecting first product...
+Found 6 product links
+Clicking product link: /en/products/3bc44b60-ce5d-4ed2-984a-0d74bb208954
+Verifying Product Detail Page...
+Adding to Cart...
+Guest Cart in localStorage: [{"skuId":"b97659a0-a505-4d47-95bf-4275f0a61c4c","quantity":1}]
+Navigating to Cart...
+Validating Cart Content...
+  ✘  1 [chromium] › e2e/cart-flow.spec.ts:6:7 › Core Commerce Flow - Guest › Guest can add item to cart and is redirected to login at checkout (15.0s)
+
+
+  1) [chromium] › e2e/cart-flow.spec.ts:6:7 › Core Commerce Flow - Guest › Guest can add item to cart and is redirected to login at checkout 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('text=items in cart')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('text=items in cart')[22m
+
+
+      67 |
+      68 |     // Check header says "items in cart"
+    > 69 |     await expect(page.locator('text=items in cart')).toBeVisible();
+         |                                                      ^
+      70 |
+      71 |     // 8. Proceed to Checkout
+      72 |     console.log('Proceeding to Checkout...');
+        at /home/mguser/ducnv/ecommerce-main/web/e2e/cart-flow.spec.ts:69:54
+
+    Error Context: test-results/cart-flow-Core-Commerce-Fl-5f9fb-rected-to-login-at-checkout-chromium/error-context.md
+
+  1 failed
+    [chromium] › e2e/cart-flow.spec.ts:6:7 › Core Commerce Flow - Guest › Guest can add item to cart and is redirected to login at checkout 

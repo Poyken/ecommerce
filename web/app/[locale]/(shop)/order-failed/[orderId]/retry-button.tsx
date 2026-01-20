@@ -1,7 +1,7 @@
 "use client";
 
 import { useToast } from "@/components/ui/use-toast";
-import { Button } from "@/components/ui/button";
+import { GlassButton } from "@/components/shared/glass-button";
 import { addToCartAction } from "@/features/cart/actions";
 import { Loader2, RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -80,10 +80,8 @@ export function RetryOrderButton({ order }: RetryButtonProps) {
   };
 
   return (
-    <Button
-      variant="outline"
-      size="lg"
-      className="w-full sm:w-auto rounded-full px-8 group"
+    <GlassButton
+      className="w-full sm:w-auto h-14 px-8 text-xs font-black uppercase tracking-widest bg-primary text-primary-foreground border-none shadow-xl shadow-primary/20"
       onClick={handleRetry}
       disabled={isLoading}
     >
@@ -93,6 +91,6 @@ export function RetryOrderButton({ order }: RetryButtonProps) {
         <RefreshCcw className="mr-2 w-4 h-4 group-hover:rotate-180 transition-transform duration-500" />
       )}
       {isLoading ? "Adding to cart..." : "Try Again"}
-    </Button>
+    </GlassButton>
   );
 }
