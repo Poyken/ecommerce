@@ -137,8 +137,9 @@ export function RolesPageClient({
       <AdminPageHeader
         title={t("roles.management")}
         subtitle={`${meta?.total || 0} roles defined in system`}
-        icon={<Shield className="text-blue-600 dark:text-blue-400" />}
-        stats={[{ label: "total", value: meta?.total || 0, variant: "info" }]}
+        icon={<Shield className="text-violet-500 fill-violet-500/20" />}
+        variant="violet"
+        stats={[{ label: "total", value: meta?.total || 0, variant: "violet" }]}
         actions={
           canCreate ? (
             <Button
@@ -315,6 +316,7 @@ export function RolesPageClient({
                     icon={Shield}
                     title={t("noFound", { item: t("roles.title") })}
                     description={t("roles.searchPlaceholder")}
+                    variant="minimal"
                     action={
                       canCreate ? (
                         <Button onClick={() => setCreateDialogOpen(true)}>

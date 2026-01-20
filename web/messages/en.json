@@ -2048,5 +2048,170 @@
       "tryAgain": "Try Again",
       "needHelp": "Need help? Contact our support team for assistance."
     }
+  },
+  "marketing": {
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "demo": "Demo",
+      "about": "About Us",
+      "contact": "Contact",
+      "login": "Login",
+      "getStarted": "Get Started Free"
+    },
+    "footer": {
+      "brand": "Luxe SaaS",
+      "tagline": "Modern Multi-tenant E-commerce Platform, optimized for Vietnamese businesses going global.",
+      "product": "Product",
+      "company": "Company",
+      "legal": "Legal",
+      "features": "Features",
+      "pricing": "Pricing",
+      "customerShowcase": "Customer Showcase",
+      "register": "Register Now",
+      "aboutUs": "About Us",
+      "contact": "Contact",
+      "techBlog": "Tech Blog",
+      "careers": "Careers",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "cookies": "Cookie Policy",
+      "sla": "SLA 99.9%",
+      "copyright": "© 2026 Luxe SaaS. All rights reserved.",
+      "vietnamese": "Tiếng Việt",
+      "english": "English"
+    },
+    "landing": {
+      "badge": "Featuring Latest AI Gemini",
+      "heroTitle": "Multi-channel E-commerce & B2B Platform",
+      "heroSubtitle": "Create your own online store in just {seconds} seconds. Built-in AI, Multi-warehouse Management and B2B Wholesale.",
+      "seconds": "30",
+      "ctaPrimary": "Start Free Trial",
+      "ctaSecondary": "View Demo Store",
+      "stats": {
+        "stores": "Stores",
+        "uptime": "Uptime",
+        "ordersMonth": "Orders/month",
+        "support": "Support"
+      },
+      "features": {
+        "title": "Core Features",
+        "subtitle": "Everything you need to build and run a professional e-commerce store",
+        "multiTenant": {
+          "title": "Multi-tenant & Custom Domain",
+          "description": "Each store has its own space, supports custom domain and automatic SSL certificates. Manage multiple stores from a single dashboard."
+        },
+        "warehouse": {
+          "title": "Multi-warehouse Management",
+          "description": "Automatic inventory dispatch from multiple warehouses. Real-time stock tracking and low-stock alerts."
+        },
+        "b2b": {
+          "title": "B2B Wholesale (Price Lists)",
+          "description": "Set up custom pricing for dealers and VIP customers. Automated quotations and order approval workflow."
+        },
+        "ai": {
+          "title": "AI Assistant (Gemini)",
+          "description": "Smart sales chatbot using Google Gemini. Automatic customer review sentiment analysis."
+        }
+      },
+      "growth": {
+        "title": "Growth Solutions",
+        "subtitle": "Powerful marketing and sales tools to boost revenue and retain customers"
+      },
+      "operations": {
+        "title": "Professional Operations",
+        "subtitle": "Automate processes, optimize performance and secure data"
+      },
+      "pricing": {
+        "title": "Transparent Pricing",
+        "subtitle": "Choose a plan that fits your business. No hidden fees, cancel anytime.",
+        "popular": "Most Popular",
+        "month": "/month"
+      },
+      "cta": {
+        "title": "Ready to get started?",
+        "subtitle": "Join over 10,000 businesses using Luxe SaaS to grow their online business",
+        "primary": "Start 14-day Free Trial",
+        "secondary": "Schedule Demo"
+      }
+    },
+    "demo": {
+      "badge": "Preview the Product",
+      "title": "Experience {brand} Today",
+      "subtitle": "Explore demo stores or schedule a personalized 1-on-1 walkthrough",
+      "storesTitle": "Demo Stores",
+      "storesSubtitle": "Access sample stores to see real features in action",
+      "local": {
+        "name": "Local Demo Store",
+        "description": "Default store (Seeded Data) on local environment",
+        "features": ["Seeded Data", "Full Access", "Debug Mode"],
+        "recommended": "RECOMMENDED",
+        "launch": "Launch Demo"
+      },
+      "fashion": {
+        "name": "Fashion Boutique",
+        "description": "Fashion store with complete features"
+      },
+      "electronics": {
+        "name": "Tech Store",
+        "description": "Electronics store with product comparison"
+      },
+      "food": {
+        "name": "Gourmet Food",
+        "description": "Food store with scheduled ordering"
+      },
+      "viewStore": "View Store",
+      "scheduleDemo": "Schedule Demo",
+      "scheduleDemoTitle": "Get a Personalized Demo",
+      "scheduleDemoSubtitle": "Our expert team will walk you through all features and answer any questions.",
+      "includes": {
+        "title": "Demo includes:",
+        "admin": "Full Admin Dashboard access",
+        "oneOnOne": "1-on-1 demo with an expert",
+        "qa": "15-minute Q&A session",
+        "custom": "Tailored to your needs"
+      },
+      "testimonial": "The demo helped me understand the platform and decide to upgrade to Pro immediately.",
+      "form": {
+        "name": "Full Name",
+        "namePlaceholder": "John Doe",
+        "email": "Email",
+        "emailPlaceholder": "email@company.com",
+        "phone": "Phone Number",
+        "phonePlaceholder": "+1 234 567 890",
+        "company": "Company",
+        "companyPlaceholder": "Company name",
+        "businessType": "Business Type",
+        "businessTypePlaceholder": "Select industry...",
+        "businessTypes": {
+          "fashion": "Fashion",
+          "electronics": "Electronics",
+          "food": "Food & Beverage",
+          "beauty": "Beauty",
+          "home": "Home & Furniture",
+          "other": "Other"
+        },
+        "preferredTime": "Preferred Time",
+        "preferredTimePlaceholder": "Select time slot...",
+        "times": {
+          "morning": "Morning (9:00 - 12:00)",
+          "afternoon": "Afternoon (14:00 - 17:00)",
+          "evening": "Evening (18:00 - 20:00)"
+        },
+        "message": "What features are you interested in?",
+        "messagePlaceholder": "E.g. Multi-warehouse management, VNPay integration...",
+        "submit": "Schedule Demo",
+        "submitting": "Sending...",
+        "orStart": "Or",
+        "startFree": "start free now",
+        "noDemo": "without a demo"
+      },
+      "success": {
+        "title": "Request Submitted!",
+        "description": "Our team will contact you within 24 hours to arrange the demo.",
+        "startNow": "Or start free now",
+        "sendAnother": "Send another request"
+      }
+    }
   }
 }

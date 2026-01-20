@@ -141,13 +141,13 @@ export function TechOpsTab() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Queue Monitoring */}
-        <Card className="rounded-3xl glass-premium border-white/5 shadow-2xl overflow-hidden">
+        <Card className="rounded-3xl glass-premium border-border/50 shadow-2xl overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
                 <Activity className="h-5 w-5 text-indigo-500" />
               </div>
-              <span className="font-black tracking-tight uppercase text-sm tracking-[0.1em]">Job Queues (BullMQ)</span>
+              <span className="font-black tracking-widest uppercase text-sm">Job Queues (BullMQ)</span>
             </CardTitle>
             <CardDescription className="text-muted-foreground/60">
               Real-time worker processing status
@@ -158,29 +158,29 @@ export function TechOpsTab() {
               {queueStats.map((queue) => (
                 <div
                   key={queue.name}
-                  className="flex items-center justify-between p-3 border border-white/5 rounded-xl hover:bg-white/5 transition-colors"
+                  className="flex items-center justify-between p-3 border border-border/50 rounded-xl hover:bg-muted/5 transition-colors"
                 >
                   <div>
-                    <p className="font-bold text-sm tracking-tight text-white">
+                    <p className="font-bold text-sm tracking-tight text-foreground">
                       {queue.name}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
-                      <Badge variant="outline" className="text-[10px] h-5 border-white/10 text-muted-foreground">
+                      <Badge variant="outline" className="text-[10px] h-5 border-border/50 text-muted-foreground">
                         {queue.active} active
                       </Badge>
-                      <Badge variant="outline" className="text-[10px] h-5 border-white/10 text-muted-foreground">
+                      <Badge variant="outline" className="text-[10px] h-5 border-border/50 text-muted-foreground">
                         {queue.waiting} waiting
                       </Badge>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1">
                     {queue.status === "healthy" && (
-                      <Badge className="bg-emerald-500 text-white border-0 text-[10px] font-black uppercase tracking-widest">
+                      <Badge className="bg-emerald-500 text-emerald-50 border-0 text-[10px] font-black uppercase tracking-widest">
                         Healthy
                       </Badge>
                     )}
                     {queue.status === "warning" && (
-                      <Badge className="bg-amber-500 text-white border-0 text-[10px] font-black uppercase tracking-widest">
+                      <Badge className="bg-amber-500 text-amber-50 border-0 text-[10px] font-black uppercase tracking-widest">
                         Slow
                       </Badge>
                     )}
@@ -201,7 +201,7 @@ export function TechOpsTab() {
               <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
                 <AlertTriangle className="h-5 w-5" />
               </div>
-              <span className="font-black tracking-tight uppercase text-sm tracking-[0.1em]">Live Error Feed</span>
+              <span className="font-black tracking-widest uppercase text-sm">Live Error Feed</span>
             </CardTitle>
             <CardDescription className="text-muted-foreground/60">Recent system exceptions & alerts</CardDescription>
           </CardHeader>
@@ -211,17 +211,17 @@ export function TechOpsTab() {
                 {errorLogs.map((log) => (
                   <div
                     key={log.id}
-                    className="p-3 rounded-lg border-l-4 border-l-rose-500 bg-white/5 text-sm"
+                    className="p-3 rounded-lg border-l-4 border-l-rose-500 bg-muted/5 text-sm"
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <span className="font-black text-[10px] px-1.5 py-0.5 rounded bg-white/10 text-muted-foreground uppercase tracking-widest">
+                      <span className="font-black text-[10px] px-1.5 py-0.5 rounded bg-muted/20 text-muted-foreground uppercase tracking-widest">
                         {log.service}
                       </span>
                       <span className="text-[10px] text-muted-foreground/60 font-mono">
                         {log.time}
                       </span>
                     </div>
-                    <p className="font-bold text-white">{log.message}</p>
+                    <p className="font-bold text-foreground">{log.message}</p>
                     <p className="text-[10px] text-muted-foreground/40 mt-1 font-mono">
                       {log.id}
                     </p>

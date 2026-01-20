@@ -170,3 +170,8 @@ The project has reached its target enterprise maturity level. All core modules a
 - [2026-01-20] **Knowledge Base Update**:
   - Created `project-structure.md` and `api-documentation.md`.
   - Updated `tech-stack.md` and `database-schema.md` to match current codebase.
+
+- [2026-01-20] **Seed Data & Scripts improved**:
+  - Added multiple sample tenants (Luxe Home, Fashion Hub, Gadget World, Organic Foods, Pet Care Plus)
+  - Fixed `npm run seed` script: switched from `ts-node` to `tsx` for TypeScript compatibility
+  - Updated `prisma.seed` configuration in `package.json`

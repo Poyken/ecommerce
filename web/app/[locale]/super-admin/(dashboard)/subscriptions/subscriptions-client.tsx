@@ -92,12 +92,13 @@ export function SubscriptionsClient({
       <AdminPageHeader
         title={t("title")}
         subtitle={t("subtitle", { total })}
-        icon={<CreditCard className="text-emerald-600 dark:text-emerald-400" />}
+        icon={<CreditCard className="text-emerald-500 fill-emerald-500/20" />}
+        variant="emerald"
         stats={[
           {
             label: t("status.active"),
             value: subscriptions.filter((s) => s.isActive).length,
-            variant: "success",
+            variant: "emerald",
           },
         ]}
       />
@@ -135,6 +136,7 @@ export function SubscriptionsClient({
                     icon={CreditCard}
                     title={t("empty.title")}
                     description={t("empty.description")}
+                    variant="minimal"
                   />
                 </TableCell>
               </TableRow>

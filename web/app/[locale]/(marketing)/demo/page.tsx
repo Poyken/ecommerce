@@ -2,7 +2,7 @@
 
 /**
  * =====================================================================
- * DEMO PAGE - Yêu cầu demo hoặc xem Live Demo Store
+ * DEMO PAGE - Request demo or explore Live Demo Stores
  * =====================================================================
  */
 
@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { m } from "framer-motion";
 import {
-  ArrowRight,
   Calendar,
   CheckCircle,
   ExternalLink,
@@ -22,60 +21,16 @@ import {
 } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
 };
 
-// Demo stores
-const demoStores = [
-  {
-    id: "local",
-    name: "Local Demo Store",
-    description: "Cửa hàng mặc định (Seeded Data) trên môi trường Local",
-    url: "/",
-    image: "/images/demos/fashion.jpg", // Reusing existing image
-    features: ["Seeded Data", "Full Access", "Debug Mode"],
-  },
-  {
-    id: "fashion",
-    name: "Fashion Boutique",
-    description: "Cửa hàng thời trang với đầy đủ tính năng",
-    url: "https://fashion-demo.luxesaas.com",
-    image: "/images/demos/fashion.jpg",
-    features: ["Product Variants", "Wishlist", "Quick View"],
-  },
-  {
-    id: "electronics",
-    name: "Tech Store",
-    description: "Cửa hàng điện tử với so sánh sản phẩm",
-    url: "https://tech-demo.luxesaas.com",
-    image: "/images/demos/electronics.jpg",
-    features: ["Comparison", "Reviews", "Specifications"],
-  },
-  {
-    id: "food",
-    name: "Gourmet Food",
-    description: "Cửa hàng thực phẩm với đặt hàng theo lịch",
-    url: "https://food-demo.luxesaas.com",
-    image: "/images/demos/food.jpg",
-    features: ["Scheduled Delivery", "Subscription Box", "Local Pickup"],
-  },
-];
-
-// What's included in demo
-const demoIncludes = [
-  {
-    icon: <Store className="size-5" />,
-    text: "Truy cập đầy đủ Admin Dashboard",
-  },
-  { icon: <Users className="size-5" />, text: "Demo 1-on-1 với chuyên gia" },
-  { icon: <Video className="size-5" />, text: "15 phút Q&A session" },
-  { icon: <Sparkles className="size-5" />, text: "Tư vấn theo nhu cầu riêng" },
-];
-
 export default function DemoPage() {
+  const t = useTranslations("marketing.demo");
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -87,6 +42,46 @@ export default function DemoPage() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // Demo stores with translations
+  const demoStores = [
+    {
+      id: "local",
+      name: t("local.name"),
+      description: t("local.description"),
+      url: "/",
+      features: ["Seeded Data", "Full Access", "Debug Mode"],
+    },
+    {
+      id: "fashion",
+      name: t("fashion.name"),
+      description: t("fashion.description"),
+      url: "https://fashion-demo.luxesaas.com",
+      features: ["Product Variants", "Wishlist", "Quick View"],
+    },
+    {
+      id: "electronics",
+      name: t("electronics.name"),
+      description: t("electronics.description"),
+      url: "https://tech-demo.luxesaas.com",
+      features: ["Comparison", "Reviews", "Specifications"],
+    },
+    {
+      id: "food",
+      name: t("food.name"),
+      description: t("food.description"),
+      url: "https://food-demo.luxesaas.com",
+      features: ["Scheduled Delivery", "Subscription Box", "Local Pickup"],
+    },
+  ];
+
+  // What's included in demo
+  const demoIncludes = [
+    { icon: <Store className="size-5" />, text: t("includes.admin") },
+    { icon: <Users className="size-5" />, text: t("includes.oneOnOne") },
+    { icon: <Video className="size-5" />, text: t("includes.qa") },
+    { icon: <Sparkles className="size-5" />, text: t("includes.custom") },
+  ];
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,21 +110,20 @@ export default function DemoPage() {
           <div className="size-20 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="size-10 text-emerald-500" />
           </div>
-          <h1 className="text-2xl font-bold mb-4">Yêu cầu đã được gửi!</h1>
+          <h1 className="text-2xl font-bold mb-4">{t("success.title")}</h1>
           <p className="text-muted-foreground mb-8">
-            Đội ngũ của chúng tôi sẽ liên hệ với bạn trong vòng 24 giờ để sắp
-            xếp buổi demo.
+            {t("success.description")}
           </p>
           <div className="space-y-3">
             <Button className="w-full" asChild>
-              <Link href="/register">Hoặc bắt đầu ngay miễn phí</Link>
+              <Link href="/register">{t("success.startNow")}</Link>
             </Button>
             <Button
               variant="outline"
               className="w-full"
               onClick={() => setIsSuccess(false)}
             >
-              Gửi yêu cầu khác
+              {t("success.sendAnother")}
             </Button>
           </div>
         </m.div>
@@ -158,23 +152,21 @@ export default function DemoPage() {
               className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
             >
               <Play className="size-4" />
-              <span>Xem trước sản phẩm</span>
+              <span>{t("badge")}</span>
             </m.div>
 
             <m.h1
               variants={fadeInUp}
               className="text-4xl md:text-5xl font-bold tracking-tight mb-6"
             >
-              Trải nghiệm <span className="text-primary">Luxe SaaS</span> ngay
-              hôm nay
+              {t("title", { brand: "Luxe SaaS" })}
             </m.h1>
 
             <m.p
               variants={fadeInUp}
               className="text-xl text-muted-foreground mb-10"
             >
-              Khám phá các cửa hàng demo hoặc đặt lịch để được hướng dẫn chi
-              tiết 1-on-1
+              {t("subtitle")}
             </m.p>
           </m.div>
         </div>
@@ -190,10 +182,10 @@ export default function DemoPage() {
             className="text-center max-w-2xl mx-auto mb-12"
           >
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-              Cửa hàng Demo
+              {t("storesTitle")}
             </h2>
             <p className="text-lg text-muted-foreground">
-              Truy cập ngay các cửa hàng mẫu để xem tính năng thực tế
+              {t("storesSubtitle")}
             </p>
           </m.div>
 
@@ -224,7 +216,7 @@ export default function DemoPage() {
                     
                     {isLocal && (
                        <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                         RECOMMENDED
+                         {t("local.recommended")}
                        </div>
                     )}
 
@@ -236,7 +228,7 @@ export default function DemoPage() {
                           rel="noopener noreferrer"
                         >
                           <ExternalLink className="size-4 mr-2" />
-                          {isLocal ? "Launch Demo" : "Xem Store"}
+                          {isLocal ? t("local.launch") : t("viewStore")}
                         </a>
                       </Button>
                     </div>
@@ -287,20 +279,19 @@ export default function DemoPage() {
             >
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
                 <Calendar className="size-4" />
-                Đặt lịch Demo
+                {t("scheduleDemo")}
               </div>
 
               <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-                Nhận demo cá nhân hóa
+                {t("scheduleDemoTitle")}
               </h2>
               <p className="text-lg text-muted-foreground mb-8">
-                Đội ngũ chuyên gia sẽ hướng dẫn bạn qua tất cả tính năng và trả
-                lời mọi thắc mắc.
+                {t("scheduleDemoSubtitle")}
               </p>
 
               {/* What's Included */}
               <div className="space-y-4 mb-8">
-                <h3 className="font-semibold">Demo bao gồm:</h3>
+                <h3 className="font-semibold">{t("includes.title")}</h3>
                 {demoIncludes.map((item) => (
                   <div
                     key={item.text}
@@ -317,9 +308,8 @@ export default function DemoPage() {
               {/* Testimonial */}
               <div className="p-6 rounded-2xl bg-muted/50 border border-border">
                 <p className="text-muted-foreground italic mb-4">
-                  "Buổi demo giúp tôi hiểu rõ platform và quyết định upgrade lên
-                  Pro ngay lập tức."
-                </p>
+                &ldquo;{t("testimonial")}&rdquo;
+              </p>
                 <div className="flex items-center gap-3">
                   <div className="size-10 rounded-full bg-primary/20" />
                   <div>
@@ -343,7 +333,7 @@ export default function DemoPage() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Họ và tên *
+                      {t("form.name")} *
                     </label>
                     <input
                       type="text"
@@ -352,12 +342,12 @@ export default function DemoPage() {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      placeholder="Nguyễn Văn A"
+                      placeholder={t("form.namePlaceholder")}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Email *
+                      {t("form.email")} *
                     </label>
                     <input
                       type="email"
@@ -366,7 +356,7 @@ export default function DemoPage() {
                       onChange={handleChange}
                       required
                       className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      placeholder="email@company.com"
+                      placeholder={t("form.emailPlaceholder")}
                     />
                   </div>
                 </div>
@@ -374,7 +364,7 @@ export default function DemoPage() {
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Số điện thoại
+                      {t("form.phone")}
                     </label>
                     <input
                       type="tel"
@@ -382,12 +372,12 @@ export default function DemoPage() {
                       value={formData.phone}
                       onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      placeholder="0912 345 678"
+                      placeholder={t("form.phonePlaceholder")}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-2">
-                      Công ty
+                      {t("form.company")}
                     </label>
                     <input
                       type="text"
@@ -395,14 +385,14 @@ export default function DemoPage() {
                       value={formData.company}
                       onChange={handleChange}
                       className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                      placeholder="Tên công ty"
+                      placeholder={t("form.companyPlaceholder")}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Loại hình kinh doanh
+                    {t("form.businessType")}
                   </label>
                   <select
                     name="businessType"
@@ -410,19 +400,19 @@ export default function DemoPage() {
                     onChange={handleChange}
                     className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   >
-                    <option value="">Chọn ngành hàng...</option>
-                    <option value="fashion">Thời trang</option>
-                    <option value="electronics">Điện tử</option>
-                    <option value="food">Thực phẩm</option>
-                    <option value="beauty">Làm đẹp</option>
-                    <option value="home">Nội thất</option>
-                    <option value="other">Khác</option>
+                    <option value="">{t("form.businessTypePlaceholder")}</option>
+                    <option value="fashion">{t("form.businessTypes.fashion")}</option>
+                    <option value="electronics">{t("form.businessTypes.electronics")}</option>
+                    <option value="food">{t("form.businessTypes.food")}</option>
+                    <option value="beauty">{t("form.businessTypes.beauty")}</option>
+                    <option value="home">{t("form.businessTypes.home")}</option>
+                    <option value="other">{t("form.businessTypes.other")}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Thời gian phù hợp
+                    {t("form.preferredTime")}
                   </label>
                   <select
                     name="preferredTime"
@@ -430,16 +420,16 @@ export default function DemoPage() {
                     onChange={handleChange}
                     className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   >
-                    <option value="">Chọn khung giờ...</option>
-                    <option value="morning">Sáng (9:00 - 12:00)</option>
-                    <option value="afternoon">Chiều (14:00 - 17:00)</option>
-                    <option value="evening">Tối (18:00 - 20:00)</option>
+                    <option value="">{t("form.preferredTimePlaceholder")}</option>
+                    <option value="morning">{t("form.times.morning")}</option>
+                    <option value="afternoon">{t("form.times.afternoon")}</option>
+                    <option value="evening">{t("form.times.evening")}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Bạn muốn tìm hiểu về tính năng nào?
+                    {t("form.message")}
                   </label>
                   <textarea
                     name="message"
@@ -447,7 +437,7 @@ export default function DemoPage() {
                     onChange={handleChange}
                     rows={3}
                     className="w-full px-4 py-3 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
-                    placeholder="VD: Quản lý kho đa chi nhánh, tích hợp VNPay..."
+                    placeholder={t("form.messagePlaceholder")}
                   />
                 </div>
 
@@ -458,24 +448,24 @@ export default function DemoPage() {
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
-                    "Đang gửi..."
+                    t("form.submitting")
                   ) : (
                     <>
                       <Calendar className="size-4 mr-2" />
-                      Đặt lịch Demo
+                      {t("form.submit")}
                     </>
                   )}
                 </Button>
 
                 <p className="text-xs text-center text-muted-foreground">
-                  Hoặc{" "}
+                  {t("form.orStart")}{" "}
                   <Link
                     href="/register"
                     className="text-primary hover:underline"
                   >
-                    bắt đầu ngay miễn phí
+                    {t("form.startFree")}
                   </Link>{" "}
-                  không cần demo
+                  {t("form.noDemo")}
                 </p>
               </form>
             </m.div>

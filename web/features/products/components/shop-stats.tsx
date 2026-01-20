@@ -30,7 +30,14 @@ interface ShopStatsProps {
 
 export function ShopStats({ productsPromise }: ShopStatsProps) {
   const t = useTranslations("shop");
-  const { meta, data: items } = use(productsPromise);
+  const result = use(productsPromise);
+  const meta = result?.meta;
+  const items = result?.data ?? [];
+
+  // Early return if no data available
+  if (!meta && items.length === 0) {
+    return null;
+  }
 
   return (
     <p className="text-sm text-muted-foreground">

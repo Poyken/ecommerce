@@ -28,7 +28,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Save, Shield, Globe, Lock } from "lucide-react";
+import { Save, Shield, Globe, Lock, Settings } from "lucide-react";
+import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
 
 import { useTranslations } from "next-intl";
 
@@ -37,12 +38,12 @@ export default function PlatformSettingsPage() {
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div>
-        <h1 className="text-3xl font-black text-slate-900 dark:text-white">
-          {t("title")}
-        </h1>
-        <p className="text-muted-foreground font-medium">{t("subtitle")}</p>
-      </div>
+      <AdminPageHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        icon={<Settings className="text-cyan-500 fill-cyan-500/20" />}
+        variant="cyan"
+      />
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="rounded-3xl border-foreground/5 shadow-sm">

@@ -184,15 +184,16 @@ export function PermissionsPageClient({
       <AdminPageHeader
         title={t("permissions.management")}
         subtitle={t("permissions.description")}
-        icon={<Shield className="h-5 w-5" />}
+        icon={<Settings className="text-sky-500 fill-sky-500/20" />}
+        variant="sky"
         stats={[
-          { label: "total", value: permissions.length, variant: "default" },
-          { label: "resources", value: totalGroups, variant: "info" },
+          { label: "total", value: permissions.length, variant: "sky" },
+          { label: "resources", value: totalGroups, variant: "cyan" },
         ]}
         actions={
           canCreate ? (
-            <Button onClick={() => setCreateDialogOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
+            <Button onClick={() => setCreateDialogOpen(true)} className="rounded-2xl h-12 px-6 shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all font-bold">
+              <Plus className="mr-2 h-5 w-5 font-black" />
               {t("permissions.createNew")}
             </Button>
           ) : undefined

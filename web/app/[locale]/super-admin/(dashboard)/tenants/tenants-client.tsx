@@ -33,6 +33,7 @@ import {
   Package,
   Plus,
   Search,
+  Shield,
   ShoppingCart,
   Store,
   Trash2,
@@ -121,10 +122,11 @@ export function TenantsClient({
       <AdminPageHeader
         title={t("title")}
         subtitle={t("subtitle", { total })}
-        icon={<Store className="text-indigo-600 dark:text-indigo-400" />}
+        icon={<Store className="text-indigo-500 fill-indigo-500/20" />}
+        variant="indigo"
         stats={[
-          { label: "Stores", value: total, variant: "info" },
-          { label: "Active", value: tenants.length, variant: "success" },
+          { label: "Stores", value: total, variant: "indigo" },
+          { label: "Active", value: tenants.length, variant: "emerald" },
         ]}
         actions={
           <div className="flex items-center gap-2">
@@ -182,6 +184,7 @@ export function TenantsClient({
                     icon={Store}
                     title={t("empty.title")}
                     description={t("empty.description")}
+                    variant="minimal"
                     action={
                       canCreate ? (
                         <Button onClick={openCreate}>

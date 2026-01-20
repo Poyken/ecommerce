@@ -58,8 +58,13 @@ export function ShopGrid({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const { data: products, meta: pagination } = use(productsPromise);
-  const suggestedProducts = use(suggestedProductsPromise);
+  // Null-safe destructuring with defaults
+  const productsResult = use(productsPromise);
+  const products = productsResult?.data ?? [];
+  const pagination = productsResult?.meta;
+  
+  const suggestedProductsRaw = use(suggestedProductsPromise);
+  const suggestedProducts = suggestedProductsRaw ?? [];
 
   const [now] = useState(() => Date.now());
   const NEW_PRODUCT_THRESHOLD = 14 * 24 * 60 * 60 * 1000;

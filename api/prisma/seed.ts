@@ -219,19 +219,31 @@ async function main() {
   }
   const allPermissions = await prisma.permission.findMany();
 
-  // 2. Tenant
-  console.log('🏢 Seeding Tenant...');
-  const tenant = await prisma.tenant.upsert({
-    where: { domain: TENANT_DOMAIN },
-    create: {
-      name: TENANT_NAME,
-      domain: TENANT_DOMAIN,
-      plan: 'ENTERPRISE',
-      themeConfig: { primaryColor: '#1a1a1a' },
-      // currency: 'VND', // Removed as it seemingly doesn't exist on Tenant model
-    },
-    update: {},
-  });
+  // 2. Tenants (Stores)
+  console.log('🏢 Seeding Tenants...');
+  const tenantData = [
+    { name: 'Luxe Home', domain: TENANT_DOMAIN, plan: 'ENTERPRISE' as const },
+    { name: 'Fashion Hub', domain: 'fashion.localhost', plan: 'PRO' as const },
+    { name: 'Gadget World', domain: 'gadgets.localhost', plan: 'BASIC' as const },
+    { name: 'Organic Foods', domain: 'organic.localhost', plan: 'PRO' as const },
+    { name: 'Pet Care Plus', domain: 'pets.localhost', plan: 'BASIC' as const },
+  ];
+
+  const tenants = [];
+  for (const data of tenantData) {
+    const t = await prisma.tenant.upsert({
+      where: { domain: data.domain },
+      create: {
+        name: data.name,
+        domain: data.domain,
+        plan: data.plan,
+        themeConfig: { primaryColor: '#1a1a1a' },
+      },
+      update: {},
+    });
+    tenants.push(t);
+  }
+  const tenant = tenants[0]; // Luxe Home as main tenant for the rest of seeding
 
   // 3. Roles
   console.log('👮 Seeding Roles...');

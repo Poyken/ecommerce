@@ -45,10 +45,11 @@ export default async function AdminChatPage() {
     <div className="space-y-6">
       <AdminPageHeader
         title="Customer Support Chat"
-        icon={<MessageCircle className="h-5 w-5" />}
-        subtitle="Manage live conversations with customers"
+        icon={<MessageCircle className="text-indigo-500 fill-indigo-500/20" />}
+        subtitle="Manage live conversations with customers across the platform"
+        variant="indigo"
       />
-      <ChatAdminClient user={user} accessToken={token || ""} />
+      <ChatAdminClient user={user as any} accessToken={token || ""} />
     </div>
   );
 }

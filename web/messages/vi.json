@@ -2094,5 +2094,170 @@
       "RETURN_AND_REFUND": "Trả hàng & Hoàn tiền",
       "EXCHANGE": "Đổi hàng"
     }
+  },
+  "marketing": {
+    "nav": {
+      "features": "Tính năng",
+      "pricing": "Bảng giá",
+      "demo": "Demo",
+      "about": "Về chúng tôi",
+      "contact": "Liên hệ",
+      "login": "Đăng nhập",
+      "getStarted": "Bắt đầu miễn phí"
+    },
+    "footer": {
+      "brand": "Luxe SaaS",
+      "tagline": "Nền tảng E-commerce Multi-tenant hiện đại, tối ưu hóa cho doanh nghiệp Việt Nam vươn tầm quốc tế.",
+      "product": "Sản phẩm",
+      "company": "Công ty",
+      "legal": "Pháp lý",
+      "features": "Tính năng",
+      "pricing": "Bảng giá",
+      "customerShowcase": "Dấu ấn khách hàng",
+      "register": "Đăng ký ngay",
+      "aboutUs": "Về chúng tôi",
+      "contact": "Liên hệ",
+      "techBlog": "Blog công nghệ",
+      "careers": "Tuyển dụng",
+      "terms": "Điều khoản dịch vụ",
+      "privacy": "Chính sách bảo mật",
+      "cookies": "Cookie Policy",
+      "sla": "SLA Cam kết 99.9%",
+      "copyright": "© 2026 Luxe SaaS. Bảo lưu mọi quyền.",
+      "vietnamese": "Tiếng Việt",
+      "english": "English"
+    },
+    "landing": {
+      "badge": "Tích hợp AI Gemini mới nhất",
+      "heroTitle": "Nền tảng Thương mại điện tử Đa kênh & B2B",
+      "heroSubtitle": "Tạo cửa hàng trực tuyến của riêng bạn chỉ trong {seconds} giây. Tích hợp sẵn AI, Quản lý đa kho và Bán buôn B2B.",
+      "seconds": "30",
+      "ctaPrimary": "Dùng thử miễn phí",
+      "ctaSecondary": "Xem Demo Store",
+      "stats": {
+        "stores": "Cửa hàng",
+        "uptime": "Uptime",
+        "ordersMonth": "Đơn hàng/tháng",
+        "support": "Hỗ trợ"
+      },
+      "features": {
+        "title": "Tính năng cốt lõi",
+        "subtitle": "Mọi thứ bạn cần để xây dựng và vận hành một cửa hàng thương mại điện tử chuyên nghiệp",
+        "multiTenant": {
+          "title": "Multi-tenant & Custom Domain",
+          "description": "Mỗi cửa hàng một không gian riêng biệt, hỗ trợ tên miền riêng và chứng chỉ SSL tự động. Quản lý đa cửa hàng từ một dashboard duy nhất."
+        },
+        "warehouse": {
+          "title": "Quản lý Đa kho (Multi-warehouse)",
+          "description": "Tự động điều phối hàng hóa từ nhiều kho khác nhau. Theo dõi tồn kho real-time và cảnh báo khi hàng sắp hết."
+        },
+        "b2b": {
+          "title": "Bán buôn B2B (Price Lists)",
+          "description": "Thiết lập bảng giá riêng cho từng nhóm khách hàng đại lý, VIP. Hỗ trợ báo giá tự động và quy trình duyệt đơn."
+        },
+        "ai": {
+          "title": "AI Assistant (Gemini)",
+          "description": "Chatbot tư vấn bán hàng thông minh sử dụng Google Gemini. Tự động phân tích cảm xúc đánh giá khách hàng."
+        }
+      },
+      "growth": {
+        "title": "Giải pháp Tăng trưởng",
+        "subtitle": "Công cụ marketing và bán hàng mạnh mẽ để tăng tốc doanh thu và giữ chân khách hàng"
+      },
+      "operations": {
+        "title": "Vận hành chuyên nghiệp",
+        "subtitle": "Tự động hóa quy trình, tối ưu hiệu suất và bảo mật dữ liệu"
+      },
+      "pricing": {
+        "title": "Bảng giá minh bạch",
+        "subtitle": "Chọn gói phù hợp với quy mô kinh doanh của bạn. Không phí ẩn, hủy bất kỳ lúc nào.",
+        "popular": "Phổ biến nhất",
+        "month": "đ/tháng"
+      },
+      "cta": {
+        "title": "Sẵn sàng bắt đầu?",
+        "subtitle": "Tham gia cùng hơn 10,000 doanh nghiệp đang sử dụng Luxe SaaS để tăng trưởng kinh doanh online",
+        "primary": "Dùng thử miễn phí 14 ngày",
+        "secondary": "Đặt lịch demo"
+      }
+    },
+    "demo": {
+      "badge": "Xem trước sản phẩm",
+      "title": "Trải nghiệm {brand} ngay hôm nay",
+      "subtitle": "Khám phá các cửa hàng demo hoặc đặt lịch để được hướng dẫn chi tiết 1-on-1",
+      "storesTitle": "Cửa hàng Demo",
+      "storesSubtitle": "Truy cập ngay các cửa hàng mẫu để xem tính năng thực tế",
+      "local": {
+        "name": "Local Demo Store",
+        "description": "Cửa hàng mặc định (Seeded Data) trên môi trường Local",
+        "features": ["Seeded Data", "Full Access", "Debug Mode"],
+        "recommended": "ĐỀ XUẤT",
+        "launch": "Mở Demo"
+      },
+      "fashion": {
+        "name": "Fashion Boutique",
+        "description": "Cửa hàng thời trang với đầy đủ tính năng"
+      },
+      "electronics": {
+        "name": "Tech Store",
+        "description": "Cửa hàng điện tử với so sánh sản phẩm"
+      },
+      "food": {
+        "name": "Gourmet Food",
+        "description": "Cửa hàng thực phẩm với đặt hàng theo lịch"
+      },
+      "viewStore": "Xem Store",
+      "scheduleDemo": "Đặt lịch Demo",
+      "scheduleDemoTitle": "Nhận demo cá nhân hóa",
+      "scheduleDemoSubtitle": "Đội ngũ chuyên gia sẽ hướng dẫn bạn qua tất cả tính năng và trả lời mọi thắc mắc.",
+      "includes": {
+        "title": "Demo bao gồm:",
+        "admin": "Truy cập đầy đủ Admin Dashboard",
+        "oneOnOne": "Demo 1-on-1 với chuyên gia",
+        "qa": "15 phút Q&A session",
+        "custom": "Tư vấn theo nhu cầu riêng"
+      },
+      "testimonial": "Buổi demo giúp tôi hiểu rõ platform và quyết định upgrade lên Pro ngay lập tức.",
+      "form": {
+        "name": "Họ và tên",
+        "namePlaceholder": "Nguyễn Văn A",
+        "email": "Email",
+        "emailPlaceholder": "email@company.com",
+        "phone": "Số điện thoại",
+        "phonePlaceholder": "0912 345 678",
+        "company": "Công ty",
+        "companyPlaceholder": "Tên công ty",
+        "businessType": "Loại hình kinh doanh",
+        "businessTypePlaceholder": "Chọn ngành hàng...",
+        "businessTypes": {
+          "fashion": "Thời trang",
+          "electronics": "Điện tử",
+          "food": "Thực phẩm",
+          "beauty": "Làm đẹp",
+          "home": "Nội thất",
+          "other": "Khác"
+        },
+        "preferredTime": "Thời gian phù hợp",
+        "preferredTimePlaceholder": "Chọn khung giờ...",
+        "times": {
+          "morning": "Sáng (9:00 - 12:00)",
+          "afternoon": "Chiều (14:00 - 17:00)",
+          "evening": "Tối (18:00 - 20:00)"
+        },
+        "message": "Bạn muốn tìm hiểu về tính năng nào?",
+        "messagePlaceholder": "VD: Quản lý kho đa chi nhánh, tích hợp VNPay...",
+        "submit": "Đặt lịch Demo",
+        "submitting": "Đang gửi...",
+        "orStart": "Hoặc",
+        "startFree": "bắt đầu ngay miễn phí",
+        "noDemo": "không cần demo"
+      },
+      "success": {
+        "title": "Yêu cầu đã được gửi!",
+        "description": "Đội ngũ của chúng tôi sẽ liên hệ với bạn trong vòng 24 giờ để sắp xếp buổi demo.",
+        "startNow": "Hoặc bắt đầu ngay miễn phí",
+        "sendAnother": "Gửi yêu cầu khác"
+      }
+    }
   }
 }

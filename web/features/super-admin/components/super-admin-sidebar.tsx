@@ -18,11 +18,13 @@ import {
   Settings,
   Shield,
   ShieldCheck,
+  ShoppingCart,
   Store,
+  Trash2,
   Users,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { usePathname } from "next/navigation";
+import { Link, usePathname } from "@/i18n/routing";
 import { useEffect, useState } from "react";
 
 /**
@@ -270,27 +272,27 @@ export function SuperAdminSidebar() {
         <TypedLink
           href={"/" as AppRoute}
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 border border-transparent hover:border-border group",
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-primary bg-secondary border border-border hover:bg-primary hover:text-primary-foreground transition-all duration-200 group",
             isCollapsed && "justify-center px-2"
           )}
-          title={isCollapsed ? t("backToStore") : undefined}
+          title={isCollapsed ? "Back to Store" : undefined}
         >
-          <Store className="h-5 w-5 group-hover:text-primary transition-colors shrink-0" />
+          <ShoppingCart className="h-5 w-5 group-hover:scale-110 transition-transform shrink-0" />
           {!isCollapsed && (
-            <span className="whitespace-nowrap">{t("backToStore")}</span>
+            <span className="whitespace-nowrap font-bold">{t("backToStore")}</span>
           )}
         </TypedLink>
         <TypedLink
           href={"/admin" as AppRoute}
           className={cn(
-            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent transition-all duration-200 border border-transparent hover:border-border group mt-2",
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-primary bg-secondary border border-border hover:bg-primary hover:text-primary-foreground transition-all duration-200 group mt-2",
             isCollapsed && "justify-center px-2"
           )}
           title={isCollapsed ? "Tenant Admin" : undefined}
         >
-          <LayoutDashboard className="h-5 w-5 group-hover:text-primary transition-colors shrink-0" />
+          <LayoutDashboard className="h-5 w-5 group-hover:scale-110 transition-transform shrink-0" />
           {!isCollapsed && (
-            <span className="whitespace-nowrap">
+            <span className="whitespace-nowrap font-bold">
               {t("tenantAdmin") || "Tenant Admin"}
             </span>
           )}

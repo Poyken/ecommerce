@@ -64,6 +64,7 @@ import { SecurityStats } from "@/types/dtos";
 import { toast } from "@/components/ui/use-toast";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { AdminPageHeader } from "@/features/admin/components/ui/admin-page-components";
 
 export default function SecurityHubPage() {
   const t = useTranslations("superAdmin.security");
@@ -229,37 +230,25 @@ export default function SecurityHubPage() {
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-indigo-600 mb-1">
-            <Link
-              href="/super-admin"
-              className="hover:underline flex items-center gap-1 text-xs font-bold uppercase tracking-widest"
-            >
-              <ArrowLeft size={12} /> {t("backToDashboard")}
-            </Link>
+      <AdminPageHeader
+        title={t("title")}
+        subtitle={t("subtitle")}
+        icon={<ShieldAlert className="text-rose-500 fill-rose-500/20" />}
+        variant="rose"
+        actions={
+          <div className="flex items-center gap-3 bg-slate-900 text-white p-4 rounded-3xl shadow-xl border border-indigo-500/20">
+            <div className="h-10 w-10 rounded-2xl bg-indigo-500/20 flex items-center justify-center">
+              <ShieldCheck className="text-indigo-400" />
+            </div>
+            <div>
+              <p className="text-[10px] uppercase font-bold tracking-widest text-indigo-300/60 leading-tight">
+                {t("status.label")}
+              </p>
+              <p className="font-black text-sm">{t("status.secured")}</p>
+            </div>
           </div>
-          <h1 className="text-4xl font-black tracking-tight flex items-center gap-3">
-            <ShieldAlert className="text-rose-500 h-10 w-10" />
-            {t("title")}
-          </h1>
-          <p className="text-muted-foreground mt-2 font-medium">
-            {t("subtitle")}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3 bg-slate-900 text-white p-4 rounded-3xl shadow-xl border border-indigo-500/20">
-          <div className="h-10 w-10 rounded-2xl bg-indigo-500/20 flex items-center justify-center">
-            <ShieldCheck className="text-indigo-400" />
-          </div>
-          <div>
-            <p className="text-[10px] uppercase font-bold tracking-widest text-indigo-300/60 leading-tight">
-              {t("status.label")}
-            </p>
-            <p className="font-black text-sm">{t("status.secured")}</p>
-          </div>
-        </div>
-      </div>
+        }
+      />
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Left Column: Security Protocols */}

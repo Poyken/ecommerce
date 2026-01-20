@@ -38,10 +38,11 @@ export default function BusinessAnalyticsPage() {
       <AdminPageHeader
         title={t("title")}
         subtitle={t("subtitle")}
-        icon={<Activity className="text-blue-600 dark:text-blue-400" />}
+        icon={<BarChart3 className="text-sky-500 fill-sky-500/20" />}
+        variant="sky"
         stats={[
-          { label: "Active Tenants", value: "2,450", variant: "default" },
-          { label: "Growth", value: "+12%", variant: "success" },
+          { label: "Active Tenants", value: "2,450", variant: "sky" },
+          { label: "Growth", value: "+12%", variant: "emerald" },
         ]}
       />
 

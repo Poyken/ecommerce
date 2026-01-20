@@ -171,3 +171,17 @@ The project has reached its target enterprise maturity level. All core modules a
   - Created `admin-ui-design-system.md` in `.agent/knowledge/`
   - Documented core components: AdminPageHeader, AdminTableWrapper, AdminStatsCard, AdminEmptyState, AdminActionBadge
   - Verified all super-admin pages use consistent UI components from `admin-page-components.tsx`
+
+- [2026-01-20] **Super Admin UI Polish completed**:
+  - Theme awareness: Removed hardcoded dark mode styles, now respects user theme settings
+  - Premium headers: All pages use `AdminPageHeader` with semantic color variants
+  - Fixed "double border" visual bug in tables using `variant="minimal"` for nested empty states
+  - Sidebar: Improved "Back to Store" button styling with hover effects
+  - Loading: Switched to `classic` variant for consistent transitions
+
+- [2026-01-20] **Marketing Pages i18n completed**:
+  - Added `marketing` namespace to `en.json` and `vi.json` message files
+  - Created `marketing-layout-client.tsx` with functional language switcher (header + footer)
+  - Fully internationalized Demo page with `useTranslations("marketing.demo")`
+  - Mobile-responsive nav menu in marketing layout
+  - Verified language switching works correctly (`/vi/demo` ↔ `/en/demo`)
