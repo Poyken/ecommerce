@@ -89,8 +89,8 @@ export function HomeContent({
   return (
     <main className="space-y-24 pb-24 relative overflow-hidden">
       {/* Background Aurora Glows */}
-      <div className="absolute top-[5%] -left-[10%] w-[600px] h-[600px] bg-[var(--aurora-purple)]/5 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute top-[20%] -right-[5%] w-[500px] h-[500px] bg-[var(--aurora-blue)]/5 rounded-full blur-[120px] pointer-events-none" />
+      <div className="absolute top-[5%] -left-[10%] w-[600px] h-[600px] bg-(--aurora-purple)/5 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute top-[20%] -right-[5%] w-[500px] h-[500px] bg-(--aurora-blue)/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[10%] left-[20%] w-[800px] h-[800px] bg-primary/2 rounded-full blur-[200px] pointer-events-none" />
       <div className="container mx-auto px-4 mt-8">
         <Suspense fallback={<CategoriesSkeleton />}>
@@ -234,7 +234,7 @@ export function HomeContent({
                   transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
                 },
               }}
-              className="group relative text-center p-10 rounded-[2.5rem] glass-premium border-white/5 hover:border-primary/20 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 overflow-hidden"
+              className="group relative text-center p-10 rounded-[2.5rem] glass-premium border-border/10 hover:border-primary/20 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 overflow-hidden"
             >
               <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
               <div className="absolute top-4 right-4 h-2 w-2 rounded-full bg-primary/20 group-hover:scale-150 transition-transform duration-500" />
@@ -243,12 +243,12 @@ export function HomeContent({
                   "text-6xl font-black mb-3 tracking-tighter transition-transform duration-700 group-hover:-translate-y-1 font-sans italic",
                   stat.color === "primary"
                     ? "text-primary"
-                    : "text-white"
+                    : "text-foreground"
                 )}
               >
                 {stat.value}
               </h3>
-              <p className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground/50 group-hover:text-muted-foreground transition-colors duration-500">
+              <p className="text-[11px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 group-hover:text-muted-foreground transition-colors duration-500">
                 {t(stat.label)}
               </p>
             </m.div>
@@ -256,7 +256,7 @@ export function HomeContent({
         </m.div>
       </section>
 
-      <section className="bg-foreground/2 py-24 border-y border-foreground/5 overflow-hidden">
+      <section className="bg-muted/30 py-24 border-y border-border/50 overflow-hidden">
         <div className="container mx-auto px-4">
           <m.div
             className="text-center mb-16"
@@ -268,7 +268,7 @@ export function HomeContent({
             <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] mb-6 block">
               {t("testimonials.subtitle")}
             </span>
-            <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic text-white">
+            <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic text-foreground">
               {t("testimonials.title")}
             </h2>
           </m.div>
@@ -316,9 +316,9 @@ export function HomeContent({
         variants={scaleUp}
       >
         <div className="relative overflow-hidden glass-premium rounded-[4rem] p-12 md:p-24 text-center border border-white/5 shadow-2xl">
-          <div className="absolute top-0 left-0 w-full h-[1px] bg-linear-to-r from-transparent via-white/10 to-transparent" />
-          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[var(--aurora-purple)]/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-[var(--aurora-blue)]/5 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
+          <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-white/10 to-transparent" />
+          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-(--aurora-purple)/5 rounded-full blur-[120px] -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-(--aurora-blue)/5 rounded-full blur-[120px] translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
           <NewsletterForm />
         </div>

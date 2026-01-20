@@ -15,7 +15,7 @@ services:
     image: ankane/pgvector:v0.4.1 # Supports Postgres 15
     container_name: postgres
     ports:
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-123456}

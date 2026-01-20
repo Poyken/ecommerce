@@ -325,134 +325,136 @@ export default function PricingPage() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 className={cn(
-                  "relative rounded-3xl p-8 border transition-all duration-300",
+                  "relative rounded-3xl p-8 border transition-all duration-300 flex flex-col justify-between h-full",
                   plan.isPopular
                     ? "bg-primary text-primary-foreground border-primary scale-105 shadow-2xl shadow-primary/20"
                     : "bg-card border-border hover:border-primary/50 hover:shadow-lg"
                 )}
               >
-                {/* Badge */}
-                {plan.badge && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <span className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-lg">
-                      <Zap className="size-4" />
-                      {plan.badge}
-                    </span>
-                  </div>
-                )}
+                <div className="flex-1">
+                  {/* Badge */}
+                  {plan.badge && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                      <span className="inline-flex items-center gap-1 px-4 py-1.5 rounded-full bg-primary text-primary-foreground text-sm font-medium shadow-lg">
+                        <Zap className="size-4" />
+                        {plan.badge}
+                      </span>
+                    </div>
+                  )}
 
-                {/* Plan Name */}
-                <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <p
-                    className={cn(
-                      "text-sm",
-                      plan.isPopular
-                        ? "text-primary-foreground/80"
-                        : "text-muted-foreground"
-                    )}
-                  >
-                    {plan.description}
-                  </p>
-                </div>
-
-                {/* Price */}
-                <div className="mb-8">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-bold">
-                      {formatPrice(
-                        billingCycle === "monthly"
-                          ? plan.priceMonthly
-                          : plan.priceYearly,
-                        plan.currency
+                  {/* Plan Name */}
+                  <div className="mb-6">
+                    <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                    <p
+                      className={cn(
+                        "text-sm",
+                        plan.isPopular
+                          ? "text-primary-foreground/80"
+                          : "text-muted-foreground"
                       )}
-                    </span>
-                    {plan.priceMonthly !== null && (
-                      <span
+                    >
+                      {plan.description}
+                    </p>
+                  </div>
+
+                  {/* Price */}
+                  <div className="mb-8">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-bold">
+                        {formatPrice(
+                          billingCycle === "monthly"
+                            ? plan.priceMonthly
+                            : plan.priceYearly,
+                          plan.currency
+                        )}
+                      </span>
+                      {plan.priceMonthly !== null && (
+                        <span
+                          className={cn(
+                            "text-sm",
+                            plan.isPopular
+                              ? "text-primary-foreground/70"
+                              : "text-muted-foreground"
+                          )}
+                        >
+                          /{billingCycle === "monthly" ? "tháng" : "năm"}
+                        </span>
+                      )}
+                    </div>
+                    {billingCycle === "yearly" && plan.priceMonthly && (
+                      <p
                         className={cn(
-                          "text-sm",
+                          "text-sm mt-1",
                           plan.isPopular
                             ? "text-primary-foreground/70"
                             : "text-muted-foreground"
                         )}
                       >
-                        /{billingCycle === "monthly" ? "tháng" : "năm"}
-                      </span>
+                        Tiết kiệm{" "}
+                        {formatPrice(
+                          plan.priceMonthly * 12 - (plan.priceYearly || 0),
+                          plan.currency
+                        )}
+                      </p>
                     )}
                   </div>
-                  {billingCycle === "yearly" && plan.priceMonthly && (
-                    <p
-                      className={cn(
-                        "text-sm mt-1",
-                        plan.isPopular
-                          ? "text-primary-foreground/70"
-                          : "text-muted-foreground"
-                      )}
-                    >
-                      Tiết kiệm{" "}
-                      {formatPrice(
-                        plan.priceMonthly * 12 - (plan.priceYearly || 0),
-                        plan.currency
-                      )}
-                    </p>
-                  )}
-                </div>
 
-                {/* CTA Button */}
-                <Button
-                  size="lg"
-                  className={cn(
-                    "w-full mb-8",
-                    plan.isPopular
-                      ? "bg-white text-primary hover:bg-white/90"
-                      : ""
-                  )}
-                  variant={plan.isPopular ? "secondary" : "default"}
-                  asChild
-                >
-                  <Link href={plan.ctaLink as "/register" | "/contact"}>
-                    {plan.cta}
-                    <ArrowRight className="size-4 ml-2" />
-                  </Link>
-                </Button>
+                  {/* CTA Button (Moved Back Up) */}
+                  <Button
+                    size="lg"
+                    className={cn(
+                      "w-full mb-8",
+                      plan.isPopular
+                        ? "bg-white text-primary hover:bg-white/90"
+                        : ""
+                    )}
+                    variant={plan.isPopular ? "secondary" : "default"}
+                    asChild
+                  >
+                    <Link href={plan.ctaLink as "/register" | "/contact"}>
+                      {plan.cta}
+                      <ArrowRight className="size-4 ml-2" />
+                    </Link>
+                  </Button>
 
-                {/* Features List */}
-                <ul className="space-y-3">
-                  {plan.features.map((feature) => (
-                    <li key={feature.name} className="flex items-center gap-3">
-                      {feature.included ? (
-                        <Check
-                          className={cn(
-                            "size-5 shrink-0",
-                            plan.isPopular
-                              ? "text-primary-foreground"
-                              : "text-primary"
-                          )}
-                        />
-                      ) : (
-                        <X
-                          className={cn(
-                            "size-5 shrink-0",
-                            plan.isPopular
-                              ? "text-primary-foreground/40"
-                              : "text-muted-foreground/40"
-                          )}
-                        />
-                      )}
-                      <span
-                        className={cn(
-                          "text-sm",
-                          !feature.included &&
-                            (plan.isPopular
-                              ? "text-primary-foreground/50"
-                              : "text-muted-foreground/50")
+                  {/* Features List */}
+                  <ul className="space-y-3">
+                    {plan.features.map((feature) => (
+                      <li key={feature.name} className="flex items-center gap-3">
+                        {feature.included ? (
+                          <Check
+                            className={cn(
+                              "size-5 shrink-0",
+                              plan.isPopular
+                                ? "text-primary-foreground"
+                                : "text-primary"
+                            )}
+                          />
+                        ) : (
+                          <X
+                            className={cn(
+                              "size-5 shrink-0",
+                              plan.isPopular
+                                ? "text-primary-foreground/40"
+                                : "text-muted-foreground/40"
+                            )}
+                          />
                         )}
-                      >
-                        {feature.name}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                        <span
+                          className={cn(
+                            "text-sm",
+                            !feature.included &&
+                              (plan.isPopular
+                                ? "text-primary-foreground/50"
+                                : "text-muted-foreground/50")
+                          )}
+                        >
+                          {feature.name}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </m.div>
             ))}
           </div>

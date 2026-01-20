@@ -445,11 +445,10 @@ export function CartClient({ cart }: CartClientProps) {
   const isFreeShipping = total >= shippingThreshold;
 
   return (
-    <div className="min-h-screen bg-black pt-28 pb-16 font-sans selection:bg-primary/30 relative overflow-hidden">
-      {/* Background Aurora Glows */}
-      <div className="absolute top-[5%] -left-[10%] w-[600px] h-[600px] bg-[var(--aurora-purple)]/5 rounded-full blur-[150px] pointer-events-none" />
-      <div className="absolute top-[30%] -right-[5%] w-[500px] h-[500px] bg-[var(--aurora-blue)]/5 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[10%] left-[20%] w-[800px] h-[800px] bg-primary/2 rounded-full blur-[200px] pointer-events-none" />
+    <div className="min-h-screen bg-background font-sans selection:bg-primary/30 pt-24 pb-24 relative overflow-hidden">
+      {/* Background Gradients (Matched with Wishlist) */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-pink-500/10 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-purple-500/10 rounded-full blur-[150px] pointer-events-none" />
 
       <div className="container mx-auto px-4 max-w-6xl relative z-10">
         <m.div
@@ -457,14 +456,11 @@ export function CartClient({ cart }: CartClientProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <div className="space-y-4">
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-primary block">
-              LUXE.BAG
-            </span>
-            <h1 className="text-4xl md:text-7xl font-black tracking-tighter uppercase italic text-white leading-none">
+          <div className="space-y-2">
+            <h1 className="text-4xl md:text-5xl font-bold text-foreground tracking-tight">
               {t("title")}
             </h1>
-            <p className="text-muted-foreground/60 text-sm font-medium uppercase tracking-[0.1em]">
+            <p className="text-muted-foreground text-lg">
               {localItems.length} {t("items")} {t("inCart")}
             </p>
           </div>
@@ -509,7 +505,7 @@ export function CartClient({ cart }: CartClientProps) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-8 space-y-4">
               {[1, 2].map((i) => (
-                <div key={i} className="p-4 border rounded-xl flex gap-4">
+                <div key={i} className="p-4 border rounded-xl flex gap-4 bg-card/50">
                   <Skeleton className="w-24 h-32 rounded-lg" />
                   <div className="flex-1 space-y-3">
                     <Skeleton className="h-6 w-3/4" />
@@ -519,7 +515,7 @@ export function CartClient({ cart }: CartClientProps) {
               ))}
             </div>
             <div className="lg:col-span-4">
-              <div className="p-6 border rounded-xl space-y-4">
+              <div className="p-6 border rounded-xl space-y-4 bg-card/50">
                 <Skeleton className="h-8 w-1/2 mb-4" />
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-full" />
@@ -531,7 +527,7 @@ export function CartClient({ cart }: CartClientProps) {
           </div>
         ) : localItems.length === 0 ? (
           <m.div
-            className="flex flex-col items-center justify-center py-24 px-4 text-center space-y-6 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm"
+            className="flex flex-col items-center justify-center py-24 px-4 text-center space-y-6 bg-card/50 rounded-3xl border border-border/50 backdrop-blur-sm"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
           >
@@ -539,7 +535,7 @@ export function CartClient({ cart }: CartClientProps) {
               <ShoppingBag className="w-12 h-12 text-muted-foreground" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-2xl font-bold">{t("empty")}</h2>
+              <h2 className="text-2xl font-bold text-foreground">{t("empty")}</h2>
               <p className="text-muted-foreground max-w-md mx-auto">
                 {t("emptyDesc")}
               </p>
@@ -547,7 +543,7 @@ export function CartClient({ cart }: CartClientProps) {
             <Link href="/shop">
               <GlassButton
                 size="lg"
-                className="bg-primary text-primary-foreground font-bold px-8"
+                className="bg-primary text-primary-foreground font-bold px-8 hover:bg-primary/90"
               >
                 {t("startShopping")}
               </GlassButton>
@@ -556,13 +552,14 @@ export function CartClient({ cart }: CartClientProps) {
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-8 space-y-4">
-              <GlassCard className="p-6 mb-6 overflow-hidden relative group">
+              {/* Free Shipping Bar */}
+              <div className="p-6 mb-6 rounded-2xl bg-card border border-border shadow-sm overflow-hidden relative group">
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/20 rounded-lg">
+                    <div className="p-2 bg-primary/10 rounded-lg">
                       <Truck className="w-5 h-5 text-primary" />
                     </div>
-                    <span className="font-black text-[10px] uppercase tracking-[0.2em] text-white">
+                    <span className="font-semibold text-xs uppercase tracking-wider text-card-foreground">
                       {isFreeShipping
                         ? t("freeShippingUnlocked")
                         : t("addForFree", {
@@ -573,7 +570,7 @@ export function CartClient({ cart }: CartClientProps) {
                           })}
                     </span>
                   </div>
-                  <span className="text-[10px] font-black text-primary uppercase tracking-widest">
+                  <span className="text-xs font-bold text-primary">
                     {Math.min(
                       100,
                       Math.round((total / shippingThreshold) * 100)
@@ -581,9 +578,9 @@ export function CartClient({ cart }: CartClientProps) {
                     %
                   </span>
                 </div>
-                <div className="h-1 bg-white/5 rounded-full overflow-hidden border border-white/5">
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <m.div
-                    className="h-full bg-linear-to-r from-primary to-indigo-500 shadow-[0_0_10px_rgba(var(--primary-rgb),0.5)]"
+                    className="h-full bg-primary"
                     initial={{ width: 0 }}
                     animate={{
                       width: `${Math.min(
@@ -594,8 +591,9 @@ export function CartClient({ cart }: CartClientProps) {
                     transition={{ duration: 1.5, ease: "easeOut" }}
                   />
                 </div>
-              </GlassCard>
+              </div>
 
+              {/* Cart Items */}
               <m.div
                 className="space-y-4"
                 variants={containerVariants}
@@ -617,7 +615,7 @@ export function CartClient({ cart }: CartClientProps) {
                         }
                       }}
                     />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/60">
+                    <span className="text-xs font-semibold uppercase tracking-wider">
                       {t("selectAll")}
                     </span>
                   </div>
@@ -625,7 +623,7 @@ export function CartClient({ cart }: CartClientProps) {
 
                 {localItems.map((item) => (
                   <m.div key={item.id} variants={itemVariants}>
-                    <GlassCard className="p-4 md:p-6 group hover:bg-white/10 transition-all duration-300">
+                    <div className="p-4 md:p-6 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-all duration-300 group">
                       <div className="flex gap-4 md:gap-6">
                         <div className="flex items-center">
                           <Checkbox
@@ -636,7 +634,7 @@ export function CartClient({ cart }: CartClientProps) {
 
                         <Link
                           href={`/products/${item.sku.product.id}`}
-                          className="relative w-24 h-32 md:w-32 md:h-40 rounded-xl overflow-hidden bg-muted shrink-0 border border-white/5 block group/img"
+                          className="relative w-24 h-32 md:w-32 md:h-40 rounded-xl overflow-hidden bg-muted shrink-0 border border-border block group/img"
                         >
                           <OptimizedImage
                             src={
@@ -656,7 +654,7 @@ export function CartClient({ cart }: CartClientProps) {
                             <div className="flex justify-between items-start gap-4">
                               <Link
                                 href={`/products/${item.sku.product.id}`}
-                                className="font-bold text-lg md:text-xl hover:text-primary transition-colors line-clamp-2"
+                                className="font-bold text-lg md:text-xl text-foreground hover:text-primary transition-colors line-clamp-2"
                               >
                                 {item.sku.product.name}
                               </Link>
@@ -672,7 +670,7 @@ export function CartClient({ cart }: CartClientProps) {
                               {item.sku.optionValues?.map((ov) => (
                                 <span
                                   key={ov.optionValue.id}
-                                  className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[10px] md:text-xs font-medium text-muted-foreground"
+                                  className="px-2 py-0.5 rounded-md bg-muted border border-border text-[10px] md:text-xs font-medium text-muted-foreground"
                                 >
                                   {ov.optionValue.option.name}:{" "}
                                   {ov.optionValue.value}
@@ -682,7 +680,7 @@ export function CartClient({ cart }: CartClientProps) {
                           </div>
 
                           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-4">
-                            <div className="flex items-center bg-black/20 rounded-full border border-white/10 p-1 w-fit">
+                            <div className="flex items-center bg-muted/50 rounded-full border border-border p-1 w-fit">
                               <button
                                 onClick={() =>
                                   handleUpdateQuantity(
@@ -691,11 +689,11 @@ export function CartClient({ cart }: CartClientProps) {
                                   )
                                 }
                                 disabled={item.quantity <= 1 || isPending}
-                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 disabled:opacity-30 transition-colors"
+                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-background shadow-sm disabled:opacity-30 transition-all text-foreground"
                               >
                                 <Minus size={14} />
                               </button>
-                              <span className="w-10 text-center font-bold text-sm">
+                              <span className="w-10 text-center font-bold text-sm text-foreground">
                                 {item.quantity}
                               </span>
                               <button
@@ -708,14 +706,14 @@ export function CartClient({ cart }: CartClientProps) {
                                 disabled={
                                   isPending || item.quantity >= item.sku.stock
                                 }
-                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-background shadow-sm transition-all text-foreground"
                               >
                                 <Plus size={14} />
                               </button>
                             </div>
 
                             <div className="text-right">
-                              <p className="text-lg md:text-2xl font-black text-primary tracking-tighter">
+                              <p className="text-lg md:text-2xl font-bold text-primary tracking-tight">
                                 {format.number(
                                   Number(item.sku.salePrice || item.sku.price) *
                                     item.quantity,
@@ -726,7 +724,7 @@ export function CartClient({ cart }: CartClientProps) {
                                 )}
                               </p>
                               {item.sku.salePrice && (
-                                <p className="text-[10px] text-muted-foreground/40 line-through font-bold">
+                                <p className="text-xs text-muted-foreground line-through font-medium">
                                   {format.number(
                                     Number(item.sku.price) * item.quantity,
                                     {
@@ -740,23 +738,24 @@ export function CartClient({ cart }: CartClientProps) {
                           </div>
                         </div>
                       </div>
-                    </GlassCard>
+                    </div>
                   </m.div>
                 ))}
               </m.div>
             </div>
 
+            {/* Order Summary */}
             <div className="lg:col-span-4 space-y-6">
-              <GlassCard className="p-6 md:p-8 sticky top-24">
-                <h2 className="text-xs font-black uppercase tracking-[0.4em] mb-8 text-primary">
+              <div className="p-6 md:p-8 sticky top-24 rounded-2xl bg-card border border-border shadow-sm">
+                <h2 className="text-xs font-bold uppercase tracking-widest mb-8 text-foreground/80">
                   {t("orderSummary")}
                 </h2>
                 <div className="space-y-6 mb-10">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                    <span className="text-sm font-medium text-muted-foreground">
                       {t("subtotal")}
                     </span>
-                    <span className="text-sm font-black text-white">
+                    <span className="text-base font-bold text-foreground">
                       {format.number(total, {
                         style: "currency",
                         currency: "VND",
@@ -764,20 +763,20 @@ export function CartClient({ cart }: CartClientProps) {
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40">
+                    <span className="text-sm font-medium text-muted-foreground">
                       {t("shipping")}
                     </span>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+                    <span className="text-xs font-bold uppercase tracking-wider text-primary">
                       {isFreeShipping ? t("free") : t("calculatedAtCheckout")}
                     </span>
                   </div>
-                  <div className="h-px bg-white/5" />
+                  <div className="h-px bg-border" />
                   <div className="flex justify-between items-end">
-                    <span className="text-xs font-black uppercase tracking-[0.2em] text-white">
+                    <span className="text-sm font-bold uppercase tracking-wide text-foreground">
                       {t("total")}
                     </span>
                     <div className="text-right">
-                      <p className="text-4xl font-black text-primary tracking-tighter leading-none italic">
+                      <p className="text-3xl font-bold text-primary tracking-tight leading-none">
                         {format.number(total, {
                           style: "currency",
                           currency: "VND",
@@ -801,57 +800,41 @@ export function CartClient({ cart }: CartClientProps) {
                       )}`}
                     >
                       <GlassButton
-                        className="w-full bg-primary text-primary-foreground font-bold py-6 rounded-2xl shadow-xl shadow-primary/20"
                         size="lg"
+                        className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90"
                       >
-                        {t("loginToCheckout")}
+                        {t("checkout")}
                       </GlassButton>
                     </Link>
                   ) : (
                     <Link
-                      href={
-                        selectedItems.length > 0 && !isCheckoutBlocked
-                          ? `/checkout?items=${selectedItems.join(",")}`
-                          : "#"
-                      }
-                      onClick={(e) => isCheckoutBlocked && e.preventDefault()}
+                      href={`/checkout${
+                        selectedItems.length > 0
+                          ? `?items=${selectedItems.join(",")}`
+                          : ""
+                      }`}
                     >
                       <GlassButton
-                        className="w-full bg-primary text-primary-foreground font-bold py-6 rounded-2xl shadow-xl shadow-primary/20"
                         size="lg"
-                        disabled={
-                          localItems.length === 0 ||
-                          selectedItems.length === 0 ||
-                          isCheckoutBlocked
-                        }
+                        disabled={isCheckoutBlocked || localItems.length === 0}
+                        className="w-full bg-primary text-primary-foreground font-bold hover:bg-primary/90 disabled:opacity-50"
                       >
-                        {isCheckoutBlocked ? (
-                          <RefreshCcw className="w-5 h-5 mr-3 animate-spin" />
+                        {isPending ? (
+                          <span className="flex items-center gap-2">
+                            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            {t("processing")}
+                          </span>
                         ) : (
-                          <Lock className="w-5 h-5 mr-3" />
+                          t("checkout")
                         )}
-                        {isCheckoutBlocked
-                          ? t("checkingStock")
-                          : t("secureCheckout")}
                       </GlassButton>
                     </Link>
                   )}
-                  <div className="pt-4 space-y-3">
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <ShieldCheck className="w-4 h-4 text-success" />
-                      <span>{t("securePayments")}</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <RefreshCcw className="w-4 h-4 text-info" />
-                      <span>{t("freeReturns")}</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                      <Truck className="w-4 h-4 text-primary" />
-                      <span>{t("fastShipping")}</span>
-                    </div>
-                  </div>
+                  <p className="text-[10px] text-center text-muted-foreground mt-4">
+                    {t("checkoutSecureDesc")}
+                  </p>
                 </div>
-              </GlassCard>
+              </div>
             </div>
           </div>
         )}

@@ -186,7 +186,7 @@ export default function DemoPage() {
                   )}
                 >
                   {isLocal && (
-                    <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary via-accent to-primary animate-shimmer" />
+                    <div className="absolute top-0 inset-x-0 h-1 bg-linear-to-r from-primary via-accent to-primary animate-shimmer" />
                   )}
                   
                   {/* Preview Image */}
@@ -203,7 +203,7 @@ export default function DemoPage() {
                       <Button variant={isLocal ? "default" : "secondary"} size="sm" asChild>
                         <a
                           href={store.url}
-                          target={isLocal ? "_self" : "_blank"}
+                          target="_blank"
                           rel="noopener noreferrer"
                         >
                           <ExternalLink className="size-4 mr-2" />

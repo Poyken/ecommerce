@@ -52,15 +52,21 @@ export function MarketingLayout({ children }: { children: React.ReactNode }) {
 
             {/* Desktop Nav */}
             <nav className="hidden lg:flex items-center gap-8">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              {navLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      "text-sm font-medium transition-colors hover:text-foreground",
+                      isActive ? "text-foreground" : "text-muted-foreground"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* CTA Buttons + Language */}
@@ -121,16 +127,24 @@ export function MarketingLayout({ children }: { children: React.ReactNode }) {
           {mobileMenuOpen && (
             <nav className="lg:hidden py-4 border-t border-border/50">
               <div className="flex flex-col gap-2">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-colors"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                ))}
+                {navLinks.map((link) => {
+                  const isActive = pathname === link.href;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      className={cn(
+                        "px-4 py-2 text-sm font-medium rounded-lg transition-colors hover:text-foreground hover:bg-muted/50",
+                        isActive
+                          ? "bg-muted text-foreground"
+                          : "text-muted-foreground"
+                      )}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {link.label}
+                    </Link>
+                  );
+                })}
               </div>
             </nav>
           )}

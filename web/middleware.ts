@@ -38,6 +38,8 @@ const CSRF_COOKIE_NAME = "csrf-token";
 
 export default async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
+  console.log(`[MIDDLEWARE] Incoming request: ${request.method} ${pathname}`);
+  console.log(`[MIDDLEWARE] Host: ${request.headers.get("host")}`);
 
   // Bypass i18n routing for static assets (images, fonts, pwa icons, etc.)
   if (
@@ -75,13 +77,15 @@ export default async function proxy(request: NextRequest) {
     currentHost === "localhost";
 
   // --------------------------------
-  // FORCE LOCALHOST (DX)
+  // FORCE LOCALHOST (DX) - DISABLED FOR DEBUGGING
   // --------------------------------
+  /*
   if (hostname?.includes("127.0.0.1")) {
      const newUrl = new URL(request.url);
      newUrl.hostname = "localhost";
      return NextResponse.redirect(newUrl);
   }
+  */
   // --------------------------------
   
   // --------------------------------
@@ -124,6 +128,40 @@ export default async function proxy(request: NextRequest) {
   // 3. Thực thi intlMiddleware (Xử lý đa ngôn ngữ)
   response = intlMiddleware(request);
 
+  // --- REWRITE LOGIC FOR TENANTS ---
+  if (!isRootDomain) {
+      // Rewrite /about -> /shop-about
+      if (pathname === `/${currentLocale}/about`) {
+          const newUrl = new URL(request.url);
+          newUrl.pathname = `/${currentLocale}/shop-about`;
+          return NextResponse.rewrite(newUrl);
+      }
+      // Rewrite /contact -> /shop-contact
+      if (pathname === `/${currentLocale}/contact`) {
+          const newUrl = new URL(request.url);
+          newUrl.pathname = `/${currentLocale}/shop-contact`;
+          return NextResponse.rewrite(newUrl);
+      }
+      // Rewrite /login -> /tenant-login
+      if (pathname === `/${currentLocale}/login`) {
+          const newUrl = new URL(request.url);
+          newUrl.pathname = `/${currentLocale}/tenant-login`;
+          return NextResponse.rewrite(newUrl);
+      }
+      // Rewrite /register -> /tenant-register
+      if (pathname === `/${currentLocale}/register`) {
+          const newUrl = new URL(request.url);
+          newUrl.pathname = `/${currentLocale}/tenant-register`;
+          return NextResponse.rewrite(newUrl);
+      }
+  }
+  // ---------------------------------
+
+  console.log(`[MIDDLEWARE] intlMiddleware response status: ${response.status}`);
+  if (response.headers.get('location')) {
+      console.log(`[MIDDLEWARE] Redirecting to: ${response.headers.get('location')}`);
+  }
+
   if (shouldRefresh && refreshToken) {
     /**
      * 🛡️ LỚP PHÒNG THỦ 1: NAVIGATION REFRESH (CHỦ ĐỘNG)
@@ -143,6 +181,9 @@ export default async function proxy(request: NextRequest) {
       const forwardedFor = request.headers.get("x-forwarded-for") || "";
       const host = request.headers.get("host") || "";
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000); // 2s timeout
+      
       const refreshRes = await fetch(`${apiUrl}/auth/refresh`, {
         method: "POST",
         headers: {
@@ -153,7 +194,9 @@ export default async function proxy(request: NextRequest) {
           Cookie: `refreshToken=${refreshToken}`,
         },
         body: JSON.stringify({ refreshToken }),
+        signal: controller.signal,
       });
+      clearTimeout(timeoutId);
 
       if (refreshRes.ok) {
         const data = await refreshRes.json();
