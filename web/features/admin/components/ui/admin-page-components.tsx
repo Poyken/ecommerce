@@ -312,7 +312,6 @@ interface AdminTableWrapperProps {
   className?: string;
   isLoading?: boolean;
   loadingMessage?: string;
-  variant?: "glass" | "solid" | "luxury" | "emerald" | "sky" | "violet" | "rose" | "amber" | "indigo" | "teal" | "orange" | "aurora" | "blue" | "cyan" | "slate" | "secondary";
 
 }
 
@@ -324,45 +323,23 @@ export function AdminTableWrapper({
   className,
   isLoading,
   loadingMessage,
-  variant = "glass",
 }: AdminTableWrapperProps) {
-  const variantClasses = {
-    glass: "glass-premium border border-border/80",
-    solid: "bg-card border border-border/80",
-    luxury: "bg-black/60 backdrop-blur-3xl border border-white/10 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)]",
-    emerald: "glass-premium border border-emerald-500/30",
-    sky: "glass-premium border border-sky-500/30",
-    violet: "glass-premium border border-violet-500/30",
-    rose: "glass-premium border border-rose-500/30",
-    amber: "glass-premium border border-amber-500/30",
-    indigo: "glass-premium border border-indigo-500/30",
-    teal: "glass-premium border border-teal-500/30",
-    orange: "glass-premium border border-orange-500/30",
-    aurora: "glass-premium border border-indigo-500/30",
-    blue: "glass-premium border border-blue-500/30",
-    cyan: "glass-premium border border-cyan-500/30",
-    slate: "glass-premium border border-slate-500/30",
-    secondary: "glass-premium border border-border/80",
-  };
-
   return (
     <div
       className={cn(
         "rounded-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700",
-        variantClasses[variant],
+        "glass-premium border border-border/80",
         className
       )}
     >
       {(title || description || headerActions) && (
         <div className={cn(
-          "flex flex-col sm:flex-row sm:items-center justify-between px-8 py-7 border-b gap-4",
-          variant === "luxury" ? "border-white/10 bg-white/5" : "border-border/40 bg-white/5"
+          "flex flex-col sm:flex-row sm:items-center justify-between px-8 py-7 border-b gap-4 border-border/40 bg-white/5"
         )}>
           <div>
             {title && (
               <h1 className={cn(
-                "text-3xl sm:text-4xl font-black tracking-tight mb-2",
-                variant === "aurora" ? "bg-clip-text text-transparent bg-linear-to-r from-[--aurora-blue] to-[--aurora-purple]" : "text-foreground"
+                "text-3xl sm:text-4xl font-black tracking-tight mb-2 text-foreground"
               )}>
                 {title}
               </h1>

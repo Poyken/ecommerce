@@ -135,7 +135,7 @@ export function RolesPageClient({ initialRoles }: RolesPageClientProps) {
         </div>
       </div>
 
-      <AdminTableWrapper variant="blue">
+      <AdminTableWrapper >
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>

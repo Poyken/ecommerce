@@ -258,7 +258,7 @@ export function CouponsClient({ initialCoupons, meta }: CouponsClientProps) {
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending} variant="rose">
+      <AdminTableWrapper isLoading={isPending} >
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

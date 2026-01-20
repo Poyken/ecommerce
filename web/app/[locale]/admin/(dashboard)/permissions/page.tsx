@@ -5,7 +5,7 @@
 //
 // Server Component này đóng vai trò fetch dữ liệu ban đầu cho việc quản lý Permissions.
 // Trong hệ thống RBAC (Role-Based Access Control), Permissions là các đơn vị quyền nhỏ nhất
-// (ví dụ: product:create, order:view). Roles sẽ tập hợp nhiều Permissions này lại.
+// (ví dụ: product:create, order:read). Roles sẽ tập hợp nhiều Permissions này lại.
 //
 // LUỒNG DỮ LIỆU:
 // 1. Gọi `getPermissionsAction` để lấy danh sách tất cả permissions khả dụng.

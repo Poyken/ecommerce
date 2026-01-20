@@ -397,7 +397,7 @@ export function OrdersClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending || isTablePending} variant="sky">
+      <AdminTableWrapper isLoading={isPending || isTablePending} >
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -436,6 +436,7 @@ export function OrdersClient({
                     icon={ShoppingBag}
                     title={t("orders.noFound")}
                     description="No orders found matching your criteria."
+                    variant="minimal"
                   />
                 </TableCell>
               </TableRow>

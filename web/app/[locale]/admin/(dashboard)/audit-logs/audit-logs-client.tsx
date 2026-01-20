@@ -262,7 +262,7 @@ export function AuditLogsClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending} variant="secondary">
+      <AdminTableWrapper isLoading={isPending} >
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

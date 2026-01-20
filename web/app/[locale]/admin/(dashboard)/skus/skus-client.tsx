@@ -253,7 +253,7 @@ export function SkusClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending} variant="cyan">
+      <AdminTableWrapper isLoading={isPending} >
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

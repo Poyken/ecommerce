@@ -221,7 +221,7 @@ export function UsersPageClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending} variant="violet">
+      <AdminTableWrapper isLoading={isPending} >
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

@@ -39,7 +39,7 @@ const getRandomItem = <T>(arr: T[]): T =>
 // =================================================================================================
 
 const ALL_PERMISSIONS = [
-  'dashboard:view',
+  'dashboard:read',
   'settings:read',
   'settings:update',
   'admin:read',

@@ -117,7 +117,7 @@ export function PermissionsPageClient({
         </div>
       </div>
 
-      <AdminTableWrapper variant="cyan">
+      <AdminTableWrapper >
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>

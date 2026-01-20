@@ -98,7 +98,7 @@ export function LoginPageContent() {
         const permissions = (res as any).permissions || [];
         const isSuperAdmin =
           permissions.includes("superAdmin:read") ||
-          permissions.includes("dashboard:view");
+          permissions.includes("dashboard:read");
         const isAdmin = permissions.includes("admin:read");
 
         let targetUrl = isSuperAdmin
@@ -237,7 +237,7 @@ export function LoginPageContent() {
             const permissions = state.permissions || [];
             const isSuperAdmin =
               permissions.includes("superAdmin:read") ||
-              permissions.includes("dashboard:view");
+              permissions.includes("dashboard:read");
             const isAdmin = permissions.includes("admin:read");
 
             let targetUrl = isSuperAdmin

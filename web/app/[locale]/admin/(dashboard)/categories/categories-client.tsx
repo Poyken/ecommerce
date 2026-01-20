@@ -257,7 +257,7 @@ export function CategoriesPageClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isValidating} variant="emerald">
+      <AdminTableWrapper isLoading={isValidating} >
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -371,6 +371,7 @@ export function CategoriesPageClient({
                       item: t("categories.title").toLowerCase(),
                     })}
                     description="No categories found. Create one to get started."
+                    variant="minimal"
                     action={
                       canCreate ? (
                         <Button onClick={() => setCreateDialogOpen(true)}>

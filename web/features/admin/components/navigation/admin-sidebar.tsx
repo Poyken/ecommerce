@@ -68,7 +68,7 @@ export function AdminSidebar() {
           title: t("dashboard"),
           href: "/admin",
           icon: LayoutDashboard,
-          permission: "dashboard:view",
+          permission: "dashboard:read",
         },
         {
           title: t("notifications"),
@@ -80,7 +80,7 @@ export function AdminSidebar() {
           title: "AI Agent",
           href: "/admin/agent",
           icon: Bot,
-          permission: "dashboard:view",
+          permission: "dashboard:read",
         },
       ],
     },

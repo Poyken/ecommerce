@@ -268,7 +268,7 @@ export function BlogsClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending} variant="amber">
+      <AdminTableWrapper isLoading={isPending} >
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

@@ -286,7 +286,7 @@ export function ProductsClient({
       </div>
 
       {/* Table without virtual scrolling */}
-      <AdminTableWrapper isLoading={isPending} variant="emerald">
+      <AdminTableWrapper isLoading={isPending} >
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50 hover:bg-muted/50">

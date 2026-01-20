@@ -321,7 +321,7 @@ export function NotificationHistoryTab() {
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={loading} variant="rose">
+      <AdminTableWrapper isLoading={loading} >
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

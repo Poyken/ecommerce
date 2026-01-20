@@ -224,7 +224,7 @@ export function BrandsPageClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isValidating} variant="emerald">
+      <AdminTableWrapper isLoading={isValidating} >
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
@@ -304,6 +304,7 @@ export function BrandsPageClient({
                       item: t("brands.title").toLowerCase(),
                     })}
                     description="No brands found. Create one to get started."
+                    variant="minimal"
                     action={
                       canCreate ? (
                         <Button onClick={() => setCreateDialogOpen(true)}>

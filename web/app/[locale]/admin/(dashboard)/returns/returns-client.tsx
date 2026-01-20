@@ -131,7 +131,7 @@ export function ReturnsClient({
       </div>
 
       {/* Table */}
-      <AdminTableWrapper isLoading={isPending || isTablePending} variant="rose">
+      <AdminTableWrapper isLoading={isPending || isTablePending} >
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">
