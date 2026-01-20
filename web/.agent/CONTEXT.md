@@ -166,3 +166,8 @@ The project has reached its target enterprise maturity level. All core modules a
   - Shipping: Shipment & Fulfillment logic
   - Infrastructure: Media Upload, Audit Logs, Notifications
   - **Status**: 100% Schema Coverage Implemented
+
+- [2026-01-20] **Admin UI Design System documented**:
+  - Created `admin-ui-design-system.md` in `.agent/knowledge/`
+  - Documented core components: AdminPageHeader, AdminTableWrapper, AdminStatsCard, AdminEmptyState, AdminActionBadge
+  - Verified all super-admin pages use consistent UI components from `admin-page-components.tsx`

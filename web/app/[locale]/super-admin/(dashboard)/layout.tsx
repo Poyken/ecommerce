@@ -37,8 +37,7 @@ export default function SuperAdminDashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="dark">
-      <div className="flex h-screen bg-slate-950 text-white relative overflow-hidden font-sans">
+    <div className="flex h-screen bg-background text-foreground relative overflow-hidden font-sans">
         {/* Aurora Glows for Super Admin Area */}
         <div className="absolute -top-[10%] -right-[10%] w-[500px] h-[500px] bg-[var(--aurora-purple)]/10 rounded-full blur-[150px] pointer-events-none" />
         <div className="absolute bottom-[10%] -left-[5%] w-[400px] h-[400px] bg-[var(--aurora-blue)]/10 rounded-full blur-[120px] pointer-events-none" />
@@ -50,7 +49,6 @@ export default function SuperAdminDashboardLayout({
           </Suspense>
         </main>
       </div>
-    </div>
   );
 }
 
@@ -69,7 +67,7 @@ async function DynamicSuperAdminShell({
   }
 
   return (
-    <div className="flex-1 flex flex-col h-full min-h-0 bg-slate-950">
+    <div className="flex-1 flex flex-col h-full min-h-0 bg-background">
       <AdminHeader user={user} title="Platform Master Control" />
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="max-w-7xl mx-auto p-4 md:p-8 w-full">

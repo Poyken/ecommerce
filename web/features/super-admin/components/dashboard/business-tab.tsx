@@ -75,7 +75,7 @@ export function BusinessTab({ stats }: { stats: any }) {
           value={stats?.mrrFormatted || "$0"}
           description="Monthly Recurring Revenue"
           icon={DollarSign}
-          variant="neon"
+          variant="emerald"
           trend={stats?.tenantGrowthRate > 0 ? { value: stats.tenantGrowthRate, isPositive: true } : undefined}
         />
 
@@ -106,13 +106,13 @@ export function BusinessTab({ stats }: { stats: any }) {
 
       {/* Main Charts */}
       <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-2 rounded-3xl glass-premium border-white/5 shadow-2xl overflow-hidden">
+        <Card className="md:col-span-2 rounded-3xl glass-premium border-border/50 shadow-2xl overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
                 <TrendingUp className="h-5 w-5 text-emerald-500" />
               </div>
-              <span className="font-black tracking-tight uppercase text-sm tracking-[0.1em]">MRR Growth Trajectory</span>
+              <span className="font-black uppercase text-sm tracking-widest">MRR Growth Trajectory</span>
             </CardTitle>
             <CardDescription className="text-muted-foreground/60">
               Revenue growth over the last 12 months
@@ -167,13 +167,13 @@ export function BusinessTab({ stats }: { stats: any }) {
           </CardContent>
         </Card>
 
-        <Card className="rounded-3xl glass-premium border-white/5 shadow-2xl overflow-hidden">
+        <Card className="rounded-3xl glass-premium border-border/50 shadow-2xl overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-3">
               <div className="p-2 rounded-xl bg-rose-500/10 border border-rose-500/20">
                 <TrendingDown className="h-5 w-5 text-rose-500" />
               </div>
-              <span className="font-black tracking-tight uppercase text-sm tracking-[0.1em]">Churn Trend</span>
+              <span className="font-black uppercase text-sm tracking-widest">Churn Trend</span>
             </CardTitle>
             <CardDescription className="text-muted-foreground/60">Weekly churn rate %</CardDescription>
           </CardHeader>

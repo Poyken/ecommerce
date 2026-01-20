@@ -129,15 +129,19 @@ export function AdminPageHeader({
       <div className={cn("flex items-center justify-between mb-8 animate-in fade-in slide-in-from-left-4 duration-500", className)}>
         <div className="flex items-center gap-4">
           {icon && (
-             <div className={cn(
-               "flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300",
-               variant === "default" ? "bg-primary/5 text-primary border border-primary/10" : iconVariants[variant]
-             )}>
-              {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { className: "h-6 w-6 stroke-[2px]" }) : icon}
-             </div>
+              <div className={cn(
+                "flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300",
+                variant === "default" ? "bg-primary/5 text-primary border border-primary/10" : iconVariants[variant]
+              )}>
+                {React.isValidElement(icon) 
+                  ? React.cloneElement(icon as React.ReactElement<any>, { 
+                      className: cn("h-6 w-6 stroke-[2px]", (icon as any).props?.className?.includes('fill-') ? "" : "fill-current/10") 
+                    }) 
+                  : icon}
+              </div>
           )}
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-white">{title}</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
             {subtitle && <p className="text-xs text-muted-foreground/60">{subtitle}</p>}
           </div>
         </div>
@@ -148,7 +152,7 @@ export function AdminPageHeader({
 
   if (layout === "luxury") {
     return (
-      <div className={cn("relative p-6 md:p-10 rounded-[2rem] bg-black/40 backdrop-blur-3xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden mb-8 animate-in fade-in zoom-in duration-1000", className)}>
+      <div className={cn("relative p-6 md:p-10 rounded-[2rem] bg-card/40 backdrop-blur-3xl border border-border/10 shadow-[0_0_50px_rgba(0,0,0,0.1)] overflow-hidden mb-8 animate-in fade-in zoom-in duration-1000", className)}>
         <div className="absolute top-0 right-0 w-1/2 h-full bg-linear-to-bl from-primary/20 via-transparent to-transparent opacity-50 pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-accent/10 rounded-full blur-[100px] pointer-events-none animate-pulse" />
         
@@ -168,7 +172,7 @@ export function AdminPageHeader({
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-3xl md:text-5xl font-black tracking-tighter text-white font-sans"
+                className="text-3xl md:text-5xl font-black tracking-tighter text-foreground font-sans"
               >
                 {title}
               </m.h1>
@@ -194,12 +198,12 @@ export function AdminPageHeader({
                     initial={{ x: 20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     transition={{ delay: 0.5 + index * 0.1 }}
-                    className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md flex flex-col items-start lg:items-end min-w-[120px] transition-all hover:bg-white/10"
+                    className="px-6 py-3 rounded-2xl bg-white/5 border border-border/10 backdrop-blur-md flex flex-col items-start lg:items-end min-w-[120px] transition-all hover:bg-white/10"
                   >
                     <span className="text-[10px] uppercase tracking-widest text-muted-foreground/60 font-black">
                       {stat.label}
                     </span>
-                    <span className="text-xl font-black text-white">
+                    <span className="text-xl font-black text-foreground">
                       {stat.value}
                     </span>
                   </m.div>
@@ -235,7 +239,11 @@ export function AdminPageHeader({
               )}
             >
               <div className={cn(variant === "default" ? "text-primary" : (colorPalette[variant] || colorPalette.default).icon)}>
-                {React.isValidElement(icon) ? React.cloneElement(icon as React.ReactElement<any>, { className: "h-8 w-8 stroke-[2px]" }) : icon}
+                {React.isValidElement(icon) 
+                  ? React.cloneElement(icon as React.ReactElement<any>, { 
+                      className: cn("h-8 w-8 stroke-[2px]", (icon as any).props?.className?.includes('fill-') ? "" : "fill-current/10") 
+                    }) 
+                  : icon}
               </div>
             </div>
 

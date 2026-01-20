@@ -60,7 +60,7 @@ export default async function SuperAdminLayout({
 
   return (
     <AuthProvider initialPermissions={permissions}>
-      <Suspense fallback={<LoadingScreen variant="luxury" message="Initializing Platform Power..." />}>
+      <Suspense fallback={<LoadingScreen variant="classic" message="Initializing Platform Power..." />}>
         <DynamicSuperAdminContent token={token}>
           {children}
         </DynamicSuperAdminContent>

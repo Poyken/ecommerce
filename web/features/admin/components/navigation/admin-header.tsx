@@ -39,23 +39,23 @@ export function AdminHeader({ user, title }: AdminHeaderProps) {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-white/5 bg-background/20 backdrop-blur-3xl">
+    <header className="sticky top-0 z-40 w-full border-b border-border/50 bg-background/20 backdrop-blur-3xl">
       <div className="flex h-16 items-center justify-between px-8">
         <div className="flex items-center gap-4">
-          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-white">
+          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-foreground">
             {title || t("adminPanel")}
           </h2>
         </div>
 
         <div className="flex items-center gap-2 md:gap-5">
-          <div className="flex items-center gap-2 pr-4 border-r border-white/10">
+          <div className="flex items-center gap-2 pr-4 border-r border-border/10">
             <AdminNotificationBell />
             <LanguageSwitcher />
           </div>
 
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="relative h-9 w-9 rounded-full ring-1 ring-white/10">
+              <Button variant="ghost" className="relative h-9 w-9 rounded-full ring-1 ring-border/10">
                   <UserAvatar 
                     src={user?.avatar} 
                     alt={user?.firstName} 
@@ -74,7 +74,7 @@ export function AdminHeader({ user, title }: AdminHeaderProps) {
                   </p>
                 </div>
               </DropdownMenuLabel>
-              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuSeparator className="bg-border/5" />
 
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
@@ -99,7 +99,7 @@ export function AdminHeader({ user, title }: AdminHeaderProps) {
                 </DropdownMenuPortal>
               </DropdownMenuSub>
 
-              <DropdownMenuSeparator className="bg-white/5" />
+              <DropdownMenuSeparator className="bg-border/5" />
 
               <DropdownMenuItem
                 disabled={isLoggingOut}

@@ -92,7 +92,8 @@ export default async function SuperAdminDashboardPage() {
       <AdminPageHeader
         title={t("title") || "Command Center"}
         subtitle={t("subtitle") || "Platform-wide operations & infrastructure monitoring."}
-        icon={<Shield className="text-primary fill-primary/10" />}
+        icon={<Store className="text-indigo-500 fill-indigo-500/20" />}
+        variant="indigo"
         actions={
           <div className="flex items-center gap-3">
             <Link href="/super-admin/security">
