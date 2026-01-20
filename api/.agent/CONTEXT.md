@@ -166,3 +166,7 @@ The project has reached its target enterprise maturity level. All core modules a
   - Shipping: Shipment & Fulfillment logic
   - Infrastructure: Media Upload, Audit Logs, Notifications
   - **Status**: 100% Schema Coverage Implemented
+
+- [2026-01-20] **Knowledge Base Update**:
+  - Created `project-structure.md` and `api-documentation.md`.
+  - Updated `tech-stack.md` and `database-schema.md` to match current codebase.

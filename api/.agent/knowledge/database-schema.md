@@ -10,6 +10,7 @@ Tài liệu này chứa toàn bộ kiến thức về Database Schema của dự
 - **Database**: PostgreSQL + pgvector (vector search)
 - **Pattern**: Multi-tenant (Shared Database với `tenantId`)
 - **Soft Delete**: Tất cả entity quan trọng có `deletedAt`
+- **Missing Models**: `Shipment`, `OrderTaxDetail`, `TaxRate`, `PriceList`, `InventoryItem` (Added in v2).
 
 ---
 

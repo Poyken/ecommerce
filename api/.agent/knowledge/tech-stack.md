@@ -8,29 +8,29 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 
 ### Core Dependencies
 
-| Package                 | Version | Mục đích                           |
-| ----------------------- | ------- | ---------------------------------- |
-| `@nestjs/core`          | 11.x    | Framework chính                    |
-| `@nestjs/config`        | 4.x     | Environment variables              |
-| `@nestjs/jwt`           | 11.x    | JWT Authentication                 |
-| `@nestjs/passport`      | 11.x    | Auth strategies (Google, Facebook) |
-| `@nestjs/swagger`       | 11.x    | API Documentation                  |
-| `@nestjs/throttler`     | 6.x     | Rate Limiting                      |
-| `@nestjs/bullmq`        | 11.x    | Job Queue                          |
-| `@nestjs/schedule`      | 6.x     | Cron Jobs                          |
-| `@nestjs/websockets`    | 11.x    | Real-time                          |
-| `@nestjs/cache-manager` | 3.x     | Caching                            |
-| `nestjs-zod`            | 5.1.x   | Zod Integration for NestJS         |
-| `nestjs-cls`            | 6.x     | Tenant Context Storage             |
-| `nestjs-i18n`           | 10.x    | Backend Internationalization       |
+| Package                 | Version | Mục đích                                                               |
+| ----------------------- | ------- | ---------------------------------------------------------------------- |
+| `@nestjs/core`          | 11.x    | Framework chính                                                        |
+| `@nestjs/config`        | 4.x     | Environment variables                                                  |
+| `@nestjs/jwt`           | 11.x    | JWT Authentication                                                     |
+| `@nestjs/passport`      | 11.x    | Auth strategies (Google, Facebook)                                     |
+| `@nestjs/swagger`       | 11.x    | API Documentation                                                      |
+| `@nestjs/throttler`     | 6.x     | Rate Limiting                                                          |
+| `@nestjs/bullmq`        | 11.x    | Job Queue                                                              |
+| `@nestjs/schedule`      | 6.x     | Cron Jobs                                                              |
+| `@nestjs/websockets`    | 11.x    | Real-time                                                              |
+| `@nestjs/cache-manager` | 3.x     | Caching                                                                |
+| `nestjs-zod`            | 5.1.x   | Zod Integration for NestJS                                             |
+| `nestjs-cls`            | 6.x     | Tenant Context Storage                                                 |
+| `nestjs-i18n`           | 10.x    | Backend Internationalization (Missing in package.json but recommended) |
 
 ### Database & ORM
 
 | Package          | Version | Mục đích        |
 | ---------------- | ------- | --------------- |
-| `prisma`         | 6.2.1   | ORM CLI         |
+| `prisma`         | 6.19.0  | ORM CLI         |
 | `@prisma/client` | 6.2.1   | Database Client |
-| `ioredis`        | 5.x     | Redis Client    |
+| `ioredis`        | 5.8.2   | Redis Client    |
 
 ### Validation (Zod-First Standard)
 
@@ -38,33 +38,34 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 | ----------------- | ---------- | --------------------------- |
 | `joi`             | ❌ REMOVED | Đã loại bỏ hoàn toàn        |
 | `class-validator` | ❌ REMOVED | Đã loại bỏ hoàn toàn        |
-| `zod`             | 4.x        | ✅ Chuẩn duy nhất API + Web |
+| `zod`             | 4.3.5      | ✅ Chuẩn duy nhất API + Web |
+| `nestjs-zod`      | 5.1.1      | ✅ Validation Pipe          |
 
 ### Utilities
 
-| Package      | Mục đích                  |
-| ------------ | ------------------------- |
-| `bcrypt`     | Password hashing (Legacy) |
-| `argon2`     | Password hashing (Modern) |
-| `nodemailer` | Email sending             |
-| `otplib`     | 2FA OTP generation        |
-| `cloudinary` | Image upload              |
-| `sharp`      | Image processing          |
-| `slugify`    | URL slug generation       |
-| `exceljs`    | Excel export              |
-| `winston`    | Logging                   |
+| Package      | Version | Mục đích                  |
+| ------------ | ------- | ------------------------- |
+| `bcrypt`     | 6.x     | Password hashing (Legacy) |
+| `argon2`     | 0.41.x  | Password hashing (Modern) |
+| `nodemailer` | 7.x     | Email sending             |
+| `otplib`     | 12.x    | 2FA OTP generation        |
+| `cloudinary` | 2.8.x   | Image upload              |
+| `sharp`      | 0.34.x  | Image processing          |
+| `slugify`    | 1.6.x   | URL slug generation       |
+| `exceljs`    | 4.4.x   | Excel export              |
+| `winston`    | 3.19.x  | Logging                   |
 
 ### AI
 
-| Package                 | Mục đích          |
-| ----------------------- | ----------------- |
-| `@google/generative-ai` | Google Gemini API |
+| Package                 | Version | Mục đích          |
+| ----------------------- | ------- | ----------------- |
+| `@google/generative-ai` | 0.24.1  | Google Gemini API |
 
 ### Monitoring
 
-| Package          | Mục đích       |
-| ---------------- | -------------- |
-| `@sentry/nestjs` | Error tracking |
+| Package          | Version | Mục đích       |
+| ---------------- | ------- | -------------- |
+| `@sentry/nestjs` | 10.x    | Error tracking |
 
 ---
 

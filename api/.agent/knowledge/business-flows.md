@@ -1,6 +1,6 @@
 # Business Flows Reference (Enterprise Edition)
 
-Tài liệu này mô tả chi tiết các luồng nghiệp vụ của hệ thống Ecommerce 2.0 (Enterprise), tương ứng với `schema.prisma` mới.
+Tài liệu này mô tả chi tiết các luồng nghiệp vụ của hệ thống Ecommerce 2.0 (Enterprise), được đồng bộ từ logic thực tế trong mã nguồn (`api/src`).
 
 ---
 
@@ -8,169 +8,147 @@ Tài liệu này mô tả chi tiết các luồng nghiệp vụ của hệ thố
 
 ### 1.1 Tenant Resolution
 
-Mọi Request tới API đều phải xác định Context Tenant:
+Hệ thống sử dụng cơ chế **Isolated Context** để quản lý dữ liệu đa cửa hàng:
 
-1.  **Public Storefront**: Dựa vào `Host` Header (Subdomain hoặc Custom Domain).
-    - `shop1.platform.com` -> Tenant A
-    - `mystore.com` (CNAME) -> Tenant A
-2.  **Platform Admin**: Dựa vào đường dẫn hoặc subdomain quản trị (`admin.platform.com`).
-3.  **API Requests**:
-    - Header `x-tenant-id`: Bắt buộc cho các tác vụ quản trị.
-    - Nếu thiếu -> Trả về 400 (Bad Request).
+1.  **Context Identification**:
+    - **Header `x-tenant-id`**: Bắt buộc cho các tác vụ quản trị (Admin Dashboard).
+    - **Host Identification**: Tự động nhận diện tenant qua `Host` header (Subdomain/CNAME) cho Storefront.
+2.  **Implementation**:
+    - `TenantMiddleware` trích xuất `tenantId` và lưu vào `AsyncLocalStorage` (thông qua `getTenant()`).
+    - Mọi truy vấn database đều được tự động gắn thêm điều kiện `{ tenantId }` nhằm đảm bảo tính cô lập dữ liệu tuyệt đối (Data Isolation).
+    - Nếu không xác định được Tenant Context cho các endpoint yêu cầu -> Trả về 400 (Bad Request).
 
-### 1.2 Permission-based RBAC
+### 1.2 Permission-based RBAC & Security
 
-Hệ thống sử dụng cơ chế kiểm soát quyền truy cập chi tiết (Granular Permission Checks):
+Hệ thống sử dụng cơ chế kiểm soát quyền truy cập phân lớp (Layered Security):
 
-- **Permission**: Đơn vị quyền nhỏ nhất (ví dụ: `order:read`, `product:create`, `tenant:manage`).
-- **Role**: Tập hợp các Permissions (nhóm quyền). Ví dụ: `STAFF` có `order:read`, `product:read`.
-- **Authorization Flow**:
-  1. Login -> Server trả về Permission Set (gộp từ Roles + Direct Permissions).
-  2. Guard (`@RequirePermissions`) kiểm tra quyền trước khi vào Controller.
-  3. Frontend ẩn hiện nút bấm dựa trên Permission List.
+- **RBAC Engine**:
+  - **Permission**: Đơn vị quyền nguyên tử (ví dụ: `order:read`, `product:create`, `tenant:manage`).
+  - **Role**: Nhóm các quyền (ví dụ: `STAFF`, `MERCHANT`). `Superadmin` có quyền bypass mọi kiểm tra.
+- **Security Guards**:
+  - `AppThrottlerGuard`: Chống brute-force và spam request.
+  - `TenantGuard`: Chặn truy cập trái phép chéo tenant.
+  - `LockdownGuard`: Chế độ bảo trì hệ thống.
+  - `@RequirePermissions`: Kiểm tra quyền truy cập tinh vi tại cấp độ Controller/Method.
 
 ### 1.3 Token Refresh & Security
 
 Để đảm bảo an toàn và trải nghiệm liền mạch:
 
-- **Access Token**: Short-lived (ví dụ 15 phút), lưu trong HTTP-Only Cookie.
-- **Refresh Token**: Long-lived (ví dụ 7 ngày), lưu trong HTTP-Only Cookie (Rotation).
-- **Auto-Refresh**:
-  - Middleware (Server-Side) tự động kiểm tra và refresh token trước khi render trang bảo vệ.
-  - Client-Side tự động retry request khi gặp lỗi 401 nhờ interceptor gọi qua Server Action proxy.
+- **Auth Strategy**: JWT dual-token (Access & Refresh).
+- **Security Features**:
+  - **HTTP-Only Cookies**: Chống tấn công XSS.
+  - **Refresh Token Rotation**: Mỗi lần refresh sẽ cấp một Refresh Token mới, vô hiệu hóa token cũ -> Chống chiếm quyền điều khiển phiên (Session Hijacking).
+- **Auto-Refresh Flow**: Interceptor phía Frontend tự động gọi Server Action proxy để refresh token khi gặp lỗi 401, giúp trải nghiệm người dùng không bị gián đoạn.
 
 ---
 
 ## 2. Catalog & Inventory (Advanced)
 
-### 2.1 Product Variants & Options
+### 2.1 Product Variants & Options (SKU-centric)
 
-Mô hình SKU-centric:
+- **Hierarchy**: `Product` -> `ProductOption` -> `OptionValue` -> `SKU`.
+- **Data Integrity**: SKU là đơn vị bán hàng cuối cùng, sở hữu các thuộc tính riêng như `skuCode`, `price`, `stock`, và định danh N-N với `OptionValue`.
+- **Pricing Strategy**: Hỗ trợ `originalPrice` (giá niêm yết) và `price` (giá bán thực tế), tự động tính toán % giảm giá hiển thị trên Storefront.
 
-- **Product**: Chứa thông tin chung (Tên, Mô tả, Brand).
-- **ProductOption**: Định nghĩa thuộc tính (Size, Color).
-- **OptionValue**: Giá trị cụ thể (S, M, Red, Blue).
-- **SKU**: Biến thể cụ thể (Product A - Red - S).
-  - SKU liên kết N-N với `OptionValue`.
-  - SKU có giá riêng (`price`, `originalPrice`, `costPrice`).
+### 2.2 Inventory Management (Atomic & Multi-warehouse)
 
-### 2.2 Inventory Management
+Hệ thống quản lý kho hàng với độ chính xác cao nhờ cơ chế **Atomic Updates**:
 
-Hỗ trợ Multi-Warehouse:
-
-- Mỗi SKU có `InventoryItem` tại nhiều `Warehouse`.
-- **InventoryLog**: Ghi lại mọi biến động kho (Purchase, Sale, Return, Adjustment).
-- **Logic**:
-  - `Available Stock` = `OnHand` - `Committed` (Đang nằm trong đơn chưa ship).
-  - Khi order -> Tăng `Committed`.
-  - Khi ship -> Giảm `OnHand`, Giảm `Committed`.
+- **Mô hình Tồn kho**:
+  - `OnHand Stock`: Số lượng thực trong kho.
+  - `Reserved Stock`: Số lượng đã được giữ cho các đơn hàng chưa hoàn tất.
+  - `Available Stock` (trường `stock` trong DB): Số lượng khách có thể mua. Công thức: `Available = OnHand - Reserved`.
+- **Atomic Operations**:
+  - **Đặt hàng**: `UPDATE Sku SET stock = stock - N, reservedStock = reservedStock + N WHERE stock >= N`.
+  - **Hủy đơn**: Hoàn trả tồn kho (`releaseStock`).
+  - **Hoàn tất (Completed)**: Trừ `reservedStock` vĩnh viễn.
+- **Traceability**: Mọi biến động đều được ghi vào `InventoryLog` kèm `reason` và `userId` để đối soát (Audit trail).
 
 ---
 
 ## 3. Order Processing & Fulfillment
 
-### 3.1 Checkout Flow (Enterprise)
+### 3.1 Checkout Flow (Serializable Transaction)
 
-1.  **Cart Calculation**:
-    - Tính tổng tiền hàng.
-    - **Promotion Engine**: Check `PromotionRules` -> Apply `PromotionActions` (Discount Item, Discount Order, Free Shipping).
-    - **Tax Engine**: Tính thuế theo `Region` và `TaxRate`.
-    - **Tiered Pricing**: Nếu là B2B Customer, áp dụng giá từ `PriceList` thay vì giá niêm yết.
-2.  **Place Order**:
-    - Tạo `Order` (Status: PENDING).
-    - Tạo `OrderLineItem` (Snapshot giá và discount tại thời điểm mua).
-    - Khóa tồn kho (Inventory Commitment).
-3.  **Payment**:
-    - Tạo `Payment` record.
-    - Tích hợp Stripe/PayPal/Momo.
+Luồng tạo đơn hàng được thực thi trong một **Database Transaction** với mức cô lập `Serializable` (cao nhất) để chống Race Condition:
 
-### 3.2 Fulfillment & Shipping
+1.  **Validation**: Kiểm tra giỏ hàng, tính khả dụng của SKU (Active) và địa chỉ giao hàng.
+2.  **Atomic Reservation**: Giữ tồn kho bằng Atomic Update. Nếu kho không đủ -> Rollback toàn bộ transaction ngay lập tức.
+3.  **Promotion Engine**: Validate mã giảm giá, kiểm tra các Rule (GTE, LTE, Category, First Order) và thực hiện Action (Discount, Gift). Tăng `usedCount` một cách nguyên tử.
+4.  **Pricing Snapshot**: Lưu `priceAtPurchase` và `skuNameSnapshot` (ví dụ: "Sofa Da (Đỏ - L)") vào `OrderItem` để bảo toàn dữ liệu lịch sử khi Master Data thay đổi.
+5.  **Shipping calculation**: Tích hợp API `GHNService` để tính phí vận chuyển real-time hoặc fallback về `TenantSettings`.
+6.  **Transactional Outbox**: Ghi event vào bảng `OutboxEvent` (ví dụ: `ORDER_CREATED`) để đảm bảo các tác vụ phụ (Gửi Email/Noti) được thực thi một cách tin cậy (Guaranteed Delivery).
 
-- **Split Shipments**: Một Order có thể tách thành nhiều `Shipment` (Giao nhiều lần/từ nhiều kho).
-- **Intelligent Routing**: Hệ thống tự động phân bổ Order Items vào các kho (Warehouse) tối ưu dựa trên tồn kho thực tế, ưu tiên dồn vào ít kho nhất để giảm chi phí vận chuyển.
-- **Shipment Records**: Mỗi kho sẽ có một `Shipment` riêng, chứa danh sách `ShipmentItem` liên kết với `OrderItem`.
+### 3.2 Fulfillment & Shipping (Webhook Integration)
+
+- **Carrier Integration**: Sử dụng Giao Hàng Nhanh (GHN) làm đối tác chính qua `ShippingService`.
+- **Webhook Workflow**: Hệ thống tự động update trạng thái đơn hàng dựa trên tín hiệu từ nhà vận chuyển:
+  - `picked/delivering` -> `SHIPPED`.
+  - `delivered` -> `DELIVERED`.
+  - `cancel` -> `CANCELLED` (Hoàn trả tồn kho tự động).
+- **Customer Notification**: Mỗi bước thay đổi trạng thái đều kích hoạt thông báo real-time qua WebSocket (`NotificationsGateway`) và Email.
 
 ### 3.3 Returns (RMA)
 
-- User request `ReturnRequest`.
-- Admin duyệt -> `APPROVED`.
-- Hàng về kho -> Update `InventoryLog` (Type: `RETURN`).
-- Refund tiền -> Update `Wallet` hoặc hoàn tiền qua Gateway.
+- Luồng xử lý: `PENDING` -> `APPROVED` -> `RECEIVED` -> `REFUNDED`.
+- Khi nhận hàng hoàn (Status `RECEIVED`): Tự động khôi phục tồn kho qua `InventoryService.releaseStock`.
 
 ---
 
 ## 4. Marketing & Loyalty
 
-### 4.1 Advanced Promotions
+### 4.1 Advanced Promotion Engine (Rule-Action Model)
 
-- **Loại hình Khuyến mãi**:
-  - **Automatic**: Tự động áp dụng khi thỏa mãn điều kiện (Rules).
-  - **Voucher/Coupon**: Phải nhập mã code chính xác để kích hoạt.
-- **Điều kiện (Rules)**:
-  - Giá trị đơn hàng tối thiểu (Min Order Value).
-  - Áp dụng cho Sản phẩm/Danh mục/Thương hiệu cụ thể.
-- **Hành động (Actions)**:
-  - Giảm giá theo % (kèm mức giảm tối đa - Max Cap).
-  - Giảm giá số tiền cố định.
-  - Miễn phí vận chuyển (Free Shipping).
-- **Cơ chế Ưu tiên (Priority)**:
-  - Hệ thống tự động chọn Khuyến mãi có độ ưu tiên (Priority) cao nhất và giá trị giảm lớn nhất để áp dụng, tránh việc cộng dồn sai quy định.
-- **Giới hạn sử dụng (Usage Limit)**:
-  - Mỗi Khuyến mãi có tổng giới hạn lượt dùng và được lưu log chi tiết trong bảng `PromotionUsage`.
+- **Rule Evaluation**: Kiểm tra các điều kiện phức tạp (giá trị đơn tối thiểu, nhóm khách hàng VIP, sản phẩm cụ thể) sử dụng toán tử so sánh (GT, LT, EQ).
+- **Execution Actions**:
+  - `DISCOUNT_PERCENT`: Giảm theo % (có `maxDiscountAmount`).
+  - `DISCOUNT_FIXED`: Giảm số tiền cụ thể.
+  - `FREE_SHIPPING`: Miễn phí ship cho đơn thỏa điều kiện.
+  - `GIFT`: Tự động thêm SKU quà tặng vào đơn hàng.
+- **Usage Control**: Giới hạn lượt dùng tổng (`usageLimit`) và lượt dùng trên mỗi User.
 
 ### 4.2 Loyalty System
 
-- **Earning**: Tỷ lệ tích điểm cấu hình theo `TenantSettings`.
-- **Tier**: Hạng thành viên (Silver, Gold) dựa trên tổng chi tiêu.
-- **Redemption**: Dùng điểm đổi voucher hoặc trừ trực tiếp vào đơn hàng.
+- **Earning Logic**: Tích điểm dựa trên `totalAmount` của đơn hàng hoàn tất theo tỷ lệ cấu hình của Tenant.
+- **Redemption**: Điểm thưởng được quản lý tập trung tại `LoyaltyService`, cho phép khách hàng dùng điểm để chi trả cho đơn hàng (Redeem).
 
 ---
 
-## 5. AI & Automation (RAG)
+## 5. AI & Automation (RAG Model)
 
-### 5.1 AI Chat Assistant
+### 5.1 AI Chat Assistant (Consultant Workflow)
 
-- **Embedding**: Sync Product/Blog data vào Vector DB (pgvector) qua bảng `ProductEmbedding`.
-- **Flow**:
-  1.  User hỏi "Tìm giày chạy bộ màu đỏ dưới 1 triệu".
-  2.  System embed query -> Search pgvector.
-  3.  LLM rerank kết quả -> Trả lời User.
-  4.  Lưu history vào `AiChatSession` và `AiChatMessage`.
+Hệ thống sử dụng Gemini AI với mô hình **RAG (Retrieval-Augmented Generation)**:
 
-### 5.2 Insight & Analytics
+1.  **Retrieval Step**: Trích xuất keyword từ câu hỏi người dùng -> Tìm kiếm Full-text Search trong Catalog để lấy Context (Giá, Tồn kho, Mô tả SP).
+2.  **Augmentation Step**: Chèn Context vào System Prompt kèm theo các chính sách của cửa hàng (Freeship, Đổi trả).
+3.  **Generation Step**: AI đóng vai tư vấn viên chuyên nghiệp, cung cấp thông tin chính xác từ DB.
+4.  **Smart Features**: AI tự động tạo link QuickView `(quickview:productId)` giúp khách hàng xem chi tiết và mua hàng ngay trong khung chat.
 
-- Phân tích hành vi User qua `UserBehaviorLog`.
-- Gợi ý sản phẩm (Recommendation Engine).
+### 5.2 Search & Insights
+
+- Sử dụng **pgvector** cho tìm kiếm ngữ nghĩa (Semantic Search) bổ trợ cho Full-text search truyền thống.
+- Nhật ký hành vi (`UserBehaviorLog`) hỗ trợ gợi ý sản phẩm cá nhân hóa.
 
 ---
 
-## 6. Subscription (SaaS for Tenant)
+## 6. SaaS Billing & Management
 
-- **SubscriptionPlan**: Gói dịch vụ (Free, Pro, Enterprise).
-- **Subscription**: Tenant đăng ký gói.
-- **Limits**: Giới hạn số lượng Product, Staff, Storage theo gói.
-- **Billing**: Thu phí Tenant định kỳ.
+- **Tenant Onboarding**: Quy trình đăng ký cửa hàng, chọn gói dịch vụ (`SubscriptionPlan`) và cấu hình ban đầu.
+- **Limit Enforcement**: Hệ thống kiểm soát số lượng sản phẩm, nhân viên dựa trên gói dịch vụ của Tenant.
+- **Audit Logs**: Lưu trữ nhật ký hoạt động quản trị, hỗ trợ phân vùng dữ liệu theo tháng (`partitioned by month`) để tối ưu hiệu suất.
 
 ---
 
 ## 7. Notification & Real-time Alerts
 
-### 7.1 Architecture
+Hệ thống thông báo đẩy (Push Notification) hoạt động theo cơ chế Single Source of Truth:
 
-- **Protocol**: WebSocket (Socket.IO) kết hợp với REST API polling.
-- **Gateway**: `NotificationsGateway` quản lý kết nối real-time, authenticate qua Token (Handshake Auth/Header/Cookie).
-- **Fallback**: Client fetch API `/notifications` để lấy lịch sử và trạng thái unread khi mới load trang.
-
-### 7.2 Notification Flow
-
-1. **Trigger Event**: Các sự kiện hệ thống (Order Update, Loyalty Tier Change, Promotion) gọi `NotificationsService`.
-2. **Persist**: Lưu thông báo vào bảng `Notification` (Postgres) với trạng thái `isRead: false`.
-3. **Dispatch**:
-   - Nếu User đang online (kết nối Socket): Gateway bắn event `notification:new` trực tiếp tới user room. Client hiển thị Toast/Badge ngay lập tức.
-   - Nếu User offline: Thông báo vẫn được lưu trong DB. Khi User online lại, Client fetch list mới nhất.
-4. **Interaction**:
-   - User click Bell Icon -> Xem list.
-   - User click "Mark as Read" -> Call API `PATCH` -> Update DB -> Giảm Unread Count.
+1.  **Trigger**: Logic nghiệp vụ gọi `NotificationsService.create()`.
+2.  **Persistence**: Lưu vào DB (Postgres) -> Trạng thái `isRead: false`.
+3.  **Real-time Dispatch**: `NotificationsGateway` phát tín hiệu qua WebSocket tới phòng (room) riêng của User.
+4.  **Fallback**: Nếu User offline, thông báo sẽ được hiển thị ngay khi User đăng nhập lại qua API polling.
 
 ---
 
@@ -178,16 +156,10 @@ Hỗ trợ Multi-Warehouse:
 
 ### 8.1 Internationalization (i18n)
 
-- **Frontend (`next-intl`)**:
-  - Routing: `/[locale]/protected-page`. Locale được lấy từ URL.
-  - Fallback: Tự động detect qua `Accept-Language` và Redirect.
-  - Persistence: Locale được lưu trong Cookie để Server-side component truy cập.
-- **Backend (`nestjs-i18n`)**:
-  - Resolver: Ưu tiên `Accept-Language` header -> Query Param `lang`.
-  - Content: Thông báo lỗi từ `GlobalExceptionFilter` được dịch tự động.
+- **Backend**: `nestjs-i18n` xử lý dịch các thông báo lỗi và email templates dựa trên locale của request.
+- **Frontend**: `next-intl` quản lý đa ngôn ngữ qua URL segment (ví dụ: `/vi/shop/tenant-1`).
 
-### 8.2 Multi-currency Support
+### 8.2 Financial Standards
 
-- **Storage**: `useCurrency` (Zustand + Persist) lưu loại tiền tệ khách chọn.
-- **Conversion**: Áp dụng tỉ giá cố định (Sandbox) hoặc gọi API bên thứ 3 để convert giá từ Base Currency (VND) sang Display Currency.
-- **Display**: Component `<Price />` xử lý logic format (VND: `100.000₫`, USD: `$4.00`).
+- **Multi-currency**: Chuyển đổi giá tự động qua component `<Price />` dựa trên tỉ giá cấu hình (VND là base currency).
+- **Money Handling**: Xử lý tiền tệ là số nguyên (Integer) hoặc dùng thư viện `Decimal` (Prisma) để tránh lỗi làm tròn của kiểu Float trong Javascript.
