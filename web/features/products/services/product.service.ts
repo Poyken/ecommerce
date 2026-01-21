@@ -131,11 +131,20 @@ export const productService = {
   getProducts: cache(
     async (
       params?: GetProductsParams,
-      options?: { next?: NextFetchRequestConfig }
+      options?: { next?: NextFetchRequestConfig },
     ): Promise<ApiResponse<Product[]>> => {
       try {
-        // Create a unique cache key based on params
-        const cacheKey = JSON.stringify(params || {});
+        // [FIX] Get host for multi-tenant cache isolation
+        let host = "unknown";
+        try {
+          const { headers } = await import("next/headers");
+          host = (await headers()).get("host") || "unknown";
+        } catch (e) {
+          // Fallback
+        }
+
+        // Create a unique cache key based on params and host
+        const cacheKey = `${host}-${JSON.stringify(params || {})}`;
 
         const response = await http.get<ApiResponse<Product[]>>("/products", {
           params: params as any, // Cast to any temporarily to avoid strict type mismatch with FetchOptions params
@@ -159,7 +168,7 @@ export const productService = {
           meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
         } as unknown as ApiResponse<Product[]>;
       }
-    }
+    },
   ),
 
   /**
@@ -177,7 +186,7 @@ export const productService = {
    */
   async getFeaturedProducts(
     limit = 8,
-    options?: { next?: NextFetchRequestConfig }
+    options?: { next?: NextFetchRequestConfig },
   ): Promise<Product[]> {
     try {
       const result = await this.getProducts({ limit }, options);
@@ -206,6 +215,15 @@ export const productService = {
     }): Promise<Category[]> => {
       const { limit, page, next } = options || {};
       const params = { limit, page };
+
+      // [FIX] Get host for multi-tenant cache isolation
+      let host = "unknown";
+      try {
+        const { headers } = await import("next/headers");
+        host = (await headers()).get("host") || "unknown";
+      } catch (e) {
+        // Fallback for non-request context
+      }
 
       const fetcher = unstable_cache(
         async () => {
@@ -240,15 +258,15 @@ export const productService = {
             return [];
           }
         },
-        ["categories-all", JSON.stringify(params)],
+        ["categories-all", host, JSON.stringify(params)],
         {
           revalidate: 86400,
           tags: ["categories"],
-        }
+        },
       );
 
       return fetcher();
-    }
+    },
   ),
 
   /**
@@ -264,6 +282,15 @@ export const productService = {
     }): Promise<import("@/types/models").Brand[]> => {
       const { limit, page, next } = options || {};
       const params = { limit, page };
+
+      // [FIX] Get host for multi-tenant cache isolation
+      let host = "unknown";
+      try {
+        const { headers } = await import("next/headers");
+        host = (await headers()).get("host") || "unknown";
+      } catch (e) {
+        // Fallback for non-request context
+      }
 
       const fetcher = unstable_cache(
         async () => {
@@ -299,15 +326,15 @@ export const productService = {
             return [];
           }
         },
-        ["brands-all", JSON.stringify(params)],
+        ["brands-all", host, JSON.stringify(params)],
         {
           revalidate: 86400,
           tags: ["brands"],
-        }
+        },
       );
 
       return fetcher();
-    }
+    },
   ),
 
   /**
@@ -407,7 +434,7 @@ export const productService = {
         {
           skipAuth: true,
           next: { revalidate: 3600, tags: [`category-${id}`] },
-        }
+        },
       );
       return response?.data || null;
     } catch {
@@ -456,7 +483,7 @@ export const productService = {
           params: { limit },
           skipAuth: true,
           next: { revalidate: 300, tags: [`product-${productId}-related`] },
-        }
+        },
       );
       return response?.data || [];
     } catch {
@@ -481,7 +508,7 @@ export const productService = {
       link.href = url;
       link.setAttribute(
         "download",
-        `products_export_${new Date().getTime()}.xlsx`
+        `products_export_${new Date().getTime()}.xlsx`,
       );
       document.body.appendChild(link);
       link.click();

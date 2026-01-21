@@ -83,6 +83,13 @@ export async function loginAction(prevState: unknown, formData: FormData) {
 
     const { accessToken, refreshToken, mfaRequired, userId } = response.data;
 
+    // Debug Log
+    console.log("[SERVER ACTION] Login API Response Data:", {
+      mfaRequired,
+      userId,
+      hasToken: !!accessToken,
+    });
+
     // Handle 2FA Case
     if (mfaRequired && userId) {
       return {
@@ -103,11 +110,14 @@ export async function loginAction(prevState: unknown, formData: FormData) {
 
       // Get permissions from token for client-side redirect logic
       const permissions = getPermissionsFromToken(accessToken);
+      console.log("[SERVER ACTION] Login Success. Permissions:", permissions);
       return { success: true, permissions };
     } else {
+      console.error("[SERVER ACTION] Login Failed: No tokens received");
       return { error: "Login failed - No tokens received" };
     }
   } catch (error: unknown) {
+    console.error("[SERVER ACTION] Login Exception:", (error as Error).message);
     return {
       error: (error as Error).message || "Failed to login",
     };
@@ -153,7 +163,7 @@ export async function logoutAction() {
  */
 export async function socialLoginAction(
   accessToken: string,
-  refreshToken: string
+  refreshToken: string,
 ) {
   try {
     await createSession(accessToken, refreshToken);
@@ -222,7 +232,7 @@ export async function registerAction(prevState: unknown, formData: FormData) {
  */
 export async function forgotPasswordAction(
   prevState: unknown,
-  formData: FormData
+  formData: FormData,
 ) {
   await cookies();
   const email = formData.get("email");
@@ -252,7 +262,7 @@ export async function forgotPasswordAction(
  */
 export async function resetPasswordAction(
   prevState: unknown,
-  formData: FormData
+  formData: FormData,
 ) {
   await cookies();
   const token = formData.get("token");

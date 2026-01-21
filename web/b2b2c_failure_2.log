@@ -1,0 +1,66 @@
+[1A[2K[2m[WebServer] [22m[33m[1m⚠[22m[39m "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
+
+[1A[2K[2m[WebServer] [22m[Shop] CMS Config not found for home on 127.0.0.1 (Status: 403)
+
+
+Running 1 test using 1 worker
+
+[1A[2K[2m[WebServer] [22m[TenantProvider] API returned 403 for 127.0.0.1:3000
+
+[1A[2K[1/1] [chromium] › e2e\b2b2c-full-flow.spec.ts:8:7 › B2B2C Full Flow › Complete Flow: Onboarding -> Admin Setup -> Customer Purchase
+[1A[2K[chromium] › e2e\b2b2c-full-flow.spec.ts:8:7 › B2B2C Full Flow › Complete Flow: Onboarding -> Admin Setup -> Customer Purchase
+[TEST] Starting B2B2C Flow for Store: AutoStore u8ta0s (autostoreu8ta0s)
+
+[1A[2K[PHASE 1] Starting Onboarding...
+
+[1A[2K[PHASE 1] Selecting Category...
+
+[1A[2K[PHASE 1] Selecting Theme...
+
+[1A[2K[PHASE 1] Finalizing...
+
+[1A[2K[PHASE 1] Redirected to Tenant: http://autostoreu8ta0s.localhost:3000/en/login
+
+[1A[2K[PHASE 2] Admin Login...
+
+[1A[2K[BROWSER]: Access to fetch at 'http://localhost:8080/api/v1/feature-flags/my-flags' from origin 'http://autostoreu8ta0s.localhost:3000' has been blocked by CORS policy: Response to preflight request doesn't pass access control check: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+[1A[2K[BROWSER]: Failed to load resource: net::ERR_FAILED
+
+[1A[2K[BROWSER]: [HTTP Fetch Error] Failed to reach http://localhost:8080/api/v1/feature-flags/my-flags: TypeError: Failed to fetch
+    at S (http://autostoreu8ta0s.localhost:3000/_next/static/chunks/cd99ba8dfc2e380e.js:1:19785)
+    at i (http://autostoreu8ta0s.localhost:3000/_next/static/chunks/cd99ba8dfc2e380e.js:1:21025)
+    at i.get (http://autostoreu8ta0s.localhost:3000/_next/static/chunks/cd99ba8dfc2e380e.js:1:21170)
+    at r (http://autostoreu8ta0s.localhost:3000/_next/static/chunks/cd99ba8dfc2e380e.js:1:27908)
+    at fetchFlags (http://autostoreu8ta0s.localhost:3000/_next/static/chunks/cd99ba8dfc2e380e.js:1:28160)
+    at http://autostoreu8ta0s.localhost:3000/_next/static/chunks/cd99ba8dfc2e380e.js:1:34393
+    at ih (http://autostoreu8ta0s.localhost:3000/_next/static/chunks/41cf4169e8383e13.js:1:102247)
+    at e (http://autostoreu8ta0s.localhost:3000/_next/static/chunks/41cf4169e8383e13.js:1:127220)
+    at e (http://autostoreu8ta0s.localhost:3000/_next/static/chunks/41cf4169e8383e13.js:1:127465)
+    at e (http://autostoreu8ta0s.localhost:3000/_next/static/chunks/41cf4169e8383e13.js:1:127465)
+
+[1A[2K[PHASE 2 ERROR] Login failed with UI error: 
+
+[1A[2K[PHASE 2] Waiting for Admin Redirect...
+
+[1A[2K  1) [chromium] › e2e\b2b2c-full-flow.spec.ts:8:7 › B2B2C Full Flow › Complete Flow: Onboarding -> Admin Setup -> Customer Purchase 
+
+    TimeoutError: page.waitForURL: Timeout 30000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+    ============================================================
+
+      109 |     console.log("[PHASE 2] Waiting for Admin Redirect...");
+      110 |     // Increase timeout for cold starts or complex permission checks
+    > 111 |     await page.waitForURL(/\/admin/, { timeout: 30000 });
+          |                ^
+      112 |     console.log("[PHASE 2] Logged into Admin Dashboard");
+      113 |
+      114 |     // =========================================================================
+        at D:\ecommerce-main\web\e2e\b2b2c-full-flow.spec.ts:111:16
+
+    Error Context: test-results\b2b2c-full-flow-B2B2C-Full-ef736-n-Setup---Customer-Purchase-chromium\error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › e2e\b2b2c-full-flow.spec.ts:8:7 › B2B2C Full Flow › Complete Flow: Onboarding -> Admin Setup -> Customer Purchase 

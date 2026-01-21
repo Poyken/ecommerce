@@ -1,0 +1,122 @@
+[1A[2K[2m[WebServer] [22m[33m[1m⚠[22m[39m "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
+
+[1A[2K[2m[WebServer] [22m[Shop] Error fetching CMS config: TypeError: fetch failed
+[2m[WebServer] [22m    at async l [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__d45577f0._.js:1:12403[90m)[39m
+[2m[WebServer] [22m    at async m [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__d45577f0._.js:1:12928[90m)[39m {
+[2m[WebServer] [22m  [cause]: AggregateError: 
+[2m[WebServer] [22m      at [3mignore-listed frames[23m {
+[2m[WebServer] [22m    code: [32m'ECONNREFUSED'[39m
+[2m[WebServer] [22m  }
+[2m[WebServer] [22m}
+
+
+Running 1 test using 1 worker
+
+[1A[2K[2m[WebServer] [22m[HTTP Fetch Error] Failed to reach http://localhost:8080/api/v1/products?limit=20: TypeError: fetch failed
+[2m[WebServer] [22m    at async [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:7681[90m)[39m
+[2m[WebServer] [22m    at async [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__55e67b29._.js:1:5121[90m)[39m
+[2m[WebServer] [22m    at async Object.getFeaturedProducts [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__55e67b29._.js:1:5450[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m {
+[2m[WebServer] [22m  [cause]: AggregateError: 
+[2m[WebServer] [22m      at [3mignore-listed frames[23m {
+[2m[WebServer] [22m    code: [32m'ECONNREFUSED'[39m
+[2m[WebServer] [22m  }
+[2m[WebServer] [22m}
+
+[1A[2K[2m[WebServer] [22m[TenantProvider] Fetch failed for tenant config (127.0.0.1:3000): fetch failed
+
+[1A[2K[2m[WebServer] [22m[HTTP Fetch Error] Failed to reach http://localhost:8080/api/v1/products?limit=20: TypeError: fetch failed
+[2m[WebServer] [22m    at async [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:7681[90m)[39m
+[2m[WebServer] [22m    at async [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__55e67b29._.js:1:5121[90m)[39m
+[2m[WebServer] [22m    at async Object.getFeaturedProducts [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__55e67b29._.js:1:5450[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m
+[2m[WebServer] [22m    at async o [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__d45577f0._.js:1:13908[90m)[39m {
+[2m[WebServer] [22m  [cause]: AggregateError: 
+[2m[WebServer] [22m      at [3mignore-listed frames[23m {
+[2m[WebServer] [22m    code: [32m'ECONNREFUSED'[39m
+[2m[WebServer] [22m  }
+[2m[WebServer] [22m}
+
+[1A[2K[1/1] [chromium] › e2e\cart-flow.spec.ts:6:7 › Core Commerce Flow - Guest › Guest can add item to cart and is redirected to login at checkout
+[1A[2K[chromium] › e2e\cart-flow.spec.ts:6:7 › Core Commerce Flow - Guest › Guest can add item to cart and is redirected to login at checkout
+Navigating to Shop Page...
+
+[1A[2K[2m[WebServer] [22m[HTTP Fetch Error] Failed to reach http://localhost:8080/api/v1/wishlist: TypeError: fetch failed
+[2m[WebServer] [22m    at async [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:7681[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m
+[2m[WebServer] [22m    at async f [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__40fde0f5._.js:1:3693[90m)[39m {
+[2m[WebServer] [22m  [cause]: AggregateError: 
+[2m[WebServer] [22m      at [3mignore-listed frames[23m {
+[2m[WebServer] [22m    code: [32m'ECONNREFUSED'[39m
+[2m[WebServer] [22m  }
+[2m[WebServer] [22m}
+
+[1A[2K[2m[WebServer] [22m[HTTP Fetch Error] Failed to reach http://localhost:8080/api/v1/products?page=1&limit=20&includeSkus=true: TypeError: fetch failed
+[2m[WebServer] [22m    at async [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:7681[90m)[39m
+[2m[WebServer] [22m    at async [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__55e67b29._.js:1:5121[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m {
+[2m[WebServer] [22m  [cause]: AggregateError: 
+[2m[WebServer] [22m      at [3mignore-listed frames[23m {
+[2m[WebServer] [22m    code: [32m'ECONNREFUSED'[39m
+[2m[WebServer] [22m  }
+[2m[WebServer] [22m}
+
+[1A[2K[2m[WebServer] [22m[HTTP Fetch Error] Failed to reach http://localhost:8080/api/v1/products?limit=4: TypeError: fetch failed
+[2m[WebServer] [22m    at async [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:7681[90m)[39m
+[2m[WebServer] [22m    at async [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__55e67b29._.js:1:5121[90m)[39m
+[2m[WebServer] [22m    at async Object.getFeaturedProducts [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__55e67b29._.js:1:5450[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m {
+[2m[WebServer] [22m  [cause]: AggregateError: 
+[2m[WebServer] [22m      at [3mignore-listed frames[23m {
+[2m[WebServer] [22m    code: [32m'ECONNREFUSED'[39m
+[2m[WebServer] [22m  }
+[2m[WebServer] [22m}
+
+[1A[2K[2m[WebServer] [22m[TenantProvider] Fetch failed for tenant config (localhost:3000): fetch failed
+
+[1A[2KSelecting first product...
+
+[1A[2KFound 0 product links
+
+[1A[2KBROWSER LOG: Failed to load resource: net::ERR_CONNECTION_REFUSED
+
+[1A[2KBROWSER LOG: [HTTP Fetch Error] Failed to reach http://localhost:8080/api/v1/feature-flags/my-flags: TypeError: Failed to fetch
+    at S (http://localhost:3000/_next/static/chunks/cd99ba8dfc2e380e.js:1:19785)
+    at i (http://localhost:3000/_next/static/chunks/cd99ba8dfc2e380e.js:1:21025)
+    at i.get (http://localhost:3000/_next/static/chunks/cd99ba8dfc2e380e.js:1:21170)
+    at r (http://localhost:3000/_next/static/chunks/cd99ba8dfc2e380e.js:1:27908)
+    at fetchFlags (http://localhost:3000/_next/static/chunks/cd99ba8dfc2e380e.js:1:28160)
+    at http://localhost:3000/_next/static/chunks/cd99ba8dfc2e380e.js:1:34393
+    at ih (http://localhost:3000/_next/static/chunks/41cf4169e8383e13.js:1:102247)
+    at e (http://localhost:3000/_next/static/chunks/41cf4169e8383e13.js:1:127220)
+    at e (http://localhost:3000/_next/static/chunks/41cf4169e8383e13.js:1:127465)
+    at e (http://localhost:3000/_next/static/chunks/41cf4169e8383e13.js:1:127465)
+
+[1A[2K  1) [chromium] › e2e\cart-flow.spec.ts:6:7 › Core Commerce Flow - Guest › Guest can add item to cart and is redirected to login at checkout 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('a[href*="/products/"]').first()
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 15000ms[22m
+    [2m  - waiting for locator('a[href*="/products/"]').first()[22m
+
+
+      17 |     const count = await page.locator('a[href*="/products/"]').count();
+      18 |     console.log(`Found ${count} product links`);
+    > 19 |     await expect(firstProduct).toBeVisible({ timeout: 15000 });
+         |                                ^
+      20 |     const href = await firstProduct.getAttribute('href');
+      21 |     console.log(`Clicking product link: ${href}`);
+      22 |     
+        at D:\ecommerce-main\web\e2e\cart-flow.spec.ts:19:32
+
+    Error Context: test-results\cart-flow-Core-Commerce-Fl-5f9fb-rected-to-login-at-checkout-chromium\error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › e2e\cart-flow.spec.ts:6:7 › Core Commerce Flow - Guest › Guest can add item to cart and is redirected to login at checkout 

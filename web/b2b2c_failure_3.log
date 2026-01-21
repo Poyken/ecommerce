@@ -1,0 +1,72 @@
+[1A[2K[2m[WebServer] [22m[33m[1m⚠[22m[39m The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+
+Running 1 test using 1 worker
+
+[1A[2K[2m[WebServer] [22m[Shop] CMS Config not found for home on 127.0.0.1 (Status: 403)
+
+[1A[2K[2m[WebServer] [22m[TenantProvider] API returned 403 for 127.0.0.1:3000
+
+[1A[2K[1/1] [chromium] › e2e\b2b2c-full-flow.spec.ts:8:7 › B2B2C Full Flow › Complete Flow: Onboarding -> Admin Setup -> Customer Purchase
+[1A[2K[chromium] › e2e\b2b2c-full-flow.spec.ts:8:7 › B2B2C Full Flow › Complete Flow: Onboarding -> Admin Setup -> Customer Purchase
+[TEST] Starting B2B2C Flow for Store: AutoStore 8q5brj (autostore8q5brj)
+
+[1A[2K[PHASE 1] Starting Onboarding...
+
+[1A[2K[BROWSER]: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+
+[1A[2K[BROWSER]: [HMR] connected
+
+[1A[2K[BROWSER]: [Fast Refresh] rebuilding
+
+[1A[2K[BROWSER]: [Fast Refresh] done in 280ms
+
+[1A[2K[BROWSER]: Image with src "/images/auth-hero-luxury.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+
+[1A[2K[PHASE 1] Selecting Category...
+
+[1A[2K[PHASE 1] Selecting Theme...
+
+[1A[2K[PHASE 1] Finalizing...
+
+[1A[2K[BROWSER]: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+
+[1A[2K[BROWSER]: [HMR] connected
+
+[1A[2K[PHASE 1] Redirected to Tenant: http://autostore8q5brj.localhost:3000/en/login
+
+[1A[2K[PHASE 2] Admin Login...
+
+[1A[2K[BROWSER]: [Fast Refresh] rebuilding
+
+[1A[2K[BROWSER]: [Fast Refresh] done in 192ms
+
+[1A[2K[PHASE 2 ERROR] Login failed with UI error: 
+
+[1A[2K[PHASE 2] Waiting for Admin Redirect...
+
+[1A[2K[BROWSER]: [Fast Refresh] rebuilding
+
+[1A[2K[BROWSER]: [Fast Refresh] done in 530ms
+
+[1A[2K  1) [chromium] › e2e\b2b2c-full-flow.spec.ts:8:7 › B2B2C Full Flow › Complete Flow: Onboarding -> Admin Setup -> Customer Purchase 
+
+    TimeoutError: page.waitForURL: Timeout 30000ms exceeded.
+    =========================== logs ===========================
+    waiting for navigation until "load"
+    ============================================================
+
+      109 |     console.log("[PHASE 2] Waiting for Admin Redirect...");
+      110 |     // Increase timeout for cold starts or complex permission checks
+    > 111 |     await page.waitForURL(/\/admin/, { timeout: 30000 });
+          |                ^
+      112 |     console.log("[PHASE 2] Logged into Admin Dashboard");
+      113 |
+      114 |     // =========================================================================
+        at D:\ecommerce-main\web\e2e\b2b2c-full-flow.spec.ts:111:16
+
+    Error Context: test-results\b2b2c-full-flow-B2B2C-Full-ef736-n-Setup---Customer-Purchase-chromium\error-context.md
+
+
+[1A[2K  1 failed
+    [chromium] › e2e\b2b2c-full-flow.spec.ts:8:7 › B2B2C Full Flow › Complete Flow: Onboarding -> Admin Setup -> Customer Purchase 

@@ -62,10 +62,58 @@ export class TenantsService {
         });
 
         if (!adminRole) {
+          // Grant default permissions to the Tenant Admin
+          const defaultPermissions = [
+            'admin:read',
+            // Products
+            'product:read',
+            'product:create',
+            'product:update',
+            'product:delete',
+            // Orders
+            'order:read',
+            'order:update',
+            // Categories & Brands
+            'category:read',
+            'category:create',
+            'category:update',
+            'brand:read',
+            'brand:create',
+            'brand:update',
+            // Analytics & Dashboard
+            'analytics:read',
+            // Reviews
+            'review:read',
+            'review:update',
+            // Pages
+            'page:read',
+            'page:create',
+            'page:update',
+            // Users
+            'user:read',
+          ];
+
+          let permissions = await tx.permission.findMany({
+            where: { name: { in: defaultPermissions } },
+          });
+
+          // Ensure at least admin:read exists (create if missing - idempotent fallback)
+          if (!permissions.find((p) => p.name === 'admin:read')) {
+            const adminRead = await tx.permission.create({
+              data: { name: 'admin:read' },
+            });
+            permissions.push(adminRead);
+          }
+
           adminRole = await tx.role.create({
             data: {
               name: 'ADMIN',
               tenant: { connect: { id: tenant.id } },
+              permissions: {
+                create: permissions.map((p) => ({
+                  permission: { connect: { id: p.id } },
+                })),
+              },
             },
           });
         }
@@ -82,6 +130,25 @@ export class TenantsService {
                 roleId: adminRole.id,
               },
             },
+          },
+        });
+
+        // Seed default Category and Brand for the new tenant
+        // This ensures the admin can create products immediately
+        const defaultCategory = await tx.category.create({
+          data: {
+            name: 'General',
+            slug: 'general',
+            metaDescription: 'Default category',
+            tenantId: tenant.id,
+          },
+        });
+
+        const defaultBrand = await tx.brand.create({
+          data: {
+            name: 'Generic',
+            slug: 'generic',
+            tenantId: tenant.id,
           },
         });
       }

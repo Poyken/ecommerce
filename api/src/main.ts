@@ -149,9 +149,11 @@ async function bootstrap() {
 
       // 3. Cho phép dynamic Localhost & Local Network (cho Dev environment)
       // Giúp developers chạy trên IP mạng LAN (ví dụ view trên điện thoại)
+      // VÀ cũng cho phép các Tenant Domain động (*.localhost:3000)
       if (
         origin.startsWith('http://localhost:') ||
-        origin.startsWith('http://192.168.')
+        origin.startsWith('http://192.168.') ||
+        /^http:\/\/[a-z0-9-]+\.localhost:3000$/.test(origin) // Allow tenant subdomains
       ) {
         return callback(null, true);
       }
@@ -222,4 +224,3 @@ async function bootstrap() {
 
 // Khởi động ứng dụng
 bootstrap();
-

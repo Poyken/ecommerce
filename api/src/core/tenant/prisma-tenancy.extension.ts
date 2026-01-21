@@ -130,10 +130,17 @@ export const tenancyExtension = Prisma.defineExtension((client) => {
               if (anyArgs.data) {
                 if (Array.isArray(anyArgs.data)) {
                   anyArgs.data.forEach((item: any) => {
-                    item.tenantId = tenant.id;
+                    // [FIX] Only set tenantId if not already explicitly provided
+                    // This allows cross-tenant operations like creating admin user for a new tenant
+                    if (item.tenantId === undefined) {
+                      item.tenantId = tenant.id;
+                    }
                   });
                 } else {
-                  anyArgs.data.tenantId = tenant.id;
+                  // [FIX] Only set tenantId if not already explicitly provided
+                  if (anyArgs.data.tenantId === undefined) {
+                    anyArgs.data.tenantId = tenant.id;
+                  }
                 }
               }
             }

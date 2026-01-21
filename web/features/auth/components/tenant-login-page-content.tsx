@@ -96,6 +96,8 @@ export function TenantLoginPageContent() {
   useEffect(() => {
     if (state && submissionCount.current > lastProcessedCount.current) {
       lastProcessedCount.current = submissionCount.current;
+      
+      console.log('[CLIENT DEBUG] Login State Return:', state); // Log full state
 
       if (state.errors) {
         setLocalErrors(state.errors);
@@ -143,8 +145,12 @@ export function TenantLoginPageContent() {
 
           // Redirect
           const permissions = state.permissions || [];
+          console.log('[LOGIN DEBUG] Permissions received:', permissions);
+          
           const isSuperAdmin = permissions.includes("superAdmin:read");
           const isAdmin = permissions.includes("admin:read");
+          console.log('[LOGIN DEBUG] Checks:', { isSuperAdmin, isAdmin });
+          
           let targetUrl = isSuperAdmin ? "/super-admin" : isAdmin ? "/admin" : callbackUrl || "/";
           
           const localePrefix = `/${locale}`;

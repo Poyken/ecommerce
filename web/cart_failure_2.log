@@ -1,0 +1,114 @@
+[1A[2K[2m[WebServer] [22m[33m[1m⚠[22m[39m "next start" does not work with "output: standalone" configuration. Use "node .next/standalone/server.js" instead.
+
+[1A[2K[2m[WebServer] [22m[Shop] CMS Config not found for home on 127.0.0.1 (Status: 403)
+
+
+Running 1 test using 1 worker
+
+[1A[2K[2m[WebServer] [22m[TenantProvider] API returned 403 for 127.0.0.1:3000
+
+[1A[2K[1/1] [chromium] › e2e\cart-flow.spec.ts:6:7 › Core Commerce Flow - Guest › Guest can add item to cart and is redirected to login at checkout
+[1A[2K[chromium] › e2e\cart-flow.spec.ts:6:7 › Core Commerce Flow - Guest › Guest can add item to cart and is redirected to login at checkout
+Navigating to Shop Page...
+
+[1A[2K[2m[WebServer] [22m[Server Action Error] Failed to fetch wishlist: Error: Unauthorized
+[2m[WebServer] [22m    at <unknown> [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:8377[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m
+[2m[WebServer] [22m    at async f [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__40fde0f5._.js:1:3693[90m)[39m {
+[2m[WebServer] [22m  status: [33m401[39m
+[2m[WebServer] [22m}
+
+[1A[2KSelecting first product...
+
+[1A[2KFound 2 product links
+
+[1A[2KClicking product link: /en/products/8ae001da-d0df-423e-9f77-9f07371f9001
+
+[1A[2K[2m[WebServer] [22m[Server Action Error] Failed to fetch profile: Error: Unauthorized
+[2m[WebServer] [22m    at <unknown> [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:8377[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m
+[2m[WebServer] [22m    at async F [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__96233131._.js:1:15451[90m)[39m {
+[2m[WebServer] [22m  status: [33m401[39m
+[2m[WebServer] [22m}
+
+[1A[2K[2m[WebServer] [22m[Server Action Error] Không thể kiểm tra quyền đánh giá: Error: NEXT_REDIRECT
+[2m[WebServer] [22m    at i [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_5b45eea0._.js:1:2634[90m)[39m
+[2m[WebServer] [22m    at j [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_5b45eea0._.js:1:2812[90m)[39m
+[2m[WebServer] [22m    at <unknown> [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:8066[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m
+[2m[WebServer] [22m    at async F [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__96233131._.js:1:15451[90m)[39m {
+[2m[WebServer] [22m  digest: [32m'NEXT_REDIRECT;replace;/login;307;'[39m
+[2m[WebServer] [22m}
+
+[1A[2KVerifying Product Detail Page...
+
+[1A[2KAdding to Cart...
+
+[1A[2K[2m[WebServer] [22m[Server Action Error] Failed to fetch profile: Error: Unauthorized
+[2m[WebServer] [22m    at <unknown> [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:8377[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m
+[2m[WebServer] [22m    at async F [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__96233131._.js:1:15451[90m)[39m {
+[2m[WebServer] [22m  status: [33m401[39m
+[2m[WebServer] [22m}
+
+[1A[2K[2m[WebServer] [22m[Server Action Error] Không thể kiểm tra quyền đánh giá: Error: NEXT_REDIRECT
+[2m[WebServer] [22m    at i [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_5b45eea0._.js:1:2634[90m)[39m
+[2m[WebServer] [22m    at j [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_5b45eea0._.js:1:2812[90m)[39m
+[2m[WebServer] [22m    at <unknown> [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:8066[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m
+[2m[WebServer] [22m    at async F [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__96233131._.js:1:15451[90m)[39m {
+[2m[WebServer] [22m  digest: [32m'NEXT_REDIRECT;push;/login;307;'[39m
+[2m[WebServer] [22m}
+
+[1A[2K[2m[WebServer] [22m[Server Action Error] Không thể kiểm tra quyền đánh giá: Error: NEXT_REDIRECT
+[2m[WebServer] [22m    at i [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_5b45eea0._.js:1:2634[90m)[39m
+[2m[WebServer] [22m    at j [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_5b45eea0._.js:1:2812[90m)[39m
+[2m[WebServer] [22m    at <unknown> [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:8066[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m
+[2m[WebServer] [22m    at async m [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_9202e9eb._.js:1:7510[90m)[39m {
+[2m[WebServer] [22m  digest: [32m'NEXT_REDIRECT;push;/login;307;'[39m
+[2m[WebServer] [22m}
+
+[1A[2K[2m[WebServer] [22m[Server Action Error] Failed to fetch profile: Error: Unauthorized
+[2m[WebServer] [22m    at <unknown> [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:8377[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m
+[2m[WebServer] [22m    at async F [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__96233131._.js:1:15451[90m)[39m {
+[2m[WebServer] [22m  status: [33m401[39m
+[2m[WebServer] [22m}
+
+[1A[2K[2m[WebServer] [22m[Server Action Error] Không thể kiểm tra quyền đánh giá: Error: NEXT_REDIRECT
+[2m[WebServer] [22m    at i [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_5b45eea0._.js:1:2634[90m)[39m
+[2m[WebServer] [22m    at j [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_5b45eea0._.js:1:2812[90m)[39m
+[2m[WebServer] [22m    at <unknown> [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:8066[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m
+[2m[WebServer] [22m    at async F [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__96233131._.js:1:15451[90m)[39m {
+[2m[WebServer] [22m  digest: [32m'NEXT_REDIRECT;push;/login;307;'[39m
+[2m[WebServer] [22m}
+
+[1A[2K[2m[WebServer] [22mAction error: Unauthorized: You must be logged in to perform this action.
+
+[1A[2K[2m[WebServer] [22m[Server Action Error] Không thể kiểm tra quyền đánh giá: Error: NEXT_REDIRECT
+[2m[WebServer] [22m    at i [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_5b45eea0._.js:1:2634[90m)[39m
+[2m[WebServer] [22m    at j [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_5b45eea0._.js:1:2812[90m)[39m
+[2m[WebServer] [22m    at <unknown> [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:8066[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m
+[2m[WebServer] [22m    at async F [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__96233131._.js:1:15451[90m)[39m {
+[2m[WebServer] [22m  digest: [32m'NEXT_REDIRECT;push;/login;307;'[39m
+[2m[WebServer] [22m}
+
+[1A[2K[2m[WebServer] [22m[Server Action Error] Failed to fetch profile: Error: Unauthorized
+[2m[WebServer] [22m    at <unknown> [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_caf7f9f3._.js:1:8377[90m)[39m
+[2m[WebServer] [22m    at async Q [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\_2bc39748._.js:26:13369[90m)[39m
+[2m[WebServer] [22m    at async F [90m(D:\ecommerce-main\web\[39m.next\server\chunks\ssr\[root-of-the-server]__96233131._.js:1:15451[90m)[39m {
+[2m[WebServer] [22m  status: [33m401[39m
+[2m[WebServer] [22m}
+
+[1A[2KNavigating to Cart...
+
+[1A[2KValidating Cart Content...
+
+[1A[2KProceeding to Checkout...
+
+[1A[2KVerifying Login Redirect...
+
+[1A[2K  1 passed (23.5s)

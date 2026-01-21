@@ -1,0 +1,160 @@
+
+> web@0.1.0 build
+> npx next build
+
+▲ Next.js 16.1.1 (Turbopack)
+- Environments: .env
+- Experiments (use with caution):
+  · optimizePackageImports
+  · serverActions
+  ✓ useCache
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 97s
+  Running TypeScript ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/180) ...
+  Generating static pages using 11 workers (45/180) 
+[Server Action Error] Failed to fetch roles: Error: NEXT_REDIRECT
+    at i (D:\ecommerce-main\web\.next\server\chunks\ssr\_5b45eea0._.js:1:2634)
+    at j (D:\ecommerce-main\web\.next\server\chunks\ssr\_5b45eea0._.js:1:2812)
+    at <unknown> (D:\ecommerce-main\web\.next\server\chunks\ssr\_caf7f9f3._.js:1:8066)
+    at async Q (D:\ecommerce-main\web\.next\server\chunks\ssr\_ab6ad293._.js:25:17252)
+    at async e (D:\ecommerce-main\web\.next\server\chunks\ssr\[root-of-the-server]__31d69d2f._.js:1:1584) {
+  digest: 'NEXT_REDIRECT;replace;/login;307;'
+}
+[Server Action Error] Failed to fetch roles: Error: NEXT_REDIRECT
+    at i (D:\ecommerce-main\web\.next\server\chunks\ssr\_5b45eea0._.js:1:2634)
+    at j (D:\ecommerce-main\web\.next\server\chunks\ssr\_5b45eea0._.js:1:2812)
+    at <unknown> (D:\ecommerce-main\web\.next\server\chunks\ssr\_caf7f9f3._.js:1:8066)
+    at async Q (D:\ecommerce-main\web\.next\server\chunks\ssr\_ab6ad293._.js:25:17252)
+    at async e (D:\ecommerce-main\web\.next\server\chunks\ssr\[root-of-the-server]__31d69d2f._.js:1:1584) {
+  digest: 'NEXT_REDIRECT;replace;/login;307;'
+}
+  Generating static pages using 11 workers (90/180) 
+[Server Action Error] Failed to fetch tenants: Error: NEXT_REDIRECT
+    at i (D:\ecommerce-main\web\.next\server\chunks\ssr\_5b45eea0._.js:1:2634)
+    at j (D:\ecommerce-main\web\.next\server\chunks\ssr\_5b45eea0._.js:1:2812)
+    at <unknown> (D:\ecommerce-main\web\.next\server\chunks\ssr\_caf7f9f3._.js:1:8066)
+    at async Q (D:\ecommerce-main\web\.next\server\chunks\ssr\_ab6ad293._.js:25:17252)
+    at async e (D:\ecommerce-main\web\.next\server\chunks\ssr\[root-of-the-server]__91e447b2._.js:1:1577) {
+  digest: 'NEXT_REDIRECT;replace;/login;307;'
+}
+[Server Action Error] Failed to fetch permissions: Error: NEXT_REDIRECT
+    at i (D:\ecommerce-main\web\.next\server\chunks\ssr\_5b45eea0._.js:1:2634)
+    at j (D:\ecommerce-main\web\.next\server\chunks\ssr\_5b45eea0._.js:1:2812)
+    at <unknown> (D:\ecommerce-main\web\.next\server\chunks\ssr\_caf7f9f3._.js:1:8066)
+    at async Q (D:\ecommerce-main\web\.next\server\chunks\ssr\_ab6ad293._.js:25:17252)
+    at async e (D:\ecommerce-main\web\.next\server\chunks\ssr\[root-of-the-server]__6ee539a0._.js:1:1656) {
+  digest: 'NEXT_REDIRECT;replace;/login;307;'
+}
+[Server Action Error] Failed to fetch tenants: Error: NEXT_REDIRECT
+    at i (D:\ecommerce-main\web\.next\server\chunks\ssr\_5b45eea0._.js:1:2634)
+    at j (D:\ecommerce-main\web\.next\server\chunks\ssr\_5b45eea0._.js:1:2812)
+    at <unknown> (D:\ecommerce-main\web\.next\server\chunks\ssr\_caf7f9f3._.js:1:8066)
+    at async Q (D:\ecommerce-main\web\.next\server\chunks\ssr\_ab6ad293._.js:25:17252)
+    at async e (D:\ecommerce-main\web\.next\server\chunks\ssr\[root-of-the-server]__91e447b2._.js:1:1577) {
+  digest: 'NEXT_REDIRECT;replace;/login;307;'
+}
+[Server Action Error] Failed to fetch permissions: Error: NEXT_REDIRECT
+    at i (D:\ecommerce-main\web\.next\server\chunks\ssr\_5b45eea0._.js:1:2634)
+    at j (D:\ecommerce-main\web\.next\server\chunks\ssr\_5b45eea0._.js:1:2812)
+    at <unknown> (D:\ecommerce-main\web\.next\server\chunks\ssr\_caf7f9f3._.js:1:8066)
+    at async Q (D:\ecommerce-main\web\.next\server\chunks\ssr\_ab6ad293._.js:25:17252)
+    at async e (D:\ecommerce-main\web\.next\server\chunks\ssr\[root-of-the-server]__6ee539a0._.js:1:1656) {
+  digest: 'NEXT_REDIRECT;replace;/login;307;'
+}
+  Generating static pages using 11 workers (135/180) 
+✓ Generating static pages using 11 workers (180/180) in 6.0s
+  Finalizing page optimization ...
+
+Route (app)                              Revalidate  Expire
+┌ ○ /_not-found
+├ ƒ /[locale]
+├ ƒ /[locale]/[...rest]
+├ ƒ /[locale]/[slug]
+├ ƒ /[locale]/about
+├ ƒ /[locale]/admin
+├ ƒ /[locale]/admin/agent
+├ ƒ /[locale]/admin/audit-logs
+├ ƒ /[locale]/admin/billing
+├ ƒ /[locale]/admin/blogs
+├ ƒ /[locale]/admin/brands
+├ ƒ /[locale]/admin/categories
+├ ƒ /[locale]/admin/chat
+├ ƒ /[locale]/admin/coupons
+├ ƒ /[locale]/admin/notifications
+├ ƒ /[locale]/admin/orders
+├ ƒ /[locale]/admin/orders/[orderId]
+├ ƒ /[locale]/admin/pages
+├ ƒ /[locale]/admin/pages/[id]
+├ ƒ /[locale]/admin/permissions
+├ ƒ /[locale]/admin/products
+├ ƒ /[locale]/admin/returns
+├ ƒ /[locale]/admin/returns/[id]
+├ ƒ /[locale]/admin/reviews
+├ ƒ /[locale]/admin/roles
+├ ƒ /[locale]/admin/skus
+├ ƒ /[locale]/admin/users
+├ ƒ /[locale]/blog
+├ ● /[locale]/blog/[id]
+├ ƒ /[locale]/brands
+├ ƒ /[locale]/brands/[id]
+├ ƒ /[locale]/cart
+├ ƒ /[locale]/categories
+├ ƒ /[locale]/categories/[id]
+├ ƒ /[locale]/checkout
+├ ƒ /[locale]/checkout/success
+├ ƒ /[locale]/contact
+├ ƒ /[locale]/demo
+├ ƒ /[locale]/features
+├ ƒ /[locale]/forgot-password
+├ ƒ /[locale]/landing
+├ ƒ /[locale]/login
+├ ƒ /[locale]/notifications
+├ ƒ /[locale]/offline
+├ ƒ /[locale]/onboarding
+├ ƒ /[locale]/order-failed/[orderId]
+├ ƒ /[locale]/order-success/[orderId]
+├ ƒ /[locale]/orders
+├ ƒ /[locale]/orders/[id]
+├ ƒ /[locale]/orders/[id]/return
+├ ƒ /[locale]/pricing
+├ ƒ /[locale]/products/[id]
+├ ƒ /[locale]/profile
+├ ƒ /[locale]/register
+├ ƒ /[locale]/reset-password
+├ ƒ /[locale]/shop
+├ ƒ /[locale]/shop-about
+├ ƒ /[locale]/shop-contact
+├ ƒ /[locale]/social-callback
+├ ƒ /[locale]/super-admin
+├ ƒ /[locale]/super-admin/analytics
+├ ƒ /[locale]/super-admin/audit-logs
+├ ƒ /[locale]/super-admin/chat
+├ ƒ /[locale]/super-admin/invoices
+├ ƒ /[locale]/super-admin/permissions
+├ ƒ /[locale]/super-admin/plans
+├ ƒ /[locale]/super-admin/roles
+├ ƒ /[locale]/super-admin/security
+├ ƒ /[locale]/super-admin/settings
+├ ƒ /[locale]/super-admin/subscriptions
+├ ƒ /[locale]/super-admin/tenants
+├ ƒ /[locale]/super-admin/tenants/[id]
+├ ƒ /[locale]/super-admin/users
+├ ƒ /[locale]/tenant-login
+├ ƒ /[locale]/tenant-register
+├ ƒ /[locale]/wishlist
+├ ƒ /api/revalidate
+├ ○ /manifest.webmanifest
+├ ○ /robots.txt
+└ ○ /sitemap.xml                                 1m      1y
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

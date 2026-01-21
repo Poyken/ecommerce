@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function BrandsPage() {
   const { getBrandsAction } = await import("@/features/products/actions");
   const brandsRes = await getBrandsAction();
-  const brands = brandsRes.success ? brandsRes.data : [];
+  const brands = brandsRes.success && brandsRes.data ? brandsRes.data : [];
 
   return <BrandsClient brands={brands} />;
 }

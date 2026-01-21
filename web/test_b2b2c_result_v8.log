@@ -1,0 +1,173 @@
+﻿
+Running 1 test using 1 worker
+
+[1A[2K[1/1] [chromium] ΓÇ║ e2e\b2b2c-full-flow.spec.ts:8:7 ΓÇ║ B2B2C Full Flow ΓÇ║ Complete Flow: Onboarding -> Admin Setup -> Customer Purchase
+[1A[2K[chromium] ΓÇ║ e2e\b2b2c-full-flow.spec.ts:8:7 ΓÇ║ B2B2C Full Flow ΓÇ║ Complete Flow: Onboarding -> Admin Setup -> Customer Purchase
+[TEST] Starting B2B2C Flow for Store: AutoStore 0i9 (autostore0i9)
+
+[1A[2K[PHASE 1] Starting Onboarding...
+
+[1A[2K[BROWSER]: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+
+[1A[2K[BROWSER]: [HMR] connected
+
+[1A[2K[BROWSER]: [Fast Refresh] rebuilding
+
+[1A[2K[BROWSER]: [Fast Refresh] done in 772ms
+
+[1A[2K[BROWSER]: Image with src "/images/auth-hero-luxury.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+
+[1A[2K[PHASE 1] Form filled - Email: admin_imtjx4@test.com, Password: Password123!
+
+[1A[2K[PHASE 1] Selecting Category...
+
+[1A[2K[PHASE 1] Selecting Theme...
+
+[1A[2K[PHASE 1] Finalizing...
+
+[1A[2K[PHASE 1 DEBUG] Tenant Registration Payload: {"name":"AutoStore 0i9","domain":"autostore0i9.localhost","plan":"BASIC","adminEmail":"admin_imtjx4@test.com","adminPassword":"Password123!","themeConfig":{"theme":"modern","categories":["fashion"]}}
+
+[1A[2K[PHASE 1 DEBUG] AdminEmail in payload: admin_imtjx4@test.com
+
+[1A[2K[PHASE 1 DEBUG] AdminPassword in payload: [SET]
+
+[1A[2K[BROWSER]: [Fast Refresh] rebuilding
+
+[1A[2K[BROWSER]: [Fast Refresh] done in 590ms
+
+[1A[2K[BROWSER]: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+
+[1A[2K[BROWSER]: [HMR] connected
+
+[1A[2K[BROWSER]: [Fast Refresh] rebuilding
+
+[1A[2K[BROWSER]: [Fast Refresh] done in 2114ms
+
+[1A[2K[PHASE 1] Redirected to Tenant: http://autostore0i9.localhost:3000/en/login
+
+[1A[2K[PHASE 2] Admin Login...
+
+[1A[2K[BROWSER]: [Fast Refresh] rebuilding
+
+[1A[2K[BROWSER]: [Fast Refresh] done in 122ms
+
+[1A[2K[PHASE 2 DEBUG] Login Status: 200
+
+[1A[2K[PHASE 2 ERROR] Login failed with UI error: 
+
+[1A[2K[PHASE 2] Waiting for Admin Redirect...
+
+[1A[2K[BROWSER]: [CLIENT DEBUG] Login State Return: {success: true, permissions: Array(20)}
+
+[1A[2K[BROWSER]: [LOGIN DEBUG] Permissions received: [user:read, review:update, review:read, product:delete, product:update, product:read, product:create, page:update, page:read, page:create, order:update, order:read, category:update, category:read, category:create, brand:update, brand:read, brand:create, analytics:read, admin:read]
+
+[1A[2K[BROWSER]: [LOGIN DEBUG] Checks: {isSuperAdmin: false, isAdmin: true}
+
+[1A[2K[BROWSER]: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+
+[1A[2K[BROWSER]: [HMR] connected
+
+[1A[2K[BROWSER]: [Fast Refresh] rebuilding
+
+[1A[2K[PHASE 2] Logged into Admin Dashboard
+
+[1A[2K[PHASE 2.1] Creating Product...
+
+[1A[2K[BROWSER]: %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+
+[1A[2K[BROWSER]: [HMR] connected
+
+[1A[2K[BROWSER]: WebSocket connection to 'ws://localhost:8081/socket.io/?EIO=4&transport=websocket' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+
+[1A[2K[BROWSER]: [Socket] Connection error: websocket error
+
+[1A[2K[BROWSER]: WebSocket connection to 'ws://localhost:8081/socket.io/?EIO=4&transport=websocket' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+
+[1A[2K[BROWSER]: [Socket] Connection error: websocket error
+
+[1A[2K[PHASE 2.1] Waiting for Products page...
+
+[1A[2K[PHASE 2.1] Products page loaded
+
+[1A[2K[BROWSER]: Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[1A[2K[BROWSER]: Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+
+[1A[2K[PHASE 2.1] Clicked Create Product button
+
+[1A[2K[PHASE 2.1] Filled product name: Luxury Sofa hbsj1f
+
+[1A[2K[PHASE 2.1] Selected Category via Keyboard
+
+[1A[2K[BROWSER]: WebSocket connection to 'ws://localhost:8081/socket.io/?EIO=4&transport=websocket' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+
+[1A[2K[BROWSER]: [Socket] Connection error: websocket error
+
+[1A[2K[BROWSER]: WebSocket connection to 'ws://localhost:8081/socket.io/?EIO=4&transport=websocket' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+
+[1A[2K[BROWSER]: [Socket] Connection error: websocket error
+
+[1A[2K[BROWSER]: WebSocket connection to 'ws://localhost:8081/socket.io/?EIO=4&transport=websocket' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+
+[1A[2K[BROWSER]: [Socket] Connection error: websocket error
+
+[1A[2K[BROWSER]: WebSocket connection to 'ws://localhost:8081/socket.io/?EIO=4&transport=websocket' failed: Error in connection establishment: net::ERR_CONNECTION_REFUSED
+
+[1A[2K[BROWSER]: [Socket] Connection error: websocket error
+
+[1A[2K[BROWSER]: [Fast Refresh] rebuilding
+
+[1A[2K[BROWSER]: [Fast Refresh] done in 329ms
+
+[1A[2K[BROWSER]: [Fast Refresh] rebuilding
+
+[1A[2K[BROWSER]: [Fast Refresh] done in 133ms
+
+[1A[2K  1) [chromium] ΓÇ║ e2e\b2b2c-full-flow.spec.ts:8:7 ΓÇ║ B2B2C Full Flow ΓÇ║ Complete Flow: Onboarding -> Admin Setup -> Customer Purchase 
+
+    [31mTest timeout of 300000ms exceeded.[39m
+
+    Error: locator.click: Test timeout of 300000ms exceeded.
+    Call log:
+    [2m  - waiting for locator('button:has-text("Select"), button:has-text("Chß╗ìn"), [id="edit-brand"]').last()[22m
+    [2m    - locator resolved to <button dir="ltr" type="button" role="combobox" data-state="closed" data-placeholder="" data-size="default" aria-expanded="false" aria-autocomplete="none" data-slot="select-trigger" aria-controls="radix-_r_4_" class="border-input data-[placeholder]:text-muted-foreground [&_svg:not([class*='text-'])]:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 dark:hoverΓÇª>ΓÇª</button>[22m
+    [2m  - attempting click action[22m
+    [2m    2 ├ù waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div data-state="open" aria-hidden="true" data-aria-hidden="true" data-slot="dialog-overlay" class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-150 bg-black/50"></div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m    - waiting 20ms[22m
+    [2m    2 ├ù waiting for element to be visible, enabled and stable[22m
+    [2m      - element is visible, enabled and stable[22m
+    [2m      - scrolling into view if needed[22m
+    [2m      - done scrolling[22m
+    [2m      - <div data-state="open" aria-hidden="true" data-aria-hidden="true" data-slot="dialog-overlay" class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-150 bg-black/50"></div> intercepts pointer events[22m
+    [2m    - retrying click action[22m
+    [2m      - waiting 100ms[22m
+    [2m    456 ├ù waiting for element to be visible, enabled and stable[22m
+    [2m        - element is visible, enabled and stable[22m
+    [2m        - scrolling into view if needed[22m
+    [2m        - done scrolling[22m
+    [2m        - <div data-state="open" aria-hidden="true" data-aria-hidden="true" data-slot="dialog-overlay" class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-150 bg-black/50"></div> intercepts pointer events[22m
+    [2m      - retrying click action[22m
+    [2m        - waiting 500ms[22m
+
+
+      228 |       .last();
+      229 |     if (await brandTrigger.isVisible({ timeout: 5000 })) {
+    > 230 |       await brandTrigger.click();
+          |                          ^
+      231 |       await page.waitForTimeout(1000);
+      232 |       await page.keyboard.press("ArrowDown");
+      233 |       await page.waitForTimeout(500);
+        at D:\ecommerce-main\web\e2e\b2b2c-full-flow.spec.ts:230:26
+
+    Error Context: test-results\b2b2c-full-flow-B2B2C-Full-ef736-n-Setup---Customer-Purchase-chromium\error-context.md
+
+
+[1A[2K  Slow test file: [chromium] ΓÇ║ e2e\b2b2c-full-flow.spec.ts (5.0m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 failed
+    [chromium] ΓÇ║ e2e\b2b2c-full-flow.spec.ts:8:7 ΓÇ║ B2B2C Full Flow ΓÇ║ Complete Flow: Onboarding -> Admin Setup -> Customer Purchase 

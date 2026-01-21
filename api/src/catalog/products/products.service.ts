@@ -188,7 +188,8 @@ export class ProductsService {
         {} as Record<string, any>,
       );
 
-    const cacheKey = `products:filter:${JSON.stringify(sortedQuery)}`;
+    const tenant = getTenant();
+    const cacheKey = `products:filter:${tenant?.id || 'public'}:${JSON.stringify(sortedQuery)}`;
 
     return this.cacheService.getOrSet(
       cacheKey,
@@ -450,7 +451,8 @@ export class ProductsService {
    * - Query time nhanh hơn 20-30%
    */
   async findOne(id: string) {
-    const cacheKey = `product:${id}`;
+    const tenant = getTenant();
+    const cacheKey = `product:${tenant?.id || 'public'}:${id}`;
 
     return this.cacheService.getOrSet(
       cacheKey,

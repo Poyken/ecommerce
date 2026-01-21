@@ -76,7 +76,6 @@ export class BrandsController {
   }
 
   @Get()
-  @Cached(300) // Cache 5 phút (300s)
   @ApiListResponse('Brand', { summary: 'Get all brands (cached 5 mins)' })
   async findAll(
     @Query('search') search?: string,

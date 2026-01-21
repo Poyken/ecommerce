@@ -1,0 +1,5 @@
+[1A[2K[2m[WebServer] [22m[33m[1m⚠[22m[39m The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+
+Error: Timed out waiting 120000ms from config.webServer.
+
+[1A[2K

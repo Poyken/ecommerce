@@ -73,7 +73,6 @@ export class CategoriesController {
   }
 
   @Get()
-  @Cached(300) // Cache 5 phút (300s)
   @ApiListResponse('Category', {
     summary: 'Get all categories (cached 5 mins)',
   })

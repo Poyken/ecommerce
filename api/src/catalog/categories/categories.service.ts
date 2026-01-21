@@ -112,7 +112,8 @@ export class CategoriesService extends BaseCrudService<
    * - Count: Đếm số lượng sản phẩm trong mỗi danh mục.
    */
   async findAll(search?: string, page = 1, limit = 100) {
-    const cacheKey = `categories:all:${search || 'none'}:${page}:${limit}`;
+    const tenant = getTenant();
+    const cacheKey = `categories:all:${tenant?.id || 'public'}:${search || 'none'}:${page}:${limit}`;
 
     // TTL: 1 hour (Categories change rarely)
     return this.cacheService.getOrSet(

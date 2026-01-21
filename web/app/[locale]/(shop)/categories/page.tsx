@@ -13,7 +13,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function CategoriesPage() {
   const { getCategoriesAction } = await import("@/features/products/actions");
   const categoriesRes = await getCategoriesAction();
-  const categories = categoriesRes.success ? categoriesRes.data : [];
+  const categories = categoriesRes.success && categoriesRes.data ? categoriesRes.data : [];
 
   return <CategoriesClient categories={categories} />;
 }

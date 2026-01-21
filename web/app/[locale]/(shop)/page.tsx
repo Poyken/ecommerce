@@ -41,7 +41,7 @@ async function getPageConfig(slug: string): Promise<any | null> {
 
     const res = await fetch(`${apiUrl}/pages/${slug}`, {
       headers: { "x-tenant-domain": host },
-      next: { revalidate: 60 },
+      next: { revalidate: 60, tags: ["cms", `page-${host}-${slug}`] },
       cache: 'no-store' // Disable cache temporarily to ensure we see fresh errors
     });
 
@@ -103,9 +103,9 @@ export default async function Home() {
 
   // 2. Initiate Data Fetches (Non-blocking) - Using Server Actions
   const { getFeaturedProductsAction, getCategoriesAction, getBrandsAction } = await import("@/features/products/actions");
-  const productsPromise = getFeaturedProductsAction(20).then((res) => res.success ? res.data : []);
-  const categoriesPromise = getCategoriesAction().then((res) => res.success ? res.data : []);
-  const brandsPromise = getBrandsAction().then((res) => res.success ? res.data : []);
+  const productsPromise = getFeaturedProductsAction(20).then((res) => res.success && res.data ? res.data : []);
+  const categoriesPromise = getCategoriesAction().then((res) => res.success && res.data ? res.data : []);
+  const brandsPromise = getBrandsAction().then((res) => res.success && res.data ? res.data : []);
 
   // Context to pass to blocks for hydration
   const dataContext = {
