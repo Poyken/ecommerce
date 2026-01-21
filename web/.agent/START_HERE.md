@@ -1,82 +1,61 @@
-# 🚀 Agentic OS: Start Here
+# 🚀 E-commerce Web: Developer Onboarding
 
-Tài liệu này là "trạm điều khiển" dành cho AI Agent. Folder `.agent` này hoàn toàn **độc lập và portable** - chứa đầy đủ kiến thức để vận hành dự án.
-
----
-
-## 1. Dành cho USER (Cách Boot-up)
-
-Khi copy folder `.agent` sang dự án mới, paste prompt này:
-
-```
-Tôi vừa copy folder `.agent` sang dự án này. Bạn là Senior Fullstack Architect.
-Hãy đọc các file trong `.agent/knowledge` và `.agent/rules` để hiểu dự án.
-Sau đó đề xuất kế hoạch làm việc tiếp theo.
-```
+> **Chào mừng bạn đến với Frontend của dự án Ecommerce!**
+> Tài liệu này giúp Frontend Developer & UI/UX Designer nắm bắt dự án Next.js 16 (App Router) này.
 
 ---
 
-## 2. Cấu trúc .agent (Đầy đủ)
+## 1. Bạn là ai? (Chọn Role của bạn)
 
-```
-.agent/
-├── START_HERE.md           ← Bạn đang ở đây
-├── knowledge/              ← Kiến thức dự án (Portable)
-│   ├── database-schema.md  ← Toàn bộ DB schema (30+ models)
-│   ├── tech-stack.md       ← Packages, dependencies (50+)
-│   ├── architecture.md     ← System design, 7 ADRs
-│   └── business-flows.md   ← Customer/Admin/RMA flows
-├── rules/                  ← Quy tắc bắt buộc
-│   ├── critical.md         ← 8 quy tắc sống còn
-│   ├── coding-standards.md ← Coding conventions
-│   ├── optimization.md     ← Tối ưu hóa (Zod-only, etc)
-│   └── prompting.md        ← CLEAR Framework (MỚI)
-├── workflows/              ← Quy trình làm việc
-│   ├── feature-flow.md     ← Dev workflow chuẩn
-│   └── fresh-start.md      ← Khởi tạo từ đầu (20 ngày)
-└── skills/                 ← Kỹ năng chuyên sâu
-    ├── solo-architect/     ← Solo dev mindset + patterns
-    └── react-best-practices/ ← Vercel 50+ rules (MỚI)
-```
+### 🎨 Frontend Developer (Triển khai UI/UX)
 
----
+Bạn cần dựng UI, ghép API và xử lý logic client?
+👉 **Bắt đầu tại đây**:
 
-## 3. Quy tắc Sống còn (BẮT BUỘC)
+1. **Dựng môi trường**: Làm theo [workflows/fresh-start.md](workflows/fresh-start.md).
+2. **Kiến trúc FE**: Đọc [knowledge/architecture.md](knowledge/architecture.md) (Server Actions + SWR Pattern).
+3. **Design System**: Đọc [knowledge/admin-ui-design-system.md](knowledge/admin-ui-design-system.md) (Shadcn UI + Tailwind 4).
+4. **Code Feature**: Tuân thủ [workflows/feature-flow.md](workflows/feature-flow.md).
 
-📖 Đọc: `.agent/rules/critical.md`
+### 🚀 Performance & SEO Specialist
 
-Top 3 quan trọng nhất:
+Bạn cần tối ưu tốc độ tải trang và chỉ số SEO?
+👉 **Đọc ngay**:
 
-- ✅ **Cập nhật CONTEXT.md sau mỗi task**
-- ✅ **Không xóa file khi chưa commit**
-- ✅ **Cảnh báo ngay khi có breaking change**
+1. **SEO Guide**: [knowledge/seo-optimization-guide.md](knowledge/seo-optimization-guide.md).
+2. **Performance Rules**: [skills/react-best-practices/SKILL.md](skills/react-best-practices/SKILL.md) (50+ rules tối ưu React).
+3. **Hạ tầng Web**: [knowledge/infrastructure-reference.md](knowledge/infrastructure-reference.md) (Vercel/ISR).
+
+### 🧠 Senior Architect / Tech Lead
+
+Bạn cần đánh giá cấu trúc component và security?
+👉 **Deep-dive**:
+
+1. **Routing Strategy**: [knowledge/architecture.md](knowledge/architecture.md) (Multi-tenant Routing: `/[locale]/shop/[tenant]`).
+2. **Authentication**: [knowledge/tech-stack.md](knowledge/tech-stack.md) (Auth flow với API).
+3. **Testing Strategy**: [knowledge/testing-guide-e2e.md](knowledge/testing-guide-e2e.md) (Playwright).
 
 ---
 
-## 4. Kiến thức Dự án (Knowledge Base)
+## 2. Quick Links (Tra cứu nhanh)
 
-| File                           | Nội dung                            |
-| ------------------------------ | ----------------------------------- |
-| `knowledge/database-schema.md` | Prisma models, enums, indexes (30+) |
-| `knowledge/tech-stack.md`      | NestJS, Next.js, packages (50+)     |
-| `knowledge/architecture.md`    | System design, 7 ADRs, Security     |
-| `knowledge/business-flows.md`  | Customer, Admin, RMA, Loyalty flows |
-
----
-
-## 5. Dành cho AI Agent (Boot Sequence)
-
-Khi bắt đầu session mới, thực hiện theo thứ tự:
-
-1. Đọc `.agent/knowledge/architecture.md` → Hiểu Big Picture
-2. Đọc `.agent/rules/critical.md` → Hiểu quy tắc bắt buộc
-3. Đọc `CONTEXT.md` ở root (nếu có) → Hiểu trạng thái hiện tại
-4. Bắt đầu công việc theo `.agent/workflows/`
+| Chủ đề            | File cần đọc                                               |
+| :---------------- | :--------------------------------------------------------- |
+| **Tech Stack**    | [knowledge/tech-stack.md](knowledge/tech-stack.md)         |
+| **I18n & RTL**    | [knowledge/i18n-rtl-guide.md](knowledge/i18n-rtl-guide.md) |
+| **Business Flow** | [knowledge/business-flows.md](knowledge/business-flows.md) |
 
 ---
 
-## 6. Changelog
+## 3. Quy tắc "Bất khả xâm phạm" (Core Rules)
 
-_(Agent tự cập nhật sau mỗi lần thay đổi lớn)_
+1.  **Server Actions First**: Ưu tiên gọi API qua Server Actions (được bọc bởi `next-safe-action`), hạn chế `useEffect`.
+2.  **Client Component tối thiểu**: Chỉ dùng `use client` ở lá (leaf nodes).
+3.  **Tailwind 4 + Shadcn**: Không viết CSS thuần nếu không cần thiết. Dùng utility classes.
 
-- [2026-01-16] Khởi tạo portable .agent với đầy đủ knowledge base.
+---
+
+## 4. Cần giúp đỡ?
+
+- **Hỏi AI**: "Làm sao để thêm một page mới chuẩn architecture?"
+- **Hỏi PM**: Tham khảo [pm-operation-guide.md](../../pm-operation-guide.md) ở root.
