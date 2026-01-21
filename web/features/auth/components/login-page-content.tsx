@@ -279,260 +279,243 @@ export function LoginPageContent() {
       initial="hidden"
       animate="visible"
       variants={sectionVariants}
-      className="w-full"
+      className="w-full flex justify-center py-20"
     >
-      <GlassCard
-        className="p-8 border-none shadow-none bg-transparent"
-        variant="default"
-      >
-        <div className="mb-10 text-center space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em] mx-auto">
-            <div className="size-1.5 rounded-full bg-accent animate-pulse" />
-            <span>Secure Access</span>
+      <div className="w-full max-w-md relative z-10">
+        {/* Glow Effect */}
+        <div className="absolute -inset-10 bg-accent/20 blur-[100px] rounded-full opacity-50 pointer-events-none" />
+
+        <div className="glass-premium rounded-[3rem] p-8 md:p-12 border border-white/10 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.5)]">
+          <div className="mb-12 text-center space-y-6">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em] mx-auto shadow-lg">
+              <div className="size-1.5 rounded-full bg-accent animate-pulse" />
+              <span>Secure Access</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-foreground leading-none">
+              {t("title")}
+            </h1>
+            <p className="text-muted-foreground font-serif italic text-lg leading-relaxed">
+              Welcome back to <span className="text-foreground font-medium">Luxe</span>
+            </p>
           </div>
-          <h1 className="text-5xl font-bold tracking-tighter text-foreground uppercase leading-none">
-            {t("title")}
-          </h1>
-          <p className="text-muted-foreground/60 font-serif italic text-lg leading-none">
-            Welcome back to luxury
-          </p>
-        </div>
 
-        <m.form layout action={handleAction} className="space-y-6" noValidate>
-          {mfaRequired ? (
-            <m.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="space-y-6"
-            >
-              <div className="flex flex-col items-center justify-center space-y-4 text-center">
-                <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center text-primary">
-                  <ShieldCheck size={32} />
-                </div>
-                <div className="space-y-1">
-                  <h3 className="font-bold text-lg">{t("twoFactor.title")}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {t("twoFactor.description")}
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="otp" className="text-foreground/80 font-bold">
-                  {t("twoFactor.otpLabel")}
-                </Label>
-                <Input
-                  id="otp"
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value)}
-                  placeholder={t("twoFactor.otpPlaceholder")}
-                  maxLength={6}
-                  className="text-center text-2xl tracking-[0.5em] font-mono h-14 bg-foreground/3 border-foreground/10"
-                />
-              </div>
-
-              <GlassButton
-                type="button"
-                onClick={handle2FASubmit}
-                disabled={isVerifying2FA || otpCode.length < 6}
-                className="w-full h-12 text-base font-black bg-primary hover:opacity-90 text-primary-foreground"
+          <m.form layout action={handleAction} className="space-y-6" noValidate>
+            {mfaRequired ? (
+              <m.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="space-y-6"
               >
-                {isVerifying2FA
-                  ? t("twoFactor.verifying")
-                  : t("twoFactor.verify")}
-              </GlassButton>
+                {/* MFA Form Content */}
+                <div className="flex flex-col items-center justify-center space-y-4 text-center">
+                  <div className="h-20 w-20 glass-premium rounded-full flex items-center justify-center text-accent shadow-xl">
+                    <ShieldCheck size={36} />
+                  </div>
+                  <div className="space-y-2">
+                    <h3 className="font-bold text-xl">{t("twoFactor.title")}</h3>
+                    <p className="text-sm text-muted-foreground/80 max-w-[200px] mx-auto">
+                      {t("twoFactor.description")}
+                    </p>
+                  </div>
+                </div>
 
-              <button
-                type="button"
-                onClick={() => setMfaRequired(false)}
-                className="w-full text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {t("twoFactor.backToLogin")}
-              </button>
-            </m.div>
-          ) : (
-            <>
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-foreground/80 font-bold">
-                  {t("emailLabel")}
-                </Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder={t("emailPlaceholder")}
-                  className={`bg-foreground/3 border-foreground/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/50 h-12 rounded-2xl ${
-                    localErrors.email ? "border-red-500" : ""
-                  }`}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    // Validate on input
-                    const result = loginSchema.shape.email.safeParse(value);
-                    if (result.success) {
-                      const newErrors = { ...localErrors };
-                      delete newErrors.email;
-                      setLocalErrors(newErrors);
-                    } else {
-                      if (localErrors.email) {
-                        const result = loginSchema.shape.email.safeParse(value);
-                        if (result.success) {
-                          const newErrors = { ...localErrors };
-                          delete newErrors.email;
-                          setLocalErrors(newErrors);
-                        } else {
-                          // Update error message to reflect current state?
-                          setLocalErrors({
-                            ...localErrors,
-                            email: result.error.flatten().formErrors,
-                          });
-                        }
-                      }
-                    }
-                  }}
-                />
-                <AnimatedError message={localErrors.email?.[0]} />
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <Label
-                    htmlFor="password"
-                    className="text-foreground/80 font-bold"
-                  >
-                    {t("passwordLabel")}
+                <div className="space-y-3">
+                  <Label htmlFor="otp" className="text-xs font-black uppercase tracking-widest text-muted-foreground pl-1">
+                    {t("twoFactor.otpLabel")}
                   </Label>
-                  <Link
-                    href="/forgot-password"
-                    className="text-xs text-primary hover:text-primary/80 transition-colors font-bold"
-                  >
-                    {t("forgotPassword")}
-                  </Link>
+                  <Input
+                    id="otp"
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value)}
+                    placeholder={t("twoFactor.otpPlaceholder")}
+                    maxLength={6}
+                    className="text-center text-3xl tracking-[0.5em] font-mono h-16 bg-white/5 border-white/10 rounded-2xl focus:ring-accent/50 focus:border-accent"
+                  />
                 </div>
-                <PasswordInput
-                  id="password"
-                  name="password"
-                  placeholder={t("passwordPlaceholder")}
-                  className={`bg-foreground/3 border-foreground/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/50 h-12 rounded-2xl ${
-                    localErrors.password ? "border-red-500" : ""
-                  }`}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    if (localErrors.password) {
-                      const result =
-                        loginSchema.shape.password.safeParse(value);
+
+                <button
+                  type="button"
+                  onClick={handle2FASubmit}
+                  disabled={isVerifying2FA || otpCode.length < 6}
+                  className="w-full h-14 rounded-full bg-foreground text-background font-black text-xs uppercase tracking-widest hover:scale-[1.02] hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100"
+                >
+                  {isVerifying2FA
+                    ? t("twoFactor.verifying")
+                    : t("twoFactor.verify")}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setMfaRequired(false)}
+                  className="w-full text-xs font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors py-2"
+                >
+                  {t("twoFactor.backToLogin")}
+                </button>
+              </m.div>
+            ) : (
+              <>
+                <div className="space-y-3">
+                  <Label htmlFor="email" className="text-xs font-black uppercase tracking-widest text-muted-foreground pl-1">
+                    {t("emailLabel")}
+                  </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="name@example.com"
+                    className={`bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground/30 focus:border-accent/50 focus:ring-accent/50 h-14 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:bg-white/10 px-5 text-base ${
+                      localErrors.email ? "border-destructive/50 ring-destructive/20" : ""
+                    }`}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      // Validate on input
+                      const result = loginSchema.shape.email.safeParse(value);
                       if (result.success) {
                         const newErrors = { ...localErrors };
-                        delete newErrors.password;
+                        delete newErrors.email;
                         setLocalErrors(newErrors);
-                      } else {
-                        setLocalErrors({
-                          ...localErrors,
-                          password: result.error.flatten().formErrors,
-                        });
                       }
+                    }}
+                  />
+                  <AnimatedError message={localErrors.email?.[0]} />
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center pl-1 pr-1">
+                    <Label
+                      htmlFor="password"
+                      className="text-xs font-black uppercase tracking-widest text-muted-foreground"
+                    >
+                      {t("passwordLabel")}
+                    </Label>
+                    <Link
+                      href="/forgot-password"
+                      className="text-[10px] font-bold uppercase tracking-wider text-accent hover:text-accent/80 transition-colors"
+                    >
+                      {t("forgotPassword")}
+                    </Link>
+                  </div>
+                  <PasswordInput
+                    id="password"
+                    name="password"
+                    placeholder="••••••••"
+                    className={`bg-white/5 border-white/10 text-foreground placeholder:text-muted-foreground/30 focus:border-accent/50 focus:ring-accent/50 h-14 rounded-2xl backdrop-blur-sm transition-all duration-300 hover:bg-white/10 px-5 text-base ${
+                      localErrors.password ? "border-destructive/50 ring-destructive/20" : ""
+                    }`}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      if (localErrors.password) {
+                        const result =
+                          loginSchema.shape.password.safeParse(value);
+                        if (result.success) {
+                          const newErrors = { ...localErrors };
+                          delete newErrors.password;
+                          setLocalErrors(newErrors);
+                        }
+                      }
+                    }}
+                  />
+                  <AnimatedError message={localErrors.password?.[0]} />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full h-14 rounded-full bg-foreground text-background font-black text-xs uppercase tracking-widest hover:scale-[1.02] hover:shadow-[0_10px_40px_-10px_rgba(255,255,255,0.2)] transition-all duration-500 shadow-2xl flex items-center justify-center gap-2 mt-4"
+                  disabled={isPending}
+                >
+                  {isPending ? (
+                    <div className="size-4 border-2 border-background border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    t("submit")
+                  )}
+                </button>
+
+                <div className="relative flex items-center gap-4 my-8">
+                  <span className="flex-1 border-t border-white/10" />
+                  <span className="text-[10px] uppercase text-muted-foreground/50 font-black tracking-[0.2em] bg-background/0 px-2">
+                    {t("orContinueWith")}
+                  </span>
+                  <span className="flex-1 border-t border-white/10" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <GlassButton
+                    type="button"
+                    variant="ghost"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    onClick={() =>
+                      (window.location.href = `${
+                        env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ||
+                        "http://localhost:8080"
+                      }/auth/google`)
                     }
-                  }}
-                />
-                <AnimatedError message={localErrors.password?.[0]} />
-              </div>
-
-              <GlassButton
-                type="submit"
-                className="w-full h-12 text-base font-black bg-primary hover:opacity-90 text-primary-foreground shadow-xl shadow-primary/20"
-                loading={isPending}
-              >
-                {t("submit")}
-              </GlassButton>
-
-              <div className="flex items-center gap-4 my-6">
-                <span className="flex-1 border-t border-black/10 dark:border-white/10" />
-                <span className="text-xs uppercase text-muted-foreground font-medium tracking-wider">
-                  {t("orContinueWith")}
-                </span>
-                <span className="flex-1 border-t border-black/10 dark:border-white/10" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <GlassButton
-                  type="button"
-                  variant="ghost"
-                  whileHover={{
-                    scale: 1.02,
-                  }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                  onClick={() =>
-                    (window.location.href = `${
-                      env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ||
-                      "http://localhost:8080"
-                    }/auth/google`)
-                  }
-                  className="bg-white/5 hover:bg-white/10 text-foreground border border-black/10 dark:border-white/10 h-12 rounded-xl flex items-center justify-center gap-3"
-                >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24">
-                    <path
-                      fill="currentColor"
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M5.84 14.09c-.22-.67-.35-1.39-.35-2.09s.13-1.42.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
-                    />
-                    <path
-                      fill="currentColor"
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    />
-                  </svg>
-                  <span className="font-medium">{t("google")}</span>
-                </GlassButton>
-                <GlassButton
-                  type="button"
-                  variant="ghost"
-                  whileHover={{
-                    scale: 1.02,
-                  }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                  onClick={() =>
-                    (window.location.href = `${
-                      env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ||
-                      "http://localhost:8080"
-                    }/auth/facebook`)
-                  }
-                  className="bg-[#1877F2]/10 hover:bg-[#1877F2]/20 text-[#1877F2] border border-[#1877F2]/20 h-12 rounded-xl flex items-center justify-center gap-3"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
+                    className="bg-white/5 hover:bg-white/10 text-foreground border border-white/10 h-14 rounded-2xl flex items-center justify-center gap-3 backdrop-blur-sm transition-all duration-300"
                   >
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                  <span className="font-medium">{t("facebook")}</span>
-                </GlassButton>
-              </div>
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                      <path
+                        fill="currentColor"
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-1 .67-2.28 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M5.84 14.09c-.22-.67-.35-1.39-.35-2.09s.13-1.42.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"
+                      />
+                      <path
+                        fill="currentColor"
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      />
+                    </svg>
+                    <span className="font-bold text-xs uppercase tracking-wider">{t("google")}</span>
+                  </GlassButton>
+                  <GlassButton
+                    type="button"
+                    variant="ghost"
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                    onClick={() =>
+                      (window.location.href = `${
+                        env.NEXT_PUBLIC_API_URL?.replace("/api/v1", "") ||
+                        "http://localhost:8080"
+                      }/auth/facebook`)
+                    }
+                    className="bg-[#1877F2]/10 hover:bg-[#1877F2]/20 text-[#1877F2] border border-[#1877F2]/20 h-14 rounded-2xl flex items-center justify-center gap-3 backdrop-blur-sm transition-all duration-300"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                    </svg>
+                    <span className="font-bold text-xs uppercase tracking-wider">{t("facebook")}</span>
+                  </GlassButton>
+                </div>
 
-              <div className="text-center text-sm text-muted-foreground/70 font-medium">
-                {t("noAccount")}{" "}
-                <Link
-                  href={
-                    callbackUrl && callbackUrl !== "/"
-                      ? `/register?callbackUrl=${encodeURIComponent(
-                          callbackUrl
-                        )}`
-                      : "/register"
-                  }
-                  className="text-primary hover:text-primary/80 transition-colors font-bold"
-                >
-                  {t("createAccount")}
-                </Link>
-              </div>
-            </>
-          )}
-        </m.form>
-      </GlassCard>
+                <div className="text-center text-xs text-muted-foreground/60 mt-6 font-medium">
+                  {t("noAccount")}{" "}
+                  <Link
+                    href={
+                      callbackUrl && callbackUrl !== "/"
+                        ? `/register?callbackUrl=${encodeURIComponent(
+                            callbackUrl
+                          )}`
+                        : "/register"
+                    }
+                    className="text-foreground hover:text-accent transition-colors font-black uppercase tracking-wide ml-1 underline underline-offset-4 decoration-white/20 hover:decoration-accent"
+                  >
+                    {t("createAccount")}
+                  </Link>
+                </div>
+              </>
+            )}
+          </m.form>
+        </div>
+      </div>
     </m.div>
   );
 }

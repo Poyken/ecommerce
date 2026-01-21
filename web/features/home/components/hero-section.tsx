@@ -89,198 +89,117 @@ export function HeroSection({
   const displayBadge = badge || t("newCollection");
 
   return (
-    <section className="relative min-h-[95vh] flex items-center bg-transparent overflow-hidden pt-20 selection:bg-accent/30">
-      {/* Background is handled by HomeWrapper (fixed) */}
+    <section className="relative min-h-[100vh] flex items-center justify-center bg-black overflow-hidden selection:bg-accent/30">
+      {/* Cinematic Background */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src={bgImage}
+          alt="Hero Background"
+          fill
+          priority
+          onLoad={() => setIsImageReady(true)}
+          className={cn(
+            "object-cover object-center transition-opacity duration-1000",
+            isImageReady ? "opacity-60" : "opacity-0"
+          )}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+        <div className="absolute inset-0 bg-black/20" />
+        {/* Grain Texture */}
+        <div className="absolute inset-0 texture-grain opacity-20" />
+      </div>
 
-      <div
-        className={cn(
-          "container relative z-10 grid grid-cols-1 gap-12 lg:gap-20 items-center md:px-12 max-w-8xl mx-auto",
-          alignment === "center" ? "text-center" : "lg:grid-cols-2"
-        )}
-      >
-        {/* Text Content */}
+      <div className="container relative z-10 px-4 md:px-12 max-w-7xl mx-auto text-center">
         <m.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className={cn(
-            "space-y-8 lg:space-y-12 order-2 lg:order-1",
-            alignment === "center" && "mx-auto max-w-4xl"
-          )}
+          className="space-y-8 flex flex-col items-center"
         >
           {displayBadge && (
             <m.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-premium border border-white/10 text-accent text-[10px] font-black uppercase tracking-[0.3em]"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.8 }}
+              className="inline-flex items-center gap-2 px-6 py-2 rounded-full glass-premium border border-white/10 text-white text-[11px] font-black uppercase tracking-[0.4em] shadow-[0_0_20px_rgba(255,255,255,0.1)]"
             >
-              <Sparkles className="size-3 animate-pulse" />
+              <Sparkles className="size-3 text-accent animate-pulse" />
               <span>{displayBadge}</span>
             </m.div>
           )}
 
-          <div className="space-y-8">
-            <h1 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-tighter leading-[0.85] bg-clip-text text-transparent bg-linear-to-b from-foreground to-foreground/40">
+          <div className="space-y-6 max-w-4xl mx-auto">
+            <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] text-white drop-shadow-2xl">
               <span className="block">{displayTitle}</span>
-              <span className="font-serif italic font-normal text-muted-foreground/60 block mt-4 px-1">
+              <span className="font-serif italic font-light text-white/50 block mt-2 text-4xl md:text-6xl">
                 {t("luxuryStyle")}
               </span>
             </h1>
 
-            <p
-              className={cn(
-                "text-xl text-muted-foreground/80 leading-relaxed font-medium max-w-2xl",
-                alignment === "center" && "mx-auto"
-              )}
-            >
+            <p className="text-lg md:text-xl text-white/70 leading-relaxed font-medium max-w-2xl mx-auto drop-shadow-lg">
               {displaySubtitle}
             </p>
           </div>
 
-          <div
-            className={cn(
-              "flex flex-col sm:flex-row gap-6 pt-6",
-              alignment === "center" ? "justify-center" : "justify-start"
-            )}
-          >
+          <div className="flex flex-col sm:flex-row gap-6 pt-8">
             <TypedLink href={(displayCtaLink || "#") as AppRoute}>
-              <button
-                className="group h-18 px-12 rounded-2xl bg-foreground text-background font-black text-xs uppercase tracking-widest transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:shadow-primary/10 cursor-pointer flex items-center gap-4"
-              >
+              <button className="group h-16 px-10 rounded-full bg-white text-black font-black text-xs uppercase tracking-widest transition-all duration-500 hover:scale-[1.05] hover:shadow-[0_0_40px_rgba(255,255,255,0.3)] cursor-pointer flex items-center gap-4">
                 {displayCtaText}
                 <ArrowRight className="size-4 transition-transform duration-500 group-hover:translate-x-1" />
               </button>
             </TypedLink>
 
             <TypedLink href={(secondaryCtaLink || "/about") as AppRoute}>
-              <GlassButton
-                variant="outline"
-                size="lg"
-                className="h-18 px-12 rounded-2xl border-white/10 text-foreground hover:bg-white/5 font-black text-xs uppercase tracking-widest transition-all duration-500 hover:scale-[1.03]"
-              >
+              <button className="h-16 px-10 rounded-full glass-premium border border-white/20 text-white hover:bg-white/10 font-black text-xs uppercase tracking-widest transition-all duration-500 hover:scale-[1.05]">
                 {secondaryCtaText || t("ourStory")}
-              </GlassButton>
+              </button>
             </TypedLink>
           </div>
-
-          {/* Bottom Features */}
-          <m.div
-            className={cn(
-              "flex flex-wrap items-center gap-x-16 gap-y-4 pt-12 border-t border-white/5",
-              alignment === "center" ? "justify-center" : "justify-start"
-            )}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-          >
-            {[
-              { label: t("freeShipping"), value: "Standard 0 VND" },
-              { label: t("premiumQuality"), value: "Grade A++ Luxury" },
-            ].map((item, idx) => (
-              <div key={idx} className="flex flex-col items-start gap-1">
-                <span className="text-[10px] uppercase tracking-[0.4em] text-accent font-black">
-                  {item.label}
-                </span>
-                <span className="text-xs font-medium text-muted-foreground/60">{item.value}</span>
-              </div>
-            ))}
-          </m.div>
         </m.div>
-
-        {/* Visual Content (Right Side) */}
-        {alignment === "left" && (
-          <m.div
-            initial={{ opacity: 0, x: 50, scale: 0.95 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            transition={{
-              duration: 1.2,
-              delay: 0.2,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            className="relative h-[65vh] lg:h-[90vh] min-h-[550px] w-full order-1 lg:order-2 group"
-          >
-            <div className="relative z-10 w-full h-full rounded-[3rem] lg:rounded-[4rem] overflow-hidden shadow-[0_0_100px_rgba(255,255,255,0.02)] border border-white/5 bg-cinematic/50 backdrop-blur-sm">
-              <AnimatePresence mode="wait">
-                {!isImageReady && (
-                  <m.div
-                    key="skeleton"
-                    exit={{ opacity: 0 }}
-                    className="absolute inset-0 z-20"
-                  >
-                    <Skeleton className="size-full rounded-none bg-white/5" />
-                  </m.div>
-                )}
-              </AnimatePresence>
-
-              <Image
-                src={bgImage}
-                alt="Hero Focus"
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-110"
-                priority
-                onLoad={() => setIsImageReady(true)}
-              />
-
-              {/* No dark overlay here intentionally for 'light' look */}
-
-              {showFeaturedCard && (
-                <m.div
-                  initial={{ y: 40, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{
-                    delay: 1.2,
-                    duration: 0.8,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
-                  className="absolute bottom-8 left-8 right-8"
-                >
-                  <div className="glass-premium p-8 rounded-4xl flex items-center justify-between border border-white/10 backdrop-blur-3xl shadow-2xl transition-all duration-500 hover:scale-[1.02] group/card">
-                    <div className="space-y-2">
-                      <div className="inline-flex items-center gap-2">
-                        <div className="size-2 rounded-full bg-accent animate-pulse" />
-                        <p className="text-[10px] text-accent font-black uppercase tracking-[0.3em]">
-                          {t("featuredLook")}
-                        </p>
-                      </div>
-                      <p className="text-2xl font-bold tracking-tight text-foreground/90">
-                        {displayFeaturedTitle}
-                      </p>
-                    </div>
-                    <div className="text-right pl-6">
-                      <span className="text-3xl font-black text-foreground italic tracking-tighter">
-                        {displayFeaturedPrice}
-                      </span>
-                    </div>
-                  </div>
-                </m.div>
-              )}
-            </div>
-
-            {/* Decorative Elements */}
-            <div className="absolute -z-10 -top-12 -right-12 size-64 border border-white/5 rounded-full blur-[2px] animate-pulse-glow" />
-            <div className="absolute -z-10 -bottom-12 -left-12 size-48 border border-white/10 rounded-full blur-[1px] animate-float" />
-          </m.div>
-        )}
       </div>
 
-      {/* Scroll indicator */}
+      {/* Featured Floating Card (Bottom Left) */}
+      {showFeaturedCard && (
+        <m.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 1, duration: 1 }}
+          className="absolute bottom-12 left-12 hidden lg:block z-20"
+        >
+          <div className="glass-premium p-6 rounded-3xl border border-white/10 backdrop-blur-xl shadow-2xl flex items-center gap-6 max-w-xs hover:scale-105 transition-transform duration-500">
+            <div className="size-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10">
+              <Sparkles className="size-6 text-accent" />
+            </div>
+            <div>
+              <p className="text-[10px] text-accent font-black uppercase tracking-widest mb-1">
+                {t("featuredLook")}
+              </p>
+              <p className="text-lg font-bold text-white leading-tight">
+                {displayFeaturedTitle}
+              </p>
+              <p className="text-white/50 text-sm mt-1">{displayFeaturedPrice}</p>
+            </div>
+          </div>
+        </m.div>
+      )}
+
+      {/* Scroll Indicator */}
       <m.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 pointer-events-none"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 pointer-events-none z-20"
       >
-        <span className="text-[10px] uppercase tracking-[0.5em] text-muted-foreground/40 font-black">
+        <span className="text-[10px] uppercase tracking-[0.5em] text-white/30 font-black">
           Scrolldown
         </span>
         <m.div
-          animate={{ y: [0, 15, 0], opacity: [0.2, 0.6, 0.2] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          className="w-px h-16 bg-linear-to-b from-accent to-transparent"
+          animate={{ y: [0, 10, 0], opacity: [0.2, 0.6, 0.2] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="w-px h-12 bg-gradient-to-b from-accent to-transparent"
         />
       </m.div>
     </section>
   );
 }
+

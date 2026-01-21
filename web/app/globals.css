@@ -125,8 +125,8 @@
 
 :root {
   /*
-   * MONOCHROME SYSTEM (Zinc/Slate)
-   * Concept: "Strict & Clean" - High Contrast, No Tint
+   * LUXE SYSTEM (Premium)
+   * Concept: "Deep & Rich" - High Contrast with Electric Accents
    */
   --background: oklch(1 0 0); /* Pure White */
   --foreground: oklch(0.129 0 0); /* Zinc-950 */
@@ -140,84 +140,84 @@
   --primary: oklch(0.129 0 0); /* Zinc-950 */
   --primary-foreground: oklch(0.98 0 0); /* Zinc-50 */
 
-  --secondary: oklch(0.96 0 0); /* Zinc-100 */
+  --secondary: oklch(0.97 0 0); /* Zinc-50/100 */
   --secondary-foreground: oklch(0.129 0 0);
 
-  --muted: oklch(0.96 0 0);
-  --muted-foreground: oklch(0.45 0 0); /* Zinc-500 */
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.55 0 0); /* Zinc-500 */
 
-  --accent: oklch(0.96 0 0); /* Zinc-100 */
-  --accent-foreground: oklch(0.129 0 0);
+  --accent: oklch(0.6 0.18 250); /* Electric Blue */
+  --accent-foreground: oklch(0.98 0 0);
 
-  --destructive: oklch(0.6 0.2 25); /* Keep Red for Errors */
+  --destructive: oklch(0.6 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --success: oklch(0.129 0 0); /* Monochrome Success (Black) */
+  --success: oklch(0.5 0.15 140); /* Emerald */
   --success-foreground: oklch(0.98 0 0);
 
-  --info: oklch(0.129 0 0); /* Monochrome Info */
+  --info: oklch(0.6 0.18 250); /* Blue */
   --info-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.9 0 0); /* Zinc-200 */
-  --input: oklch(0.9 0 0);
-  --ring: oklch(0.129 0 0);
+  --border: oklch(0.92 0 0);
+  --input: oklch(0.92 0 0);
+  --ring: oklch(0.6 0.18 250); /* Match Accent */
 
-  --radius: 0.5rem;
+  --radius: 0.75rem;
 
   /* Chart Colors */
-  --chart-1: oklch(0.55 0.22 260);
-  --chart-2: oklch(0.6 0.18 300);
-  --chart-3: oklch(0.5 0.15 200);
-  --chart-4: oklch(0.7 0.15 60);
+  --chart-1: oklch(0.6 0.18 250);
+  --chart-2: oklch(0.55 0.2 300);
+  --chart-3: oklch(0.7 0.15 200);
+  --chart-4: oklch(0.65 0.15 50);
   --chart-5: oklch(0.7 0.15 150);
 
-  /* Aurora Glow Colors */
+  /* Aurora Glow Colors - Updated for Electric Vibe */
   --aurora-blue: oklch(0.6 0.18 250);
-  --aurora-purple: oklch(0.65 0.15 300);
-  --aurora-orange: oklch(0.7 0.15 45);
+  --aurora-purple: oklch(0.55 0.25 300);
+  --aurora-orange: oklch(0.65 0.2 40);
 }
 
 .dark {
-  --background: oklch(0.1 0 0); /* Zinc-950 */
-  --foreground: oklch(0.98 0 0); /* Zinc-50 */
+  --background: oklch(0.05 0 0); /* Almost Black */
+  --foreground: oklch(0.98 0 0);
 
-  --card: oklch(0.1 0 0);
+  --card: oklch(0.08 0 0); /* Dark Zinc */
   --card-foreground: oklch(0.98 0 0);
 
-  --popover: oklch(0.1 0 0);
+  --popover: oklch(0.08 0 0);
   --popover-foreground: oklch(0.98 0 0);
 
-  --primary: oklch(0.98 0 0); /* Zinc-50 */
-  --primary-foreground: oklch(0.1 0 0); /* Zinc-950 */
+  --primary: oklch(0.98 0 0);
+  --primary-foreground: oklch(0.05 0 0);
 
-  --secondary: oklch(0.2 0 0); /* Zinc-800 */
+  --secondary: oklch(0.12 0 0);
   --secondary-foreground: oklch(0.98 0 0);
 
-  --muted: oklch(0.2 0 0);
+  --muted: oklch(0.12 0 0);
   --muted-foreground: oklch(0.65 0 0);
 
-  --accent: oklch(0.2 0 0);
+  --accent: oklch(0.6 0.18 250); /* Electric Blue */
   --accent-foreground: oklch(0.98 0 0);
 
   --destructive: oklch(0.4 0.15 25);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --success: oklch(0.98 0 0); /* Monochrome */
-  --success-foreground: oklch(0.1 0 0);
+  --success: oklch(0.5 0.15 140);
+  --success-foreground: oklch(0.98 0 0);
 
-  --info: oklch(0.98 0 0);
-  --info-foreground: oklch(0.1 0 0);
+  --info: oklch(0.6 0.18 250);
+  --info-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.2 0 0); /* Zinc-800 */
-  --input: oklch(0.2 0 0);
-  --ring: oklch(0.8 0 0);
+  --border: oklch(0.15 0 0);
+  --input: oklch(0.15 0 0);
+  --ring: oklch(0.6 0.18 250);
 
   /* Chart Colors */
-  --chart-1: oklch(0.65 0.22 260);
-  --chart-2: oklch(0.7 0.15 320);
-  --chart-3: oklch(0.6 0.15 220);
-  --chart-4: oklch(0.8 0.15 80);
-  --chart-5: oklch(0.7 0.15 160);
+  --chart-1: oklch(0.65 0.18 250);
+  --chart-2: oklch(0.6 0.2 300);
+  --chart-3: oklch(0.7 0.15 220);
+  --chart-4: oklch(0.8 0.15 50);
+  --chart-5: oklch(0.75 0.15 160);
 }
 
 @layer utilities {

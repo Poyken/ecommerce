@@ -101,29 +101,23 @@ export function ProductCardBase({
         "group relative rounded-3xl overflow-hidden transition-all duration-500",
         // Default variant
         variant === "default" && "bg-white dark:bg-card border border-neutral-100 dark:border-white/5 shadow-sm",
-        // Luxury variant
-        variant === "luxury" && "bg-neutral-900 text-white border border-white/10 shadow-2xl",
+        // Luxury variant (Updated)
+        variant === "luxury" && "glass-premium bg-black/40 backdrop-blur-3xl border border-white/10 text-white shadow-2xl",
         // Glass variant
         variant === "glass" && "glass-premium backdrop-blur-2xl border border-white/20 text-foreground dark:text-white shadow-2xl",
-        "hover:shadow-2xl hover:shadow-accent/10",
-        variant !== "luxury" && "hover:border-accent/30 dark:hover:border-accent/20",
+        "hover:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] hover:border-accent/50 hover:ring-1 hover:ring-accent/50",
         className
       )}
       onMouseEnter={handleMouseEnter}
-      whileHover={!isCompact ? { y: -12 } : {}}
+      whileHover={!isCompact ? { y: -8, scale: 1.02 } : {}}
       transition={{
         type: "spring",
         stiffness: 400,
         damping: 30,
-        layout: {
-          type: "spring",
-          stiffness: 260,
-          damping: 35,
-        },
       }}
     >
       {/* A. IMAGE CONTAINER */}
-      <div className="relative aspect-4/5 overflow-hidden bg-neutral-50 dark:bg-neutral-900">
+      <div className="relative aspect-[3/4] overflow-hidden bg-neutral-100 dark:bg-neutral-900">
         <Link href={`/products/${id}`} className="relative block w-full h-full">
           <OptimizedImage
             src={imageUrl || "/images/placeholders/product-placeholder.jpg"}
@@ -137,7 +131,7 @@ export function ProductCardBase({
         </Link>
 
         {/* Overlay Gradient */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 transition-opacity duration-500 pointer-events-none" />
 
         {/* B. BADGES */}
         <div
@@ -149,7 +143,7 @@ export function ProductCardBase({
           {isNew && (
             <span
               key="badge-new"
-              className="w-fit bg-accent/90 text-accent-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg"
+              className="w-fit bg-accent text-white text-[10px] font-black px-3 py-1 uppercase tracking-[0.2em] rounded-full shadow-lg border border-white/20 backdrop-blur-md"
             >
               {t("new")}
             </span>
@@ -160,7 +154,7 @@ export function ProductCardBase({
               key="badge-low-stock"
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="w-fit bg-orange-500/90 text-white text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg animate-pulse"
+              className="w-fit bg-orange-500 text-white text-[10px] font-black px-3 py-1 uppercase tracking-[0.15em] rounded-full shadow-lg animate-pulse"
             >
               {t("lowStock") || "Low Stock"}
             </m.span>
@@ -169,7 +163,7 @@ export function ProductCardBase({
           {!isNew && isHot && (
             <span
               key="badge-hot"
-              className="w-fit bg-primary/90 text-primary-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg"
+              className="w-fit bg-white text-black text-[10px] font-black px-3 py-1 uppercase tracking-[0.2em] rounded-full shadow-lg border border-white/20"
             >
               {t("hot")}
             </span>
@@ -178,7 +172,7 @@ export function ProductCardBase({
           {!isNew && !isHot && isSale && discountPercentage > 0 && (
             <span
               key="badge-sale"
-              className="w-fit bg-destructive/90 text-destructive-foreground text-[10px] font-black px-3 py-1.5 uppercase tracking-[0.15em] backdrop-blur-md rounded-full shadow-lg"
+              className="w-fit bg-destructive text-white text-[10px] font-black px-3 py-1 uppercase tracking-[0.15em] rounded-full shadow-lg"
             >
               -{discountPercentage}%
             </span>
