@@ -93,7 +93,7 @@ export class TenantsService {
             'user:read',
           ];
 
-          let permissions = await tx.permission.findMany({
+          const permissions = await tx.permission.findMany({
             where: { name: { in: defaultPermissions } },
           });
 

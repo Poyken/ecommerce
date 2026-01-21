@@ -30,12 +30,17 @@ const colors = {
   bold: '\x1b[1m',
 };
 
-const log = (msg: string, type: 'INFO' | 'SUCCESS' | 'ERROR' | 'WARN' = 'INFO') => {
+const log = (
+  msg: string,
+  type: 'INFO' | 'SUCCESS' | 'ERROR' | 'WARN' = 'INFO',
+) => {
   let color = colors.cyan;
   if (type === 'SUCCESS') color = colors.green;
   if (type === 'ERROR') color = colors.red;
   if (type === 'WARN') color = colors.yellow;
-  console.log(`${colors.bold}${LOG_PREFIX}${colors.reset} ${color}[${type}]${colors.reset} ${msg}`);
+  console.log(
+    `${colors.bold}${LOG_PREFIX}${colors.reset} ${color}[${type}]${colors.reset} ${msg}`,
+  );
 };
 
 // Test data
@@ -79,7 +84,10 @@ async function main() {
   log('=== PHASE 1: TENANT ONBOARDING ===', 'INFO');
   try {
     log(`Creating new tenant: ${NEW_TENANT.name}`, 'INFO');
-    const res = await axios.post(`${API_URL}/tenants/public-register`, NEW_TENANT);
+    const res = await axios.post(
+      `${API_URL}/tenants/public-register`,
+      NEW_TENANT,
+    );
 
     if (res.status === 201 || res.status === 200) {
       tenantId = res.data.data?.id || res.data.id;
@@ -96,7 +104,10 @@ async function main() {
       log('⚠️ Tenant already exists, trying to login...', 'WARN');
       tenantDomain = NEW_TENANT.domain;
     } else {
-      log(`❌ Tenant creation error: ${error.response?.data?.message || error.message}`, 'ERROR');
+      log(
+        `❌ Tenant creation error: ${error.response?.data?.message || error.message}`,
+        'ERROR',
+      );
       process.exit(1);
     }
   }
@@ -109,12 +120,15 @@ async function main() {
     const res = await axios.post(
       `${API_URL}/auth/login`,
       { email: NEW_TENANT.adminEmail, password: NEW_TENANT.adminPassword },
-      { headers: { 'x-tenant-domain': tenantDomain } }
+      { headers: { 'x-tenant-domain': tenantDomain } },
     );
     adminToken = res.data.data?.accessToken || res.data.accessToken;
     log(`✅ Admin logged in: ${NEW_TENANT.adminEmail}`, 'SUCCESS');
   } catch (error: any) {
-    log(`❌ Admin login failed: ${error.response?.data?.message || error.message}`, 'ERROR');
+    log(
+      `❌ Admin login failed: ${error.response?.data?.message || error.message}`,
+      'ERROR',
+    );
     log(`   Note: Tenant may not have been activated yet`, 'WARN');
     process.exit(1);
   }
@@ -129,7 +143,9 @@ async function main() {
     const plans = plansRes.data.data || plansRes.data;
     if (plans.length > 0) {
       log(`✅ Found ${plans.length} subscription plans`, 'SUCCESS');
-      plans.forEach((p: any) => log(`   - ${p.name}: ${p.monthlyPrice} VND/month`, 'INFO'));
+      plans.forEach((p: any) =>
+        log(`   - ${p.name}: ${p.monthlyPrice} VND/month`, 'INFO'),
+      );
     }
 
     // Try to get current subscription
@@ -155,7 +171,7 @@ async function main() {
               frequency: 'MONTHLY',
               paymentMethod: 'VNPAY',
             },
-            { headers: tenantHeaders() }
+            { headers: tenantHeaders() },
           );
           subscriptionId = purchaseRes.data.data?.subscription?.id || '';
           log(`✅ Subscription purchased: ${subscriptionId}`, 'SUCCESS');
@@ -165,7 +181,7 @@ async function main() {
             await axios.post(
               `${API_URL}/subscription/dev/activate/${subscriptionId}`,
               {},
-              { headers: tenantHeaders() }
+              { headers: tenantHeaders() },
             );
             log('✅ Payment simulated (PAID)', 'SUCCESS');
           }
@@ -173,7 +189,10 @@ async function main() {
       }
     }
   } catch (error: any) {
-    log(`⚠️ Subscription check/purchase: ${error.response?.data?.message || error.message}`, 'WARN');
+    log(
+      `⚠️ Subscription check/purchase: ${error.response?.data?.message || error.message}`,
+      'WARN',
+    );
     // Continue anyway - subscription might not be required
   }
 
@@ -184,7 +203,9 @@ async function main() {
   try {
     // First, get or create a category
     let categoryId = '';
-    const catsRes = await axios.get(`${API_URL}/categories`, { headers: tenantHeaders() });
+    const catsRes = await axios.get(`${API_URL}/categories`, {
+      headers: tenantHeaders(),
+    });
     const cats = catsRes.data.data || catsRes.data || [];
     if (cats.length > 0) {
       categoryId = cats[0].id;
@@ -193,7 +214,7 @@ async function main() {
       const newCat = await axios.post(
         `${API_URL}/categories`,
         { name: 'General', slug: 'general' },
-        { headers: tenantHeaders() }
+        { headers: tenantHeaders() },
       );
       categoryId = newCat.data.data?.id || newCat.data.id;
       log('✅ Created category: General', 'SUCCESS');
@@ -201,7 +222,9 @@ async function main() {
 
     // Get or create brand
     let brandId = '';
-    const brandsRes = await axios.get(`${API_URL}/brands`, { headers: tenantHeaders() });
+    const brandsRes = await axios.get(`${API_URL}/brands`, {
+      headers: tenantHeaders(),
+    });
     const brands = brandsRes.data.data || brandsRes.data || [];
     if (brands.length > 0) {
       brandId = brands[0].id;
@@ -210,7 +233,7 @@ async function main() {
       const newBrand = await axios.post(
         `${API_URL}/brands`,
         { name: 'Default Brand' },
-        { headers: tenantHeaders() }
+        { headers: tenantHeaders() },
       );
       brandId = newBrand.data.data?.id || newBrand.data.id;
       log('✅ Created brand: Default Brand', 'SUCCESS');
@@ -226,10 +249,13 @@ async function main() {
         brandId,
         options: [{ name: 'Size', values: ['M', 'L', 'XL'] }],
       },
-      { headers: tenantHeaders() }
+      { headers: tenantHeaders() },
     );
     productId = productRes.data.data?.id || productRes.data.id;
-    log(`✅ Product created: ${productRes.data.data?.name || 'SaaS Demo Product'}`, 'SUCCESS');
+    log(
+      `✅ Product created: ${productRes.data.data?.name || 'SaaS Demo Product'}`,
+      'SUCCESS',
+    );
 
     // Create SKU
     const skuRes = await axios.post(
@@ -242,17 +268,22 @@ async function main() {
         status: 'ACTIVE',
         options: [{ name: 'Size', value: 'L' }],
       },
-      { headers: tenantHeaders() }
+      { headers: tenantHeaders() },
     );
     skuId = skuRes.data.data?.id || skuRes.data.id;
     log(`✅ SKU created: SAAS-SKU-${UNIQUE_ID} (2,500,000 VND)`, 'SUCCESS');
   } catch (error: any) {
-    log(`❌ Product creation failed: ${error.response?.data?.message || error.message}`, 'ERROR');
+    log(
+      `❌ Product creation failed: ${error.response?.data?.message || error.message}`,
+      'ERROR',
+    );
     log(`   Response: ${JSON.stringify(error.response?.data)}`, 'ERROR');
 
     // Try to get existing products
     try {
-      const prodsRes = await axios.get(`${API_URL}/products?limit=1`, { headers: tenantHeaders() });
+      const prodsRes = await axios.get(`${API_URL}/products?limit=1`, {
+        headers: tenantHeaders(),
+      });
       const prods = prodsRes.data.data || [];
       if (prods.length > 0 && prods[0].skus?.length > 0) {
         productId = prods[0].id;
@@ -272,20 +303,19 @@ async function main() {
   log('=== PHASE 5: CUSTOMER PURCHASE FLOW ===', 'INFO');
   try {
     // Register customer
-    await axios.post(
-      `${API_URL}/auth/register`,
-      TEST_CUSTOMER,
-      { headers: { 'x-tenant-domain': tenantDomain } }
-    );
+    await axios.post(`${API_URL}/auth/register`, TEST_CUSTOMER, {
+      headers: { 'x-tenant-domain': tenantDomain },
+    });
     log(`✅ Customer registered: ${TEST_CUSTOMER.email}`, 'SUCCESS');
 
     // Login customer
     const loginRes = await axios.post(
       `${API_URL}/auth/login`,
       { email: TEST_CUSTOMER.email, password: TEST_CUSTOMER.password },
-      { headers: { 'x-tenant-domain': tenantDomain } }
+      { headers: { 'x-tenant-domain': tenantDomain } },
     );
-    customerToken = loginRes.data.data?.accessToken || loginRes.data.accessToken;
+    customerToken =
+      loginRes.data.data?.accessToken || loginRes.data.accessToken;
     log('✅ Customer logged in', 'SUCCESS');
 
     const customerHeaders = {
@@ -295,7 +325,11 @@ async function main() {
     };
 
     // Add to cart
-    await axios.post(`${API_URL}/cart`, { skuId, quantity: 1 }, { headers: customerHeaders });
+    await axios.post(
+      `${API_URL}/cart`,
+      { skuId, quantity: 1 },
+      { headers: customerHeaders },
+    );
     log('✅ Added to cart', 'SUCCESS');
 
     // Create order (COD)
@@ -310,14 +344,17 @@ async function main() {
         shippingWard: 'Ben Nghe',
         paymentMethod: 'COD',
       },
-      { headers: customerHeaders }
+      { headers: customerHeaders },
     );
     orderId = orderRes.data.data.id;
     log(`✅ Order created: ${orderId}`, 'SUCCESS');
     log(`   Total: ${orderRes.data.data.totalAmount} VND`, 'INFO');
     log(`   Status: PENDING`, 'INFO');
   } catch (error: any) {
-    log(`❌ Customer flow failed: ${error.response?.data?.message || error.message}`, 'ERROR');
+    log(
+      `❌ Customer flow failed: ${error.response?.data?.message || error.message}`,
+      'ERROR',
+    );
     process.exit(1);
   }
 
@@ -330,7 +367,7 @@ async function main() {
     await axios.patch(
       `${API_URL}/orders/${orderId}/status`,
       { status: 'PROCESSING' },
-      { headers: tenantHeaders() }
+      { headers: tenantHeaders() },
     );
     log('✅ Order → PROCESSING', 'SUCCESS');
 
@@ -338,7 +375,7 @@ async function main() {
     await axios.patch(
       `${API_URL}/orders/${orderId}/status`,
       { status: 'SHIPPED' },
-      { headers: tenantHeaders() }
+      { headers: tenantHeaders() },
     );
     log('✅ Order → SHIPPED', 'SUCCESS');
 
@@ -346,11 +383,14 @@ async function main() {
     await axios.patch(
       `${API_URL}/orders/${orderId}/status`,
       { status: 'DELIVERED' },
-      { headers: tenantHeaders() }
+      { headers: tenantHeaders() },
     );
     log('✅ Order → DELIVERED', 'SUCCESS');
   } catch (error: any) {
-    log(`❌ Fulfillment failed: ${error.response?.data?.message || error.message}`, 'ERROR');
+    log(
+      `❌ Fulfillment failed: ${error.response?.data?.message || error.message}`,
+      'ERROR',
+    );
   }
 
   // =====================================================================

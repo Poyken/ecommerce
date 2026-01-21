@@ -29,12 +29,17 @@ const colors = {
   bold: '\x1b[1m',
 };
 
-const log = (msg: string, type: 'INFO' | 'SUCCESS' | 'ERROR' | 'WARN' = 'INFO') => {
+const log = (
+  msg: string,
+  type: 'INFO' | 'SUCCESS' | 'ERROR' | 'WARN' = 'INFO',
+) => {
   let color = colors.cyan;
   if (type === 'SUCCESS') color = colors.green;
   if (type === 'ERROR') color = colors.red;
   if (type === 'WARN') color = colors.yellow;
-  console.log(`${colors.bold}${LOG_PREFIX}${colors.reset} ${color}[${type}]${colors.reset} ${msg}`);
+  console.log(
+    `${colors.bold}${LOG_PREFIX}${colors.reset} ${color}[${type}]${colors.reset} ${msg}`,
+  );
 };
 
 // Test data
@@ -66,7 +71,10 @@ async function main() {
     superAdminToken = res.data.data?.accessToken || res.data.accessToken;
     log('✅ Super Admin logged in successfully', 'SUCCESS');
   } catch (error: any) {
-    log(`❌ Super Admin login failed: ${error.response?.data?.message || error.message}`, 'ERROR');
+    log(
+      `❌ Super Admin login failed: ${error.response?.data?.message || error.message}`,
+      'ERROR',
+    );
     process.exit(1);
   }
 
@@ -81,7 +89,9 @@ async function main() {
   // =====================================================================
   log('=== PHASE 2: VERIFY PRODUCTS ===', 'INFO');
   try {
-    const res = await axios.get(`${API_URL}/products?limit=1`, { headers: adminHeaders });
+    const res = await axios.get(`${API_URL}/products?limit=1`, {
+      headers: adminHeaders,
+    });
     const products = res.data.data;
     if (products.length === 0) {
       log('❌ No products found. Please run seed first.', 'ERROR');
@@ -91,17 +101,25 @@ async function main() {
     log(`✅ Found product: ${product.name}`, 'SUCCESS');
 
     // Get SKU
-    const detailRes = await axios.get(`${API_URL}/products/${product.id}`, { headers: adminHeaders });
+    const detailRes = await axios.get(`${API_URL}/products/${product.id}`, {
+      headers: adminHeaders,
+    });
     const fullProduct = detailRes.data.data;
     if (fullProduct.skus && fullProduct.skus.length > 0) {
       skuId = fullProduct.skus[0].id;
-      log(`✅ Selected SKU: ${fullProduct.skus[0].skuCode} (Price: ${fullProduct.skus[0].price})`, 'SUCCESS');
+      log(
+        `✅ Selected SKU: ${fullProduct.skus[0].skuCode} (Price: ${fullProduct.skus[0].price})`,
+        'SUCCESS',
+      );
     } else {
       log('❌ Product has no SKUs', 'ERROR');
       process.exit(1);
     }
   } catch (error: any) {
-    log(`❌ Product fetch failed: ${error.response?.data?.message || error.message}`, 'ERROR');
+    log(
+      `❌ Product fetch failed: ${error.response?.data?.message || error.message}`,
+      'ERROR',
+    );
     process.exit(1);
   }
 
@@ -118,19 +136,23 @@ async function main() {
         firstName: TEST_CUSTOMER.firstName,
         lastName: TEST_CUSTOMER.lastName,
       },
-      { headers: { 'x-tenant-domain': 'localhost' } }
+      { headers: { 'x-tenant-domain': 'localhost' } },
     );
     log(`✅ Customer registered: ${TEST_CUSTOMER.email}`, 'SUCCESS');
 
     const loginRes = await axios.post(
       `${API_URL}/auth/login`,
       { email: TEST_CUSTOMER.email, password: TEST_CUSTOMER.password },
-      { headers: { 'x-tenant-domain': 'localhost' } }
+      { headers: { 'x-tenant-domain': 'localhost' } },
     );
-    customerToken = loginRes.data.data?.accessToken || loginRes.data.accessToken;
+    customerToken =
+      loginRes.data.data?.accessToken || loginRes.data.accessToken;
     log('✅ Customer logged in successfully', 'SUCCESS');
   } catch (error: any) {
-    log(`❌ Customer registration/login failed: ${error.response?.data?.message || error.message}`, 'ERROR');
+    log(
+      `❌ Customer registration/login failed: ${error.response?.data?.message || error.message}`,
+      'ERROR',
+    );
     process.exit(1);
   }
 
@@ -146,11 +168,17 @@ async function main() {
   log('=== PHASE 4: SHOPPING FLOW ===', 'INFO');
   try {
     // Add to cart
-    await axios.post(`${API_URL}/cart`, { skuId, quantity: 2 }, { headers: customerHeaders });
+    await axios.post(
+      `${API_URL}/cart`,
+      { skuId, quantity: 2 },
+      { headers: customerHeaders },
+    );
     log('✅ Added 2 items to cart', 'SUCCESS');
 
     // View cart
-    const cartRes = await axios.get(`${API_URL}/cart`, { headers: customerHeaders });
+    const cartRes = await axios.get(`${API_URL}/cart`, {
+      headers: customerHeaders,
+    });
     log(`✅ Cart total: ${cartRes.data.data?.totalAmount || 'N/A'}`, 'SUCCESS');
 
     // Create order with COD
@@ -165,7 +193,7 @@ async function main() {
         shippingWard: 'Ben Nghe',
         paymentMethod: 'COD',
       },
-      { headers: customerHeaders }
+      { headers: customerHeaders },
     );
     orderId = orderRes.data.data.id;
     const orderNumber = orderRes.data.data.orderNumber;
@@ -175,7 +203,10 @@ async function main() {
     log(`   - Total: ${totalAmount} VND`, 'INFO');
     log(`   - Status: PENDING`, 'INFO');
   } catch (error: any) {
-    log(`❌ Shopping flow failed: ${error.response?.data?.message || error.message}`, 'ERROR');
+    log(
+      `❌ Shopping flow failed: ${error.response?.data?.message || error.message}`,
+      'ERROR',
+    );
     process.exit(1);
   }
 
@@ -188,7 +219,7 @@ async function main() {
     await axios.patch(
       `${API_URL}/orders/${orderId}/status`,
       { status: 'PROCESSING' },
-      { headers: adminHeaders }
+      { headers: adminHeaders },
     );
     log('✅ Order PROCESSING', 'SUCCESS');
 
@@ -196,7 +227,7 @@ async function main() {
     await axios.patch(
       `${API_URL}/orders/${orderId}/status`,
       { status: 'SHIPPED' },
-      { headers: adminHeaders }
+      { headers: adminHeaders },
     );
     log('✅ Order SHIPPED', 'SUCCESS');
 
@@ -204,11 +235,14 @@ async function main() {
     await axios.patch(
       `${API_URL}/orders/${orderId}/status`,
       { status: 'DELIVERED' },
-      { headers: adminHeaders }
+      { headers: adminHeaders },
     );
     log('✅ Order DELIVERED', 'SUCCESS');
   } catch (error: any) {
-    log(`❌ Order fulfillment failed: ${error.response?.data?.message || error.message}`, 'ERROR');
+    log(
+      `❌ Order fulfillment failed: ${error.response?.data?.message || error.message}`,
+      'ERROR',
+    );
     log(`   Response: ${JSON.stringify(error.response?.data)}`, 'ERROR');
     process.exit(1);
   }
@@ -218,7 +252,9 @@ async function main() {
   // =====================================================================
   log('=== PHASE 6: VERIFICATION ===', 'INFO');
   try {
-    const orderRes = await axios.get(`${API_URL}/orders/${orderId}`, { headers: customerHeaders });
+    const orderRes = await axios.get(`${API_URL}/orders/${orderId}`, {
+      headers: customerHeaders,
+    });
     const finalOrder = orderRes.data.data;
     log(`✅ Final Order Status: ${finalOrder.status}`, 'SUCCESS');
     log(`   - Payment: ${finalOrder.paymentMethod}`, 'INFO');
@@ -230,7 +266,10 @@ async function main() {
       log(`⚠️ Expected DELIVERED, got ${finalOrder.status}`, 'WARN');
     }
   } catch (error: any) {
-    log(`❌ Verification failed: ${error.response?.data?.message || error.message}`, 'ERROR');
+    log(
+      `❌ Verification failed: ${error.response?.data?.message || error.message}`,
+      'ERROR',
+    );
   }
 
   // =====================================================================

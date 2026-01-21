@@ -1,4 +1,3 @@
-
 import {
   Controller,
   Get,
@@ -18,7 +17,13 @@ import { UpdatePromotionDto } from './dto/update-promotion.dto';
 import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/auth/permissions.guard';
 import { RequirePermissions } from '@/common/decorators/crud.decorators';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 
 @ApiTags('Coupons')
 @Controller('coupons')
@@ -31,8 +36,8 @@ export class CouponsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new coupon (Promotion with code)' })
   async create(@Body() createPromotionDto: CreatePromotionDto) {
-    // Force having a code if it's hitting the /coupons endpoint? 
-    // Or just let the service handle it. 
+    // Force having a code if it's hitting the /coupons endpoint?
+    // Or just let the service handle it.
     return this.promotionsService.create(createPromotionDto);
   }
 
@@ -49,7 +54,7 @@ export class CouponsController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('search') search?: string,
   ) {
-    // Reuse findAll from promotions. 
+    // Reuse findAll from promotions.
     // Ideally we filter by having a 'code' here, but the service might not support it yet.
     // For now, mapping /coupons to /promotions logic is the fix.
     return this.promotionsService.findAll({ page, limit, search });
@@ -69,7 +74,10 @@ export class CouponsController {
   @RequirePermissions('promotion:update')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update coupon' })
-  async update(@Param('id') id: string, @Body() updatePromotionDto: UpdatePromotionDto) {
+  async update(
+    @Param('id') id: string,
+    @Body() updatePromotionDto: UpdatePromotionDto,
+  ) {
     return this.promotionsService.update(id, updatePromotionDto);
   }
 

@@ -18,7 +18,7 @@ async function seedTenant() {
   const loginRes = await axios.post(
     `${API_URL}/auth/login`,
     { email: TENANT.adminEmail, password: TENANT.adminPassword },
-    { headers: { 'x-tenant-domain': TENANT.domain } }
+    { headers: { 'x-tenant-domain': TENANT.domain } },
   );
   const token = loginRes.data.data.accessToken;
   console.log('   ✅ Login successful');
@@ -36,7 +36,7 @@ async function seedTenant() {
     const catRes = await axios.post(
       `${API_URL}/categories`,
       { name: 'Furniture', slug: 'furniture' },
-      { headers }
+      { headers },
     );
     categoryId = catRes.data.data?.id || catRes.data.id;
     console.log(`   ✅ Category created: ${categoryId}`);
@@ -58,7 +58,7 @@ async function seedTenant() {
     const brandRes = await axios.post(
       `${API_URL}/brands`,
       { name: 'DemoShop Brand', slug: 'demoshop-brand' },
-      { headers }
+      { headers },
     );
     brandId = brandRes.data.data?.id || brandRes.data.id;
     console.log(`   ✅ Brand created: ${brandId}`);
@@ -75,13 +75,15 @@ async function seedTenant() {
         const minBrand = await axios.post(
           `${API_URL}/brands`,
           { name: 'Generic', slug: 'generic' },
-          { headers }
+          { headers },
         );
         brandId = minBrand.data.data?.id || minBrand.data.id;
         console.log(`   ✅ Created minimal brand: ${brandId}`);
       }
     } catch (e2: any) {
-      console.log(`   ❌ Brand error: ${e2.response?.data?.message || e2.message}`);
+      console.log(
+        `   ❌ Brand error: ${e2.response?.data?.message || e2.message}`,
+      );
       throw e2;
     }
   }
@@ -100,14 +102,19 @@ async function seedTenant() {
         brandId,
         options: [{ name: 'Color', values: ['Gray', 'Blue', 'White'] }],
       },
-      { headers }
+      { headers },
     );
     productId = prodRes.data.data?.id || prodRes.data.id;
     console.log(`   ✅ Product created: ${productId}`);
   } catch (e: any) {
-    console.log(`   ❌ Product error details:`, JSON.stringify(e.response?.data || e.message, null, 2));
+    console.log(
+      `   ❌ Product error details:`,
+      JSON.stringify(e.response?.data || e.message, null, 2),
+    );
     // Try to get existing
-    const prodsRes = await axios.get(`${API_URL}/products?limit=1`, { headers });
+    const prodsRes = await axios.get(`${API_URL}/products?limit=1`, {
+      headers,
+    });
     if (prodsRes.data.data?.length > 0) {
       productId = prodsRes.data.data[0].id;
       console.log(`   ⚠️ Using existing product: ${productId}`);
@@ -129,7 +136,7 @@ async function seedTenant() {
         status: 'ACTIVE',
         options: [{ name: 'Color', value: 'Gray' }],
       },
-      { headers }
+      { headers },
     );
     const skuId = skuRes.data.data?.id || skuRes.data.id;
     console.log(`   ✅ SKU created: ${skuId}`);
@@ -147,10 +154,15 @@ async function seedTenant() {
   });
 
   console.log('\n✅ Tenant seeding complete!');
-  console.log(`\n🌐 Customer can now shop at: http://${TENANT.domain}:3000/en/shop\n`);
+  console.log(
+    `\n🌐 Customer can now shop at: http://${TENANT.domain}:3000/en/shop\n`,
+  );
 }
 
 seedTenant().catch((err) => {
-  console.error('❌ Seeding failed:', err.response?.data?.message || err.message);
+  console.error(
+    '❌ Seeding failed:',
+    err.response?.data?.message || err.message,
+  );
   process.exit(1);
 });

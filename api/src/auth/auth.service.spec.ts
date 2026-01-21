@@ -101,7 +101,9 @@ describe('AuthService', () => {
       userRole: {
         create: jest.fn(),
         deleteMany: jest.fn(),
-        upsert: jest.fn().mockResolvedValue({ userId: 'user-123', roleId: 'role-id' }),
+        upsert: jest
+          .fn()
+          .mockResolvedValue({ userId: 'user-123', roleId: 'role-id' }),
       },
       permission: {
         upsert: jest.fn(),

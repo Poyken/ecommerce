@@ -126,10 +126,12 @@ export class ProductsImportService {
             brandId,
             categories: {
               deleteMany: {},
-              create: [{ 
-                categoryId, 
-                tenantId: getTenant()!.id 
-              }],
+              create: [
+                {
+                  categoryId,
+                  tenantId: getTenant()!.id,
+                },
+              ],
             },
           } as any,
           create: {
