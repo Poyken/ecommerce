@@ -113,23 +113,24 @@ export class ProductsService {
     const { categoryIds, ...dataForCreate } = productData;
     const product = await (this.prisma.product as any).create({
       data: {
-        ...productData,
+        ...dataForCreate,
         slug,
         tenantId: tenant!.id,
         categories: {
           create: createProductDto.categoryIds.map((categoryId) => ({
             category: { connect: { id: categoryId } },
+            tenant: { connect: { id: tenant!.id } },
           })),
         },
         options: {
           create: options?.map((opt, index) => ({
             name: opt.name,
             displayOrder: index,
-            tenantId: tenant!.id,
+            tenant: { connect: { id: tenant!.id } },
             values: {
               create: opt.values.map((val) => ({
                 value: val,
-                tenantId: tenant!.id,
+                tenant: { connect: { id: tenant!.id } },
               })),
             },
           })),
@@ -139,7 +140,7 @@ export class ProductsService {
             url: img.url,
             alt: img.alt,
             displayOrder: img.displayOrder || 0,
-            tenantId: tenant!.id,
+            tenant: { connect: { id: tenant!.id } },
           })),
         },
       } as any,

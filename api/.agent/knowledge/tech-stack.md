@@ -61,15 +61,95 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 | ----------------------- | ------- | ----------------- |
 | `@google/generative-ai` | 0.24.1  | Google Gemini API |
 
-### Monitoring
+### Monitoring & Observability
 
-| Package          | Version | Mục đích       |
-| ---------------- | ------- | -------------- |
-| `@sentry/nestjs` | 10.x    | Error tracking |
+| Package                       | Version | Mục đích                         | Status     |
+| ----------------------------- | ------- | -------------------------------- | ---------- |
+| `@sentry/nestjs`              | 10.x    | Error tracking                   | ✅ Active  |
+| `@willsoto/nestjs-prometheus` | 6.x     | Prometheus Metrics (Supastarter) | 📅 Planned |
+| `@bull-board/api`             | 6.x     | Job Queue Dashboard              | 📅 Planned |
 
 ---
 
-## 2. Frontend (Next.js 16)
+## 2. Core Comparison (Supastarter vs Current)
+
+| Feature           | Supastarter               | Current Project               | Action                 |
+| ----------------- | ------------------------- | ----------------------------- | ---------------------- |
+| **Multi-tenancy** | Isolated (Custom Domains) | Shared DB (AsyncLocalStorage) | Adopt Custom Domains   |
+| **Auth**          | Better-auth               | JWT + Passport                | Migrate to Better-auth |
+| **Monitoring**    | Prometheus + Grafana      | Sentry                        | Add Prometheus         |
+| **E2E Testing**   | Playwright (High)         | Playwright (Medium)           | Increase coverage      |
+| **DX**            | Excellent (Templates)     | Strong (Architecture)         | Add more infra docs    |
+
+---
+
+## 3. Performance Benchmarks (Targets)
+
+- **API Latency**: <50ms (Core endpoints)
+- **DB Query**: <10ms (Indexed queries)
+- **Cache Hit Rate**: >90% (Redis)
+- **Worker Throughput**: >100 jobs/min
+
+---
+
+## 4. Domain Architecture
+
+Hệ thống được cấu trúc theo nguyên lý **Domain-Driven Design (DDD)**, nhóm thành các vùng chức năng lớn:
+
+| Domain        | Module            | Trách nhiệm chính                                                |
+| ------------- | ----------------- | ---------------------------------------------------------------- |
+| **Catalog**   | `CatalogModule`   | Products, SKUs, Categories, Brands, Search (Full-text & Vector). |
+| **Sales**     | `SalesModule`     | Cart, Orders, Payment, Invoices, Shipping calculation.           |
+| **Identity**  | `AuthModule`      | JWT Auth, MFA, Social Login, RBAC (`@RequirePermissions`).       |
+| **Inventory** | `InventoryModule` | Multi-warehouse, Stock tracking, Audit logs.                     |
+| **Marketing** | `PromotionModule` | Flexible rule-based promotion engine, Loyalty points.            |
+| **AI**        | `AiModule`        | RAG-based Chatbot, Product embeddings.                           |
+
+---
+
+## 5. Project Structure Map (`api/src`)
+
+| Directory       | Purpose                                                        |
+| --------------- | -------------------------------------------------------------- |
+| `core/`         | Infrastructure backbone (Prisma, Redis, Guards, Interceptors). |
+| `common/`       | Shared utilities, DTOs, and constants.                         |
+| `audit/`        | System-wide audit logging (AuditLog table).                    |
+| `worker/`       | Background job processing (BullMQ consumers).                  |
+| `integrations/` | External services (Cloudinary, Nodemailer, Sitemap).           |
+| `saas/`         | Multi-tenancy resolution, Subscription billing, Plans.         |
+
+---
+
+## 6. API Standards
+
+### Unified Response Format
+
+```json
+{
+  "statusCode": 200,
+  "message": "Operation successful",
+  "data": { ... },
+  "meta": { "total": 100, "page": 1, "limit": 10, "lastPage": 10 }
+}
+```
+
+### Error Handling
+
+```json
+{
+  "success": false,
+  "error": {
+    "statusCode": 404,
+    "message": "Product not found",
+    "code": "NotFoundException",
+    "path": "/api/products/123"
+  }
+}
+```
+
+---
+
+## 7. Backend (Next.js 16 - Shared Logic if any)
 
 ### Core
 

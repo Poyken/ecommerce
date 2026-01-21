@@ -146,7 +146,29 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 
 ---
 
-## 3. Infrastructure
+## 3. Web Performance & Optimization
+
+### Core Web Vitals (Targets)
+
+| Metric         | Target | Description              |
+| -------------- | ------ | ------------------------ |
+| **LCP**        | <2.5s  | Largest Contentful Paint |
+| **FID**        | <100ms | First Input Delay        |
+| **CLS**        | <0.1   | Cumulative Layout Shift  |
+| **Lighthouse** | >90    | Overall Score            |
+
+### SEO & Content
+
+| Feature         | Status                   | Priority |
+| --------------- | ------------------------ | -------- |
+| Auto-Sitemap    | ✅ Active                | High     |
+| Robots.txt      | ✅ Active                | High     |
+| Structured Data | ✅ Partial               | Medium   |
+| MDX Blog        | 📅 Planned (Supastarter) | Low      |
+
+---
+
+## 4. Infrastructure
 
 ### Docker Services
 
@@ -160,7 +182,7 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 ### Production Cloud (Modern Stack)
 
 - **Frontend**: Vercel
-- **Backend**: Railway / Render
+- **Backend**: Render (Web Service + Worker)
 - **Database**: Neon (Serverless Postgres)
 - **Cache/Queue**: Upstash (Redis/Kafka)
 
@@ -188,21 +210,7 @@ GOOGLE_GEMINI_API_KEY
 
 ---
 
-## 4. Scripts quan trọng
-
-### API
-
-```bash
-npm run dev          # Development
-npm run build        # Production build
-npm run start:prod   # Production start (with migrate)
-npm run seed         # Database seeding
-npm run lint         # Linting
-npm run test         # Unit tests
-npm run test:e2e     # E2E tests
-```
-
-### Web
+## 5. Scripts quan trọng (Web)
 
 ```bash
 npm run dev          # Development

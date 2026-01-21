@@ -6,7 +6,7 @@ Tài liệu này đánh giá kiến trúc hiện tại của dự án Ecommerce 
 
 **Kiến trúc:** Modular Monolith (NestJS) + Shared Database Multi-tenancy (Discriminator Column).
 
-Dựa trên cấu trúc file và `schema.prisma`, hệ thống đang sử dụng chung một cơ sở dữ liệu cho tất cả Tenant, phân biệt bằng trường `tenantId`.
+Xem chi tiết tại: [SaaS Core Design Patterns](file:///home/mguser/ducnv/ecommerce-main/api/.agent/knowledge/saas-core-patterns.md)
 
 ### Ưu điểm:
 
