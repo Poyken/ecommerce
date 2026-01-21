@@ -40,8 +40,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { PermissionsGuard } from '../../auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import {
   CreateFeatureFlagDto,
   UpdateFeatureFlagDto,
@@ -87,3 +87,4 @@ export class FeatureFlagsController {
     return { data: result };
   }
 }
+

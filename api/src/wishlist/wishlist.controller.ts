@@ -1,4 +1,4 @@
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import {
   ApiCreateResponse,
   ApiGetOneResponse,
@@ -84,3 +84,4 @@ export class WishlistController {
     return this.wishlistService.mergeWishlist(req.user.id, productIds);
   }
 }
+

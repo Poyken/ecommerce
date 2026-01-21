@@ -16,8 +16,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import type { RequestWithUser } from '../auth/interfaces/request-with-user.interface';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import type { RequestWithUser } from '@/identity/auth/interfaces/request-with-user.interface';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import { AddressesService } from './addresses.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
@@ -55,13 +55,13 @@ export class AddressesController {
     @Request() req: RequestWithUser,
     @Body() createAddressDto: CreateAddressDto,
   ) {
-    return this.addressesService.create(req.user.id, createAddressDto);
+    return await this.addressesService.create(req.user.id, createAddressDto);
   }
 
   @Get()
   @ApiListResponse('Address', { summary: 'Lấy danh sách địa chỉ của user' })
   async findAll(@Request() req: RequestWithUser) {
-    return this.addressesService.findAll(req.user.id);
+    return await this.addressesService.findAll(req.user.id);
   }
 
   @Patch(':id')
@@ -71,12 +71,17 @@ export class AddressesController {
     @Param('id') id: string,
     @Body() updateAddressDto: UpdateAddressDto,
   ) {
-    return this.addressesService.update(req.user.id, id, updateAddressDto);
+    return await this.addressesService.update(
+      req.user.id,
+      id,
+      updateAddressDto,
+    );
   }
 
   @Delete(':id')
   @ApiDeleteResponse('Address', { summary: 'Xóa địa chỉ' })
   async remove(@Request() req: RequestWithUser, @Param('id') id: string) {
-    return this.addressesService.remove(req.user.id, id);
+    return await this.addressesService.remove(req.user.id, id);
   }
 }
+

@@ -16,8 +16,26 @@ const eslintConfig = defineConfig([
   {
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
+      
+      // === Web Refactoring: Downgrade to warnings ===
+      // Unescaped entities: common with Vietnamese text in JSX
+      "react/no-unescaped-entities": "warn",
+      
+      // Unused vars: allow underscore prefix convention
+      "@typescript-eslint/no-unused-vars": ["warn", {
+        argsIgnorePattern: "^_",
+        varsIgnorePattern: "^_",
+      }],
+      
+      // Empty object type: common for empty interfaces
+      "@typescript-eslint/no-empty-object-type": "warn",
+      
+      // React Hooks (from React Compiler) - downgrade to warnings
+      // These are experimental and cause false positives
+      "react-hooks/set-state-in-effect": "warn",
     },
   },
 ]);
 
 export default eslintConfig;
+

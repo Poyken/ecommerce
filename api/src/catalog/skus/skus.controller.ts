@@ -43,8 +43,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiQuery, ApiTags } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import { CreateSkuDto } from './dto/create-sku.dto';
 import { UpdateSkuDto } from './dto/update-sku.dto';
 import { SkusService } from './skus.service';
@@ -126,3 +126,4 @@ export class SkusController {
     return this.skusService.remove(id);
   }
 }
+

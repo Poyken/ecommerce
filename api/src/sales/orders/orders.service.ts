@@ -15,7 +15,7 @@ import { Queue } from 'bullmq';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 
-import { PromotionsService } from '@/promotions/promotions.service';
+import { PromotionsService } from '@/marketing/promotions/promotions.service';
 import { OrdersRepository } from './orders.repository';
 
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
@@ -23,7 +23,7 @@ import { NotificationsService } from '@/notifications/notifications.service';
 import { ShippingService } from '@/sales/shipping/shipping.service';
 import { InventoryService } from '@/catalog/skus/inventory.service';
 import { EmailService } from '@integrations/email/email.service';
-import { LoyaltyService } from '@/loyalty/loyalty.service';
+import { LoyaltyService } from '@/marketing/loyalty/loyalty.service';
 import { Logger } from '@nestjs/common';
 
 /**
@@ -1252,3 +1252,4 @@ export class OrdersService {
 
   // #endregion
 }
+

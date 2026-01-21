@@ -40,9 +40,9 @@ import { UpdateReviewDto } from './dto/update-review.dto';
 import { FilterReviewDto } from './dto/filter-review.dto';
 import { ReviewsService } from './reviews.service';
 import { AiSentimentService } from './ai-sentiment.service';
-import { GetUser } from '@/auth/decorators/get-user.decorator';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
+import { GetUser } from '@/identity/auth/decorators/get-user.decorator';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import {
   ApiListResponse,
   ApiCreateResponse,
@@ -225,3 +225,4 @@ export class ReviewsController {
     return this.reviewsService.replyToReview(id, reply);
   }
 }
+

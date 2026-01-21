@@ -41,8 +41,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger'; // Added ApiOperation
 
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import { CategoriesService } from './categories.service';
 import { CategoriesExportService } from './categories-export.service'; // Added
 import { CategoriesImportService } from './categories-import.service'; // Added
@@ -146,3 +146,4 @@ export class CategoriesController {
     return this.categoriesService.remove(id);
   }
 }
+

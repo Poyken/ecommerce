@@ -21,9 +21,9 @@
 import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { InsightsService } from './insights.service';
-// import { JwtAuthGuard } from '@/auth/jwt-auth.guard'; // Assuming global guard or handled by layout
-// import { RolesGuard } from '@/auth/roles.guard';
-// import { Roles } from '@/auth/roles.decorator';
+// import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard'; // Assuming global guard or handled by layout
+// import { RolesGuard } from '@/identity/auth/roles.guard';
+// import { Roles } from '@/identity/auth/roles.decorator';
 // import { Role } from '@prisma/client';
 
 @ApiTags('Insights')
@@ -45,3 +45,4 @@ export class InsightsController {
     return { success: true, data };
   }
 }
+

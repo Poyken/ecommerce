@@ -14,7 +14,7 @@ import {
   TransferStockDto,
 } from './dto/inventory.dto';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 // import { RequirePermissions } from '@/common/decorators/crud.decorators';
 
 @ApiTags('Inventory (Quản lý kho)')
@@ -57,3 +57,4 @@ export class InventoryController {
     return { data: stock };
   }
 }
+

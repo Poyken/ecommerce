@@ -25,8 +25,8 @@ import { PrismaModule } from '@core/prisma/prisma.module';
 import { NotificationsModule } from '@/notifications/notifications.module';
 import { ProductsModule } from '@/catalog/products/products.module';
 import { ShippingModule } from '@/sales/shipping/shipping.module';
-import { LoyaltyModule } from '@/loyalty/loyalty.module';
-import { PromotionsModule } from '@/promotions/promotions.module';
+import { LoyaltyModule } from '@/marketing/loyalty/loyalty.module';
+import { PromotionsModule } from '@/marketing/promotions/promotions.module';
 import { InvoiceService } from './invoice.service';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
@@ -61,3 +61,4 @@ import { OrdersRepository } from './orders.repository';
   exports: [OrdersRepository, InvoiceService, BullModule],
 })
 export class OrdersModule {}
+

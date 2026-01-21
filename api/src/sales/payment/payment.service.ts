@@ -127,7 +127,7 @@ export class PaymentService {
     // Lưu ý: So sánh số thực (Float) cần cẩn thận sai số, nhưng ở đây dùng Decimal/Number cơ bản.
     if (payload.amount < Number(order.totalAmount)) {
       this.logger.warn(
-        `Số tiền không đủ. Yêu cầu ${order.totalAmount}, nhận được ${payload.amount}`,
+        `Số tiền không đủ. Yêu cầu ${String(order.totalAmount)}, nhận được ${payload.amount}`,
       );
       // Có thể update status là "PARTIAL_PAYMENT" hoặc chỉ log cảnh báo
       throw new BadRequestException('Số tiền thanh toán không đủ');

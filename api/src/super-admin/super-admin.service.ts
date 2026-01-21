@@ -22,8 +22,8 @@
  */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
-import { TokenService } from '@/auth/token.service';
-import { PermissionService } from '@/auth/permission.service';
+import { TokenService } from '@/identity/auth/token.service';
+import { PermissionService } from '@/identity/auth/permission.service';
 import { RedisService } from '@core/redis/redis.service';
 import { tenantStorage } from '@core/tenant/tenant.context';
 
@@ -154,3 +154,4 @@ export class SuperAdminService {
     });
   }
 }
+

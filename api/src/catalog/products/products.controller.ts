@@ -26,8 +26,8 @@
  * =====================================================================
  */
 
-import { PermissionsGuard } from '@/auth/permissions.guard';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import {
   ApiCreateResponse,
   ApiDeleteResponse,
@@ -251,3 +251,4 @@ export class ProductsController {
     return this.importService.generateTemplate(res);
   }
 }
+

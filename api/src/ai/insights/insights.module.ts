@@ -20,7 +20,7 @@ import { Module } from '@nestjs/common';
 import { InsightsService } from './insights.service';
 import { InsightsController } from './insights.controller';
 import { PrismaModule } from '@core/prisma/prisma.module';
-// import { AuthModule } from '@/auth/auth.module'; // If needed for guards
+// import { AuthModule } from '@/identity/auth/auth.module'; // If needed for guards
 
 @Module({
   imports: [PrismaModule],
@@ -29,3 +29,4 @@ import { PrismaModule } from '@core/prisma/prisma.module';
   exports: [InsightsService],
 })
 export class InsightsModule {}
+

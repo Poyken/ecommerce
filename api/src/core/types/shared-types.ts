@@ -227,4 +227,4 @@ export interface CreateAddressInput {
   wardCode?: string;
 }
 
-export interface UpdateAddressInput extends Partial<CreateAddressInput> {}
+export type UpdateAddressInput = Partial<CreateAddressInput>;

@@ -1,4 +1,4 @@
-import { OptionalJwtAuthGuard } from '@/auth/optional-jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '@/identity/auth/optional-jwt-auth.guard';
 import {
   Body,
   Controller,
@@ -90,3 +90,4 @@ export class AiChatController {
     };
   }
 }
+

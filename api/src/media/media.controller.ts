@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { MediaService } from './media.service';
 import { CreateMediaDto } from './dto/create-media.dto';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 
 @Controller('media')
 @UseGuards(JwtAuthGuard)
@@ -37,3 +37,4 @@ export class MediaController {
     return this.mediaService.remove(id);
   }
 }
+

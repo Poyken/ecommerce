@@ -20,7 +20,7 @@
 import { Module } from '@nestjs/common';
 import { SuperAdminService } from './super-admin.service';
 import { SuperAdminController } from './super-admin.controller';
-import { AuthModule } from '@/auth/auth.module';
+import { AuthModule } from '@/identity/auth/auth.module';
 import { PlatformAnalyticsController } from '@/platform/platform-analytics.controller';
 
 @Module({
@@ -29,3 +29,4 @@ import { PlatformAnalyticsController } from '@/platform/platform-analytics.contr
   providers: [SuperAdminService],
 })
 export class SuperAdminModule {}
+

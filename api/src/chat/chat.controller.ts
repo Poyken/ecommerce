@@ -1,8 +1,8 @@
-import type { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
+import type { RequestWithUser } from '@/identity/auth/interfaces/request-with-user.interface';
 import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { PermissionsGuard } from '../auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import {
   ApiGetOneResponse,
   ApiListResponse,
@@ -81,3 +81,5 @@ export class ChatController {
     return { data };
   }
 }
+
+

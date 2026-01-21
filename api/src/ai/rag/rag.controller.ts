@@ -26,7 +26,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import { RagService } from './rag.service';
 import { getTenant } from '@core/tenant/tenant.context';
 
@@ -120,3 +120,4 @@ export class RagController {
     };
   }
 }
+

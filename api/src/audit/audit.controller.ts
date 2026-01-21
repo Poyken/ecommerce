@@ -20,8 +20,8 @@ import {
   RequirePermissions,
   ApiListResponse,
 } from '@/common/decorators/crud.decorators';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { AuditService } from './audit.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -58,3 +58,4 @@ export class AuditController {
     return result; // Result already has { data, meta }
   }
 }
+

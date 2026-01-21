@@ -16,9 +16,9 @@
  */
 import { Controller, Get, Post, Param, UseGuards } from '@nestjs/common';
 import { SuperAdminService } from './super-admin.service';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
-import { Permissions } from '@/auth/decorators/permissions.decorator';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
+import { Permissions } from '@/identity/auth/decorators/permissions.decorator';
 
 @Controller('super-admin')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
@@ -36,3 +36,4 @@ export class SuperAdminController {
     return this.service.impersonate(id);
   }
 }
+

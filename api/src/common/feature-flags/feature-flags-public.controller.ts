@@ -1,7 +1,7 @@
-import type { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
+import type { RequestWithUser } from '@/identity/auth/interfaces/request-with-user.interface';
 import { Controller, Get, Req, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { OptionalJwtAuthGuard } from '../../auth/optional-jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '@/identity/auth/optional-jwt-auth.guard';
 import { FeatureFlagsService } from './feature-flags.service';
 
 /**
@@ -46,3 +46,5 @@ export class FeatureFlagsPublicController {
     });
   }
 }
+
+

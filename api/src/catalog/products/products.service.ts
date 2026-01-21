@@ -54,7 +54,7 @@ import { FilterProductDto, SortOption } from './dto/filter-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { SkuManagerService } from './sku-manager.service';
 
-import { PlanUsageService } from '@/tenants/plan-usage.service';
+import { PlanUsageService } from '@/identity/tenants/plan-usage.service';
 import { getTenant } from '@core/tenant/tenant.context';
 import { createPaginatedResult } from '@/common/dto/base.dto';
 
@@ -1107,3 +1107,4 @@ export class ProductsService {
     return results;
   }
 }
+

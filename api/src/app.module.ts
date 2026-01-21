@@ -30,26 +30,27 @@ import { AdminModule } from '@/admin/admin.module';
 import { AnalyticsModule } from '@/analytics/analytics.module';
 import { AuditInterceptor } from '@/audit/audit.interceptor';
 import { AuditModule } from '@/audit/audit.module';
-import { AuthModule } from '@/auth/auth.module';
 import { BlogModule } from '@/blog/blog.module';
 import { CatalogModule } from '@/catalog/catalog.module'; // NEW
 import { CommonModule } from '@/common/common.module';
 import { FeatureFlagsModule } from '@/common/feature-flags/feature-flags.module';
-import { PromotionsModule } from '@/promotions/promotions.module';
+// import { PromotionsModule } from '@/marketing/promotions/promotions.module'; -> Moved
 // import { RmaModule } from '@/rma/rma.module'; // REMOVED
 import { InventoryModule } from '@/inventory/inventory.module';
 import { MediaModule } from '@/media/media.module';
-import { CustomerGroupsModule } from '@/customer-groups/customer-groups.module';
+// import { CustomerGroupsModule } from '@/marketing/customer-groups/customer-groups.module'; -> Moved
 import { NotificationsModule } from '@/notifications/notifications.module';
+
 import { PagesModule } from '@/pages/pages.module';
 import { SalesModule } from '@/sales/sales.module'; // NEW
 import { PlansModule } from '@/plans/plans.module';
 import { ReviewsModule } from '@/reviews/reviews.module';
-import { RolesModule } from '@/roles/roles.module';
-import { TenantsModule } from '@/tenants/tenants.module';
-import { UsersModule } from '@/users/users.module';
+// import { RolesModule } from '@/identity/roles/roles.module'; -> Moved
+// import { TenantsModule } from '@/identity/tenants/tenants.module'; -> Moved
+// import { UsersModule } from '@/identity/users/users.module'; -> Moved
 import { WishlistModule } from '@/wishlist/wishlist.module';
 import { AppThrottlerGuard } from '@core/guards/app.throttler.guard';
+
 import { CsrfGuard } from '@core/guards/csrf.guard';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { RedisModule } from '@core/redis/redis.module';
@@ -77,22 +78,27 @@ import { AiModule } from '@/ai/ai.module'; // NEW
 import { ChatModule } from './chat/chat.module';
 import { LockdownGuard } from '@core/guards/lockdown.guard';
 import { SuperAdminIpGuard } from '@core/guards/super-admin-ip.guard';
+import { IdentityModule } from './identity/identity.module';
+import { MarketingModule } from './marketing/marketing.module';
+import { OperationsModule } from './operations/operations.module';
 import { TenantGuard } from '@core/guards/tenant.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { SentryModule } from '@core/sentry/sentry.module';
 import { DataLoaderModule } from '@core/dataloader/dataloader.module';
 import { MetricsModule } from '@core/metrics/metrics.module';
 import { SuperAdminModule } from '@/super-admin/super-admin.module';
-import { ReturnRequestsModule } from './return-requests/return-requests.module';
-import { ProcurementModule } from './procurement/procurement.module';
-import { FulfillmentModule } from './fulfillment/fulfillment.module';
+// import { ReturnRequestsModule } from './return-requests/return-requests.module'; -> Moved
+
+// import { ProcurementModule } from './procurement/procurement.module'; -> Moved
+// import { FulfillmentModule } from './fulfillment/fulfillment.module'; -> Moved
 import { TaxModule } from './tax/tax.module';
-import { LoyaltyModule } from './loyalty/loyalty.module';
+// import { LoyaltyModule } from './loyalty/loyalty.module'; -> Moved
 import { WebhooksModule } from './webhooks/webhooks.module';
+
 import { DevToolsModule } from './dev-tools/dev-tools.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 import { ReportsModule } from './reports/reports.module';
-import { InventoryAlertsModule } from './inventory-alerts/inventory-alerts.module';
+// InventoryAlertsModule merged into InventoryModule
 
 import { z } from 'zod';
 
@@ -182,17 +188,22 @@ function validate(config: Record<string, unknown>) {
     PrismaModule,
 
     // 5. AuthModule - Xác thực & Phân quyền (JWT, Guards)
-    AuthModule,
+    // AuthModule, -> Moved to IdentityModule
 
     // 6. UsersModule - Quản lý người dùng
-    UsersModule,
-    TenantsModule,
+    // UsersModule, -> Moved to IdentityModule
+    // TenantsModule, -> Moved to IdentityModule
+
+    // === DOMAIN MODULES ===
+    IdentityModule, // Auth, Users, Roles, Tenants
+    MarketingModule, // Promotions, Loyalty, CustomerGroups
+    OperationsModule, // Fulfillment, Procurement, ReturnRequests
 
     // AddressesModule - Quản lý địa chỉ
     AddressesModule,
 
     // 7. RolesModule - Quản lý vai trò & quyền hạn (RBAC)
-    RolesModule,
+    // RolesModule, -> Moved to IdentityModule
 
     // 8. Catalog Domain
     CatalogModule,
@@ -244,21 +255,21 @@ function validate(config: Record<string, unknown>) {
     SentryModule, // Error Tracking & Performance Monitoring
     DataLoaderModule, // N+1 Query Prevention
     MetricsModule, // Prometheus Metrics
-    PromotionsModule,
+    // PromotionsModule, -> Moved to MarketingModule
     // RmaModule REMOVED
     InventoryModule,
     MediaModule,
-    CustomerGroupsModule,
-    ReturnRequestsModule,
-    ProcurementModule,
-    FulfillmentModule,
+    // CustomerGroupsModule, -> Moved to MarketingModule
+    // ReturnRequestsModule, -> Moved to OperationsModule
+    // ProcurementModule, -> Moved to OperationsModule
+    // FulfillmentModule, -> Moved to OperationsModule
     TaxModule,
-    LoyaltyModule,
+    // LoyaltyModule, -> Moved to MarketingModule
     WebhooksModule,
     DevToolsModule,
     SubscriptionModule,
     ReportsModule,
-    InventoryAlertsModule,
+    // InventoryAlertsModule merged into InventoryModule
   ],
   controllers: [HealthController],
   providers: [
@@ -307,3 +318,4 @@ export class AppModule implements NestModule {
     consumer.apply(TenantMiddleware).forRoutes('*');
   }
 }
+

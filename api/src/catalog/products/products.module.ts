@@ -33,7 +33,7 @@ import { StockGateway } from '@/catalog/skus/stock.gateway';
 
 import { NotificationsModule } from '@/notifications/notifications.module';
 
-import { TenantsModule } from '@/tenants/tenants.module';
+import { TenantsModule } from '@/identity/tenants/tenants.module';
 
 @Module({
   imports: [PrismaModule, NotificationsModule, TenantsModule],
@@ -49,3 +49,4 @@ import { TenantsModule } from '@/tenants/tenants.module';
   exports: [ProductsService, SkuManagerService, InventoryService, StockGateway],
 })
 export class ProductsModule {}
+

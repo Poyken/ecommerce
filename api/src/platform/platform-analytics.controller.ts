@@ -5,8 +5,8 @@ import {
   ApiBearerAuth,
   ApiQuery,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import { RequirePermissions } from '@/common/decorators/crud.decorators';
 import { PrismaService } from '@core/prisma/prisma.service';
 
@@ -405,3 +405,4 @@ export class PlatformAnalyticsController {
     };
   }
 }
+

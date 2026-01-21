@@ -6,8 +6,8 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { ReportsService } from './reports.service';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import { RequirePermissions } from '@/common/decorators/crud.decorators';
 import { getTenant } from '@/core/tenant/tenant.context';
 
@@ -60,3 +60,4 @@ export class ReportsController {
     );
   }
 }
+

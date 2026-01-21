@@ -6,8 +6,8 @@ import {
   ApiUpdateResponse,
   ApiDeleteResponse,
 } from '@/common/decorators/crud.decorators';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import {
   Body,
   Controller,
@@ -135,3 +135,4 @@ export class PagesController {
     return this.pagesService.delete(id);
   }
 }
+

@@ -6,8 +6,8 @@ import {
   ApiCreateResponse,
   RequirePermissions,
 } from '@/common/decorators/crud.decorators';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import { EmailService } from '@integrations/email/email.service';
 import {
   Body,
@@ -241,3 +241,4 @@ export class NotificationsController {
     return { data };
   }
 }
+

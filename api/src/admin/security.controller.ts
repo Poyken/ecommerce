@@ -36,8 +36,8 @@
  */
 
 import { RequirePermissions } from '@/common/decorators/crud.decorators';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import { Body, Controller, Get, Post, UseGuards, Req } from '@nestjs/common';
 import { SecurityService } from './security.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -113,3 +113,4 @@ export class SecurityController {
     };
   }
 }
+

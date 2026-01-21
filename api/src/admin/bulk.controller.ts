@@ -18,8 +18,8 @@
  * =====================================================================
  */
 import { RequirePermissions } from '@/common/decorators/crud.decorators';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import {
   Body,
   Controller,
@@ -130,3 +130,4 @@ export class BulkController {
     return { data: result };
   }
 }
+

@@ -20,9 +20,9 @@
 
  * =====================================================================
  */
-import { PermissionsGuard } from '@/auth/permissions.guard';
-import * as requestWithUserInterface from '@/auth/interfaces/request-with-user.interface';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
+import * as requestWithUserInterface from '@/identity/auth/interfaces/request-with-user.interface';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import {
   ApiCreateResponse,
   ApiGetOneResponse,
@@ -171,3 +171,4 @@ export class OrdersController {
     return { data };
   }
 }
+

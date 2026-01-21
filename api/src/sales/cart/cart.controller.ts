@@ -27,7 +27,7 @@
  * =====================================================================
  */
 
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import {
   ApiCreateResponse,
   ApiDeleteResponse,
@@ -46,7 +46,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import type { RequestWithUser } from '@/auth/interfaces/request-with-user.interface';
+import type { RequestWithUser } from '@/identity/auth/interfaces/request-with-user.interface';
 import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
@@ -136,3 +136,4 @@ export class CartController {
     return this.cartService.mergeCart(req.user.id, items);
   }
 }
+

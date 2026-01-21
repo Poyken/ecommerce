@@ -1,4 +1,4 @@
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CloudinaryService } from './cloudinary.service';
@@ -37,3 +37,4 @@ export class CloudinaryController {
     return this.cloudinaryService.generateSignature(targetFolder);
   }
 }
+

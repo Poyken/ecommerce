@@ -44,8 +44,8 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import { BrandsService } from './brands.service';
 import { BrandsExportService } from './brands-export.service';
 import { BrandsImportService } from './brands-import.service';
@@ -147,3 +147,4 @@ export class BrandsController {
     return this.brandsService.remove(id);
   }
 }
+

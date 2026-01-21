@@ -23,7 +23,7 @@
 
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import { AgentService } from './agent.service';
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
@@ -69,3 +69,4 @@ export class AgentController {
     };
   }
 }
+

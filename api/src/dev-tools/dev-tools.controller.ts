@@ -10,11 +10,11 @@ import {
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { PrismaService } from '@/core/prisma/prisma.service';
 import { OrderStatus, ShipmentStatus, PaymentStatus } from '@prisma/client';
-import { JwtAuthGuard } from '@/auth/jwt-auth.guard';
-import { PermissionsGuard } from '@/auth/permissions.guard';
+import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
+import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import { RequirePermissions } from '@/common/decorators/crud.decorators';
 import { getTenant } from '@/core/tenant/tenant.context';
-import { LoyaltyService } from '@/loyalty/loyalty.service';
+import { LoyaltyService } from '@/marketing/loyalty/loyalty.service';
 
 /**
  * =====================================================================
@@ -227,3 +227,4 @@ export class DevToolsController {
     };
   }
 }
+
