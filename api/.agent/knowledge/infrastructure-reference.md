@@ -50,7 +50,7 @@ Hệ thống được thiết kế để tách biệt phần xử lý HTTP và p
 
 ## 4. Networking & Security
 
-- **CORS**: Phải được cấu hình nghiêm ngặt (`FRONTEND_URL`).
+- **CORS**: Phải được cấu hình nghiêm ngặt (`FRONTEND_URL=https://<your-web-project>.vercel.app`)
 - **TLS/SSL**: Bắt buộc cho toàn bộ giao dịch.
 - **Rate Limiting**: Throttler layer tích hợp sẵn (mặc định 100 req/min/IP).
 - **Encryption**: JWT secrets phải có độ dài tối thiểu 64 ký tự (Random Hex).

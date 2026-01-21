@@ -22,6 +22,16 @@ A modern, full-featured e-commerce platform built with **NestJS** (API) and **Ne
 
 ---
 
+## 🧠 Agent Knowledge Base
+
+This project is powered by an extensive documentation system located in the `.agent` directories. Technical deep-dives, infrastructure references, and SaaS core patterns can be found here:
+
+- **API Knowledge**: [api/.agent/knowledge/](file:///home/mguser/ducnv/ecommerce-main/api/.agent/knowledge/)
+- **Web Knowledge**: [web/.agent/knowledge/](file:///home/mguser/ducnv/ecommerce-main/web/.agent/knowledge/)
+- **Deployment Master Plan**: [DEPLOYMENT_MASTER_PLAN.md](file:///home/mguser/ducnv/ecommerce-main/DEPLOYMENT_MASTER_PLAN.md)
+
+---
+
 ## 📁 Project Structure
 
 ```

@@ -10,7 +10,7 @@
 ### 1.1 Setup
 
 1. Tạo account: https://sentry.io
-2. Create project: `ecommerce-api` (Platform: Node.js)
+2. Create project: `{{YOUR_PROJECT_NAME}}` (Platform: Node.js)
 3. Copy DSN: `https://xxx@xxx.ingest.sentry.io/xxx`
 
 ### 1.2 Integration

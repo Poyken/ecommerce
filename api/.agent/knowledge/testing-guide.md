@@ -139,6 +139,12 @@ All files           |   82.5  |   75.3   |   88.1  |   82.5  |
 }
 ```
 
+# Docker environment
+
+DATABASE_URL="postgresql://user:pass@localhost:5432/<project_test_db>"
+REDIS_URL="redis://localhost:6379"
+JWT_ACCESS_SECRET="test_secret"
+
 ### Database Setup
 
 ```typescript
