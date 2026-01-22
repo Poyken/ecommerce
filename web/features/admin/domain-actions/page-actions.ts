@@ -24,6 +24,8 @@
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
 import { adminPageService } from "../services/admin-page.service";
 import { ActionResult } from "@/types/dtos";
+import { CreatePageDto, Page, UpdatePageDto } from "@/types/cms";
+import { PaginationParams } from "@/lib/utils";
 
 /**
  * =====================================================================
@@ -32,8 +34,8 @@ import { ActionResult } from "@/types/dtos";
  */
 
 export async function getPagesAction(
-  paramsOrPage: any = {}
-): Promise<ActionResult<any[]>> {
+  paramsOrPage: number | PaginationParams = {}
+): Promise<ActionResult<Page[]>> {
   return wrapServerAction(
     () => adminPageService.getPages(paramsOrPage),
     "Failed to fetch pages"
@@ -42,14 +44,16 @@ export async function getPagesAction(
 
 export async function getPageByIdAction(
   id: string
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<Page>> {
   return wrapServerAction(
     () => adminPageService.getPageById(id),
     "Failed to fetch page"
   );
 }
 
-export async function createPageAction(data: any): Promise<ActionResult<any>> {
+export async function createPageAction(
+  data: CreatePageDto
+): Promise<ActionResult<Page>> {
   return wrapServerAction(async () => {
     const res = await adminPageService.createPage(data);
     REVALIDATE.admin.pages();
@@ -59,8 +63,8 @@ export async function createPageAction(data: any): Promise<ActionResult<any>> {
 
 export async function updatePageAction(
   id: string,
-  data: any
-): Promise<ActionResult<any>> {
+  data: UpdatePageDto
+): Promise<ActionResult<Page>> {
   return wrapServerAction(async () => {
     const res = await adminPageService.updatePage(id, data);
     REVALIDATE.admin.pages();

@@ -61,13 +61,13 @@ export class InventoryService {
     const tenantId = this.getTenantId();
     // Nếu đặt làm default, cần bỏ default của kho cũ
     if (dto.isDefault) {
-      await (this.prisma as any).warehouse.updateMany({
+      await this.prisma.warehouse.updateMany({
         where: { tenantId, isDefault: true },
         data: { isDefault: false },
       });
     }
 
-    return (this.prisma as any).warehouse.create({
+    return this.prisma.warehouse.create({
       data: {
         ...dto,
         tenantId,
@@ -80,7 +80,7 @@ export class InventoryService {
    */
   async getWarehouses() {
     const tenantId = this.getTenantId();
-    return (this.prisma as any).warehouse.findMany({
+    return this.prisma.warehouse.findMany({
       where: { tenantId },
       include: { _count: { select: { inventoryItems: true } } },
     });
@@ -93,7 +93,7 @@ export class InventoryService {
   async updateStock(userId: string, dto: UpdateStockDto) {
     const tenantId = this.getTenantId();
 
-    const warehouse = await (this.prisma as any).warehouse.findUnique({
+    const warehouse = await this.prisma.warehouse.findUnique({
       where: { id: dto.warehouseId },
     });
     if (!warehouse || warehouse.tenantId !== tenantId)
@@ -102,7 +102,7 @@ export class InventoryService {
     // Transaction cập nhật kho và ghi log cùng lúc
     return this.prisma.$transaction(async (tx) => {
       // 1. Tìm hoặc tạo mới InventoryItem
-      const inventoryItem = await (tx as any).inventoryItem.findUnique({
+      const inventoryItem = await tx.inventoryItem.findUnique({
         where: {
           warehouseId_skuId: {
             warehouseId: dto.warehouseId,
@@ -121,7 +121,7 @@ export class InventoryService {
       }
 
       // 2. Upsert InventoryItem
-      await (tx as any).inventoryItem.upsert({
+      await tx.inventoryItem.upsert({
         where: {
           warehouseId_skuId: {
             warehouseId: dto.warehouseId,
@@ -148,7 +148,7 @@ export class InventoryService {
       });
 
       // 4. Create Audit Log (InventoryLog)
-      return (tx as any).inventoryLog.create({
+      return tx.inventoryLog.create({
         data: {
           skuId: dto.skuId,
           changeAmount: dto.quantity,
@@ -277,7 +277,7 @@ export class InventoryService {
 
   async getStockBySku(skuId: string) {
     const tenantId = this.getTenantId();
-    return (this.prisma as any).inventoryItem.findMany({
+    return this.prisma.inventoryItem.findMany({
       where: {
         skuId,
         warehouse: { tenantId },

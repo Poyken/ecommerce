@@ -373,13 +373,14 @@ export class OrdersService {
         );
 
         // 8. Trừ tồn kho (Reserve Stock) cho từng sản phẩm
-        for (const item of itemsToProcess) {
-          await this.inventoryService.reserveStock(
-            item.skuId,
-            item.quantity,
-            tx,
-          );
-        }
+        // 8. Trừ tồn kho (Reserve Stock) - Batch Optimization
+        await this.inventoryService.reserveStockBatch(
+          itemsToProcess.map((item) => ({
+            skuId: item.skuId,
+            quantity: item.quantity,
+          })),
+          tx,
+        );
 
         // 9. Xóa các sản phẩm đã mua khỏi giỏ hàng
         const itemIdsToDelete = itemsToProcess.map((i) => i.id);
@@ -390,9 +391,8 @@ export class OrdersService {
           },
         });
 
-        // --- 10. [RELIABILITY] OUTBOX PATTERN (Đảm bảo độ tin cậy) ---
-        // Thay vì gửi event ngay, ta lưu event vào DB cùng transaction.
-        // Worker sẽ đọc bảng OutboxEvent và xử lý sau (Gửi email, bắn thông báo...).
+        // --- 10. [RELIABILITY] OUTBOX PATTERN (Giữ lại Job Stock Release Check) ---
+        // Vẫn giữ job kiểm tra hết hạn đơn hàng (15p) để release stock
         await tx.outboxEvent.create({
           data: {
             aggregateType: 'ORDER',
@@ -401,21 +401,14 @@ export class OrdersService {
             payload: { orderId: order.id },
           },
         });
-
-        await tx.outboxEvent.create({
-          data: {
-            aggregateType: 'ORDER',
-            aggregateId: order.id,
-            type: 'ORDER_CREATED_POST_PROCESS',
-            payload: { orderId: order.id, userId },
-          },
-        });
+        
+        // [FIX] Removed ORDER_CREATED_POST_PROCESS outbox event to prevent "Double Email" 
+        // because OrderSubscriber now handles emails via eventEmitter.
 
         return order;
       },
       {
-        isolationLevel: 'Serializable', // Mức cô lập cao nhất: Chặn hoàn toàn các transaction khác can thiệp
-        timeout: 10000, // Timeout 10 giây để tránh deadlock treo hệ thống
+        timeout: 10000,
       },
     );
 
@@ -432,19 +425,17 @@ export class OrdersService {
            },
          );
 
-         if (paymentResult.success) {
-           paymentUrl = paymentResult.paymentUrl;
-           await (this.prisma as any).payment.create({
-             data: {
-               orderId: order.id,
-               amount: order.totalAmount,
-               paymentMethod: createOrderDto.paymentMethod,
-               status: paymentUrl ? 'PENDING' : 'PAID',
-               providerTransactionId: paymentResult.transactionId,
-               tenantId: tenant.id,
-             },
-           });
-         }
+           if (paymentResult.success) {
+            paymentUrl = paymentResult.paymentUrl;
+            await this.paymentService.createPaymentRecord({
+              orderId: order.id,
+              amount: order.totalAmount,
+              paymentMethod: createOrderDto.paymentMethod,
+              status: paymentUrl ? 'PENDING' : 'PAID',
+              providerTransactionId: paymentResult.transactionId,
+              tenantId: tenant.id,
+            });
+          }
        } catch (error) {
          this.logger.error(`Error processing payment for order ${order.id}`, error);
        }
@@ -457,7 +448,7 @@ export class OrdersService {
         order.id,
         userId,
         Number(order.totalAmount),
-        order.paymentMethod,
+        order.paymentMethod || 'COD',
         tenant.id,
         {
           paymentMethod: createOrderDto.paymentMethod,

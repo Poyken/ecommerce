@@ -58,6 +58,7 @@ export class NewsletterService {
     }
 
     const tenant = getTenant();
+    if (!tenant) throw new ConflictException('Tenant invalid');
     const existing = await this.prisma.newsletterSubscriber.findFirst({
       where: {
         email,
@@ -100,6 +101,7 @@ export class NewsletterService {
 
   async checkSubscriber(email: string) {
     const tenant = getTenant();
+    if (!tenant) return { exists: false, isActive: false };
     const subscriber = await this.prisma.newsletterSubscriber.findFirst({
       where: {
         email,

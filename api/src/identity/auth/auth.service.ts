@@ -218,7 +218,8 @@ export class AuthService {
       }
     } else {
       // Nếu user chưa tồn tại -> Tạo mới (Auto Register)
-      user = (await this.prisma.user.create({
+      // Nếu user chưa tồn tại -> Tạo mới (Auto Register)
+      const newUser = await this.prisma.user.create({
         data: {
           email,
           firstName,
@@ -228,21 +229,17 @@ export class AuthService {
           avatarUrl: picture,
           tenantId: tenant!.id,
         },
-        select: this.USER_PERMISSION_SELECT,
-      })) as any;
+      });
 
-      if (!user) throw new UnauthorizedException('Không thể tạo tài khoản');
-      await this.ensureGuestRoleAndAssign(user.id);
+      if (!newUser) throw new UnauthorizedException('Không thể tạo tài khoản');
+      await this.ensureGuestRoleAndAssign(newUser.id);
 
       // Reload để lấy đủ permission
-      const reloaded = await this.prisma.user.findFirst({
-        where: { id: user.id },
+      user = await this.prisma.user.findFirst({
+        where: { id: newUser.id },
         select: this.USER_PERMISSION_SELECT,
       });
 
-      if (!reloaded)
-        throw new UnauthorizedException('Lỗi tải lại thông tin user');
-      user = reloaded as any;
 
       if (user) {
         await this.grantWelcomeVoucher(user.id).catch((err) =>
@@ -320,9 +317,10 @@ export class AuthService {
     }
 
     // 3. Tổng hợp quyền hạn (Roles & Permissions)
-    const roles = (user as any).roles.map((r: any) => r.role.name);
+    // 3. Tổng hợp quyền hạn (Roles & Permissions)
+    const roles = user.roles.map((r) => r.role.name);
     const allPermissions = this.permissionService.aggregatePermissions(
-      user as any,
+      user as any, // TODO: Define strict type for aggregation
     );
 
     // 4. Kiểm tra quyền truy cập (Quan trọng cho Multi-tenancy)
@@ -369,12 +367,12 @@ export class AuthService {
    * Finds a user by email across all tenants.
    */
   private async findUserByEmailUnfiltered(email: string) {
-    return tenantStorage.run(undefined as any, () =>
+    return tenantStorage.run(undefined, () =>
       this.prisma.user.findFirst({
         where: {
           email: { equals: email, mode: 'insensitive' },
           deletedAt: null,
-        } as any,
+        },
         select: this.USER_PERMISSION_SELECT,
       }),
     );
@@ -385,7 +383,7 @@ export class AuthService {
    * - User thường: Chỉ vào được Tenant của mình.
    */
   private validateTenancyAccess(
-    user: any,
+    user: { tenantId: string; email: string },
     currentTenant: any,
     roles: string[],
     permissions: string[],
@@ -423,7 +421,10 @@ export class AuthService {
   /**
    * Kiểm tra IP User có nằm trong danh sách cho phép không (nếu đã cấu hình).
    */
-  private validateIpWhitelist(user: any, currentIp?: string) {
+  private validateIpWhitelist(
+    user: { email: string; whitelistedIps?: any },
+    currentIp?: string,
+  ) {
     const whitelistedIps = user.whitelistedIps as string[];
     if (
       whitelistedIps?.length > 0 &&
@@ -445,15 +446,15 @@ export class AuthService {
 
     if (
       !user ||
-      !(user as any).twoFactorEnabled ||
-      !(user as any).twoFactorSecret
+      !user.twoFactorEnabled ||
+      !user.twoFactorSecret
     ) {
       throw new UnauthorizedException('2FA không khả dụng cho tài khoản này');
     }
 
     const isValid = this.twoFactorService.verifyToken(
       token,
-      (user as any).twoFactorSecret,
+      user.twoFactorSecret,
     );
     if (!isValid) {
       throw new UnauthorizedException('Mã xác thực không hợp lệ');

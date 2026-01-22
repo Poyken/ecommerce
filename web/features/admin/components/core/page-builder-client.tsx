@@ -1,5 +1,7 @@
 "use client";
 
+import dynamic from "next/dynamic";
+
 import { BlockRenderer } from "@/features/cms/components/block-renderer";
 import { useToast } from "@/components/ui/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -47,6 +49,92 @@ import dynamicIconImports from "lucide-react/dist/esm/dynamicIconImports.js";
 import Image from "next/image";
 import { Page, Block } from "@/types/cms";
 
+const HeroEditor = dynamic(() =>
+  import("./blocks/hero-editor").then((mod) => mod.HeroEditor)
+);
+
+const FeaturedCollectionEditor = dynamic(() =>
+  import("./blocks/featured-collection-editor").then(
+    (mod) => mod.FeaturedCollectionEditor
+  )
+);
+
+const PromoBannerEditor = dynamic(() =>
+  import("./blocks/promo-banner-editor").then((mod) => mod.PromoBannerEditor)
+);
+
+const FeaturesEditor = dynamic(() =>
+  import("./blocks/features-editor").then((mod) => mod.FeaturesEditor)
+);
+
+const PromoGridEditor = dynamic(() =>
+  import("./blocks/promo-grid-editor").then((mod) => mod.PromoGridEditor)
+);
+
+const BannerEditor = dynamic(() =>
+  import("./blocks/banner-editor").then((mod) => mod.BannerEditor)
+);
+
+const TextBlockEditor = dynamic(() =>
+  import("./blocks/text-block-editor").then((mod) => mod.TextBlockEditor)
+);
+
+const CTASectionEditor = dynamic(() =>
+  import("./blocks/cta-section-editor").then((mod) => mod.CTASectionEditor)
+);
+
+const StatsEditor = dynamic(() =>
+  import("./blocks/stats-editor").then((mod) => mod.StatsEditor)
+);
+
+const PricingEditor = dynamic(() =>
+  import("./blocks/pricing-editor").then((mod) => mod.PricingEditor)
+);
+
+const NewsletterEditor = dynamic(() =>
+  import("./blocks/newsletter-editor").then((mod) => mod.NewsletterEditor)
+);
+
+const TestimonialsEditor = dynamic(() =>
+  import("./blocks/testimonials-editor").then((mod) => mod.TestimonialsEditor)
+);
+
+const FaqEditor = dynamic(() =>
+  import("./blocks/faq-editor").then((mod) => mod.FaqEditor)
+);
+
+const CategoriesEditor = dynamic(() =>
+  import("./blocks/categories-editor").then((mod) => mod.CategoriesEditor)
+);
+
+const BrandsEditor = dynamic(() =>
+  import("./blocks/brands-editor").then((mod) => mod.BrandsEditor)
+);
+
+const ProductsEditor = dynamic(() =>
+  import("./blocks/products-editor").then((mod) => mod.ProductsEditor)
+);
+
+const DealEditor = dynamic(() =>
+  import("./blocks/deal-editor").then((mod) => mod.DealEditor)
+);
+
+const FlexLayoutEditor = dynamic(() =>
+  import("./blocks/flex-layout-editor").then((mod) => mod.FlexLayoutEditor)
+);
+
+const VideoHeroEditor = dynamic(() =>
+  import("./blocks/video-hero-editor").then((mod) => mod.VideoHeroEditor)
+);
+
+const HeaderEditor = dynamic(() =>
+  import("./blocks/header-editor").then((mod) => mod.HeaderEditor)
+);
+
+const FooterEditor = dynamic(() =>
+  import("./blocks/footer-editor").then((mod) => mod.FooterEditor)
+);
+
 /**
  * =================================================================================================
  * PAGE BUILDER CLIENT - TRÌNH KÉO THẢ VÀ CHỈNH SỬA TRANG
@@ -78,43 +166,9 @@ import { Page, Block } from "@/types/cms";
 
 // Local components use types from types/cms
 
-const FlexibleIcon = ({
-  source,
-  size = 18,
-  className,
-}: {
-  source?: string;
-  size?: number;
-  className?: string;
-}) => {
-  if (!source) return null;
 
-  // Check if source is a URL (contains / or .)
-  if (source.includes("/") || source.includes(".")) {
-    return (
-      <div
-        className={cn("relative overflow-hidden", className)}
-        style={{ width: size, height: size }}
-      >
-        <Image
-          src={source}
-          alt="icon"
-          fill
-          className="object-contain"
-          sizes={`${size}px`}
-        />
-      </div>
-    );
-  }
 
-  // Otherwise assume Lucide Icon Name
-  const iconName = source.toLowerCase().replace(/([a-z0-9])([A-Z])/g, '$1-$2');
-  if (iconName in dynamicIconImports) {
-    return <DynamicIcon name={iconName as keyof typeof dynamicIconImports} size={size} className={className} />;
-  }
-  
-  return null;
-};
+// FlexibleIcon moved to @/components/shared/flexible-icon.tsx
 
 // Page interface moved to @/types/cms
 
@@ -250,1021 +304,72 @@ export function PageBuilderClient({
     switch (block.type) {
       case "Hero":
         return (
-          <div className="space-y-6">
-            {/* Layout Section */}
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Layout & Structure
-              </Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Layout Style</Label>
-                <div className="grid grid-cols-4 gap-1">
-                  {["split", "center", "fullscreen", "minimal"].map((l) => (
-                    <Button
-                      key={l}
-                      variant={block.props.layout === l ? "default" : "outline"}
-                      size="sm"
-                      className="text-[9px] capitalize h-8"
-                      onClick={() => updateBlockProps(block.id, { layout: l })}
-                    >
-                      {l}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Height</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.height || "screen"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { height: e.target.value })
-                    }
-                  >
-                    <option value="auto">Auto</option>
-                    <option value="medium">Medium (50vh)</option>
-                    <option value="large">Large (80vh)</option>
-                    <option value="screen">Full Screen</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Content Width</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.contentWidth || "medium"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, {
-                        contentWidth: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="narrow">Narrow</option>
-                    <option value="medium">Medium</option>
-                    <option value="wide">Wide</option>
-                    <option value="full">Full</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Content Section */}
-            <div className="space-y-3 pt-4 border-t">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Content
-              </Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Badge Text</Label>
-                <Input
-                  value={block.props.badge || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { badge: e.target.value })
-                  }
-                  placeholder="New Collection"
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Title</Label>
-                <Textarea
-                  value={block.props.title || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { title: e.target.value })
-                  }
-                  placeholder="Enter hero title"
-                  rows={2}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Subtitle</Label>
-                <Textarea
-                  value={block.props.subtitle || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { subtitle: e.target.value })
-                  }
-                  placeholder="Enter hero subtitle"
-                  rows={3}
-                />
-              </div>
-            </div>
-
-            {/* Typography Section */}
-            <div className="space-y-3 pt-4 border-t">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Typography
-              </Label>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Title Size</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.titleSize || "xlarge"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { titleSize: e.target.value })
-                    }
-                  >
-                    <option value="medium">Medium</option>
-                    <option value="large">Large</option>
-                    <option value="xlarge">X-Large</option>
-                    <option value="xxlarge">XX-Large</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Title Font</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.titleFont || "serif"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { titleFont: e.target.value })
-                    }
-                  >
-                    <option value="serif">Serif (Elegant)</option>
-                    <option value="sans">Sans (Modern)</option>
-                    <option value="display">Display (Bold)</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* CTA Section */}
-            <div className="space-y-3 pt-4 border-t">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Call to Action
-              </Label>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Primary CTA Text</Label>
-                  <Input
-                    value={block.props.ctaText || ""}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { ctaText: e.target.value })
-                    }
-                    placeholder="Shop Now"
-                    className="h-8 text-xs"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Primary CTA Link</Label>
-                  <Input
-                    value={block.props.ctaLink || ""}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { ctaLink: e.target.value })
-                    }
-                    placeholder="/shop"
-                    className="h-8 text-xs"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Secondary CTA Text</Label>
-                  <Input
-                    value={block.props.secondaryCtaText || ""}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, {
-                        secondaryCtaText: e.target.value,
-                      })
-                    }
-                    placeholder="Learn More"
-                    className="h-8 text-xs"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Secondary CTA Link</Label>
-                  <Input
-                    value={block.props.secondaryCtaLink || ""}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, {
-                        secondaryCtaLink: e.target.value,
-                      })
-                    }
-                    placeholder="/about"
-                    className="h-8 text-xs"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label className="text-[10px]">CTA Style</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.ctaStyle || "solid"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { ctaStyle: e.target.value })
-                    }
-                  >
-                    <option value="solid">Solid</option>
-                    <option value="outline">Outline</option>
-                    <option value="ghost">Ghost</option>
-                    <option value="gradient">Gradient</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px]">CTA Corners</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.ctaRounded || "full"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { ctaRounded: e.target.value })
-                    }
-                  >
-                    <option value="none">Square</option>
-                    <option value="sm">Slightly Rounded</option>
-                    <option value="md">Rounded</option>
-                    <option value="lg">More Rounded</option>
-                    <option value="full">Pill</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            {/* Visual Section */}
-            <div className="space-y-3 pt-4 border-t">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Visual & Background
-              </Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Background Image URL</Label>
-                <Input
-                  value={block.props.bgImage || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { bgImage: e.target.value })
-                  }
-                  placeholder="/images/hero.jpg"
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px]">
-                  Background Video URL (Optional)
-                </Label>
-                <Input
-                  value={block.props.bgVideo || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { bgVideo: e.target.value })
-                  }
-                  placeholder="/videos/hero.mp4"
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Overlay Type</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.overlayType || "none"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, {
-                        overlayType: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="none">None</option>
-                    <option value="dark">Dark</option>
-                    <option value="light">Light</option>
-                    <option value="gradient">Gradient</option>
-                    <option value="radial">Radial</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Overlay Opacity</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    value={block.props.overlayOpacity ?? 0}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, {
-                        overlayOpacity: parseFloat(e.target.value),
-                      })
-                    }
-                    className="h-8 text-xs"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Animation Section */}
-            <div className="space-y-3 pt-4 border-t">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Animation
-              </Label>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Animation Type</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.animationType || "fade"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, {
-                        animationType: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="none">None</option>
-                    <option value="fade">Fade In</option>
-                    <option value="slide">Slide Up</option>
-                    <option value="zoom">Zoom In</option>
-                    <option value="parallax">Parallax</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Animation Delay (s)</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="3"
-                    step="0.1"
-                    value={block.props.animationDelay ?? 0}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, {
-                        animationDelay: parseFloat(e.target.value),
-                      })
-                    }
-                    className="h-8 text-xs"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Featured Card (for split layout) */}
-            {(block.props.layout === "split" || !block.props.layout) && (
-              <div className="space-y-3 pt-4 border-t">
-                <div className="flex items-center justify-between">
-                  <Label className="text-xs font-bold uppercase text-muted-foreground">
-                    Featured Card
-                  </Label>
-                  <Switch
-                    checked={block.props.showFeaturedCard !== false}
-                    onCheckedChange={(checked) =>
-                      updateBlockProps(block.id, { showFeaturedCard: checked })
-                    }
-                  />
-                </div>
-                {block.props.showFeaturedCard !== false && (
-                  <>
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-2">
-                        <Label className="text-[10px]">Featured Title</Label>
-                        <Input
-                          value={block.props.featuredTitle || ""}
-                          onChange={(e) =>
-                            updateBlockProps(block.id, {
-                              featuredTitle: e.target.value,
-                            })
-                          }
-                          placeholder="Silk Evening Dress"
-                          className="h-8 text-xs"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-[10px]">Featured Price</Label>
-                        <Input
-                          value={block.props.featuredPrice || ""}
-                          onChange={(e) =>
-                            updateBlockProps(block.id, {
-                              featuredPrice: e.target.value,
-                            })
-                          }
-                          placeholder="$1,299"
-                          className="h-8 text-xs"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-[10px]">Featured Image URL</Label>
-                      <Input
-                        value={block.props.featuredImage || ""}
-                        onChange={(e) =>
-                          updateBlockProps(block.id, {
-                            featuredImage: e.target.value,
-                          })
-                        }
-                        placeholder="/images/product.jpg"
-                        className="h-8 text-xs"
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* Bottom Features */}
-            <div className="space-y-3 pt-4 border-t">
-              <div className="flex items-center justify-between">
-                <Label className="text-xs font-bold uppercase text-muted-foreground">
-                  Bottom Features Bar
-                </Label>
-                <Switch
-                  checked={block.props.showBottomFeatures !== false}
-                  onCheckedChange={(checked) =>
-                    updateBlockProps(block.id, { showBottomFeatures: checked })
-                  }
-                />
-              </div>
-            </div>
-
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <HeroEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
-
       case "FeaturedCollection":
         return (
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">Collection Settings</Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Collection Filter Name</Label>
-                <Input
-                  value={block.props.collectionName || ""}
-                  onChange={(e) => updateBlockProps(block.id, { collectionName: e.target.value })}
-                  placeholder="Fall 2024"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Product Count</Label>
-                  <Input
-                    type="number"
-                    value={block.props.count || 4}
-                    onChange={(e) => updateBlockProps(block.id, { count: parseInt(e.target.value) })}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Columns</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.columns || 4}
-                    onChange={(e) => updateBlockProps(block.id, { columns: parseInt(e.target.value) })}
-                  >
-                    <option value={2}>2 Columns</option>
-                    <option value={3}>3 Columns</option>
-                    <option value={4}>4 Columns</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div className="space-y-3 pt-4 border-t">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">Card Aesthetic</Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Card Style</Label>
-                <div className="grid grid-cols-3 gap-1">
-                  {["default", "luxury", "glass"].map((s) => (
-                    <Button
-                      key={s}
-                      variant={block.props.cardStyle === s ? "default" : "outline"}
-                      size="sm"
-                      className="text-[9px] capitalize h-8"
-                      onClick={() => updateBlockProps(block.id, { cardStyle: s })}
-                    >
-                      {s}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) => updateBlockProps(block.id, { styles: newStyles })}
-            />
-          </div>
+          <FeaturedCollectionEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
       case "PromoBanner":
         return (
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">Promo Content</Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Title</Label>
-                <Input
-                  value={block.props.title || ""}
-                  onChange={(e) => updateBlockProps(block.id, { title: e.target.value })}
-                  placeholder="Midnight Edition"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Subtitle</Label>
-                <Textarea
-                  value={block.props.subtitle || ""}
-                  onChange={(e) => updateBlockProps(block.id, { subtitle: e.target.value })}
-                  placeholder="Exclusive drops..."
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Discount Text</Label>
-                <Input
-                  value={block.props.discountText || ""}
-                  onChange={(e) => updateBlockProps(block.id, { discountText: e.target.value })}
-                  placeholder="70% OFF"
-                />
-              </div>
-            </div>
-            <div className="space-y-3 pt-4 border-t">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">Digital Premium</Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Aurora Variant</Label>
-                <select
-                  className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                  value={block.props.auroraVariant || "cinematic"}
-                  onChange={(e) => updateBlockProps(block.id, { auroraVariant: e.target.value })}
-                >
-                  <option value="blue">Blue Aurora</option>
-                  <option value="purple">Purple Aurora</option>
-                  <option value="orange">Orange Aurora</option>
-                  <option value="cinematic">Cinematic Mix</option>
-                </select>
-              </div>
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) => updateBlockProps(block.id, { styles: newStyles })}
-            />
-          </div>
+          <PromoBannerEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "Features":
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Section Title</Label>
-              <Input
-                value={block.props.title || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { title: e.target.value })
-                }
-                placeholder="Features section title"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Subtitle (Small text above title)</Label>
-              <Input
-                value={block.props.subtitle || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { subtitle: e.target.value })
-                }
-                placeholder="Why Choose Us"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Feature Items</Label>
-              <div className="space-y-3">
-                {(block.props.items || []).map((item: any, idx: number) => (
-                  <Card key={idx} className="p-3 space-y-2 bg-muted/30">
-                    <Input
-                      value={item.title || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          title: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      placeholder="Feature title"
-                      className="text-sm font-bold"
-                    />
-                    <Textarea
-                      value={item.description || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          description: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      placeholder="Feature description"
-                      rows={2}
-                      className="text-sm"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => {
-                        const newItems = (block.props.items || []).filter(
-                          (_: any, i: number) => i !== idx
-                        );
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                    >
-                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove
-                    </Button>
-                  </Card>
-                ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-dashed"
-                  onClick={() => {
-                    const newItems = [
-                      ...(block.props.items || []),
-                      { title: "New Feature", description: "Description here" },
-                    ];
-                    updateBlockProps(block.id, { items: newItems });
-                  }}
-                >
-                  <Plus className="h-4 w-4 mr-1" /> Add Feature Item
-                </Button>
-              </div>
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <FeaturesEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
-
-      /* ... (Others remain same, skip for brevity in this specific tool call or replace fully) ... */
 
       case "PromoGrid":
         return (
-          <div className="space-y-4">
-            <Label>Promo Items (Max 2)</Label>
-            <div className="space-y-4">
-              {(block.props.items || []).map((item: any, idx: number) => (
-                <Card
-                  key={idx}
-                  className="p-4 space-y-3 bg-muted/30 border-dashed"
-                >
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <Label className="text-[10px] uppercase opacity-60">
-                        Tag
-                      </Label>
-                      <Input
-                        value={item.tag || ""}
-                        onChange={(e) => {
-                          const newItems = [...(block.props.items || [])];
-                          newItems[idx] = {
-                            ...newItems[idx],
-                            tag: e.target.value,
-                          };
-                          updateBlockProps(block.id, { items: newItems });
-                        }}
-                        className="h-8 text-xs"
-                        placeholder="Exclusive"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-[10px] uppercase opacity-60">
-                        Button Text
-                      </Label>
-                      <Input
-                        value={item.buttonText || ""}
-                        onChange={(e) => {
-                          const newItems = [...(block.props.items || [])];
-                          newItems[idx] = {
-                            ...newItems[idx],
-                            buttonText: e.target.value,
-                          };
-                          updateBlockProps(block.id, { items: newItems });
-                        }}
-                        className="h-8 text-xs"
-                        placeholder="Shop Now"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase opacity-60">
-                      Title
-                    </Label>
-                    <Input
-                      value={item.title || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          title: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      className="h-9 font-bold"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase opacity-60">
-                      Subtitle
-                    </Label>
-                    <Textarea
-                      value={item.subtitle || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          subtitle: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      className="h-16 text-sm"
-                      rows={2}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase opacity-60">
-                      Image URL
-                    </Label>
-                    <Input
-                      value={item.imageUrl || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          imageUrl: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      className="h-8 text-xs"
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <Label className="text-[10px] uppercase opacity-60">
-                      Link
-                    </Label>
-                    <Input
-                      value={item.link || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          link: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      className="h-8 text-xs"
-                    />
-                  </div>
-                </Card>
-              ))}
-
-              {(block.props.items || []).length < 2 && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-dashed"
-                  onClick={() => {
-                    const newItems = [
-                      ...(block.props.items || []),
-                      {
-                        tag: "New",
-                        title: "Promo Title",
-                        subtitle: "Details here",
-                        link: "/shop",
-                        imageUrl: "/images/home/promo-living.jpg",
-                        buttonText: "Discover",
-                      },
-                    ];
-                    updateBlockProps(block.id, { items: newItems });
-                  }}
-                >
-                  <Plus className="h-4 w-4 mr-1" /> Add Promo Item
-                </Button>
-              )}
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <PromoGridEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "Banner":
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input
-                value={block.props.title || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { title: e.target.value })
-                }
-                placeholder="Banner title"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Subtitle</Label>
-              <Textarea
-                value={block.props.subtitle || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { subtitle: e.target.value })
-                }
-                placeholder="Banner subtitle"
-                rows={2}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Image URL</Label>
-              <Input
-                value={block.props.imageUrl || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { imageUrl: e.target.value })
-                }
-                placeholder="https://..."
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label>CTA Text</Label>
-                <Input
-                  value={block.props.ctaText || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { ctaText: e.target.value })
-                  }
-                  placeholder="Button text"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>CTA Link</Label>
-                <Input
-                  value={block.props.ctaLink || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { ctaLink: e.target.value })
-                  }
-                  placeholder="/deals"
-                />
-              </div>
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <BannerEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "TextBlock":
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input
-                value={block.props.title || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { title: e.target.value })
-                }
-                placeholder="Section title"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Content</Label>
-              <Textarea
-                value={block.props.content || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { content: e.target.value })
-                }
-                placeholder="Enter your content..."
-                rows={6}
-              />
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <TextBlockEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "CTASection":
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input
-                value={block.props.title || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { title: e.target.value })
-                }
-                placeholder="CTA title"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Subtitle</Label>
-              <Textarea
-                value={block.props.subtitle || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { subtitle: e.target.value })
-                }
-                placeholder="Supporting text"
-                rows={2}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-2">
-                <Label>Button Text</Label>
-                <Input
-                  value={block.props.buttonText || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { buttonText: e.target.value })
-                  }
-                  placeholder="Get Started"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Button Link</Label>
-                <Input
-                  value={block.props.buttonLink || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { buttonLink: e.target.value })
-                  }
-                  placeholder="/signup"
-                />
-              </div>
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <CTASectionEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "Stats":
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Stat Items</Label>
-              <div className="space-y-3">
-                {(block.props.items || []).map((item: any, idx: number) => (
-                  <Card key={idx} className="p-3 space-y-2 bg-muted/30">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Input
-                        value={item.label || ""}
-                        onChange={(e) => {
-                          const newItems = [...(block.props.items || [])];
-                          newItems[idx] = {
-                            ...newItems[idx],
-                            label: e.target.value,
-                          };
-                          updateBlockProps(block.id, { items: newItems });
-                        }}
-                        placeholder="Label"
-                        className="text-sm"
-                      />
-                      <Input
-                        value={item.value || ""}
-                        onChange={(e) => {
-                          const newItems = [...(block.props.items || [])];
-                          newItems[idx] = {
-                            ...newItems[idx],
-                            value: e.target.value,
-                          };
-                          updateBlockProps(block.id, { items: newItems });
-                        }}
-                        placeholder="Value (e.g. 10k+)"
-                        className="text-sm"
-                      />
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => {
-                        const newItems = (block.props.items || []).filter(
-                          (_: any, i: number) => i !== idx
-                        );
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                    >
-                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove
-                    </Button>
-                  </Card>
-                ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-dashed"
-                  onClick={() => {
-                    const newItems = [
-                      ...(block.props.items || []),
-                      { label: "New Stat", value: "0", color: "primary" },
-                    ];
-                    updateBlockProps(block.id, { items: newItems });
-                  }}
-                >
-                  <Plus className="h-4 w-4 mr-1" /> Add Stat Item
-                </Button>
-              </div>
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <StatsEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "Pricing":
@@ -1343,7 +448,7 @@ export function PageBuilderClient({
                       className="text-destructive h-8 w-full"
                       onClick={() => {
                         const newItems = block.props.items.filter(
-                          (_: any, i: number) => i !== idx
+                          (_: unknown, i: number) => i !== idx
                         );
                         updateBlockProps(block.id, { items: newItems });
                       }}
@@ -1731,1478 +836,98 @@ export function PageBuilderClient({
 
       case "Categories":
         return (
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Content
-              </Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Section Title</Label>
-                <Input
-                  value={block.props.title || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { title: e.target.value })
-                  }
-                  placeholder="Featured Categories"
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Section Subtitle</Label>
-                <Textarea
-                  value={block.props.subtitle || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { subtitle: e.target.value })
-                  }
-                  placeholder="Curated collections for every style"
-                  rows={2}
-                  className="text-xs"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3 pt-4 border-t">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Layout & Style
-              </Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Grid Columns</Label>
-                <div className="grid grid-cols-5 gap-1">
-                  {[2, 3, 4, 5, 6].map((c) => (
-                    <Button
-                      key={c}
-                      variant={
-                        block.props.columns === c ? "default" : "outline"
-                      }
-                      size="sm"
-                      className="h-7 text-[10px]"
-                      onClick={() => updateBlockProps(block.id, { columns: c })}
-                    >
-                      {c}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Layout Mode</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.layout || "grid"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { layout: e.target.value })
-                    }
-                  >
-                    <option value="grid">Grid</option>
-                    <option value="carousel">Carousel</option>
-                    <option value="masonry">Masonry</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Card Style</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.cardStyle || "default"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { cardStyle: e.target.value })
-                    }
-                  >
-                    <option value="default">Default</option>
-                    <option value="luxury">Luxury</option>
-                    <option value="minimal">Minimal</option>
-                  </select>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Alignment</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.alignment || "left"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { alignment: e.target.value })
-                    }
-                  >
-                    <option value="left">Left</option>
-                    <option value="center">Center</option>
-                    <option value="right">Right</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Animation</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.animationType || "fade"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, {
-                        animationType: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="fade">Fade</option>
-                    <option value="slide">Slide</option>
-                    <option value="zoom">Zoom</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <CategoriesEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "Brands":
         return (
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Content
-              </Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Section Title</Label>
-                <Input
-                  value={block.props.title || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { title: e.target.value })
-                  }
-                  placeholder="Our Trusted Partners"
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Section Subtitle</Label>
-                <Input
-                  value={block.props.subtitle || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { subtitle: e.target.value })
-                  }
-                  placeholder="Collaborating with the world's finest artisans"
-                  className="h-8 text-xs"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3 pt-4 border-t">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Visual & Style
-              </Label>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center justify-between border p-2 rounded-lg bg-muted/20">
-                  <Label className="text-[10px]">Grayscale</Label>
-                  <Switch
-                    checked={block.props.grayscale !== false}
-                    onCheckedChange={(checked: boolean) =>
-                      updateBlockProps(block.id, { grayscale: checked })
-                    }
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[10px]">
-                    Opacity: {block.props.opacity || 1}
-                  </Label>
-                  <Input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    value={block.props.opacity || 1}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      updateBlockProps(block.id, {
-                        opacity: parseFloat(e.target.value),
-                      })
-                    }
-                    className="h-8"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Logo Size</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.logoSize || "md"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { logoSize: e.target.value })
-                    }
-                  >
-                    <option value="sm">Small</option>
-                    <option value="md">Medium</option>
-                    <option value="lg">Large</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Hover Effect</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.hoverEffect || "lift"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, {
-                        hoverEffect: e.target.value,
-                      })
-                    }
-                  >
-                    <option value="scale">Scale</option>
-                    <option value="lift">Lift</option>
-                    <option value="glow">Glow</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Layout Style</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.layout || "grid"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { layout: e.target.value })
-                    }
-                  >
-                    <option value="grid">Grid</option>
-                    <option value="carousel">Carousel</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-[10px]">Alignment</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.alignment || "left"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { alignment: e.target.value })
-                    }
-                  >
-                    <option value="left">Left</option>
-                    <option value="center">Center</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <BrandsEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "Products":
         return (
-          <div className="space-y-4">
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">Product Filtering</Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Filter Type</Label>
-                <select
-                  className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                  value={block.props.filter || "trending"}
-                  onChange={(e) => updateBlockProps(block.id, { filter: e.target.value })}
-                >
-                  <option value="trending">Trending Products</option>
-                  <option value="new">New Arrivals</option>
-                </select>
-              </div>
-            </div>
-            <div className="space-y-3 pt-4 border-t">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">Card Aesthetic</Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Card Style</Label>
-                <div className="grid grid-cols-3 gap-1">
-                  {["default", "luxury", "glass"].map((s) => (
-                    <Button
-                      key={s}
-                      variant={block.props.cardStyle === s ? "default" : "outline"}
-                      size="sm"
-                      className="text-[9px] capitalize h-8"
-                      onClick={() => updateBlockProps(block.id, { cardStyle: s })}
-                    >
-                      {s}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) => updateBlockProps(block.id, { styles: newStyles })}
-            />
-          </div>
+          <ProductsEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "Deal":
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Section Title</Label>
-              <Input
-                value={block.props.title || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { title: e.target.value })
-                }
-                placeholder="Section title"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Section Subtitle</Label>
-              <Input
-                value={block.props.subtitle || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { subtitle: e.target.value })
-                }
-                placeholder="Section subtitle"
-              />
-            </div>
-            <div className="space-y-4 pt-4 border-t">
-              <BlockStyleControls
-                styles={block.props.styles}
-                onChange={(newStyles) =>
-                  updateBlockProps(block.id, { styles: newStyles })
-                }
-              />
-            </div>
-          </div>
+          <DealEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
+        );
+
+      case "Pricing":
+        return (
+          <PricingEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "Newsletter":
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Title</Label>
-              <Input
-                value={block.props.title || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { title: e.target.value })
-                }
-                placeholder="Newsletter title"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea
-                value={block.props.description || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { description: e.target.value })
-                }
-                placeholder="Subscribe description"
-                rows={2}
-              />
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <NewsletterEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "Testimonials":
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Section Title</Label>
-              <Input
-                value={block.props.title || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { title: e.target.value })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Section Subtitle</Label>
-              <Input
-                value={block.props.subtitle || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { subtitle: e.target.value })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Testimonials</Label>
-              <div className="space-y-3">
-                {(block.props.items || []).map((item: any, idx: number) => (
-                  <Card key={idx} className="p-3 space-y-2 bg-muted/30">
-                    <Input
-                      value={item.author || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          author: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      placeholder="Author name"
-                      className="text-sm"
-                    />
-                    <Input
-                      value={item.role || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          role: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      placeholder="Role (e.g. Designer)"
-                      className="text-sm"
-                    />
-                    <Textarea
-                      value={item.text || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          text: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      placeholder="Testimonial text"
-                      rows={2}
-                      className="text-sm"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => {
-                        const newItems = (block.props.items || []).filter(
-                          (_: any, i: number) => i !== idx
-                        );
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                    >
-                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove
-                    </Button>
-                  </Card>
-                ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-dashed"
-                  onClick={() => {
-                    const newItems = [
-                      ...(block.props.items || []),
-                      {
-                        author: "New Client",
-                        role: "Client",
-                        text: "Great service!",
-                        rating: 5,
-                      },
-                    ];
-                    updateBlockProps(block.id, { items: newItems });
-                  }}
-                >
-                  <Plus className="h-4 w-4 mr-1" /> Add Testimonial
-                </Button>
-              </div>
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <TestimonialsEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "FAQ":
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Section Title</Label>
-              <Input
-                value={block.props.title || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { title: e.target.value })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Section Subtitle</Label>
-              <Input
-                value={block.props.subtitle || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { subtitle: e.target.value })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>FAQ Items</Label>
-              <div className="space-y-3">
-                {(block.props.items || []).map((item: any, idx: number) => (
-                  <Card key={idx} className="p-3 space-y-2 bg-muted/30">
-                    <Input
-                      value={item.question || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          question: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      placeholder="Question"
-                      className="text-sm"
-                    />
-                    <Textarea
-                      value={item.answer || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          answer: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      placeholder="Answer"
-                      rows={2}
-                      className="text-sm"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                      onClick={() => {
-                        const newItems = (block.props.items || []).filter(
-                          (_: any, i: number) => i !== idx
-                        );
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                    >
-                      <Trash2 className="h-3.5 w-3.5 mr-1" /> Remove
-                    </Button>
-                  </Card>
-                ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-dashed"
-                  onClick={() => {
-                    const newItems = [
-                      ...(block.props.items || []),
-                      { question: "New Question", answer: "New Answer" },
-                    ];
-                    updateBlockProps(block.id, { items: newItems });
-                  }}
-                >
-                  <Plus className="h-4 w-4 mr-1" /> Add FAQ Item
-                </Button>
-              </div>
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <FaqEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "FlexLayout":
         return (
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Layout Settings
-              </Label>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <Label className="text-[10px]">Columns</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.layout || "1-1"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { layout: e.target.value })
-                    }
-                  >
-                    <option value="1">1 Column</option>
-                    <option value="1-1">1-1 (2 Cols)</option>
-                    <option value="1-2">1-2 (Wide Right)</option>
-                    <option value="2-1">2-1 (Wide Left)</option>
-                    <option value="1-1-1">1-1-1 (3 Cols)</option>
-                    <option value="1-1-1-1">1-1-1-1 (4 Cols)</option>
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[10px]">Gap</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.gap || "medium"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { gap: e.target.value })
-                    }
-                  >
-                    <option value="none">None</option>
-                    <option value="small">Small</option>
-                    <option value="medium">Medium</option>
-                    <option value="large">Large</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3 pt-4 border-t">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Items
-              </Label>
-              <div className="space-y-4">
-                {(block.props.items || []).map((item: any, idx: number) => (
-                  <Card
-                    key={idx}
-                    className="p-4 space-y-3 bg-muted/20 border-dashed"
-                  >
-                    <div className="flex justify-between items-center">
-                      <Label className="text-[10px] font-bold">
-                        Item #{idx + 1}
-                      </Label>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-destructive"
-                        onClick={() => {
-                          const newItems = (block.props.items || []).filter(
-                            (_: any, i: number) => i !== idx
-                          );
-                          updateBlockProps(block.id, { items: newItems });
-                        }}
-                      >
-                        <Trash2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-
-                    <Input
-                      value={item.title || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          title: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      placeholder="Title"
-                      className="h-8 text-xs font-bold"
-                    />
-
-                    <Textarea
-                      value={item.description || ""}
-                      onChange={(e) => {
-                        const newItems = [...(block.props.items || [])];
-                        newItems[idx] = {
-                          ...newItems[idx],
-                          description: e.target.value,
-                        };
-                        updateBlockProps(block.id, { items: newItems });
-                      }}
-                      placeholder="Description"
-                      rows={2}
-                      className="text-xs"
-                    />
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-1">
-                        <Label className="text-[10px]">Theme</Label>
-                        <select
-                          className="h-7 w-full rounded-md border border-input bg-transparent px-1 text-[10px]"
-                          value={item.theme || "light"}
-                          onChange={(e) => {
-                            const newItems = [...(block.props.items || [])];
-                            newItems[idx] = {
-                              ...newItems[idx],
-                              theme: e.target.value,
-                            };
-                            updateBlockProps(block.id, { items: newItems });
-                          }}
-                        >
-                          <option value="light">Light</option>
-                          <option value="dark">Dark</option>
-                          <option value="glass">Glass</option>
-                        </select>
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-[10px]">Icon (Lucide)</Label>
-                        <Input
-                          value={item.icon || ""}
-                          onChange={(e) => {
-                            const newItems = [...(block.props.items || [])];
-                            newItems[idx] = {
-                              ...newItems[idx],
-                              icon: e.target.value,
-                            };
-                            updateBlockProps(block.id, { items: newItems });
-                          }}
-                          placeholder="Sparkles"
-                          className="h-7 text-[10px]"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <Label className="text-[10px]">Image URL</Label>
-                      <Input
-                        value={item.image || ""}
-                        onChange={(e) => {
-                          const newItems = [...(block.props.items || [])];
-                          newItems[idx] = {
-                            ...newItems[idx],
-                            image: e.target.value,
-                          };
-                          updateBlockProps(block.id, { items: newItems });
-                        }}
-                        placeholder="/images/..."
-                        className="h-7 text-[10px]"
-                      />
-                    </div>
-                  </Card>
-                ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-dashed h-9"
-                  onClick={() => {
-                    const newItems = [
-                      ...(block.props.items || []),
-                      { title: "New Item", description: "Content goes here" },
-                    ];
-                    updateBlockProps(block.id, { items: newItems });
-                  }}
-                >
-                  <Plus className="h-3 w-3 mr-1" /> Add Flex Item
-                </Button>
-              </div>
-            </div>
-
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <FlexLayoutEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "VideoHero":
         return (
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Video Content
-              </Label>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Video URL (MP4)</Label>
-                <Input
-                  value={block.props.videoUrl || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { videoUrl: e.target.value })
-                  }
-                  placeholder="https://..."
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Hero Title</Label>
-                <Input
-                  value={block.props.title || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { title: e.target.value })
-                  }
-                  className="h-8 text-xs"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-[10px]">Subtitle</Label>
-                <Textarea
-                  value={block.props.subtitle || ""}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { subtitle: e.target.value })
-                  }
-                  rows={3}
-                  className="text-xs"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-3 pt-4 border-t">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Visuals & Design
-              </Label>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label className="text-[10px]">Overlay Opacity</Label>
-                  <Input
-                    type="number"
-                    min="0"
-                    max="1"
-                    step="0.1"
-                    value={block.props.overlayOpacity ?? 0.5}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, {
-                        overlayOpacity: parseFloat(e.target.value),
-                      })
-                    }
-                    className="h-8 text-xs"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[10px]">Theme Style</Label>
-                  <select
-                    className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                    value={block.props.theme || "luxury"}
-                    onChange={(e) =>
-                      updateBlockProps(block.id, { theme: e.target.value })
-                    }
-                  >
-                    <option value="classic">Classic</option>
-                    <option value="modern">Modern</option>
-                    <option value="luxury">Luxury</option>
-                  </select>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <Label className="text-[10px]">Section Height</Label>
-                <select
-                  className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-xs"
-                  value={block.props.height || "large"}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, { height: e.target.value })
-                  }
-                >
-                  <option value="small">Small</option>
-                  <option value="medium">Medium</option>
-                  <option value="large">Large</option>
-                  <option value="full">Fullscreen</option>
-                </select>
-              </div>
-            </div>
-
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <VideoHeroEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "Header":
         return (
-          <div className="space-y-4">
-            {/* Design Settings */}
-            <div className="space-y-4 pt-2 pb-4 border-b">
-              <Label className="text-xs font-bold uppercase text-muted-foreground">
-                Design
-              </Label>
-
-              {/* Transparency Toggle */}
-              <div className="flex items-center justify-between border p-2 rounded-lg bg-muted/20">
-                <div className="space-y-0.5">
-                  <Label className="text-[10px] uppercase font-bold opacity-70">
-                    Transparent
-                  </Label>
-                  <p className="text-[9px] text-muted-foreground leading-tight">
-                    No background initially
-                  </p>
-                </div>
-                <Switch
-                  checked={
-                    block.props.styles?.transparent !== undefined
-                      ? block.props.styles.transparent
-                      : block.props.transparent || false
-                  }
-                  onCheckedChange={(checked: boolean) => {
-                    // Update legacy and new style prop for compatibility
-                    updateBlockProps(block.id, {
-                      transparent: checked,
-                      styles: { ...block.props.styles, transparent: checked },
-                    });
-                  }}
-                />
-              </div>
-
-              <div className="flex items-center justify-between border p-2 rounded-lg bg-muted/20">
-                <div className="space-y-0.5">
-                  <Label className="text-[10px] uppercase font-bold opacity-70">
-                    Full Width
-                  </Label>
-                  <p className="text-[9px] text-muted-foreground leading-tight">
-                    Edge-to-edge layout
-                  </p>
-                </div>
-                <Switch
-                  checked={block.props.fullWidth || false}
-                  onCheckedChange={(checked: boolean) =>
-                    updateBlockProps(block.id, { fullWidth: checked })
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs font-bold">Header Height (px)</Label>
-              <div className="flex gap-4 items-center">
-                <Input
-                  type="number"
-                  value={block.props.customHeight || 80}
-                  onChange={(e) =>
-                    updateBlockProps(block.id, {
-                      customHeight: parseInt(e.target.value) || 80,
-                    })
-                  }
-                  className="w-24 h-9"
-                />
-                <div className="flex gap-2">
-                  {[64, 80, 100].map((h) => (
-                    <Button
-                      key={h}
-                      variant={
-                        (block.props.customHeight || 80) === h
-                          ? "default"
-                          : "outline"
-                      }
-                      size="sm"
-                      className="h-7 px-2 text-[10px]"
-                      onClick={() =>
-                        updateBlockProps(block.id, { customHeight: h })
-                      }
-                    >
-                      {h}px
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs font-bold">Nav Alignment</Label>
-              <div className="grid grid-cols-3 gap-2">
-                {["left", "center", "right"].map((a) => (
-                  <Button
-                    key={a}
-                    variant={
-                      (block.props.alignment || "right") === a
-                        ? "default"
-                        : "outline"
-                    }
-                    size="sm"
-                    className="text-[10px] capitalize h-8"
-                    onClick={() => updateBlockProps(block.id, { alignment: a })}
-                  >
-                    {a}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            <div className="space-y-3 pt-2 border-t mt-4">
-              <Label className="text-[10px] uppercase font-bold opacity-50">
-                Utilities (Search, Cart, etc.)
-              </Label>
-              <div className="space-y-3">
-                {(block.props.utils || []).map((util: any, idx: number) => (
-                  <Card
-                    key={idx}
-                    className="p-3 space-y-2 bg-muted/20 border-dashed"
-                  >
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="space-y-1">
-                        <div className="flex justify-between items-center">
-                          <Label className="text-[10px]">
-                            Lucide Icon Name
-                          </Label>
-                          <a
-                            href="https://lucide.dev/icons"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[9px] text-blue-500 hover:underline"
-                          >
-                            Browse Icons ↗
-                          </a>
-                        </div>
-                        <div className="relative">
-                          <Input
-                            value={util.icon || ""}
-                            onChange={(e) => {
-                              const newUtils = [...(block.props.utils || [])];
-                              newUtils[idx] = {
-                                ...newUtils[idx],
-                                icon: e.target.value,
-                              };
-                              updateBlockProps(block.id, { utils: newUtils });
-                            }}
-                            placeholder="Search, User, ShoppingCart..."
-                            className="h-8 text-xs pr-8"
-                          />
-                          <div className="absolute right-0 top-0 h-8 w-8 flex items-center justify-center p-1 pointer-events-none opacity-50">
-                            <FlexibleIcon
-                              source={util.icon}
-                              size={14}
-                              className="text-foreground"
-                            />
-                          </div>
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        <Label className="text-[10px]">Label</Label>
-                        <Input
-                          value={util.label || ""}
-                          onChange={(e) => {
-                            const newUtils = [...(block.props.utils || [])];
-                            newUtils[idx] = {
-                              ...newUtils[idx],
-                              label: e.target.value,
-                            };
-                            updateBlockProps(block.id, { utils: newUtils });
-                          }}
-                          placeholder="Search"
-                          className="h-8 text-xs"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Input
-                        value={util.href || ""}
-                        onChange={(e) => {
-                          const newUtils = [...(block.props.utils || [])];
-                          newUtils[idx] = {
-                            ...newUtils[idx],
-                            href: e.target.value,
-                          };
-                          updateBlockProps(block.id, { utils: newUtils });
-                        }}
-                        placeholder="/cart"
-                        className="flex-1 h-8 text-xs"
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive"
-                        onClick={() => {
-                          const newUtils = (block.props.utils || []).filter(
-                            (_: any, i: number) => i !== idx
-                          );
-                          updateBlockProps(block.id, { utils: newUtils });
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-dashed h-8 text-[11px]"
-                  onClick={() => {
-                    const newUtils = [
-                      ...(block.props.utils || []),
-                      { icon: "Search", label: "Search", href: "/search" },
-                    ];
-                    updateBlockProps(block.id, { utils: newUtils });
-                  }}
-                >
-                  <Plus className="h-3 w-3 mr-1" /> Add Utility
-                </Button>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label>Navigation Links</Label>
-              <div className="space-y-3">
-                {(block.props.links || []).map((link: any, idx: number) => (
-                  <Card key={idx} className="p-3 space-y-2 bg-muted/30">
-                    <div className="space-y-2">
-                      <div className="grid grid-cols-2 gap-2">
-                        <Input
-                          value={link.label || ""}
-                          onChange={(e) => {
-                            const newLinks = [...(block.props.links || [])];
-                            newLinks[idx] = {
-                              ...newLinks[idx],
-                              label: e.target.value,
-                            };
-                            updateBlockProps(block.id, { links: newLinks });
-                          }}
-                          placeholder="Label"
-                          className="text-sm h-8"
-                        />
-                        <Input
-                          value={link.href || ""}
-                          onChange={(e) => {
-                            const newLinks = [...(block.props.links || [])];
-                            newLinks[idx] = {
-                              ...newLinks[idx],
-                              href: e.target.value,
-                            };
-                            updateBlockProps(block.id, { links: newLinks });
-                          }}
-                          placeholder="URL"
-                          className="text-sm h-8"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <div className="flex justify-between items-center">
-                          <Label className="text-[10px]">
-                            Icon (Lucide Name or Image URL)
-                          </Label>
-                          <a
-                            href="https://lucide.dev/icons"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[9px] text-blue-500 hover:underline"
-                          >
-                            Browse Icons ↗
-                          </a>
-                        </div>
-                        <div className="flex gap-2 relative">
-                          <div className="absolute right-0 top-0 h-8 w-8 flex items-center justify-center p-1 pointer-events-none opacity-50">
-                            <FlexibleIcon
-                              source={link.icon}
-                              size={14}
-                              className="text-foreground"
-                            />
-                          </div>
-                          <Input
-                            value={link.icon || ""}
-                            onChange={(e) => {
-                              const newLinks = [...(block.props.links || [])];
-                              newLinks[idx] = {
-                                ...newLinks[idx],
-                                icon: e.target.value,
-                              };
-                              updateBlockProps(block.id, { links: newLinks });
-                            }}
-                            placeholder="e.g. Home, User, or https://..."
-                            className="text-xs h-8 flex-1 pr-8"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 text-destructive hover:bg-destructive/10"
-                      onClick={() => {
-                        const newLinks = (block.props.links || []).filter(
-                          (_: any, i: number) => i !== idx
-                        );
-                        updateBlockProps(block.id, { links: newLinks });
-                      }}
-                    >
-                      <Trash2 className="h-3 w-3 mr-1" /> Remove
-                    </Button>
-                  </Card>
-                ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-dashed"
-                  onClick={() => {
-                    const newLinks = [
-                      ...(block.props.links || []),
-                      { label: "New Link", href: "/" },
-                    ];
-                    updateBlockProps(block.id, { links: newLinks });
-                  }}
-                >
-                  <Plus className="h-3.5 w-3.5 mr-1" /> Add Link
-                </Button>
-              </div>
-            </div>
-            <BlockStyleControls
-              styles={block.props.styles}
-              onChange={(newStyles) =>
-                updateBlockProps(block.id, { styles: newStyles })
-              }
-            />
-          </div>
+          <HeaderEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       case "Footer":
         return (
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label>Theme</Label>
-              <div className="grid grid-cols-3 gap-2">
-                {["dark", "minimal", "brushed"].map((t) => (
-                  <Button
-                    key={t}
-                    variant={
-                      (block.props.theme || "dark") === t
-                        ? "default"
-                        : "outline"
-                    }
-                    size="sm"
-                    className="text-[10px] capitalize"
-                    onClick={() => updateBlockProps(block.id, { theme: t })}
-                  >
-                    {t}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {/* Design Customization - Moved to BlockStyleControls */}
-            <div className="flex items-center justify-between border p-2 rounded-lg bg-muted/20 mt-4">
-              <Label className="text-xs">Show Contact Info</Label>
-              <Switch
-                checked={block.props.showContact !== false}
-                onCheckedChange={(checked: boolean) =>
-                  updateBlockProps(block.id, { showContact: checked })
-                }
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Company Name</Label>
-              <Input
-                value={block.props.companyName || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { companyName: e.target.value })
-                }
-                placeholder="Luxe Premium"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label>Description</Label>
-              <Textarea
-                value={block.props.description || ""}
-                onChange={(e) =>
-                  updateBlockProps(block.id, { description: e.target.value })
-                }
-                placeholder="Footer description text..."
-                rows={3}
-              />
-            </div>
-
-            <div className="pt-4 border-t space-y-4">
-              <Label className="text-xs uppercase opacity-50 font-bold">
-                Navigation Columns
-              </Label>
-              <div className="space-y-4">
-                {(block.props.columns || []).map((col: any, colIdx: number) => (
-                  <Card
-                    key={colIdx}
-                    className="p-3 space-y-3 bg-muted/30 border-dashed"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Input
-                        value={col.title || ""}
-                        onChange={(e) => {
-                          const newCols = [...(block.props.columns || [])];
-                          newCols[colIdx] = {
-                            ...newCols[colIdx],
-                            title: e.target.value,
-                          };
-                          updateBlockProps(block.id, { columns: newCols });
-                        }}
-                        placeholder="Column Title (e.g. Products)"
-                        className="font-bold h-8"
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive"
-                        onClick={() => {
-                          const newCols = (block.props.columns || []).filter(
-                            (_: any, i: number) => i !== colIdx
-                          );
-                          updateBlockProps(block.id, { columns: newCols });
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <div className="space-y-2 pl-4 border-l-2">
-                      {(col.links || []).map((link: any, linkIdx: number) => (
-                        <div key={linkIdx} className="flex gap-2">
-                          <Input
-                            value={link.label || ""}
-                            onChange={(e) => {
-                              const newCols = [...(block.props.columns || [])];
-                              const newLinks = [
-                                ...(newCols[colIdx].links || []),
-                              ];
-                              newLinks[linkIdx] = {
-                                ...newLinks[linkIdx],
-                                label: e.target.value,
-                              };
-                              newCols[colIdx] = {
-                                ...newCols[colIdx],
-                                links: newLinks,
-                              };
-                              updateBlockProps(block.id, { columns: newCols });
-                            }}
-                            placeholder="Label"
-                            className="h-7 text-xs"
-                          />
-                          <Input
-                            value={link.href || ""}
-                            onChange={(e) => {
-                              const newCols = [...(block.props.columns || [])];
-                              const newLinks = [
-                                ...(newCols[colIdx].links || []),
-                              ];
-                              newLinks[linkIdx] = {
-                                ...newLinks[linkIdx],
-                                href: e.target.value,
-                              };
-                              newCols[colIdx] = {
-                                ...newCols[colIdx],
-                                links: newLinks,
-                              };
-                              updateBlockProps(block.id, { columns: newCols });
-                            }}
-                            placeholder="/url"
-                            className="h-7 text-xs"
-                          />
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-destructive"
-                            onClick={() => {
-                              const newCols = [...(block.props.columns || [])];
-                              const newLinks = (
-                                newCols[colIdx].links || []
-                              ).filter((_: any, i: number) => i !== linkIdx);
-                              newCols[colIdx] = {
-                                ...newCols[colIdx],
-                                links: newLinks,
-                              };
-                              updateBlockProps(block.id, { columns: newCols });
-                            }}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ))}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-6 w-full text-[10px] border-dashed"
-                        onClick={() => {
-                          const newCols = [...(block.props.columns || [])];
-                          const newLinks = [
-                            ...(newCols[colIdx].links || []),
-                            { label: "New Link", href: "/" },
-                          ];
-                          newCols[colIdx] = {
-                            ...newCols[colIdx],
-                            links: newLinks,
-                          };
-                          updateBlockProps(block.id, { columns: newCols });
-                        }}
-                      >
-                        <Plus className="h-3 w-3 mr-1" /> Add Link
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-dashed"
-                  onClick={() => {
-                    const newCols = [
-                      ...(block.props.columns || []),
-                      { title: "New Column", links: [] },
-                    ];
-                    updateBlockProps(block.id, { columns: newCols });
-                  }}
-                >
-                  <Plus className="h-3.5 w-3.5 mr-1" /> Add Column
-                </Button>
-              </div>
-            </div>
-
-            <div className="space-y-2 pt-4 border-t">
-              <Label>Social Links</Label>
-              <div className="space-y-2">
-                {(block.props.socialLinks || []).map(
-                  (social: any, idx: number) => (
-                    <div key={idx} className="flex gap-2">
-                      <Input
-                        value={social.platform || ""}
-                        onChange={(e) => {
-                          const newSocials = [
-                            ...(block.props.socialLinks || []),
-                          ];
-                          newSocials[idx] = {
-                            ...newSocials[idx],
-                            platform: e.target.value,
-                          };
-                          updateBlockProps(block.id, {
-                            socialLinks: newSocials,
-                          });
-                        }}
-                        placeholder="Platform"
-                        className="flex-1 h-8 text-xs"
-                      />
-                      <Input
-                        value={social.url || ""}
-                        onChange={(e) => {
-                          const newSocials = [
-                            ...(block.props.socialLinks || []),
-                          ];
-                          newSocials[idx] = {
-                            ...newSocials[idx],
-                            url: e.target.value,
-                          };
-                          updateBlockProps(block.id, {
-                            socialLinks: newSocials,
-                          });
-                        }}
-                        placeholder="URL"
-                        className="flex-1 h-8 text-xs"
-                      />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive"
-                        onClick={() => {
-                          const newSocials = (
-                            block.props.socialLinks || []
-                          ).filter((_: any, i: number) => i !== idx);
-                          updateBlockProps(block.id, {
-                            socialLinks: newSocials,
-                          });
-                        }}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full border-dashed"
-                  onClick={() => {
-                    const newSocials = [
-                      ...(block.props.socialLinks || []),
-                      { platform: "Instagram", url: "#" },
-                    ];
-                    updateBlockProps(block.id, { socialLinks: newSocials });
-                  }}
-                >
-                  <Plus className="h-4 w-4 mr-1" /> Add Social Link
-                </Button>
-              </div>
-
-              <BlockStyleControls
-                styles={block.props.styles}
-                onChange={(newStyles) =>
-                  updateBlockProps(block.id, { styles: newStyles })
-                }
-              />
-            </div>
-          </div>
+          <FooterEditor
+            block={block}
+            onChange={(newProps) => updateBlockProps(block.id, newProps)}
+          />
         );
 
       default:

@@ -868,6 +868,7 @@ model InventoryLog {
   @@index([skuId])
   @@index([userId])
   @@index([tenantId])
+  @@index([skuId, createdAt(sort: Desc)])
 }
 
 model Wishlist {

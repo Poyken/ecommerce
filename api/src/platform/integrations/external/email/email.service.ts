@@ -24,6 +24,8 @@ import * as nodemailer from 'nodemailer';
 
  * =====================================================================
  */
+import { EmailTemplates } from './email.templates';
+
 @Injectable()
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
@@ -42,24 +44,14 @@ export class EmailService {
   }
 
   async sendOrderConfirmation(order: any): Promise<void> {
+    const html = EmailTemplates.orderConfirmation(order);
     const mailOptions = {
       from: this.configService.get('SMTP_FROM'),
       to: order.user?.email,
       subject: `Xác nhận đơn hàng #${order.id.slice(-8)}`,
-      html: `
-        <h1>Cảm ơn bạn đã mua hàng!</h1>
-        <p>Đơn hàng <strong>#${order.id.slice(-8)}</strong> đã được xác nhận.</p>
-        <p>Tổng tiền: ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalAmount)}</p>
-        <p>Chúng tôi sẽ sớm giao hàng cho bạn.</p>
-      `,
+      html,
     };
-
-    try {
-      await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Order confirmation email sent to ${order.user?.email}`);
-    } catch (error) {
-      this.logger.error(`Failed to send order confirmation email`, error);
-    }
+    await this.sendMail(mailOptions, `Order confirmation to ${order.user?.email}`);
   }
 
   async sendOrderStatusUpdate(order: any): Promise<void> {
@@ -69,30 +61,21 @@ export class EmailService {
       DELIVERED: 'Giao hàng thành công',
       CANCELLED: 'Đã hủy',
     };
-
     const statusText = statusMap[order.status] || order.status;
+    
+    const html = EmailTemplates.orderStatusUpdate(
+      order, 
+      statusText, 
+      this.configService.get('FRONTEND_URL') || ''
+    );
+
     const mailOptions = {
       from: this.configService.get('SMTP_FROM'),
       to: order.user?.email,
       subject: `Cập nhật trạng thái đơn hàng #${order.id.slice(-8)}: ${statusText}`,
-      html: `
-        <h1>Cập nhật trạng thái đơn hàng</h1>
-        <p>Chào bạn,</p>
-        <p>Đơn hàng <strong>#${order.id.slice(-8)}</strong> của bạn đã chuyển sang trạng thái: <strong>${statusText}</strong>.</p>
-        ${order.status === 'SHIPPED' && order.shippingCode ? `<p>Mã vận đơn: <strong>${order.shippingCode}</strong></p>` : ''}
-        <p>Xem chi tiết tại: <a href="${this.configService.get('FRONTEND_URL')}/orders/${order.id}">Đơn hàng của tôi</a></p>
-        <p>Cảm ơn bạn đã mua sắm tại Poyken Shop!</p>
-      `,
+      html,
     };
-
-    try {
-      await this.transporter.sendMail(mailOptions);
-      this.logger.log(
-        `Status update email (${order.status}) sent to ${order.user?.email}`,
-      );
-    } catch (error) {
-      this.logger.error(`Failed to send status update email`, error);
-    }
+    await this.sendMail(mailOptions, `Status update (${order.status}) to ${order.user?.email}`);
   }
 
   async sendShippingUpdate(order: any): Promise<void> {
@@ -100,72 +83,47 @@ export class EmailService {
   }
 
   sendInvoice(order: any): Promise<void> {
-    // Implementation for sending invoice PDF could be added here
-    this.logger.log(`Invoice email requested for order ${order.id}`);
+    this.logger.log(`Invoice custom email requested for order ${order.id}`);
     return Promise.resolve();
   }
 
-  async sendCustomEmail(
-    to: string,
-    subject: string,
-    html: string,
-  ): Promise<void> {
+  async sendCustomEmail(to: string, subject: string, html: string): Promise<void> {
     const mailOptions = {
       from: this.configService.get('SMTP_FROM'),
       to,
       subject,
       html,
     };
-
-    try {
-      await this.transporter.sendMail(mailOptions);
-      this.logger.log(`Custom email sent to ${to}`);
-    } catch (error) {
-      this.logger.error(`Failed to send custom email to ${to}`, error);
-    }
+    await this.sendMail(mailOptions, `Custom email to ${to}`);
   }
 
   async sendPasswordReset(to: string, resetToken: string): Promise<void> {
     const frontendUrl = this.configService.get('FRONTEND_URL');
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+    const html = EmailTemplates.passwordReset(resetUrl);
 
-    await this.sendCustomEmail(
-      to,
-      'Yêu cầu khôi phục mật khẩu',
-      `<p>Bạn nhận được email này vì đã yêu cầu khôi phục mật khẩu cho tài khoản Poyken Shop.</p>
-       <p>Vui lòng click vào link sau để đặt lại mật khẩu (link có hiệu lực trong 1 giờ):</p>
-       <p><a href="${resetUrl}">${resetUrl}</a></p>
-       <p>Nếu bạn không yêu cầu, vui lòng bỏ qua email này.</p>`,
-    );
+    await this.sendCustomEmail(to, 'Yêu cầu khôi phục mật khẩu', html);
   }
 
   async sendPasswordResetSuccess(to: string): Promise<void> {
-    await this.sendCustomEmail(
-      to,
-      'Mật khẩu của bạn đã được thay đổi thành công',
-      `<p>Chào bạn,</p>
-       <p>Mật khẩu tài khoản Poyken Shop của bạn đã được thay đổi thành công.</p>
-       <p>Nếu bạn không thực hiện việc này, vui lòng liên hệ với bộ phận hỗ trợ ngay lập tức.</p>
-       <p>Trân trọng,<br/>Poyken Shop Team</p>`,
-    );
+    const html = EmailTemplates.passwordResetSuccess();
+    await this.sendCustomEmail(to, 'Mật khẩu của bạn đã được thay đổi thành công', html);
   }
 
-  async sendLoyaltyPointsEarned(
-    to: string,
-    name: string,
-    points: number,
-    orderId: string,
-  ): Promise<void> {
+  async sendLoyaltyPointsEarned(to: string, name: string, points: number, orderId: string): Promise<void> {
     const frontendUrl = this.configService.get('FRONTEND_URL');
+    const html = EmailTemplates.loyaltyPoints(name, points, orderId, frontendUrl || '');
+    
+    await this.sendCustomEmail(to, `🎉 Bạn đã nhận được ${points} điểm thưởng!`, html);
+  }
 
-    await this.sendCustomEmail(
-      to,
-      `🎉 Bạn đã nhận được ${points} điểm thưởng!`,
-      `<p>Chào ${name},</p>
-       <p>Chúc mừng bạn! Bạn đã nhận được <strong>${points} điểm thưởng</strong> từ đơn hàng <strong>#${orderId.slice(0, 8)}</strong>.</p>
-       <p>Bạn có thể sử dụng điểm thưởng để giảm giá cho các đơn hàng tiếp theo.</p>
-       <p><a href="${frontendUrl}/account/loyalty">Xem số dư điểm của bạn</a></p>
-       <p>Cảm ơn bạn đã mua sắm tại Poyken Shop!</p>`,
-    );
+  // Helper to centralize sendMail error handling
+  private async sendMail(options: nodemailer.SendMailOptions, logMsg: string) {
+    try {
+      await this.transporter.sendMail(options);
+      this.logger.log(`✅ ${logMsg}`);
+    } catch (error) {
+      this.logger.error(`❌ Failed: ${logMsg}`, error);
+    }
   }
 }

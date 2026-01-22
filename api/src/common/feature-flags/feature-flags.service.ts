@@ -24,9 +24,10 @@
 
  * =====================================================================
  */
+import { getTenant } from '@core/tenant/tenant.context';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import type { Cache } from 'cache-manager';
 import { CacheL1Service } from '../cache-l1.service';
 import {
@@ -139,8 +140,14 @@ export class FeatureFlagsService {
    * Admin: Create a new flag
    */
   async create(dto: CreateFeatureFlagDto) {
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context required');
+
     const flag = await this.prisma.featureFlag.create({
-      data: dto,
+      data: {
+        ...dto,
+        tenantId: tenant.id,
+      },
     });
     const cacheKey = `${this.CACHE_PREFIX}${dto.key}`;
     await this.cacheManager.del(cacheKey);

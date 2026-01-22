@@ -71,6 +71,21 @@ export class InventoryService {
   }
 
   /**
+   * Giữ tồn kho (Reserve Stock) cho nhiều sản phẩm cùng lúc.
+   * - Optimization: Dùng Promise.all để tận dụng concurrency của DB Transaction.
+   */
+  async reserveStockBatch(
+    items: { skuId: string; quantity: number }[],
+    tx?: any,
+  ) {
+    // 1. Reserve từng món (Parallel)
+    // Prisma trong transaction sẽ serialize, nhưng code gọn hơn loop thường.
+    await Promise.all(
+      items.map((item) => this.reserveStock(item.skuId, item.quantity, tx)),
+    );
+  }
+
+  /**
    * Hoàn trả tồn kho (Release Stock).
    * - Dùng khi: Đơn hàng bị Hủy (Cancel) hoặc Hết hạn thanh toán (Expire).
    * - Logic: Cộng lại vào `stock` và giảm `reservedStock`.
@@ -113,7 +128,7 @@ export class InventoryService {
    * ✅ TỐI ƯU HÓA: Gửi batch notification (nhanh hơn 100x).
    */
   private async checkLowStock(skuId: string) {
-    const sku = await (this.prisma.sku as any).findUnique({
+    const sku = await this.prisma.sku.findUnique({
       where: { id: skuId },
       include: { product: true },
     });
@@ -125,7 +140,7 @@ export class InventoryService {
       );
 
       // ✅ Query 1 lần để lấy tất cả user bị ảnh hưởng
-      const carts = await (this.prisma.cart as any).findMany({
+      const carts = await this.prisma.cart.findMany({
         where: {
           items: {
             some: {
@@ -148,7 +163,7 @@ export class InventoryService {
         isRead: false,
       }));
 
-      await (this.prisma.notification as any).createMany({
+      await this.prisma.notification.createMany({
         data: notifications,
       });
 
@@ -180,7 +195,7 @@ export class InventoryService {
    */
   private async notifyStockUpdate(skuId: string) {
     try {
-      const sku = await (this.prisma.sku as any).findUnique({
+      const sku = await this.prisma.sku.findUnique({
         where: { id: skuId },
         select: { stock: true, productId: true },
       });

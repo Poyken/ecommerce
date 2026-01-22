@@ -61,6 +61,6 @@ import { OrderSubscriber } from './order.subscriber';
     OrdersExportService,
     OrderSubscriber,
   ],
-  exports: [OrdersRepository, InvoiceService, BullModule],
+  exports: [OrdersRepository, InvoiceService, BullModule, OrdersService],
 })
 export class OrdersModule {}

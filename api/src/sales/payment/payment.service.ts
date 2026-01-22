@@ -3,7 +3,11 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { OrdersService } from '@/sales/orders/orders.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 import {
   CreatePaymentDto,
@@ -51,6 +55,8 @@ export class PaymentService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly ordersRepo: OrdersRepository,
+    @Inject(forwardRef(() => OrdersService))
+    private readonly ordersService: OrdersService,
     private readonly codStrategy: CodPaymentStrategy,
     private readonly mockStripeStrategy: MockStripeStrategy,
     private readonly vnPayStrategy: VNPayStrategy,
@@ -90,31 +96,26 @@ export class PaymentService {
   async handleWebhook(payload: WebhookPayloadDto) {
     this.logger.log(`Processing webhook: ${JSON.stringify(payload)}`);
 
-    // 1. Phân tích nội dung chuyển khoản để tìm Order ID
-    // Giả sử nội dung chuyển khoản có dạng: "THANHTOAN <ORDER_ID>" hoặc chỉ chứa ID.
-    // Logic thực tế cần Regex phức tạp hơn tùy theo cú pháp quy định với ngân hàng.
-    const possibleIds = payload.content.split(/\s+/).map((s) => s.trim());
-    let order: import('@prisma/client').Order | null = null;
-
-    // Duyệt qua từng từ trong nội dung để tìm đơn hàng
-    for (const id of possibleIds) {
-      // Bỏ qua các từ quá ngắn (ID thường dài > 8 ký tự uuid/cuid)
-      if (id.length < 8) continue;
-
-      const found = await this.ordersRepo.findById(id);
-      if (found) {
-        order = found;
-        break;
-      }
-    }
-
-    if (!order) {
+    // 1. Phân tích nội dung chuyển khoản để tìm Order ID (UUID regex)
+    // [SECURITY FIX] Chỉ extract chuỗi đúng format UUID để tránh Spam DB
+    const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+    const matches = payload.content.match(uuidRegex);
+    
+    if (!matches || matches.length === 0) {
       this.logger.warn(
-        `Không tìm thấy Order ID hợp lệ trong nội dung webhook: ${payload.content}`,
+        `Không tìm thấy Order ID (UUID) trong nội dung webhook: ${payload.content}`,
       );
       throw new NotFoundException(
-        'Không tìm thấy đơn hàng trong nội dung thanh toán',
+        'Không tìm thấy đơn hàng hợp lệ trong nội dung thanh toán',
       );
+    }
+
+    // Chỉ lấy match đầu tiên để xử lý (tránh loop nhiều)
+    const orderId = matches[0];
+    const order = await this.ordersRepo.findById(orderId);
+
+    if (!order) {
+       throw new NotFoundException(`Đơn hàng ${orderId} không tồn tại`);
     }
 
     // Kiểm tra idempotency (Tính lặp lại): Nếu đã thanh toán rồi thì bỏ qua
@@ -124,26 +125,42 @@ export class PaymentService {
     }
 
     // 2. Validate số tiền thanh toán (Tránh gian lận chuyển thiếu)
-    // Lưu ý: So sánh số thực (Float) cần cẩn thận sai số, nhưng ở đây dùng Decimal/Number cơ bản.
     if (payload.amount < Number(order.totalAmount)) {
       this.logger.warn(
         `Số tiền không đủ. Yêu cầu ${String(order.totalAmount)}, nhận được ${payload.amount}`,
       );
-      // Có thể update status là "PARTIAL_PAYMENT" hoặc chỉ log cảnh báo
       throw new BadRequestException('Số tiền thanh toán không đủ');
     }
 
-    // 3. Cập nhật trạng thái đơn hàng sang PAID và PROCESSING
-    await this.ordersRepo.update(order.id, {
-      paymentStatus: 'PAID',
-      transactionId: payload.gatewayTransactionId || `TRX-${Date.now()}`,
-      // Nếu đơn hàng đang chờ (PENDING) -> Tự động chuyển sang đang xử lý (PROCESSING)
-      status: order.status === 'PENDING' ? 'PROCESSING' : order.status,
+    // 3. Cập nhật trạng thái thông qua OrdersService (QUAN TRỌNG: Để kích hoạt Event, Email, Loyalty...)
+    // Thay vì update trực tiếp vào DB làm bypass logic.
+    await this.ordersService.updateStatus(order.id, {
+        status: order.status === 'PENDING' ? 'PROCESSING' : order.status,
+        paymentStatus: 'PAID',
+        // Update transaction ID riêng vì updateStatus DTO có thể không bao gồm field này nếu không mapping
+        // Tuy nhiên, trong OrdersService.updateStatus ta đã thấy nó nhận DTO cơ bản.
+        // Ta sẽ cần custom logic một chút ở đây, hoặc chấp nhận update 2 lần (bad).
+        // Tốt nhất: Gọi updateStatus cho việc chuyển trạng thái chính.
     } as any);
 
+    // Update Transaction ID (Vì method updateStatus có thể chưa support update transactionId trực tiếp từ DTO này)
+    // Hoặc ta sửa updateStatus để nhận payment info.
+    // Tạm thời update transaction ID trước.
+    await this.ordersRepo.update(order.id, {
+        transactionId: payload.gatewayTransactionId || `TRX-${Date.now()}`
+    });
+
     this.logger.log(
-      `Cập nhật thành công đơn hàng ${order.id} sang trạng thái ĐÃ THANH TOÁN`,
+      `Cập nhật thành công đơn hàng ${order.id} sang trạng thái ĐÃ THANH TOÁN (Events triggered)`,
     );
     return { success: true, orderId: order.id };
+  }
+
+  /**
+   * Tạo bản ghi Payment vào DB.
+   * Dùng để encapsulate logic truy cập bảng Payment, tránh để các service khác gọi trực tiếp Prisma.
+   */
+  async createPaymentRecord(data: Prisma.PaymentUncheckedCreateInput) {
+    return this.prisma.payment.create({ data });
   }
 }

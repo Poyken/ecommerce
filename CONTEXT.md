@@ -163,3 +163,11 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
   - **Web**: Created `(dashboard)` route group. Moved `admin` and `super-admin` routes into it for cleaner root structure. Build passes.
 - [2026-01-22] **Major API Restructuring**: Consolidated 32 modules → 17 modules (47% reduction). Created `Platform` (admin, super-admin, analytics, subscriptions, integrations) and `CMS` (blog, pages, media) Feature Modules. Extended `Sales` (+reviews, +wishlist, +tax), `Operations` (+inventory), and `Identity` (+addresses). Zero API breaking changes. All import paths updated globally. Build verification: ✅ PASSED.
 - [2026-01-22] **Technical Audit & Type Hardening**: Eliminated generic `any` types across 15+ Admin Services, Domain Actions, and Core Components. Standardized pagination with `PaginationParams` and centralized CMS models (`Page`, `Block`). Hardened binary data flow by replacing `Blob` with `ArrayBuffer` in Server Actions, ensuring strict type safety from API to UI. Admin core type coverage is now 100% strict.
+- [2026-01-22] **Admin Performance & Architecture Refactor**: Addressed "God Component" issues in `page-builder-client.tsx` by extracting monolithic editors into lazy-loaded sub-components. Enforced type safety in `page-actions.ts` and reduced initial bundle size via `next/dynamic`.
+- [2026-01-22] **API Core Optimization**:
+  - **OrdersService**: Eliminated N+1 query loop by implementing `inventoryService.reserveStockBatch`. Decoupled Payment persistence logic into `PaymentService`.
+  - **InventoryService**: Removed `any` casts and implemented transaction-safe batch reservation.
+  - **PaymentService**: Encapsulated direct DB access typesafe methods.
+  - **Database**: Added `idx_inventory_log_sku_date` for scalable stock history.
+  - **Security**: Hardened `AuthService` types and removed context casting hacks.
+  - **Global Build Verification**: ✅ PASSED (API & Web) [2026-01-22].
