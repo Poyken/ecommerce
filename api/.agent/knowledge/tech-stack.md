@@ -38,22 +38,22 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 | ----------------- | ---------- | --------------------------- |
 | `joi`             | ❌ REMOVED | Đã loại bỏ hoàn toàn        |
 | `class-validator` | ❌ REMOVED | Đã loại bỏ hoàn toàn        |
-| `zod`             | 4.3.5      | ✅ Chuẩn duy nhất API + Web |
+| `zod`             | ^4.3.5     | ✅ Chuẩn duy nhất API + Web |
 | `nestjs-zod`      | 5.1.1      | ✅ Validation Pipe          |
 
 ### Utilities
 
-| Package      | Version | Mục đích                  |
-| ------------ | ------- | ------------------------- |
-| `bcrypt`     | 6.x     | Password hashing (Legacy) |
-| `argon2`     | 0.41.x  | Password hashing (Modern) |
-| `nodemailer` | 7.x     | Email sending             |
-| `otplib`     | 12.x    | 2FA OTP generation        |
-| `cloudinary` | 2.8.x   | Image upload              |
-| `sharp`      | 0.34.x  | Image processing          |
-| `slugify`    | 1.6.x   | URL slug generation       |
-| `exceljs`    | 4.4.x   | Excel export              |
-| `winston`    | 3.19.x  | Logging                   |
+| Package      | Version | Mục đích                   |
+| ------------ | ------- | -------------------------- |
+| `bcrypt`     | 6.x     | Password hashing (Active)  |
+| `argon2`     | -       | Password hashing (Planned) |
+| `nodemailer` | 7.x     | Email sending              |
+| `otplib`     | 12.x    | 2FA OTP generation         |
+| `cloudinary` | 2.8.x   | Image upload               |
+| `sharp`      | 0.34.x  | Image processing           |
+| `slugify`    | 1.6.x   | URL slug generation        |
+| `exceljs`    | 4.4.x   | Excel export               |
+| `winston`    | 3.19.x  | Logging                    |
 
 ### AI
 
@@ -113,10 +113,17 @@ Hệ thống được cấu trúc theo nguyên lý **Domain-Driven Design (DDD)*
 | --------------- | -------------------------------------------------------------- |
 | `core/`         | Infrastructure backbone (Prisma, Redis, Guards, Interceptors). |
 | `common/`       | Shared utilities, DTOs, and constants.                         |
-| `audit/`        | System-wide audit logging (AuditLog table).                    |
+| `identity/`     | Auth, Users, Roles, Tenants (Multi-tenancy).                   |
+| `catalog/`      | products, categories, brands, skus.                            |
+| `sales/`        | Orders, Cart, Payment, Invoices.                               |
+| `operations/`   | Inventory, Warehouse, Fulfillment.                             |
+| `marketing/`    | Promotions, Loyalty points.                                    |
+| `platform/`     | Admin dashboard, Analytics, Reports.                           |
+| `cms/`          | Blog, Pages, Media.                                            |
+| `ai/`           | AI Chatbot, RAG, Embeddings.                                   |
 | `worker/`       | Background job processing (BullMQ consumers).                  |
-| `integrations/` | External services (Cloudinary, Nodemailer, Sitemap).           |
-| `saas/`         | Multi-tenancy resolution, Subscription billing, Plans.         |
+| `integrations/` | External services (Cloudinary, Nodemailer).                    |
+| `audit/`        | System-wide audit logging.                                     |
 
 ---
 

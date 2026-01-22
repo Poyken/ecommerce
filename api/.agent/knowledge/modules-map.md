@@ -1,156 +1,120 @@
 # API Modules Map
 
-Tài liệu này liệt kê tất cả modules trong `api/src/` và mối quan hệ giữa chúng.
+Document reflecting the current module structure in `api/src/`.
 
 ---
 
-## 1. Domain Modules (Consolidated)
+## 1. Domain Modules
 
-### CatalogModule (`src/catalog/`)
+### Identity (`src/identity/`)
 
-Quản lý sản phẩm và danh mục.
+Authentication, User Management, and Multi-tenancy.
 
-| Sub-module   | Path                  | Purpose           |
-| ------------ | --------------------- | ----------------- |
-| `brands`     | `catalog/brands/`     | Thương hiệu       |
-| `categories` | `catalog/categories/` | Danh mục (nested) |
-| `products`   | `catalog/products/`   | Sản phẩm chính    |
-| `skus`       | `catalog/skus/`       | Biến thể (SKU)    |
+- `auth`: JWT, Passport strategies, Guards.
+- `users`: User profile management.
+- `roles`: RBAC (Roles & Permissions).
+- `tenants`: SaaS Tenant management.
 
----
+### Catalog (`src/catalog/`)
 
-### SalesModule (`src/sales/`)
+Product management.
 
-Quản lý đơn hàng và thanh toán.
+- `products`: Core product logic.
+- `categories`: Category tree.
+- `brands`: Brand management.
+- `skus`: Inventory/Price variant units.
 
-| Sub-module | Path              | Purpose                       |
-| ---------- | ----------------- | ----------------------------- |
-| `cart`     | `sales/cart/`     | Giỏ hàng                      |
-| `orders`   | `sales/orders/`   | Đơn hàng                      |
-| `payment`  | `sales/payment/`  | Thanh toán (MOMO, VNPAY, COD) |
-| `invoices` | `sales/invoices/` | Hóa đơn                       |
-| `shipping` | `sales/shipping/` | Tính phí vận chuyển (GHN)     |
+### Sales (`src/sales/`)
 
----
+Order processing and checkout.
 
-### AiModule (`src/ai/`)
+- `orders`: Order lifecycle.
+- `cart`: Shopping cart.
+- `payment`: Payment gateways (VNPAY, MOMO).
+- `invoices`: Billing generation.
+- `shipping`: 3PL Integrations.
 
-AI và Machine Learning features.
+### Operations (`src/operations/`)
 
-| Feature    | Purpose          |
-| ---------- | ---------------- |
-| `chat`     | AI Chatbot (RAG) |
-| `insights` | Product insights |
-| `images`   | Image processing |
+Back-office operations.
 
----
+- `inventory`: Warehouse & Stock management.
+- `fulfillment`: Order picking/packing.
+- `procurement`: Supplier & Purchase Orders.
 
-## 2. Identity & Auth
+### Marketing (`src/marketing/`)
 
-| Module          | Path           | Purpose                     |
-| --------------- | -------------- | --------------------------- |
-| `AuthModule`    | `src/auth/`    | JWT Auth, MFA, Social Login |
-| `UsersModule`   | `src/users/`   | User CRUD, Profile          |
-| `RolesModule`   | `src/roles/`   | RBAC Roles & Permissions    |
-| `TenantsModule` | `src/tenants/` | Multi-tenant management     |
+Customer engagement.
 
----
+- `promotions`: Discount engine.
+- `loyalty`: Points & Rewards.
+- `reviews`: Product reviews.
 
-## 3. Infrastructure (Core)
+### CMS (`src/cms/`)
 
-| Module             | Path               | Purpose            |
-| ------------------ | ------------------ | ------------------ |
-| `PrismaModule`     | `core/prisma/`     | Database ORM       |
-| `RedisModule`      | `core/redis/`      | Cache & Queue      |
-| `SentryModule`     | `core/sentry/`     | Error tracking     |
-| `MetricsModule`    | `core/metrics/`    | Prometheus metrics |
-| `DataLoaderModule` | `core/dataloader/` | N+1 prevention     |
+Content Management.
 
----
+- `blog`: Blog posts.
+- `pages`: Static pages.
+- `media`: File/Asset management.
 
-## 4. Support Modules
+### Platform (`src/platform/`)
 
-| Module                  | Path                    | Purpose                                |
-| ----------------------- | ----------------------- | -------------------------------------- |
-| `InventoryModule`       | `src/inventory/`        | Multi-warehouse stock                  |
-| `InventoryAlertsModule` | `src/inventory-alerts/` | Low stock alerts (**Merge candidate**) |
-| `PromotionsModule`      | `src/promotions/`       | Discount rules engine                  |
-| `LoyaltyModule`         | `src/loyalty/`          | Points system                          |
-| `ReviewsModule`         | `src/reviews/`          | Product reviews                        |
-| `NotificationsModule`   | `src/notifications/`    | Push/Email                             |
-| `WishlistModule`        | `src/wishlist/`         | User wishlists                         |
+Admin & System level features.
+
+- `admin`: APIs for Admin Dashboard.
+- `analytics`: Business metrics.
+- `settings`: System configurations.
 
 ---
 
-## 5. Operations
+## 2. Specialized Modules
 
-| Module                 | Path                   | Purpose           |
-| ---------------------- | ---------------------- | ----------------- |
-| `FulfillmentModule`    | `src/fulfillment/`     | Order fulfillment |
-| `ProcurementModule`    | `src/procurement/`     | Purchase orders   |
-| `ReturnRequestsModule` | `src/return-requests/` | RMA handling      |
-| `TaxModule`            | `src/tax/`             | Tax calculation   |
+### AI (`src/ai/`)
 
----
+Artificial Intelligence features.
 
-## 6. Admin & Platform
+- `chat`: RAG-based Chatbot.
+- `insights`: Smart recommendations.
 
-| Module             | Path               | Purpose              |
-| ------------------ | ------------------ | -------------------- |
-| `AdminModule`      | `src/admin/`       | Admin dashboard APIs |
-| `SuperAdminModule` | `src/super-admin/` | Platform owner APIs  |
-| `AnalyticsModule`  | `src/analytics/`   | Business analytics   |
-| `ReportsModule`    | `src/reports/`     | Report generation    |
-| `AuditModule`      | `src/audit/`       | Audit logs           |
+### Chat (`src/chat/`)
 
----
+Real-time user support.
 
-## 7. Integrations
+- `conversations`: Support tickets/chats.
+- `gateway`: WebSocket gateway.
 
-| Module             | Path                       | Purpose             |
-| ------------------ | -------------------------- | ------------------- |
-| `CloudinaryModule` | `integrations/cloudinary/` | Image upload        |
-| `NewsletterModule` | `integrations/newsletter/` | Email subscriptions |
-| `SitemapModule`    | `integrations/sitemap/`    | SEO sitemap         |
+### Notifications (`src/notifications/`)
+
+- Email & Push notification delivery.
+
+### Audit (`src/audit/`)
+
+- System-wide audit logging.
+
+### Worker (`src/worker/`)
+
+- BullMQ Background job processors.
 
 ---
 
-## 8. CMS & Marketing
+## 3. Core & Shared
 
-| Module        | Path         | Purpose          |
-| ------------- | ------------ | ---------------- |
-| `BlogModule`  | `src/blog/`  | Blog posts       |
-| `PagesModule` | `src/pages/` | Static pages     |
-| `MediaModule` | `src/media/` | Media management |
+### Core (`src/core/`)
 
----
+Infrastructure layer.
 
-## 9. SaaS Features
+- `prisma`: Database connection.
+- `redis`: Caching layer.
+- `config`: Environment configuration.
+- `decorators`: Custom decorators (@CurrentUser, etc).
+- `interceptors`: Response transformation.
+- `filters`: Global exception handling.
 
-| Module                 | Path                   | Purpose            |
-| ---------------------- | ---------------------- | ------------------ |
-| `PlansModule`          | `src/plans/`           | Subscription plans |
-| `SubscriptionModule`   | `src/subscription/`    | Billing management |
-| `CustomerGroupsModule` | `src/customer-groups/` | B2B groups         |
+### Common (`src/common/`)
 
----
+Shared utilities.
 
-## 10. Utilities
-
-| Module               | Path                    | Purpose               |
-| -------------------- | ----------------------- | --------------------- |
-| `CommonModule`       | `src/common/`           | Shared utilities      |
-| `WorkerModule`       | `src/worker/`           | Background jobs       |
-| `WebhooksModule`     | `src/webhooks/`         | Webhook handlers      |
-| `ChatModule`         | `src/chat/`             | Live chat (WebSocket) |
-| `DevToolsModule`     | `src/dev-tools/`        | Development utilities |
-| `FeatureFlagsModule` | `common/feature-flags/` | Feature toggles       |
-| `AddressesModule`    | `src/addresses/`        | Address management    |
-
----
-
-## Module Count Summary
-
-- **Total Modules**: 41
-- **Consolidated Domain Modules**: 3 (Catalog, Sales, AI)
-- **Merge Candidates**: `inventory-alerts` → `inventory`
+- `dtos`: Shared Data Transfer Objects.
+- `utils`: Helper functions.
+- `constants`: System constants.

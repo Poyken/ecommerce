@@ -5,10 +5,8 @@ import { Logo } from "@/features/layout/components/logo";
 import { Link, usePathname } from "@/i18n/routing";
 import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 import { cn } from "@/lib/utils";
-import { DynamicIcon } from "@/components/shared/dynamic-icon";
-import dynamicIconImports from "lucide-react/dist/esm/dynamicIconImports.js";
+import { FlexibleIcon } from "@/components/shared/flexible-icon";
 import { Menu } from "lucide-react"; // Keeping Menu as it's used later
-import Image from "next/image";
 
 interface HeaderLink {
   label: string;

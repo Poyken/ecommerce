@@ -336,43 +336,122 @@ export class PaymentController {
     const expectedSignature = hmac.update(rawSignature).digest('hex');
 
     if (signature === expectedSignature) {
-      // Find Order
-      const order = await (this.prisma.order as any).findUnique({
-        where: { id: orderId },
-      });
-      if (!order) {
-        return { message: 'Không tìm thấy đơn hàng' };
-      }
+      const webhookId = `momo_${requestId}`;
 
-      if (resultCode === 0) {
-        // Success
-        await (this.prisma.order as any).update({
-          where: { id: orderId },
-          data: {
-            status: 'PROCESSING',
-            paymentStatus: 'PAID',
-            transactionId: transId.toString(),
-          },
-        });
+      try {
+        return await this.prisma.$transaction(
+          async (tx) => {
+            // 1. Idempotency Check
+            const existingWebhook = await tx.webhookEvent.findUnique({
+              where: { webhookId },
+            });
 
-        // Calculate commissions/fees
-        await this.commissionService.calculateForOrder(orderId).catch((e) => {
-          this.logger.error(
-            `Error calculating commission for order ${orderId}`,
-            e,
-          );
-        });
-      } else {
-        // Failed
-        await (this.prisma.order as any).update({
-          where: { id: orderId },
-          data: {
-            status: 'CANCELLED',
-            paymentStatus: 'FAILED',
+            if (existingWebhook) {
+              this.logger.warn(`Duplicate MoMo webhook detected: ${webhookId}`);
+              return { message: 'Thành công (Duplicate)' };
+            }
+
+            // 2. Lock Order (Row-level lock)
+            const order = await tx.$queryRaw<any[]>`
+              SELECT * FROM "Order" WHERE id = ${orderId} FOR UPDATE
+            `;
+
+            if (!order || order.length === 0) {
+              // Log failed attempt
+              await tx.webhookEvent.create({
+                data: {
+                  webhookId,
+                  orderId,
+                  provider: 'MOMO',
+                  status: 'FAILED',
+                  responseCode: resultCode.toString(),
+                  tenantId: 'unknown',
+                },
+              });
+              return { message: 'Không tìm thấy đơn hàng' };
+            }
+
+            const orderData = order[0];
+
+            // 3. Check Order Status (Prevent double processing)
+            if (orderData.status !== 'PENDING') {
+              await tx.webhookEvent.create({
+                data: {
+                  webhookId,
+                  orderId,
+                  provider: 'MOMO',
+                  status: 'IGNORED',
+                  responseCode: resultCode.toString(),
+                  tenantId: orderData.tenantId,
+                },
+              });
+              return { message: 'Đơn hàng đã được xử lý trước đó' };
+            }
+
+            // 4. Update Status & Create Webhook Event
+            if (resultCode === 0) {
+              await tx.order.update({
+                where: { id: orderId },
+                data: {
+                  status: 'PROCESSING',
+                  paymentStatus: 'PAID',
+                  transactionId: transId.toString(),
+                },
+              });
+
+              await tx.webhookEvent.create({
+                data: {
+                  webhookId,
+                  orderId,
+                  provider: 'MOMO',
+                  status: 'PROCESSED',
+                  responseCode: resultCode.toString(),
+                  tenantId: orderData.tenantId,
+                },
+              });
+
+              // 5. Calculate Commission (Safe in potential retry due to transaction)
+              try {
+                await this.commissionService.calculateForOrder(orderId);
+              } catch (e) {
+                this.logger.error(
+                  `Error calculating commission for order ${orderId} (MOMO)`,
+                  e,
+                );
+              }
+            } else {
+              // Payment Failed
+              await tx.order.update({
+                where: { id: orderId },
+                data: {
+                  status: 'CANCELLED',
+                  paymentStatus: 'FAILED',
+                },
+              });
+
+              await tx.webhookEvent.create({
+                data: {
+                  webhookId,
+                  orderId,
+                  provider: 'MOMO',
+                  status: 'PROCESSED',
+                  responseCode: resultCode.toString(),
+                  tenantId: orderData.tenantId,
+                },
+              });
+            }
+
+            return { message: 'Thành công' };
           },
-        });
+          {
+            isolationLevel: 'Serializable',
+            timeout: 10000,
+          },
+        );
+      } catch (error) {
+        this.logger.error('MoMo IPN transaction failed', error);
+        return { message: 'Lỗi hệ thống' };
       }
-      return { message: 'Thành công' };
     } else {
       return { message: 'Chữ ký không khớp (Signature mismatch)' };
     }

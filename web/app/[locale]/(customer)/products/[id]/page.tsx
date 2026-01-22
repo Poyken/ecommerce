@@ -12,6 +12,7 @@ import { getProfileAction } from "@/features/profile/actions";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { ProductDetailClient } from "./product-detail-client";
+import { Product } from "@/types/models";
 
 // Generate các URL static tại thời điểm build (để SEO tốt hơn)
 export async function generateStaticParams() {
@@ -33,8 +34,8 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   const { getProductAction } = await import("@/features/products/actions");
-  const productRes = await getProductAction(id);
-  const product = productRes.success ? productRes.data : null;
+  const productRes = await getProductAction({ id });
+  const product = productRes.success ? (productRes.data as Product) : null;
 
   if (!product) return { title: "Product Not Found" };
 
@@ -71,12 +72,12 @@ async function ProductDetailStreamer({ id }: { id: string }) {
   // Kỹ thuật Parallel Fetching quan trọng - Using Server Actions
   const { getProductAction } = await import("@/features/products/actions");
   const [productRes, , reviewsData, eligibilityData] = await Promise.all([
-    getProductAction(id), // Lấy thông tin sản phẩm
+    getProductAction({ id }), // Lấy thông tin sản phẩm
     getProfileAction(), // Lấy user hiện tại (có thể dùng cho review eligibility)
     getReviewsAction(id), // Lấy reviews
     checkReviewEligibilityAction(id), // Check xem user đã mua hàng chưa (để cho review)
   ]);
-  const product = productRes.success ? productRes.data : null;
+  const product = productRes.success ? (productRes.data as Product) : null;
 
   if (!product) notFound();
 
@@ -111,8 +112,8 @@ async function ProductDetailStreamer({ id }: { id: string }) {
 // Breadcrumb cũng cần fetch data, tách riêng để Suspense cục bộ
 async function BreadcrumbStreamer({ id }: { id: string }) {
   const { getProductAction } = await import("@/features/products/actions");
-  const productRes = await getProductAction(id);
-  const product = productRes.success ? productRes.data : null;
+  const productRes = await getProductAction({ id });
+  const product = productRes.success ? (productRes.data as Product) : null;
   if (!product) return null;
 
   return (
@@ -137,8 +138,8 @@ async function BreadcrumbStreamer({ id }: { id: string }) {
 // Recommendations cũng cần fetch product để lấy categoryId
 async function RecommendationsStreamer({ id }: { id: string }) {
   const { getProductAction } = await import("@/features/products/actions");
-  const productRes = await getProductAction(id);
-  const product = productRes.success ? productRes.data : null;
+  const productRes = await getProductAction({ id });
+  const product = productRes.success ? (productRes.data as Product) : null;
   if (!product || !product.category?.id) return null;
 
   return (

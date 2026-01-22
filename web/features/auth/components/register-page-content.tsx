@@ -23,7 +23,13 @@ import { useActionState, useEffect, useRef, useState } from "react";
 export function RegisterPageContent() {
   const t = useTranslations("auth.register");
   const tToast = useTranslations("common.toast");
-  const [state, action, isPending] = useActionState(registerAction, null);
+  const [state, action, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+    const firstName = formData.get("firstName") as string;
+    const lastName = formData.get("lastName") as string;
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    return registerAction({ firstName, lastName, email, password });
+  }, null);
   const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -43,8 +49,8 @@ export function RegisterPageContent() {
     if (state && submissionCount.current > lastProcessedCount.current) {
       lastProcessedCount.current = submissionCount.current;
 
-      if (state.errors) {
-        setLocalErrors(state.errors);
+      if ((state as any).errors) {
+        setLocalErrors((state as any).errors);
       }
 
       if (state.error) {

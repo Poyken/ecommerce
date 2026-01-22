@@ -68,8 +68,8 @@ Hỗ trợ Multi-Warehouse:
 - **InventoryLog**: Ghi lại mọi biến động kho (Purchase, Sale, Return, Adjustment).
 - **Logic**:
   - `Available Stock` = `OnHand` - `Committed` (Đang nằm trong đơn chưa ship).
-  - Khi order -> Tăng `Committed`.
-  - Khi ship -> Giảm `OnHand`, Giảm `Committed`.
+  - Khi order -> Tăng `Committed` (`InventoryService.reserveStock`).
+  - Khi ship -> Giảm `OnHand`, Giảm `Committed` (`InventoryService.deductStock`).
 
 ---
 
@@ -136,12 +136,7 @@ Hỗ trợ Multi-Warehouse:
 
 ### 5.1 AI Chat Assistant
 
-- **Embedding**: Sync Product/Blog data vào Vector DB (pgvector) qua bảng `ProductEmbedding`.
-- **Flow**:
-  1.  User hỏi "Tìm giày chạy bộ màu đỏ dưới 1 triệu".
-  2.  System embed query -> Search pgvector.
-  3.  LLM rerank kết quả -> Trả lời User.
-  4.  Lưu history vào `AiChatSession` và `AiChatMessage`.
+- Nhật ký hành vi người dùng hỗ trợ gợi ý sản phẩm cá nhân hóa (Planned).
 
 ### 5.2 Insight & Analytics
 

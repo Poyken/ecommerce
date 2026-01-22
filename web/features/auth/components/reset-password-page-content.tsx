@@ -25,7 +25,12 @@ export function ResetPasswordPageContent() {
 
   const t = useTranslations("auth.resetPassword");
   const tToast = useTranslations("common.toast");
-  const [state, action, isPending] = useActionState(resetPasswordAction, null);
+  const [state, action, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+    const token = formData.get("token") as string;
+    const newPassword = formData.get("newPassword") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+    return resetPasswordAction({ token, newPassword, confirmPassword });
+  }, null);
 
   const [localErrors, setLocalErrors] = useState<Record<string, string[]>>({});
   const submissionCount = useRef(0);
@@ -40,8 +45,8 @@ export function ResetPasswordPageContent() {
     if (state && submissionCount.current > lastProcessedCount.current) {
       lastProcessedCount.current = submissionCount.current;
 
-      if (state.errors) {
-        requestAnimationFrame(() => setLocalErrors(state.errors || {}));
+      if ((state as any).errors) {
+        requestAnimationFrame(() => setLocalErrors((state as any).errors || {}));
       } else {
         requestAnimationFrame(() => setLocalErrors({})); // Clear errors if state has no errors
       }
@@ -119,7 +124,7 @@ export function ResetPasswordPageContent() {
             <div className="text-center">
               <p className="font-black text-2xl">{t("successTitle")}</p>
               <p className="text-sm text-primary/70 mt-2 font-medium">
-                {state.message}
+                {(state as any).message}
               </p>
             </div>
             <Link href="/login" className="mt-4">

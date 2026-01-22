@@ -79,7 +79,7 @@ export default async function Home() {
 
   // 2. Initiate Data Fetches (Non-blocking) - Using Server Actions
   const { getFeaturedProductsAction, getCategoriesAction, getBrandsAction } = await import("@/features/products/actions");
-  const productsPromise = getFeaturedProductsAction(20).then((res) => res.success && res.data ? res.data : []);
+  const productsPromise = getFeaturedProductsAction({ limit: 20 }).then((res) => res.success && res.data ? res.data : []);
   const categoriesPromise = getCategoriesAction().then((res) => res.success && res.data ? res.data : []);
   const brandsPromise = getBrandsAction().then((res) => res.success && res.data ? res.data : []);
 
@@ -150,7 +150,7 @@ async function HomeDataFetcher() {
     // Parallel data fetching - Using Server Actions
     const { getFeaturedProductsAction, getCategoriesAction, getBrandsAction } = await import("@/features/products/actions");
     const [productsRes, categoriesRes, brandsRes] = await Promise.all([
-      getFeaturedProductsAction(20),
+      getFeaturedProductsAction({ limit: 20 }),
       getCategoriesAction(),
       getBrandsAction(),
     ]);

@@ -66,27 +66,13 @@ export default async function proxy(request: NextRequest) {
   const currentCsrfToken = request.cookies.get(CSRF_COOKIE_NAME)?.value;
   const csrfToken = currentCsrfToken || nanoid(32);
 
-  let accessToken = request.cookies.get("accessToken")?.value;
-  const refreshToken = request.cookies.get("refreshToken")?.value;
+  const accessToken = request.cookies.get("accessToken")?.value;
 
   // 2. Token Refresh Logic
-  let shouldRefresh = false;
-  if (!accessToken && refreshToken) {
-    shouldRefresh = true;
-  } else if (accessToken && refreshToken) {
-    try {
-      const { decodeJwt } = await import("jose");
-      const decoded = decodeJwt(accessToken);
-      // Refresh 60 seconds before expiration
-      if (decoded.exp && Date.now() >= decoded.exp * 1000 - 60000) {
-        shouldRefresh = true;
-      }
-    } catch {
-      shouldRefresh = true;
-    }
-  }
-
-  let response: NextResponse;
+  // [OPTIMIZATION] Moved to Client Side (AuthProvider) to prevent blocking Middleware
+  // Middleware should ONLY check if token exists/looks valid, not verify against DB.
+  
+  const response = intlMiddleware(request);
 
   // ==========================================
   // ROUTING RESTRUCTURE - Dynamic Redirects
@@ -109,9 +95,6 @@ export default async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(newPath, request.url));
   }
 
-  // 3. Execution (next-intl)
-  response = intlMiddleware(request);
-
   // --- GENERIC TENANT REWRITE LOGIC ---
   if (!isRootDomain) {
     const tenantRewrites: Record<string, string> = {
@@ -126,71 +109,6 @@ export default async function proxy(request: NextRequest) {
       const newUrl = new URL(request.url);
       newUrl.pathname = `/${currentLocale}/${tenantRewrites[segment]}`;
       return NextResponse.rewrite(newUrl);
-    }
-  }
-
-  if (shouldRefresh && refreshToken) {
-    try {
-      const apiUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api/v1";
-      const userAgent = request.headers.get("user-agent") || "";
-      const forwardedFor = request.headers.get("x-forwarded-for") || "";
-      const host = request.headers.get("host") || "";
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000); 
-      
-      const refreshRes = await fetch(`${apiUrl}/auth/refresh`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "User-Agent": userAgent,
-          "X-Forwarded-For": forwardedFor,
-          "X-Tenant-Domain": host.split(":")[0],
-          Cookie: `refreshToken=${refreshToken}`,
-        },
-        body: JSON.stringify({ refreshToken }),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-
-      if (refreshRes.ok) {
-        const data = await refreshRes.json();
-        const newTokens = data.data;
-
-        if (newTokens && newTokens.accessToken) {
-          accessToken = newTokens.accessToken;
-          request.headers.set(
-            "Cookie",
-            `accessToken=${newTokens.accessToken}; refreshToken=${refreshToken}`
-          );
-
-          response = intlMiddleware(request);
-
-          const cookieOptions = {
-            httpOnly: true,
-            secure: true, 
-            sameSite: "none" as const,
-            path: "/",
-          };
-          response.cookies.set("accessToken", newTokens.accessToken, {
-            ...cookieOptions,
-            maxAge: 15 * 60,
-          });
-
-          if (newTokens.refreshToken) {
-            response.cookies.set("refreshToken", newTokens.refreshToken, {
-              ...cookieOptions,
-              maxAge: 7 * 24 * 60 * 60,
-            });
-          }
-        }
-      } else if (refreshRes.status === 401 || refreshRes.status === 403) {
-        response.cookies.delete("accessToken");
-        response.cookies.delete("refreshToken");
-        accessToken = undefined;
-      }
-    } catch (error) {
-      console.error("[PROXY] Refresh failed", error);
     }
   }
 

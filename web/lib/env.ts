@@ -6,10 +6,24 @@
  */
 
 export const env = {
-  NEXT_PUBLIC_API_URL:
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api/v1",
-  NEXT_PUBLIC_APP_URL:
-    process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  NEXT_PUBLIC_API_URL: (() => {
+    const val = process.env.NEXT_PUBLIC_API_URL;
+    if (!val && process.env.NODE_ENV === "production") {
+      throw new Error(
+        "❌ MISSING ENV: NEXT_PUBLIC_API_URL is required in production!"
+      );
+    }
+    return val || "http://localhost:8081/api/v1";
+  })(),
+  NEXT_PUBLIC_APP_URL: (() => {
+    const val = process.env.NEXT_PUBLIC_APP_URL;
+    if (!val && process.env.NODE_ENV === "production") {
+      throw new Error(
+        "❌ MISSING ENV: NEXT_PUBLIC_APP_URL is required in production!"
+      );
+    }
+    return val || "http://localhost:3000";
+  })(),
   NEXT_PUBLIC_SOCKET_URL:
     process.env.NEXT_PUBLIC_SOCKET_URL || "http://localhost:8081",
   NODE_ENV: process.env.NODE_ENV || "development",

@@ -91,7 +91,7 @@ export default async function ShopPage({
       sort: typeof params.sort === "string" ? params.sort : undefined,
       includeSkus: "true",
     }).then((res) => ({
-      data: res.success && res.data ? res.data : [],
+      data: res.success && Array.isArray(res.data) ? (res.data as Product[]) : [],
       meta: res.success && res.meta ? res.meta : { page: 1, limit: 20, total: 0, lastPage: 1 },
     }));
 
@@ -101,7 +101,7 @@ export default async function ShopPage({
     const brandsPromise = getBrandsAction().then((res) => 
       (res.success && res.data ? res.data : []) as import("@/types/models").Brand[]
     );
-    const suggestedProductsPromise = getFeaturedProductsAction(4).then((res) =>
+    const suggestedProductsPromise = getFeaturedProductsAction({ limit: 4 }).then((res) =>
       (res.success && res.data ? res.data : []) as import("@/types/models").Product[]
     );
 

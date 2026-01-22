@@ -116,7 +116,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
                 <div className="flex flex-col gap-2 mb-6">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
                       <Clock className="h-3.5 w-3.5" />
-                      Updated {format(new Date(page.updatedAt || Date.now()), "MMM dd, yyyy")}
+                      Updated {page.updatedAt ? format(new Date(page.updatedAt), "MMM dd, yyyy") : "N/A"}
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
                       <Globe className="h-3.5 w-3.5" />

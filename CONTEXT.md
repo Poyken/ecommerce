@@ -183,3 +183,11 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
   - **OrdersProcessor**: Scaled real-time notification broadcasts using `Promise.all` for background jobs.
   - **Schema Hardening**: Made `Notification.tenantId` required to eliminate cross-tenant data leak risks.
   - **AuthService**: Enforced `allowSocialRegistration` check at the tenant level.
+
+## Changelog
+
+- [2026-01-22] Fixed Prisma Client type error by regenerating the client (missing `webhookEvent` model).
+- [2026-01-22] **Critical Schema Fixes**:
+  - **Data Safety**: Changed dangerous `onDelete: Cascade` to `Restrict` for `Order->User` and `InventoryLog->SKU` to prevent catastrophic data loss.
+  - **Multi-tenancy**: Hardened isolation by adding mandatory `tenantId` to `AuditLog`, `PerformanceMetric`, and `OutboxEvent`.
+  - **Migration**: Cleaned conflicting development data and applied migration `fix_critical_schema_issues`.

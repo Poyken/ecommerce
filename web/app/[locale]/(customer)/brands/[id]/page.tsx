@@ -27,7 +27,7 @@ export async function generateMetadata({
     limit: 1,
   });
 
-  const brandName = productsRes.success && productsRes.data?.[0]?.brand?.name || "Brand";
+  const brandName = productsRes.success && Array.isArray(productsRes.data) && productsRes.data[0]?.brand?.name || "Brand";
 
   return {
     title: brandName,
@@ -50,7 +50,7 @@ export default async function BrandProductsPage({
   // Parallel fetch: get brand details and products promise - Using Server Actions
   const { getBrandAction, getProductsAction } = await import("@/features/products/actions");
   const [brandRes, t] = await Promise.all([
-    getBrandAction(id),
+    getBrandAction({ id }),
     getTranslations("common"),
   ]);
 
@@ -59,11 +59,11 @@ export default async function BrandProductsPage({
     limit,
     page,
   }).then((res) => ({
-    data: res.success && res.data ? res.data : [],
+    data: res.success && Array.isArray(res.data) ? res.data : [],
     meta: res.success && res.meta ? res.meta : { page: 1, limit: 20, total: 0, lastPage: 1 },
   }));
 
-  const brandName = brandRes.success && brandRes.data ? brandRes.data.name : "Brand";
+  const brandName = brandRes.success && brandRes.data ? (brandRes.data as any).name : "Brand";
 
   return (
     <CollectionContent

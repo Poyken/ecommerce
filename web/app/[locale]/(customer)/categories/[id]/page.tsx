@@ -27,7 +27,7 @@ export async function generateMetadata({
     limit: 1,
   });
 
-  const categoryName = productsRes.success && productsRes.data?.[0]?.category?.name || "Category";
+  const categoryName = productsRes.success && Array.isArray(productsRes.data) && productsRes.data[0]?.category?.name || "Category";
 
   return {
     title: categoryName,
@@ -45,7 +45,7 @@ export default async function CategoryProductsPage({
   // Parallel fetch: get name for the UI, and promise for the grid - Using Server Actions
   const { getCategoryAction, getProductsAction } = await import("@/features/products/actions");
   const [categoryRes, t] = await Promise.all([
-    getCategoryAction(id),
+    getCategoryAction({ id }),
     getTranslations("common"),
   ]);
 
@@ -53,11 +53,11 @@ export default async function CategoryProductsPage({
     categoryId: id,
     limit: 20,
   }).then((res) => ({
-    data: res.success && res.data ? res.data : [],
+    data: res.success && Array.isArray(res.data) ? res.data : [],
     meta: res.success && res.meta ? res.meta : { page: 1, limit: 20, total: 0, lastPage: 1 },
   }));
 
-  const categoryName = categoryRes.success && categoryRes.data ? categoryRes.data.name : "Category";
+  const categoryName = categoryRes.success && categoryRes.data ? (categoryRes.data as any).name : "Category";
 
   return (
     <CollectionContent

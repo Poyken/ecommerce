@@ -129,8 +129,8 @@ export function useProduct(id: string | null, initialData?: Product) {
     cacheKey,
     async () => {
       if (!id) return null;
-      const result = await getProductAction(id);
-      return result.success ? result.data : null;
+      const result = await getProductAction({ id });
+      return result.success ? (result.data as Product) : null;
     },
     {
       fallbackData: initialData,

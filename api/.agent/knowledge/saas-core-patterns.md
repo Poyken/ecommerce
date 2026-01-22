@@ -14,14 +14,11 @@ Hệ thống sử dụng mô hình **Shared Database** với cơ chế cô lập
 Resolution diễn ra sớm nhất có thể trong request lifecycle:
 
 1. **Middleware**: Trích xuất Host (hoặc `x-tenant-id`) -> Lookup Tenant ID trong Redis/DB.
-2. **Context Persistence**: Sử dụng `nestjs-cls` (AsyncLocalStorage) để lưu `tenantId`.
-3. **Implicit Filtering**: Mọi query Prisma được tự động filter:
-   ```typescript
-   // Automated via Global Interceptor/Guard or Service Helper
-   where: {
-     tenantId: this.cls.get('tenantId');
-   }
-   ```
+2. **Context Persistence**: Sử dụng `AsyncLocalStorage` (Node.js builtin) thông qua `tenantStorage` để lưu `tenantId` cho toàn bộ request lifecycle.
+3. **Implicit Filtering & RLS**:
+   - NestJS Middleware thiết lập session variable trong Postgres: `SET app.current_tenant_id = 'tenant-id'`.
+   - Database Policies (RLS) sẽ chặn truy cập trái phép ngay cả khi query bị thiếu `where` clause.
+   - Prisma Extension tự động inject `tenantId` vào `where` clause cho các models liên quan.
 
 ### 1.2 Custom Domains resolution
 
@@ -53,20 +50,33 @@ Overselling là lỗi nghiêm trọng nhất trong E-commerce. Chúng ta xử l�
 
 ### 3.1 Inventory Reservation logic
 
-Sử dụng **Compare-and-Swap (CAS)** hoặc **Negative Stock Prevention**:
+Sử dụng **SELECT ... FOR UPDATE** để lock row tại tầng Database, đảm bảo việc kiểm tra tồn kho và cập nhật diễn ra nguyên tử (Atomic):
 
-```sql
-UPDATE "Sku"
-SET "stock" = "stock" - :qty,
-    "reservedStock" = "reservedStock" + :qty
-WHERE "id" = :id AND "stock" >= :qty
-```
+1. **Lock row**: `SELECT ... FROM Sku WHERE id = :id FOR UPDATE`
+2. **Check & Update**: Kiểm tra `stock >= :qty` và thực hiện `update` trong cùng transaction.
 
-Nếu `affectedRows === 0`, chúng ta ném lỗi `InsufficientStockException`. Điều này an toàn hơn nhiều so với việc kiểm tra stock bằng code rồi mới update (Race condition).
+Nếu kho không đủ, throw lỗi ngay lập tức để Rollback transaction. Điều này an toàn hơn so với việc kiểm tra bằng code thuần túy (Race condition).
 
 ---
 
-## 4. Historical Snapshots
+## 4. Automated Soft Delete
+
+Hệ thống bảo vệ dữ liệu bằng cách không bao giờ thực hiện xóa cứng (Hard Delete) đối với các thực thể quan trọng.
+
+### 4.1 Prisma Interceptor Transform
+
+Mọi lệnh `delete` hoặc `deleteMany` được Prisma Extension tự động chuyển thành `update` với logic:
+
+- `deletedAt = new Date()`
+- Query tự động thêm `deletedAt: null` vào `where` clause để ẩn các mục đã xóa khỏi UI.
+
+### 4.2 Restoring Data
+
+Việc khôi phục dữ liệu chỉ đơn giản là set `deletedAt = null` thông qua Admin Panel.
+
+---
+
+## 5. Historical Snapshots
 
 Master Data (Product price, name) đổi thay đổi theo thời gian. Đơn hàng PHẢI giữ được trạng thái lúc mua.
 

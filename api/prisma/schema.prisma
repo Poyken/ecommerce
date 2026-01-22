@@ -582,7 +582,7 @@ model Order {
   address                   Address?                @relation(fields: [addressId], references: [id])
   referredByBlog            Blog?                   @relation("BlogReferrals", fields: [referredByBlogId], references: [id])
   tenant                    Tenant                  @relation(fields: [tenantId], references: [id])
-  user                      User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                      User                    @relation(fields: [userId], references: [id], onDelete: Restrict)
   items                     OrderItem[]
   taxDetails                OrderTaxDetail[]
   payments                  Payment[]
@@ -787,11 +787,15 @@ model AuditLog {
   createdAt DateTime @default(now())
   user      User?    @relation(fields: [userId], references: [id])
 
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+
   @@id([id, createdAt])
   @@index([userId])
   @@index([resource])
   @@index([action])
   @@index([payload], type: Gin)
+  @@index([tenantId])
 }
 
 model ProductTranslation {
@@ -870,7 +874,7 @@ model InventoryLog {
   userId        String?
   createdAt     DateTime         @default(now())
   tenantId      String
-  sku           Sku              @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  sku           Sku              @relation(fields: [skuId], references: [id], onDelete: Restrict)
   tenant        Tenant           @relation(fields: [tenantId], references: [id])
   user          User?            @relation(fields: [userId], references: [id])
 
@@ -1060,9 +1064,13 @@ model PerformanceMetric {
   navigationType String?
   createdAt      DateTime @default(now())
 
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+
   @@id([id, createdAt])
   @@index([name])
   @@index([createdAt])
+  @@index([tenantId])
 }
 
 model AiChatSession {
@@ -1103,7 +1111,10 @@ model OutboxEvent {
   status        OutboxStatus @default(PENDING)
   error         String?
 
+  tenantId      String
+
   @@index([status, createdAt])
+  @@index([tenantId])
 }
 
 model Tenant {
@@ -1147,11 +1158,13 @@ model Tenant {
   trialStartedAt        DateTime?
   allowSocialRegistration Boolean @default(true)
   addresses             Address[]
+  auditLogs             AuditLog[]
   blogs                 Blog[]
   brands                Brand[]
   carts                 Cart[]
   cartItems             CartItem[]
   categories            Category[]
+  commissionTransactions CommissionTransaction[]
   customerGroups        CustomerGroup[]
   featureFlags          FeatureFlag[]
   inventoryItems        InventoryItem[]
@@ -1167,6 +1180,7 @@ model Tenant {
   orderTaxDetails       OrderTaxDetail[]
   pages                 Page[]
   payments              Payment[]
+  performanceMetrics    PerformanceMetric[]
   priceLists            PriceList[]
   priceListItems        PriceListItem[]
   products              Product[]
@@ -1383,8 +1397,12 @@ model CommissionTransaction {
   status    CommissionStatus @default(COMPLETED)
   note      String?
   createdAt DateTime         @default(now())
+  tenantId  String
   order     Order?           @relation(fields: [orderId], references: [id])
+  tenant    Tenant           @relation(fields: [tenantId], references: [id])
   user      User             @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
 }
 
 enum LoyaltyPointType {

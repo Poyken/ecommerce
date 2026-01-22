@@ -17,9 +17,10 @@ Xem chi tiết tại: [SaaS Core Design Patterns](file:///home/mguser/ducnv/ecom
 
 ### Nhược điểm & Rủi ro:
 
-- **Noisy Neighbor:** Một Tenant lớn hoạt động nặng (ví dụ: chạy report, sale lớn) có thể làm chậm toàn bộ hệ thống, ảnh hưởng Tenant khác.
-- **Data Isolation (Bảo mật):** Phụ thuộc hoàn toàn vào code (WHERE tenantId = ...). Nếu code lỗi, Tenant A có thể thấy dữ liệu Tenant B.
-- **Giới hạn Database:** Khi bảng `Order` hoặc `InventoryLog` lên tới hàng trăm triệu dòng, index `tenantId` có thể không còn hiệu quả, việc backup/restore cho riêng 1 tenant rất khó.
+- **Data Isolation (Bảo mật):** Phụ thuộc vào cơ chế Layered Security:
+  1.  **Application Layer**: Prisma Extension tự động inject `tenantId` vào mọi query.
+  2.  **Database Layer**: PostgreSQL **Row Level Security (RLS)** được kích hoạt thông qua session variable `app.current_tenant_id` được set trong mỗi Prisma operation.
+- **Giới hạn Database:** Khi dữ liệu quá lớn, hệ thống hỗ trợ **Silo Mode** (Enterprise) để tách Database riêng cho từng Tenant VIP.
 
 ---
 
@@ -68,7 +69,7 @@ Dựa vào `schema.prisma` hiện tại, đây là lộ trình khuyến nghị:
 - **Domain Module Consolidation**: Gom nhóm các module nhỏ thành Feature Modules để dễ quản lý và module hóa:
   - `CatalogModule`: Categories, Brands, Products, Skus.
   - `SalesModule`: Orders, Cart, Payment, Invoices, Shipping.
-  - `AiModule`: Chat, Agent, Insights, RAG, ImageProcessor.
+  - `AiModule`: Chat, Agent, Insights, RAG (Current: Redis-based, Planned: pgvector).
 - **Database:**
   - Sử dụng **Read Replicas**: Đẩy các query đọc (Catalog, Listing) sang Replica, Master chỉ để ghi (Order, Inventory).
   - Tối ưu bảng `AuditLog`, `InventoryLog`: Partitioning bảng theo thời gian (ví dụ: mỗi tháng 1 partition) để giữ bảng chính nhẹ.

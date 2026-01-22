@@ -30,7 +30,11 @@ import {
 export function LoginPageContent() {
   const t = useTranslations("auth.login");
   const tToast = useTranslations("common.toast");
-  const [state, action, isPending] = useActionState(loginAction, null);
+  const [state, action, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    return loginAction({ email, password });
+  }, null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
@@ -118,11 +122,11 @@ export function LoginPageContent() {
     if (state && submissionCount.current > lastProcessedCount.current) {
       lastProcessedCount.current = submissionCount.current;
 
-      if (state.errors) {
-        setLocalErrors(state.errors);
+      if ((state as any).errors) {
+        setLocalErrors((state as any).errors);
       }
 
-      if (state.error && !state.mfaRequired) {
+      if (state.error && !(state as any).mfaRequired) {
         toast({
           variant: "destructive",
           title: tToast("error"),
@@ -130,9 +134,9 @@ export function LoginPageContent() {
         });
       }
 
-      if (state.mfaRequired && state.userId) {
+      if ((state as any).mfaRequired && (state as any).userId) {
         setMfaRequired(true);
-        setTempUserId(state.userId);
+        setTempUserId((state as any).userId);
         // Don't show success toast yet
         return;
       }
@@ -212,7 +216,7 @@ export function LoginPageContent() {
             console.error("Failed to sync cart");
           } finally {
             // Priority-based navigation
-            const permissions = state.permissions || [];
+            const permissions = (state as any).permissions || [];
             const isSuperAdmin =
               permissions.includes("superAdmin:read") ||
               permissions.includes("dashboard:read");

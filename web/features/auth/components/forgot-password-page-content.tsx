@@ -20,7 +20,10 @@ import { useActionState, useEffect, useRef, useState } from "react";
 export function ForgotPasswordPageContent() {
   const t = useTranslations("auth.forgotPassword");
   const tToast = useTranslations("common.toast");
-  const [state, action, isPending] = useActionState(forgotPasswordAction, null);
+  const [state, action, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+    const email = formData.get("email") as string;
+    return forgotPasswordAction({ email });
+  }, null);
   const { toast } = useToast();
 
   const [localErrors, setLocalErrors] = useState<Record<string, string[]>>({});
@@ -36,8 +39,8 @@ export function ForgotPasswordPageContent() {
     if (state && submissionCount.current > lastProcessedCount.current) {
       lastProcessedCount.current = submissionCount.current;
 
-      if (state.errors) {
-        requestAnimationFrame(() => setLocalErrors(state.errors || {}));
+      if ((state as any).errors) {
+        requestAnimationFrame(() => setLocalErrors((state as any).errors || {}));
       }
 
       if (state.error) {
@@ -87,7 +90,7 @@ export function ForgotPasswordPageContent() {
             <div className="text-center">
               <p className="font-black text-2xl">{t("checkEmailTitle")}</p>
               <p className="text-sm text-primary/70 mt-2 font-medium">
-                {state.message}
+                {(state as any).message}
               </p>
             </div>
             <Link href="/login" className="mt-4">

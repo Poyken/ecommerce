@@ -40,6 +40,7 @@ import { OrdersService } from './orders.service';
 import { Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { OrderFilterDto } from './dto/order-filter.dto';
+import { CancelOrderDto } from './dto/cancel-order.dto';
 
 @ApiTags('Orders')
 @Controller('orders')
@@ -137,7 +138,7 @@ export class OrdersController {
   async cancelMyOrder(
     @Request() req: requestWithUserInterface.RequestWithUser,
     @Param('id') id: string,
-    @Body() dto: { cancellationReason: string },
+    @Body() dto: CancelOrderDto,
   ) {
     const data = await this.ordersService.cancelMyOrder(
       req.user.id,
