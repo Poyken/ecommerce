@@ -2,25 +2,7 @@
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * STATUS BADGE - Thẻ hiển thị trạng thái chuẩn hóa
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. STATUS MAPPING:
- * - Sử dụng `statusMap` để tự động ánh xạ các trạng thái từ API (VD: "PENDING", "DELIVERED") sang các biến thể màu sắc (warning, success).
- * - Giúp giao diện đồng nhất: Mọi nơi hiển thị "Đã giao hàng" đều sẽ có màu xanh lá.
- *
- * 2. FLEXIBILITY:
- * - Hỗ trợ cả `label` (nếu muốn hiển thị text tùy chỉnh) hoặc mặc định dùng chính `status`.
- * - Có thể override `variant` nếu cần thiết cho các trường hợp đặc biệt. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
- *
- * =====================================================================
- */
+
 
 type StatusVariant =
   | "default"

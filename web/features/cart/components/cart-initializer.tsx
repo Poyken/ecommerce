@@ -1,22 +1,5 @@
 /**
- * =====================================================================
- * CART INITIALIZER - Đồng bộ giỏ hàng đa nền tảng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DATA HYDRATION:
- * - Khi Server trả về `initialCount` (từ SEO/Server Components), ta "bơm" ngay vào store để user thấy số ngay, không chờ JS load xong mới fetch.
- *
- * 2. CROSS-TAB SYNC:
- * - Lắng nghe event `storage` để khi User mở tab mới và add cart, tab hiện tại cũng tự nhảy số.
- *
- * 3. GUEST CART INTEGRATION:
- * - Trực tiếp đọc `localStorage` nếu chưa login, đảm bảo trải nghiệm mua hàng không bị gián đoạn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
+ * CART INITIALIZER - Synchronizes cart across tabs and devices.
  */
 
 "use client";
@@ -38,7 +21,6 @@ export function CartInitializer({
   const { updateCount, setFetching } = useCartStore();
   const isFetchingRef = useRef(false);
 
-  // Hydrate initial count if provided
   useEffect(() => {
     if (typeof initialCount === "number") {
       updateCount(initialCount);
@@ -48,7 +30,6 @@ export function CartInitializer({
   const fetchCount = useCallback(async () => {
     if (isFetchingRef.current) return;
 
-    // 1. Logged in user -> API
     if (initialUser) {
       try {
         isFetchingRef.current = true;
@@ -72,7 +53,6 @@ export function CartInitializer({
       return;
     }
 
-    // 2. Guest user -> LocalStorage
     try {
       const guestCart = localStorage.getItem("guest_cart");
       if (guestCart) {
@@ -94,7 +74,6 @@ export function CartInitializer({
   }, [initialUser, updateCount, setFetching]);
 
   useEffect(() => {
-    // Only fetch if initialCount was not provided by server
     if (initialCount === undefined) {
       fetchCount();
     }
@@ -103,22 +82,12 @@ export function CartInitializer({
       if (e.key === "guest_cart") fetchCount();
     };
 
-    const handleGuestUpdate = () => fetchCount();
-    const handleCartUpdate = () => fetchCount();
-    const handleCartClear = () => updateCount(0);
-
     window.addEventListener("storage", handleStorageChange);
-    window.addEventListener("guest_cart_updated", handleGuestUpdate);
-    window.addEventListener("cart_updated", handleCartUpdate);
-    window.addEventListener("cart_clear", handleCartClear);
 
     return () => {
       window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("guest_cart_updated", handleGuestUpdate);
-      window.removeEventListener("cart_updated", handleCartUpdate);
-      window.removeEventListener("cart_clear", handleCartClear);
     };
-  }, [fetchCount, updateCount, initialCount]);
+  }, [fetchCount, initialCount]);
 
   return null;
 }

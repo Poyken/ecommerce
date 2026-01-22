@@ -26,24 +26,29 @@ export class OrderSubscriber {
   @OnEvent('order.created')
   async handleOrderCreated(event: OrderCreatedEvent) {
     this.logger.log(`Post-process for order.created: ${event.orderId}`);
-    
+
     // 1. Send Order Confirmation Email (Async)
     const order = await this.prisma.order.findUnique({
-        where: { id: event.orderId },
-        include: { items: true, user: true }
+      where: { id: event.orderId },
+      include: { items: true, user: true },
     });
     if (order) {
-        await this.emailService.sendOrderConfirmation(order as any).catch(e => this.logger.error('Email error', e));
+      await this.emailService
+        .sendOrderConfirmation(order as any)
+        .catch((e) => this.logger.error('Email error', e));
     }
 
     // 2. Initial Notification
-    await this.notificationsService.create({
+    await this.notificationsService
+      .create({
         userId: event.userId,
+        tenantId: event.tenantId,
         type: 'ORDER_CREATED',
         title: 'Đặt hàng thành công',
         message: `Đơn hàng #${event.orderId.slice(-8)} đã được tạo thành công.`,
         link: `/orders/${event.orderId}`,
-    }).catch(e => this.logger.error('Notification error', e));
+      })
+      .catch((e) => this.logger.error('Notification error', e));
   }
 
   @OnEvent('order.status.updated')
@@ -51,29 +56,37 @@ export class OrderSubscriber {
     this.logger.log(`Handling order.status.updated for order ${event.orderId}`);
 
     const order = await this.prisma.order.findUnique({
-        where: { id: event.orderId },
-        include: { user: true }
+      where: { id: event.orderId },
+      include: { user: true },
     });
 
     if (!order) return;
 
     // 1. Send Email
-    await this.emailService.sendOrderStatusUpdate(order as any).catch(e => this.logger.error('Email error', e));
+    await this.emailService
+      .sendOrderStatusUpdate(order as any)
+      .catch((e) => this.logger.error('Email error', e));
 
     // 2. Notifications
     const notification = await this.notificationsService.create({
-        userId: event.userId,
-        type: 'ORDER_STATUS_UPDATE',
-        title: 'Cập nhật đơn hàng',
-        message: `Đơn hàng #${event.orderId.slice(-8)} đã chuyển sang trạng thái ${event.newStatus}`,
-        link: `/orders/${event.orderId}`,
+      userId: event.userId,
+      tenantId: event.tenantId,
+      type: 'ORDER_STATUS_UPDATE',
+      title: 'Cập nhật đơn hàng',
+      message: `Đơn hàng #${event.orderId.slice(-8)} đã chuyển sang trạng thái ${event.newStatus}`,
+      link: `/orders/${event.orderId}`,
     });
 
-    this.notificationsGateway.sendNotificationToUser(event.userId, notification);
+    this.notificationsGateway.sendNotificationToUser(
+      event.userId,
+      notification,
+    );
 
     // 3. LoyaltyPoints on DELIVERED
     if (event.newStatus === OrderStatus.DELIVERED) {
-        await this.loyaltyService.earnPointsFromOrder(event.tenantId, event.orderId).catch(e => this.logger.error('Loyalty error', e));
+      await this.loyaltyService
+        .earnPointsFromOrder(event.tenantId, event.orderId)
+        .catch((e) => this.logger.error('Loyalty error', e));
     }
   }
 }

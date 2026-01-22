@@ -11,20 +11,6 @@ import type { Cache } from 'cache-manager';
  * PAGES SERVICE - XỬ LÝ DỮ LIỆU CMS
  * =================================================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CACHING (BỘ NHỚ ĐỆM):
- *    - Các trang tĩnh (About Us, Policy) RẤT ÍT KHI thay đổi, nhưng lại được đọc RẤT NHIỀU.
- *    - Giải pháp: Dùng `CacheManager`.
- *    - Logic: Kiểm tra Cache -> Có thì trả về (Hit) -> Không có thì query DB và lưu vào Cache (Miss).
- *    - Cache Invalidation: Khi Admin cập nhật trang (`update`), ta phải XÓA Cache cũ đi để User thấy nội dung mới.
- *
- * 2. MULTI-TENANCY CONTEXT:
- *    - Hàm `getTenant()` lấy ID cửa hàng hiện tại.
- *    - Mọi query DB đều phải có `where: { tenantId }` (Dù Prisma Extension đã hỗ trợ, nhưng viết rõ ở đây giúp dễ hiểu hơn). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =================================================================================================
  */
 export class PagesService {

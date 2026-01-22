@@ -20,20 +20,6 @@ export class AppThrottlerGuard extends ThrottlerGuard {
    * APP THROTTLER GUARD - Tenant-Aware Rate Limiting
    * =====================================================================
    *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. MULTI-TENANT RATE LIMITING:
-   * - Thay vì dùng một giới hạn chung cho toàn bộ server, guard này điều chỉnh
-   *   limit dựa trên Gói Dịch Vụ (Plan) của cửa hàng hiện tại.
-   *
-   * 2. LOGIC PHÂN TẦNG:
-   * - BASIC: 500 req/min (Dành cho shop nhỏ).
-   * - PRO: 2000 req/min (Dành cho shop vừa).
-   * - ENTERPRISE: 5000 req/min (Dành cho tập đoàn lớn).
-   *
-   * 3. FALLBACK:
-   * - Nếu không xác định được Tenant (vd: public API chung), dùng limit mặc định.
-   *
    * =====================================================================
    */
 

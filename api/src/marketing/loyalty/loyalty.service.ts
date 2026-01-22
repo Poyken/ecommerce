@@ -3,28 +3,6 @@
  * LOYALTY SERVICE - HỆ THỐNG ĐIỂM THƯỞNG & CHĂM SÓC KHÁCH HÀNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Module này quản lý "Loyalty Points" (Điểm thành viên) của người dùng.
- * Giống như thẻ tích điểm tại các siêu thị.
- *
- * 1. CƠ CHẾ HOẠT ĐỘNG:
- *    - EARNED (Tích điểm): Thường diễn ra sau khi đơn hàng COMPLETED.
- *    - REDEEMED (Tiêu điểm): Người dùng dùng điểm để trừ tiền khi mua hàng.
- *    - REFUNDED (Hoàn điểm): Khi đơn hàng bị hủy/trả hàng.
- *
- * 2. QUY TẮC TÍCH ĐIỂM:
- *    - Mặc định: 1 điểm cho mỗi 10,000đ chi tiêu
- *    - Điểm hết hạn sau 365 ngày
- *    - 1 điểm = 1,000đ khi thanh toán
- *
- * 3. TÍNH NHẤT QUÁN (Consistency):
- *    - Điểm được lưu theo dạng "Transaction Log" vào bảng LoyaltyPoint
- *    - Số dư thực tế được tính bằng SUM(amount)
- *
- * 4. IDEMPOTENCY:
- *    - Tránh việc tích điểm 2 lần cho cùng 1 đơn hàng
- *
  * =====================================================================
  */
 

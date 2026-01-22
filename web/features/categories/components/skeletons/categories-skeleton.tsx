@@ -1,32 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * =====================================================================
- * CATEGORIES SKELETON - Skeleton cho trang Categories
- * =====================================================================
- *
- * Layout khớp với CategoriesPage:
- * - Header center
- * - Grid 5 cột (responsive)
- * - Card tỷ lệ 4/3
- * =====================================================================
- */
 
-/**
- * =====================================================================
- * CATEGORIES SKELETON - Skeleton cho trang Categories
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. VISUAL CONSISTENCY:
- * - Quan trọng: Cấu trúc HTML của Skeleton PHẢI KHỚP với cấu trúc của Page thật.
- * - Giúp tránh CLS (Content Layout Shift) khi data load xong. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */
 export function CategoriesSkeleton() {
   return (
     <div className="min-h-screen bg-background pt-24 pb-16">

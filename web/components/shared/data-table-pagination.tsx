@@ -1,22 +1,4 @@
-/**
- * =====================================================================
- * DATA TABLE PAGINATION - Phân trang cho bảng dữ liệu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. URL-BASED PAGINATION:
- * - Sử dụng `useRouter` và `useSearchParams` để cập nhật tham số `page` trên URL.
- * - Giúp người dùng có thể chia sẻ link hoặc quay lại trang trước đó mà vẫn giữ đúng vị trí phân trang.
- *
- * 2. DYNAMIC PAGE NUMBERS:
- * - Tự động tính toán và hiển thị các số trang xung quanh trang hiện tại.
- * - Hỗ trợ nút Previous/Next để điều hướng nhanh. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

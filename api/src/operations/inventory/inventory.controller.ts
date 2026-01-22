@@ -57,4 +57,3 @@ export class InventoryController {
     return { data: stock };
   }
 }
-

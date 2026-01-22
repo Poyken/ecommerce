@@ -7,19 +7,6 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  * ORDERS MODULE - Module quản lý đơn hàng
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CROSS-MODULE INTEGRATION:
- * - `OrdersModule` là nơi giao thoa của nhiều module khác:
- *   - `PrismaModule`: Lưu trữ dữ liệu đơn hàng.
- *   - `PaymentModule`: Xử lý thanh toán.
- *   - `NotificationsModule`: Gửi email/thông báo cho khách hàng.
- *
- * 2. CENTRALIZED LOGIC:
- * - Gom nhóm tất cả logic liên quan đến vòng đời của một đơn hàng (từ lúc tạo đến lúc giao thành công). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 import { NotificationsModule } from '@/notifications/notifications.module';

@@ -15,25 +15,6 @@ import { UpdateCartItemDto } from './dto/update-cart-item.dto';
  * CART SERVICE - Dịch vụ quản lý giỏ hàng
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PERSISTENT CART:
- * - Giỏ hàng của người dùng đã đăng nhập được lưu trữ trong database (`Prisma`).
- * - Nếu user chưa có giỏ hàng, hệ thống sẽ tự động tạo mới khi truy cập (`getCart`).
- *
- * 2. STOCK VALIDATION:
- * - Luôn kiểm tra tồn kho (`sku.stock`) trước khi thêm hoặc cập nhật số lượng trong giỏ.
- * - Đảm bảo người dùng không thể đặt mua nhiều hơn số lượng thực tế đang có.
- *
- * 3. UPSERT LOGIC:
- * - Khi thêm sản phẩm, nếu sản phẩm đó đã có trong giỏ, ta thực hiện cộng dồn số lượng (`update`) thay vì tạo mới (`create`).
- *
- * 4. CART MERGING:
- * - Hỗ trợ gộp giỏ hàng từ khách (Guest Cart - lưu ở LocalStorage) vào tài khoản khi họ đăng nhập.
- * - Logic gộp được xử lý từng item một để đảm bảo validation tồn kho cho từng sản phẩm. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Duy trì giỏ hàng tạm thời cho người dùng, tính toán giá trị đơn hàng và áp dụng các chương trình khuyến mãi tự động.
-
  * =====================================================================
  */
 

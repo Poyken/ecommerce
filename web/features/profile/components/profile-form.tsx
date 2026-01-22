@@ -1,24 +1,4 @@
-/**
- * =====================================================================
- * PROFILE FORM - Trang quản lý hồ sơ người dùng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TAB-BASED NAVIGATION:
- * - Sử dụng state `activeTab` để chuyển đổi giữa các mục: Dashboard, Account, Orders, Wishlist, v.v.
- * - Giúp tổ chức thông tin người dùng một cách khoa học và dễ sử dụng.
- *
- * 2. ANIMATED TRANSITIONS:
- * - Sử dụng `AnimatePresence` và `m.div` để tạo hiệu ứng trượt khi chuyển đổi giữa các tab.
- *
- * 3. COMPONENT COMPOSITION:
- * - Mỗi tab là một component riêng biệt (ví dụ: `ProfileAccountTab`, `ProfileOrdersTab`) giúp code dễ bảo trì và mở rộng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

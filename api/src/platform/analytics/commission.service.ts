@@ -3,27 +3,6 @@
  * COMMISSION SERVICE - QUẢN LÝ HOA HỒNG & DOANH THU NỀN TẢNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Đây là module quan trọng nhất trong việc tính toán "Tiền" cho hệ thống.
- * Nó xử lý 3 luồng doanh thu chính:
- *
- * 1. PLATFORM FEE (Phí giao dịch):
- *    - Hệ thống thu phí trên mỗi đơn hàng của Shop (Tenant).
- *    - Công thức: Phí = Tổng đơn * % Phí (tùy theo gói Subscription của Shop).
- *
- * 2. AFFILIATE COMMISSION (Hoa hồng tiếp thị liên kết):
- *    - Hỗ trợ đa cấp (Multi-level):
- *      + Tier 1: Người trực tiếp viết Blog/Review dẫn đến đơn hàng.
- *      + Tier 2: Người giới thiệu ra người Tier 1.
- *    - Hoa hồng được tính dựa trên `% commissionRate` cấu hình cho từng Sản phẩm.
- *
- * 3. SUBSCRIPTION REVENUE:
- *    - Doanh thu từ việc các Shop trả tiền thuê nền tảng hàng tháng.
- *
- * ⚠️ LƯU Ý BẢO MẬT:
- *    - Mọi tính toán tiền tệ phải sử dụng Transaction để tránh sai lệch.
- *    - Cơ chế Idempotency: Kiểm tra đơn hàng đã tính hoa hồng chưa trước khi xử lý lại.
  * =====================================================================
  */
 

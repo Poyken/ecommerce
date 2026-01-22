@@ -3,21 +3,6 @@
  * ANALYTICS SERVICE - HỆ THỐNG THỐNG KÊ & BÁO CÁO
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Đây là "Bộ não" cung cấp dữ liệu cho Dashboard của Admin.
- *
- * 1. HIỆU NĂNG (Performance):
- *    - Sử dụng `Promise.all` để chạy đồng thời nhiều câu lệnh SQL count/sum.
- *    - Tránh việc chờ đợi tuần tự giúp Dashboard load cực nhanh.
- *
- * 2. CHỈ SỐ QUAN TRỌNG (KPIs):
- *    - Doanh thu (Revenue): Chỉ tính những đơn đã giao thành công (DELIVERED).
- *    - Tồn kho thấp: Cảnh báo những món sắp hết để Admin nhập hàng kịp thời.
- *    - Khách hàng mới: Theo dõi mức độ tăng trưởng của cửa hàng.
- *
- * 3. PHẠM VI DỮ LIỆU:
- *    - Luôn lọc theo `tenantId`. Dữ liệu của shop này không được lẫn vào shop kia.
  * =====================================================================
  */
 

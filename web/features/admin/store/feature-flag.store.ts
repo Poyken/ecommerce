@@ -1,26 +1,5 @@
 import { featureFlagService } from "../services/admin-feature-flag.service";
-/**
- * =====================================================================
- * FEATURE FLAG STORE - Quản lý tính năng động
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DYNAMIC CONFIGURATION:
- * - Cho phép bật/tắt các tính năng (VD: "Black Friday Sale", "New AI Chat") từ xa mà không cần deploy lại code.
- * - Store lưu trữ danh sách các flag đang được kích hoạt (`enabledFlags`).
- *
- * 2. GLOBAL ACCESSIBILITY:
- * - Thay thế Provider cũ bằng Zustand để bất kỳ component nào cũng có thể check flag nhanh chóng (`isEnabled`).
- *
- * 3. ERROR RESILIENCE:
- * - Nếu fetch flag lỗi, store sẽ mặc định trả về mảng rỗng (tắt tính năng lạ) để App không bị crash. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Safe Deployment: Thử nghiệm tính năng mới cho 5% người dùng trước khi ra mắt chính thức (Canary Release), giúp giảm thiểu rủi ro khi có lỗi.
- * - Seasonal Features: Bật banner "Chúc mừng năm mới" hoặc "Sale 12.12" đúng giờ G mà không cần Developer phải trực đêm để deploy.
 
- * =====================================================================
- */
 
 import { create } from "zustand";
 

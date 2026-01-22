@@ -3,30 +3,7 @@
 import { nanoid } from "nanoid";
 import { useCallback, useState } from "react";
 
-/**
- * =====================================================================
- * USE AI CHAT HOOK - Hook quản lý chat AI
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. GUEST SESSION:
- * - Sử dụng guestId lưu trong localStorage để track session.
- * - Nếu user chưa có guestId, tạo mới bằng nanoid.
- *
- * 2. STATE MANAGEMENT:
- * - messages: Danh sách tin nhắn (cả user và AI)
- * - isLoading: Đang chờ response từ AI
- * - error: Lỗi nếu có
- *
- * 3. API INTEGRATION:
- * - Gọi API /ai-chat/message với message và guestId
- * - Nếu user đã login, API sẽ dùng userId từ token *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
 
- * =====================================================================
- */
 
 interface AiMessage {
   id: string;

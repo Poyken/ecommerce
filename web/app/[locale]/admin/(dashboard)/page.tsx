@@ -35,35 +35,7 @@ interface Order {
   };
 }
 
-/**
- * =====================================================================
- * ADMIN DASHBOARD (PRO VERSION) 🚀
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TRANG DASHBOARD TỔNG QUAN:
- * - Đây là trung tâm điều khiển của Admin, nơi tổng hợp dữ liệu từ nhiều nguồn.
- * - Cung cấp cái nhìn nhanh về doanh thu, đơn hàng, khách hàng và sản phẩm.
- *
- * 2. TỐI ƯU HIỆU NĂNG (Parallel Fetching):
- * - Sử dụng `Promise.all` (dòng 80) để gọi nhiều Server Actions đồng thời.
- * - Việc này giúp giảm tổng thời gian chờ đợi (waiting time) so với việc gọi `await` từng dòng một.
- *
- * 3. DASHBOARD FEATURES:
- * - REAL-TIME PULSE: Hiển thị doanh thu HÔM NAY ngay cạnh tổng doanh thu để chủ shop nắm bắt tình hình tức thì.
- * - ACTIONABLE INSIGHTS: Nổi bật số lượng đơn hàng "Chờ xử lý" (Pending) để nhắc nhở Admin xử lý ngay.
- * - CUSTOMER VOICE: Hiển thị các đánh giá (Reviews) mới nhất để quản trị viên phản hồi khách hàng.
- * - INVENTORY HEALTH: Cảnh báo các SKU sắp hết hàng (Low Stock) để kịp thời nhập thêm.
- *
- * 4. LAZY LOADING CHARTS:
- * - Các biểu đồ (Charts) được load bằng `dynamic import` (Lazy Loading) để giảm kích thước file JavaScript ban đầu. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Business Intelligence (BI) Dashboard: Cung cấp trung tâm chỉ huy cho chủ doanh nghiệp, nơi mọi chỉ số kinh doanh quan trọng được tổng hợp và hiển thị trực quan dưới dạng biểu đồ.
- * - Operational Command Center: Giúp Admin phát hiện nhanh các đơn hàng cần xử lý (Pending) hoặc sản phẩm sắp hết hàng (Low Stock) để phản ứng kịp thời trong chuỗi cung ứng.
 
- * =====================================================================
- */
 
 export default async function AdminDashboardPage() {
   const { data: user } = await getProfileAction();

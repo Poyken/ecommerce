@@ -1,24 +1,4 @@
-/**
- * =====================================================================
- * COUPON INPUT - Nhập và chọn mã giảm giá (Checkout)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DUAL INPUT MODE:
- * - Hỗ trợ cả việc chọn mã giảm giá từ danh sách có sẵn (`Select`) và hiển thị mã đã áp dụng.
- *
- * 2. REAL-TIME VALIDATION:
- * - Hiển thị thông báo lỗi hoặc số tiền được giảm ngay khi áp dụng mã.
- * - Sử dụng `AnimatePresence` để các thông báo xuất hiện/biến mất mượt mà.
- *
- * 3. FEEDBACK UI:
- * - Mã đã áp dụng thành công sẽ có màu xanh lá (`emerald`) để người dùng dễ dàng nhận biết. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

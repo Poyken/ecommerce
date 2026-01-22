@@ -8,23 +8,6 @@ import { toDataURL } from 'qrcode';
  * TWO FACTOR SERVICE - XÁC THỰC 2 LỚP (2FA)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TOTP (Time-based One-Time Password):
- * - Đây là cơ chế mã số dùng một lần thay đổi theo thời gian (thường là 30 giây).
- * - Hệ thống sử dụng thư viện `otplib` để tạo và xác thực mã này.
- *
- * 2. SECRET KEY:
- * - Mỗi user kích hoạt 2FA sẽ có một `twoFactorSecret` riêng.
- * - Secret này được dùng để tạo ra chuỗi số 6 chữ số mà bạn thấy trên Google Authenticator hoặc Authy.
- *
- * 3. QUY TRÌNH KÍCH HOẠT:
- * - Bước 1: Tạo Secret -> Tạo Link `otpauth` -> Chuyển thành QR Code.
- * - Bước 2: User quét mã bằng app điện thoại.
- * - Bước 3: User nhập mã từ app để xác nhận -> Server lưu Secret và bật `twoFactorEnabled`. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()

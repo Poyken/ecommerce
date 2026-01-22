@@ -1,17 +1,4 @@
-/**
- * =====================================================================
- * ADDRESS DISPLAY - Hiển thị thông tin địa chỉ
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Component này dùng để hiển thị thông tin người nhận và địa chỉ giao hàng
- * một cách nhất quán trên toàn bộ ứng dụng (Checkout, Profile, Order Details). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

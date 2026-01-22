@@ -14,26 +14,6 @@ import * as Sentry from '@sentry/nestjs';
  * ALL EXCEPTIONS FILTER - Bộ lọc xử lý lỗi toàn cục
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CENTRALIZED ERROR HANDLING:
- * - Đây là "chốt chặn cuối cùng" cho mọi lỗi xảy ra trong ứng dụng.
- * - Thay vì để server "sập" hoặc trả về lỗi thô kệch, filter này sẽ bắt lấy và trả về một format JSON đẹp đẽ cho Client.
- *
- * 2. HTTP VS INTERNAL ERRORS:
- * - Nếu là `HttpException` (lỗi do ta chủ động throw like 404, 400), nó sẽ lấy status code tương ứng.
- * - Nếu là lỗi code không mong muốn (Crash), nó sẽ tự động chuyển thành `500 Internal Server Error`.
- *
- * 3. LOGGING FOR DEVS:
- * - Chỉ những lỗi 500 mới được ghi vào `logger.error` kèm theo `stack trace`. Giúp chúng ta biết chính xác dòng code nào bị lỗi để sửa.
- *
- * 4. SECURITY:
- * - Tránh việc để lộ thông tin nhạy cảm của server (như lỗi Database thô) ra ngoài Client bằng cách chuẩn hóa thông điệp lỗi. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Error Standardization: Client luôn nhận được format lỗi nhất quán `{ success: false, error: { message, code } }`.
- * - Security: Ẩn các thông tin nhạy cảm (như tên bảng DB, câu query SQL) khỏi response trả về client.
- * - Monitoring: Tự động bắn lỗi 500 lên Sentry để team Dev nhận email cảnh báo và fix nóng.
-
  * =====================================================================
  */
 

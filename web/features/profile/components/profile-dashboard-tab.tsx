@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * PROFILE DASHBOARD TAB - Tab tổng quan hồ sơ
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. QUICK STATS:
- * - Hiển thị các con số thống kê nhanh: Số đơn hàng, Sản phẩm yêu thích, Mã giảm giá.
- * - Click vào mỗi thẻ sẽ chuyển nhanh đến tab tương ứng.
- *
- * 2. DATA FETCHING:
- * - Sử dụng `Promise.all` để fetch đồng thời nhiều nguồn dữ liệu (orders, wishlist, coupons).
- * - Giúp giảm thời gian chờ đợi và tăng hiệu năng.
- *
- * 3. PERSONALIZED WELCOME:
- * - Hiển thị lời chào cá nhân hóa kèm theo tóm tắt thông tin cơ bản của tài khoản. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

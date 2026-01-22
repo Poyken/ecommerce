@@ -2,26 +2,7 @@
 
 import { ReactNode, memo, useEffect, useRef, useState } from "react";
 
-/**
- * =====================================================================
- * LAZY LOAD COMPONENTS - Components với Intersection Observer
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. INTERSECTION OBSERVER:
- * - API browser để detect khi element xuất hiện trong viewport.
- * - Giúp lazy load content chỉ khi user scroll đến.
- *
- * 2. PERFORMANCE BENEFITS:
- * - Giảm initial render cost.
- * - Giảm memory usage.
- * - Cải thiện FCP và LCP metrics. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface LazyLoadProps {
   children: ReactNode;

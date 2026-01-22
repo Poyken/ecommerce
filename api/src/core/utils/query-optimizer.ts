@@ -3,13 +3,6 @@
  * QUERY OPTIMIZATION UTILITIES
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Các utilities này giúp tối ưu hóa database queries:
- * 1. Batching: Gom nhiều queries thành một
- * 2. DataLoader: Giải quyết N+1 problem
- * 3. Query analyzer: Phân tích và cảnh báo slow queries
- *
  * =====================================================================
  */
 

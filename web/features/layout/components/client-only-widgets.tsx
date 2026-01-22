@@ -28,22 +28,7 @@ export function ClientOnlyWidgets({
   user,
   accessToken,
 }: ClientOnlyWidgetsProps) {
-  /**
-   * =====================================================================
-   * CLIENT ONLY WIDGETS - Các thành phần phụ trợ (Non-Critical)
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. NEXT.JS DYNAMIC IMPORT (SSR: FALSE):
-   * - Các Widget như Chat, Toasts không cần thiết cho SEO hay First Paint.
-   * - Ta dùng `dynamic(..., { ssr: false })` để chỉ tải chúng ở phía Client sau khi trang đã load.
-   * - Giảm bundle size của HTML ban đầu (TTFB nhanh hơn). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
-   * =====================================================================
-   */
+  
   return (
     <>
       <PurchaseToast />

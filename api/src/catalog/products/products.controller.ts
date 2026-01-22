@@ -3,26 +3,6 @@
  * PRODUCTS CONTROLLER - Điều khiển Sản phẩm
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Controller này xử lý tất cả các request liên quan đến Sản phẩm.
- * Sản phẩm ở đây là "Product Base" (sản phẩm gốc), VD: "iPhone 15 Pro Max".
- * Mỗi Product có thể có nhiều biến thể (SKU), VD: "Đen - 256GB", "Trắng - 512GB".
- *
- * PHÂN QUYỀN:
- * - GET endpoints: Ai cũng có thể truy cập (Public)
- * - POST/PATCH/DELETE: Chỉ Admin có quyền (product:create, product:update, product:delete)
- *
- * CÁC CHỨC NĂNG:
- * 1. Tạo sản phẩm mới (POST /products)
- * 2. Lấy danh sách sản phẩm có filter (GET /products)
- * 3. Lấy chi tiết sản phẩm (GET /products/:id)
- * 4. Cập nhật sản phẩm (PATCH /products/:id)
- * 5. Xóa sản phẩm - Soft delete (DELETE /products/:id)
- * 6. Lấy thông tin SKUs cho Guest Cart (POST /products/skus/details) *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Cung cấp các API công khai để khách hàng xem sản phẩm và API admin để quản lý kho hàng.
-
  * =====================================================================
  */
 
@@ -251,4 +231,3 @@ export class ProductsController {
     return this.importService.generateTemplate(res);
   }
 }
-

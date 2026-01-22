@@ -15,17 +15,6 @@ import { ChatService } from './chat.service';
  * CHAT CONTROLLER - QUẢN LÝ LỊCH SỬ HỘI THOẠI
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ADMIN VIEW:
- * - Admin cần API `/conversations` để xem danh sách tất cả các khách hàng đang chờ hỗ trợ.
- * - API `/history/:userId` cho phép Admin xem lại toàn bộ tin nhắn cũ với một khách hàng cụ thể.
- *
- * 2. USER VIEW:
- * - API `/my-history` giúp khách hàng load lại tin nhắn của chính họ khi F5 trang web hoặc chuyển đổi thiết bị. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 @ApiTags('Chat Support')
@@ -81,5 +70,3 @@ export class ChatController {
     return { data };
   }
 }
-
-

@@ -3,31 +3,6 @@
  * PROMOTIONS SERVICE - HỆ THỐNG KHUYẾN MÃI (MARKETING ENGINE)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Đây là module xử lý các chương trình giảm giá, khuyến mãi linh hoạt.
- * Nó được thiết kế theo mô hình Rule-Action Engine.
- *
- * 1. CÁC THÀNH PHẦN CHÍNH:
- *    - Promotion: Thông tin chung (Mã, Thời gian, Giới hạn sử dụng).
- *    - PromotionRule: Các điều kiện để áp dụng (VD: Giỏ hàng > 500k, Mua sản phẩm A...).
- *    - PromotionAction: Hành động khi thỏa điều kiện (VD: Giảm 10%, Freeship, Tặng quà).
- *
- * 2. RULE TYPES:
- *    - MIN_ORDER_VALUE: Đơn hàng tối thiểu
- *    - SPECIFIC_CATEGORY: Danh mục cụ thể
- *    - SPECIFIC_PRODUCT: Sản phẩm cụ thể
- *    - CUSTOMER_GROUP: Nhóm khách hàng
- *    - FIRST_ORDER: Đơn hàng đầu tiên
- *    - MIN_QUANTITY: Số lượng tối thiểu
- *
- * 3. ACTION TYPES:
- *    - DISCOUNT_FIXED: Giảm số tiền cố định
- *    - DISCOUNT_PERCENT: Giảm phần trăm
- *    - FREE_SHIPPING: Miễn phí vận chuyển
- *    - GIFT: Tặng quà
- *    - BUY_X_GET_Y: Mua X tặng Y
- *
  * =====================================================================
  */
 
@@ -291,21 +266,56 @@ export class PromotionsService {
     dto: ValidatePromotionDto,
   ): Promise<ValidationResult> {
     const tenantId = this.getTenantId();
-    const { code, totalAmount, userId, customerGroupId, items } = dto;
+    const { code, userId, customerGroupId, items } = dto;
 
-    // Tìm promotion
+    // FIND PROMOTION
     const promotion = await this.prisma.promotion.findUnique({
       where: { tenantId_code: { tenantId, code } },
       include: { rules: true, actions: true },
     });
 
     if (!promotion) {
-      throw new NotFoundException('Không tìm thấy mã khuyến mãi');
+      throw new NotFoundException('Mã khuyến mãi không tồn tại');
     }
 
     if (!promotion.isActive) {
       throw new BadRequestException('Mã khuyến mãi đang tạm ngưng');
     }
+
+    // [ZERO TRUST SECURITY]: NEVER trust prices or totalAmount from DTO.
+    // ALWAYS fetch from DB to prevent rule-triggering exploits.
+    if (!items || items.length === 0) {
+      throw new BadRequestException(
+        'Danh sách sản phẩm không được trống khi kiểm tra mã',
+      );
+    }
+
+    // [P11 FIX]: Fetch SKUs from DB to get reliable prices
+    const skuIds = items.map((i) => i.skuId);
+    const dbSkus = await this.prisma.sku.findMany({
+      where: { id: { in: skuIds }, tenantId },
+      select: { id: true, price: true, productId: true, product: { select: { categories: { select: { categoryId: true } } } } },
+    });
+    const skuMap = new Map(dbSkus.map((s) => [s.id, s]));
+
+    let calculatedTotal = new Prisma.Decimal(0);
+    const enrichedItems = items.map(item => {
+      const sku = skuMap.get(item.skuId);
+      if (!sku) {
+        throw new BadRequestException(`Sản phẩm ${item.skuId} không tồn tại hoặc không thuộc cửa hàng này`);
+      }
+      const price = sku.price || new Prisma.Decimal(0);
+      calculatedTotal = calculatedTotal.add(price.mul(item.quantity));
+      
+      return {
+        ...item,
+        price: price.toNumber(), // Keep as number for internal context for now, but use Decimal for sum
+        productId: sku.productId,
+        categoryId: sku.product.categories[0]?.categoryId, // Assuming first category for rule evaluation
+      };
+    });
+
+    const effectiveTotal = calculatedTotal;
 
     // Kiểm tra thời gian
     const now = new Date();
@@ -336,10 +346,10 @@ export class PromotionsService {
     // Evaluate tất cả rules
     for (const rule of promotion.rules) {
       const passed = await this.evaluateRule(rule, {
-        totalAmount,
+        totalAmount: effectiveTotal.toNumber(),
         userId,
         customerGroupId,
-        items,
+        items: enrichedItems,
         tenantId,
       });
 
@@ -351,7 +361,11 @@ export class PromotionsService {
     }
 
     // Calculate discount từ actions
-    const result = this.calculateActions(promotion.actions, totalAmount, items);
+    const result = this.calculateActions(
+      promotion.actions,
+      effectiveTotal.toNumber(),
+      enrichedItems,
+    );
 
     return {
       valid: true,
@@ -413,23 +427,18 @@ export class PromotionsService {
     const tenantId = this.getTenantId();
     const now = new Date();
 
-    // Lấy tất cả promotions active, sau đó filter trong code
-    // vì Prisma không hỗ trợ so sánh 2 fields trực tiếp
-    const allPromotions = await this.prisma.promotion.findMany({
+    // SQL-based filtering for basic availability constraints
+    const promotions = await this.prisma.promotion.findMany({
       where: {
         tenantId,
         isActive: true,
         startDate: { lte: now },
         endDate: { gte: now },
+        OR: [{ usageLimit: null }, { usageLimit: { gt: this.prisma.promotion.fields.usedCount } }],
       },
       include: { rules: true, actions: true },
       orderBy: { priority: 'desc' },
     });
-
-    // Filter: usageLimit is null OR usedCount < usageLimit
-    const promotions = allPromotions.filter(
-      (p) => p.usageLimit === null || p.usedCount < p.usageLimit,
-    );
 
     // Nếu có context, filter thêm những cái applicable
     if (context?.totalAmount) {
@@ -483,6 +492,39 @@ export class PromotionsService {
       },
     };
   }
+  /**
+   * Tặng quà chào mừng thành viên mới
+   */
+  async grantWelcomeVoucher(userId: string) {
+    const tenantId = this.getTenantId();
+
+    // Kiểm tra user đã nhận quà chưa (chống spam nhận quà)
+    const existingNotification = await (this.prisma.notification as any).findFirst({
+      where: {
+        userId,
+        tenantId,
+        title: { contains: 'Quà tặng chào mừng' },
+      },
+    });
+
+    if (existingNotification) {
+      this.logger.log(`User ${userId} đã nhận quà chào mừng rồi, bỏ qua...`);
+      return null;
+    }
+
+    // [TODO]: Thực tế sẽ tạo một mã Promotion hoặc áp dụng một Rule đặc biệt.
+    // Hiện tại chúng ta chỉ tạo Notification để thông báo, logic Promo Engine sẽ tự hiểu
+    // thông qua Rule FIRST_ORDER khi user checkout.
+
+    this.logger.log(`Ghi nhận quà chào mừng cho User ${userId}`);
+
+    return {
+      userId,
+      type: 'WELCOME_GIFT',
+      title: 'Quà tặng chào mừng thành viên mới! 🎁',
+      message: `Chào mừng bạn! Bạn sẽ nhận được ưu đãi giảm giá cho đơn hàng đầu tiên.`,
+    };
+  }
 
   // ============================================================
   // PRIVATE HELPER METHODS
@@ -511,10 +553,10 @@ export class PromotionsService {
 
     switch (type) {
       case PromotionRuleType.MIN_ORDER_VALUE:
-        return this.compareNumbers(
-          context.totalAmount,
+        return this.compareDecimals(
+          new Prisma.Decimal(context.totalAmount),
           operator,
-          parseFloat(value),
+          new Prisma.Decimal(value),
         );
 
       case PromotionRuleType.MIN_QUANTITY:
@@ -568,13 +610,31 @@ export class PromotionsService {
 
       default:
         this.logger.warn(`Unknown rule type: ${type}`);
-        return true; // Unknown rules pass by default
+        return true;
     }
   }
 
-  /**
-   * So sánh số với operator
-   */
+  private compareDecimals(
+    a: Prisma.Decimal,
+    operator: string,
+    b: Prisma.Decimal,
+  ): boolean {
+    switch (operator) {
+      case RuleOperator.EQ:
+        return a.equals(b);
+      case RuleOperator.GTE:
+        return a.gte(b);
+      case RuleOperator.LTE:
+        return a.lte(b);
+      case RuleOperator.GT:
+        return a.gt(b);
+      case RuleOperator.LT:
+        return a.lt(b);
+      default:
+        return false;
+    }
+  }
+
   private compareNumbers(a: number, operator: string, b: number): boolean {
     switch (operator) {
       case RuleOperator.EQ:
@@ -592,9 +652,6 @@ export class PromotionsService {
     }
   }
 
-  /**
-   * Tính toán discount từ actions
-   */
   private calculateActions(
     actions: Array<{
       type: string;
@@ -604,27 +661,29 @@ export class PromotionsService {
     totalAmount: number,
     items?: Array<{ skuId: string; quantity: number; price: number }>,
   ): { discountAmount: number; freeShipping: boolean; giftSkuIds: string[] } {
-    let discountAmount = 0;
+    let discountAmount = new Prisma.Decimal(0);
     let freeShipping = false;
     const giftSkuIds: string[] = [];
+    const totalDec = new Prisma.Decimal(totalAmount);
 
     for (const action of actions) {
-      const val = parseFloat(action.value);
+      const val = new Prisma.Decimal(action.value);
 
       switch (action.type) {
         case PromotionActionType.DISCOUNT_FIXED:
-          discountAmount += val;
+          discountAmount = discountAmount.add(val);
           break;
 
         case PromotionActionType.DISCOUNT_PERCENT:
-          let percentDiscount = (totalAmount * val) / 100;
-          if (
-            action.maxDiscountAmount &&
-            percentDiscount > Number(action.maxDiscountAmount)
-          ) {
-            percentDiscount = Number(action.maxDiscountAmount);
+          let percentDiscount = totalDec.mul(val).div(100);
+
+          if (action.maxDiscountAmount) {
+            const maxDec = new Prisma.Decimal(action.maxDiscountAmount);
+            if (percentDiscount.gt(maxDec)) {
+              percentDiscount = maxDec;
+            }
           }
-          discountAmount += percentDiscount;
+          discountAmount = discountAmount.add(percentDiscount);
           break;
 
         case PromotionActionType.FREE_SHIPPING:
@@ -632,16 +691,13 @@ export class PromotionsService {
           break;
 
         case PromotionActionType.GIFT:
-          // value chứa skuId của quà tặng
           giftSkuIds.push(action.value);
           break;
 
         case PromotionActionType.BUY_X_GET_Y:
-          // Format value: {"buyQty": 3, "getQty": 1, "productId": "xxx"}
           try {
             const buyXGetY = JSON.parse(action.value);
-            // Logic tính giảm giá cho Buy X Get Y
-            // TODO: Implement chi tiết
+            // Buy X Get Y logic would go here
           } catch {
             this.logger.warn('Invalid BUY_X_GET_Y config');
           }
@@ -649,10 +705,16 @@ export class PromotionsService {
       }
     }
 
-    // Đảm bảo discount không vượt quá tổng đơn
-    discountAmount = Math.min(discountAmount, totalAmount);
+    // Ensure discount does not exceed total
+    if (discountAmount.gt(totalDec)) {
+      discountAmount = totalDec;
+    }
 
-    return { discountAmount, freeShipping, giftSkuIds };
+    return {
+      discountAmount: discountAmount.toNumber(),
+      freeShipping,
+      giftSkuIds,
+    };
   }
 
   /**

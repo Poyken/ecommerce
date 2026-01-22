@@ -3,18 +3,6 @@
  * PAGES.MODULE MODULE
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Module này đóng gói các thành phần liên quan lại với nhau.
- *
- * 1. CẤU TRÚC MODULE:
- *    - imports: Các module khác cần sử dụng
- *    - controllers: Các controller xử lý request
- *    - providers: Các service cung cấp logic
- *    - exports: Các service cho module khác sử dụng *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

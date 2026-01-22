@@ -3,23 +3,6 @@
  * MEDIA SERVICE - QUẢN LÝ TÀI NGUYÊN (HÌNH ẢNH, VIDEO, FILES)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Module này quản lý Metadata của tất cả các file được upload lên hệ thống.
- *
- * 1. TẠI SAO PHẢI LƯU VÀO DB?
- *    - Các file thực tế thường nằm trên Cloud Storage (S3, Cloudinary).
- *    - Ta lưu metadata vào DB để quản lý mối quan hệ: Ai upload? Khi nào?
- *      File này đang dùng cho sản phẩm nào? Dung lượng bao nhiêu?
- *
- * 2. PHÂN LOẠI (Media Type):
- *    - IMAGE: Ảnh sản phẩm, ảnh avatar.
- *    - VIDEO: Review sản phẩm.
- *    - DOCUMENT: File hướng dẫn sử dụng (PDF).
- *
- * 3. MULTI-TENANCY:
- *    - Media của shop A không bao giờ được xuất hiện trong kho media của shop B.
- *    - Luôn lọc theo `tenantId`.
  * =====================================================================
  */
 

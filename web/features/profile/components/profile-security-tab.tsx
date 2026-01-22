@@ -1,23 +1,4 @@
-/**
- * =====================================================================
- * PROFILE SECURITY TAB - Quản lý bảo mật (2FA)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TWO-FACTOR AUTHENTICATION (2FA):
- * - Sử dụng thuật toán TOTP (Time-based One-time Password).
- * - Quy trình:
- *   B1: Generate Secret -> B2: Hiển thị QR -> B3: User scan & nhập OTP để Confirm -> B4: Enable.
- *
- * 2. ANIMATED TRANSITIONS:
- * - `AnimatePresence` + `mode="wait"`: Đảm bảo UI cũ biến mất hẳn rồi UI mới mới hiện ra.
- * - Tránh giật layout (Layout Shift). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

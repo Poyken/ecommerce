@@ -13,25 +13,7 @@ interface NewsletterBlockProps {
   };
 }
 
-/**
- * =================================================================================================
- * NEWSLETTER BLOCK - KHỐI ĐĂNG KÝ NHẬN TIN
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. GLASSMORPHISM DESIGN:
- *    - Sử dụng `backdrop-blur-xl` và `bg-foreground/2` để tạo hiệu ứng kính mờ hiện đại.
- *    - Kết hợp với 2 đốm sáng (blur-circles) ở góc giúp UI có chiều sâu và cao cấp.
- *
- * 2. REUSABLE FORM:
- *    - Tách logic form vào `NewsletterForm` để xử lý validation (Zod) và gọi API.
- *    - Header này chỉ quan tâm tới visual và thông điệp truyền tải. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =================================================================================================
- */
 export function NewsletterBlock({
   title,
   description,

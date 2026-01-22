@@ -1,22 +1,4 @@
-/**
- * =====================================================================
- * DYNAMIC CMS PAGE - HIỂN THỊ TRANG TÙY CHỈNH TỪ DATABASE
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Trang này cho phép Admin tạo các trang mới (VD: Giới thiệu, Chính sách)
- * từ Page Builder mà không cần code lại.
- *
- * 1. DYNAMIC ROUTING: Sử dụng [slug] để bắt mọi đường dẫn tùy chỉnh.
- * 2. DATA FECHING: Fetch cấu hình các "Blocks" của trang từ API.
- * 3. COMPONENT MAPPING: Dùng BlockRenderer để biến JSON data thành React Components.
- * 4. PERFORMANCE: Sử dụng Next.js revalidate (ISR) để cache trang 60s. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 import { BlockData, BlockRenderer } from "@/features/cms/components/block-renderer";
 import { HomeWrapper } from "@/features/home/components/home-wrapper";
@@ -81,7 +63,7 @@ export default async function DynamicCMSPage({ params }: PageProps) {
 
   // 2. Initiate Data Fetches (Non-blocking context for products/categories blocks) - Using Server Actions
   const { getFeaturedProductsAction, getCategoriesAction, getBrandsAction } = await import("@/features/products/actions");
-  const productsPromise = getFeaturedProductsAction(20).then((res) => res.success ? res.data : []);
+  const productsPromise = getFeaturedProductsAction({ limit: 20 }).then((res) => res.success ? res.data : []);
   const categoriesPromise = getCategoriesAction().then((res) => res.success ? res.data : []);
   const brandsPromise = getBrandsAction().then((res) => res.success ? res.data : []);
 

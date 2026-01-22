@@ -32,33 +32,7 @@ import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 
-/**
- * =====================================================================
- * HEADER ACTIONS - Các hành động trên Header (User, Theme, Auth)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. USER PROFILE HOOK (`useUserProfile`):
- * - Tự động fetch thông tin user từ API nếu đã đăng nhập.
- * - Quản lý trạng thái loading và error một cách tập trung.
- *
- * 2. DROPDOWN MENU (Radix UI):
- * - Hiển thị menu xổ xuống khi click vào Avatar.
- * - Chứa các link quan trọng: Profile, Theme, Logout.
- *
- * 3. THEME SWITCHING:
- * - Sử dụng `next-themes` để thay đổi giữa Light, Dark và System mode.
- * - `DropdownMenuSub`: Menu con lồng nhau giúp giao diện gọn gàng hơn.
- *
- * 4. LOGOUT LOGIC:
- * - Khi logout, ta cần xóa `guest_cart` trong localStorage để tránh xung đột dữ liệu cũ.
- * - Dispatch event `cart_clear` để các component khác cập nhật UI ngay lập tức. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 

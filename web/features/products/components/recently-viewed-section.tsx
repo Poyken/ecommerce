@@ -1,26 +1,4 @@
-/**
- * =====================================================================
- * RECENTLY VIEWED SECTION - Hiển thị sản phẩm đã xem gần đây
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CLIENT COMPONENT:
- * - Sử dụng "use client" vì cần truy cập localStorage (chỉ có trên browser).
- * - Dùng useEffect để tránh hydration mismatch.
- *
- * 2. LAZY RENDERING:
- * - Chỉ render khi có sản phẩm để hiển thị.
- * - Responsive: 2 cột mobile, 4-6 cột desktop.
- *
- * 3. PERSONALIZATION STRATEGY:
- * - Loại bỏ sản phẩm đang xem khỏi danh sách.
- * - Hiển thị tối đa 8 sản phẩm để không làm loãng focus. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

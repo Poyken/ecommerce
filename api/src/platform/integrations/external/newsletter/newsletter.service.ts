@@ -10,21 +10,6 @@ import { getTenant } from '@core/tenant/tenant.context';
  * NEWSLETTER SERVICE - Dịch vụ quản lý đăng ký bản tin
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ASYNCHRONOUS PROCESSING (Xử lý bất đồng bộ):
- * - Khi có người đăng ký email, ta không gửi email chào mừng ngay lập tức vì việc này có thể làm chậm phản hồi của API.
- * - Thay vào đó, ta đẩy một "Job" vào `emailQueue` (sử dụng BullMQ và Redis).
- *
- * 2. QUEUE BENEFITS:
- * - Giúp hệ thống chịu tải tốt hơn (Scalability).
- * - Nếu server gửi mail bị lỗi, BullMQ có thể tự động thử lại (Retry) sau một khoảng thời gian.
- *
- * 3. LOGGING:
- * - Sử dụng `Logger` của NestJS để ghi lại các sự kiện quan trọng, giúp theo dõi hoạt động của hệ thống trong môi trường Production. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

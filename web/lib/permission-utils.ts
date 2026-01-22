@@ -1,30 +1,4 @@
-/**
- * =====================================================================
- * PERMISSION UTILITIES - Tiện ích xử lý quyền truy cập
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. JWT STRUCTURE (JSON Web Token):
- * - Header: Thuật toán mã hóa.
- * - Payload: Dữ liệu (Claims) như `sub` (userId), `permissions`, `exp` (hết hạn).
- * - Signature: Chữ ký bảo mật.
- *
- * 2. STATELESS VERIFICATION:
- * - Server không cần lưu session trong database.
- * - Chỉ cần verify chữ ký của token là biết user là ai, có quyền gì.
- * - Ở client, ta chỉ cần `decode` payload để lấy thông tin hiển thị UI (không verify signature vì không có secret key).
- *
- * 3. SECURITY NOTE:
- * - Không bao giờ tin tưởng tuyệt đối dữ liệu decode từ client cho các thao tác quan trọng.
- * - Luôn phải verify lại token ở phía Server (API Backend). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Phân quyền giao diện (UI Access Control): Ẩn/Hiện nút "Xóa sản phẩm" dựa trên quyền (`permissions`) của user.
- * - Client-side Guard: Chặn truy cập vào các trang Admin nếu token không chứa quyền `admin:access`.
- * - Tiết kiệm Request: Kiểm tra quyền ngay tại Client thay vì phải gọi API mới biết là không được phép.
 
- * =====================================================================
- */
 
 import { decodeJwt } from "jose";
 

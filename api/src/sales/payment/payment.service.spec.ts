@@ -13,18 +13,6 @@ import { OrdersRepository } from '@/sales/orders/orders.repository';
  * PAYMENT SERVICE UNIT TESTS
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. STRATEGY PATTERN TESTING:
- *    - Payment Service sử dụng Strategy Pattern.
- *    - Mỗi payment method (COD, VNPAY, MOMO...) là một Strategy riêng.
- *    - Test cần verify đúng strategy được gọi cho đúng method.
- *
- * 2. WEBHOOK HANDLING:
- *    - Webhook là HTTP callback từ cổng thanh toán.
- *    - Cần test việc parse order ID từ nội dung chuyển khoản.
- *    - Cần test validation số tiền thanh toán.
- *
  * =====================================================================
  */
 

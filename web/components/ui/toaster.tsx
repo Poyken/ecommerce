@@ -10,28 +10,7 @@ import {
   ToastViewport,
 } from "@/components/ui/toast";
 
-/**
- * =====================================================================
- * TOASTER - Trình quản lý thông báo toàn cục
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. GLOBAL NOTIFICATIONS:
- * - Thay vì mỗi trang tự quản lý thông báo, ta dùng một `Toaster` duy nhất ở root của ứng dụng.
- * - Bất kỳ đâu cũng có thể gọi `toast()` để hiển thị thông báo mà không cần lo lắng về UI.
- *
- * 2. DURATION STRATEGY:
- * - Thông báo lỗi (`destructive`) thường quan trọng hơn nên được hiển thị lâu hơn (5s).
- * - Thông báo thành công/thông tin thường chỉ cần 3s để không làm phiền user.
- *
- * 3. VIEWPORT:
- * - `ToastViewport`: Nơi các thông báo thực sự xuất hiện trên màn hình (thường là góc dưới bên phải). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import { AlertCircle, AlertTriangle, CheckCircle2, Info } from "lucide-react";
 

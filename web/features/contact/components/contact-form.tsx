@@ -14,23 +14,7 @@ import { useAction } from "next-safe-action/hooks";
 import { sendMessage } from "../actions";
 import { useToast } from "@/components/ui/use-toast";
 
-/**
- * =====================================================================
- * CONTACT FORM - Form liên hệ khách hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. FORM HANDLING (NEXT-SAFE-ACTION):
- * - Sử dụng `useAction` để gói gọn logic gửi form và xử lý trạng thái.
- * - Validation được xử lý tự động bởi `contactSchema`.
- *
- * 2. SUCCESS STATE:
- * - Khi `result.data?.success` là true, hiển thị giao diện cảm ơn.
- * - Tự động quay lại trạng thái form sau một khoảng thời gian.
- *
- * =====================================================================
- */
+
 
 export function ContactForm() {
   const t = useTranslations("contact");

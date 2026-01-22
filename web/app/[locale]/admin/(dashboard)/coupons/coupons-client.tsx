@@ -1,28 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * COUPONS CLIENT - Quản lý mã giảm giá (Enhanced)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. QUẢN LÝ COUPONS (Promotion Management):
- * - Hiển thị danh sách các mã giảm giá hiện có trong hệ thống.
- * - Hỗ trợ lọc theo trạng thái: All (Tất cả), Active (Đang hiệu lực), Expired (Hết hạn).
- *
- * 2. SEARCH & SYNC URL:
- * - Sử dụng `useDebounce` để trì hoãn việc gọi API (Server Action) khi người dùng gõ tìm kiếm.
- * - Khi tìm kiếm, URL sẽ được cập nhật (Sync URL), cho phép bookmark hoặc chia sẻ bộ lọc.
- *
- * 3. TRẠNG THÁI LOADING (isPending):
- * - Sử dụng `useTransition` để theo dõi trạng thái chuyển trang/lọc dữ liệu.
- * - `isPending` được truyền vào `AdminTableWrapper` để hiển thị lớp phủ mờ (blur overlay) khi đang tải. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Badge } from "@/components/ui/badge";

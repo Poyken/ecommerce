@@ -22,18 +22,6 @@ import { WishlistService } from './wishlist.service';
  * WISHLIST CONTROLLER - QUẢN LÝ DANH SÁCH YÊU THÍCH
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TOGGLE PATTERN (Cơ chế bật/tắt):
- * - Thay vì có 2 API add và remove, ta dùng 1 API `toggle`.
- * - Nếu sản phẩm chưa có -> Thêm vào. Nếu có rồi -> Xóa đi.
- * - Giúp frontend xử lý UI nút "Tim" đơn giản hơn.
- *
- * 2. MERGE WISHLIST (Hợp nhất dữ liệu):
- * - Khi khách hàng vãng lai (Guest) đăng nhập, ta gọi API `merge` để đưa các sản phẩm họ đã thích ở Client vào tài khoản chính thức trong DB. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 @ApiTags('Wishlist')
@@ -84,4 +72,3 @@ export class WishlistController {
     return this.wishlistService.mergeWishlist(req.user.id, productIds);
   }
 }
-

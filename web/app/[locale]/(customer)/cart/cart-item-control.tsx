@@ -5,28 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
 import { useState, useTransition } from "react";
 
-/**
- * =====================================================================
- * CART ITEM CONTROL - Bộ điều khiển số lượng sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. STOCK VALIDATION:
- * - Trước khi tăng số lượng, ta luôn kiểm tra `item.sku.stock`.
- * - Không cho phép user đặt quá số lượng tồn kho hiện có.
- *
- * 2. DUAL LOGIC (Guest vs User):
- * - Guest: Cập nhật trực tiếp vào `localStorage` và bắn event `guest_cart_updated`.
- * - User: Gọi Server Action `updateCartItemAction` để lưu vào database.
- *
- * 3. UX ENHANCEMENT:
- * - Sử dụng `useTransition` (`isPending`) để disable các nút bấm khi đang xử lý API, tránh việc user click quá nhanh gây lỗi race condition. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 import { useToast } from "@/components/ui/use-toast";
 import { CartItem } from "@/types/models";

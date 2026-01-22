@@ -3,25 +3,7 @@
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
-/**
- * =====================================================================
- * ADMIN SEARCH INPUT - Ô tìm kiếm dùng chung trong trang quản trị
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REUSABILITY:
- * - Thành phần này được thiết kế để dùng lại ở nhiều trang (Products, Users, Orders...).
- * - Nhận `value` và `onChange` từ component cha để quản lý trạng thái tìm kiếm.
- *
- * 2. UI/UX:
- * - Sử dụng icon `Search` từ `lucide-react` đặt tuyệt đối (`absolute`) bên trong input.
- * - `pl-10` tạo khoảng trống bên trái để icon không đè lên chữ. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface AdminSearchInputProps {
   value: string;

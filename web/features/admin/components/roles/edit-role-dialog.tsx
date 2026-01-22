@@ -10,20 +10,7 @@ import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 
-/**
- * =====================================================================
- * EDIT ROLE DIALOG - Dialog chỉnh sửa vai trò
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SIMPLE UPDATE:
- * - Cho phép đổi tên vai trò. Tương tự Permission, việc đổi tên vai trò cần được thực hiện cẩn thận. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface EditRoleDialogProps {
   roleId: string;

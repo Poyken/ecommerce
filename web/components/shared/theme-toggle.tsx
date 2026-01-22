@@ -11,26 +11,7 @@ import { Moon, Sun } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 
-/**
- * =====================================================================
- * THEME TOGGLE - Nút chuyển đổi Giao diện Tối/Sáng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. NEXT-THEMES INTEGRATION:
- * - Sử dụng hook `useTheme` để thay đổi giá trị theme toàn cục.
- * - Hỗ trợ 3 chế độ: Light, Dark, và System (theo hệ điều hành).
- *
- * 2. ICON ANIMATIONS:
- * - Sử dụng CSS classes (`rotate`, `scale`) để tạo hiệu ứng xoay và phóng to/thu nhỏ khi chuyển đổi giữa icon Mặt trời và Mặt trăng.
- * - `dark:-rotate-90 dark:scale-0`: Ẩn icon Sun khi ở chế độ Dark.
- * - `dark:rotate-0 dark:scale-100`: Hiện icon Moon khi ở chế độ Dark. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function ThemeToggle() {
   const t = useTranslations("common");

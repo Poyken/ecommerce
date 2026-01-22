@@ -1,31 +1,15 @@
 /**
- * =====================================================================
- * PRODUCT SERVER ACTIONS - Xử lý logic nghiệp vụ Sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. "use server":
- * - Đánh dấu file này chỉ chạy trên Server. Các export functions ở đây có thể được gọi
- *   trực tiếp từ Client Components (RPC - Remote Procedure Call).
- *
- * 2. ACTION WRAPPER (`wrapServerAction`):
- * - Wrap mọi action trong `try-catch` để xử lý lỗi tập trung.
- * - Đảm bảo trả về format thống nhất `ActionResult<T>`.
- *
- * 3. REVALIDATION (Cache Invalidation):
- * - Khi Thêm/Sửa/Xóa (`create`, `update`, `delete`), ta phải gọi `REVALIDATE`.
- * - Mục đích: Xóa cache cũ của Next.js để user thấy dữ liệu mới ngay lập tức.
- *
- * =====================================================================
+ * PRODUCT SERVER ACTIONS - Logic nghiệp vụ Sản phẩm
  */
 
 "use server";
 
-import { ApiResponse, ActionResult } from "@/types/dtos";
+import { ActionResult } from "@/types/dtos";
 import { Brand, Category, Product } from "@/types/models";
-import { wrapServerAction } from "@/lib/safe-action";
+import { actionClient, wrapServerAction } from "@/lib/safe-action";
 import { productService } from "./services/product.service";
+import { GetProductsSchema, ProductIdSchema, LimitSchema } from "./schemas";
+import { createActionWrapper } from "@/lib/safe-action";
 
 // =============================================================================
 // 📦 PRODUCT ACTIONS
@@ -34,180 +18,124 @@ import { productService } from "./services/product.service";
 /**
  * Lấy danh sách sản phẩm với filter và phân trang
  */
-export async function getProductsAction(
-  params?: {
-    limit?: number;
-    page?: number;
-    search?: string;
-    categoryId?: string;
-    brandId?: string;
-    ids?: string;
-    sort?: string;
-    minPrice?: number;
-    maxPrice?: number;
-    includeSkus?: string;
-  }
-): Promise<ActionResult<Product[]>> {
-  return wrapServerAction(
-    () => productService.getProducts(params),
-    "Failed to fetch products"
-  );
-}
+const safeGetProducts = actionClient
+  .schema(GetProductsSchema)
+  .action(async ({ parsedInput }) => {
+    return productService.getProducts(parsedInput);
+  });
+
+export const getProductsAction = createActionWrapper(safeGetProducts, "Failed to fetch products");
 
 /**
  * Lấy chi tiết một sản phẩm
  */
-export async function getProductAction(
-  id: string
-): Promise<ActionResult<Product | null>> {
-  return wrapServerAction(
-    async () => {
-      const product = await productService.getProduct(id);
-      if (!product) {
-        return null;
-      }
-      return product;
-    },
-    "Failed to fetch product"
-  );
-}
+const safeGetProduct = actionClient
+  .schema(ProductIdSchema)
+  .action(async ({ parsedInput }) => {
+    const product = await productService.getProduct(parsedInput.id);
+    return product || null;
+  });
+
+export const getProductAction = createActionWrapper(safeGetProduct, "Failed to fetch product");
 
 /**
  * Lấy danh sách sản phẩm nổi bật
  */
-export async function getFeaturedProductsAction(
-  limit: number = 12
-): Promise<ActionResult<Product[]>> {
-  return wrapServerAction(
-    () => productService.getFeaturedProducts(limit),
-    "Failed to fetch featured products"
-  );
-}
+const safeGetFeaturedProducts = actionClient
+  .schema(LimitSchema)
+  .action(async ({ parsedInput }) => {
+    return productService.getFeaturedProducts(parsedInput.limit);
+  });
+
+export const getFeaturedProductsAction = createActionWrapper(safeGetFeaturedProducts, "Failed to fetch featured products");
 
 /**
  * Lấy danh sách sản phẩm mới nhất
  */
-export async function getNewestProductsAction(
-  limit: number = 12
-): Promise<ActionResult<Product[]>> {
-  return wrapServerAction(
-    () => productService.getNewArrivals(limit),
-    "Failed to fetch newest products"
-  );
-}
+const safeGetNewestProducts = actionClient
+  .schema(LimitSchema)
+  .action(async ({ parsedInput }) => {
+    return productService.getNewArrivals(parsedInput.limit);
+  });
+
+export const getNewestProductsAction = createActionWrapper(safeGetNewestProducts, "Failed to fetch new arrivals");
 
 /**
  * Lấy danh sách sản phẩm bán chạy
  */
-export async function getBestSellingProductsAction(
-  limit: number = 12
-): Promise<ActionResult<Product[]>> {
-  return wrapServerAction(
-    () => productService.getFeaturedProducts(limit), // Use featured as fallback for best selling
-    "Failed to fetch best selling products"
-  );
-}
+const safeGetBestSellingProducts = actionClient
+  .schema(LimitSchema)
+  .action(async ({ parsedInput }) => {
+    return productService.getFeaturedProducts(parsedInput.limit);
+  });
+
+export const getBestSellingProductsAction = createActionWrapper(safeGetBestSellingProducts, "Failed to fetch best selling products");
 
 // =============================================================================
 // 🏷️ CATEGORY ACTIONS
 // =============================================================================
 
-/**
- * Lấy danh sách tất cả categories
- */
-export async function getCategoriesAction(): Promise<ActionResult<Category[]>> {
+export const getCategoriesAction = async (): Promise<ActionResult<Category[]>> => {
   return wrapServerAction(
     () => productService.getCategories(),
     "Failed to fetch categories"
   );
-}
+};
 
-/**
- * Lấy chi tiết một category
- */
-export async function getCategoryAction(
-  id: string
-): Promise<ActionResult<Category | null>> {
-  return wrapServerAction(
-    async () => {
-      const category = await productService.getCategory(id);
-      if (!category) {
-        return null;
-      }
-      return category;
-    },
-    "Failed to fetch category"
-  );
-}
+const safeGetCategory = actionClient
+  .schema(ProductIdSchema)
+  .action(async ({ parsedInput }) => {
+    const category = await productService.getCategory(parsedInput.id);
+    return category || null;
+  });
+
+export const getCategoryAction = createActionWrapper(safeGetCategory, "Failed to fetch category");
 
 // =============================================================================
 // 🏢 BRAND ACTIONS
 // =============================================================================
 
-/**
- * Lấy danh sách tất cả brands
- */
-export async function getBrandsAction(): Promise<ActionResult<Brand[]>> {
+export const getBrandsAction = async (): Promise<ActionResult<Brand[]>> => {
   return wrapServerAction(
     () => productService.getBrands(),
     "Failed to fetch brands"
   );
-}
+};
 
-/**
- * Lấy chi tiết một brand
- */
-export async function getBrandAction(
-  id: string
-): Promise<ActionResult<Brand | null>> {
-  return wrapServerAction(
-    async () => {
-      const brand = await productService.getBrand(id);
-      if (!brand) {
-        return null;
-      }
-      return brand;
-    },
-    "Failed to fetch brand"
-  );
-}
+const safeGetBrand = actionClient
+  .schema(ProductIdSchema)
+  .action(async ({ parsedInput }) => {
+    const brand = await productService.getBrand(parsedInput.id);
+    return brand || null;
+  });
+
+export const getBrandAction = createActionWrapper(safeGetBrand, "Failed to fetch brand");
 
 // =============================================================================
-// 🔧 HELPER ACTIONS (For generateStaticParams)
+// 🔧 HELPER ACTIONS (For SSG)
 // =============================================================================
 
-/**
- * Lấy danh sách ID sản phẩm để generateStaticParams (SSG)
- */
 export async function getProductIdsAction(): Promise<string[]> {
   try {
-    const result = await productService.getProductIds();
-    return result;
+    return await productService.getProductIds();
   } catch {
     return [];
   }
 }
 
-/**
- * Lấy danh sách ID categories để generateStaticParams (SSG)
- */
 export async function getCategoryIdsAction(): Promise<string[]> {
   try {
-    const result = await productService.getCategoryIds();
-    return result;
+    return await productService.getCategoryIds();
   } catch {
     return [];
   }
 }
 
-/**
- * Lấy danh sách ID brands để generateStaticParams (SSG)
- */
 export async function getBrandIdsAction(): Promise<string[]> {
   try {
-    const result = await productService.getBrandIds();
-    return result;
+    return await productService.getBrandIds();
   } catch {
     return [];
   }
 }
+

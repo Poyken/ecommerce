@@ -3,21 +3,6 @@
  * INVENTORY ALERTS SERVICE - HỆ THỐNG CẢNH BÁO TỒN KHO
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Module này đóng vai trò là một "Người giám sát" kho hàng.
- * Nó giúp đảm bảo cửa hàng không bao giờ bị hết hàng mà không biết.
- *
- * 1. NGƯỠNG CẢNH BÁO (Threshold):
- *    - Mặc định là 10. Khi số lượng SKU trong kho < 10 -> Hệ thống coi là "Low Stock".
- *
- * 2. CRON JOB (Tác vụ tự động):
- *    - Sử dụng `@Cron`. Hệ thống tự động quét toàn bộ kho vào 8:00 sáng mỗi ngày.
- *    - Gom danh sách sản phẩm sắp hết và gửi Email cho Admin của từng Shop (Tenant).
- *
- * 3. TÍNH NĂNG:
- *    - Gửi email thông báo tự động.
- *    - Hỗ trợ xem danh sách nhanh qua API để hiển thị Badge trên Dashboard.
  * =====================================================================
  */
 

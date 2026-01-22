@@ -5,31 +5,7 @@ import { AnimatePresence } from "framer-motion";
 import { ShoppingBag, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-/**
- * =====================================================================
- * PURCHASE TOAST - Thông báo mua hàng thời gian thực
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MARKETING PSYCHOLOGY - FOMO:
- * - Hiển thị "Ai đó vừa mua..." để tạo hiệu ứng đám đông (Social Proof).
- * - Làm cho website trông có vẻ "đắt hàng" -> Kích thích user chốt đơn nhanh hơn.
- *
- * 2. ANIMATE PRESENCE (Framer Motion):
- * - React thuần không hỗ trợ animation khi unmount (gỡ bỏ) component.
- * - `AnimatePresence` giúp component "sống sót" thêm vài ms để chạy nốt animation `exit` rồi mới biến mất hẳn.
- *
- * 3. NOTIFICATION LOOP LOGIC:
- * - Dùng cặp `setTimeout` lồng nhau:
- *   + Timer 1: Show toast -> Chờ 5s -> Hide toast.
- *   + Timer 2: Sau khi hide -> Chờ random 15-25s -> Gọi lại hàm showNext.
- * - Tạo ra một vòng lặp vô tận nhưng có khoảng nghỉ ngẫu nhiên để trông tự nhiên. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 interface PurchaseNotification {
   id: string;
   customerName: string;

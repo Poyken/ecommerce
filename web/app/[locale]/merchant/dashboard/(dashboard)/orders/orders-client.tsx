@@ -1,21 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * ORDERS CLIENT - Quản lý đơn hàng (Enhanced)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * - Filter theo status (Server-side via URL)
- * - Bulk actions: Export CSV, Delete
- * - Quick status update
- * - Show status counts from server props *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Badge } from "@/components/ui/badge";

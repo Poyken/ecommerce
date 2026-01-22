@@ -1,27 +1,4 @@
-/**
- * =====================================================================
- * NOTIFICATIONS CLIENT - Giao diện danh sách thông báo
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REAL-TIME UPDATES:
- * - Sử dụng `useNotifications` hook từ `NotificationProvider`.
- * - Tự động cập nhật danh sách thông báo qua WebSocket khi có sự kiện mới từ server.
- *
- * 2. INTERACTION FLOW:
- * - Khi click vào thông báo: Đánh dấu là đã đọc (`markAsRead`) và mở Dialog chi tiết.
- * - Hỗ trợ lọc thông báo (Tất cả / Chưa đọc).
- * - Hỗ trợ "Đánh dấu tất cả là đã đọc" để cải thiện trải nghiệm người dùng.
- *
- * 3. DYNAMIC STYLING:
- * - `getTypeIcon` và `getTypeStyles`: Tự động thay đổi icon và màu sắc dựa trên loại thông báo (Order, Promo, System...). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Real-time Engagement Loop: Duy trì kết nối liên tục giữa nền tảng và người dùng, đảm bảo khách hàng nhận được các thông tin quan trọng về đơn hàng và khuyến mãi ngay lập tức qua WebSocket.
- * - Contextual Feedback System: Chuyển đổi các sự kiện hệ thống khô khan thành những thông báo có tính tương tác cao, giúp điều hướng người dùng tới các khu vực chức năng liên quan một cách tự nhiên.
 
- * =====================================================================
- */
 
 "use client";
 

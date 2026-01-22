@@ -14,27 +14,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-/**
- * =====================================================================
- * DELETE REVIEW DIALOG - Xác nhận xóa đánh giá
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ALERT DIALOG (Radix UI):
- * - Sử dụng Alert Dialog thay vì Dialog thông thường cho các hành động mang tính "hủy diệt" (Destructive).
- * - Yêu cầu người dùng phải xác nhận rõ ràng trước khi thực hiện.
- *
- * 2. LOADING STATE:
- * - `disabled={loading}`: Ngăn chặn người dùng click nhiều lần trong khi đang xử lý xóa trên server.
- *
- * 3. PREVENT DEFAULT:
- * - `e.preventDefault()`: Cần thiết khi dùng `AlertDialogAction` để tránh việc đóng dialog trước khi logic xóa hoàn tất (nếu cần). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface DeleteReviewDialogProps {
   reviewId: string;

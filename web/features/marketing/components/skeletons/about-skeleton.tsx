@@ -1,21 +1,4 @@
-/**
- * =====================================================================
- * ABOUT SKELETON - Skeleton cho trang Giới thiệu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. FULL-PAGE PLACEHOLDER:
- * - Mô phỏng lại toàn bộ cấu trúc trang About bao gồm: Hero section, Mission section và Core Values.
- * - Giúp giảm hiện tượng "nhảy" giao diện (layout shift) khi dữ liệu thật được tải xong.
- *
- * 2. SECTION-BASED SKELETONS:
- * - Mỗi phần của trang được thay thế bằng các khối `Skeleton` có kích thước tương đương với nội dung thật. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import { Skeleton } from "@/components/ui/skeleton";
 

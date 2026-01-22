@@ -12,30 +12,6 @@ import { tenantStorage } from './tenant.context';
  * TENANT MIDDLEWARE - LỚP BẢO VỆ ĐẦU TIÊN CỦA REQUEST
  * =================================================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. NHIỆM VỤ:
- *    - Xác định xem "Ai đang gọi cửa?". Request này đến từ cửa hàng nào (Store A hay Store B)?
- *    - Middleware này chạy TRƯỚC KHI request đến được Controller.
- *
- * 2. CÁCH XÁC ĐỊNH TENANT (DOMAIN RESOLUTION):
- *    - Dựa vào `Host Header` hoặc `x-tenant-domain`.
- *    - Ví dụ: User truy cập `shop-giay.platform.com` -> Hệ thống tách lấy `shop-giay` để tìm trong DB.
- *
- * 3. HIỆU NĂNG (PERFORMANCE & CACHING):
- *    - Vì Middleware chạy trên 100% request, nên việc query DB ở đây sẽ làm chậm toàn bộ hệ thống.
- *    - Giải pháp: Dùng Caching (Redis/Memory).
- *    - Logic: Lần đầu query DB -> Lưu vào Cache 60s. Các lần sau lấy từ Cache -> Siêu nhanh.
- *
- * 4. CONTEXT (ASYNC LOCAL STORAGE):
- *    - Sau khi tìm được Tenant, ta cần truyền nó cho các lớp bên trong (Service, Repo) dùng.
- *    - Thay vì truyền tham suố `function(tenantId)` qua hàng chục hàm, ta dùng `tenantStorage.run()`.
- *    - Nó giống như một "biến toàn cục" nhưng chỉ tồn tại trong vòng đời của 1 request duy nhất (Thread-safe). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - SaaS Multi-tenancy: Cho phép một source code phục vụ hàng nghìn cửa hàng (tenants) khác nhau, mỗi cửa hàng có dữ liệu riêng biệt.
- * - Performance Optimization: Nhờ caching tầng Middleware, việc xác định cửa hàng tốn < 1ms, không làm chậm request chính.
- * - Thread Safety: Đảm bảo request của User A (Store X) không bao giờ nhìn thấy dữ liệu của User B (Store Y) nhờ `AsyncLocalStorage`.
-
  * =================================================================================================
  */
 export class TenantMiddleware implements NestMiddleware {

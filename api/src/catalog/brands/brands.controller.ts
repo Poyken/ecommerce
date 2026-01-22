@@ -3,18 +3,6 @@
  * BRANDS CONTROLLER - Quản lý Thương hiệu
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CACHING STRATEGY (`@Cached`):
- * - Danh sách Brands (Thương hiệu) RẤT ÍT KHI THAY ĐỔI.
- * - Sử dụng `@Cached(300)` để cache kết quả trong 5 phút.
- * - Giảm tải DB đáng kể vì API này được gọi ở mọi trang Product Filter.
- *
- * 2. MULTIPART UPLOAD:
- * - Hỗ trợ upload Logo thương hiệu qua `FileInterceptor`. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 import {
@@ -147,4 +135,3 @@ export class BrandsController {
     return this.brandsService.remove(id);
   }
 }
-

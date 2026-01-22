@@ -15,17 +15,6 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
  * BRANDS SERVICE - QUẢN LÝ THƯƠNG HIỆU
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CRUD STANDARDIZATION:
- * - `BrandsService` kế thừa `BaseCrudService` để tái sử dụng các hàm tìm kiếm, phân trang chuẩn.
- *
- * 2. BUSINESS CONSTRAINTS (Ràng buộc nghiệp vụ):
- * - Trước khi tạo mới: Kiểm tra trùng tên thương hiệu (Conflict check).
- * - Trước khi xóa: Phải kiểm tra xem thương hiệu đó có đang chứa sản phẩm nào không. Nếu có -> KHÔNG được xóa để đảm bảo toàn vẹn dữ liệu (Integrity). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Quản lý các đối tác cung cấp, nhãn hiệu sản phẩm và xây dựng uy tín cho shop thông qua các thương hiệu nổi tiếng.
-
  * =====================================================================
  */
 

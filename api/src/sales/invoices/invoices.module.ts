@@ -3,19 +3,6 @@
  * INVOICES MODULE - Module Hóa đơn (SaaS Billing)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PHẠM VI:
- * - Module này quản lý hóa đơn thanh toán PHÍ THUÊ BAO (Subscription)
- *   của các Tenant trả cho SuperAdmin.
- * - KHÔNG PHẢI hóa đơn bán hàng lẻ của từng shop (đó là module `Orders`).
- *
- * 2. CẤU TRÚC:
- * - Export `InvoicesService` để các module khác (như `WebhookModule` của Stripe)
- *   có thể gọi hàm tạo hóa đơn khi thanh toán thành công. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 import { Module } from '@nestjs/common';

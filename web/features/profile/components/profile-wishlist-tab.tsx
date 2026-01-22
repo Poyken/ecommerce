@@ -1,24 +1,4 @@
-/**
- * =====================================================================
- * PROFILE WISHLIST TAB - Tab danh sách sản phẩm yêu thích
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PRODUCT GRID:
- * - Hiển thị danh sách sản phẩm yêu thích dưới dạng lưới (grid).
- * - Tái sử dụng component `ProductCard` để đảm bảo tính nhất quán về UI/UX.
- *
- * 2. REAL-TIME SYNC:
- * - Dữ liệu được fetch trực tiếp từ API khi tab được mở, đảm bảo danh sách luôn mới nhất.
- *
- * 3. EMPTY STATE:
- * - Nếu chưa có sản phẩm nào, hiển thị nút "Browse Shop" để khuyến khích người dùng khám phá sản phẩm. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

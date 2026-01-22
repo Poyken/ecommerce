@@ -13,21 +13,6 @@ import {
  * MOMO STRATEGY - CHIẾN LƯỢC THANH TOÁN QUA VÍ MOMO
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HMAC-SHA256 SIGNATURE:
- * - MoMo yêu cầu một chuỗi rawSignature bao gồm: accessKey, amount, extraData, ipnUrl, orderId, orderInfo, partnerCode, redirectUrl, requestId, requestType.
- * - Chuỗi này được hash bằng HMAC-SHA256 với Secret Key để tạo chữ ký bảo mật.
- *
- * 2. IPN (Instant Payment Notification):
- * - Đây là URL mà MoMo sẽ gọi ngầm (Server-to-Server) để thông báo kết quả thanh toán.
- * - Rất quan trọng vì user có thể đóng trình duyệt trước khi redirect về website. IPN đảm bảo đơn hàng vẫn được cập nhật trạng thái "Đã thanh toán".
- *
- * 3. REQUEST ID:
- * - Mỗi request gửi lên MoMo phải có một `requestId` duy nhất để tránh việc gửi trùng lặp (Idempotency). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()

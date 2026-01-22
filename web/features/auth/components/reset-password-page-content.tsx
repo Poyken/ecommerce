@@ -16,28 +16,7 @@ import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 
-/**
- * =====================================================================
- * RESET PASSWORD CONTENT - Xử lý UI Đặt lại mật khẩu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TOKEN VALIDATION:
- * - Token được lấy từ URL query string (`?token=...`).
- * - Nếu không có token, hiển thị màn hình lỗi "Invalid Link".
- *
- * 2. PASSWORD CONFIRMATION:
- * - Form yêu cầu nhập mật khẩu mới 2 lần.
- * - `resetPasswordAction` sẽ kiểm tra xem 2 mật khẩu này có khớp nhau không trước khi cập nhật vào DB.
- *
- * 3. SECURITY:
- * - Token này thường chỉ có hiệu lực trong thời gian ngắn (vd: 1 giờ) và chỉ dùng được 1 lần. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function ResetPasswordPageContent() {
   const searchParams = useSearchParams();

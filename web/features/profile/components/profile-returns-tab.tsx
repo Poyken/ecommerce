@@ -12,24 +12,7 @@ import { ArrowRight, RotateCcw, Calendar, Hash, PackageSearch } from "lucide-rea
 import { useEffect, useState } from "react";
 import { GlassButton } from "@/components/shared/glass-button";
 
-/**
- * =====================================================================
- * PROFILE RETURNS TAB - Tab quản lý yêu cầu trả hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RMA LISTING:
- * - Hiển thị danh sách các yêu cầu trả hàng/hoàn tiền của user.
- * - Hiển thị ID yêu cầu, trạng thái, loại (Refund Only/Return & Refund) và ngày tạo.
- *
- * 2. SYNC WITH ORDERS:
- * - Khi không có yêu cầu nào, hướng dẫn user quay lại tab Orders để tạo yêu cầu mới.
- *
- * 3. DYNAMIC STATUS:
- * - Sử dụng StatusBadge đã được cập nhật để hiển thị màu sắc tương ứng với quy trình RMA (Approved, Waiting for Return, etc.).
- * =====================================================================
- */
+
 
 export function ProfileReturnsTab() {
   const [returns, setReturns] = useState<ReturnRequest[]>([]);

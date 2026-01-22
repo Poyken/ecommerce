@@ -1,21 +1,4 @@
-/**
- * =====================================================================
- * FEATURED PRODUCTS - Danh sách sản phẩm nổi bật (Blog)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CONTEXTUAL PRODUCTS:
- * - Hiển thị các sản phẩm liên quan trực tiếp đến nội dung bài viết Blog.
- * - Giúp tăng khả năng bán hàng (Cross-selling) ngay khi người dùng đang đọc tin tức.
- *
- * 2. STAGGERED GRID:
- * - Sử dụng Framer Motion để tạo hiệu ứng xuất hiện lần lượt cho các thẻ sản phẩm. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

@@ -40,30 +40,7 @@ import {
   useTransition,
 } from "react";
 
-/**
- * =====================================================================
- * SHOP CONTENT - Nội dung trang cửa hàng (Danh sách sản phẩm)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. FILTER & SORT LOGIC:
- * - Sử dụng `URLSearchParams` để quản lý trạng thái lọc và sắp xếp trực tiếp trên URL.
- * - Giúp người dùng có thể copy link và chia sẻ kết quả tìm kiếm/lọc chính xác.
- * - `useTransition` (`isPending`) được dùng để xử lý chuyển hướng mượt mà không làm treo UI.
- *
- * 2. RESPONSIVE FILTERING:
- * - Trên Desktop: Hiển thị `FilterSidebar` cố định bên trái.
- * - Trên Mobile: Sử dụng `Sheet` (Drawer) để ẩn/hiện bộ lọc, tối ưu không gian hiển thị.
- *
- * 3. DATA STREAMING:
- * - Nhận các `Promise` từ Server Component và sử dụng `Suspense` để hiển thị Skeleton.
- * - `ShopGrid` sẽ unwrap `productsPromise` để hiển thị danh sách sản phẩm. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface ShopContentProps {
   productsPromise: Promise<{

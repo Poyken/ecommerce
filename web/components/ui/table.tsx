@@ -4,29 +4,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * TABLE COMPONENT - Bảng dữ liệu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HTML TABLE STRUCTURE:
- * - Tuân thủ cấu trúc chuẩn HTML5: `table`, `thead`, `tbody`, `tr`, `th`, `td`.
- * - Điều này quan trọng cho SEO và Accessibility.
- *
- * 2. RESPONSIVE DESIGN:
- * - `overflow-x-auto` ở container ngoài cùng giúp bảng có thể scroll ngang trên mobile
- *   mà không làm vỡ layout chung của trang.
- *
- * 3. STYLING:
- * - Sử dụng `w-full` để bảng luôn chiếm 100% chiều rộng.
- * - `caption-bottom` đặt chú thích bảng ở dưới cùng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (

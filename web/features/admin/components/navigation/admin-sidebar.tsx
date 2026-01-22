@@ -31,28 +31,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-/**
- * =====================================================================
- * ADMIN SIDEBAR - Thanh điều hướng quản trị
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COLLAPSIBLE LOGIC:
- * - `isCollapsed`: Trạng thái thu gọn/mở rộng của sidebar để tối ưu không gian làm việc.
- * - Tự động thu gọn trên màn hình nhỏ (< 768px) bằng `useEffect` lắng nghe sự kiện `resize`.
- *
- * 2. NAVIGATION GROUPS:
- * - Phân loại các mục quản lý thành từng nhóm: Overview, Product, User, Sales để dễ tìm kiếm.
- *
- * 3. PERMISSION-BASED RENDERING:
- * - `hasPermission`: Chỉ hiển thị các menu mà tài khoản Admin hiện tại có quyền truy cập.
- * - Đây là tính năng bảo mật quan trọng (RBAC). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function AdminSidebar() {
   const t = useTranslations("admin.sidebar");

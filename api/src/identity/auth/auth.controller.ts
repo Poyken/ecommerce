@@ -1,21 +1,6 @@
 /**
  * =====================================================================
- * AUTH CONTROLLER - Cổng xác thực & Tài khoản
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HTTP-ONLY COOKIE:
- * - Refresh Token được lưu trong `httpOnly` cookie để chống XSS (JavaScript không đọc được).
- * - Access Token trả về verify body để Client dùng gọi API.
- *
- * 2. SECURITY FEATURES:
- * - 2FA (Two-Factor Auth): Sinh QR Code, verify OTP.
- * - Social Login: Google/Facebook OAuth2 callback xử lý ở đây.
- * - Throttling: `@Throttle` giới hạn số lần thử login để chống Brute Force. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Cổng giao tiếp cho các hành động đăng nhập, đăng ký và xác thực hai lớp (2FA).
-
+ * AUTH CONTROLLER
  * =====================================================================
  */
 import {
@@ -42,6 +27,7 @@ import {
   ApiUpdateResponse,
 } from '@/common/decorators/crud.decorators';
 import { getFingerprint } from '@/common/utils/fingerprint';
+import { AUTH_CONFIG } from '@core/config/constants';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
@@ -52,30 +38,6 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import type { RequestWithUser } from './interfaces/request-with-user.interface';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { TwoFactorService } from './two-factor.service';
-
-/**
- * =====================================================================
- * AUTH CONTROLLER - CỔNG XÁC THỰC & QUẢN LÝ TÀI KHOẢN
- * =====================================================================
- */
-
-/**
- * 🌐 CẤU HÌNH COOKIE CHO PRODUCTION (VERCEL + RENDER)
- * 📚 TẠI SAO CẦN SameSite: 'none' VÀ Secure: true?
- * 1. Vì Web (Vercel) và API (Render) nằm trên 2 domain khác nhau hoàn toàn.
- * 2. Trình duyệt mặc định sẽ CHẶN cookie của API gửi về Web (Cross-site).
- * 3. 'none' cho phép gửi xuyên domain, và 'none' BẮT BUỘC phải đi kèm 'secure: true'.
- *
- * ⚠️ LƯU Ý: Không được đổi về 'lax' hay 'strict' khi deploy thực tế,
- * nếu không User sẽ không thể đăng nhập hoặc duy trì phiên làm việc.
- */
-const COOKIE_OPTIONS = {
-  httpOnly: true,
-  secure: true, // Bắt buộc phải có để SameSite 'none' hoạt động
-  sameSite: 'none' as const,
-  path: '/',
-  maxAge: 7 * 24 * 60 * 60 * 1000,
-};
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -96,7 +58,11 @@ export class AuthController {
     const fp = getFingerprint(req);
     const data = await this.authService.register(dto, fp);
 
-    (res as Response).cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
+    (res as Response).cookie(
+      'refreshToken',
+      data.refreshToken,
+      AUTH_CONFIG.COOKIE_OPTIONS,
+    );
     return { data };
   }
 
@@ -118,7 +84,7 @@ export class AuthController {
       (res as Response).cookie(
         'refreshToken',
         data.refreshToken,
-        COOKIE_OPTIONS,
+        AUTH_CONFIG.COOKIE_OPTIONS,
       );
     }
 
@@ -132,7 +98,7 @@ export class AuthController {
   @ApiGetOneResponse('Boolean', { summary: 'Đăng xuất' })
   async logout(@Request() req: any, @Res({ passthrough: true }) res: any) {
     (res as Response).clearCookie('refreshToken', {
-      ...COOKIE_OPTIONS,
+      ...AUTH_CONFIG.COOKIE_OPTIONS,
       maxAge: 0,
     });
     const data = await this.authService.logout(req.user.userId, req.user.jti);
@@ -169,7 +135,11 @@ export class AuthController {
     }
 
     const data = await this.authService.refreshTokens(tokenFromCookie, fp);
-    (res as Response).cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
+    (res as Response).cookie(
+      'refreshToken',
+      data.refreshToken,
+      AUTH_CONFIG.COOKIE_OPTIONS,
+    );
     return { data: { accessToken: data.accessToken } };
   }
 
@@ -221,7 +191,11 @@ export class AuthController {
       },
       fp,
     );
-    (res as Response).cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
+    (res as Response).cookie(
+      'refreshToken',
+      data.refreshToken,
+      AUTH_CONFIG.COOKIE_OPTIONS,
+    );
     (res as Response).redirect(
       `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/social-callback?accessToken=${data.accessToken}`,
     );
@@ -256,7 +230,11 @@ export class AuthController {
       fp,
     );
 
-    (res as Response).cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
+    (res as Response).cookie(
+      'refreshToken',
+      data.refreshToken,
+      AUTH_CONFIG.COOKIE_OPTIONS,
+    );
 
     (res as Response).redirect(
       `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/social-callback?accessToken=${data.accessToken}`,
@@ -335,7 +313,11 @@ export class AuthController {
       fp,
     );
 
-    (res as Response).cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
+    (res as Response).cookie(
+      'refreshToken',
+      data.refreshToken,
+      AUTH_CONFIG.COOKIE_OPTIONS,
+    );
     return { data };
   }
 }

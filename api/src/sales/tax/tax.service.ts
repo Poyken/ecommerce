@@ -3,22 +3,6 @@
  * TAX SERVICE - QUẢN LÝ THUẾ VÀ ĐỊNH MỨC THUẾ
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Module này quản lý các loại thuế (VAT, thuế tiêu thụ đặc biệt...)
- * áp dụng cho đơn hàng.
- *
- * 1. THIẾT LẬP THUẾ (Tax Rate):
- *    - Mỗi Shop (Tenant) có thể có các mức thuế khác nhau tùy khu vực.
- *    - VD: Shop ở VN dùng VAT 10%, Shop ở Mỹ dùng Sales Tax 8%.
- *
- * 2. CƠ CHẾ ÁP THUẾ (Apply Tax):
- *    - Thuế được tính dựa trên "Tổng giá trị đơn hàng".
- *    - Một đơn hàng có thể có nhiều loại thuế chồng lên nhau (Tax Details).
- *
- * 3. TÍNH TOÁN CHÍNH XÁC:
- *    - Sử dụng thư viện `Decimal` để tính toán số tiền thuế, tránh lỗi sai số
- *      của kiểu Float trong Javascript (VD: 0.1 + 0.2 != 0.3).
  * =====================================================================
  */
 

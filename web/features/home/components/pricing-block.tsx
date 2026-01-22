@@ -1,17 +1,4 @@
-/**
- * =====================================================================
- * PRICING BLOCK - BẢNG GIÁ DỊCH VỤ/SẢN PHẨM
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Hiển thị các gói sản phẩm hoặc dịch vụ theo dạng Card so sánh.
- * Hỗ trợ đánh dấu gói "Popular" để thu hút người dùng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

@@ -16,18 +16,6 @@ import { AiChatService } from './ai-chat.service';
  * AI CHAT CONTROLLER - CỔNG TIẾP NHẬN TRUY VẤN KHÁCH HÀNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. OPTIONAL AUTH (`OptionalJwtAuthGuard`):
- * - Cho phép cả khách vãng lai (Guest) và User đã đăng nhập sử dụng Chatbot.
- * - Guest dùng `guestId` để lưu lịch sử, User dùng `userId`.
- *
- * 2. RATE LIMITING (Chặn Spam):
- * - Sử dụng `@Throttle` để giới hạn số lượt chat mỗi phút.
- * - AI API (Gemini) tốn tiền/resource, nên phải chặn các bot cào dữ liệu hoặc người dùng spam câu hỏi liên tục.
- *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Nhân viên tư vấn 24/7. Trả lời ngay lập tức các thắc mắc về sản phẩm, giá cả và chính sách cửa hàng bất kể ngày đêm.
  * =====================================================================
  */
 
@@ -90,4 +78,3 @@ export class AiChatController {
     };
   }
 }
-

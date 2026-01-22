@@ -12,24 +12,6 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
  * JWT STRATEGY - Chiến lược xác thực bằng mã JWT
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PASSPORT STRATEGY:
- * - Đây là một "chiến lược" (Strategy) cụ thể trong thư viện Passport.
- * - Nó định nghĩa cách thức ứng dụng trích xuất và kiểm tra tính hợp lệ của một mã JWT.
- *
- * 2. TOKEN EXTRACTION:
- * - `ExtractJwt.fromAuthHeaderAsBearerToken()`: Tự động tìm token trong Header `Authorization` có tiền tố là `Bearer`.
- *
- * 3. VALIDATION STEP:
- * - Hàm `validate` chỉ được gọi khi chữ ký (Signature) của token đã được xác minh là đúng.
- * - Dữ liệu trả về từ hàm này sẽ được NestJS tự động gán vào `request.user`.
- *
- * 4. PAYLOAD MAPPING:
- * - Ta trích xuất `userId` và `permissions` từ payload để các Guard và Controller phía sau có thể sử dụng thông tin này mà không cần truy vấn lại Database. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

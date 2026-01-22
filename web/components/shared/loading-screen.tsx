@@ -5,25 +5,7 @@ import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * LOADING SCREEN - Hiệu ứng chờ tinh tế (Elegant Loading)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CLEAN AESTHETICS:
- * - Quay lại phong cách tối giản, tập trung vào sự tinh tế thay vì quá nhiều chi tiết.
- * - Sử dụng Backdrop Blur nhẹ nhàng để giữ sự tập trung.
- *
- * 2. UNIQUE CIRCLE ANIMATION:
- * - Thay vì vòng xoay đơn điệu, ta sử dụng 2 vòng tròn lồng nhau với hiệu ứng "Orbit" (Quỹ đạo).
- * - Kết hợp với hiệu ứng Pulse ở tâm để tạo cảm giác "sống". *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
- *
- * =====================================================================
- */
+
 
 interface LoadingScreenProps {
   message?: string;

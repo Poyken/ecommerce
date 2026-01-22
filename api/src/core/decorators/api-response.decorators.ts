@@ -3,13 +3,6 @@
  * API RESPONSE DECORATORS - SWAGGER DOCUMENTATION HELPERS
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Các decorator này giúp tạo Swagger documentation tự động và nhất quán:
- * 1. @ApiPaginatedResponse: Mô tả response có pagination
- * 2. @ApiErrorResponses: Thêm các error responses phổ biến
- * 3. @ApiAuthRequired: Đánh dấu endpoint cần authentication
- *
  * =====================================================================
  */
 

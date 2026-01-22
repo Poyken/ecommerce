@@ -3,32 +3,6 @@
  * SECURITY SERVICE - QUẢN LÝ BẢO MẬT HỆ THỐNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Service này quản lý các tính năng bảo mật cấp cao cho Super Admin:
- *
- * 1. SECURITY STATS (getSecurityStats):
- *    - Thống kê số lần đăng nhập trong 24h qua (từ AuditLog)
- *    - Tính % người dùng đã bật 2FA (Two-Factor Authentication)
- *    - Hiển thị trên Security Dashboard của Super Admin
- *
- * 2. SYSTEM LOCKDOWN (setSystemLockdown/getLockdownStatus):
- *    - Tính năng "khóa hệ thống" khẩn cấp
- *    - Khi bật: Chỉ Super Admin được truy cập, tất cả user khác bị chặn
- *    - Dùng FeatureFlag 'SYSTEM_LOCKDOWN' để lưu trạng thái
- *    - Ứng dụng: Khi bị tấn công, bảo trì khẩn cấp, hoặc phát hiện rò rỉ dữ liệu
- *
- * 3. IP WHITELIST (getWhitelistedIps/updateWhitelistedIps):
- *    - Cho phép Super Admin chỉ định danh sách IP được phép đăng nhập
- *    - Dữ liệu được MÃ HÓA (encrypted) trước khi lưu vào DB để bảo mật
- *    - EncryptionService xử lý encrypt/decrypt dữ liệu nhạy cảm
- *
- * 4. LƯU Ý BẢO MẬT:
- *    - Tất cả endpoint được bảo vệ bởi @Permissions('superAdmin:read/write')
- *    - IP whitelist được encrypt để tránh lộ thông tin nếu DB bị xâm nhập *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Giám sát an ninh hệ thống, phát hiện các đợt tấn công Brute-force và quản lý cấu hình Lockdown khẩn cấp.
-
  * =====================================================================
  */
 

@@ -8,21 +8,6 @@ import { Queue } from 'bullmq';
  * AUDIT SERVICE - HỆ THỐNG GHI NHẬT KÝ HOẠT ĐỘNG (AUDIT LOG)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ASYNC LOGGING (Ghi log bất đồng bộ):
- * - Việc ghi log không được làm chậm request của người dùng.
- * - Vì vậy, ta không ghi trực tiếp vào DB mà đẩy vào `auditQueue` (BullMQ/Redis).
- * - Một worker sẽ chạy ngầm để lấy dữ liệu từ queue và lưu vào DB sau.
- *
- * 2. AUTOMATED CLEANUP (Tự động dọn dẹp):
- * - Log hệ thống tích tụ rất nhanh. Hàm `onApplicationBootstrap` sẽ tạo một job chạy định kỳ mỗi đêm để xóa các log cũ (ví dụ: quá 90 ngày) để tiết kiệm dung lượng DB.
- *
- * 3. IP & USER-AGENT:
- * - Luôn lưu lại IP và thiết bị của người dùng để phục vụ việc điều tra khi có sự cố bảo mật. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()

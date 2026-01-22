@@ -7,30 +7,7 @@ import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 
 // Shell Component - Shows Sidebar immediately
-/**
- * =================================================================================================
- * SUPER ADMIN DASHBOARD LAYOUT - KHUNG QUẢN TRỊ CẤP CAO
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SHELL & DYNAMIC CONTENT:
- *    - Layout này chia làm 2 phần: `SuperAdminSidebar` tĩnh và `DynamicSuperAdminShell` động.
- *    - Việc tách nhỏ giúp Sidebar hiện ra ngay lập tức trong khi Header và Content đang fetch.
- *
- * 2. SKELETON LOADING:
- *    - Sử dụng `Suspense` bọc quanh `DynamicSuperAdminShell` với fallback là `AdminHeaderSkeleton`.
- *    - Giúp giao diện mượt mà, không bị giật lag khi chuyển đổi giữa các menu.
- *
- * 3. SPECIFIC STYLING:
- *    - `bg-slate-950`: Sử dụng tông màu tối (Dark mode đặc trưng) cho Super Admin để phân biệt
- *      với giao diện Admin thường. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Platform-level Control: Cung cấp giao diện quản trị tối cao dành cho đội ngũ vận hành nền tảng (Platform Owners), cho phép giám sát tất cả các Store đang hoạt động.
- * - SaaS Multi-tenant Command Hub: Tách biệt hoàn toàn luồng quản trị hệ thống khỏi quản trị bán lẻ thông thường, đảm bảo các cài đặt hạ tầng được bảo vệ nghiêm ngặt.
 
- * =================================================================================================
- */
 export default function SuperAdminDashboardLayout({
   children,
 }: {

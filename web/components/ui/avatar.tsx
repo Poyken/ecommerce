@@ -5,28 +5,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * AVATAR - Thành phần hiển thị ảnh đại diện
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. FALLBACK STRATEGY:
- * - Khi ảnh bị lỗi hoặc chưa load xong, `AvatarFallback` sẽ được hiển thị.
- * - Thường dùng để hiển thị chữ cái đầu của tên user (VD: "John Doe" -> "JD").
- *
- * 2. RADIX PRIMITIVE:
- * - Sử dụng `@radix-ui/react-avatar` để xử lý việc chuyển đổi giữa ảnh và fallback một cách mượt mà, không bị giật (flicker).
- *
- * 3. STYLING:
- * - `aspect-square`: Luôn đảm bảo ảnh là hình vuông.
- * - `rounded-full`: Cắt ảnh thành hình tròn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 function Avatar({
   className,

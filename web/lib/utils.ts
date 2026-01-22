@@ -1,23 +1,4 @@
-/**
- * =====================================================================
- * UTILITY & FORMAT FUNCTIONS - Các hàm tiện ích dùng chung
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. `cn` (Class Name Utility):
- * - Kết hợp `clsx` và `tailwind-merge` để xử lý class Tailwind thông minh.
- *
- * 2. FORMATTING:
- * - Tập trung các hàm format tiền, ngày tháng, text tại một nơi.
- * - Sử dụng Intl API để hỗ trợ đa ngôn ngữ (vi-VN). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Consistent Formatting: Đảm bảo hiển thị tiền tệ, ngày tháng thống nhất trên toàn bộ giao diện người dùng.
- * - Clean Code: Tách biệt logic xử lý chuỗi, classnames (cn) ra khỏi UI component, giúp code dễ đọc và dễ bảo trì.
- * - SEO Optimization: Hàm `toSlug` giúp tạo URL thân thiện (User-Friendly URLs) cho sản phẩm và bài viết.
 
- * =====================================================================
- */
 
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";

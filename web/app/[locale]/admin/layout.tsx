@@ -15,33 +15,7 @@ import { getTranslations } from "next-intl/server";
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 
-/**
- * =====================================================================
- * ADMIN LAYOUT - Khung sườn nền tảng cho trang quản trị
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CẤU TRÚC LAYOUT (Layout Structure):
- * - Sử dụng CSS Flexbox: Chia màn hình thành Sidebar cố định (trái) và vùng Content linh hoạt (phải).
- * - `min-h-screen`: Đảm bảo giao diện luôn phủ kín chiều cao màn hình trình duyệt.
- *
- * 2. QUẢN LÝ DỮ LIỆU TOÀN CỤC (Providers):
- * - `AuthProvider`: Lưu trữ và quản lý quyền hạn (Permissions) của Admin xuyên suốt các trang con.
- * - `NotificationProvider`: Kết nối Socket và quản lý thông báo thời gian thực (Real-time).
- * - `AdminMetadataProvider`: Sử dụng SWR để cache danh sách Brands và Categories, tránh việc fetch đi fetch lại ở nhiều trang khác nhau.
- *
- * 3. DATA PRE-FETCHING (Hydration):
- * - Fetch dữ liệu quan trọng ngay tại Server Layout và truyền xuống Client qua props (initial data).
- * - Điều này giúp UI hiển thị ngay lập tức (SEO tốt và trải nghiệm mượt mà) mà không cần chờ Client gọi API.
- *
- * 4. BẢO MẬT & ĐIỀU HƯỚNG:
- * - Kiểm tra profile người dùng trên Server. Nếu chưa đăng nhập hoặc không đủ quyền, thực hiện `redirect("/login")` ngay lập tức. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 async function DynamicAdminContent({
   children,

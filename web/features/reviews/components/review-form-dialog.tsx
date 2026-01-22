@@ -33,29 +33,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
-/**
- * =====================================================================
- * REVIEW FORM DIALOG - Form viết/sửa đánh giá
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ZOD SCHEMA:
- * - Định nghĩa quy tắc: Rating từ 1-5 sao, nội dung tối thiểu 10 ký tự.
- * - Giúp validate dữ liệu ngay lập tức và hiển thị thông báo lỗi thân thiện.
- *
- * 2. UPSERT LOGIC (Update or Insert):
- * - Nếu `sku.review` đã tồn tại: Gọi `updateReviewAction` (Sửa).
- * - Nếu chưa có: Gọi `createReviewAction` (Thêm mới).
- * - Giúp tái sử dụng 1 Dialog cho cả 2 mục đích.
- *
- * 3. INTERACTIVE RATING:
- * - Các ngôi sao có thể click được. Khi click, giá trị `rating` trong form sẽ được cập nhật. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface ReviewFormDialogProps {
   productId: string;

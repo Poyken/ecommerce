@@ -7,22 +7,6 @@ import { PrismaService } from '@core/prisma/prisma.service';
  * SITEMAP SERVICE - Tạo XML Sitemap cho SEO
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. XML SITEMAP LÀ GÌ?
- * - Một file XML chứa danh sách tất cả các trang trên website.
- * - Giúp Google và các công cụ tìm kiếm khác dễ dàng phát hiện và lập chỉ mục nội dung.
- *
- * 2. PRIORITY & CHANGE FREQUENCY:
- * - priority: Mức độ quan trọng của trang (0.0 - 1.0).
- * - changefreq: Tần suất cập nhật (daily, weekly, monthly, yearly).
- *
- * 3. DYNAMIC GENERATION:
- * - Sitemap được tạo động từ dữ liệu trong database.
- * - Bao gồm: Trang chính, Sản phẩm, Danh mục. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

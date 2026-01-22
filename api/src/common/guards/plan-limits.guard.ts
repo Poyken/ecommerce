@@ -47,22 +47,6 @@ export function CheckPlanLimit(limitType: PlanLimitType) {
  * PLAN LIMITS GUARD - KIỂM TRA GIỚI HẠN GÓI DỊCH VỤ
  * =================================================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PURPOSE:
- *    - Đảm bảo tenant không vượt quá giới hạn của gói dịch vụ.
- *    - Trả về 403 với message gợi ý nâng cấp khi vượt limit.
- *
- * 2. HOW IT WORKS:
- *    - Đọc metadata từ decorator @CheckPlanLimit
- *    - Lấy thông tin tenant từ context
- *    - So sánh current count với limit
- *    - Cho phép hoặc từ chối request
- *
- * 3. USAGE:
- *    - Thêm @UseGuards(PlanLimitsGuard) vào controller/method
- *    - Thêm @CheckPlanLimit('product') để chỉ định loại limit
- *
  * =================================================================================================
  */
 @Injectable()

@@ -1,27 +1,4 @@
-/**
- * =====================================================================
- * ORDERS CLIENT - Giao diện danh sách đơn hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ORDER LISTING:
- * - Hiển thị danh sách đơn hàng của người dùng dưới dạng các thẻ (`GlassCard`).
- * - Mỗi thẻ chứa thông tin cơ bản: Mã đơn hàng, Trạng thái, Ngày đặt, Tổng tiền.
- *
- * 2. CONDITIONAL ACTIONS:
- * - `PENDING`: Cho phép hủy đơn hàng (`cancelOrderAction`).
- * - `DELIVERED`: Cho phép đặt lại (`ReorderButton`).
- * - Luôn có nút "Xem chi tiết" để chuyển hướng sang trang chi tiết đơn hàng.
- *
- * 3. EMPTY STATE:
- * - Nếu không có đơn hàng, hiển thị thông báo thân thiện và nút "Bắt đầu mua sắm" để dẫn dắt người dùng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Order Lifecycle Visibility: Cung cấp cho khách hàng cái nhìn tổng quan về lịch sử mua sắm, giúp họ dễ dàng theo dõi trạng thái từ lúc đặt hàng cho tới khi nhận được hàng thành công.
- * - Self-service Fulfillment Actions: Trao quyền cho người dùng chủ động thực hiện các hành động như Hủy đơn hàng hoặc Đặt lại sản phẩm, giúp giảm tải khối lượng công việc cho bộ phận CSKH.
 
- * =====================================================================
- */
 
 "use client";
 

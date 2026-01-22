@@ -33,19 +33,6 @@ import { getTenant } from '@core/tenant/tenant.context';
  * TENANTS CONTROLLER - QUẢN LÝ CỬA HÀNG (DÀNH CHO SUPER ADMIN)
  * =================================================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PHÂN QUYỀN (RBAC):
- *    - Các API này rất nhạy cảm (Tạo/Xóa cửa hàng), nên được bảo vệ bởi `@Permissions`.
- *    - Chỉ User có Role là `SUPERADMIN` mới có thể gọi được quyền `tenant:create`, `tenant:delete`...
- *
- * 2. KIẾN TRÚC SAAS (SOFTWARE AS A SERVICE):
- *    - Đây là nơi quản lý "Khách hàng" của hệ thống Platform.
- *    - Một "Tenant" tương ứng với một "Cửa hàng" độc lập.
- *    - Controller này không xử lý logic bán hàng, mà chỉ xử lý việc Cấp phép (Provisioning) cửa hàng mới. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Cung cấp giao diện quản trị cho Super Admin để giám sát, cấp phép và điều phối hoạt động của toàn bộ hệ thống Multi-tenant.
-
  * =================================================================================================
  */
 export class TenantsController {
@@ -175,4 +162,3 @@ export class TenantsController {
     };
   }
 }
-

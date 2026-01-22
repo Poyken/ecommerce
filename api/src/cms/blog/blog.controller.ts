@@ -44,21 +44,6 @@ import { UpdateBlogDto } from './dto/update-blog.dto';
  * BLOG CONTROLLER - QUẢN LÝ BÀI VIẾT (TIN TỨC)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MULTIPART FORM DATA (Tải lên hình ảnh):
- * - API dùng `FileInterceptor` để nhận file ảnh bìa gửi từ Client.
- * - Ảnh sẽ được đẩy lên Cloudinary trước, sau đó link ảnh mới được lưu vào Database.
- *
- * 2. OWNER-STRICT UPDATE (Bảo vệ bài viết):
- * - Hệ thống cho phép cả User (thành viên) viết blog.
- * - Tuy nhiên, Service sẽ kiểm tra: Nếu bạn không phải Admin và cũng không phải chủ bài viết -> Bạn sẽ bị từ chối cập nhật.
- *
- * 3. PUBLISH FLOW:
- * - Admin có quyền tối cao dùng API `/toggle-publish` để cho phép bài viết hiển thị hoặc ẩn đi. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 @ApiTags('Admin - Blogs')
@@ -184,4 +169,3 @@ export class BlogController {
     return this.blogService.remove(id, user);
   }
 }
-

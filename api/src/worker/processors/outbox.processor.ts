@@ -10,25 +10,6 @@ import { Queue } from 'bullmq';
  * OUTBOX PROCESSOR - Đảm bảo tính toàn vẹn sự kiện (Reliability)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. THE PROBLEM (Dual Write):
- * - Khi lưu Order vào DB xong, ta cần gửi Email.
- * - Nếu lưu DB thành công nhưng Server crash TRƯỚC khi kịp gửi job Email vào Queue -> Mất Email.
- * - User thấy đơn hàng thành công, nhưng không bao giờ nhận được mail.
- *
- * 2. TRANSACTIONAL OUTBOX PATTERN:
- * - Thay vì gửi trực tiếp vào Queue, ta lưu một bản ghi "Event" (OutboxEvent) vào DB
- *   CÙNG MỘT TRANSACTION với việc tạo Order.
- * - Đảm bảo: Nếu Order được tạo -> Chắc chắn Event được lưu.
- *
- * 3. TRIGGER & POLLING:
- * - Worker này (`handleOutboxEvents`) sẽ chạy định kỳ (mỗi giây) để quét các Event chưa xử lý.
- * - Nó lấy Event từ DB -> Đẩy vào BullMQ thật sự -> Đánh dấu là COMPLETED.
- * - Cơ chế này đảm bảo "At-least-once delivery" (Gửi ít nhất 1 lần). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đảm bảo các tác vụ nền (gửi email, sync kho) luôn được thực hiện thành công bằng cách quét và xử lý các sự kiện trong bảng Outbox định kỳ.
-
  * =====================================================================
  */
 
@@ -65,12 +46,6 @@ export class OutboxProcessor {
       for (const event of events) {
         try {
           /**
-           * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-           * Lưu vết log chi tiết giúp ta biết:
-           * 1. Sự kiện nào đang được xử lý? (Type)
-           * 2. Dữ liệu đầu vào là gì? (Payload)
-           * 3. Kết quả thành công hay thất bại?
-           * Điều này cực kỳ quan trọng khi hệ thống có hàng ngàn sự kiện chạy ngầm.
            */
           this.logger.log(
             `[Outbox] Dispatching: ${event.type} (ID: ${event.id})`,
@@ -122,6 +97,10 @@ export class OutboxProcessor {
 
       case 'ORDER_CREATED_POST_PROCESS':
         await this.ordersQueue.add('order-created-post-process', payload);
+        break;
+
+      case 'LOW_STOCK_ALERT':
+        await this.ordersQueue.add('low-stock-alert', payload);
         break;
 
       default:

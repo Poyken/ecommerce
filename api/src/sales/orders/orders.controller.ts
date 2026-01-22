@@ -3,21 +3,6 @@
  * ORDERS CONTROLLER - API xử lý Đơn hàng
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PHÂN QUYỀN (Auth & RBAC):
- * - Controller này phục vụ cả USER thường và ADMIN.
- * - Route `my-orders`: User chỉ xem được đơn của chính mình (`req.user.id`).
- * - Route `findAll` (Admin): Cần quyền `order:read`, xem được tất cả đơn.
- *
- * 2. CÁC TÍNH NĂNG CHÍNH:
- * - `create`: Tạo đơn hàng (Checkout).
- * - `updateStatus`: Admin cập nhật trạng thái (Duyệt, Giao, Hủy).
- * - `cancelMyOrder`: User tự hủy đơn (nếu đơn chưa được xử lý).
- * - `getInvoice`: Xuất dữ liệu hóa đơn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Cổng tiếp nhận đơn hàng từ khách hàng, cho phép admin theo dõi trạng thái thanh toán và điều phối quá trình đóng gói/giao hàng.
-
  * =====================================================================
  */
 import { PermissionsGuard } from '@/identity/auth/permissions.guard';
@@ -171,4 +156,3 @@ export class OrdersController {
     return { data };
   }
 }
-

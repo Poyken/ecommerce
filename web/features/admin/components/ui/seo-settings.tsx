@@ -21,29 +21,7 @@ interface SeoSettingsProps {
   productName?: string; // For auto-generation suggestions
 }
 
-/**
- * =====================================================================
- * SEO SETTINGS - Cấu hình SEO cho sản phẩm/danh mục
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. META TITLE:
- * - Tiêu đề hiển thị trên tab trình duyệt và kết quả tìm kiếm.
- * - Nên giữ dưới 60 ký tự để không bị cắt.
- *
- * 2. META DESCRIPTION:
- * - Mô tả ngắn gọn về trang, xuất hiện dưới tiêu đề trong kết quả Google.
- * - Nên giữ dưới 160 ký tự để tối ưu hiển thị.
- *
- * 3. META KEYWORDS:
- * - Các từ khóa liên quan đến sản phẩm, phân cách bởi dấu phẩy.
- * - Ít quan trọng hơn với Google hiện đại, nhưng vẫn hữu ích cho nội bộ. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function SeoSettings({
   values,

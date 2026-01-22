@@ -60,31 +60,7 @@ async function getPageConfig(slug: string): Promise<any | null> {
 
 export const revalidate = 3600;
 
-/**
- * =================================================================================================
- * SHOP HOME PAGE - TRANG CHỦ CỬA HÀNG (HỖ TRỢ CMS)
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HYBRID RENDERING (CMS vs FALLBACK):
- *    - Hệ thống ưu tiên lấy cấu hình trang từ API Page Builder (`getPageConfig`).
- *    - Nếu có cấu hình (CMS Mode) -> Sử dụng `BlockRenderer` để vẽ giao diện động.
- *    - Nếu không có (Fallback Mode) -> Hiện giao diện mặc định đã code cứng (Static Sections).
- *
- * 2. DATA PROMISES (HYDRATION):
- *    - `dataContext` chứa các Promises (products, categories, brands).
- *    - Thay vì chờ đợi tất cả dữ liệu ở Server (gây chậm trang), ta truyền Promise xuống
- *      các Blocks. Block nào cần dữ liệu sẽ tự `use(promise)` để hiển thị khi có kết quả.
- *
- * 3. SEO & METADATA:
- *    - Cấu hình Meta tiêu chuẩn của Next.js để tối ưu tìm kiếm Google. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - High-Conversion Landing Page: Tạo ra trang chủ chuyên nghiệp, tốc độ cực nhanh nhờ kết hợp SSR và Hydration, giúp tăng tỷ lệ chốt đơn ngay từ cái nhìn đầu tiên.
- * - Flexible Marketing: Cho phép bộ phận Marketing liên tục thay đổi chiến dịch Sale (Flash Sale, New Arrivals) thông qua CMS mà không cần chờ IT can thiệp vào code.
 
- * =================================================================================================
- */
 export default async function Home() {
   // 0. Handle Domain Redirects
   const headersList = await headers();

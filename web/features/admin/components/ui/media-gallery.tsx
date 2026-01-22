@@ -23,30 +23,7 @@ interface MediaGalleryProps {
   label?: string;
 }
 
-/**
- * =====================================================================
- * MEDIA GALLERY - Quản lý bộ sưu tập ảnh sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. NATIVE DRAG & DROP:
- * - Thay vì dùng thư viện nặng như `dnd-kit`, ta dùng API kéo thả có sẵn của trình duyệt.
- * - Sự kiện: `onDragStart` (bắt đầu kéo), `onDragOver` (kéo qua phần tử khác), `onDragEnd` (thả tay).
- * - Logic `handleDragOver`: Hoán đổi vị trí trong mảng `images` ngay lập tức để tạo hiệu ứng mượt mà.
- *
- * 2. OBJECT URL PREVIEW:
- * - Khi user chọn file từ máy: `URL.createObjectURL(file)`.
- * - Tạo ra một URL giả (blob:http://...) để hiển thị ảnh ngay lập tức mà chưa cần upload lên server.
- * - UX tốt: User thấy ngay ảnh mình vừa chọn.
- *
- * 3. ACCESSIBILITY (ALT TEXT):
- * - Rất quan trọng cho SEO. Cho phép Admin nhập mô tả ảnh ngay lúc upload. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function MediaGallery({
   images,

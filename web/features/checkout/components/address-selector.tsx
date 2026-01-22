@@ -1,27 +1,4 @@
-/**
- * =====================================================================
- * ADDRESS SELECTOR - Bộ chọn địa chỉ giao hàng (Checkout)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RADIO GROUP SELECTION:
- * - Sử dụng `RadioGroup` để người dùng chọn duy nhất một địa chỉ giao hàng.
- * - Hiển thị rõ ràng địa chỉ đang được chọn bằng viền màu `primary`.
- *
- * 2. ADDRESS DISPLAY:
- * - Tái sử dụng component `AddressDisplay` để hiển thị thông tin người nhận, số điện thoại và địa chỉ chi tiết.
- *
- * 3. QUICK ACTIONS:
- * - Cho phép thêm địa chỉ mới hoặc chỉnh sửa địa chỉ hiện có trực tiếp trong quy trình thanh toán.
- *
- * 4. PERFORMANCE:
- * - React.memo để prevent unnecessary re-renders *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

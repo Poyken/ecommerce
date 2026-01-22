@@ -11,33 +11,7 @@ import { ApiResponse, ActionResult } from "@/types/api";
 import { Order } from "@/types/models";
 import { z } from "zod";
 
-/**
- * =====================================================================
- * ORDER SERVER ACTIONS - Quản lý đơn hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SAFE ACTION CLIENT (`protectedActionClient`):
- * - Thay vì dùng `export async function...` trần trụi, ta bọc logic trong `safe-action`.
- * - Lợi ích:
- *   + Tự động validate input với Zod schema (`.schema(...)`).
- *   + Tự động handle try-catch lỗi hệ thống.
- *   + Type-safety cho input và output trả về client.
- *   + Middleware authentication đã được tích hợp sẵn (check login).
- *
- * 2. REVALIDATION:
- * - Sau khi tạo đơn hoặc hủy đơn, ta gọi `revalidatePath`.
- * - Mục đích: Xóa cache cũ của Next.js để UI cập nhật ngay lập tức (vd: giỏ hàng về 0, danh sách đơn hàng có thêm đơn mới).
- *
- * 3. SIMULATION ACTION:
- * - `simulatePaymentSuccessAction`: Chỉ dùng cho môi trường Dev/Test để giả lập việc thanh toán thành công mà không cần qua cổng thanh toán thật. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Order Lifecycle: Quản lý toàn bộ vòng đời của một đơn hàng từ khi khách "Đặt hàng" (Place Order) cho đến khi "Thanh toán" (Payment) hoặc "Hủy đơn" (Cancel).
- * - Immediate Feedback: Sử dụng Revalidation để đảm bảo sau khi đặt hàng thành công, giỏ hàng sẽ trống rỗng và danh sách đơn hàng xuất hiện đơn mới ngay lập tức.
- *
- * =====================================================================
- */
+
 
 // --- VALIDATION SCHEMAS ---
 

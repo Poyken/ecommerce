@@ -7,45 +7,6 @@ import { ConfigService } from '@nestjs/config';
  * GEMINI SERVICE - SERVICE KẾT NỐI VỚI GOOGLE GEMINI API
  * =================================================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MỤC ĐÍCH CỦA SERVICE NÀY:
- *    - Service này đóng vai trò là "Cầu nối" (Wrapper/Adapter) giữa Backend của chúng ta và Google Gemini API.
- *    - Nó chịu trách nhiệm gửi tin nhắn của user lên Google và nhận câu trả lời về.
- *    - Xử lý các logic phụ trợ: Authentication (API Key), Error Handling, Logging.
- *
- * 2. CÁC KHÁI NIỆM QUAN TRỌNG (KEY CONCEPTS):
- *
- *    A. MODEL (MÔ HÌNH):
- *       - Chúng ta đang sử dụng `gemini-2.0-flash`.
- *       - "Flash" nghĩa là phiên bản được tối ưu cho tốc độ phản hồi nhanh (Low Latency),
- *         rất phù hợp cho tính năng Chatbot Real-time.
- *       - Nếu cần xử lý phức tạp hơn (VD: Phân tích ảnh, logic suy luận sâu), có thể đổi sang `gemini-1.5-pro`.
- *
- *    B. STREAMING RESPONSE (PHẢN HỒI DẠNG DÒNG CHẢY):
- *       - Non-Streaming: Chờ AI nghĩ xong TẤT CẢ mới trả về 1 cục văn bản. (User phải chờ lâu).
- *       - Streaming: AI nghĩ được chữ nào trả về chữ đó ngay lập tức. (Giống hiệu ứng gõ chữ của ChatGPT).
- *       - Lợi ích: Tăng trải nghiệm người dùng (UX) vì cảm giác phản hồi tức thì.
- *
- *    C. SYSTEM PROMPT (HƯỚNG DẪN HỆ THỐNG):
- *       - Đây là "bản thiết kế nhân cách" cho AI.
- *       - Trước khi chat, ta "nhồi" (inject) vào đầu AI các quy tắc: "Bạn là nhân viên bán hàng",
- *         "Sản phẩm A giá 10k", "Không được nói bậy"...
- *       - `role: 'system'`: Đánh dấu đây là chỉ thị tối cao, không phải tin nhắn chat thông thường.
- *
- *    D. HISTORY (LỊCH SỬ CHAT):
- *       - AI không có bộ nhớ dài hạn tự động (Stateless).
- *       - Mỗi lần gửi tin nhắn mới, ta phải gửi KÈM THEO toàn bộ nội dung chat trước đó
- *         để AI hiểu ngữ cảnh (Context).
- *
- * 3. CONFIGURATION (CẤU HÌNH SÁNG TẠO):
- *    - `temperature` (0.0 - 2.0): Độ "phiêu" của AI. Thấp (0.2) thì trả lời chính xác, máy móc. Cao (0.9) thì sáng tạo, văn hoa.
- *    - `topP` (0.0 - 1.0): Độ đa dạng từ vựng.
- *    - `maxOutputTokens`: Giới hạn độ dài câu trả lời để tránh spam hoặc tốn tiền.
- * *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =================================================================================================
  */
 

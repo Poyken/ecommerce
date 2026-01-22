@@ -5,28 +5,7 @@ import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 
-/**
- * =====================================================================
- * NAV CARD - Thẻ điều hướng danh mục/thương hiệu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. POLYMORPHIC STYLING:
- * - Sử dụng object `variantStyles` để quản lý giao diện cho các trạng thái khác nhau (default, brand, category).
- * - Giúp code gọn gàng hơn so với việc dùng nhiều câu lệnh `if/else` hoặc `cn()` quá dài.
- *
- * 2. GROUP HOVER EFFECT:
- * - `group` ở thẻ cha và `group-hover:...` ở thẻ con.
- * - Khi hover vào thẻ cha, các thẻ con sẽ thay đổi style (zoom ảnh, hiện mũi tên, đổi màu chữ).
- *
- * 3. FALLBACK UI:
- * - Nếu không có `imageUrl`, hiển thị chữ cái đầu của tên (`name.charAt(0)`).
- * - Đảm bảo UI không bị vỡ khi thiếu dữ liệu ảnh. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- */
 
 interface NavCardProps {
   href: string;

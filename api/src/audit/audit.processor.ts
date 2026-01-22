@@ -8,19 +8,6 @@ import { Job } from 'bullmq';
  * AUDIT PROCESSOR - NGƯỜI XỬ LÝ NHIỆM VỤ GHI CHÉP HÀNH VI
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. WORKER HOST:
- * - Đây là một background worker lắng nghe queue `audit`.
- * - Nó nhặt các request từ Queue ra và thực hiện ghi vào Database.
- * - Việc này giúp giải phóng tài nguyên cho Main Thread của API, giúp API phản hồi nhanh hơn.
- *
- * 2. CÁC LOẠI JOB:
- * - `create-log`: Lưu nhật ký mới.
- * - `cleanup`: Xóa các nhật ký cũ (Job này thường được schedule chạy tự động hàng ngày). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Worker chạy ngầm chuyên trách việc ghi nhật ký hệ thống và tự động dọn dẹp (cleanup) các bản ghi cũ để tối ưu dung lượng DB.
-
  * =====================================================================
  */
 @Processor('audit')
@@ -56,11 +43,6 @@ export class AuditProcessor extends WorkerHost {
   }
 
   /**
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   * Tại sao phải dọn dẹp nhiều bảng cùng lúc?
-   * 1. AuditLog: Ghi lại hành động, tích tụ rất nhanh -> Xóa sau 90 ngày.
-   * 2. PerformanceMetric: Các chỉ số hiệu năng chỉ cần thiết trong ngắn hạn để debug -> Xóa sau 90 ngày.
-   * 3. OutboxEvent: Đây là các sự kiện tạm để đồng bộ dữ liệu, sau khi xử lý xong chỉ nên giữ lại 7 ngày để đối soát.
    */
   private async handleCleanup(data: { days: number }) {
     const { days = 90 } = data;

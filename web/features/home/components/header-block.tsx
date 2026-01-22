@@ -43,70 +43,7 @@ interface HeaderBlockProps {
   fullWidth?: boolean;
 }
 
-/**
- * Flexible Icon Component (Lucide or Image)
- */
-const FlexibleIcon = ({
-  source,
-  size = 18,
-  className,
-}: {
-  source?: string;
-  size?: number;
-  className?: string;
-}) => {
-  if (!source) return null;
 
-  // Check if source is a URL (contains / or .)
-  if (source.includes("/") || source.includes(".")) {
-    return (
-      <div
-        className={cn("relative overflow-hidden", className)}
-        style={{ width: size, height: size }}
-      >
-        <Image
-          src={source}
-          alt="icon"
-          fill
-          className="object-contain"
-          sizes={`${size}px`}
-        />
-      </div>
-    );
-  }
-
-  // Otherwise assume Lucide Icon Name
-  const iconName = source.toLowerCase().replace(/([a-z0-9])([A-Z])/g, '$1-$2');
-  if (iconName in dynamicIconImports) {
-    return <DynamicIcon name={iconName as keyof typeof dynamicIconImports} size={size} className={className} />;
-  }
-  
-  return null;
-};
-
-/**
- * =================================================================================================
- * HEADER BLOCK - THANH ĐIỀU HƯỚNG LINH HOẠT
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MULTI-MODE HEADER:
- *    - Hỗ trợ cả chế độ trong suốt (Transparent - dùng cho Hero section) và chế độ có màu nền.
- *    - `StickyHeader`: Component bọc ngoài xử lý logic "dính" lên đầu trang khi cuộn.
- *
- * 2. FLEXIBLE ICONS:
- *    - `FlexibleIcon` xử lý cả 2 loại: Lucide Icon (string name) hoặc Image URL (PNG/SVG).
- *    - Điều này cho phép User tùy biến Icon menu dễ dàng từ Admin Dashboard.
- *
- * 3. RESPONSIVE DESIGN:
- *    - Tự động ẩn menu chính trên Mobile và hiện nút `Menu` (Hamburger).
- *    - `isTransparent` sync với `styles.transparent` để thay đổi giao diện động. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =================================================================================================
- */
 export function HeaderBlock({
   links,
   styles,

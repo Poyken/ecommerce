@@ -1,26 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * NOTIFICATION HISTORY TAB - Lịch sử thông báo với Quick Actions
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TABS FILTER:
- * - Tất cả / Đơn hàng / Hệ thống để lọc nhanh.
- *
- * 2. QUICK ACTIONS:
- * - Accept/Reject đơn hàng trực tiếp từ bảng.
- * - Chỉ hiển thị với notification loại ORDER chưa xử lý.
- *
- * 3. BULK ACTIONS:
- * - Đánh dấu tất cả đã đọc. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 import { GlassCard } from "@/components/shared/glass-card";
 import { useToast } from "@/components/ui/use-toast";

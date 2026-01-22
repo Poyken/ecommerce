@@ -11,18 +11,6 @@ import { ShippingService } from './shipping.service';
  * SHIPPING CONTROLLER - API GIAO HÀNG & WEBHOOK
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ĐỊA CHÍNH (Geo-location):
- * - Cung cấp API để frontend lấy danh sách Tỉnh/Huyện/Xã chuẩn từ đối tác GHN.
- * - Giúp user chọn địa chỉ chính xác, tránh việc nhập tay sai sót.
- *
- * 2. WEBHOOK (CỰC KỲ QUAN TRỌNG):
- * - Khi trạng thái đơn hàng thay đổi trên hệ thống GHN (Đang giao, Đã giao...), GHN sẽ gọi vào API `/webhook` này.
- * - Hệ thống tự động cập nhật trạng thái đơn hàng trong DB mà không cần Admin phải làm thủ công. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 @ApiTags('Shipping')
@@ -33,11 +21,6 @@ export class ShippingController {
    * SHIPPING CONTROLLER - Vận chuyển & Địa chính
    * =====================================================================
    *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. PROXY PATTERN:
-   * - Các API này (provinces, districts...) thực chất là gọi sang Services của Giao Hàng Nhanh (GHN) hoặc GHTK.
-   * - Backend ta đóng vai trò Proxy để ẩn API Key của đối tác và cache lại dữ liệu địa chính (ít thay đổi) để giảm tải.
    * =====================================================================
    */
   constructor(private readonly shippingService: ShippingService) {}

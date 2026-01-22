@@ -1,25 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * =====================================================================
- * ORDERS SKELETON - Skeleton cho trang Lịch sử đơn hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. LIST-BASED MOCKUP:
- * - Giả lập danh sách các đơn hàng dưới dạng các thẻ `GlassCard`.
- *
- * 2. DETAIL PLACEHOLDERS:
- * - Mỗi đơn hàng giả lập bao gồm: Mã đơn hàng, Trạng thái (badge), Ngày đặt, Tổng tiền và các nút hành động.
- *
- * 3. CONSISTENT STYLING:
- * - Sử dụng cùng một hệ thống đổ bóng và bo góc như component `OrderCard` thật. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function OrdersSkeleton() {
   return (

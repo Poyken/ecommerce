@@ -17,32 +17,7 @@ import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-/**
- * =====================================================================
- * PRODUCT REVIEWS - Danh sách đánh giá sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CHECK ELIGIBILITY (Kiểm tra quyền đánh giá):
- * - Không phải user nào cũng được viết review. Chỉ những người ĐÃ MUA sản phẩm (`checkReviewEligibilityAction`) mới được phép.
- * - Đây là tiêu chuẩn "Verified Purchase" của các sàn TMĐT lớn để chống spam/fake review.
- *
- * 2. CLIENT-SIDE DATA FETCHING:
- * - Review list không cần thiết phải SEO quá mạnh (Google chỉ cần AggregateRating JSON-LD).
- * - Fetch ở Client (`useEffect`) giúp TTime To First Byte (TTFB) của trang sản phẩm nhanh hơn vì server không phải chờ query review.
- *
- * 3. PAGINATION STRATEGY:
- * - Sử dụng Cursor-based pagination (`meta.nextCursor`) thay vì Page number.
- * - Hiệu quả hơn với các bảng dữ liệu lớn (Big Data) vì database không phải scan/offset lại từ đầu.
- *
- * 4. STRICT MODE HANDLING:
- * - `useRef(hasFetched)`: Ngăn chặn việc React 18 Strict Mode gọi API 2 lần khi dev, tiết kiệm tài nguyên. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface ProductReviewsProps {
   productId: string;

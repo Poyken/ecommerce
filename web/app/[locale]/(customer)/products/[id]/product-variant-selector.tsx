@@ -6,29 +6,7 @@ import { ProductOption, Sku } from "@/types/models";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-/**
- * =====================================================================
- * PRODUCT VARIANT SELECTOR - Bộ chọn thuộc tính sản phẩm (Size, Color...)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SMART SELECTION LOGIC:
- * - Khi người dùng chọn một thuộc tính (ví dụ: Size L), hệ thống sẽ tự động tìm SKU phù hợp nhất.
- * - Nếu tổ hợp hiện tại không tồn tại (ví dụ: Màu Đỏ không có Size L), hệ thống sẽ tự động chuyển sang một SKU hợp lệ gần nhất thay vì để người dùng bị "kẹt".
- *
- * 2. CONTROLLED COMPONENT PATTERN:
- * - Component này GIẢM BỚT trách nhiệm: Không còn tự gọi API Add to cart nữa.
- * - Thay vào đó, nó nhận prop `onAddToCart` từ component cha (`ProductDetailClient`).
- * - Điều này giúp logic sạch hơn (Single Responsibility Principle).
- *
- * 3. REACTION CONTROL:
- * - Sử dụng `useRef` (`lastNotifiedSkuId`) để tránh việc bắn event `onSkuChange` liên tục gây ra vòng lặp render vô tận. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 interface ProductVariantSelectorProps {
   options: ProductOption[];

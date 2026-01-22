@@ -4,31 +4,7 @@ import { cn } from "@/lib/utils";
 import Image, { ImageProps } from "next/image";
 import { memo, useState } from "react";
 
-/**
- * =====================================================================
- * OPTIMIZED IMAGE - Component ảnh với blur placeholder
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. LAYOUT SHIFT (CLS Prevention):
- * - Vấn đề: Ảnh khi chưa load có độ cao = 0, load xong nhảy xuống -> Bố cục bị giật (CLS).
- * - Giải pháp: Dùng `aspect-ratio` (container bao ngoài) để "chiếm chỗ" trước tương ứng với tỉ lệ ảnh.
- *
- * 2. FALLBACK CHAIN (Chuỗi dự phòng):
- * - Level 1: Load ảnh gốc (`src`).
- * - Level 2: Nếu lỗi -> Load ảnh thay thế (`fallbackSrc`).
- * - Level 3: Nếu vẫn lỗi -> Render hộp màu xám (`<div />`).
- * -> Không bao giờ hiển thị icon "Image Broken" xấu xí.
- *
- * 3. SHIMMER EFFECT (Hiệu ứng lấp lánh):
- * - Trong khi chờ (`isLoading`), hiển thị vệt sáng chạy ngang (`animate-shimmer`).
- * - Tạo cảm giác "đang tải" (Perceived Performance) tốt hơn là xoay vòng tròn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface OptimizedImageProps extends ImageProps {
   /** Ảnh thay thế nếu ảnh chính load lỗi (Mặc định: placeholder hệ thống) */

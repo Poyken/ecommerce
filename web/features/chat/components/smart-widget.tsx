@@ -33,44 +33,7 @@ import type {
   AlertItem,
 } from "@/types/feature-types/chat.types";
 
-/**
- * =============================================================================
- * SMART WIDGET - GENERATIVE UI RENDERER (AI-Driven UI)
- * =============================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Đây là "Generative UI" - Giao diện tự động sinh ra dựa trên dữ liệu từ AI.
- * Thay vì code cứng từng loại biểu đồ, AI trả về schema và component này render.
- *
- * 1. CÁCH HOẠT ĐỘNG:
- *    - AI Chat trả về UISchema: { type: "bar_chart", title: "...", data: {...} }
- *    - SmartWidget nhận schema -> Switch theo type -> Render component tương ứng
- *    - Admin hỏi "Doanh thu tháng này?" -> AI trả về bar_chart với data thực
- *
- * 2. CÁC WIDGET TYPES:
- *    - stat_card: Thẻ thống kê đơn (VD: "Tổng doanh thu: 100M")
- *    - table: Bảng dữ liệu (VD: Top 10 sản phẩm bán chạy)
- *    - bar_chart: Biểu đồ thanh ngang
- *    - line_chart: Biểu đồ đường (xu hướng theo thời gian)
- *    - pie_chart: Biểu đồ tròn (phân bổ %)
- *    - alert: Cảnh báo (warning/error/info)
- *    - list: Danh sách đơn giản
- *
- * 3. TẠI SAO DÙNG GENERATIVE UI?
- *    - Flexibility: AI tự chọn loại UI phù hợp với câu hỏi
- *    - Adaptability: Dễ thêm widget mới mà không đổi logic AI
- *    - Rich UX: Câu trả lời trực quan hơn text thuần
- *
- * 4. VÍ DỤ:
- *    User: "So sánh doanh thu 3 tháng gần nhất"
- *    AI Response: { type: "bar_chart", title: "Doanh thu Q4", data: {...} }
- *    -> SmartWidget render biểu đồ thanh đẹp mắt *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =============================================================================
- */
 
 
 // Re-export types for backward compatibility

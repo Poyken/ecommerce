@@ -1,27 +1,4 @@
-/**
- * =====================================================================
- * COMBOBOX - Ô chọn có tính năng tìm kiếm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SEARCHABLE SELECT (Select + Search):
- * - Kết hợp `Button` (trigger) và `Input` (search) trong một `Popover`.
- * - Giải quyết vấn đề của thẻ `<select>` mặc định: Không thể tìm kiếm khi danh sách quá dài (UI/UX kém).
- *
- * 2. POPOVER PATTERN:
- * - Dùng `Popover` thay vì render list ngay bên dưới để tránh bị `overflow: hidden` của các container cha cắt mất nội dung.
- * - Danh sách nổi lên lớp trên cùng (Z-index layer).
- *
- * 3. CONTROLLED VS UNCONTROLLED SEARCH:
- * - Hỗ trợ cả 2 chế độ:
- *   + Uncontrolled (`internalSearch`): component tự quản lý state tìm kiếm.
- *   + Controlled (`searchValue` prop): cha quản lý state (thường dùng khi search gọi API server-side). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

@@ -3,18 +3,6 @@
  * AI SENTIMENT SERVICE - PHÂN TÍCH CẢM XÚC ĐÁNH GIÁ
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Module này sử dụng Google Gemini AI để:
- * 1. Phân tích sentiment (cảm xúc) của review
- * 2. Tự động gắn tags cho review
- * 3. Phát hiện review spam/toxic
- *
- * CÁCH HOẠT ĐỘNG:
- * - Khi có review mới -> Gọi AI phân tích
- * - AI trả về: sentiment, tags
- * - Lưu kết quả vào review.sentiment và review.autoTags
- *
  * =====================================================================
  */
 

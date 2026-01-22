@@ -18,25 +18,7 @@ interface FeaturesSectionProps {
   };
 }
 
-/**
- * =================================================================================================
- * FEATURES SECTION - KHỐI TÍNH NĂNG NỔI BẬT
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DYNAMIC ICON MAPPING:
- *    - Dữ liệu từ DB chỉ lưu text ("Free Shipping"), không lưu component Icon.
- *    - Hàm `getIcon` có nhiệm vụ "phiên dịch" từ text sang Icon component tương ứng (Lucide React).
- *
- * 2. UI/UX DESIGN:
- *    - Sử dụng `backdrop-blur` và `border` mỏng để tạo cảm giác hiện đại (Glassmorphism).
- *    - Hover effect: Thay đổi màu background và shadow để tăng tính tương tác. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =================================================================================================
- */
 export function FeaturesSection({
   title,
   subtitle,

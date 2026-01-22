@@ -1,26 +1,6 @@
 /**
  * =====================================================================
- * APP CONSTANTS - CẤU HÌNH TẬP TRUNG TOÀN HỆ THỐNG
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TẠI SAO CẦN FILE NÀY?
- * - Tập trung tất cả "số ma thuật" (magic numbers) và cấu hình cứng vào một chỗ.
- * - Dễ dàng quản lý sự khác biệt giữa các môi trường (Dev, Staging, Prod).
- * - Tránh việc sửa code lắt nhắt ở nhiều nơi khi logic thay đổi.
- *
- * 2. TYPE SAFETY (AN TOÀN KIỂU DỮ LIỆU):
- * - Sử dụng `as const` để báo cho TypeScript biết đây là giá trị không đổi (Read-only).
- * - Giúp IDE gợi ý code thông minh và phát hiện lỗi gõ sai ngay lập tức.
- *
- * 3. ƯU TIÊN BIẾN MÔI TRƯỜNG (.ENV):
- * - Các giá trị mặc định ở đây có thể bị ghi đè bởi biến môi trường.
- * - Điều này giúp DevOps tune hệ thống trên Production mà không cần build lại code. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Single Source of Truth: Là "Cuốn từ điển" chứa toàn bộ thông số kỹ thuật (Timeout, Limits). Dev backend và DevOps chỉ cần nhìn vào đây là hiểu cấu hình hệ thống.
- * - Environment Flexibility: Hỗ trợ chuyển đổi mượt mà giữa Dev (Local), Staging (Test) và Production (Live) mà không cần sửa code.
-
+ * APP CONSTANTS
  * =====================================================================
  */
 
@@ -54,6 +34,15 @@ export const AUTH_CONFIG = {
 
   /** Thời gian khóa tài khoản sau khi đăng nhập sai quá nhiều (giây) */
   ACCOUNT_LOCK_DURATION: 15 * 60, // 15 phút
+
+  /** Cookie Options for Refresh Token */
+  COOKIE_OPTIONS: {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none' as const,
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  },
 } as const;
 
 /**

@@ -3,15 +3,6 @@
  * CATEGORIES CONTROLLER
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HIERARCHY DATA:
- * - Danh mục thường có cấu trúc cây (Cha - Con).
- * - Controller này cung cấp API CRUD cơ bản.
- * - API `findAll` có cache vì danh mục ít thay đổi. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 import {
@@ -146,4 +137,3 @@ export class CategoriesController {
     return this.categoriesService.remove(id);
   }
 }
-

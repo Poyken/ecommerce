@@ -19,18 +19,6 @@ import { EmailModule } from '@/platform/integrations/external/email/email.module
  * SHIPPING MODULE
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. EXTERNAL MODULES IMPORTS:
- * - `HttpModule`: Dùng để gọi API bên thứ 3 (Giao Hàng Nhanh - GHN).
- * - `NotificationsModule` & `EmailModule`: Để gửi thông báo/email khi trạng thái vận chuyển thay đổi.
- *
- * 2. CRON JOBS (`ShippingCronService`):
- * - Service này chứa các tác vụ chạy ngầm định kỳ (VD: quét đơn hàng đang giao để cập nhật trạng thái).
- * - Được đăng ký trong `providers` để NestJS khởi tạo instance của nó. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 export class ShippingModule {}

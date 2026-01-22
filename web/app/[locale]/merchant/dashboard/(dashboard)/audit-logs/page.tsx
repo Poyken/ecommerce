@@ -1,29 +1,7 @@
 import { getAuditLogsAction } from "@/features/admin/actions";
 import { AuditLogsClient } from "./audit-logs-client";
 
-/**
- * =====================================================================
- * ADMIN AUDIT LOGS PAGE - Nhật ký hệ thống (Server Component)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MỤC ĐÍCH:
- * - Trang này hiển thị tất cả các hoạt động nhạy cảm của hệ thống (Audit Logs).
- * - Giúp quản trị viên theo dõi "Ai đã làm gì, vào lúc nào và thay đổi ra sao".
- *
- * 2. KIỂM TRA QUYỀN TRUY CẬP (Role-Based Access Control):
- * - `getAuditLogsAction` sẽ kiểm tra quyền `audit:read` của user hiện tại.
- * - Nếu không có quyền, Server Action sẽ trả về object có thuộc tính `error: "Forbidden"`.
- *
- * 3. PHÂN TRANG & TÌM KIẾM:
- * - Dữ liệu nhật ký có thể rất lớn, do đó bắt buộc phải sử dụng phân trang (Pagination) ở server.
- * - Chỉ lấy 10-20 bản ghi mỗi lần gọi API để tối ưu tốc độ. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 export default async function AuditLogsPage({
   searchParams,

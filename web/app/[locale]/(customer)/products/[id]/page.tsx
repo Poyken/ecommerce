@@ -1,29 +1,4 @@
-/**
- * =====================================================================
- * PRODUCT DETAIL PAGE - Trang chi tiết sản phẩm (Server Component)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SUSPENSE STREAMING (Kỹ thuật Streaming):
- * - Trang chi tiết rất nặng (Product info, Review, Related items...).
- * - Nếu chờ load xong tất cả mới hiện -> User phải đợi lâu màn hình trắng.
- * - Giải pháp: Bọc phần nặng (`ProductDetailStreamer`) vào `<Suspense>`.
- * -> Next.js trả về khung trang (Shell) ngay lập tức, rồi "stream" nội dung nặng về sau.
- *
- * 2. PARALLEL FETCHING (Waterfall vs Parallel):
- * - SAI: `await getProduct(); await getReviews();` (Mất A + B giây).
- * - ĐÚNG: `Promise.all([getProduct(), getReviews()])` (Chỉ mất max(A, B) giây).
- * -> Tối ưu thời gian phản hồi máy chủ (TTFB).
- *
- * 3. SEO METADATA (`generateMetadata`):
- * - Vì là Server Component, ta có thể fetch data sản phẩm để điền Title, Description, OpenGraph Image chuẩn SEO dynamic. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Product Detail Conversion: Kết hợp thông tin chi tiết, biến thể (SKUs) và đánh giá thật từ khách hàng để thuyết phục người dùng đưa sản phẩm vào giỏ hàng, tối ưu hóa tỷ lệ chuyển đổi.
- * - SEO Rich Snippets: Cung cấp dữ liệu sản phẩm chuẩn OpenGraph và Meta động, giúp sản phẩm hiển thị bắt mắt với đầy đủ giá và đánh giá khi chia sẻ lên mạng xã hội hoặc kết quả tìm kiếm.
 
- * =====================================================================
- */
 
 // [FIX] Force dynamic rendering because this page uses cookies/headers (via profile/auth check)
 // which prevents static generation (SSG).

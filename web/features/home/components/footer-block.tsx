@@ -37,25 +37,7 @@ interface FooterBlockProps {
   styles?: FooterStyles;
 }
 
-/**
- * =================================================================================================
- * FOOTER BLOCK - CHÂN TRANG (GLOBAL FOOTER)
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPLEX CONFIGURATION:
- *    - Footer là block phức tạp nhất với nhiều cột (Columns), Social Links, và Theme options.
- *    - `theme` prop: Cho phép switch nhanh giữa giao diện Tối (Dark), Tối giản (Minimal), v.v.
- *
- * 2. CONDITIONAL STYLING:
- *    - Sử dụng `cn()` (clsx + tailwind-merge) để xử lý logic class phức tạp.
- *    - Ưu tiên `styles.backgroundColor` (User custom) > `theme` (Preset). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =================================================================================================
- */
 export function FooterBlock({
   companyName,
   description,

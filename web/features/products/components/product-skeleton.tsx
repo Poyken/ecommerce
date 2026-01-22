@@ -1,26 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * PRODUCT SKELETON - Giao diện chờ cho thẻ sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PERCEIVED PERFORMANCE:
- * - Skeleton giúp người dùng cảm thấy ứng dụng đang phản hồi nhanh hơn so với việc chỉ hiện một spinner xoay tròn.
- * - Nó giữ cho layout không bị nhảy (layout shift) khi dữ liệu thật được load xong.
- *
- * 2. SHIMMER ANIMATION (`animate-pulse`):
- * - Hiệu ứng nhấp nháy nhẹ giúp người dùng biết nội dung đang được tải và ứng dụng không bị "treo".
- *
- * 3. MATCHING LAYOUT:
- * - Các khối `div` trong Skeleton phải có kích thước và tỉ lệ (`aspect-[3/4]`) giống hệt với `ProductCard` thật. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function ProductSkeleton({ className }: { className?: string }) {

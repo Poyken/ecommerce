@@ -10,19 +10,6 @@ import { CloudinaryService } from '@/platform/integrations/external/cloudinary/c
  * IMAGE PROCESSOR SERVICE - XỬ LÝ ẢNH AI
  * =============================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Service này giúp chuẩn hóa ảnh sản phẩm:
- * 1. Xóa phông nền - làm ảnh trông chuyên nghiệp
- * 2. Resize về kích thước chuẩn - đảm bảo đồng bộ trên website
- * 3. Nén ảnh - tối ưu tốc độ tải trang
- *
- * Lưu ý: Tính năng xóa phông cần @imgly/background-removal-node
- * npm install @imgly/background-removal-node
- * *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =============================================================================
  */
 

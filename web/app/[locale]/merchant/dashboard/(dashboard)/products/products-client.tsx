@@ -1,22 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * PRODUCTS CLIENT - Quản lý sản phẩm (Enhanced)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * - Removed virtual scrolling for simpler pagination
- * - Using DataTablePagination with page numbers
- * - Filter tabs
- * - Stats header *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Enterprise Catalog Management: Cung cấp giao diện quản trị mạnh mẽ để kiểm soát hàng nghìn SKU sản phẩm, từ việc thiết lập thuộc tính đến quản lý phân loại và thương hiệu một cách khoa học.
- * - Multi-dimensional Product Insights: Giúp Admin nhanh chóng nhận diện các sản phẩm mới nhập (Recent) hoặc các sản phẩm chưa được phân loại (No Category) để kịp thời tối ưu hóa luồng hiển thị trên Storefront.
 
- * =====================================================================
- */
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Badge } from "@/components/ui/badge";

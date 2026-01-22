@@ -11,30 +11,7 @@ import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { memo, useCallback, useState } from "react";
 
-/**
- * =====================================================================
- * FILTER SIDEBAR - Thanh lọc sản phẩm (Category, Brand)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. URL-BASED STATE (Trạng thái dựa trên URL):
- * - Thay vì dùng `useState` để lưu filter đang chọn -> Ta lưu lên URL (`?categoryId=...`).
- * - Lợi ích: User f5 không mất filter, có thể share link cho người khác đúng filter đó.
- *
- * 2. ROUTER PREFETCHING (Kỹ thuật tăng tốc):
- * - Logic `onMouseEnter`: Khi user chỉ mới VỪA RÊ CHUỘT vào nút lọc -> Ta đã gọi `router.prefetch()`.
- * - Next.js sẽ tải ngầm trang kết quả ở background.
- * - Khi user thực sự Click -> Trang mới hiện ra TỨC THÌ (Instant Navigation).
- *
- * 3. PERFORMANCE (`React.memo`):
- * - Sidebar này nhận list category/brand ít thay đổi.
- * - Dùng `memo` để nó không bị render lại vô nghĩa khi Parent Component (ProductList) re-render do data thay đổi. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface FilterSidebarProps {
   categories: Category[];

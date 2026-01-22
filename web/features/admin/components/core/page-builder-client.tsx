@@ -135,34 +135,7 @@ const FooterEditor = dynamic(() =>
   import("./blocks/footer-editor").then((mod) => mod.FooterEditor)
 );
 
-/**
- * =================================================================================================
- * PAGE BUILDER CLIENT - TRÌNH KÉO THẢ VÀ CHỈNH SỬA TRANG
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MÔ HÌNH DỮ LIỆU (DATA MODEL):
- *    - Một `Page` được cấu tạo từ một mảng các `Blocks` (Khối).
- *    - Mỗi Block có: `type` (Loại: Hero, Banner...) và `props` (Dữ liệu: Text, Image URL...).
- *    - Toàn bộ nội dung trang được lưu dưới dạng JSON trong Database.
- *
- * 2. CƠ CHẾ HOẠT ĐỘNG (CLIENT-SIDE STATE):
- *    - Chúng ta dùng `useState` để quản lý danh sách Blocks ngay tại trình duyệt.
- *    - Khi User chỉnh sửa (gõ text, đổi ảnh), ta cập nhật state `blocks`.
- *    - CHÚ Ý: Dữ liệu CHƯA được lưu vào DB cho đến khi bấm nút "Save Changes".
- *
- * 3. RENDER LOGIC:
- *    - Bên trái (hoặc giữa): Preview (Hiển thị trang web như user thấy). Dùng `BlockRenderer`.
- *    - Bên phải (Sidebar): Editor (Form chỉnh sửa). Khi click vào block nào, form tương ứng hiện ra.
- *
- * 4. OPTIMIZATION:
- *    - Sử dụng `useTransition` khi Save để không làm đơ UI.
- *    - Tách biệt `BlockStyleControls` để tái sử dụng logic chỉnh màu/padding. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
- * =================================================================================================
- */
+
 
 // Local components use types from types/cms
 

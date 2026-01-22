@@ -1,27 +1,4 @@
-/**
- * =====================================================================
- * PRODUCT RECOMMENDATIONS - Sản phẩm gợi ý dựa trên category
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RECOMMENDATION STRATEGY:
- * - Đây là implementation đơn giản: "Khách hàng cũng xem" dựa trên cùng category.
- * - Theo nghiên cứu, personalized recommendations có thể tăng conversion 288%.
- *
- * 2. DATA FETCHING:
- * - Server Component: Fetch data trên server, SEO friendly.
- * - Chỉ lấy 8 sản phẩm để không overwhelm user.
- *
- * 3. FUTURE IMPROVEMENTS:
- * - AI-powered recommendations (based on purchase history)
- * - Collaborative filtering (users who bought X also bought Y)
- * - Real-time personalization *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import { OptimizedImage } from "@/components/shared/optimized-image";
 import { formatCurrency } from "@/lib/utils";

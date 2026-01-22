@@ -12,24 +12,6 @@ import { Order, Prisma, OrderStatus } from '@prisma/client';
  * ORDERS REPOSITORY - TRUY CẬP DỮ LIỆU ĐƠN HÀNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MỤC ĐÍCH:
- *    - Tập trung tất cả các queries liên quan đến Order vào một nơi.
- *    - OrdersService sẽ gọi repository này thay vì gọi Prisma trực tiếp.
- *    - Giúp code clean hơn và dễ test hơn.
- *
- * 2. CÁC METHODS:
- *    - findByUser(): Lấy đơn hàng của một user cụ thể.
- *    - findByStatus(): Lọc theo trạng thái đơn hàng.
- *    - findWithItems(): Lấy đơn hàng kèm chi tiết items.
- *    - getStatistics(): Thống kê đơn hàng cho dashboard.
- *
- * 🎯 ỨNG DỤNG THỰC TẾ:
- * - Tách biệt data access logic ra khỏi business logic.
- * - Dễ dàng optimize queries ở một nơi tập trung.
- * - Có thể switch sang database khác mà không ảnh hưởng services.
- *
  * =====================================================================
  */
 

@@ -10,21 +10,7 @@ interface RequestReturnButtonProps {
   className?: string;
 }
 
-/**
- * =====================================================================
- * REQUEST RETURN BUTTON - Nút bắt đầu quy trình trả hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CONDITIONAL NAVIGATION:
- * - Sau khi đơn hàng đã giao (Delivered), khách hàng có quyền yêu cầu trả hàng/hoàn tiền.
- * - Nút này sẽ dẫn đến trang form RMA để user điền thông tin chi tiết.
- *
- * 2. REUSABILITY:
- * - Component nhỏ gọn, có thể đặt ở đầu trang Order Detail hoặc cạnh từng item.
- * =====================================================================
- */
+
 
 export function RequestReturnButton({ orderId, className }: RequestReturnButtonProps) {
   const t = useTranslations("orders");

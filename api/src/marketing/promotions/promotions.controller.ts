@@ -227,4 +227,3 @@ export class PromotionsController {
     return this.promotionsService.remove(id);
   }
 }
-

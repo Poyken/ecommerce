@@ -12,32 +12,7 @@ import { format } from "date-fns";
 import { getTranslations } from "next-intl/server";
 import Image from "next/image";
 
-/**
- * =====================================================================
- * ORDER DETAIL PAGE - Chi tiết đơn hàng (Dynamic Route)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DYNAMIC ROUTES (Thư mục [id]):
- * - Next.js sử dụng cú pháp `[id]` để tạo các trang có URL động (VD: `/orders/123`, `/orders/456`).
- * - Giá trị `id` được truyền vào `params`.
- *
- * 2. SERVER-SIDE DATA FETCHING:
- * - Vì đây là Server Component, ta có thể gọi API trực tiếp bằng `async/await` ngay trong hàm component.
- * - Dữ liệu được fetch trên server giúp trang web hiển thị nội dung ngay lập tức khi user truy cập, tốt cho SEO.
- *
- * 3. DYNAMIC METADATA:
- * - Hàm `generateMetadata` cho phép ta thay đổi tiêu đề trang dựa trên dữ liệu thực tế (VD: "Order #12345 | Luxe").
- *
- * 4. PRICE SNAPSHOT:
- * - `priceAtPurchase`: Đây là giá tại thời điểm mua. Ta KHÔNG dùng giá hiện tại của sản phẩm vì giá có thể thay đổi theo thời gian, nhưng hóa đơn thì phải giữ nguyên giá cũ. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Detailed Order Traceability: Cung cấp cái nhìn sâu sắc về từng mặt hàng trong đơn hàng, bao gồm cả biến thể và giá tại thời điểm mua, giúp khách hàng dễ dàng đối soát.
- * - Fulfillment Transparency: Kết nối trực tiếp với các đơn vị vận chuyển (như GHN) để hiển thị mã vận đơn và link theo dõi hành trình thực tế, nâng cao niềm tin vào dịch vụ logistics.
 
- * =====================================================================
- */
 
 interface OrderItem {
   id: string;

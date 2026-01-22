@@ -3,40 +3,6 @@
  * PRODUCTS SERVICE - QUẢN LÝ SẢN PHẨM CHO E-COMMERCE
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Đây là SERVICE QUAN TRỌNG NHẤT của hệ thống E-commerce, quản lý toàn bộ
- * logic liên quan đến sản phẩm.
- *
- * 1. KIẾN TRÚC PRODUCT - SKU:
- *    - Product: Thông tin chung (Tên, Mô tả, Category, Brand)
- *    - SKU (Stock Keeping Unit): Biến thể cụ thể (Màu đỏ - Size M) có giá, tồn kho riêng
- *    - Options: Các tùy chọn (Color, Size) -> Values: Giá trị cụ thể (Red, Blue, S, M, L)
- *
- * 2. CACHING STRATEGY (Multi-layer):
- *    - L1: In-memory cache (cache-manager) - 1 phút cho listing
- *    - L2: Redis - 5 phút cho product detail
- *    - Invalidation: Khi update -> xóa cache + pre-warm (không chờ request mới)
- *
- * 3. PERFORMANCE OPTIMIZATIONS:
- *    - Cached columns: minPrice, maxPrice, avgRating được tính sẵn ở Product
- *      -> Tránh aggregate query expensive khi load listing
- *    - Smart selects: Chỉ load fields cần thiết, tránh over-fetching
- *    - Query canonicalization: Sort query params để tăng cache hit rate
- *
- * 4. MULTI-TENANCY:
- *    - getTenant() lấy context tenant hiện tại
- *    - PlanUsageService kiểm tra giới hạn số sản phẩm theo gói (BASIC/PRO/ENTERPRISE)
- *
- * 5. CÁC PHƯƠNG THỨC CHÍNH:
- *    - create(): Tạo product + auto-generate SKUs từ options
- *    - findAll(): Listing với filter, search, sort, pagination
- *    - findOne(): Chi tiết product + tất cả SKUs
- *    - update(): Smart migration SKUs khi đổi options
- *    - getRelatedProducts(): Sản phẩm liên quan cùng category *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Hiển thị danh mục sản phẩm, quản lý biến thể (SKU), tối ưu tìm kiếm và đồng bộ dữ liệu với hệ thống kho hàng.
-
  * =====================================================================
  */
 
@@ -82,6 +48,7 @@ export class ProductsService {
 
   /**
    * Tạo Sản phẩm mới (Product Base).
+   * [P12 FIX]: Atomic creation - Product and SKUs must be created together.
    */
   async create(createProductDto: CreateProductDto) {
     const { options, images, ...productData } = createProductDto;
@@ -109,55 +76,60 @@ export class ProductsService {
       throw new NotFoundException('Một hoặc nhiều danh mục không tồn tại');
     if (!brand) throw new NotFoundException('Thương hiệu không tồn tại');
 
-    // 3. Tạo Product và Options (Nested Create)
-    const { categoryIds, ...dataForCreate } = productData;
-    const product = await this.prisma.product.create({
-      data: {
-        ...dataForCreate,
-        slug,
-        tenantId: tenant!.id,
-        categories: {
-          create: createProductDto.categoryIds.map((categoryId) => ({
-            category: { connect: { id: categoryId } },
-            tenant: { connect: { id: tenant!.id } },
-          })),
+    // [P12 FIX] Atomic Transaction: Product + SKUs in one go
+    const product = await this.prisma.$transaction(async (tx) => {
+      // 3. Tạo Product và Options (Nested Create)
+      const { categoryIds, ...dataForCreate } = productData;
+      const newProduct = await tx.product.create({
+        data: {
+          ...dataForCreate,
+          slug,
+          tenantId: tenant!.id,
+          categories: {
+            create: createProductDto.categoryIds.map((categoryId) => ({
+              category: { connect: { id: categoryId } },
+              tenant: { connect: { id: tenant!.id } },
+            })),
+          },
+          options: {
+            create: options?.map((opt, index) => ({
+              name: opt.name,
+              displayOrder: index,
+              tenant: { connect: { id: tenant!.id } },
+              values: {
+                create: opt.values.map((val) => ({
+                  value: val,
+                  tenant: { connect: { id: tenant!.id } },
+                })),
+              },
+            })),
+          },
+          images: {
+            create: images?.map((img) => ({
+              url: img.url,
+              alt: img.alt,
+              displayOrder: img.displayOrder || 0,
+              tenant: { connect: { id: tenant!.id } },
+            })),
+          },
         },
-        options: {
-          create: options?.map((opt, index) => ({
-            name: opt.name,
-            displayOrder: index,
-            tenant: { connect: { id: tenant!.id } },
-            values: {
-              create: opt.values.map((val) => ({
-                value: val,
-                tenant: { connect: { id: tenant!.id } },
-              })),
-            },
-          })),
+        include: {
+          brand: true,
+          categories: {
+            include: { category: true },
+          },
+          options: {
+            include: { values: true },
+          },
         },
-        images: {
-          create: images?.map((img) => ({
-            url: img.url,
-            alt: img.alt,
-            displayOrder: img.displayOrder || 0,
-            tenant: { connect: { id: tenant!.id } },
-          })),
-        },
-      },
-      include: {
-        brand: true,
-        categories: {
-          include: { category: true },
-        },
-        options: {
-          include: { values: true },
-        },
-      },
-    });
+      });
 
-    // 4. Tự động tạo SKUs (Giao cho SkuManager xử lý)
-    // SkuManager sẽ tạo tất cả các biến thể có thể (Red-S, Red-M, Blue-S, Blue-M...)
-    await this.skuManager.generateSkusForNewProduct(product);
+      // 4. Tự động tạo SKUs (Giao cho SkuManager xử lý TRONG transaction)
+      // SkuManager sẽ tạo tất cả các biến thể có thể (Red-S, Red-M, Blue-S, Blue-M...)
+      await this.skuManager.generateSkusForNewProduct(newProduct, tx);
+
+      return newProduct;
+    });
 
     // [PLAN LIMIT] Tăng bộ đếm usage của tenant
     if (tenant) {
@@ -956,12 +928,6 @@ export class ProductsService {
   /**
    * [P13 RECONCILIATION] - HỆ THỐNG TỰ PHỤC HỒI DỮ LIỆU
    *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   * Do chúng ta sử dụng kỹ thuật "Denormalization" (lưu giá trị min/max và rating trực tiếp ở bảng Product
-   * để tăng tốc độ load), đôi khi dữ liệu này có thể bị sai lệch so với thực tế (do lỗi logic hoặc race condition).
-   *
-   * Hàm này sẽ "quét" lại dữ liệu thực tế từ SKUs và Reviews để ghi đè lại các giá trị này,
-   * giúp hệ thống luôn đạt độ chính xác cao nhất (Data Integrity).
    */
   async reconcileProduct(productId: string) {
     this.logger.log(`Reconciling data for product ${productId}...`);
@@ -1000,9 +966,6 @@ export class ProductsService {
    * [P13 RECONCILIATION] Periodic job to heal data across the entire catalog.
    * Runs weekly to ensure high data integrity.
    *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   * Tại sao phải chạy lúc 2h sáng Chủ Nhật? -> Vì đây là thao tác quét toàn bộ DB (Heavy Job),
-   * ta chọn giờ ít người dùng nhất để không làm ảnh hưởng đến hiệu năng hệ thống.
    */
   @Cron('0 2 * * 0') // Sunday at 2 AM
   async reconcileAllProducts() {
@@ -1109,4 +1072,3 @@ export class ProductsService {
     return results;
   }
 }
-

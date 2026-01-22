@@ -15,30 +15,6 @@ import { NotificationsService } from './notifications.service';
  * NOTIFICATIONS GATEWAY - WebSocket cho thông báo real-time
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. WEBSOCKET vs HTTP:
- * - HTTP: Client phải "hỏi" server liên tục (Polling) → Lãng phí tài nguyên
- * - WebSocket: Server "đẩy" thông báo đến client ngay lập tức → Real-time
- *
- * 2. AUTHENTICATION:
- * - Client gửi JWT token khi kết nối
- * - Server xác thực và lưu userId vào socket.data
- * - Chỉ client đúng userId mới nhận được thông báo của họ
- *
- * 3. ROOMS:
- * - Mỗi user có một "room" riêng (userId)
- * - Khi tạo thông báo, emit vào room của user đó
- * - Chỉ user trong room đó mới nhận được thông báo
- *
- * 4. USE CASES:
- * - Thông báo đơn hàng mới
- * - Thông báo trạng thái đơn hàng thay đổi
- * - Thông báo khuyến mãi
- * - Chat support (nếu mở rộng) *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Cầu nối Websocket thời gian thực, giúp đẩy thông báo quan trọng đến trình duyệt của người dùng ngay lập tức mà không cần F5 trang.
-
  * =====================================================================
  */
 

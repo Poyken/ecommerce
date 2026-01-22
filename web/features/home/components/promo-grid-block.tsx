@@ -24,28 +24,7 @@ interface PromoGridBlockProps {
   };
 }
 
-/**
- * =================================================================================================
- * PROMO GRID BLOCK - KHỐI KHUYẾN MÃI (BANNERS PHỤ)
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MOTION VARIANTS (L-R ANIMATION):
- *    - Sử dụng `fadeInLeft` cho item đầu và `fadeInRight` cho item thứ hai.
- *    - `margin: "-100px"` trong `viewport`: Kích hoạt animation sớm hơn trước khi item xuất hiện hoàn toàn.
- *
- * 2. IMAGE OPTIMIZATION:
- *    - `Image` component của Next.js với thuộc tính `fill`: Phải bọc trong div cha có `relative`.
- *    - `sizes` giúp trình duyệt tải kích thước ảnh phù hợp (Responsive Images).
- *
- * 3. HOVER TRANSLATIONS:
- *    - Hiệu ứng `scale-110` kết hợp `duration-700` tạo cảm giác chuyển động mượt mà. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =================================================================================================
- */
 export function PromoGridBlock({ items, styles }: PromoGridBlockProps) {
   const t = useTranslations("home");
 

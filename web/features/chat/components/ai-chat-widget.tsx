@@ -27,29 +27,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import ReactMarkdown from "react-markdown";
 
-/**
- * =====================================================================
- * AI CHAT WIDGET - Widget chat với AI Assistant
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DUAL MODE SUPPORT:
- * - Guest users: Chat không cần đăng nhập, session lưu trong localStorage
- * - Logged-in users: Chat có lịch sử, sync với database
- *
- * 2. MARKDOWN RENDERING:
- * - AI responses có thể chứa markdown (bold, lists, links)
- * - Sử dụng react-markdown để render đẹp
- *
- * 3. FLOATING WIDGET:
- * - Sử dụng Portal để render ngoài DOM tree chính
- * - Fixed position ở góc dưới phải màn hình *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface AiChatWidgetProps {
   user?: {

@@ -11,20 +11,6 @@ import { Job } from 'bullmq';
  * CACHE WARMING PROCESSOR - HỆ THỐNG "LÀM NÓNG" BỘ NHỚ ĐỆM
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CACHE WARMING (Làm nóng Cache):
- * - Thông thường, lần đầu tiên người dùng vào web sẽ bị chậm vì server phải gọi DB (Cold Start).
- * - Processor này giải quyết vấn đề đó bằng cách chủ động gọi các API nặng (như danh sách sản phẩm trang chủ, danh mục) để đưa vào Cache trước khi có người dùng thực tế yêu cầu.
- *
- * 2. TẠI SAO PHẢI LÀM?
- * - Giảm thời gian phản hồi (TTFB) cho những trang quan trọng nhất.
- * - Tránh việc DB bị quá tải đột ngột khi vừa mới khởi động lại server. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tự động hóa việc nạp lại Cache định kỳ hoặc ngay sau khi hệ thống khởi động.
- * - Cải thiện trải nghiệm người dùng (UX) bằng cách đảm bảo dữ liệu luôn sẵn sàng trong RAM.
- * - Giảm tải áp lực truy vấn trực tiếp lên Database vào giờ cao điểm.
-
  * =====================================================================
  */
 @Processor('cache-warming')

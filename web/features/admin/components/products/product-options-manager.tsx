@@ -1,26 +1,4 @@
-/**
- * =====================================================================
- * PRODUCT OPTIONS MANAGER - Quản lý Biến thể Sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. UI LOGIC PHỨC TẠP:
- * - Component này cho phép thêm/sửa/xóa động (Dynamic Fields).
- * - Cấu trúc: 1 Sản phẩm -> Nhiều Options (Màu, Size) -> Mỗi Option có nhiều Values (Xanh, Đỏ...).
- *
- * 2. TRẢI NGHIỆM NGƯỜI DÙNG (UX):
- * - Hỗ trợ nhập liệu nhanh: Nhập giá trị -> Bấm Enter để thêm (Input onKeyDown).
- * - Nút xóa (Remove) rõ ràng cho từng cấp độ.
- *
- * 3. PROP DRILLING:
- * - Nhận `options` và `setOptions` từ component cha (`CreateProductDialog`).
- * - Thay đổi ở đây sẽ cập nhật trực tiếp state của cha (Lifted State Up). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */ 
+ 
 "use client";
 
 import { Button } from "@/components/ui/button";

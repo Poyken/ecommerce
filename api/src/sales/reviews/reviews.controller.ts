@@ -3,20 +3,6 @@
  * REVIEWS CONTROLLER - API Đánh giá sản phẩm
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ELIGIBILITY CHECK (`check-eligibility`):
- * - Trước khi cho user viết review, phải kiểm tra:
- *   + User đã mua sản phẩm này chưa?
- *   + Đơn hàng đã giao thành công chưa?
- *   + Đã review sản phẩm này trước đó chưa?
- *
- * 2. MEDIA UPLOAD:
- * - Endpoint `upload` cho phép upload ảnh/video đính kèm review.
- * - Sử dụng `FilesInterceptor` để xử lý multipart/form-data. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 import { CloudinaryService } from '@/platform/integrations/external/cloudinary/cloudinary.service';
@@ -225,4 +211,3 @@ export class ReviewsController {
     return this.reviewsService.replyToReview(id, reply);
   }
 }
-

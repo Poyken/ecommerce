@@ -1,28 +1,4 @@
-/**
- * =====================================================================
- * AUTH PROVIDER - Quản lý phân quyền (RBAC)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RBAC (Role-Based Access Control):
- * - Thay vì chỉ check Role (Admin/User), ta check PERMISSION (Quyền).
- * - VD: `hasPermission("product:create")`.
- * - Linh hoạt hơn: Một Role có thể có nhiều Permission. Admin có thể tạo user, nhưng Manager thì không.
- *
- * 2. HYDRATION (Bơm dữ liệu):
- * - `initialPermissions` được lấy từ Server (trong Layout) truyền xuống.
- * - Giúp UI hiển thị đúng quyền ngay lập tức mà không cần chờ loading spinner (Client-side fetching).
- *
- * 3. SECURITY NOTE:
- * - Việc check permission ở Client (`hasPermission`) chỉ là để ẩn hiện UI (UX).
- * - BẮT BUỘC phải check lại ở Backend/API để đảm bảo an toàn thực sự. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Granular Access Control: Cho phép phân quyền chi tiết (vd: Nhân viên A chỉ được xem đơn hàng, Nhân viên B được xóa đơn hàng).
- * - Dynamic UI: Tự động ẩn các nút chức năng hoặc menu mà người dùng không có quyền truy cập, giúp giao diện gọn gàng và tránh gây bối rối.
 
- * =====================================================================
- */
 
 "use client";
 import { getPermissionsAction } from "@/features/auth/actions";

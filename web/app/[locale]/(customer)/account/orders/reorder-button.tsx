@@ -8,28 +8,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 
-/**
- * =====================================================================
- * REORDER BUTTON - Nút mua lại đơn hàng cũ
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REORDER LOGIC:
- * - Cho phép người dùng thêm nhanh toàn bộ sản phẩm từ một đơn hàng cũ vào giỏ hàng hiện tại.
- * - Giúp tăng trải nghiệm người dùng (UX) và thúc đẩy doanh số (Retention).
- *
- * 2. USE TRANSITION:
- * - Sử dụng `useTransition` để bọc lấy Server Action (`reorderAction`).
- * - `isPending` giúp ta hiển thị trạng thái "Adding..." trên nút bấm, ngăn user click nhiều lần.
- *
- * 3. NAVIGATION AFTER ACTION:
- * - Sau khi thêm thành công, ta dùng `router.push("/cart")` để đưa người dùng đến trang giỏ hàng ngay lập tức. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 interface ReorderButtonProps {
   orderId: string;

@@ -15,29 +15,7 @@ import { Calendar, Edit, FileText, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState } from "react";
 
-/**
- * =====================================================================
- * PROFILE BLOGS TAB - Quản lý bài viết cá nhân
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. USER GENERATED CONTENT (UGC):
- * - Cho phép người dùng tự tạo bài viết (Blog) để chia sẻ trên cộng đồng.
- * - API `getMyBlogsAction` sẽ chỉ trả về các bài viết do user hiện tại tạo (`where: { authorId: user.id }`).
- *
- * 2. REUSABLE COMPONENTS:
- * - Sử dụng lại `BlogFormDialog` của trang Admin.
- *   + Prop `isUserMode={true}` giúp ẩn các trường chỉ dành cho Admin (như Featured, Tags nâng cao).
- *
- * 3. STATE MANAGEMENT:
- * - `selectedBlog`: Lưu bài viết đang được chọn để Edit. Nếu null -> Mode Create.
- * - `itemToDelete`: Lưu item đang chờ xóa để hiện Confirm Dialog. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 export function ProfileBlogsTab() {
   const t = useTranslations("admin.blogs");
   const { toast } = useToast();

@@ -1,20 +1,4 @@
-/**
- * =====================================================================
- * SECURITY HUB - TRUNG TÂM PHÒNG CHỐNG TẤN CÔNG
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Đây là "nút bấm khẩn cấp" của hệ thống SaaS:
- * 1. EMERGENCY LOCKDOWN: Khóa toàn bộ nền tảng nếu phát hiện tấn công.
- * 2. IP WHITELIST: Chỉ cho phép các IP tin tưởng được truy cập Super Admin.
- * 3. THREAT DETECTION: Theo dõi số lần login sai toàn hệ thống. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Infrastructural Perimeter Defense: Thiết lập lớp phòng thủ vòng ngoài bằng cách Whitelist IP, ngăn chặn tối đa các truy cập trái phép vào khu vực điều hành cấp cao.
- * - Cyber Threat Response: Cung cấp công cụ phản ứng nhanh (Emergency Lockdown) giúp cô lập hệ thống ngay lập tức khi phát hiện có dấu hiệu bị thâm nhập hoặc tấn công từ chối dịch vụ (DDoS).
 
- * =====================================================================
- */
 
 "use client";
 

@@ -1,23 +1,4 @@
-/**
- * =====================================================================
- * PRODUCT SEO INFO - Form thông tin SEO sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. META DATA:
- * - Meta Title: Title hiển thị trên tab trình duyệt và kết quả Google.
- * - Meta Description: Đoạn mô tả ngắn dưới title trên Google.
- * - Keywords: Từ khóa (Hiện tại Google ít dùng, nhưng 1 số search engine khác vẫn dùng).
- *
- * 2. BEST PRACTICES:
- * - Component này nên gợi ý độ dài text (VD: Title < 60 ký tự, Desc < 160 ký tự)
- *   để content không bị cắt bớt (ellipsis) trên trang kết quả tìm kiếm. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */ 
+ 
 "use client";
 
 import { Input } from "@/components/ui/input";

@@ -1,25 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * USE USER PROFILE HOOK - Hook quản lý thông tin user
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. OPTIMISTIC UI (Giao diện lạc quan):
- * - Nhận `initialUser` từ Server Component để hiển thị ngay lập tức.
- * - Tránh hiện tượng "layout shift" (nhảy giao diện) hoặc loading spinner không cần thiết.
- *
- * 2. CLIENT-SIDE FETCHING STRATEGY:
- * - Nếu `initialUser` được provide (dù là null hoặc object), ta TIN TƯỞNG giá trị đó.
- * - CHỈ fetch khi `initialUser === undefined` (tức là component không nhận được data từ server).
- * - Điều này tránh duplicate API calls khi server đã fetch sẵn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
 
- * =====================================================================
- */
 
 import { getProfileAction } from "@/features/profile/actions";
 import { User } from "@/types/models";

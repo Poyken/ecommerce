@@ -6,29 +6,7 @@ import { AlertTriangle, RefreshCcw } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 
-/**
- * =====================================================================
- * GLOBAL ERROR PAGE - Trang xử lý lỗi toàn cục
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ERROR BOUNDARIES:
- * - Next.js sử dụng file `error.tsx` để tự động bọc các route trong một React Error Boundary.
- * - Khi có lỗi xảy ra ở bất kỳ component con nào, thay vì làm trắng trang, Next.js sẽ hiển thị UI này.
- *
- * 2. RESET FUNCTION:
- * - Prop `reset` là một hàm giúp "thử lại" việc render route đó.
- * - Thường dùng khi lỗi xảy ra do mất kết nối mạng tạm thời hoặc lỗi ngẫu nhiên.
- *
- * 3. LOGGING:
- * - `useEffect` được dùng để log lỗi ra console (hoặc gửi lên các dịch vụ như Sentry) để lập trình viên theo dõi. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Fault Tolerance: Tăng độ bền bỉ cho ứng dụng bằng cách cô lập lỗi tại một trang cụ thể, không để một lỗi nhỏ làm sập toàn bộ hệ thống của người dùng.
- * - User Retention: Giữ chân người dùng ở lại website bằng cách cung cấp nút "Thử lại" và UI thân thiện thay vì thông báo lỗi kỹ thuật đáng sợ của trình duyệt.
 
- * =====================================================================
- */
 
 export default function Error({
   error,

@@ -27,20 +27,6 @@ import { UpdateAddressDto } from './dto/update-address.dto';
  * ADDRESSES CONTROLLER - Điều hướng yêu cầu về địa chỉ
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SECURITY (JWT AUTH):
- * - `@UseGuards(JwtAuthGuard)`: Đảm bảo chỉ những người dùng đã đăng nhập mới có thể truy cập các API này.
- * - `@ApiBearerAuth()`: Thông báo cho Swagger rằng API này yêu cầu Token để thực thi.
- *
- * 2. REQUEST OBJECT:
- * - `@Request() req`: Dùng để lấy thông tin user từ Token (sau khi qua Guard). `req.user.id` giúp ta biết chính xác ai đang thực hiện yêu cầu.
- *
- * 3. RESTFUL API:
- * - Sử dụng đầy đủ các phương thức: `POST` (Tạo), `GET` (Lấy), `PATCH` (Cập nhật), `DELETE` (Xóa). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Cho phép người dùng đầu cuối (Customer) quản lý danh sách địa chỉ nhận hàng của họ một cách an toàn.
-
  * =====================================================================
  */
 @ApiTags('Addresses')
@@ -84,4 +70,3 @@ export class AddressesController {
     return await this.addressesService.remove(req.user.id, id);
   }
 }
-

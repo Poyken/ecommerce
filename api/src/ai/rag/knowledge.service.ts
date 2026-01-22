@@ -8,18 +8,6 @@ import { RedisService } from '@core/redis/redis.service';
  * KNOWLEDGE SERVICE - QUẢN LÝ KNOWLEDGE BASE
  * =============================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Service này quản lý "kho kiến thức" của từng shop:
- * 1. Index sản phẩm - Tên, mô tả, giá, tồn kho
- * 2. Index chính sách - Shipping, return, payment
- * 3. Index FAQ - Câu hỏi thường gặp
- *
- * Mỗi tenant có knowledge riêng biệt (Multi-tenancy)
- * *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =============================================================================
  */
 

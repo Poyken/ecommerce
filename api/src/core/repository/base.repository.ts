@@ -8,36 +8,6 @@ import { Prisma } from '@prisma/client';
  * BASE REPOSITORY - LỚP CƠ SỞ CHO REPOSITORY PATTERN
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REPOSITORY PATTERN LÀ GÌ?
- *    - Là một design pattern tách biệt logic truy cập dữ liệu (Data Access) ra khỏi Business Logic.
- *    - Service sẽ gọi Repository thay vì gọi trực tiếp Prisma.
- *    - Giúp code sạch hơn, dễ test hơn, dễ thay đổi database hơn.
- *
- * 2. LỢI ÍCH:
- *    - Single Responsibility: Repository chỉ lo query, Service chỉ lo business.
- *    - Dễ test: Mock repository thay vì mock Prisma phức tạp.
- *    - Reusable: Nhiều services có thể dùng chung repository.
- *    - Tenant-aware: Tự động thêm tenantId filter.
- *
- * 3. CÁCH SỬ DỤNG:
- *    ```typescript
- *    @Injectable()
- *    export class ProductsRepository extends BaseRepository<Product> {
- *      protected modelName = 'product' as const;
- *
- *      async findByBrand(brandId: string) {
- *        return this.findMany({ where: { brandId } });
- *      }
- *    }
- *    ```
- *
- * 🎯 ỨNG DỤNG THỰC TẾ:
- * - Giảm 40-60% code trong các service files.
- * - Query standardization: Tất cả queries đều có tenant filter.
- * - Performance monitoring: Dễ thêm logging/metrics cho queries.
- *
  * =====================================================================
  */
 

@@ -7,14 +7,6 @@ import { NotificationType } from './create-notification.dto';
  * SEND TO USER DTO
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * USE CASE:
- * - Gửi thông báo cho 1 USER CỤ THỂ (VD: "Đơn hàng của bạn đã được giao").
- * - `userId`: Bắt buộc phải có ID người nhận. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 const SendToUserSchema = z.object({

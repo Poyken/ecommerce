@@ -25,35 +25,12 @@ import { Prisma } from '@prisma/client';
 
 /**
  * =====================================================================
- * AUTH SERVICE - LOGIC XÁC THỰC
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PERMISSION SYSTEM (Hệ thống phân quyền - RBAC):
- * - Hệ thống này sử dụng cơ chế quyền kết hợp (Hybrid Permissions):
- *   + Quyền trực tiếp (Direct Permissions): Gán thẳng vào User.
- *   + Quyền qua vai trò (Role-based Permissions): User -> Roles -> Permissions.
- * - Logic "Permission Flattening":
- *   Khi user đăng nhập, ta sẽ gộp tất cả quyền từ Role và quyền trực tiếp thành một mảng duy nhất -> Lưu vào Redis/Token để check nhanh sau này.
- *
- * 2. AUTHENTICATION FLOW:
- * - Bước 1: Validate email/password (Bcrypt compare).
- * - Bước 2: Kiểm tra 2FA (nếu user bật).
- * - Bước 3: Generate Tokens (Access + Refresh).
- * - Bước 4: Lưu Refresh Token vào Redis (để có thể thu hồi/revoke khi user logout).
- *
- * 3. SECURITY:
- * - Mật khẩu LUÔN được hash bằng `bcrypt` trước khi lưu DB.
- * - Refresh Token cũng được quản lý chặt chẽ kèm Fingerprint thiết bị. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Bảo vệ cổng vào của hệ thống, cấp thẻ bài (Token) cho người dùng hợp lệ và đảm bảo tính bảo mật mật khẩu bằng các thuật toán mã hóa hiện đại.
-
+ * AUTH SERVICE
  * =====================================================================
  */
 
-import { NotificationsGateway } from '@/notifications/notifications.gateway';
-import { NotificationsService } from '@/notifications/notifications.service';
+import { PromotionsService } from '@/marketing/promotions/promotions.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AUTH_CONFIG } from '@core/config/constants';
 import { PermissionService } from './permission.service';
 
@@ -69,8 +46,8 @@ export class AuthService {
     private readonly permissionService: PermissionService,
     @InjectQueue('email-queue') private readonly emailQueue: Queue,
     private readonly emailService: EmailService,
-    private readonly notificationsService: NotificationsService,
-    private readonly notificationsGateway: NotificationsGateway,
+    private readonly promotionsService: PromotionsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   private readonly USER_PERMISSION_SELECT = {
@@ -217,7 +194,18 @@ export class AuthService {
         });
       }
     } else {
-      // Nếu user chưa tồn tại -> Tạo mới (Auto Register)
+      // [BẢO MẬT] Kiểm tra xem Tenant có cho phép tự động đăng ký qua Social không
+      const tenantDetails = await this.prisma.tenant.findUnique({
+        where: { id: tenant!.id },
+        select: { allowSocialRegistration: true },
+      });
+
+      if (!tenantDetails?.allowSocialRegistration) {
+        throw new UnauthorizedException(
+          'Cửa hàng này không cho phép tự động đăng ký qua mạng xã hội. Vui lòng liên hệ quản trị viên.',
+        );
+      }
+
       // Nếu user chưa tồn tại -> Tạo mới (Auto Register)
       const newUser = await this.prisma.user.create({
         data: {
@@ -239,7 +227,6 @@ export class AuthService {
         where: { id: newUser.id },
         select: this.USER_PERMISSION_SELECT,
       });
-
 
       if (user) {
         await this.grantWelcomeVoucher(user.id).catch((err) =>
@@ -444,11 +431,7 @@ export class AuthService {
       select: this.USER_PERMISSION_SELECT,
     });
 
-    if (
-      !user ||
-      !user.twoFactorEnabled ||
-      !user.twoFactorSecret
-    ) {
+    if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
       throw new UnauthorizedException('2FA không khả dụng cho tài khoản này');
     }
 
@@ -726,73 +709,15 @@ export class AuthService {
   }
 
   private async grantWelcomeVoucher(userId: string) {
-    // Kiểm tra user đã nhận quà chưa (chống spam nhận quà)
-    // 1. Check xem đã dùng coupon WELCOME nào chưa
-    // [MIGRATION TODO]: Rewrite this using Promotion Engine
-    // const existingWelcomeCoupon = await this.prisma.coupon.findFirst({
-    //   where: {
-    //     code: { startsWith: 'WELCOME-' },
-    //     orders: {
-    //       some: { userId },
-    //     },
-    //   },
-    // });
-
-    // 2. Check xem đã được hệ thống gửi thông báo tặng quà chưa
-    const existingNotification = await this.prisma.notification.findFirst({
-      where: {
-        userId,
-        title: { contains: 'Quà tặng chào mừng' },
-      },
-    });
-
-    // existingWelcomeCoupon ||
-    if (existingNotification) {
-      this.logger.log(`User ${userId} đã nhận quà chào mừng rồi, bỏ qua...`);
-      return null;
+    try {
+      const result = await this.promotionsService.grantWelcomeVoucher(userId);
+      if (result) {
+        // Phát sự kiện để NotificationsService xử lý gửi thông báo
+        this.eventEmitter.emit('user.welcome_gift_granted', result);
+      }
+    } catch (error) {
+      this.logger.error('Lỗi khi xử lý quà chào mừng', error);
     }
-
-    const now = new Date();
-    const endDate = new Date();
-    endDate.setDate(now.getDate() + 7);
-
-    const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
-    const couponCode = `WELCOME-${randomSuffix}`;
-
-    const tenant = getTenant();
-    // const coupon = await this.prisma.coupon.create({
-    //   data: {
-    //     code: couponCode,
-    //     discountType: 'FIXED_AMOUNT',
-    //     discountValue: 50000,
-    //     description: 'Voucher chào mừng thành viên mới',
-    //     startDate: now,
-    //     endDate: endDate,
-    //     usageLimit: 1,
-    //     isActive: true,
-    //     tenantId: tenant!.id,
-    //   },
-    // });
-
-    // Fake coupon object for now to avoid errors, or just don't return it
-    const coupon = null;
-
-    // TODO: Create a Promotion record instead
-    this.logger.warn(
-      'Skipping Welcome Coupon creation - Promotion Engine migration pending',
-    );
-
-    const notification = await this.notificationsService.create({
-      userId,
-      type: 'SYSTEM',
-      title: 'Quà tặng chào mừng thành viên mới! 🎁',
-      message: `Chào mừng bạn! Tính năng quà tặng đang được nâng cấp, bạn sẽ nhận được ưu đãi sớm nhất!`,
-      link: '/profile',
-    });
-
-    this.notificationsGateway.sendNotificationToUser(userId, notification);
-
-    return coupon;
   }
 
   private async ensureGuestRoleAndAssign(userId: string) {

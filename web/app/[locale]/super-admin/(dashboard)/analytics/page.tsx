@@ -1,21 +1,4 @@
-/**
- * =====================================================================
- * SUPER ADMIN ANALYTICS - THỐNG KÊ TOÀN NỀN TẢNG (SAAS)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Trang này chỉ dành cho chủ sở hữu nền tảng (Super Admin).
- * Khác với Business Analytics của riêng từng Shop, đây là chỉ số tổng quát:
- * - Tổng số Tenant (Cửa hàng) đang hoạt động.
- * - Tỷ lệ rời bỏ (Churn Rate).
- * - Doanh thu từ phí thuê nền tảng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Platform-wide BI: Tổng hợp các chỉ số kinh doanh từ hàng nghìn cửa hàng thành một bức tranh thống nhất, giúp ban lãnh đạo đưa ra các quyết định chiến lược về phát triển nền tảng.
- * - Aggregate Performance Insights: Theo dõi sức khỏe tài chính và mức độ tăng trưởng của mô hình SaaS thông qua các chỉ số đặc thù như Churn Rate và ARPU (Average Revenue Per User).
 
- * =====================================================================
- */
 
 "use client";
 

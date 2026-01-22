@@ -18,31 +18,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 
-/**
- * =====================================================================
- * REGISTER PAGE CONTENT - Xử lý UI Đăng ký
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REGISTRATION FLOW:
- * - Sử dụng `registerAction` (Server Action) để tạo tài khoản mới.
- * - Form được validate ở cả Client (HTML5) và Server (Zod).
- *
- * 2. ERROR HANDLING:
- * - `state.errors` chứa các lỗi validation chi tiết cho từng field (firstName, email, password...).
- * - Hiển thị lỗi ngay dưới input tương ứng để user dễ dàng sửa đổi.
- *
- * 3. UI CONSISTENCY:
- * - Sử dụng chung bộ `GlassCard` và `GlassButton` để đảm bảo tính thẩm mỹ đồng nhất với trang Login.
- *
- * 4. SYNC GUEST DATA:
- * - Sau khi đăng ký thành công, tự động sync Cart và Wishlist từ localStorage lên Server. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function RegisterPageContent() {
   const t = useTranslations("auth.register");

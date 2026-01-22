@@ -17,26 +17,6 @@ import { getTenant } from '@core/tenant/tenant.context';
  * ROLES SERVICE - Dịch vụ quản lý vai trò và phân quyền
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. QUAN HỆ NHIỀU - NHIỀU (Many-to-Many):
- * - Mối quan hệ giữa `Role` và `Permission` là n-n. Một Role có nhiều Permission, một Permission thuộc về nhiều Role.
- * - Ta sử dụng bảng trung gian `RolePermission` để lưu trữ các liên kết này nhằm tối ưu hóa truy vấn.
- *
- * 2. GÁN QUYỀN NGUYÊN TỐ (Atomic Assignment):
- * - Trong hàm `assignPermissions`, ta sử dụng `$transaction` để đảm bảo:
- *   - Bước 1: Xóa sạch các quyền cũ của Role.
- *   - Bước 2: Thêm danh sách các quyền mới.
- * - Điều này giúp tránh việc bị trùng lặp, sót quyền hoặc dữ liệu không nhất quán khi cập nhật.
- *
- * 3. XỬ LÝ XUNG ĐỘT (Conflict Handling):
- * - Luôn kiểm tra trùng tên (`findFirst`) trước khi tạo Role hoặc Permission mới để đảm bảo tính duy nhất trong hệ thống (Unique Constraint).
- *
- * 4. XÓA LAN TRUYỀN (Cascade Delete):
- * - Khi xóa một Role hoặc Permission, các liên kết trong bảng `RolePermission` cũng cần được xử lý (thường là DB tự động xóa nhờ `ON DELETE CASCADE`). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

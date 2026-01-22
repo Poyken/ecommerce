@@ -3,24 +3,6 @@
  * WEBHOOK SERVICE - HỆ THỐNG GỬI SỰ KIỆN ĐẾN BÊN THỨ BA
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Webhook là cơ chế "đẩy" (push) sự kiện từ server đến các ứng dụng bên ngoài.
- * Thay vì bên thứ ba phải polling (hỏi liên tục), ta chủ động thông báo cho họ.
- *
- * Ví dụ use cases:
- * - Khi có đơn hàng mới -> Gửi webhook đến hệ thống kho
- * - Khi thanh toán thành công -> Gửi đến accounting system
- * - Khi stock thấp -> Gửi cảnh báo đến Slack/Teams
- *
- * Các tính năng:
- * 1. Retry với exponential backoff (1s, 2s, 4s, 8s...)
- * 2. Signature verification (HMAC-SHA256)
- * 3. Event logging cho audit
- * 4. Rate limiting để tránh spam endpoints *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
-
  * =====================================================================
  */
 

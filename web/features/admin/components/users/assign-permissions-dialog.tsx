@@ -13,29 +13,7 @@ import { Permission } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState, useTransition } from "react";
 
-/**
- * =====================================================================
- * ASSIGN PERMISSIONS DIALOG - Gán quyền cho vai trò
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PERMISSION GROUPING:
- * - Hệ thống tự động nhóm các quyền theo resource (dựa trên dấu `:`).
- * - Ví dụ: Tất cả quyền bắt đầu bằng `product:` sẽ được gom vào nhóm "Product".
- * - Giúp Admin dễ dàng quản lý hàng trăm quyền hạn khác nhau.
- *
- * 2. BULK SELECTION:
- * - Cho phép "Select All" hoặc "Clear All" theo từng nhóm resource.
- * - Tiết kiệm thời gian khi cần gán toàn bộ quyền của một module cho một vai trò.
- *
- * 3. UI LAYOUT:
- * - Sử dụng Grid Layout (`grid-cols-5`) để hiển thị nhiều nhóm quyền trên một màn hình rộng, tối ưu cho Admin Dashboard. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface AssignPermissionsDialogProps {
   roleId: string;

@@ -26,29 +26,7 @@ interface Order {
   items: OrderItem[];
 }
 
-/**
- * =================================================================================================
- * ORDER FAILED PAGE - TRANG THÔNG BÁO THANH TOÁN THẤT BẠI
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ERROR CONTEXT:
- *    - Hiển thị thông báo lỗi cụ thể dựa trên việc có truy vấn được `order` hay không.
- *    - Nhấn mạnh rằng "No money has been charged" để giảm bớt sự lo lắng của khách hàng.
- *
- * 2. RECOVERABILITY (RETRY):
- *    - `RetryOrderButton`: Một component cực kỳ quan trọng giúp User mua lại nhanh chóng
- *      bằng cách đẩy lại các item từ đơn hàng cũ vào giỏ hàng và mở lại checkout.
- *
- * 3. DATA TYPES:
- *    - Định nghĩa `OrderItem` và `Order` interface ngay tại file để quản lý cấu trúc dữ liệu
- *      trả về từ Server Action (Type Casting). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =================================================================================================
- */
 export default async function OrderFailedPage({
   params,
 }: {

@@ -15,7 +15,9 @@ import { DataLoaderModule } from '@core/dataloader/dataloader.module';
 import { MetricsModule } from '@core/metrics/metrics.module';
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production', 'test', 'provision']).default('development'),
+  NODE_ENV: z
+    .enum(['development', 'production', 'test', 'provision'])
+    .default('development'),
   PORT: z.coerce.number().default(8080),
   DATABASE_URL: z.string().min(1),
   JWT_ACCESS_SECRET: z.string().min(32),
@@ -34,7 +36,11 @@ function validate(config: Record<string, unknown>) {
   }
   const data = result.data;
   if (data.NODE_ENV === 'production') {
-    if (!data.CLOUDINARY_CLOUD_NAME || !data.CLOUDINARY_API_KEY || !data.CLOUDINARY_API_SECRET) {
+    if (
+      !data.CLOUDINARY_CLOUD_NAME ||
+      !data.CLOUDINARY_API_KEY ||
+      !data.CLOUDINARY_API_SECRET
+    ) {
       throw new Error('❌ CLOUDINARY credentials are REQUIRED in production.');
     }
   }
@@ -68,7 +74,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        connection: { url: configService.get('REDIS_URL') || 'redis://localhost:6379' },
+        connection: {
+          url: configService.get('REDIS_URL') || 'redis://localhost:6379',
+        },
       }),
     }),
     ScheduleModule.forRoot(),

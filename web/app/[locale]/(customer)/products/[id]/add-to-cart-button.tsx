@@ -6,27 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 
-/**
- * =====================================================================
- * ADD TO CART BUTTON - Nút thêm vào giỏ hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SERVER ACTIONS:
- * - `addToCartAction`: Hàm chạy trên server để cập nhật DB.
- * - `useTransition`: Quản lý trạng thái loading (`isPending`) để disable nút khi đang xử lý.
- *
- * 2. EVENT DISPATCHING:
- * - `window.dispatchEvent(new Event("cart_updated"))`: Thông báo cho các component khác (như Header) biết giỏ hàng đã thay đổi để cập nhật số lượng hiển thị.
- *
- * 3. TOAST FEEDBACK:
- * - Sử dụng `useToast` để hiển thị thông báo thành công/thất bại ngay lập tức, giúp người dùng biết thao tác đã được thực hiện. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 export function AddToCartButton({
   skuId,

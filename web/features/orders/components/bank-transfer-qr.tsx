@@ -11,31 +11,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-/**
- * =====================================================================
- * BANK TRANSFER QR - Mã QR thanh toán chuyển khoản
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. VIETQR STANDARD:
- * - Mã QR được generate theo chuẩn VietQR (được hỗ trợ bởi hầu hết app ngân hàng VN).
- * - Sử dụng API của `vietqr.io` để render ảnh QR động dựa trên số tiền và nội dung.
- * - Cấu trúc: `https://img.vietqr.io/image/<BANK_ID>-<ACC_NO>-<TEMPLATE>.png?amount=...&addInfo=...`
- *
- * 2. POLLING MECHANISM (`useEffect` + `setInterval`):
- * - Đếm ngược thời gian hết hạn (15 phút).
- * - Trong thực tế, component này có thể poll API trạng thái đơn hàng (`setInterval`)
- *   để tự động redirect khi backend nhận được tiền (webhook từ ngân hàng).
- *
- * 3. DEV SIMULATION MODE:
- * - Vì môi trường dev không thể kết nối ngân hàng thật, ta có nút "Simulation".
- * - Gọi Server Action `simulatePaymentSuccessAction` để giả lập sự kiện Webhook thành công. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface BankTransferQRProps {
   amount: number;

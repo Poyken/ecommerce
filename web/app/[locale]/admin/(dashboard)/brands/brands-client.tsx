@@ -1,19 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * BRANDS PAGE CLIENT - Quản lý thương hiệu (Enhanced)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * - SWR for data fetching and caching
- * - Consistent styling with other admin pages *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { Button } from "@/components/ui/button";

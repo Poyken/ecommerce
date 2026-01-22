@@ -6,22 +6,7 @@ import { ReturnRequestForm } from "@/features/returns/components/return-request-
 import { ApiResponse } from "@/types/dtos";
 import { Order } from "@/types/models";
 
-/**
- * =====================================================================
- * RETURN REQUEST PAGE - Trang tạo yêu cầu trả hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. AUTHORIZATION & STATE CHECK:
- * - Chỉ cho phép tạo yêu cầu trả hàng nếu đơn hàng đã ở trạng thái THÀNH CÔNG (Delivered/Completed).
- * - Nếu không, redirect người dùng về trang chi tiết đơn hàng.
- *
- * 2. DATA PASSING:
- * - Fetch dữ liệu đơn hàng trên Server và truyền xuống Client Component `ReturnRequestForm`.
- * - Giảm thiểu việc gọi API dư thừa trên Client.
- * =====================================================================
- */
+
 
 export default async function ReturnRequestPage({
   params,

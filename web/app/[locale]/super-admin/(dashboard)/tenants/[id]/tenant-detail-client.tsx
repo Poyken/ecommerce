@@ -33,29 +33,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-/**
- * =================================================================================================
- * TENANT DETAIL CLIENT - CHI TIẾT CHI NHÁNH & GIÁM SÁT HỆ THỐNG
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TENANT MONITORING:
- *    - Màn hình này cung cấp cái nhìn 360 độ về một Store: Doanh thu, Đơn hàng, Khách hàng.
- *    - Các chỉ số Cloud (CPU, DB Load) là các chỉ số quan trọng để Super Admin đảm bảo Store vận hành ổn định.
- *
- * 2. RESOURCE QUOTAS:
- *    - Mỗi gói (BASIC, PRO, ENTERPRISE) đều có giới hạn (Limits) về sản phẩm và dung lượng.
- *    - Logic tính toán % usage giúp phát hiện các Store sắp vượt ngưỡng để gợi ý nâng cấp.
- *
- * 3. LOCAL DOMAIN CONFIG:
- *    - Giải thích cách cấu hình file `hosts` để lập trình viên có thể truy cập Store cục bộ
- *      qua tên miền tùy chỉnh (VD: store1.localhost). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =================================================================================================
- */
 export function TenantDetailClient({ tenant }: { tenant: Tenant }) {
   const t = useTranslations("superAdmin.tenants.tenantDetail");
 

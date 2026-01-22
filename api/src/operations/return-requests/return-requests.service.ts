@@ -3,22 +3,6 @@
  * RETURN REQUEST SERVICE (RMA) - QUẢN LÝ ĐỔI TRẢ HÀNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * RMA (Return Merchandise Authorization) là module xử lý khi khách hàng
- * không hài lòng và muốn trả hàng hoặc đổi hàng.
- *
- * 1. QUY TRÌNH (Workflow):
- *    - PENDING (Chờ duyệt): Khách gửi yêu cầu + ảnh bằng chứng.
- *    - APPROVED (Đã chấp nhận): Admin đồng ý cho trả. Khách cần gửi hàng về.
- *    - WAITING_FOR_RETURN: Đang đợi khách gửi hàng.
- *    - IN_TRANSIT (Đang vận chuyển): Khách cập nhật mã vận đơn.
- *    - RECEIVED (Đã nhận hàng): Kho nhận được hàng.
- *    - INSPECTING (Đang kiểm hàng): Kiểm tra chất lượng.
- *    - REFUNDED (Hoàn tiền): Đã hoàn tiền cho khách.
- *    - REJECTED (Từ chối): Admin từ chối.
- *    - CANCELLED (Hủy): Khách hủy yêu cầu.
- *
  * =====================================================================
  */
 

@@ -3,27 +3,6 @@
  * INVENTORY SERVICE - QUẢN LÝ KHO HÀNG VÀ TỒN KHO
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Hệ thống quản lý kho của chúng ta hỗ trợ "Đa kho" (Multi-warehouse).
- *
- * 1. MÔ HÌNH DỮ LIỆU:
- *    - Warehouse: Thông tin kho (Địa chỉ, Tên, Kho mặc định).
- *    - InventoryItem: Liên kết giữa SKU và Warehouse (Biết SKU này trong kho kia còn bao nhiêu).
- *    - InventoryLog: Nhật ký mọi biến động (Nhập, Xuất, Hoàn trả) để đối soát.
- *
- * 2. CƠ CHẾ CẬP NHẬT:
- *    - Luôn dùng Transaction khi cập nhật tồn kho để đảm bảo tính nhất quán.
- *    - Khi thay đổi số lượng ở InventoryItem, phải cập nhật đồng thời ở bảng Sku
- *      (cột stock tổng) để hiển thị nhanh trên Storefront.
- *    - Mọi thay đổi phải có lý do (reason) và người thực hiện (userId).
- *
- * 3. TENANCY:
- *    - Các kho hàng tách biệt hoàn toàn theo TenantId.
- *    - Shipper/Nhân viên kho chỉ thấy kho của cửa hàng họ.
- *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Quản lý mạng lưới kho hàng, điều phối hàng hóa giữa các kho (Transfer) và đảm bảo số lượng tồn kho luôn chính xác khi có đơn hàng mới.
  * =====================================================================
  */
 
@@ -89,6 +68,7 @@ export class InventoryService {
   /**
    * Cập nhật tồn kho (Nhập/Xuất) cho một SKU tại một kho cụ thể
    * Tự động ghi Log (InventoryLog)
+   * [P12 FIX]: Row-level Locking để tránh Race Condition khi cập nhật concurrent.
    */
   async updateStock(userId: string, dto: UpdateStockDto) {
     const tenantId = this.getTenantId();
@@ -101,17 +81,19 @@ export class InventoryService {
 
     // Transaction cập nhật kho và ghi log cùng lúc
     return this.prisma.$transaction(async (tx) => {
-      // 1. Tìm hoặc tạo mới InventoryItem
-      const inventoryItem = await tx.inventoryItem.findUnique({
-        where: {
-          warehouseId_skuId: {
-            warehouseId: dto.warehouseId,
-            skuId: dto.skuId,
-          },
-        },
-      });
+      // [P12 FIX] Row-level Locking: SELECT FOR UPDATE
+      // This prevents concurrent updates from causing lost data
+      const inventoryItem = await tx.$queryRaw<
+        Array<{ id: string; quantity: number }>
+      >`
+        SELECT id, quantity 
+        FROM "InventoryItem" 
+        WHERE "warehouseId" = ${dto.warehouseId}::uuid 
+          AND "skuId" = ${dto.skuId}::uuid
+        FOR UPDATE
+      `;
 
-      const currentQty = inventoryItem ? inventoryItem.quantity : 0;
+      const currentQty = inventoryItem.length > 0 ? inventoryItem[0].quantity : 0;
       const newQty = currentQty + dto.quantity;
 
       if (newQty < 0) {
@@ -147,14 +129,20 @@ export class InventoryService {
         },
       });
 
-      // 4. Create Audit Log (InventoryLog)
+      // 4. Create Audit Log (InventoryLog) with structured data
       return tx.inventoryLog.create({
         data: {
           skuId: dto.skuId,
           changeAmount: dto.quantity,
           previousStock: currentQty,
           newStock: newQty,
+          actionType: dto.quantity > 0 ? 'PURCHASE' : 'SALE',
           reason: `[${warehouse.name}] ${dto.reason}`,
+          metadata: {
+            warehouseId: dto.warehouseId,
+            warehouseName: warehouse.name,
+            delta: dto.quantity,
+          },
           userId,
           tenantId,
         },
@@ -268,7 +256,13 @@ export class InventoryService {
         changeAmount: dto.quantity,
         previousStock: currentQty,
         newStock: newQty,
+        actionType: dto.quantity > 0 ? 'TRANSFER_IN' : 'TRANSFER_OUT',
         reason: `[TRANSFER] ${dto.reason}`,
+        metadata: {
+          warehouseId: dto.warehouseId,
+          warehouseName: warehouse.name,
+          delta: dto.quantity,
+        },
         userId,
         tenantId,
       },

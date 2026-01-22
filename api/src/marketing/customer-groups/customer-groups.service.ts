@@ -3,22 +3,6 @@
  * B2B PRICING SERVICE - BẢNG GIÁ THEO NHÓM KHÁCH HÀNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Module này cho phép tạo bảng giá riêng cho từng nhóm khách hàng (B2B).
- * Ví dụ: Đại lý cấp 1 được giá gốc, Đại lý cấp 2 được 10% off, VIP được 5% off.
- *
- * 1. CẤU TRÚC:
- *    - CustomerGroup: Nhóm khách hàng (VIP, Wholesale, Đại lý C1, C2...)
- *    - PriceList: Bảng giá (có thể gắn với nhiều nhóm)
- *    - PriceListItem: Giá cụ thể cho từng SKU trong bảng giá
- *
- * 2. LOGIC LẤY GIÁ:
- *    a) Kiểm tra User thuộc CustomerGroup nào
- *    b) Lấy PriceList của CustomerGroup đó
- *    c) Tìm giá SKU trong PriceListItem
- *    d) Nếu không có -> Fallback về giá gốc trong bảng Sku
- *
  * =====================================================================
  */
 

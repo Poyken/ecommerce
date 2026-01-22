@@ -1,4 +1,3 @@
-
 export const EmailTemplates = {
   orderConfirmation: (order: any) => `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -37,8 +36,13 @@ export const EmailTemplates = {
       <p style="margin-top: 20px; color: #999; font-size: 12px;">Link có hiệu lực trong 1 giờ. Nếu bạn không yêu cầu, vui lòng bỏ qua email này.</p>
     </div>
   `,
-  
-  loyaltyPoints: (name: string, points: number, orderId: string, frontendUrl: string) => `
+
+  loyaltyPoints: (
+    name: string,
+    points: number,
+    orderId: string,
+    frontendUrl: string,
+  ) => `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
        <h2 style="color: #F1C40F;">🎉 Bạn nhận được ${points} điểm thưởng!</h2>
        <p>Chào ${name},</p>
@@ -47,12 +51,12 @@ export const EmailTemplates = {
        <p><a href="${frontendUrl}/account/loyalty">Xem ví điểm của bạn</a></p>
     </div>
   `,
-  
+
   passwordResetSuccess: () => `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #2ECC71;">Thành công!</h2>
       <p>Mật khẩu tài khoản Poyken Shop của bạn đã được thay đổi thành công.</p>
       <p>Nếu bạn không thực hiện việc này, vui lòng liên hệ với bộ phận hỗ trợ ngay lập tức.</p>
     </div>
-  `
+  `,
 };

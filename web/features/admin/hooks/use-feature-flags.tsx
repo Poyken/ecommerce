@@ -1,22 +1,6 @@
 import { useFeatureFlagStore } from "../store/feature-flag.store";
 
-/**
- * =====================================================================
- * USE FEATURE FLAGS - Hook truy cập tính năng
- * =====================================================================
- * 
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- * 
- * 1. ABSTRACTION LAYER:
- * - Hook này bọc quanh Zustand store để giữ API giống với Context cũ, giúp việc refactor các component đang dùng `useFeatureFlags` không bị lỗi.
- * 
- * 2. MIGRATION COMPATIBILITY:
- * - `FeatureFlagProvider` hiện tại chỉ là 1 Fragment trống, giúp App cũ vẫn chạy được khi chưa kịp gỡ hết các Provider wrapper. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
 
- * =====================================================================
- */
 export function useFeatureFlags() {
   const { enabledFlags, isLoading, isEnabled } = useFeatureFlagStore();
   return { enabledFlags, isLoading, isEnabled };

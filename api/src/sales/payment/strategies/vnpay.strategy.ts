@@ -13,21 +13,6 @@ import { VNPayUtils } from '../vnpay.utils';
  * VNPAY STRATEGY - CHIẾN LƯỢC THANH TOÁN QUA VNPAY
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SECURE HASH (Chữ ký số):
- * - Đây là phần quan trọng nhất. Mọi tham số gửi đi phải được sắp xếp A-Z, sau đó dùng thuật toán HMAC-SHA512 với Secret Key để tạo chữ ký.
- * - VNPay dùng chữ ký này để đảm bảo dữ liệu không bị thay đổi trên đường truyền (Integrity).
- *
- * 2. CURRENCY SCALE:
- * - VNPay yêu cầu số tiền gửi đi phải nhân với 100 (đơn vị minor). Ví dụ: 10,000đ -> gửi 1000000.
- *
- * 3. TMN CODE & SECRET KEY:
- * - `TmnCode` là mã định danh website của mình trên VNPay.
- * - `SecretKey` dùng để tạo chữ ký. TUYỆT ĐỐI không được để lộ key này ở phía Client. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()

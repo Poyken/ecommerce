@@ -4,15 +4,15 @@ import DOMPurify from 'isomorphic-dompurify';
  * =====================================================================
  * HTML SANITIZATION UTILITY - XSS PREVENTION
  * =====================================================================
- * 
+ *
  * 📚 PURPOSE:
  * Làm sạch HTML input từ user để ngăn chặn XSS (Cross-Site Scripting) attacks
- * 
+ *
  * 🔒 SECURITY:
  * - Strip tất cả các thẻ nguy hiểm: <script>, <iframe>, <object>
  * - Chỉ cho phép các thẻ an toàn cho rich text (p, strong, em, ul, ol, li)
  * - Remove tất cả event handlers (onclick, onerror, etc.)
- * 
+ *
  * 🎯 USE CASES:
  * - Product descriptions
  * - Blog post content

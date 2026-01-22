@@ -32,4 +32,3 @@ export class InventoryAlertsController {
     return this.inventoryAlertsService.triggerManualAlert(tenant!.id);
   }
 }
-

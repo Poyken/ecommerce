@@ -6,29 +6,7 @@ import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-/**
- * =================================================================================================
- * ORDER SUCCESS PAGE (SHARED) - TRANG HIỂN THỊ CHI TIẾT SAU KHI ĐẶT HÀNG
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ASYNC ACTION DATA FETCHING:
- *    - `getOrderDetailsAction`: Gọi trực tiếp Server Action để lấy dữ liệu đơn hàng từ DB.
- *    - Sử dụng `notFound()` nếu không có dữ liệu để hiện trang 404 tiêu chuẩn.
- *
- * 2. ANIMATIONS (Framer Motion):
- *    - Lớp `animate-in fade-in slide-in-from-bottom-8`: Sử dụng tiện ích của Tailwind CSS
- *      (kết hợp plugin tailwind-animate) để tạo hiệu ứng xuất hiện mềm mại.
- *
- * 3. DYNAMIC UI ELEMENTS:
- *    - `#order.id.slice(-8).toUpperCase()`: Rút gọn ID cho thân thiện với người dùng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Post-purchase Gratification: Tăng cường sự hài lòng của khách hàng bằng việc xác nhận đặt hàng thành công ngay lập tức với các hiệu ứng hình ảnh chúc mừng chuyên nghiệp.
- * - Immediate Order Confirmation: Cung cấp bản tóm tắt nhanh về đơn hàng vừa đặt, giúp khách hàng yên tâm rằng thông tin của họ đã được hệ thống ghi nhận chính xác.
 
- * =================================================================================================
- */
 export default async function OrderSuccessPage({
   params,
 }: {

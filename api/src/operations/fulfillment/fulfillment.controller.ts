@@ -67,4 +67,3 @@ export class FulfillmentController {
     return this.fulfillmentService.updateShipmentStatus(tenant!.id, id, dto);
   }
 }
-

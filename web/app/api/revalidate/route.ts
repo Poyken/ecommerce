@@ -1,24 +1,7 @@
 import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
-/**
- * API Endpoint: On-Demand Revalidation (Xóa cache chủ động)
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ISR (Incremental Static Regeneration):
- * - Next.js cache các trang tĩnh rất lâu.
- * - Endpoint này giúp ta "ép" Next.js xóa cache ngay lập tức khi dữ liệu thay đổi (VD: Sửa giá sản phẩm).
- *
- * 2. SECURITY:
- * - Vì đây là public API, cần có `token` bí mật để tránh người lạ spam làm sập cache server.
- *
- * Cách sử dụng:
- * GET /api/revalidate?tag=products&token=MY_SECRET_TOKEN *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, điều phối xử lý và trả về response.
 
- */
 export async function GET(request: NextRequest) {
   // 1. Lấy tham số 'tag' và 'token' từ URL Query String
   const tag = request.nextUrl.searchParams.get("tag");

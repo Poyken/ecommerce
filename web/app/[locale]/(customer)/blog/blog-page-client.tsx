@@ -9,25 +9,7 @@ import { Loader2, ShoppingBag } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
-/**
- * =====================================================================
- * BLOG PAGE CLIENT - Giao diện danh sách bài viết
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CLIENT COMPONENT ("use client"):
- * - Trang này cần interactivity cao (Filter theo category, Load more).
- * - Không thể dùng Server Component thuần túy vì cần `useState` và `useEffect`.
- *
- * 2. HYBRID FETCHING STRATEGY:
- * - Dữ liệu ban đầu (`initialPosts`) được fetch từ Server (SSR) để tốt cho SEO.
- * - Khi user chọn Category, ta fetch lại từ API (`getBlogsAction`) ở phía Client. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 interface BlogPageClientProps {
   posts: BlogWithProducts[];

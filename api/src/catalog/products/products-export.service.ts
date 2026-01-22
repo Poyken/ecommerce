@@ -7,18 +7,6 @@ import * as ExcelJS from 'exceljs';
  * PRODUCTS EXPORT SERVICE - XUẤT DỮ LIỆU SẢN PHẨM RA EXCEL
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. EXCELJS:
- * - Thư viện dùng để tạo file Excel (.xlsx) mạnh mẽ, hỗ trợ định dạng row/column và style.
- *
- * 2. BATCH-BASED STREAMING (Xử lý theo lô):
- * - Nếu hệ thống có 10,000 sản phẩm, việc load tất cả vào RAM một lúc sẽ gây lỗi Over Memory (OOM).
- * - Ta dùng kỹ thuật `Cursor-based batching`: Lấy từng 100 sản phẩm một, ghi vào file, rồi lấy tiếp 100 cái tiếp theo.
- * - `cursor` giúp Prisma biết cần bắt đầu lấy dữ liệu từ vị trí nào trong DB mà không cần dùng `offset` (chậm khi dữ liệu lớn). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()

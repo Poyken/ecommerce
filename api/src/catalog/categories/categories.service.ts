@@ -17,25 +17,6 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
  * CATEGORIES SERVICE - Dịch vụ quản lý danh mục sản phẩm
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HIERARCHICAL DATA (Dữ liệu phân cấp):
- * - Danh mục sản phẩm thường có cấu trúc cây (Cha - Con). Ví dụ: Điện tử -> Điện thoại -> Smartphone.
- * - `parentId` giúp ta xây dựng mối quan hệ này trong Database.
- *
- * 2. SLUG & SEO:
- * - `slugify` giúp chuyển đổi tên danh mục thành chuỗi không dấu, cách nhau bằng dấu gạch ngang (VD: "Đồ Gia Dụng" -> "do-gia-dung").
- * - Rất quan trọng cho SEO và làm URL trông chuyên nghiệp hơn.
- *
- * 3. AGGREGATION (Tổng hợp dữ liệu):
- * - Hàm `findAll` sử dụng `_count` của Prisma để đếm số lượng sản phẩm trong mỗi danh mục một cách hiệu quả mà không cần load toàn bộ sản phẩm.
- *
- * 4. SAFETY CONSTRAINTS:
- * - Ngăn chặn việc xóa danh mục nếu nó vẫn còn chứa sản phẩm hoặc danh mục con.
- * - Đảm bảo tính nhất quán của dữ liệu (Data Integrity). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tổ chức hệ thống phân loại sản phẩm đa tầng, giúp người dùng dễ dàng duyệt qua danh mục hàng hóa khổng lồ.
-
  * =====================================================================
  */
 

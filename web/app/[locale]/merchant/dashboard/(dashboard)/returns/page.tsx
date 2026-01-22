@@ -2,24 +2,7 @@ import { getAdminReturnsAction } from "@/features/admin/actions";
 import { ReturnsClient } from "./returns-client";
 import { ReturnStatus } from "@/types/models";
 
-/**
- * =====================================================================
- * ADMIN RETURNS PAGE - Quản lý Trả hàng (Server Component)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RMA FLOW (Vòng đời trả hàng):
- * - Theo dõi các yêu cầu từ PENDING đến REFUNDED/REJECTED.
- * - Cho phép lọc theo trạng thái để xử lý nhanh.
- *
- * 2. DATA AGGREGATION:
- * - `getReturnCounts` đếm số lượng yêu cầu ở mỗi trạng thái để hiển thị trên các Tabs.
- *
- * 3. SERVER-SIDE FETCHING:
- * - Sử dụng Server Actions để lấy dữ liệu trực tiếp, tối ưu SEO và tốc độ load trang đầu.
- * =====================================================================
- */
+
 
 async function getReturnCounts() {
   const statuses: ReturnStatus[] = [

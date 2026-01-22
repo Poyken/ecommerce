@@ -1,26 +1,4 @@
-/**
- * =====================================================================
- * BLOG SERVER ACTIONS - Quản lý bài viết (Blog)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * File này chứa các Server Actions để quản lý bài viết trên trang Blog.
- * Admin có thể thực hiện các thao tác CRUD (Create, Read, Update, Delete).
- *
- * CÁC TÍNH NĂNG CHÍNH:
- * 1. Tạo bài viết mới (hỗ trợ cả JSON và FormData cho upload ảnh).
- * 2. Cập nhật bài viết hiện có.
- * 3. Xóa bài viết.
- * 4. Revalidate cache để cập nhật giao diện ngay lập tức.
- *
- * ⚠️ LƯU Ý: Các action này thường được gọi từ Admin Dashboard. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Content Marketing: Cung cấp các công cụ cho bộ phận Marketing biên tập và xuất bản bài viết, giúp tăng lượng truy cập tự nhiên (Organic Traffic) vào website.
- * - Dynamic SEO: Tự động cập nhật cache bài viết mới nhất lên giao diện người dùng (Revalidate), đảm bảo khách hàng và bot tìm kiếm luôn thấy nội dung mới nhất.
 
- * =====================================================================
- */
 
 "use server";
 

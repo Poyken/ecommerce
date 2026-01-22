@@ -18,33 +18,7 @@ import { Check, Shield, Truck } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-/**
- * =====================================================================
- * PRODUCT DETAIL CLIENT - Logic tương tác trang chi tiết sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. IMAGE SORTING LOGIC:
- * - `sortedImages`: Tự động sắp xếp ảnh gallery dựa trên thứ tự của các Option (ví dụ: Màu sắc).
- * - Giúp trải nghiệm người dùng đồng nhất: Khi chọn màu nào thì ảnh màu đó hiện lên đầu.
- *
- * 2. URL SYNC (Single Source of Truth):
- * - `skuId` được lưu trên URL (`?skuId=...`).
- * - Khi người dùng chọn variant khác, URL sẽ cập nhật mà không load lại trang (`replaceState`).
- * - Giúp người dùng có thể copy link chính xác của một variant cụ thể để share.
- *
- * 3. INTERACTIVE COMPONENTS:
- * - `ProductImageGallery`: Hiển thị ảnh lớn và danh sách ảnh con.
- * - `ProductVariantSelector`: Xử lý việc chọn Size, Color... và tìm SKU tương ứng.
- *   - [REFACTOR]: Logic thêm vào giỏ hàng (`handleAddToCart`) đã được đưa lên Client Component này
- *     để tái sử dụng cho cả VariantSelector và MobileStickyCart (Clean Architecture).
- * - `MobileStickyCart`: Thanh mua hàng luôn dính ở dưới màn hình mobile. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 interface ProductDetailClientProps {
   product: Product;

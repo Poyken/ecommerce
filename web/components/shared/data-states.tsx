@@ -6,25 +6,7 @@ import { memo, ReactNode, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-/**
- * =====================================================================
- * DATA STATE COMPONENTS - UI Components cho các trạng thái data
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. LOADING/ERROR/EMPTY STATES:
- * - Mọi fetch data đều có 3 trạng thái: Loading, Error, Empty.
- * - Thay vì code lại 3 trạng thái này ở mọi component, ta tạo sẵn.
- *
- * 2. CONSISTENT UX:
- * - Tất cả các trang có cùng style loading, error, empty.
- * - User có trải nghiệm nhất quán xuyên suốt ứng dụng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 // ============================================================================
 // TYPES

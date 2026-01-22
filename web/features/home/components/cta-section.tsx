@@ -16,25 +16,7 @@ interface CTASectionProps {
   };
 }
 
-/**
- * =================================================================================================
- * CTA SECTION - KHỐI KÊU GỌI HÀNH ĐỘNG (CALL TO ACTION)
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. VISUAL HIERARCHY (PHÂN CẤP THỊ GIÁC):
- *    - Nút CTA (`GlassButton`) được thiết kế nổi bật nhất để thu hút click.
- *    - Background có hiệu ứng Gradient mờ (`bg-gradient-to-b`) để tạo chiều sâu.
- *
- * 2. ANIMATION (`framer-motion`):
- *    - `<m.div>`: Phiên bản tối ưu của `motion.div` (giảm bundle size).
- *    - `whileInView`: Chỉ chạy animation khi User cuộn tới khối này. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =================================================================================================
- */
 export function CTASection({
   title,
   subtitle,

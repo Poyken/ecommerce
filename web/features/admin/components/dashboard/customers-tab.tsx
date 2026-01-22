@@ -1,21 +1,4 @@
-/**
- * =====================================================================
- * CUSTOMERS TAB - Tab Khách hàng & Phản hồi
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SOCIAL PROOF QUẢN TRỊ:
- * - Hiển thị Reviews mới nhất để Admin biết khách hàng đang nói gì.
- * - "Reply to Reviews": Tip tăng trưởng quan trọng (Engagement).
- *
- * 2. WIDGETS TÍCH HỢP:
- * - `RecentChatsWidget`: Component chat support (CSKH) nhúng vào Dashboard. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 "use client";
 
 import {

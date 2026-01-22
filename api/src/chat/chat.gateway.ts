@@ -15,21 +15,6 @@ import { ChatService } from './chat.service';
  * CHAT GATEWAY - CỔNG KẾT NỐI WEBSOCKET THỜI GIAN THỰC
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. WEBSOCKET (Bi-directional):
- * - Khác với HTTP (Client gọi -> Server trả lời), WebSocket cho phép Server chủ động gửi dữ liệu về Client bất cứ lúc nào (Real-time).
- * - Dùng cho tính năng Chat, thông báo đơn hàng mới, v.v.
- *
- * 2. ROOMS (Phòng chat):
- * - `handleConnection`: Khi user kết nối, ta cho họ vào một "phòng" riêng (`user:userId`).
- * - Admin sẽ vào phòng `admin-room` để nhận tất cả tin nhắn từ mọi khách hàng.
- *
- * 3. SURGICAL EMITS:
- * - Thay vì gửi nguyên object DB cồng kềnh, ta chỉ gửi những field cần thiết (Sanitization) qua socket để tiết kiệm băng thông. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @WebSocketGateway({

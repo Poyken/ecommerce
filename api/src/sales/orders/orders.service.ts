@@ -28,33 +28,7 @@ import { Logger } from '@nestjs/common';
 
 /**
  * =====================================================================
- * ORDERS SERVICE - LOGIC XỬ LÝ ĐƠN HÀNG
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DATABASE TRANSACTION ($transaction):
- * - Đây là kỹ thuật QUAN TRỌNG NHẤT khi xử lý đơn hàng.
- * - Mọi thao tác: Tạo Order, Trừ tồn kho (Stock), Xóa giỏ hàng -> Phải nằm trong 1 transaction.
- * - Nếu 1 bước lỗi -> Mọi thứ rollback về ban đầu. KHÔNG BAO GIỜ có chuyện tạo đơn xong mà kho không trừ, hoặc kho trừ mà đơn không tạo.
- *
- * 2. BACKGROUND JOBS (BullMQ):
- * - Sau khi tạo đơn, các tác vụ phụ như: Gửi Email xác nhận, Auto-cancel nếu không thanh toán...
- *   được đẩy vào hàng đợi (`ordersQueue`) để xử lý bất đồng bộ (Async).
- * - Giúp API phản hồi nhanh (Low Latency) cho user, không bắt user chờ email gửi xong mới báo thành công.
- *
- * 3. 3RD PARTY INTEGRATION:
- * - Service này tích hợp chặt chẽ với Payment (VNPAY/MoMo) và Shipping (GHN).
- * - Logic đồng bộ trạng thái đơn hàng (Sync GHN) được tự động kích hoạt khi đơn chuyển sang 'PROCESSING'.
- *
- * 4. RELIABILITY & PERFORMANCE (New Features):
- * - Transactional Outbox: Thay vì đẩy job vào Queue trực tiếp, ta lưu Event vào DB trong transaction
- *   để đảm bảo không bao giờ mất job (Zero Data Loss).
- * - Denormalization: Thông tin Product Name, Image được lưu cứng vào `OrderItem` ngay lúc mua.
- *   -> Giúp xem lại lịch sử siêu nhanh mà không cần JOIN 5-6 bảng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý quy trình thanh toán, trừ tồn kho kho hàng, tính toán khuyến mãi và điều phối giao vận (Fulfillment).
-
+ * ORDERS SERVICE
  * =====================================================================
  */
 
@@ -94,23 +68,60 @@ export class OrdersService {
    * - Đảm bảo tính nhất quán: Tạo đơn xong là phải trừ kho, xóa giỏ hàng.
    */
   async create(userId: string, createOrderDto: CreateOrderDto) {
-    // 0. Lấy context Tenant hiện tại (Cửa hàng nào?)
     const tenant = getTenant();
     if (!tenant)
       throw new BadRequestException(
         'Không xác định được Cửa hàng hiện tại (Tenant context missing)',
       );
 
-    // Bọc toàn bộ quá trình tạo đơn hàng trong 1 Transaction lớn
+    // 1. Prepare data before transaction (Zero Trust & External APIs)
+    // [P11 FIX]: Call external shipping API BEFORE transaction to avoid long DB locks
+    let shippingFee = new Prisma.Decimal(0);
+    let recipientName = createOrderDto.recipientName;
+    let phoneNumber = createOrderDto.phoneNumber;
+    let shippingCity = createOrderDto.shippingCity || null;
+    let shippingDistrict = createOrderDto.shippingDistrict || null;
+    let shippingWard = createOrderDto.shippingWard || null;
+    let shippingPhone =
+      createOrderDto.shippingPhone || createOrderDto.phoneNumber;
+    let shippingAddressSnapshot: Record<string, unknown> | null = null;
+
+    if (createOrderDto.addressId) {
+      const address = await this.prisma.address.findUnique({
+        where: { id: createOrderDto.addressId },
+      });
+      if (address) {
+        shippingAddressSnapshot = address as unknown as Record<string, unknown>;
+        recipientName = address.recipientName;
+        phoneNumber = address.phoneNumber;
+        shippingCity = address.city;
+        shippingDistrict = address.district;
+        shippingWard = address.ward;
+        shippingPhone = address.phoneNumber;
+
+        if (address.districtId && address.wardCode) {
+          try {
+            const fee = await this.shippingService.calculateFee(
+              address.districtId,
+              address.wardCode,
+            );
+            shippingFee = new Prisma.Decimal(fee);
+          } catch (error) {
+            this.logger.warn(
+              'Lỗi tính phí vận chuyển từ GHN. Đơn hàng sẽ dùng phí mặc định từ Settings.',
+            );
+          }
+        }
+      }
+    }
+
     const order = await this.prisma.$transaction(
       async (tx) => {
-        // 1. Kiểm tra User có tồn tại không
         const user = await tx.user.findUnique({ where: { id: userId } });
         if (!user) {
           throw new BadRequestException('User không tồn tại');
         }
 
-        // 2. Lấy giỏ hàng và chi tiết sản phẩm (Trong cùng transaction để đảm bảo dữ liệu mới nhất)
         const cart = await tx.cart.findFirst({
           where: {
             userId,
@@ -127,7 +138,6 @@ export class OrdersService {
           throw new BadRequestException('Giỏ hàng trống');
         }
 
-        // 3. Lọc ra các sản phẩm user muốn mua (nếu chọn checkbox) hoặc mua tất cả
         const itemsToProcess =
           createOrderDto.itemIds && createOrderDto.itemIds.length > 0
             ? cart.items.filter((item) =>
@@ -139,12 +149,11 @@ export class OrdersService {
           throw new BadRequestException('Chưa chọn sản phẩm nào để thanh toán');
         }
 
-        // 4. Validate tồn kho và tính giá tiền (Ngay trong Transaction)
-        let totalAmount = 0;
+        let totalAmount = new Prisma.Decimal(0);
         const orderItemsData: {
           skuId: string;
           quantity: number;
-          priceAtPurchase: number;
+          priceAtPurchase: Prisma.Decimal;
           productName: string;
           skuNameSnapshot: string;
           productSlug: string;
@@ -152,7 +161,6 @@ export class OrdersService {
           tenantId: string;
         }[] = [];
 
-        // [TỐI ƯU HÓA] Batch fetch (lấy một lần) các SKU để tránh lỗi N+1 Queries trong vòng lặp
         const uniqueSkuIds = [...new Set(itemsToProcess.map((i) => i.skuId))];
         const skus = await tx.sku.findMany({
           where: { id: { in: uniqueSkuIds } },
@@ -200,19 +208,15 @@ export class OrdersService {
             );
           }
 
-          // ✅ Quan trọng: Check tồn kho trong Transaction (Chặn đứng mọi user khác đang mua cùng lúc)
           if (sku.stock < item.quantity) {
             throw new BadRequestException(
               `Sản phẩm ${sku.skuCode} không đủ số lượng (Yêu cầu: ${item.quantity}, Còn: ${sku.stock})`,
             );
           }
 
-          const price = Number(sku.price);
-          // [MATH SAFETY] Round to nearest integer for VND to avoid floating point errors
-          totalAmount += Math.round(price * item.quantity);
+          const price = sku.price || new Prisma.Decimal(0);
+          totalAmount = totalAmount.add(price.mul(item.quantity));
 
-          // Tạo tên snapshot cho SKU (VD: "Áo Thun (Đỏ - M)") để lưu cứng vào đơn hàng
-          // Giúp admin xem lại đơn hàng cũ vẫn thấy đúng tên sản phẩm lúc mua, dù sau này sản phẩm có bị đổi tên.
           const optionsString = sku.optionValues
             .map((ov) => ov.optionValue.value)
             .join(' - ');
@@ -232,111 +236,61 @@ export class OrdersService {
           });
         }
 
-        // 5. Kiểm tra và Áp dụng Mã giảm giá (Promotion Engine)
-        let discountAmount = 0;
+        let discountAmount = new Prisma.Decimal(0);
         let appliedPromotionId: string | undefined = undefined;
 
         if (createOrderDto.couponCode) {
           try {
             const promoResult = await this.promotionsService.validatePromotion({
               code: createOrderDto.couponCode,
-              totalAmount,
+              totalAmount: totalAmount.toNumber(),
               userId,
               items: orderItemsData.map((item) => ({
                 skuId: item.skuId,
                 quantity: item.quantity,
-                price: item.priceAtPurchase,
+                price: item.priceAtPurchase.toNumber(),
               })),
             });
 
             if (promoResult.valid) {
               appliedPromotionId = promoResult.promotionId;
-              discountAmount = promoResult.discountAmount;
+              discountAmount = new Prisma.Decimal(promoResult.discountAmount);
 
-              // ✅ Atomic Increment: Tăng số lượt sử dụng trong transaction
               await (tx as any).promotion.update({
                 where: { id: appliedPromotionId },
                 data: { usedCount: { increment: 1 } },
               });
 
-              totalAmount = Math.max(0, totalAmount - discountAmount);
-              this.logger.log(
-                `Đã áp dụng mã ${createOrderDto.couponCode}: Giảm ${discountAmount}đ`,
+              totalAmount = Prisma.Decimal.max(
+                0,
+                totalAmount.sub(discountAmount),
               );
             }
           } catch (error) {
             this.logger.warn(
               `Không thể áp dụng mã ${createOrderDto.couponCode}: ${error.message}`,
             );
-            // Có thể chọn throw lỗi hoặc chỉ log warning tùy nghiệp vụ.
-            // Ở đây ta throw lỗi để user biết mã không hợp lệ.
             throw error;
           }
         }
 
-        // 6. Tính phí vận chuyển (Shipping Fee)
-        // Lưu ý: Gọi API bên ngoài có thể chậm, cân nhắc đưa vào background job nếu cần tối ưu tốc độ.
-        let shippingFee = 0;
-        let recipientName = createOrderDto.recipientName;
-        let phoneNumber = createOrderDto.phoneNumber;
-        let shippingAddressSnapshot: Record<string, unknown> | null = null;
-        let shippingCity = createOrderDto.shippingCity || null;
-        let shippingDistrict = createOrderDto.shippingDistrict || null;
-        let shippingWard = createOrderDto.shippingWard || null;
-        let shippingPhone =
-          createOrderDto.shippingPhone || createOrderDto.phoneNumber;
+        // Apply settings-based shipping fee if needed
+        const settings = await (tx as any).tenantSettings.findUnique({
+          where: { tenantId: tenant.id },
+        });
 
-        if (createOrderDto.addressId) {
-          const address = await tx.address.findUnique({
-            where: { id: createOrderDto.addressId },
-          });
-          if (address) {
-            shippingAddressSnapshot = address;
-            recipientName = address.recipientName;
-            phoneNumber = address.phoneNumber;
-            shippingCity = address.city;
-            shippingDistrict = address.district;
-            shippingWard = address.ward;
-            shippingPhone = address.phoneNumber;
+        if (shippingFee.isZero() && settings?.defaultShippingFee) {
+          shippingFee = new Prisma.Decimal(settings.defaultShippingFee);
+        }
 
-            // 6.a Lấy cấu hình phí vận chuyển của Tenant
-            const settings = await (tx as any).tenantSettings.findUnique({
-              where: { tenantId: tenant.id },
-            });
-
-            if (address.districtId && address.wardCode) {
-              try {
-                shippingFee = await this.shippingService.calculateFee(
-                  address.districtId,
-                  address.wardCode,
-                );
-              } catch (error) {
-                this.logger.warn(
-                  'Lỗi tính phí vận chuyển từ GHN, sử dụng phí từ Settings',
-                );
-                // Lấy phí mặc định từ Settings hoặc 30k nếu chưa set
-                shippingFee = settings
-                  ? Number(settings.defaultShippingFee)
-                  : 30000;
-              }
-            }
-
-            // 6.b Kiểm tra ngưỡng Miễn phí vận chuyển (Free Shipping Threshold)
-            if (settings?.freeShippingThreshold) {
-              const threshold = Number(settings.freeShippingThreshold);
-              // Lưu ý: totalAmount lúc này chưa bao gồm phí ship mới
-              if (totalAmount >= threshold) {
-                this.logger.log(
-                  `FREE SHIPPING: Total ${totalAmount} >= ${threshold}`,
-                );
-                shippingFee = 0;
-              }
-            }
+        if (settings?.freeShippingThreshold) {
+          const threshold = new Prisma.Decimal(settings.freeShippingThreshold);
+          if (totalAmount.gte(threshold)) {
+            shippingFee = new Prisma.Decimal(0);
           }
         }
-        totalAmount += shippingFee;
+        totalAmount = totalAmount.add(shippingFee);
 
-        // 7. Tạo đơn hàng (Order) vào Database
         const order = await this.ordersRepo.create(
           {
             userId,
@@ -352,7 +306,6 @@ export class OrdersService {
             shippingFee,
             paymentMethod: createOrderDto.paymentMethod || 'COD',
             status: OrderStatus.PENDING,
-            // Link to new promotion system
             promotions: appliedPromotionId
               ? {
                   create: {
@@ -372,8 +325,6 @@ export class OrdersService {
           tx,
         );
 
-        // 8. Trừ tồn kho (Reserve Stock) cho từng sản phẩm
-        // 8. Trừ tồn kho (Reserve Stock) - Batch Optimization
         await this.inventoryService.reserveStockBatch(
           itemsToProcess.map((item) => ({
             skuId: item.skuId,
@@ -382,7 +333,6 @@ export class OrdersService {
           tx,
         );
 
-        // 9. Xóa các sản phẩm đã mua khỏi giỏ hàng
         const itemIdsToDelete = itemsToProcess.map((i) => i.id);
         await tx.cartItem.deleteMany({
           where: {
@@ -391,8 +341,6 @@ export class OrdersService {
           },
         });
 
-        // --- 10. [RELIABILITY] OUTBOX PATTERN (Giữ lại Job Stock Release Check) ---
-        // Vẫn giữ job kiểm tra hết hạn đơn hàng (15p) để release stock
         await tx.outboxEvent.create({
           data: {
             aggregateType: 'ORDER',
@@ -401,9 +349,6 @@ export class OrdersService {
             payload: { orderId: order.id },
           },
         });
-        
-        // [FIX] Removed ORDER_CREATED_POST_PROCESS outbox event to prevent "Double Email" 
-        // because OrderSubscriber now handles emails via eventEmitter.
 
         return order;
       },
@@ -412,53 +357,58 @@ export class OrdersService {
       },
     );
 
-    // 11. [PAYMENT] Synchronous Payment Processing (to return Redirect URL to UI)
     let paymentUrl: string | undefined;
-    if (createOrderDto.paymentMethod && createOrderDto.paymentMethod !== 'COD') {
-       try {
-         const paymentResult = await this.paymentService.processPayment(
-           createOrderDto.paymentMethod,
-           {
-             amount: Number(order.totalAmount),
-             orderId: order.id,
-             returnUrl: createOrderDto.returnUrl,
-           },
-         );
+    if (
+      createOrderDto.paymentMethod &&
+      createOrderDto.paymentMethod !== 'COD'
+    ) {
+      try {
+        const paymentResult = await this.paymentService.processPayment(
+          createOrderDto.paymentMethod,
+          {
+            amount: order.totalAmount.toNumber(),
+            orderId: order.id,
+            returnUrl: createOrderDto.returnUrl,
+          },
+        );
 
-           if (paymentResult.success) {
-            paymentUrl = paymentResult.paymentUrl;
-            await this.paymentService.createPaymentRecord({
-              orderId: order.id,
-              amount: order.totalAmount,
-              paymentMethod: createOrderDto.paymentMethod,
-              status: paymentUrl ? 'PENDING' : 'PAID',
-              providerTransactionId: paymentResult.transactionId,
-              tenantId: tenant.id,
-            });
-          }
-       } catch (error) {
-         this.logger.error(`Error processing payment for order ${order.id}`, error);
-       }
+        if (paymentResult.success) {
+          paymentUrl = paymentResult.paymentUrl;
+          await this.paymentService.createPaymentRecord({
+            orderId: order.id,
+            amount: order.totalAmount,
+            paymentMethod: createOrderDto.paymentMethod,
+            status: paymentUrl ? 'PENDING' : 'PAID',
+            providerTransactionId: paymentResult.transactionId,
+            tenantId: tenant.id,
+          });
+        }
+      } catch (error) {
+        this.logger.error(
+          `Error processing payment for order ${order.id}`,
+          error,
+        );
+      }
     }
 
-    // 12. [DISPATCH] Emit Event for Asynchronous Side-Effects (Email, Notifications, etc.)
     this.eventEmitter.emit(
       'order.created',
       new OrderCreatedEvent(
         order.id,
         userId,
-        Number(order.totalAmount),
+        order.totalAmount.toNumber(),
         order.paymentMethod || 'COD',
         tenant.id,
         {
           paymentMethod: createOrderDto.paymentMethod,
           returnUrl: createOrderDto.returnUrl,
-        }
-      )
+        },
+      ),
     );
 
     return { ...order, paymentUrl };
   }
+
 
   async findAllByUser(userId: string, page = 1, limit = 10) {
     const skip = (page - 1) * limit;
@@ -792,12 +742,11 @@ export class OrdersService {
     }
 
     // CHẶN THAO TÁC THỦ CÔNG: Đảm bảo luồng trạng thái tuân thủ Webhook từ GHN
-    // [TEMPORARY BYPASS] User requested to allow manual trigger
-    // if (newStatus === OrderStatus.SHIPPED && !dto.force) {
-    //   throw new BadRequestException(
-    //     'Không được cập nhật thủ công sang "Đã Giao ĐVVC". Trạng thái này sẽ tự động cập nhật khi GHN qua lấy hàng (Picked). Nếu cần thiết, hãy dùng flag "force: true".',
-    //   );
-    // }
+    if (newStatus === OrderStatus.SHIPPED && !dto.force) {
+      throw new BadRequestException(
+        'Không được cập nhật thủ công sang "Đã Giao ĐVVC". Trạng thái này sẽ tự động cập nhật khi GHN qua lấy hàng (Picked). Nếu cần thiết, hãy dùng flag "force: true".',
+      );
+    }
 
     // Kiểm tra bổ sung: Không cho phép xử lý đơn hàng COD nếu chưa thanh toán (Trừ khi admin xác nhận thanh toán ngay lúc này)
     const effectivePaymentStatus = dto.paymentStatus || order.paymentStatus;
@@ -880,8 +829,8 @@ export class OrdersService {
           updatedOrder.userId,
           currentStatus,
           newStatus as OrderStatus,
-          tenantInfo!.id
-        )
+          tenantInfo!.id,
+        ),
       );
 
       return updatedOrder;
@@ -1115,4 +1064,3 @@ export class OrdersService {
 
   // #endregion
 }
-

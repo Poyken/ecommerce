@@ -9,28 +9,7 @@ import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
-/**
- * =================================================================================================
- * CHECKOUT SUCCESS PAGE - TRANG THÔNG BÁO ĐẶT HÀNG THÀNH CÔNG
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CELEBRATION EFFECTS:
- *    - Sử dụng `canvas-confetti` để tạo hiệu ứng pháo giấy chúc mừng.
- *    - Logic trong `useEffect` giúp kích hoạt hiệu ứng ngay khi trang được render.
- *
- * 2. SECURITY & STATE:
- *    - Kiểm tra `orderId` từ URL. Nếu không có (truy cập trái phép), chuyển hướng về Home ngay.
- *    - Hiển thị 8 ký tự cuối mã đơn hàng để User dễ đối soát nhưng vẫn giữ bảo mật.
- *
- * 3. CALL TO ACTIONS (CTA):
- *    - Cung cấp 2 lựa chọn: Xem chi tiết đơn hàng vừa đặt hoặc tiếp tục mua sắm. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =================================================================================================
- */
 export default function CheckoutSuccessPage() {
   const t = useTranslations("checkout.success");
   const searchParams = useSearchParams();

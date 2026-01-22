@@ -5,22 +5,6 @@ import { Injectable } from '@nestjs/common';
  * L1 CACHE SERVICE - Bộ nhớ đệm tầng 1 (RAM)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HYBRID CACHING (Caching 2 tầng):
- * - Tầng 1 (L1): RAM của chính ứng dụng (Service này). Cực nhanh (nanoseconds), không tốn network.
- * - Tầng 2 (L2): Redis. Nhanh (milliseconds), tốn network, nhưng dùng chung giữa nhiều instance.
- *
- * 2. TẠI SAO CẦN L1?
- * - Có những dữ liệu như Feature Flags được check hàng chục lần TRONG MỘT request.
- * - Việc gọi tới Redis liên tục vẫn tạo ra một chút latency (network round-trip).
- * - L1 giúp giảm tải 100% network cho các check lặp lại trong thời gian ngắn.
- *
- * 3. SHORT TTL:
- * - Dữ liệu ở L1 chỉ nên sống rất ngắn (vd: 10-30s) để đảm bảo không bị "lệch" quá lâu so với L2. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()

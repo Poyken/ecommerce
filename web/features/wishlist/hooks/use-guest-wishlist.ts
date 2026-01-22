@@ -1,32 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * USE GUEST WISHLIST HOOK - Quản lý danh sách yêu thích cho khách
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. LOCAL STORAGE PERSISTENCE:
- * - Lưu danh sách ID sản phẩm yêu thích vào `localStorage` dưới key `guest_wishlist`.
- * - Giúp khách hàng vẫn có thể lưu sản phẩm yêu thích mà không cần đăng ký tài khoản.
- *
- * 2. CROSS-TAB SYNC:
- * - Sử dụng `window.addEventListener("guest_wishlist_updated", ...)` để đồng bộ dữ liệu giữa các tab.
- * - Khi một tab thêm/xóa sản phẩm, các tab khác sẽ tự động cập nhật UI.
- *
- * 3. EVENT DISPATCHING:
- * - Dispatch cả `guest_wishlist_updated` và `wishlist_updated` để đảm bảo tương thích với các component khác nhau.
- *
- * 4. PERFORMANCE OPTIMIZATIONS:
- * - useCallback cho tất cả functions để stabilize references
- * - Tránh re-render các components consumer *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - No-Login Retention: Cho phép khách mua tiềm năng lưu sản phẩm họ yêu thích ngay cả khi chưa muốn đăng nhập, giảm rào cản tương tác.
- * - Tab Sync: Đảm bảo khi khách hàng "Thả tim" ở Tab A, danh sách yêu thích ở Tab B cũng tự động cập nhật, tạo trải nghiệm ứng dụng web ổn định và chuyên nghiệp.
 
- * =====================================================================
- */
 
 import { useCallback, useEffect, useState } from "react";
 

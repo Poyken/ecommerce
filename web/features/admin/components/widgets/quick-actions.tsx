@@ -5,28 +5,7 @@ import { Link } from "@/i18n/routing";
 import { BarChart3, Box, FileText, Package, Palette, ShieldAlert, ShoppingBag, Ticket, Users } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-/**
- * =====================================================================
- * QUICK ACTIONS - Các lối tắt quản trị nhanh
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DATA-DRIVEN UI:
- * - Danh sách các hành động được định nghĩa trong mảng `actions`.
- * - Giúp việc thêm/bớt hoặc thay đổi icon, màu sắc trở nên cực kỳ dễ dàng mà không cần sửa cấu trúc JSX.
- *
- * 2. STYLING STRATEGY:
- * - Mỗi action có bộ màu riêng (`color`, `bg`, `border`) để phân biệt trực quan các khu vực quản lý.
- * - Sử dụng `border-dashed` (viền đứt đoạn) tạo cảm giác nhẹ nhàng, không bị nặng nề như viền liền.
- *
- * 3. INTERACTIVE EFFECTS:
- * - `group-hover:scale-110`: Khi di chuột vào card, icon sẽ phóng to nhẹ, tạo phản hồi thị giác tốt. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function QuickActions() {
   const t = useTranslations("admin");

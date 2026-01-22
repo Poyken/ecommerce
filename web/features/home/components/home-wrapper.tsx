@@ -6,22 +6,7 @@ interface HomeWrapperProps {
   children: ReactNode;
 }
 
-/**
- * =====================================================================
- * HOME WRAPPER - Setup nền tảng cho Homepage
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. FIXED BACKGROUND ELEMENTS:
- * - Các `div` background (blur blobs) được đặt `fixed`.
- * - Chúng sẽ đứng yên khi user scroll nội dung trang, tạo hiệu ứng chiều sâu (Parallax giả).
- * - `pointer-events-none`: Đảm bảo không chặn click của user vào các nội dung bên dưới. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 export function HomeWrapper({ children }: HomeWrapperProps) {
   // Use translations if needed for aria-labels, but mostly for background
 

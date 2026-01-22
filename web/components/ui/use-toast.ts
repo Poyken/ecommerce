@@ -1,27 +1,4 @@
-/**
- * =====================================================================
- * USE TOAST HOOK - Hook quản lý thông báo Toast
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REDUCER PATTERN (Kiến trúc Flux/Redux thu nhỏ):
- * - Thay vì dùng `useState` lộn xộn, ta dùng mô hình: `Action` (yêu cầu) -> `Reducer` (xử lý) -> `State` (kết quả).
- * - Giúp logic thêm/sửa/xóa toast trở nên dễ đoán và dễ debug.
- *
- * 2. GLOBAL STATE WITHOUT CONTEXT (State toàn cục không cần Provider):
- * - State `memoryState` nằm ngoài React Component Tree.
- * - Các component "đăng ký" (subscribe) sự thay đổi qua mảng `listeners`.
- * - Lợi ích: Có thể gọi `toast()` ở bất cứ đâu (trong API, trong utils...) mà không cần `useContext`.
- *
- * 3. AUTO-DISMISS (Tự động tắt):
- * - Sử dụng `setTimeout` 5s để bắn action `REMOVE_TOAST`.
- * - Dùng `Map` để quản lý các timeout này, tránh memory leak khi toast bị tắt thủ công trước hạn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
 import * as React from "react";

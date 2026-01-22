@@ -5,29 +5,7 @@ import { Link } from "@/i18n/routing";
 
 import { Metadata } from "next";
 
-/**
- * =====================================================================
- * PROFILE PAGE - Trang quản lý tài khoản (Server Component)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DYNAMIC RENDERING:
- * - `export const dynamic = "force-dynamic"`: Vì thông tin profile thay đổi theo từng user, ta không thể cache tĩnh trang này.
- * - Trang sẽ được render lại trên mỗi request (SSR).
- *
- * 2. SESSION HANDLING:
- * - `getProfileAction()`: Gọi API lấy thông tin user hiện tại dựa trên cookie session.
- * - Nếu không có session hoặc lỗi -> Hiển thị UI "Session Expired" thay vì crash trang.
- *
- * 3. SECURITY:
- * - Dữ liệu nhạy cảm được fetch ở Server, đảm bảo an toàn hơn so với việc fetch ở Client. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Self-service Identity: Trao quyền cho khách hàng tự quản lý thông tin cá nhân, địa chỉ và mật khẩu, giảm tải khối lượng công việc cho bộ phận chăm sóc khách hàng.
- * - Account Personalization: Tạo nền tảng để hệ thống đưa ra các gợi ý mua sắm hoặc chương trình ưu đãi riêng biệt dựa trên thông tin và hành vi của từng người dùng.
 
- * =====================================================================
- */
 
 export const metadata: Metadata = {
   title: "My Profile | Luxe",

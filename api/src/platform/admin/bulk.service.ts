@@ -8,21 +8,6 @@ import { getTenant } from '@core/tenant/tenant.context';
  * BULK SERVICE - Xử lý thao tác hàng loạt (Import/Export)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. EXPORT:
- * - Xuất danh sách sản phẩm/SKU ra định dạng CSV/JSON để tải về.
- * - Hỗ trợ thêm Excel (XLSX) chuyên nghiệp hơn.
- *
- * 2. IMPORT:
- * - Nhập dữ liệu từ file CSV/JSON và cập nhật vào database.
- * - Có cơ chế validate và báo lỗi từng dòng nếu không hợp lệ.
- *
- * 3. BULK UPDATE:
- * - Cập nhật giá/tồn kho hàng loạt theo phần trăm hoặc số cố định. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

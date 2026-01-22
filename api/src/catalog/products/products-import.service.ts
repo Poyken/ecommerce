@@ -9,21 +9,6 @@ import { SkuManagerService } from './sku-manager.service';
  * PRODUCTS IMPORT SERVICE - NHẬP DỮ LIỆU SẢN PHẨM TỪ EXCEL
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PRE-FETCH CACHING (Cơ chế nạp trước):
- * - Thay vì mỗi dòng trong Excel lại gọi DB để tìm Category/Brand, ta load TOÀN BỘ chúng vào RAM ngay từ đầu (`categoryMap`, `brandMap`).
- * - Việc tìm kiếm trong RAM (Map) nhanh hơn gấp hàng ngàn lần so với gọi DB liên tục (N+1 Query Problem).
- *
- * 2. GROUPING BY PRODUCT:
- * - Trong Excel, 1 sản phẩm có thể có nhiều SKU (nhiều dòng).
- * - Ta group các dòng này lại theo `productId` hoặc `slug` để chỉ thực hiện `upsert` sản phẩm 1 lần duy nhất, sau đó mới xử lý các SKU bên dưới.
- *
- * 3. UPSERT (Update or Insert):
- * - Dùng `upsert` giúp code ngắn gọn: Nếu sản phẩm đã tồn tại -> Cập nhật thông tin; Nếu chưa có -> Tạo mới. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()

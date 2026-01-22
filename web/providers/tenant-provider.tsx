@@ -1,38 +1,4 @@
-/**
- * =====================================================================
- * TENANT PROVIDER - QUẢN LÝ CẤU HÌNH MULTI-TENANT
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Hệ thống hỗ trợ Multi-tenancy: Nhiều cửa hàng chạy trên cùng 1 codebase
- * nhưng có giao diện (theme) khác nhau.
- *
- * 1. CÁCH HOẠT ĐỘNG:
- *    - Mỗi tenant có domain riêng (store1.com, store2.com)
- *    - Khi user truy cập, lấy domain từ request header
- *    - Gọi API /tenants/current/config với domain đó
- *    - Backend trả về themeConfig của tenant tương ứng
- *
- * 2. THEME CONFIG:
- *    - primaryColor: Màu chủ đạo (VD: "hsl(220, 90%, 50%)")
- *    - borderRadius: Bo góc (VD: "0.5rem", "1rem")
- *    - Inject vào CSS :root variables -> Toàn app tự động đổi màu
- *
- * 3. KỸ THUẬT:
- *    - Server Component: Fetch config trên server, không leak API
- *    - dangerouslySetInnerHTML: Inject <style> vào HTML
- *    - Revalidate 60s: Cache config để không gọi API mỗi request
- *
- * 4. FALLBACK:
- *    - Nếu không có themeConfig -> Dùng theme mặc định
- *    - Nếu API lỗi -> Tiếp tục render bình thường *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - White-labeling: Cho phép chạy hàng nghìn cửa hàng với giao diện tùy biến (màu sắc, font chữ) chỉ từ 1 codebase duy nhất.
- * - Performance: Tối ưu LCP (Largest Contentful Paint) bằng cách inject CSS trực tiếp trên Server, tránh tình trạng giao diện bị "giật" màu (FOUC).
 
- * =====================================================================
- */
 
 import { headers } from "next/headers";
 
@@ -97,13 +63,24 @@ export async function TenantProvider({
 
   const { primaryColor, borderRadius } = config.themeConfig;
 
-  // Inject CSS Variables into :root
-  // Note: We use dangerouslySetInnerHTML to ensure this injection happens on server render
+  // Validate inputs to prevent CSS injection
+  // Only allow valid hex, rgb, rgba, oklch colors and standard radius values
+  const isValidColor = (c: string) => /^(#|rgb|rgba|oklch)/.test(c) || /^[a-z]+$/.test(c);
+  const isValidRadius = (r: string) => /^[0-9]+(px|rem|em|%)?$/.test(r);
+
+  const safePrimary = primaryColor && isValidColor(primaryColor) ? primaryColor : null;
+  const safeRadius = borderRadius && isValidRadius(borderRadius) ? borderRadius : null;
+
+  if (!safePrimary && !safeRadius) {
+    return <>{children}</>;
+  }
+
+  // Inject CSS Variables into :root safely
   const cssVars = `
     :root {
-      ${primaryColor ? `--primary: ${primaryColor};` : ""}
-      ${borderRadius ? `--radius: ${borderRadius};` : ""}
-      ${primaryColor ? `--ring: ${primaryColor};` : ""}
+      ${safePrimary ? `--primary: ${safePrimary};` : ""}
+      ${safeRadius ? `--radius: ${safeRadius};` : ""}
+      ${safePrimary ? `--ring: ${safePrimary};` : ""}
     }
   `;
 

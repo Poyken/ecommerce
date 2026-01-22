@@ -1,33 +1,7 @@
 import { nanoid } from "nanoid";
 import { cookies, headers } from "next/headers";
 
-/**
- * =====================================================================
- * CSRF PROTECTION - Bảo vệ chống tấn công giả mạo request
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CSRF (Cross-Site Request Forgery) LÀ GÌ?
- * - Là tấn công khi hacker lừa trình duyệt của user gửi request đến server của ta.
- * - Vì browser tự động gửi cookie, server tưởng request là hợp lệ.
- *
- * 2. CƠ CHẾ "DOUBLE SUBMIT COOKIE":
- * - Server gửi 1 random token vào Cookie.
- * - Khi Client gửi form/API, Client phải đọc token từ Cookie và gửi kèm trong Header (x-csrf-token).
- * - Server so sánh: Cookie Token == Header Token -> Request hợp lệ.
- * - Tại sao an toàn? Hacker (web lạ) không thể đọc được cookie của web ta (Same Origin Policy),
- *   nên không thể lấy token để gắn vào header được.
- *
- * 3. TẠI SAO HTTPONLY = FALSE?
- * - Cookie này KHÔNG ĐƯỢC để HttpOnly, vì Javascript bên Client CẦN ĐỌC nó để gắn vào Header.
- * - (Khác với Session Cookie phải để HttpOnly). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Banking-grade Security: Áp dụng cơ chế bảo mật tiêu chuẩn (Double Submit Cookie) để ngăn chặn các cuộc tấn công chiếm quyền điều khiển request.
- * - User Safety: Đảm bảo các hành động quan trọng như "Đổi mật khẩu" hay "Thanh toán" chỉ được thực hiện từ chính website của hệ thống.
 
- * =====================================================================
- */
 
 const CSRF_COOKIE_NAME = "csrf-token";
 const CSRF_HEADER_NAME = "x-csrf-token";

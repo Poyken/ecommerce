@@ -46,25 +46,7 @@ interface NotificationsAdminClientProps {
 
 const ALL_USERS_VALUE = "__ALL_USERS__";
 
-/**
- * =====================================================================
- * NOTIFICATIONS ADMIN CLIENT - Giao diện Gửi thông báo
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DUAL MODE SENDING (Chế độ gửi kép):
- * - Broadcast: Gửi cho toàn bộ user (System wide).
- * - Individual: Gửi cho 1 user cụ thể (Targeted).
- *
- * 2. POLYMORPHIC LINK BUILDER (Tạo link đa hình):
- * - Admin có thể chọn loại link (Product, Order, Coupon) để attach vào notif.
- * - Client sẽ tự động search và suggest ID tương ứng (vd: Search product -> lấy Product ID). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 export function NotificationsAdminClient({
   users,
 }: NotificationsAdminClientProps) {

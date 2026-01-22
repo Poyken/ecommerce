@@ -9,27 +9,7 @@ export const metadata: Metadata = {
   description: "Securely complete your purchase.",
 };
 
-/**
- * =====================================================================
- * CHECKOUT PAGE - Trang thanh toán
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * PAGE PROTECTION:
- * - Trang này yêu cầu bắt buộc phải có dữ liệu Cart và Profile.
- * - Nếu API trả về lỗi hoặc không có dữ liệu, Client Component sẽ xử lý (hoặc redirect).
- *
- * DATA PREPARATION:
- * - Fetch Cart để hiển thị lại lần cuối trước khi đặt hàng.
- * - Fetch Addresses (Profile) để user chọn địa chỉ giao hàng.
- * - Truyền tất cả xuống `CheckoutClient` để render form. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - High-Conversion Checkout: Tối ưu hóa luồng thanh toán một trang (One-page Checkout) để giảm thiểu tỷ lệ bỏ rơi giỏ hàng và tăng tốc độ hoành thành đơn hàng cho khách.
- * - Multi-Gateway Payment: Cung cấp nhiều lựa chọn thanh toán linh hoạt cho khách hàng, từ COD truyền thống đến chuyển khoản ngân hàng qua mã QR tự động.
 
- * =====================================================================
- */
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 

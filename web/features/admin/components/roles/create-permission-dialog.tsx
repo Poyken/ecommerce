@@ -10,24 +10,7 @@ import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
-/**
- * =====================================================================
- * CREATE PERMISSION DIALOG - Dialog tạo quyền hạn mới
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. NAMING CONVENTION:
- * - Quyền hạn nên được đặt theo format `resource:action` (VD: `product:create`).
- * - Hệ thống tự động chuyển text sang `lowercase` để đảm bảo tính nhất quán.
- *
- * 2. FEEDBACK:
- * - Sử dụng `AnimatePresence` để hiển thị lỗi validation một cách mượt mà. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface CreatePermissionDialogProps {
   open: boolean;

@@ -13,24 +13,6 @@ import { UpdateSkuDto } from './dto/update-sku.dto';
  * SKUS SERVICE - Dịch vụ quản lý biến thể và tồn kho
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SKU CODE (Mã định danh):
- * - `skuCode` là mã duy nhất để phân biệt các mặt hàng trong kho.
- * - Hệ thống bắt buộc mã này phải là duy nhất (`ConflictException`) để tránh nhầm lẫn khi nhập/xuất kho.
- *
- * 2. OPTION VALUES MAPPING:
- * - Một SKU được định nghĩa bởi sự kết hợp của nhiều Option Value (VD: Màu Đỏ + Size L).
- * - Ta sử dụng bảng trung gian `SkuToOptionValue` để lưu trữ mối quan hệ Many-to-Many này.
- *
- * 3. INVENTORY MONITORING (Giám sát tồn kho):
- * - Hàm `findAll` hỗ trợ lọc theo `stockLimit`. Giúp Admin dễ dàng tìm ra các mặt hàng sắp hết hàng để kịp thời nhập thêm.
- *
- * 4. SEARCHING:
- * - Hỗ trợ tìm kiếm theo cả mã SKU và tên sản phẩm gốc, giúp việc quản lý trở nên linh hoạt và nhanh chóng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

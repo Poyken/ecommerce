@@ -1,28 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * FEATURED CATEGORIES - Section danh mục nổi bật
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DATA FETCHING:
- * - Nhận `categoriesPromise` từ Server Component (Page).
- * - Sử dụng `use()` để unwrap promise.
- *
- * 2. GRID LAYOUT:
- * - Hiển thị 4 danh mục đầu tiên trên một hàng (desktop).
- * - Responsive: 1 cột (mobile) -> 2 cột (tablet) -> 4 cột (desktop).
- *
- * 3. REUSABLE COMPONENT:
- * - Sử dụng `CategoryCard` để hiển thị từng item.
- * - Đảm bảo tính nhất quán về giao diện giữa các trang. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 import { CategoryCard } from "@/features/categories/components/category-card";
 import { Link } from "@/i18n/routing";
 import { fadeInUp, itemScaleVariant, staggerContainer } from "@/lib/animations";

@@ -3,35 +3,6 @@
  * SECURITY CONTROLLER - API QUẢN LÝ BẢO MẬT HỆ THỐNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Controller này cung cấp các API cho trang Security Dashboard của Super Admin.
- * Tất cả endpoint đều yêu cầu quyền 'super-admin:read' hoặc 'super-admin:update'.
- *
- * 1. CÁC ENDPOINT:
- *    - GET /admin/security/stats
- *      -> Thống kê bảo mật: Số lần login 24h, % người dùng bật 2FA
- *
- *    - GET /admin/security/lockdown-status
- *      -> Kiểm tra trạng thái "khóa hệ thống" (System Lockdown)
- *
- *    - POST /admin/security/lockdown
- *      -> Bật/tắt chế độ khóa hệ thống khẩn cấp
- *      -> Body: { isEnabled: true/false }
- *
- *    - GET /admin/security/whitelist
- *      -> Lấy danh sách IP được phép đăng nhập của user hiện tại
- *
- *    - POST /admin/security/whitelist
- *      -> Cập nhật danh sách IP whitelist
- *      -> Body: { ips: ["1.2.3.4", "5.6.7.8"] }
- *
- * 2. GUARDS BẢO VỆ:
- *    - JwtAuthGuard: Kiểm tra access token hợp lệ
- *    - PermissionsGuard + @Permissions(): Kiểm tra quyền superAdmin *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 
@@ -113,4 +84,3 @@ export class SecurityController {
     };
   }
 }
-

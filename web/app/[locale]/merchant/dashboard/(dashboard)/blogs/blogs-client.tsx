@@ -1,20 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * BLOGS CLIENT - Quản lý bài viết (Enhanced with Server-side filtering)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * - Server-side filtering via URL params (status, search)
- * - Pagination based on actual filtered results
- * - Consistent styling with other admin pages *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 import { DataTablePagination } from "@/components/shared/data-table-pagination";
 import { StatusBadge } from "@/components/shared/status-badge";

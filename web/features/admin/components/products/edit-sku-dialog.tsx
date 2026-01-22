@@ -12,26 +12,7 @@ import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 
-/**
- * =====================================================================
- * EDIT SKU DIALOG - Dialog chỉnh sửa biến thể sản phẩm (SKU)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. READ-ONLY SKU CODE:
- * - `skuCode` là mã định danh duy nhất, không được phép sửa sau khi đã tạo để đảm bảo tính toàn vẹn dữ liệu kho.
- *
- * 2. PRICE & STOCK MANAGEMENT:
- * - Đây là nơi Admin cập nhật giá bán và số lượng tồn kho thực tế cho từng biến thể.
- *
- * 3. SKU-SPECIFIC IMAGE:
- * - Mỗi SKU có thể có ảnh riêng (VD: Áo màu Đỏ thì hiện ảnh áo Đỏ). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface EditSkuDialogProps {
   sku: Sku;

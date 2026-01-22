@@ -53,4 +53,3 @@ export class TenantSettingsController {
     return { data: settings };
   }
 }
-

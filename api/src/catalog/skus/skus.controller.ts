@@ -3,19 +3,6 @@
  * SKUS CONTROLLER - Quản lý Biến thể sản phẩm (SKU)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SKU LÀ GÌ?
- * - Stock Keeping Unit (Đơn vị lưu kho).
- * - Cùng 1 sản phẩm "Áo thun", sẽ có nhiều SKU: "Áo Đỏ Size M", "Áo Xanh Size L".
- * - Giá và Số lượng tồn kho nằm ở SKU, KHÔNG nằm ở Product cha.
- *
- * 2. IMAGE HANDLING:
- * - Mỗi SKU có thể có ảnh riêng (VD: click chọn màu Đỏ -> ảnh áo đỏ hiện ra).
- * - Controller này xử lý upload ảnh lên Cloudinary ngay khi tạo/sửa SKU. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 import {
@@ -126,4 +113,3 @@ export class SkusController {
     return this.skusService.remove(id);
   }
 }
-

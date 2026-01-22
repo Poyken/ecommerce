@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * ADMIN COMPONENTS INDEX - Thư viện Components Admin
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TỔ CHỨC FILE:
- * - Các components được chia theo Domain (Products, Users, Orders...) hoặc Loại (Dialogs, UI Charts...).
- *
- * 2. DIALOG PATTERN:
- * - Hầu hết các tính năng Create/Edit đều dùng Dialog (Modal).
- * - VD: `CreateProductDialog`, `EditUserDialog`.
- * - Lợi ích: User không bị chuyển trang, giữ context hiện tại, UX tốt hơn.
- *
- * 3. EXPORT STRATEGY:
- * - Re-export tất cả tại đây giúp việc import ở các page clean hơn rất nhiều. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 /**
  * =====================================================================
  * ADMIN COMPONENTS INDEX

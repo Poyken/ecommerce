@@ -71,4 +71,3 @@ export class ProcurementController {
     return this.procurementService.updateOrderStatus(req.user.id, id, dto);
   }
 }
-

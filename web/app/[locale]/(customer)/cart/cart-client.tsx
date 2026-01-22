@@ -1,29 +1,4 @@
-/**
- * =====================================================================
- * CART CLIENT - Giao diện giỏ hàng chi tiết
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HYBRID CART LOGIC (User & Guest):
- * - Nếu user đã đăng nhập: Dữ liệu lấy từ `cart` prop (Server Action).
- * - Nếu là khách (Guest): Dữ liệu lấy từ `localStorage` ('guest_cart').
- * - `useEffect` lắng nghe event `guest_cart_updated` để đồng bộ UI khi có thay đổi.
- *
- * 2. OPTIMISTIC UPDATES & DEBOUNCING:
- * - Khi thay đổi số lượng, UI cập nhật ngay lập tức (`localItems`).
- * - Sau đó dùng `setTimeout` (Debounce 500ms) để gọi API, tránh spam request.
- * - Nếu API lỗi, UI sẽ tự động rollback về dữ liệu cũ từ Server.
- *
- * 3. SELECTION SYSTEM:
- * - Cho phép user chọn từng món để thanh toán (`selectedItems`).
- * - Tự động tính toán lại tổng tiền dựa trên các món đã chọn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Dynamic Cart Orchestration: Quản lý tập trung toàn bộ logic giỏ hàng ở phía Client, cho phép xử lý đồng thời cả giỏ hàng định danh (Login) và giỏ hàng ẩn danh (Guest) một cách nhất quán.
- * - Optimistic Quantity Adjustments: Tăng tốc độ phản hồi của giao diện bằng cách cập nhật ngay lập tức số lượng sản phẩm và tổng tiền, sau đó mới đồng bộ với database qua cơ chế Debouncing thông minh.
 
- * =====================================================================
- */
 
 "use client";
 

@@ -24,24 +24,6 @@ import { WebhookPayloadDto } from './dto/webhook-payload.dto';
  * PAYMENT SERVICE - Dịch vụ điều phối thanh toán
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. STRATEGY PATTERN (Mẫu thiết kế Chiến lược):
- * - Thay vì dùng `switch-case` khổng lồ để xử lý từng loại thanh toán (COD, Stripe, VNPAY, MOMO...), ta dùng Pattern này.
- * - Mỗi phương thức thanh toán là một Class riêng (`CodStrategy`, `VnPayStrategy`...) cùng implement một interface.
- *
- * 2. STRATEGY REGISTRY (Map):
- * - `strategies: Map<string, PaymentStrategy>` đóng vai trò như một cuốn danh bạ.
- * - Khi cần thanh toán, chỉ cần tra "tên" (VD: 'VNPAY') trong danh bạ để lấy "thợ" xử lý tương ứng.
- * - Tra cứu bằng Map cực nhanh (O(1)).
- *
- * 3. OPEN/CLOSED PRINCIPLE (Nguyên lý Đóng/Mở):
- * - Code "Mở" cho việc mở rộng: Muốn thêm Momo? Chỉ cần tạo class `MomoStrategy` và đăng ký vào Map.
- * - Code "Đóng" cho việc sửa đổi: Không cần sửa hàm `processPayment` hiện tại -> Giảm rủi ro bug. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Payment Abstraction: Che giấu sự phức tạp của từng cổng thanh toán (VNPAY, Momo, Stripe) dưới một giao diện thống nhất `processPayment`.
- * - Runtime Flexibility: Dễ dàng cấu hình bật/tắt các cổng thanh toán (chỉ cần xóa khỏi Map) mà không cần sửa logic xử lý đơn hàng.
- *
  * =====================================================================
  */
 
@@ -98,9 +80,10 @@ export class PaymentService {
 
     // 1. Phân tích nội dung chuyển khoản để tìm Order ID (UUID regex)
     // [SECURITY FIX] Chỉ extract chuỗi đúng format UUID để tránh Spam DB
-    const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+    const uuidRegex =
+      /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
     const matches = payload.content.match(uuidRegex);
-    
+
     if (!matches || matches.length === 0) {
       this.logger.warn(
         `Không tìm thấy Order ID (UUID) trong nội dung webhook: ${payload.content}`,
@@ -115,7 +98,7 @@ export class PaymentService {
     const order = await this.ordersRepo.findById(orderId);
 
     if (!order) {
-       throw new NotFoundException(`Đơn hàng ${orderId} không tồn tại`);
+      throw new NotFoundException(`Đơn hàng ${orderId} không tồn tại`);
     }
 
     // Kiểm tra idempotency (Tính lặp lại): Nếu đã thanh toán rồi thì bỏ qua
@@ -135,19 +118,19 @@ export class PaymentService {
     // 3. Cập nhật trạng thái thông qua OrdersService (QUAN TRỌNG: Để kích hoạt Event, Email, Loyalty...)
     // Thay vì update trực tiếp vào DB làm bypass logic.
     await this.ordersService.updateStatus(order.id, {
-        status: order.status === 'PENDING' ? 'PROCESSING' : order.status,
-        paymentStatus: 'PAID',
-        // Update transaction ID riêng vì updateStatus DTO có thể không bao gồm field này nếu không mapping
-        // Tuy nhiên, trong OrdersService.updateStatus ta đã thấy nó nhận DTO cơ bản.
-        // Ta sẽ cần custom logic một chút ở đây, hoặc chấp nhận update 2 lần (bad).
-        // Tốt nhất: Gọi updateStatus cho việc chuyển trạng thái chính.
+      status: order.status === 'PENDING' ? 'PROCESSING' : order.status,
+      paymentStatus: 'PAID',
+      // Update transaction ID riêng vì updateStatus DTO có thể không bao gồm field này nếu không mapping
+      // Tuy nhiên, trong OrdersService.updateStatus ta đã thấy nó nhận DTO cơ bản.
+      // Ta sẽ cần custom logic một chút ở đây, hoặc chấp nhận update 2 lần (bad).
+      // Tốt nhất: Gọi updateStatus cho việc chuyển trạng thái chính.
     } as any);
 
     // Update Transaction ID (Vì method updateStatus có thể chưa support update transactionId trực tiếp từ DTO này)
     // Hoặc ta sửa updateStatus để nhận payment info.
     // Tạm thời update transaction ID trước.
     await this.ordersRepo.update(order.id, {
-        transactionId: payload.gatewayTransactionId || `TRX-${Date.now()}`
+      transactionId: payload.gatewayTransactionId || `TRX-${Date.now()}`,
     });
 
     this.logger.log(

@@ -1,24 +1,4 @@
-/**
- * =====================================================================
- * METADATA ACTIONS - Quản lý Danh mục, Thương hiệu, Coupon
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. GOM NHÓM (Aggregated Actions):
- * - Thay vì tạo 3 files `brand-actions.ts`, `category-actions.ts`, `coupon-actions.ts`,
- *   ta gom chúng vào đây vì chúng đều là "Metadata" (dữ liệu nền) của hệ thống Ecommerce.
- *
- * 2. POLYMORPHISM (Đa hình) trong API Call:
- * - Hàm `createBrandAction`, `updateBrandAction`... nhận vào `CreateBrandDto` (JSON) HOẶC `FormData`.
- * - Lý do: Nếu có upload ảnh -> phải dùng `FormData` (multipart). Nếu chỉ text -> dùng JSON.
- * - Hàm tự động check `data instanceof FormData` để gửi request đúng định dạng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Data Centralization: Quản lý tập trung toàn bộ "xương sống" của cửa hàng điện tử bao gồm Danh mục, Thương hiệu và các mã giảm giá một cách có hệ thống.
- * - Inventory & Brand Control: Đảm bảo tính nhất quán về dữ liệu sản phẩm, giúp việc quản lý kho và phân loại hàng hóa diễn ra mượt mà và chính xác.
 
- * =====================================================================
- */
 "use server";
 
 import {

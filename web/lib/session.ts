@@ -1,28 +1,4 @@
-/**
- * =====================================================================
- * SESSION MANAGEMENT - Quản lý phiên đăng nhập
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HTTP-ONLY COOKIES:
- * - Chúng ta lưu Token ở Cookie thay vì LocalStorage để bảo mật.
- * - `httpOnly: true`: Ngăn JavaScript phía Client đọc được Cookie -> Chặn đứng tấn công XSS.
- * - `secure: true`: Bắt buộc chỉ gửi qua HTTPS (trừ localhost).
- *
- * 2. SESSION LIFECYCLE:
- * - Khi Login -> Tạo 2 Cookies: `accessToken` (ngắn hạn) và `refreshToken` (dài hạn).
- * - Khi gọi API -> Trình duyệt tự động đính kèm Cookie vào request.
- * - Khi Logout -> Xóa Cookies.
- *
- * 3. SERVER-ONLY:
- * - File này được đánh dấu `"server-only"` để đảm bảo không bao giờ bị bundle nhầm xuống Client (gây lộ logic bảo mật). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - XSS Prevention: Bảo vệ tài khoản người dùng khỏi bị đánh cắp Session bằng cách sử dụng HttpOnly Cookie - hacker dùng JS không thể đọc được Token.
- * - Seamless Experience: Tự động ghi nhớ trạng thái đăng nhập của người dùng qua các phiên làm việc mà không cần bắt họ đăng nhập lại mỗi khi mở tab mới.
 
- * =====================================================================
- */
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -43,15 +19,12 @@ import "server-only";
 export async function createSession(accessToken: string, refreshToken: string) {
   const cookieStore = await cookies();
 
-  // Common cookie options
+  const isProduction = process.env.NODE_ENV === "production";
   const cookieOptions = {
-    httpOnly: true, // JavaScript không thể đọc
-    // FORCE FALSE FOR DEBUGGING
-    secure: false, // isProduction, // HTTPS only trong production
-    sameSite: "lax" as const, // Bảo vệ CSRF, cho phép navigation requests
-    path: "/", // Gửi với mọi request
-    // NOTE: Không set domain để cookie work với cả subdomain và main domain
-    // Nếu set domain: ".yourdomain.com" sẽ không work với localhost
+    httpOnly: true, // JavaScript cannot read this
+    secure: isProduction, // HTTPS only in production
+    sameSite: "lax" as const, // Protection against CSRF
+    path: "/",
   };
 
   // Access Token - Dùng để xác thực API requests

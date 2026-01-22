@@ -1,27 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * NEW ARRIVALS - Section sản phẩm mới về
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DATA SLICING:
- * - Nhận toàn bộ danh sách sản phẩm nhưng chỉ hiển thị 4 sản phẩm tiếp theo (`slice(4, 8)`).
- * - Giả định 4 sản phẩm đầu tiên đã dùng cho section "Trending".
- *
- * 2. REUSABLE COMPONENT:
- * - Tái sử dụng `ProductCard` với prop `isNew={true}` để hiển thị badge "New".
- *
- * 3. ANIMATION:
- * - Sử dụng `fadeInRight` cho header để tạo cảm giác chuyển động từ phải sang trái.
- * - Grid sản phẩm vẫn dùng `staggerChildren` để hiện lần lượt. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 import { ProductCard } from "@/features/products/components/product-card";
 import { Link } from "@/i18n/routing";
 import {

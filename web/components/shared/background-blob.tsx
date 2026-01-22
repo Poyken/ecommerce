@@ -1,17 +1,4 @@
-/**
- * =====================================================================
- * BACKGROUND BLOB - Các đốm màu nền trang trí
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Component này tạo ra các hiệu ứng đốm màu mờ (blur) ở nền website,
- * giúp giao diện trông hiện đại và có chiều sâu hơn (Glassmorphism style). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

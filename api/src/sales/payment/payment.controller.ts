@@ -21,22 +21,6 @@ import { VNPayUtils } from './vnpay.utils';
  * PAYMENT CONTROLLER - XỬ LÝ KẾT QUẢ THANH TOÁN (VNPAY, MOMO)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RETURN URL (Trang phản hồi):
- * - Đây là nơi người dùng được chuyển hướng về sau khi thanh toán xong trên web của đối tác.
- * - Ta dùng nó để Redirect người dùng về trang "Thành công" hoặc "Thất bại" trên Frontend.
- * - QUAN TRỌNG: Không nên chỉ tin vào Return URL để cập nhật DB vì người dùng có thể can thiệp.
- *
- * 2. IPN (Instant Payment Notification):
- * - Đây là kênh Giao tiếp Server-to-Server. Đối tác (VNPay/MoMo) sẽ bí mật gọi vào API này để thông báo kết quả.
- * - Đây mới là nơi TIN CẬY NHẤT để cập nhật trạng thái đơn hàng (`PAID`, `PROCESSING`) trong Database.
- *
- * 3. CHECKSUM VALIDATION:
- * - Mọi dữ liệu đối tác gửi về đều phải được xác thực chữ ký (`vnp_SecureHash` hoặc `signature`) để đảm bảo không bị kẻ xấu giả mạo gói tin thanh toán. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 import { CommissionService } from '@/platform/analytics/commission.service';

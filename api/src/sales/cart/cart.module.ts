@@ -6,19 +6,6 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  * CART MODULE - Module quản lý giỏ hàng
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MODULE ENCAPSULATION:
- * - Module này gom nhóm các thành phần liên quan đến giỏ hàng: Controller (xử lý HTTP), Service (xử lý logic).
- *
- * 2. PRISMA INTEGRATION:
- * - `PrismaModule` được import để `CartService` có thể truy cập vào database.
- *
- * 3. ARCHITECTURE:
- * - Tuân thủ kiến trúc Modular của NestJS, giúp code dễ bảo trì và mở rộng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 import { CartController } from './cart.controller';

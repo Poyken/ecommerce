@@ -16,25 +16,7 @@ import { ProductMetadata } from "./product-metadata";
 import { ProductSeoInfo } from "./product-seo-info";
 import { ProductOptionsManager } from "./product-options-manager";
 
-/**
- * =====================================================================
- * CREATE PRODUCT DIALOG - Dialog tạo sản phẩm mới (Phức tạp)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPONENT REUSE:
- * - Sử dụng chung các sub-components (`ProductBasicInfo`, `ProductMetadata`, etc.)
- *   với `EditProductDialog` để đảm bảo tính đồng nhất UI/Logic.
- *
- * 2. DYNAMIC FORM (Form động):
- * - Sản phẩm có thể có N tùy chọn (Màu, Size, Chất liệu...).
- * - Ta sử dụng `ProductOptionsManager` để quản lý việc thêm/xóa các tùy chọn này. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface CreateProductDialogProps {
   open: boolean;

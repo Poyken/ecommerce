@@ -1,22 +1,4 @@
-/**
- * =====================================================================
- * EDIT CATEGORY DIALOG - Form chỉnh sửa danh mục
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ĐỆ QUY & LOGIC PARENT:
- * - Khi sửa danh mục, phải tránh chọn Parent là chính nó (Circular Dependency).
- * - `availableParentCategories` lọc bỏ `category.id` hiện tại khỏi danh sách dropdown.
- *
- * 2. SLUG EDITING:
- * - Khác với lúc tạo (Auto-slug), khi sửa ta cho phép sửa Slug thủ công.
- * - Lý do: Đôi khi User muốn tối ưu lại URL cho chuẩn SEO mà không muốn đổi tên hiển thị. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */ 
+ 
 "use client";
 
 import { FormDialog } from "@/components/shared/form-dialog";

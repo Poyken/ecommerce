@@ -1,30 +1,7 @@
 import { getReviewsAction } from "@/features/admin/actions";
 import { ReviewsClient } from "./reviews-client";
 
-/**
- * =====================================================================
- * ADMIN REVIEWS PAGE - Quản lý đánh giá sản phẩm (Server Component)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. QUẢN LÝ PHẢN HỒI KHÁCH HÀNG:
- * - Trang này hiển thị tất cả các đánh giá (Reviews) mà khách hàng đã để lại cho sản phẩm.
- * - Admin có thể duyệt (Publish) hoặc ẩn (Hide) các đánh giá không phù hợp.
- *
- * 2. REVIEW COUNTS (Parallel Fetching):
- * - Hàm `getReviewCounts` sử dụng `Promise.all` để đếm số lượng đánh giá theo từng trạng thái.
- * - Điều này giúp hiển thị các Tab với số liệu chính xác (All, Published, Hidden).
- *
- * 3. STATUS FILTER:
- * - Hỗ trợ lọc đánh giá theo trạng thái thông qua URL parameter `status`.
- * - Server-side filtering đảm bảo hiệu năng tốt ngay cả khi có hàng nghìn đánh giá. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Brand Feedback Moderation: Xây dựng uy tín thương hiệu bằng cách kiểm duyệt và phản hồi các đánh giá của khách hàng, đảm bảo nội dung hiển thị trên Storefront luôn tích cực và hữu ích.
- * - AI Sentiment Tracking: Tích hợp AI để phân tích xu hướng cảm xúc của khách hàng qua hàng nghìn đánh giá, giúp doanh nghiệp cải thiện sản phẩm dựa trên phản hổi thực tế.
 
- * =====================================================================
- */
 
 async function getReviewCounts() {
   try {

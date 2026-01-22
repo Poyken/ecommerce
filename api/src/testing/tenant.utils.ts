@@ -6,23 +6,6 @@ import { tenantStorage } from '@core/tenant/tenant.context';
  * TEST UTILITIES - HELPER CHO UNIT TESTS MULTI-TENANCY
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MỤC ĐÍCH:
- *    - Cung cấp các utility functions để viết unit test dễ dàng hơn.
- *    - Mock tenant context mà không cần setup phức tạp.
- *    - Tạo mock data nhất quán cho tất cả tests.
- *
- * 2. CÁC FUNCTION CHÍNH:
- *    - createMockTenant(): Tạo mock Tenant object.
- *    - withTenantContext(): Chạy function trong tenant context.
- *    - createMockPrismaService(): Tạo mock Prisma service.
- *
- * 🎯 ỨNG DỤNG THỰC TẾ:
- * - Viết unit tests không cần kết nối database thật.
- * - Test các service với tenant context được mock.
- * - Đảm bảo test isolation giữa các test cases.
- *
  * =====================================================================
  */
 
@@ -70,6 +53,7 @@ export const DEFAULT_MOCK_TENANT: Tenant = {
   monthlyRevenue: null,
   referralCode: null,
   referredByCode: null,
+  allowSocialRegistration: false,
 };
 
 /**

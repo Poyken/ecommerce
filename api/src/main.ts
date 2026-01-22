@@ -6,21 +6,6 @@ import './core/sentry/instrument';
  * MAIN BOOTSTRAP - ĐIỂM KHỞI CHẠY ỨNG DỤNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Đây là file quan trọng nhất (Entry Point) của ứng dụng NestJS.
- * Nó chịu trách nhiệm:
- * 1. Khởi tạo instance ứng dụng (`NestFactory.create`).
- * 2. Cấu hình Middleware toàn cục (Global Middleware):
- *    - Security (Helmet, CORS): Bảo mật HTTP headers và chặn request trái phép.
- *    - Performance (Compression): Nén Gzip response để giảm dung lượng tải.
- *    - Logging: Ghi log chuẩn format JSON để dễ debug và trace.
- * 3. Cấu hình Pipes & Interceptors toàn cục:
- *    - ZodValidationPipe: Tự động kiểm tra và convert dữ liệu đầu vào (DTO) dùng Zod schema.
- *    - TransformInterceptor: Chuẩn hóa format trả về { data, message, statusCode }.
- *    - AllExceptionsFilter: Bắt lỗi tập trung và trả về lỗi đẹp thay vì stack trace thô.
- * 4. Tạo tài liệu API (Swagger) tự động tại `/docs`.
- * 5. [NEW] Sentry error tracking và performance monitoring (Theo dõi lỗi và hiệu năng).
  * =====================================================================
  */
 

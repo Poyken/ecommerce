@@ -8,29 +8,7 @@ interface CloudinarySignatureResponse {
   folder: string;
 }
 
-/**
- * =====================================================================
- * CLOUDINARY UTILITY - Xử lý upload ảnh trực tiếp
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DIRECT UPLOAD (Tải lên trực tiếp):
- * - Thay vì gửi ảnh qua Backend (gây nặng server), Client sẽ gửi ảnh trực tiếp đến Cloudinary.
- * - Tiết kiệm băng thông và tài nguyên CPU cho server chính.
- *
- * 2. SECURE SIGNATURE (Chữ ký bảo mật):
- * - Để Cloudinary chấp nhận upload, Backend cần tạo một "Signature" (chữ ký số).
- * - Client gọi API backend lấy signature -> sau đó mới gửi kèm ảnh lên Cloudinary.
- *
- * 3. FORMDATA:
- * - Ảnh được gửi dưới dạng Multi-part FormData, chuẩn định dạng cho file upload. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Offloading Server: Giảm tải hoàn toàn việc xử lý file nặng cho Backend, giúp Server Backend tập trung vào logic nghiệp vụ và Database.
- * - UX Speed: Ảnh được tải lên CDN gần nhất với người dùng, kết hợp với các kỹ thuật transform ảnh tự động của Cloudinary để tối ưu dung lượng hiển thị.
 
- * =====================================================================
- */
 export async function uploadToCloudinary(
   file: File,
   accessToken?: string,

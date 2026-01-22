@@ -43,25 +43,7 @@ interface TestimonialsBlockProps {
   };
 }
 
-/**
- * =================================================================================================
- * TESTIMONIALS BLOCK - KHỐI Ý KIẾN KHÁCH HÀNG
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. EXTERNAL CAROUSEL:
- *    - Thành phần chính là `TestimonialsCarousel`. Logic vuốt (swipe) phức tạp được tách ra.
- *    - Khối này chỉ bọc Title và xử lý Background.
- *
- * 2. PREVIEW VS PRODUCTION:
- *    - `isMock`: Cờ đánh dấu khi không có dữ liệu thực tế.
- *    - `pointer-events-none`: Vô hiệu hóa click trong chế độ Preview để Admin dễ kéo thả block. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =================================================================================================
- */
 export function TestimonialsBlock({
   title,
   subtitle,

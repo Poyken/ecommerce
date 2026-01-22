@@ -1,25 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * =====================================================================
- * CHECKOUT SKELETON - Skeleton cho trang Thanh toán
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. STEP-BY-STEP MOCKUP:
- * - Giả lập các khối thông tin quan trọng: Chọn địa chỉ, Phương thức thanh toán và Tóm tắt đơn hàng.
- *
- * 2. SIDEBAR STICKY MOCK:
- * - Phần tóm tắt đơn hàng bên phải cũng được giả lập với thuộc tính `sticky` để khớp với giao diện thật.
- *
- * 3. SECURITY REASSURANCE:
- * - Giữ lại các placeholder cho icon bảo mật và thông tin tin cậy để người dùng cảm thấy an tâm khi chờ đợi. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function CheckoutSkeleton() {
   return (

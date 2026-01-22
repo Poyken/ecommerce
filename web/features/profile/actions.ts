@@ -1,28 +1,4 @@
-/**
- * =====================================================================
- * PROFILE SERVER ACTIONS - Quản lý hồ sơ người dùng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * File này chứa các Server Actions liên quan đến thông tin cá nhân của User:
- * - Lấy thông tin profile (`getProfileAction`)
- * - Cập nhật thông tin (Tên, Ảnh đại diện, Mật khẩu) (`updateProfileAction`)
- *
- * LƯU Ý KỸ THUẬT QUAN TRỌNG:
- * 1. CACHE DEDUPLICATION:
- *    - `getProfileAction` được bọc bởi `cache()` của React.
- *    - Giúp tránh việc gọi API `/auth/me` nhiều lần nếu component cha và con cùng cần profile trong 1 lần render.
- *
- * 2. SESSION VALIDATION:
- *    - Luôn kiểm tra `accessToken` từ Cookie.
- *    - Xử lý các case 401 (Unauthorized) để tự động force logout nếu phiên làm việc hết hạn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Personalization: Quản lý toàn bộ thông tin cá nhân của khách hàng như ảnh đại diện (avatar), tên hiển thị và mật khẩu một cách an toàn.
- * - Multi-factor Security: Tăng cường bảo mật tài khoản bằng cách cung cấp các action để thiết lập xác thực 2 lớp (2FA), giúp bảo vệ triệt để dữ liệu khách hàng.
 
- * =====================================================================
- */
 
 "use server";
 
@@ -42,27 +18,7 @@ import { cookies } from "next/headers";
 
 import { profileService } from "./services/profile.service";
 
-/**
- * =====================================================================
- * PROFILE ACTIONS - Quản lý hồ sơ người dùng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REACT CACHE (Deduplication):
- * - `cache(async () => ...)`: Giúp tránh gọi API `auth/me` nhiều lần trong cùng một lần render của React.
- * - Ví dụ: Header cần tên user, Sidebar cần avatar -> Chỉ gọi API 1 lần.
- *
- * 2. REVALIDATE PATH:
- * - Sau khi cập nhật profile (`updateProfileAction`), ta gọi `revalidatePath("/profile")`.
- * - Lệnh này bảo Next.js: "Dữ liệu trang này cũ rồi, hãy xóa cache và fetch lại mới ngay lập tức".
- * - Giúp UI cập nhật tên/ảnh mới ngay mà không cần F5.
- *
- * 3. FORM DATA HANDLING:
- * - Upload ảnh (`avatar`) bắt buộc dùng `FormData`.
- * - Logic: Nếu có ảnh -> Gửi FormData multipart. Nếu chỉ sửa text -> Gửi JSON cho nhẹ.
- * =====================================================================
- */
+
 
 /**
  * Lấy thông tin profile của user đang đăng nhập.

@@ -3,27 +3,7 @@ import { Blog } from "@/types/models";
 import { Metadata } from "next";
 import { BlogPageClient } from "./blog-page-client";
 
-/**
- * =====================================================================
- * BLOG PAGE - Trang danh sách bài viết (Journal)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. API DATA FETCHING:
- * - Dữ liệu blog đang được lấy từ backend API thông qua `blogService`.
- * - Cache strategy: revalidate 900s (15 phút) để cân bằng giữa performance và fresh data.
- *
- * 2. CLIENT-SIDE INTERACTION:
- * - `BlogPageClient` xử lý việc hiển thị danh sách bài viết với các hiệu ứng animation.
- *
- * 3. SEO:
- * - Metadata được cấu hình để tối ưu hóa việc hiển thị trên các công cụ tìm kiếm. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 export const metadata: Metadata = {
   title: "Journal",

@@ -1,30 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * WISHLIST BUTTON - Nút thêm vào yêu thích
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. OPTIMISTIC UI:
- * - Cập nhật state `isWishlisted` ngay lập tức khi user click (`setIsWishlisted(!isWishlisted)`).
- * - Giúp giao diện phản hồi tức thì, không cần chờ server trả về kết quả.
- * - Nếu server trả về lỗi, revert lại state cũ (`setIsWishlisted(previousState)`).
- *
- * 2. HYBRID STATE MANAGEMENT:
- * - Hỗ trợ cả User đã đăng nhập (Server Action) và Khách (LocalStorage).
- * - `useGuestWishlist`: Hook quản lý wishlist cho khách.
- * - `toggleWishlistAction`: Server Action gọi API backend.
- *
- * 3. USE TRANSITION:
- * - `useTransition`: Đánh dấu việc gọi Server Action là "non-blocking transition".
- * - Giúp React ưu tiên các update UI khác quan trọng hơn trong khi chờ action hoàn tất. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 import { MotionButton } from "@/components/shared/motion-button";
 import { useToast } from "@/components/ui/use-toast";
 import { useAuth } from "@/features/auth/providers/auth-provider";

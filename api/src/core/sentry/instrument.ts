@@ -3,32 +3,6 @@
  * SENTRY INSTRUMENTATION - ERROR TRACKING & PERFORMANCE MONITORING
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Sentry là dịch vụ theo dõi lỗi (Error Tracking) và hiệu năng (APM).
- *
- * 1. ERROR TRACKING:
- *    - Tự động capture mọi lỗi xảy ra trong app
- *    - Có stack trace, context, user info đầy đủ
- *    - Gửi alert qua email/Slack khi có lỗi critical
- *
- * 2. PERFORMANCE MONITORING:
- *    - Theo dõi thời gian response của từng request
- *    - Phát hiện các bottleneck (N+1 queries, slow DB calls)
- *    - Trace toàn bộ flow từ frontend -> backend -> database
- *
- * 3. RELEASE TRACKING:
- *    - Tag lỗi theo version để biết bug xuất hiện từ khi nào
- *    - Source map upload để xem code gốc thay vì minified
- *
- * 4. ENVIRONMENT CONFIG:
- *    - SENTRY_DSN: Data Source Name - URL để gửi data
- *    - sampleRate: % request được monitor (production nên < 100%) *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Centralized Monitoring: Dashboard duy nhất để theo dõi sức khỏe của toàn bộ hệ thống (API, Worker, DB).
- * - Performance Baseline: Giúp dev biết được "Bình thường" API chạy mất bao lâu, từ đó phát hiện sự cố "Tự nhiên chậm" (Regression).
- * - Security Auditing: Tự động lọc bỏ mật khẩu, token khỏi log trước khi gửi đi để tránh lộ thông tin người dùng.
-
  * =====================================================================
  */
 

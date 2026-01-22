@@ -1,18 +1,4 @@
-/**
- * =====================================================================
- * AI AGENT ACTIONS - XỬ LÝ SERVER-SIDE CHO AGENT
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * File này chứa các Server Actions để giao tiếp với AI API.
- * 1. executeAgentCommand: Gửi lệnh NLP để thực thi các task (giảm giá, check kho).
- * 2. generateUIAction: Gửi yêu cầu để AI tự động thiết kế widget phù hợp dữ liệu. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 
 "use server";
 

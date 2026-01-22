@@ -18,29 +18,7 @@ import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-/**
- * =====================================================================
- * ABOUT PAGE CONTENT - Nội dung trang giới thiệu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. VISUAL STORYTELLING:
- * - Sử dụng hình ảnh chất lượng cao từ Unsplash kết hợp với `opacity` và `gradient` để tạo chiều sâu.
- * - `m.div` từ Framer Motion giúp các đoạn text xuất hiện mượt mà, tạo cảm giác cao cấp.
- *
- * 2. ANIMATION VARIANTS:
- * - Sử dụng các animation variants từ `@/lib/animations` thay vì inline.
- * - Giúp code sạch hơn và dễ maintain hơn.
- *
- * 3. HERO LOADING STATE:
- * - Hero section có loading state riêng - hiển thị shimmer cho đến khi ảnh load xong.
- * - Content chỉ fade in sau khi ảnh đã sẵn sàng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function AboutPageContent() {
   const t = useTranslations("about");

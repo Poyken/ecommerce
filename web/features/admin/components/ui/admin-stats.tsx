@@ -29,27 +29,7 @@ export interface AdminStatsProps {
   };
 }
 
-/**
- * =================================================================================================
- * ADMIN STATS - BẢNG THỐNG KÊ (DASHBOARD)
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. LAZY LOADING CHARTS:
- *    - Các biểu đồ (Recharts) rất nặng (>300KB JS).
- *    - Nếu import trực tiếp, trang Dashboard sẽ load rất chậm.
- *    - Giải pháp: Dùng `LazyBestSellersChart`, `LazyOrderStatusChart`... (đã wrap bằng `next/dynamic`).
- *    - Chỉ khi User cuộn tới hoặc mở tab đó, code JS của biểu đồ mới được tải về.
- *
- * 2. DATA FLOW:
- *    - Component này nhận `stats` từ `page.tsx` (Server Component).
- *    - Nó chỉ có nhiệm vụ hiển thị (Presentational), không gọi API. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =================================================================================================
- */
 export function AdminStats({ stats }: AdminStatsProps) {
   const t = useTranslations("admin");
 

@@ -8,26 +8,6 @@ import { PrismaService } from '@core/prisma/prisma.service';
  * RAG SERVICE - RETRIEVAL AUGMENTED GENERATION (Kỹ thuật RAG)
  * =============================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * RAG là kỹ thuật giúp AI trả lời dựa trên "kiến thức riêng" của shop thay vì
- * chỉ dựa trên kiến thức chung của mô hình (Gemini).
- *
- * 1. QUY TRÌNH 3 BƯỚC:
- *    - Retrieval (Truy xuất): Tìm 5-10 đoạn văn băn liên quan nhất trong DB KnowledgeBase.
- *    - Augmentation (Bổ sung): Ghép các đoạn văn này vào Prompt gửi lên cho AI.
- *    - Generation (Sinh kết quả): AI đọc context và trả lời câu hỏi của User.
- *
- * 2. TẠI SAO CẦN?
- *    - Tránh AI "ảo tưởng" (Hallucination) về sản phẩm không có thật.
- *    - Luôn cập nhật thông tin tồn kho, khuyến mãi mới nhất của Shop.
- *
- * 3. CÁC MODULE LIÊN QUAN:
- *    - KnowledgeService: Chịu trách nhiệm Vectorize và Search (dùng pgvector).
- *    - GeminiService: Chịu trách nhiệm giao tiếp với Google AI. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =============================================================================
  */
 

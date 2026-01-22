@@ -3,23 +3,6 @@
  * METRICS SERVICE - PROMETHEUS-COMPATIBLE METRICS
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Prometheus là hệ thống monitoring phổ biến nhất cho microservices.
- * Service này expose các metrics theo định dạng Prometheus để:
- * - Grafana có thể visualize
- * - Alert Manager có thể gửi cảnh báo
- * - Track performance trends over time
- *
- * Các loại metrics:
- * 1. Counter: Đếm số lần (requests, errors)
- * 2. Gauge: Giá trị hiện tại (active connections, memory)
- * 3. Histogram: Phân bổ giá trị (response times) *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - SRE Dashboard: Cung cấp dữ liệu Sống (Real-time) cho Team Infra biết server có đang quá tải RAM/CPU không.
- * - Business Insights: Đếm số lượng đơn hàng/user mới theo thời gian thực để hiển thị trên màn hình Big Screen của công ty.
- * - Auto-scaling: K8s có thể dựa vào metric `active_requests` để tự động bật thêm server khi traffic tăng đột biến.
-
  * =====================================================================
  */
 

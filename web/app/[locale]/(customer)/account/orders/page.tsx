@@ -10,31 +10,7 @@ export const metadata: Metadata = {
 
 import { GlassCard } from "@/components/shared/glass-card";
 
-/**
- * =====================================================================
- * ORDERS PAGE - Lịch sử đơn hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * DATA FETCHING:
- * - Fetch danh sách đơn hàng từ API `/orders/my-orders`.
- * - API này yêu cầu Header `Authorization: Bearer <token>`,
- *   được `http` utility tự động thêm vào (lấy từ cookies).
- *
- * ERROR HANDLING:
- * - Nếu fetch lỗi (thường là 401 Unauthorized), hiển thị UI yêu cầu đăng nhập.
- * - Đây là cách xử lý "Graceful Degradation" - thay vì crash trang, hiển thị thông báo thân thiện.
- *
- * COMPONENT STRUCTURE:
- * - `OrdersPage` (Server): Fetch dữ liệu.
- * - `OrdersClient` (Client): Hiển thị danh sách, filter, pagination. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Post-purchase Experience: Xây dựng lòng tin với khách hàng thông qua việc cung cấp lịch sử mua hàng minh bạch, cho phép theo dõi trạng thái vận đơn mọi lúc mọi nơi.
- * - Order History Transparency: Giúp người dùng dễ dàng xem lại các đơn hàng cũ để thực hiện việc mua lại (re-order) hoặc yêu cầu hỗ trợ bảo hành một cách nhanh chóng.
 
- * =====================================================================
- */
 import { cookies } from "next/headers";
 import { Suspense } from "react";
 

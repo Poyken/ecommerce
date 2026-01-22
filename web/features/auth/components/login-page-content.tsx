@@ -26,29 +26,7 @@ import {
   useTransition,
 } from "react";
 
-/**
- * =====================================================================
- * LOGIN PAGE CONTENT - Xử lý UI Đăng nhập
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REACT 19 `useActionState`:
- * - Hook mới để quản lý trạng thái của Server Actions.
- * - `state`: Chứa dữ liệu trả về (success, error, validation errors).
- * - `isPending`: Trạng thái loading tự động khi form đang submit.
- *
- * 2. GUEST CART SYNC:
- * - Sau khi login thành công, hệ thống kiểm tra `localStorage` xem có giỏ hàng khách không.
- * - Nếu có, gọi `mergeGuestCartAction` để đồng bộ sản phẩm vào tài khoản user.
- *
- * 3. ANIMATED ERRORS:
- * - Sử dụng `AnimatePresence` và `m.p` để thông báo lỗi xuất hiện mượt mà, không làm "nhảy" layout đột ngột. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 export function LoginPageContent() {
   const t = useTranslations("auth.login");
   const tToast = useTranslations("common.toast");

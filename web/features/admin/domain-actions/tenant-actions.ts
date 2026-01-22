@@ -1,23 +1,4 @@
-/**
- * =====================================================================
- * TENANT ACTIONS - Quản lý Khách hàng Doanh nghiệp (SaaS)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CONTEXT:
- * - Hệ thống của chúng ta là Multi-tenant (SaaS).
- * - `Tenant` đại diện cho một khách hàng doanh nghiệp thuê platform.
- *
- * 2. SUPER ADMIN ONLY:
- * - Các actions này chỉ dành cho SuperAdmin. Tenant Admin bình thường không được gọi.
- * - `REVALIDATE.superAdmin.tenants()`: Cache key riêng biệt cho khu vực SuperAdmin. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Multi-tenant SaaS Management: Cung cấp các công cụ cho SuperAdmin để quản trị toàn bộ các khách hàng doanh nghiệp (Tenant) thuê nền tảng, đảm bảo tính biệt lập về dữ liệu.
- * - Subscription Lifecycle: Quản lý vòng đời đăng ký dịch vụ (Subscription) của từng doanh nghiệp, bao gồm việc gia hạn, nâng cấp hoặc hủy gói dịch vụ linh hoạt.
 
- * =====================================================================
- */
 "use server";
 
 import { ActionResult, CreateTenantDto, UpdateTenantDto } from "@/types/dtos";

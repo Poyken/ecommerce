@@ -845,30 +845,37 @@ model Notification {
   link      String?
   createdAt DateTime @default(now())
   userId    String
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([tenantId])
   @@index([isRead])
+  @@index([tenantId, userId, isRead])
 }
 
 model InventoryLog {
-  id            String   @id @default(uuid())
+  id            String           @id @default(uuid())
   skuId         String
   changeAmount  Int
   previousStock Int
   newStock      Int
+  actionType    InventoryLogType @default(ADJUSTMENT)
   reason        String
+  metadata      Json?
   userId        String?
-  createdAt     DateTime @default(now())
+  createdAt     DateTime         @default(now())
   tenantId      String
-  sku           Sku      @relation(fields: [skuId], references: [id], onDelete: Cascade)
-  tenant        Tenant   @relation(fields: [tenantId], references: [id])
-  user          User?    @relation(fields: [userId], references: [id])
+  sku           Sku              @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  tenant        Tenant           @relation(fields: [tenantId], references: [id])
+  user          User?            @relation(fields: [userId], references: [id])
 
   @@index([skuId])
   @@index([userId])
   @@index([tenantId])
   @@index([skuId, createdAt(sort: Desc)])
+  @@index([actionType])
 }
 
 model Wishlist {
@@ -1109,6 +1116,7 @@ model Tenant {
   storageLimit          Int                    @default(1024)
   trialEndsAt           DateTime?
   trialStartedAt        DateTime?
+  allowSocialRegistration Boolean @default(true)
   addresses             Address[]
   blogs                 Blog[]
   brands                Brand[]
@@ -1123,6 +1131,7 @@ model Tenant {
   loyaltyPoints         LoyaltyPoint[]
   media                 Media[]
   newsletterSubscribers NewsletterSubscriber[]
+  notifications         Notification[]
   optionValues          OptionValue[]
   orders                Order[]
   orderItems            OrderItem[]
@@ -1477,4 +1486,14 @@ enum CommissionStatus {
   PENDING
   COMPLETED
   CANCELLED
+}
+
+enum InventoryLogType {
+  ADJUSTMENT
+  SALE
+  TRANSFER_IN
+  TRANSFER_OUT
+  RETURN
+  PURCHASE
+  STOCKTAKE
 }

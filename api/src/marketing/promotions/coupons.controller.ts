@@ -90,4 +90,3 @@ export class CouponsController {
     return this.promotionsService.remove(id);
   }
 }
-

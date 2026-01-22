@@ -1,27 +1,4 @@
-/**
- * =====================================================================
- * WISHLIST SERVER ACTIONS - Quản lý danh sách yêu thích
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * File này chứa các actions để quản lý danh sách sản phẩm yêu thích của user.
- * Hệ thống hỗ trợ cả Wishlist cho User đã đăng nhập (lưu DB) và
- * Guest Wishlist (lưu localStorage).
- *
- * CÁC TÍNH NĂNG CHÍNH:
- * 1. Toggle (Thêm/Xóa) sản phẩm khỏi wishlist.
- * 2. Lấy danh sách sản phẩm yêu thích.
- * 3. Kiểm tra trạng thái yêu thích của một sản phẩm.
- * 4. Merge Guest Wishlist vào DB sau khi user đăng nhập.
- *
- * ⚠️ LƯU Ý: Khi user đăng nhập, hệ thống sẽ tự động gọi `mergeGuestWishlistAction`. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Abandoned Cart Recovery (Wishlist variant): Lưu lại các sản phẩm khách hàng thích nhưng chưa mua, dùng làm dữ liệu để gửi email khuyến mãi cá nhân hóa.
- * - Seamless Transition: Cho phép người dùng lưu sản phẩm khi đang là khách (Guest) và tự động đồng bộ vào tài khoản sau khi đăng nhập.
 
- * =====================================================================
- */
 
 "use server";
 

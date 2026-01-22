@@ -1,29 +1,4 @@
-/**
- * =====================================================================
- * MODEL DEFINITIONS - Định nghĩa các kiểu dữ liệu chính
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * File này định nghĩa các TypeScript interfaces cho entities trong hệ thống.
- * Các interfaces này tương ứng với các bảng trong database (Prisma models).
- *
- * TẠI SAO CẦN FRONTEND MODELS?
- * 1. Type Safety: TypeScript kiểm tra kiểu dữ liệu tại compile time.
- *    - Giúp tránh lỗi truy cập field không tồn tại (vd: `user.name` thay vì `user.fullName`).
- * 2. IntelliSense: IDE (VS Code) gợi ý code cực mạnh khi gõ dấu chấm.
- * 3. Documentation: Nhìn vào interface là hiểu ngay cấu trúc dữ liệu.
- *
- * QUY ƯỚC:
- * - Fields optional (có `?`): Không bắt buộc hoặc có thể `null` trong DB.
- * - Nested objects (như `category` trong `Product`): Là relations (kết bảng).
- * - `_count`: Field đặc biệt từ Prisma aggregations (đếm số lượng relation). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Single Source of Truth: Là "xương sống" của ứng dụng, đảm bảo dữ liệu hiển thị trên UI hoàn toàn khớp với dữ liệu từ Database.
- * - Debugging: Giúp phát hiện ngay lập tức nếu API đổi cấu hình (vd: đổi field `price` thành `unitPrice`), tiết kiệm hàng giờ debug mò mẫm.
 
- * =====================================================================
- */
 
 // =============================================================================
 // 📊 ENUMS - Các giá trị cố định

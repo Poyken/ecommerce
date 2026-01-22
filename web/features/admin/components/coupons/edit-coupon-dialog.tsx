@@ -1,26 +1,4 @@
-/**
- * =====================================================================
- * EDIT COUPON DIALOG - Form chỉnh sửa mã giảm giá
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. STATE INITIALIZATION:
- * - Khác với Create Form, Edit Form cần load dữ liệu có sẵn (`coupon` prop) vào state.
- * - Format lại ngày tháng (Date -> YYYY-MM-DD) để input date hiểu được.
- *
- * 2. DIRTY CHECKING (`isDirty`):
- * - Đây là kỹ thuật tối ưu UX/Performance.
- * - Chỉ cho phép nút "Save" sáng lên khi User thực sự có thay đổi dữ liệu.
- * - Giảm thiểu việc gọi API updates không cần thiết.
- *
- * 3. LOGIC:
- * - Tương tự Create Form nhưng gọi API `updateCouponAction` với ID. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */ 
+ 
 "use client";
 
 import { FormDialog } from "@/components/shared/form-dialog";

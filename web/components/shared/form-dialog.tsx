@@ -1,27 +1,4 @@
-/**
- * =====================================================================
- * FORM DIALOG - Hộp thoại chứa Form (Enhanced)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REUSABLE FORM MODAL:
- * - Kết hợp `Dialog` và thẻ `form` để tạo ra một hộp thoại nhập liệu nhanh.
- * - Thường dùng cho các tác vụ Thêm/Sửa nhanh trong trang Admin.
- *
- * 2. PENDING STATE:
- * - Hỗ trợ prop `isPending` để vô hiệu hóa các nút bấm khi đang gửi dữ liệu (Submitting),
- *   ngăn chặn việc user nhấn gửi nhiều lần gây trùng lặp dữ liệu.
- *
- * 3. ENHANCED UI:
- * - Icon support in header
- * - Better styling for form sections
- * - Improved footer with consistent button styling *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

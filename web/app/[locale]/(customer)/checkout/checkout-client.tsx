@@ -1,35 +1,4 @@
-/**
- * =====================================================================
- * CHECKOUT CLIENT - Giao diện thanh toán tập trung
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPONENT DECOMPOSITION (Chia nhỏ Component):
- * - Form thanh toán rất phức tạp nên được chia nhỏ thành các component chức năng:
- *   - `AddressSelector`: Logic chọn/Thêm địa chỉ giao hàng.
- *   - `PaymentMethodSelector`: Logic chọn phương thức thanh toán.
- *   - `CouponInput`: Logic nhập và validate mã giảm giá.
- *   - `OrderSummary`: Logic hiển thị tổng tiền cuối cùng.
- *
- * 2. REACT TRANSITION (`useTransition`):
- * - Khi user nhấn "Đặt hàng", ta bọc hành động này trong `startTransition`.
- * - Lợi ích: Nếu action chạy lâu, UI vẫn phản hồi (không bị đơ), và React có thể hiển thị trạng thái `isPending`.
- *
- * 3. HYBRID CART (Giỏ hàng lai):
- * - `cart`: Giỏ hàng của user đã login (lấy từ DB).
- * - `guestItems`: Giỏ hàng của khách (lấy từ LocalStorage -> convert thành objects).
- * - Component này phải xử lý cả 2 trường hợp một cách trong suốt (Transparent).
- *
- * 4. DYNAMIC FEE CALCULATION:
- * - Khi `selectedAddress` thay đổi -> Trigger `useEffect` gọi shipping API.
- * - Cập nhật phí ship realtime dựa trên Quận/Huyện. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Interactive Payment Orchestration: Điều phối luồng thanh toán đa bước một cách thông minh, từ khâu chọn địa chỉ đến việc tính toán phí vận chuyển và áp dụng mã giảm giá theo thời gian thực.
- * - Real-time Order Validation: Đảm bảo mọi thông tin đơn hàng đều hợp lệ trước khi gửi về Server, giúp giảm thiểu sai sót dữ liệu và cung cấp phản hồi tức thì về tình trạng kho hàng hoặc tính hợp lệ của Coupon.
 
- * =====================================================================
- */
 
 "use client";
 

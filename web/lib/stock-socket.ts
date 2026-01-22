@@ -1,30 +1,7 @@
 import { io, Socket } from "socket.io-client";
 import { env } from "./env";
 
-/**
- * =====================================================================
- * STOCK SOCKET CLIENT - Kết nối real-time cho cập nhật tồn kho
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SINGLETON PATTERN:
- * - Chỉ tạo 1 WebSocket connection duy nhất cho toàn app
- * - Tránh tạo nhiều connections không cần thiết gây quá tải Server.
- *
- * 2. ROOM-BASED SUBSCRIPTIONS:
- * - Mỗi Product là một "Room". Client join room để nhận updates cho SKUs thuộc product đó.
- * - Server chỉ broadcast updates cho các clients trong room -> Tối ưu bandwidth.
- *
- * 3. STOCK UPDATE FLOW:
- * - Khi có đơn hàng mới -> Backend emit `stock_update` event với skuId và newStock.
- * - Client nhận event và cập nhật UI tức thì (không cần refresh). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Real-time Inventory: Khách hàng thấy ngay số lượng tồn kho thay đổi khi có người khác vừa mua xong, tránh tình trạng "đặt hụt" (Out of stock).
- * - Bandwidth Efficiency: Nhờ cơ chế Room-based, người dùng chỉ nhận thông báo cho sản phẩm họ đang xem, giúp tiết kiệm data 4G cho khách hàng.
 
- * =====================================================================
- */
 
 type StockUpdateCallback = (newStock: number) => void;
 

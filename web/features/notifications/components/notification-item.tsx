@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * NOTIFICATION ITEM - Từng dòng thông báo cụ thể
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DYNAMIC STYLING:
- * - `getTypeStyles`: Tự động thay đổi màu sắc và icon dựa trên loại thông báo (ORDER, PROMO, SYSTEM, v.v.).
- *
- * 2. INTERACTION:
- * - Khi click vào thông báo:
- *   a. Đánh dấu là đã đọc (`onRead`).
- *   b. Mở hộp thoại chi tiết (`Dialog`) để xem toàn bộ nội dung.
- *
- * 3. LOCALIZATION:
- * - Sử dụng `formatDistanceToNow` kết hợp với `locale` để hiển thị thời gian thân thiện (VD: "2 phút trước"). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

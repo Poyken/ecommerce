@@ -7,25 +7,7 @@ import { AnimatePresence } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-/**
- * =====================================================================
- * FLOATING CART - Minimalist Shopping Bag with Micro-interactions
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. GLOBAL STATE LISTENER:
- * - Component này lắng nghe sự kiện `window.dispatchEvent(new Event("cart_updated"))`.
- * - Đây là cách đơn giản để đồng bộ state giữa các component xa nhau mà không cần Context quá phức tạp
- *   (Pub/Sub pattern đơn giản bằng DOM Events).
- *
- * 2. ANIMATE PRESENCE:
- * - Badge số lượng item có hiệu ứng pop-in/pop-out khi số lượng thay đổi. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface FloatingCartProps {
   className?: string;

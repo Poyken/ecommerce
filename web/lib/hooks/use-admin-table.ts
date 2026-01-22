@@ -4,32 +4,7 @@ import { useDebounce } from "@/lib/hooks/use-debounce";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
-/**
- * =====================================================================
- * USE ADMIN TABLE - Hook quản lý bảng dữ liệu Admin
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. URL SYNC (Đồng bộ URL):
- * - Đây là pattern quan trọng nhất trong Admin Dashboard.
- * - Thay vì lưu state (page, search, filter) vào memory, ta đẩy hết lên URL.
- * - Lợi ích: User có thể copy link gửi cho người khác, F5 không mất dữ liệu, có thể dùng nút Back/Forward của trình duyệt.
- *
- * 2. USETRANSITION & PROGRESSIVE ENHANCEMENT:
- * - `useTransition` giúp việc chuyển trang/tìm kiếm mượt mà hơn, không gây đơ UI.
- * - Cho phép React ưu tiên các tương tác khẩn cấp (như gõ phím) trước khi render lại danh sách lớn.
- *
- * 3. DEBOUNCE SEARCH:
- * - Chỉ cập nhật URL sau khi user ngừng gõ 400ms.
- * - Tránh lãng phí request khi user mới gõ được nửa chừng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Admin Listing Pages: Quản lý danh sách sản phẩm, đơn hàng, khách hàng với đầy đủ tính năng tìm kiếm, lọc, phân trang.
- * - Shareable URLs: CSKH A có thể filter "Đơn hàng chưa thanh toán" rồi copy link gửi sang CSKH để xử lý tiếp mà không cần chỉ dẫn bấm nút nào.
- * - UX Perceived Performance: Kết hợp `useTransition` để UI luôn phản hồi (responsive) ngay cả khi đang loading dữ liệu mới.
 
- * =====================================================================
- */
 export function useAdminTable(baseUrl: string) {
   const router = useRouter();
   const searchParams = useSearchParams();

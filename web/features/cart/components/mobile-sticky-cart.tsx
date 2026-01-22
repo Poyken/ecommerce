@@ -7,28 +7,7 @@ import { useMotionValueEvent, useScroll } from "framer-motion";
 import { ShoppingCart } from "lucide-react";
 import { useState } from "react";
 
-/**
- * =====================================================================
- * MOBILE STICKY CART - Thanh mua hàng dính (Sticky) trên Mobile
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SCROLL TRIGGERED VISIBILITY:
- * - `useScroll` & `useMotionValueEvent`: Theo dõi vị trí cuộn trang của người dùng.
- * - Chỉ hiển thị (`isVisible`) khi người dùng đã cuộn qua ảnh sản phẩm chính (khoảng 500px).
- * - Giúp người dùng có thể mua hàng bất cứ lúc nào mà không cần cuộn ngược lên đầu trang.
- *
- * 2. SAFE AREA PADDING (`safe-area-pb`):
- * - Trên các thiết bị di động hiện đại (như iPhone có tai thỏ/nút home ảo), ta cần chừa khoảng trống ở dưới cùng để không bị che mất nội dung.
- *
- * 3. SPRING ANIMATION:
- * - Sử dụng `type: "spring"` để thanh trượt lên một cách tự nhiên và có độ nảy nhẹ. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface MobileStickyCartProps {
   productName: string;

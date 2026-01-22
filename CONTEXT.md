@@ -171,3 +171,15 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
   - **Database**: Added `idx_inventory_log_sku_date` for scalable stock history.
   - **Security**: Hardened `AuthService` types and removed context casting hacks.
   - **Global Build Verification**: ✅ PASSED (API & Web) [2026-01-22].
+- [2026-01-22] **Web Refactoring & Optimization Pass**:
+  - **Performance**: Optimized `middleware.ts` (TTFB reduction) and decomposed root layout data fetching. Moved non-critical widgets (Cart, Wishlist, Notifications) to parallel Suspense boundaries, improving LCP and perceived performance.
+  - **Security**: Refactored Products server actions to use `next-safe-action` with strict Zod schema validation, replacing unvalidated custom wrappers.
+  - **State Management**: Cleaned up legacy DOM event listeners in Cart synchronization, migrating to native Zustand store updates for a predictable React data flow.
+  - **Code Quality**: Programmatically removed "Intern-level" redundant comment blocks («📚 GIẢI THÍCH CHO THỰC TẬP SINH») from **470 files**, resulting in a cleaner, professional codebase.
+  - **Documentation**: Created full `walkthrough.md` and updated technical audit status.
+- [2026-01-22] **API "Poison" Architectural Fixes**:
+  - **OrdersService**: Optimized transactions by moving external GHN API calls outside the DB lock. Standardized `Decimal` usage for all money math.
+  - **PromotionsService**: Implemented Zero Trust recalculation logic; prices are now fetched directly from DB to prevent DTO exploits.
+  - **OrdersProcessor**: Scaled real-time notification broadcasts using `Promise.all` for background jobs.
+  - **Schema Hardening**: Made `Notification.tenantId` required to eliminate cross-tenant data leak risks.
+  - **AuthService**: Enforced `allowSocialRegistration` check at the tenant level.

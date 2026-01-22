@@ -8,26 +8,7 @@ import { useState } from "react";
 import { useAction } from "next-safe-action/hooks";
 import { subscribeNewsletter } from "../actions";
 
-/**
- * =====================================================================
- * NEWSLETTER FORM - Form đăng ký nhận tin
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. FORM HANDLING (NEXT-SAFE-ACTION):
- * - Sử dụng `useAction` hook để quản lý trạng thái action (isExecuting, result).
- * - Tự động hóa quá trình validation ở client thông qua schema.
- *
- * 2. API INTEGRATION:
- * - Thay thế `fetch` thủ công bằng Server Action `subscribeNewsletter`.
- * - Đảm bảo tính nhất quán về xử lý lỗi và hiển thị thông báo.
- *
- * 3. SUCCESS STATE:
- * - Khi đăng ký thành công, `result.data?.success` sẽ là true, UI tự động cập nhật.
- *
- * =====================================================================
- */
+
 
 export function NewsletterForm() {
   const t = useTranslations("newsletter");

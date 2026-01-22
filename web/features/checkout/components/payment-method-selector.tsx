@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * PAYMENT METHOD SELECTOR - Bộ chọn phương thức thanh toán
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PAYMENT OPTIONS:
- * - Hỗ trợ nhiều phương thức: COD (Thanh toán khi nhận hàng), Chuyển khoản, VNPay.
- * - Mỗi phương thức có icon và mô tả chi tiết để người dùng dễ lựa chọn.
- *
- * 2. COMING SOON STATE:
- * - Các phương thức chưa hỗ trợ (như Credit Card trực tiếp) được làm mờ và gắn nhãn "Coming Soon".
- *
- * 3. INTERACTIVE FEEDBACK:
- * - Phương thức được chọn sẽ có viền màu `primary` và dấu `Check` xác nhận. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - User Experience: Cho phép người dùng chuyển đổi linh hoạt giữa các phương thức thanh toán phổ biến tại Việt Nam (VNPay, Momo, Chuyển khoản).
- * - Revenue Conversion: Việc tích hợp đa dạng cổng thanh toán giúp giảm tỷ lệ bỏ giỏ hàng (Cart Abandonment) do khách hàng không tìm thấy phương thức phù hợp.
- *
- * =====================================================================
- */
+
 
 "use client";
 

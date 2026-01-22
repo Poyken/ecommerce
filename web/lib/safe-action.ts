@@ -7,30 +7,7 @@ import { revalidatePath } from "next/cache";
 import { getErrorMessage } from "./error-utils";
 import { ApiResponse, ActionResult } from "@/types/api";
 
-/**
- * =====================================================================
- * SAFE ACTION CLIENT - Cấu hình nòng cốt cho Server Actions
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TRÁNH LỖI LỘ DỮ LIỆU:
- * - next-safe-action giúp đảm bảo input luôn đúng kiểu (Zod) và xử lý lỗi server tập trung.
- * - Không bao giờ trả về error stack trace cho client ở môi trường production.
- *
- * 2. AUTHENTICATION (Middleware):
- * - `protectedActionClient` sẽ tự động kiểm tra xem user đã log in chưa.
- * - Nếu chưa, nó sẽ throw lỗi "Unauthorized" ngay lập tức, giúp action chính luôn an toàn.
- *
- * 3. HỢP NHẤT UTILITIES:
- * - Cung cấp unwrapResult, createActionWrapper để giảm boilerplate ở frontend. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Server Actions Integration: Thay thế hoàn toàn API Routes truyền thống cho các tác vụ Form Submission (Login, Đặt hàng).
- * - Robust Validation: Đảm bảo dữ liệu gửi lên server luôn sạch (đã qua Zod validate), giảm thiểu lỗi 500 do sai data type.
- * - Framework agnostic logic: Tách biệt logic xử lý lỗi ra khỏi Logic nghiệp vụ, giúp func chính (`useAction`) chỉ tập trung vào happy path.
 
- * =====================================================================
- */
 
 /**
  * Action Client cơ bản dùng cho các hành động công khai (không cần login).

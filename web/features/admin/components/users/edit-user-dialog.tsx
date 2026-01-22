@@ -1,22 +1,4 @@
-/**
- * =====================================================================
- * EDIT USER DIALOG - Form chỉnh sửa thông tin nhân viên
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PHẠM VI CHỈNH SỬA:
- * - Chỉ sửa: Tên, Họ, Email.
- * - KHÔNG sửa Password ở đây (Password thường có flow đổi riêng hoặc reset qua email).
- *
- * 2. SIDE EFFECTS:
- * - Lưu ý: Nếu user dùng Email để đăng nhập, việc đổi Email sẽ làm thông tin đăng nhập cũ vô hiệu hóa.
- * - Admin cần nắm rõ điều này khi thao tác. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */ 
+ 
 "use client";
 
 import { FormDialog } from "@/components/shared/form-dialog";

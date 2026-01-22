@@ -12,23 +12,6 @@ import { tenancyExtension } from '../tenant/prisma-tenancy.extension';
  * PRISMA SERVICE - Cầu nối tới cơ sở dữ liệu (PostgreSQL)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ORM (Object-Relational Mapping):
- * - Prisma giúp ta làm việc với Database bằng code TypeScript thay vì viết SQL thuần.
- * - `PrismaClient` được sinh ra tự động dựa trên file `schema.prisma`, giúp ta có Type-safety (gợi ý code chính xác).
- *
- * 2. CONNECTION MANAGEMENT:
- * - `onModuleInit`: Tự động kết nối tới DB khi ứng dụng khởi động.
- * - `onModuleDestroy`: Tự động ngắt kết nối khi ứng dụng tắt, tránh rò rỉ tài nguyên (Connection Leak).
- *
- * 3. INHERITANCE:
- * - Lớp này kế thừa `PrismaClient`, nghĩa là mọi hàm của Prisma (findMany, create, update...) đều có sẵn để ta sử dụng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Auto-Connect: Đảm bảo server không bao giờ xử lý request khi chưa kết nối tới DB, tránh lỗi 500 ngớ ngẩn.
- * - Performance Logging: Tự động cảnh báo (Warn) khi có câu query chạy chậm hơn 200ms để dev kịp tối ưu (đánh index).
- * - Security Sanitization: Tự động che giấu password trong log để hacker đọc trộm log cũng không thấy thông tin nhạy cảm.
-
  * =====================================================================
  */
 
@@ -92,7 +75,7 @@ export class PrismaService
         }
         return (target as any)[prop];
       },
-    }) as any; // The return type of constructor can technically be anything, but we still use 'as any' for the proxy instance itself. 
+    }) as any; // The return type of constructor can technically be anything, but we still use 'as any' for the proxy instance itself.
     // Wait, the roast was specifically about 'as any' on the EXTENSION return.
   }
 

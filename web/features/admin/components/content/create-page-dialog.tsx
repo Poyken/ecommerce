@@ -23,25 +23,7 @@ interface CreatePageDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-/**
- * =================================================================================================
- * CREATE PAGE DIALOG - HỘP THOẠI TẠO TRANG MỚI
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SLUG GENERATION (AUTO-SLUG):
- *    - Khi User nhập Title ("Summer Collection 2024"), ta tự động tạo URL thân thiện ("summer-collection-2024").
- *    - Logic: `toLowerCase()`, `trim()`, thay khoảng trắng bằng gạch ngang `-`, bỏ ký tự đặc biệt.
- *
- * 2. SERVER ACTIONS (`createPageAction`):
- *    - Thay vì gọi API `/api/pages`, ta dùng Server Action của Next.js (chạy trực tiếp trên Server).
- *    - `useTransition`: Giúp UI không bị đơ (freezing) khi đang chờ Server xử lý. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =================================================================================================
- */
 export function CreatePageDialog({
   open,
   onOpenChange,

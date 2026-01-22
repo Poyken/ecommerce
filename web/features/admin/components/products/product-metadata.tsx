@@ -1,22 +1,4 @@
-/**
- * =====================================================================
- * PRODUCT METADATA - Chọn Danh mục & Thương hiệu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PROPS DRILLING:
- * - Component này nhận `formData` và `setFormData` từ component cha (`ProductForm`).
- * - Giúp tách nhỏ form khổng lồ thành các phần nhỏ dễ quản lý (Separation of Concerns).
- *
- * 2. DATA SOURCE:
- * - List `categories` và `brands` được fetch từ Server Component cha và truyền xuống,
- *   tránh việc component con phải tự fetch lại gây chậm (Waterfall requests). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */ 
+ 
 "use client";
 
 import { Label } from "@/components/ui/label";

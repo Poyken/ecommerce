@@ -5,29 +5,7 @@ import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-/**
- * =====================================================================
- * FAQ ACCORDION - Danh sách câu hỏi thường gặp
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ACCORDION LOGIC:
- * - `openIndex` lưu index của câu hỏi đang mở.
- * - Nếu click vào câu hỏi đang mở -> Đóng lại (set null).
- *
- * 2. CSS GRID ANIMATION (Trick):
- * - Để animate chiều cao từ 0 đến auto, ta dùng `grid-template-rows`.
- * - `grid-rows-[0fr]` (đóng) và `grid-rows-[1fr]` (mở).
- * - Kết hợp với `transition-all` để có hiệu ứng mượt mà mà không cần JS tính toán height.
- *
- * 3. STYLING:
- * - Sử dụng `GlassCard` để tạo hiệu ứng kính mờ đồng bộ với toàn app. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 
 

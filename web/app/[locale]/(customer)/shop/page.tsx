@@ -5,29 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { Product } from "@/types/models";
 import { Metadata } from "next";
 
-/**
- * =====================================================================
- * SHOP PAGE - Trang danh sách sản phẩm (Cửa hàng)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SEARCH PARAMS (URL State):
- * - Nhận các tham số từ URL như `categoryId`, `brandId`, `search`, `page`, `sort`.
- * - Đây là cách chính để đồng bộ trạng thái lọc/tìm kiếm giữa URL và Server.
- *
- * 2. PARALLEL FETCHING:
- * - Sử dụng `Promise.all` để fetch đồng thời: Products, Categories, Brands, và Suggested Products.
- * - Tối ưu hóa hiệu năng bằng cách không bắt các request phải chờ đợi nhau.
- *
- * 3. PAGINATION:
- * - Dữ liệu phân trang được lấy từ `productsRes.meta` và truyền xuống Client để hiển thị thanh phân trang. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Dynamic Catalog Browsing: Mang lại trải nghiệm tìm kiếm sản phẩm mượt mà với bộ lọc đa dạng (Category, Brand, Price), giúp khách hàng nhanh chóng tìm thấy món đồ ưng ý giữa hàng nghìn sản phẩm.
- * - Search-Optimized Discovery: Tự động cập nhật Metadata theo từ khóa tìm kiếm và danh mục, giúp các trang kết quả lọc dễ dàng được lập chỉ mục (index) và xếp hạng cao trên Google.
 
- * =====================================================================
- */
 
 export async function generateMetadata({
   searchParams,

@@ -1,30 +1,7 @@
 import { getUsersAction } from "@/features/admin/actions";
 import { UsersPageClient } from "./users-page-client";
 
-/**
- * =====================================================================
- * ADMIN USERS PAGE - Quản lý người dùng (Server Component)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. QUẢN LÝ NGƯỜI DÙNG (User Management):
- * - Trang này hiển thị danh sách tất cả người dùng đã đăng ký trong hệ thống.
- * - Admin có thể xem thông tin, chỉnh sửa vai trò, hoặc vô hiệu hóa tài khoản.
- *
- * 2. ROLE-BASED FILTERING:
- * - Hỗ trợ lọc người dùng theo vai trò (Role): All, Admin, User, Manager, v.v.
- * - `getUserCounts` đếm số lượng người dùng theo từng vai trò để hiển thị trên Tab.
- *
- * 3. SEARCH & PAGINATION:
- * - Tìm kiếm theo tên hoặc email người dùng.
- * - Phân trang để xử lý hiệu quả khi có hàng nghìn người dùng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Access Governance: Thiết lập hệ thống quản trị nhân sự chặt chẽ, cho phép Admin kiểm soát ai có quyền can thiệp vào dữ liệu shop dựa trên vai trò (Roles) cụ thể.
- * - Personnel Auditing: Giám sát danh sách nhân viên và khách hàng tập trung, giúp việc khóa tài khoản hoặc thay đổi quyền hạn diễn ra tức thì khi có yêu cầu bảo mật.
 
- * =====================================================================
- */
 
 async function getUserCounts() {
   try {

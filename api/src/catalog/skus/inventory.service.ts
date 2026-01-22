@@ -10,23 +10,6 @@ import { StockGateway } from './stock.gateway';
  * INVENTORY SERVICE - Quản lý tồn kho
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CONCURRENCY CONTROL (Kiểm soát đồng thời):
- * - Vấn đề kinh điển: 2 user A và B cùng mua sản phẩm cuối cùng CÙNG LÚC.
- * - Giải pháp: Dùng "Atomic Update" với điều kiện `where: { stock: { gte: quantity } }`.
- * - Database sẽ khóa dòng dữ liệu (Row Lock) và chỉ cho phép update nếu điều kiện thỏa mãn.
- * - User chậm hơn 1ms sẽ bị fail do `count === 0` (hàng đã bị người trước mua mất).
- *
- * 2. REAL-TIME UPDATES:
- * - Khi stock thay đổi, ta dùng WebSocket (`StockGateway`) để bắn tin cho tất cả client đang xem sản phẩm đó.
- * - Giúp UI user tự động cập nhật "Còn 5 sản phẩm" -> "Còn 4 sản phẩm" ngay lập tức.
- *
- * 3. FOMO EFFECT (Low Stock Alert):
- * - Khi hàng sắp hết (< 5), hệ thống tự động tìm những ai đang để hàng trong giỏ (Pending Cart) và gửi thông báo thúc giục mua hàng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Giám sát chặt chẽ số lượng hàng trong kho, điều phối xuất nhập kho và cảnh báo khi sản phẩm sắp hết hàng.
-
  * =====================================================================
  */
 
@@ -67,7 +50,7 @@ export class InventoryService {
     }
 
     this.notifyStockUpdate(skuId);
-    this.checkLowStock(skuId);
+    await this.checkLowStock(skuId, tx);
   }
 
   /**
@@ -127,66 +110,38 @@ export class InventoryService {
    *
    * ✅ TỐI ƯU HÓA: Gửi batch notification (nhanh hơn 100x).
    */
-  private async checkLowStock(skuId: string) {
-    const sku = await this.prisma.sku.findUnique({
+  /**
+   * Kiểm tra và cảnh báo sắp hết hàng (Low Stock Alert).
+   *
+   * [SENIOR ARCHITECTURE]: Không gửi notification/websocket trực tiếp trong transaction.
+   * Thay vào đó, tạo OutboxEvent để worker xử lý async.
+   */
+  private async checkLowStock(skuId: string, tx?: any) {
+    const prisma = tx || this.prisma;
+
+    const sku = await prisma.sku.findUnique({
       where: { id: skuId },
-      include: { product: true },
+      select: { stock: true, skuCode: true, tenantId: true },
     });
 
     // Ngưỡng cảnh báo: < 5 sản phẩm
     if (sku && sku.stock < 5) {
-      this.logger.warn(
-        `LOW STOCK ALERT: SKU ${sku.skuCode} chỉ còn ${sku.stock} sản phẩm.`,
+      this.logger.debug(
+        `Queuing LOW_STOCK_ALERT for SKU ${sku.skuCode} (Stock: ${sku.stock})`,
       );
 
-      // ✅ Query 1 lần để lấy tất cả user bị ảnh hưởng
-      const carts = await this.prisma.cart.findMany({
-        where: {
-          items: {
-            some: {
-              skuId: skuId,
-            },
+      await prisma.outboxEvent.create({
+        data: {
+          aggregateType: 'SKU',
+          aggregateId: skuId,
+          type: 'LOW_STOCK_ALERT',
+          payload: {
+            skuId,
+            stock: sku.stock,
+            tenantId: sku.tenantId,
           },
         },
-        select: { userId: true },
       });
-
-      if (carts.length === 0) return;
-
-      // ✅ Batch create (Tạo hàng loạt notification) -> 1 Query thay vì N Query
-      const notifications = carts.map((cart) => ({
-        userId: cart.userId,
-        type: 'LOW_STOCK',
-        title: 'Sản phẩm sắp hết hàng!',
-        message: `Sản phẩm ${sku.product.name} trong giỏ hàng của bạn chỉ còn lại ${sku.stock} sản phẩm. Hãy mua ngay kẻo lỡ!`,
-        link: '/cart',
-        isRead: false,
-      }));
-
-      await this.prisma.notification.createMany({
-        data: notifications,
-      });
-
-      // ✅ Gửi WebSocket (Real-time) - Fire-and-forget
-      for (const cart of carts) {
-        const notification = notifications.find(
-          (n) => n.userId === cart.userId,
-        );
-        if (notification) {
-          try {
-            this.notificationsGateway.sendNotificationToUser(
-              cart.userId,
-              notification,
-            );
-          } catch (error) {
-            // Không break luồng nếu lỗi WebSocket
-            this.logger.warn(
-              `Lỗi gửi WebSocket cho user ${cart.userId}`,
-              error,
-            );
-          }
-        }
-      }
     }
   }
 

@@ -1,24 +1,4 @@
-/**
- * =====================================================================
- * BUY AGAIN BUTTON - Nút mua lại sản phẩm (Lịch sử đơn hàng)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. QUICK RE-ORDER:
- * - Cho phép người dùng thêm nhanh sản phẩm từ đơn hàng cũ vào giỏ hàng.
- * - Sử dụng `useTransition` để xử lý trạng thái loading khi đang gọi API.
- *
- * 2. EVENT DISPATCHING:
- * - Sau khi thêm thành công, bắn ra event `cart_updated` để đồng bộ số lượng trên Header Badge.
- *
- * 3. NAVIGATION:
- * - Tự động chuyển hướng người dùng đến trang giỏ hàng (`/cart`) sau khi thêm thành công. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

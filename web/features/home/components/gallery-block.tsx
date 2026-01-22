@@ -1,17 +1,4 @@
-/**
- * =====================================================================
- * GALLERY BLOCK - BỘ SƯU TẬP ẢNH LUXURY
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Hiển thị hình ảnh theo dạng lưới (Grid) với nhiều kích thước khác nhau.
- * Khi click vào ảnh sẽ có hiệu ứng Dialog phóng to (Lightbox). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

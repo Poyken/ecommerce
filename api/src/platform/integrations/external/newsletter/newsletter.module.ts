@@ -6,16 +6,6 @@ import { NotificationsModule } from '@/notifications/notifications.module';
  * NEWSLETTER MODULE - Module quản lý bản tin
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. NOTIFICATIONS INTEGRATION:
- * - Module này phụ thuộc vào `NotificationsModule` để có thể sử dụng các hàng đợi (Queues) gửi email.
- *
- * 2. FEATURE ENCAPSULATION:
- * - Gom nhóm các logic liên quan đến việc thu thập email khách hàng và gửi tin khuyến mãi. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 import { NewsletterController } from './newsletter.controller';
