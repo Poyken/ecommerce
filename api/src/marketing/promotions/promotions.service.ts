@@ -294,19 +294,26 @@ export class PromotionsService {
     const skuIds = items.map((i) => i.skuId);
     const dbSkus = await this.prisma.sku.findMany({
       where: { id: { in: skuIds }, tenantId },
-      select: { id: true, price: true, productId: true, product: { select: { categories: { select: { categoryId: true } } } } },
+      select: {
+        id: true,
+        price: true,
+        productId: true,
+        product: { select: { categories: { select: { categoryId: true } } } },
+      },
     });
     const skuMap = new Map(dbSkus.map((s) => [s.id, s]));
 
     let calculatedTotal = new Prisma.Decimal(0);
-    const enrichedItems = items.map(item => {
+    const enrichedItems = items.map((item) => {
       const sku = skuMap.get(item.skuId);
       if (!sku) {
-        throw new BadRequestException(`Sản phẩm ${item.skuId} không tồn tại hoặc không thuộc cửa hàng này`);
+        throw new BadRequestException(
+          `Sản phẩm ${item.skuId} không tồn tại hoặc không thuộc cửa hàng này`,
+        );
       }
       const price = sku.price || new Prisma.Decimal(0);
       calculatedTotal = calculatedTotal.add(price.mul(item.quantity));
-      
+
       return {
         ...item,
         price: price.toNumber(), // Keep as number for internal context for now, but use Decimal for sum
@@ -434,7 +441,10 @@ export class PromotionsService {
         isActive: true,
         startDate: { lte: now },
         endDate: { gte: now },
-        OR: [{ usageLimit: null }, { usageLimit: { gt: this.prisma.promotion.fields.usedCount } }],
+        OR: [
+          { usageLimit: null },
+          { usageLimit: { gt: this.prisma.promotion.fields.usedCount } },
+        ],
       },
       include: { rules: true, actions: true },
       orderBy: { priority: 'desc' },
@@ -499,7 +509,9 @@ export class PromotionsService {
     const tenantId = this.getTenantId();
 
     // Kiểm tra user đã nhận quà chưa (chống spam nhận quà)
-    const existingNotification = await (this.prisma.notification as any).findFirst({
+    const existingNotification = await (
+      this.prisma.notification as any
+    ).findFirst({
       where: {
         userId,
         tenantId,

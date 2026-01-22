@@ -208,11 +208,7 @@ export class OrdersService {
             );
           }
 
-          if (sku.stock < item.quantity) {
-            throw new BadRequestException(
-              `Sản phẩm ${sku.skuCode} không đủ số lượng (Yêu cầu: ${item.quantity}, Còn: ${sku.stock})`,
-            );
-          }
+          // Stock validation now happens atomically in reserveStock() with row locking
 
           const price = sku.price || new Prisma.Decimal(0);
           totalAmount = totalAmount.add(price.mul(item.quantity));
@@ -256,7 +252,7 @@ export class OrdersService {
               appliedPromotionId = promoResult.promotionId;
               discountAmount = new Prisma.Decimal(promoResult.discountAmount);
 
-              await (tx as any).promotion.update({
+              await tx.promotion.update({
                 where: { id: appliedPromotionId },
                 data: { usedCount: { increment: 1 } },
               });
@@ -275,7 +271,7 @@ export class OrdersService {
         }
 
         // Apply settings-based shipping fee if needed
-        const settings = await (tx as any).tenantSettings.findUnique({
+        const settings = await tx.tenantSettings.findUnique({
           where: { tenantId: tenant.id },
         });
 
@@ -408,7 +404,6 @@ export class OrdersService {
 
     return { ...order, paymentUrl };
   }
-
 
   async findAllByUser(userId: string, page = 1, limit = 10) {
     const skip = (page - 1) * limit;
@@ -693,7 +688,7 @@ export class OrdersService {
   }
 
   async updateStatus(id: string, dto: UpdateOrderStatusDto) {
-    const order = await this.ordersRepo.findFirst({
+    const order = await this.prisma.order.findFirst({
       where: { id },
       include: { items: true },
     });
@@ -782,9 +777,8 @@ export class OrdersService {
         }
 
         // Hoàn trả tồn kho (Release Stock)
-        const orderWithItems = order as any;
-        if (orderWithItems.items) {
-          for (const item of orderWithItems.items) {
+        if (order.items) {
+          for (const item of order.items) {
             await this.inventoryService.releaseStock(
               item.skuId,
               item.quantity,
@@ -984,10 +978,10 @@ export class OrdersService {
     try {
       if (paymentMethod === 'COD') {
         // Log transaction COD
-        await (this.prisma as any).payment.create({
+        await this.prisma.payment.create({
           data: {
             orderId: order.id,
-            amount: order.totalAmount,
+            amount: new Prisma.Decimal(order.totalAmount.toString()),
             paymentMethod,
             status: 'PAID',
             providerTransactionId: `COD-${order.id}`,
@@ -1008,10 +1002,10 @@ export class OrdersService {
 
       if (paymentResult.success) {
         // Tạo bản ghi lịch sử thanh toán
-        await (this.prisma as any).payment.create({
+        await this.prisma.payment.create({
           data: {
             orderId: order.id,
-            amount: order.totalAmount,
+            amount: new Prisma.Decimal(order.totalAmount.toString()),
             paymentMethod,
             status: paymentResult.paymentUrl ? 'PENDING' : 'PAID',
             providerTransactionId: paymentResult.transactionId,

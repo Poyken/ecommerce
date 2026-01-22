@@ -261,7 +261,7 @@ export class ProductsRepository extends BaseRepository<Product> {
    * Update min/max prices cho product (denormalization)
    */
   async updatePriceRange(productId: string): Promise<Product> {
-    const skuPrices = await (this.prisma.sku as any).aggregate({
+    const skuPrices = await this.prisma.sku.aggregate({
       where: { productId, status: 'ACTIVE' },
       _min: { price: true, salePrice: true },
       _max: { price: true, salePrice: true },

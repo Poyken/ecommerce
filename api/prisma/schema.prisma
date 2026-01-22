@@ -457,6 +457,7 @@ model CartItem {
   cartId    String
   skuId     String
   quantity  Int      @default(1)
+  version   Int      @default(0) // [RACE CONDITION FIX C5] Optimistic locking
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   tenantId  String
@@ -588,6 +589,7 @@ model Order {
   promotions                PromotionUsage[]
   returnRequests            ReturnRequest[]
   shipments                 Shipment[]
+  webhookEvents             WebhookEvent[]
 
   @@unique([id, tenantId])
   @@index([userId, createdAt(sort: Desc)], map: "idx_order_user_history")
@@ -725,7 +727,8 @@ model OrderItem {
   skuId           String
   quantity        Int
   priceAtPurchase Decimal        @db.Decimal(20, 2)
-  imageUrl        String?
+  imageUrl        String?        // Original URL (may break if deleted)
+  imageSnapshotUrl String?       // [DATA INTEGRITY FIX C4] Permanent snapshot URL
   productName     String?
   productSlug     String?
   skuNameSnapshot String?
@@ -892,6 +895,7 @@ model Wishlist {
   @@index([userId])
   @@index([tenantId])
   @@index([tenantId, userId, createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
 }
 
 model Blog {
@@ -955,6 +959,31 @@ model FeatureFlag {
 
   @@index([key])
   @@index([tenantId])
+}
+
+// =====================================================================
+// WEBHOOK EVENT TRACKING - Idempotency & Replay Protection
+// =====================================================================
+model WebhookEvent {
+  id             String   @id @default(uuid())
+  webhookId      String   @unique // Payment gateway's transaction/request ID
+  orderId        String
+  provider       String   // "VNPAY" | "MOMO" | "STRIPE"
+  payloadHash    String?  // SHA256 hash of payload for duplicate detection
+  status         String   // "PROCESSED" | "FAILED" | "IGNORED"
+  responseCode   String?  // Payment gateway response code
+  processedAt    DateTime @default(now())
+  attemptCount   Int      @default(1)
+  lastAttemptAt  DateTime @default(now())
+  tenantId       String
+  
+  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id])
+
+  @@index([webhookId, orderId])
+  @@index([orderId, provider])
+  @@index([tenantId, processedAt(sort: Desc)])
+  @@index([payloadHash])
 }
 
 model Payment {
@@ -1165,6 +1194,7 @@ model Tenant {
   translations          Translation[]
   users                 User[]
   warehouses            Warehouse[]
+  webhookEvents         WebhookEvent[]
   wishlists             Wishlist[]
 
   @@index([deletedAt])
@@ -1177,6 +1207,7 @@ model TenantSettings {
   isLoyaltyEnabled      Boolean  @default(true)
   defaultShippingFee    Decimal  @default(30000)
   freeShippingThreshold Decimal?
+  lowStockThreshold     Int      @default(5)
   updatedAt             DateTime @updatedAt
   tenant                Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }

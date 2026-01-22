@@ -23,7 +23,7 @@ export class SuperAdminService {
 
   // Helper to run queries in global context (bypass tenant filter)
   private async runGlobal<T>(fn: () => Promise<T>): Promise<T> {
-    return tenantStorage.run(undefined as any, fn);
+    return tenantStorage.run(undefined, fn);
   }
 
   async getGlobalStats() {
@@ -117,7 +117,7 @@ export class SuperAdminService {
 
       // 3. Generate Tokens
       const allPermissions = this.permissionService.aggregatePermissions(
-        owner as any,
+        owner as any, // Owner query missing permissions field - only has roles with nested permissions
       );
       const roles = owner.roles.map((r: any) => r.role.name);
 

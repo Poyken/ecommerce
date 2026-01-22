@@ -29,7 +29,7 @@ export class SkusService {
     const { optionValueIds, imageUrl, ...skuData } = createSkuDto;
 
     const tenant = getTenant();
-    const existing = await (this.prisma.sku as any).findFirst({
+    const existing = await this.prisma.sku.findFirst({
       where: {
         skuCode: skuData.skuCode,
         tenantId: tenant?.id,
@@ -39,14 +39,14 @@ export class SkusService {
       throw new ConflictException('Mã SKU này đã tồn tại');
     }
 
-    const product = await (this.prisma.product as any).findUnique({
+    const product = await this.prisma.product.findUnique({
       where: { id: skuData.productId },
     });
     if (!product) {
       throw new NotFoundException('Sản phẩm gốc không tồn tại');
     }
 
-    const newSku = await (this.prisma.sku as any).create({
+    const newSku = await this.prisma.sku.create({
       data: {
         ...skuData,
         imageUrl,
@@ -96,7 +96,7 @@ export class SkusService {
     }
 
     const [skus, total] = await Promise.all([
-      (this.prisma.sku as any).findMany({
+      this.prisma.sku.findMany({
         where,
         skip,
         take: limit,
@@ -106,7 +106,7 @@ export class SkusService {
         },
         orderBy: { createdAt: 'desc' },
       }),
-      (this.prisma.sku as any).count({ where }),
+      this.prisma.sku.count({ where }),
     ]);
 
     return {
@@ -122,7 +122,7 @@ export class SkusService {
 
   async findOne(id: string) {
     const tenant = getTenant();
-    const sku = await (this.prisma.sku as any).findFirst({
+    const sku = await this.prisma.sku.findFirst({
       where: {
         id,
         tenantId: tenant?.id,
@@ -145,12 +145,12 @@ export class SkusService {
   async update(id: string, updateSkuDto: UpdateSkuDto) {
     const { imageUrl, ...data } = updateSkuDto;
 
-    const updatedSku = await (this.prisma.sku as any).update({
+    const updatedSku = await this.prisma.sku.update({
       where: { id },
       data: {
         ...data,
         ...(imageUrl !== undefined && { imageUrl }),
-      } as any,
+      },
     });
 
     // Update Product Price Cache
@@ -160,7 +160,7 @@ export class SkusService {
   }
 
   async remove(id: string) {
-    const deletedSku = await (this.prisma.sku as any).delete({
+    const deletedSku = await this.prisma.sku.delete({
       where: { id },
     });
 

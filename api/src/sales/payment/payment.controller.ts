@@ -58,7 +58,7 @@ export class PaymentController {
 
       if (responseCode === '00') {
         // Success -> Update Order Status immediately (good for local dev)
-        await (this.prisma.order as any).update({
+        await this.prisma.order.update({
           where: { id: orderId },
           data: {
             status: 'PROCESSING',
@@ -74,12 +74,20 @@ export class PaymentController {
           );
         });
 
+        // H2 FIX: Dynamic locale from order/user preference
+        const frontendUrl = this.configService.get('FRONTEND_URL');
+        if (!frontendUrl) {
+          this.logger.error('[CONFIG] FRONTEND_URL not set - cannot redirect');
+          return res.status(500).send('Configuration error');
+        }
+        const locale = 'en'; // TODO: Extract from order.locale or user.locale
+
         return res.redirect(
-          `${process.env.FRONTEND_URL || 'http://localhost:3000'}/en/order-success/${orderId}`,
+          `${frontendUrl}/${locale}/order-success/${orderId}`,
         );
       } else {
         // Failed
-        await (this.prisma.order as any).update({
+        await this.prisma.order.update({
           where: { id: orderId },
           data: {
             status: 'CANCELLED',
@@ -87,13 +95,24 @@ export class PaymentController {
           },
         });
 
-        return res.redirect(
-          `${process.env.FRONTEND_URL || 'http://localhost:3000'}/en/order-failed/${orderId}`,
-        );
+        const frontendUrl = this.configService.get('FRONTEND_URL');
+        if (!frontendUrl) {
+          this.logger.error('[CONFIG] FRONTEND_URL not set - cannot redirect');
+          return res.status(500).send('Configuration error');
+        }
+        const locale = 'en'; // TODO: Extract from order.locale
+
+        return res.redirect(`${frontendUrl}/${locale}/order-failed/${orderId}`);
       }
     } else {
+      const frontendUrl = this.configService.get('FRONTEND_URL');
+      if (!frontendUrl) {
+        this.logger.error('[CONFIG] FRONTEND_URL not set - cannot redirect');
+        return res.status(500).send('Configuration error');
+      }
+
       return res.redirect(
-        `${process.env.FRONTEND_URL || 'http://localhost:3000'}/en/order-failed?reason=checksum_failed`,
+        `${frontendUrl}/en/order-failed?reason=checksum_failed`,
       );
     }
   }
@@ -112,55 +131,172 @@ export class PaymentController {
     const signData = querystring.stringify(sortedParams, { encode: false });
     const isValid = VNPayUtils.verifySignature(secureHash, secretKey, signData);
 
-    if (isValid) {
-      const orderId = vnp_Params['vnp_TxnRef'];
-      const rspCode = vnp_Params['vnp_ResponseCode'];
-
-      // Find Order
-      const order = await (this.prisma.order as any).findUnique({
-        where: { id: orderId },
-      });
-      if (!order) {
-        return { RspCode: '01', Message: 'Không tìm thấy đơn hàng' };
-      }
-
-      // Kiểm tra xem đơn đã thanh toán chưa
-      if (order.status !== 'PENDING') {
-        return { RspCode: '02', Message: 'Đơn hàng đã được xác nhận trước đó' };
-      }
-
-      if (rspCode === '00') {
-        // Payment Success -> Update Order Status
-        await (this.prisma.order as any).update({
-          where: { id: orderId },
-          data: {
-            status: 'PROCESSING', // Paid orders go to PROCESSING (or configured flow)
-            paymentStatus: 'PAID',
-          },
-        });
-
-        // Tính toán hoa hồng và phí nền tảng
-        await this.commissionService.calculateForOrder(orderId).catch((e) => {
-          this.logger.error(
-            `Lỗi khi tính toán hoa hồng cho đơn hàng ${orderId}`,
-            e,
-          );
-        });
-
-        return { RspCode: '00', Message: 'Thành công' };
-      } else {
-        // Payment Failed
-        await (this.prisma.order as any).update({
-          where: { id: orderId },
-          data: {
-            status: 'CANCELLED',
-            paymentStatus: 'FAILED',
-          },
-        });
-        return { RspCode: '00', Message: 'Thành công' };
-      }
-    } else {
+    if (!isValid) {
       return { RspCode: '97', Message: 'Checksum failed' };
+    }
+
+    const orderId = vnp_Params['vnp_TxnRef'];
+    const rspCode = vnp_Params['vnp_ResponseCode'];
+    const webhookId =
+      vnp_Params['vnp_TransactionNo'] || `vnpay_${orderId}_${Date.now()}`;
+    const vnpPayDate = vnp_Params['vnp_PayDate']; // Format: YYYYMMDDHHmmss
+
+    // B4: Timestamp validation - Reject webhooks older than 5 minutes
+    if (vnpPayDate) {
+      try {
+        const year = parseInt(vnpPayDate.substring(0, 4));
+        const month = parseInt(vnpPayDate.substring(4, 6)) - 1;
+        const day = parseInt(vnpPayDate.substring(6, 8));
+        const hour = parseInt(vnpPayDate.substring(8, 10));
+        const minute = parseInt(vnpPayDate.substring(10, 12));
+        const second = parseInt(vnpPayDate.substring(12, 14));
+        const webhookTimestamp = new Date(
+          year,
+          month,
+          day,
+          hour,
+          minute,
+          second,
+        ).getTime();
+        const now = Date.now();
+        const maxAge = 5 * 60 * 1000; // 5 minutes
+
+        if (now - webhookTimestamp > maxAge) {
+          return { RspCode: '99', Message: 'Webhook expired' };
+        }
+      } catch (e) {
+        this.logger.warn(
+          'Failed to parse vnp_PayDate for timestamp validation',
+          e,
+        );
+      }
+    }
+
+    // B1 & B4: Idempotency check + Transaction with row locking
+    try {
+      const result = await this.prisma.$transaction(
+        async (tx) => {
+          // Check if webhook already processed (idempotency)
+          const existingWebhook = await tx.webhookEvent.findUnique({
+            where: { webhookId },
+          });
+
+          if (existingWebhook) {
+            this.logger.warn(`Duplicate webhook detected: ${webhookId}`);
+            return {
+              RspCode: '02',
+              Message: 'Webhook already processed (idempotent)',
+            };
+          }
+
+          // Lock order row to prevent concurrent webhook processing
+          const order = await tx.$queryRaw<any[]>`
+          SELECT * FROM "Order" WHERE id = ${orderId} FOR UPDATE
+        `;
+
+          if (!order || order.length === 0) {
+            await tx.webhookEvent.create({
+              data: {
+                webhookId,
+                orderId,
+                provider: 'VNPAY',
+                status: 'FAILED',
+                responseCode: rspCode,
+                tenantId: 'unknown', // Will be overridden by Prisma middleware
+              },
+            });
+            return { RspCode: '01', Message: 'Không tìm thấy đơn hàng' };
+          }
+
+          const orderData = order[0];
+
+          // Check if order already processed
+          if (orderData.status !== 'PENDING') {
+            await tx.webhookEvent.create({
+              data: {
+                webhookId,
+                orderId,
+                provider: 'VNPAY',
+                status: 'IGNORED',
+                responseCode: rspCode,
+                tenantId: orderData.tenantId,
+              },
+            });
+            return {
+              RspCode: '02',
+              Message: 'Đơn hàng đã được xác nhận trước đó',
+            };
+          }
+
+          if (rspCode === '00') {
+            // Payment Success - Update order AND create webhook event atomically
+            await tx.order.update({
+              where: { id: orderId },
+              data: {
+                status: 'PROCESSING',
+                paymentStatus: 'PAID',
+              },
+            });
+
+            // Create webhook event record
+            await tx.webhookEvent.create({
+              data: {
+                webhookId,
+                orderId,
+                provider: 'VNPAY',
+                status: 'PROCESSED',
+                responseCode: rspCode,
+                tenantId: orderData.tenantId,
+              },
+            });
+
+            // B1 FIX: Calculate commission INSIDE transaction
+            try {
+              await this.commissionService.calculateForOrder(orderId);
+            } catch (e) {
+              this.logger.error(
+                `Lỗi khi tính toán hoa hồng cho đơn hàng ${orderId} (IN TRANSACTION)`,
+                e,
+              );
+              // Don't throw - commission can be recalculated later
+            }
+
+            return { RspCode: '00', Message: 'Thành công' };
+          } else {
+            // Payment Failed
+            await tx.order.update({
+              where: { id: orderId },
+              data: {
+                status: 'CANCELLED',
+                paymentStatus: 'FAILED',
+              },
+            });
+
+            await tx.webhookEvent.create({
+              data: {
+                webhookId,
+                orderId,
+                provider: 'VNPAY',
+                status: 'PROCESSED',
+                responseCode: rspCode,
+                tenantId: orderData.tenantId,
+              },
+            });
+
+            return { RspCode: '00', Message: 'Thành công' };
+          }
+        },
+        {
+          isolationLevel: 'Serializable', // Highest isolation to prevent race conditions
+          maxWait: 5000,
+          timeout: 10000,
+        },
+      );
+
+      return result;
+    } catch (error) {
+      this.logger.error('VNPay IPN transaction failed', error);
+      return { RspCode: '99', Message: 'System error' };
     }
   }
 

@@ -24,23 +24,24 @@ export class WishlistService {
    */
 
   async toggle(userId: string, productId: string) {
-    const existing = await (this.prisma.wishlist as any).findUnique({
-      where: {
-        userId_productId: {
-          userId,
-          productId,
+    // [FIX C1] Use Transaction to prevent Race Condition (TOCTOU)
+    return this.prisma.$transaction(async (tx) => {
+      const existing = await tx.wishlist.findUnique({
+        where: {
+          userId_productId: {
+            userId,
+            productId,
+          },
         },
-      },
-    });
-
-    if (existing) {
-      await (this.prisma.wishlist as any).delete({
-        where: { id: existing.id },
       });
-      return { isWishlisted: false };
-    } else {
-      try {
-        await (this.prisma.wishlist as any).create({
+
+      if (existing) {
+        await tx.wishlist.delete({
+          where: { id: existing.id },
+        });
+        return { isWishlisted: false };
+      } else {
+        await tx.wishlist.create({
           data: {
             userId,
             productId,
@@ -48,21 +49,14 @@ export class WishlistService {
           },
         });
         return { isWishlisted: true };
-      } catch (err) {
-        this.logger.error('[WishlistService] create error details:', {
-          userId,
-          productId,
-          error: err,
-        });
-        throw err;
       }
-    }
+    });
   }
 
   async findAll(userId: string, page = 1, limit = 10) {
     const skip = (page - 1) * limit;
     const [data, total] = await Promise.all([
-      (this.prisma.wishlist as any).findMany({
+      this.prisma.wishlist.findMany({
         where: { userId },
         skip,
         take: limit,
@@ -87,7 +81,7 @@ export class WishlistService {
         },
         orderBy: { createdAt: 'desc' },
       }),
-      (this.prisma.wishlist as any).count({ where: { userId } }),
+      this.prisma.wishlist.count({ where: { userId } }),
     ]);
 
     return {
@@ -102,62 +96,62 @@ export class WishlistService {
   }
 
   async checkStatus(userId: string, productId: string) {
-    const existing = await (this.prisma.wishlist as any).findUnique({
+    const existing = await this.prisma.wishlist.findUnique({
       where: { userId_productId: { userId, productId } },
     });
     return { isWishlisted: !!existing };
   }
 
   async count(userId: string) {
-    const count = await (this.prisma.wishlist as any).count({
+    const count = await this.prisma.wishlist.count({
       where: { userId },
     });
     return { count };
   }
 
   async mergeWishlist(userId: string, productIds: string[]) {
-    if (!productIds || !Array.isArray(productIds)) {
+    if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
       return [];
     }
-    const results: Array<{
-      productId: string;
-      success: boolean;
-      alreadyExisted?: boolean;
-      error?: string;
-    }> = [];
-    for (const productId of productIds) {
-      try {
-        // Toggle adds if it doesn't exist. If it exists, it removes it.
-        // But for merge, we only want to ADD if it doesn't exist.
-        const existing = await (this.prisma.wishlist as any).findUnique({
-          where: {
-            userId_productId: {
-              userId,
-              productId,
-            },
-          },
-        });
 
-        if (!existing) {
-          await (this.prisma.wishlist as any).create({
-            data: {
-              userId: userId,
-              productId: productId,
-              tenantId: getTenant()!.id,
-            },
-          });
-          results.push({ productId: productId, success: true });
-        } else {
-          results.push({
-            productId: productId,
-            success: true,
-            alreadyExisted: true,
-          });
-        }
-      } catch (error: any) {
-        results.push({ productId, success: false, error: error.message });
-      }
+    const tenantId = getTenant()!.id;
+
+    // [FIX C2] Security: Verify products belong to current tenant
+    // Prevent cross-tenant data pollution
+    const validProducts = await this.prisma.product.findMany({
+      where: {
+        id: { in: productIds },
+        tenantId,
+      },
+      select: { id: true },
+    });
+
+    const validIds = validProducts.map((p) => p.id);
+    const validIdSet = new Set(validIds);
+
+    if (validIds.length === 0) {
+      return [];
     }
-    return results;
+
+    // [FIX H3] Performance: Use createMany with skipDuplicates instead of Loop
+    // This reduces N queries to 1 query and handles race conditions implicitly
+    await this.prisma.wishlist.createMany({
+      data: validIds.map((productId) => ({
+        userId,
+        productId,
+        tenantId,
+      })),
+      skipDuplicates: true,
+    });
+
+    // Return format mimicking old behavior but optimized
+    return productIds.map((productId) => ({
+      productId,
+      success: validIdSet.has(productId), // Only successful if valid in this tenant
+      alreadyExisted: true, // Simplified: We don't distinguish created vs existed in bulk mode (it's safe)
+      error: validIdSet.has(productId)
+        ? undefined
+        : 'Product not found or invalid',
+    }));
   }
 }

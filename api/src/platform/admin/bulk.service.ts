@@ -128,7 +128,7 @@ export class BulkService {
     sheet.getRow(1).font = { bold: true };
 
     const buffer = await workbook.xlsx.writeBuffer();
-    return buffer as any;
+    return buffer as any; // ExcelJS Buffer type differs from Node Buffer
   }
 
   /**
@@ -366,7 +366,7 @@ export class BulkService {
           where: {
             id: skuId,
             tenantId: tenant?.id,
-          } as any, // Using any as Prisma helper might not allow multi-where on update if unique is compound
+          }, // Prisma handles multi-field updates correctly
           data: updateData,
         });
         updated++;

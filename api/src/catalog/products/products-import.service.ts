@@ -102,10 +102,15 @@ export class ProductsImportService {
         }
 
         // 2. Upsert Product
-        const product = await (this.prisma.product as any).upsert({
-          where: (productRow.productId
+        const product = await this.prisma.product.upsert({
+          where: productRow.productId
             ? { id: productRow.productId }
-            : { slug: productRow.productSlug }) as any,
+            : {
+                tenantId_slug: {
+                  tenantId: getTenant()!.id,
+                  slug: productRow.productSlug,
+                },
+              },
           update: {
             name: productRow.productName,
             brandId,
@@ -118,7 +123,7 @@ export class ProductsImportService {
                 },
               ],
             },
-          } as any,
+          },
           create: {
             name: productRow.productName,
             slug:
@@ -129,26 +134,26 @@ export class ProductsImportService {
             categories: {
               create: [{ categoryId, tenantId: getTenant()!.id }],
             },
-          } as any,
+          },
         });
 
         // 3. Upsert SKUs
         for (const skuRow of item.skus) {
-          await (this.prisma.sku as any).upsert({
-            where: (skuRow.skuId
+          await this.prisma.sku.upsert({
+            where: skuRow.skuId
               ? { id: skuRow.skuId }
               : {
                   tenantId_skuCode: {
                     skuCode: skuRow.skuCode as string,
                     tenantId: product.tenantId || '',
                   },
-                }) as any,
+                },
             update: {
               price: skuRow.price,
               salePrice: skuRow.salePrice,
               stock: skuRow.stock,
               status: skuRow.status,
-            } as any,
+            },
             create: {
               skuCode: skuRow.skuCode,
               price: skuRow.price,
@@ -157,7 +162,7 @@ export class ProductsImportService {
               productId: product.id,
               tenantId: product.tenantId,
               status: skuRow.status,
-            } as any,
+            },
           });
           results.success++;
         }

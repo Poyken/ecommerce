@@ -43,7 +43,25 @@ export class PrismaService
             if (duration > threshold) {
               const logger = new Logger('PrismaPerformance');
               const sanitizedArgs = JSON.parse(JSON.stringify(args || {}));
-              const sensitiveFields = ['password', 'token', 'secret', 'key'];
+              const sensitiveFields = [
+                'password',
+                'token',
+                'secret',
+                'key',
+                'vnp_securehash',
+                'vnp_hashsecret',
+                'momo_secret_key',
+                'twofactorsecret',
+                'accesstoken',
+                'refreshtoken',
+                'signature',
+                'hmac',
+                'webhook',
+                'twoFactorSecret',
+                'socialId',
+                'whitelistedIps',
+                'apiKey',
+              ];
 
               const sanitize = (obj: any) => {
                 if (!obj || typeof obj !== 'object') return;

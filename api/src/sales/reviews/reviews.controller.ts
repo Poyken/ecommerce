@@ -11,6 +11,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   Patch,
   Post,
@@ -48,6 +49,8 @@ import {
 @ApiTags('Reviews')
 @Controller('reviews')
 export class ReviewsController {
+  private readonly logger = new Logger(ReviewsController.name);
+
   constructor(
     private readonly reviewsService: ReviewsService,
     private readonly cloudinaryService: CloudinaryService,
@@ -82,7 +85,7 @@ export class ReviewsController {
     try {
       return this.reviewsService.checkEligibility(userId, productId);
     } catch (e) {
-      console.error('[CheckEligibility Error]', e);
+      this.logger.error('[CheckEligibility Error]', e.stack);
       throw e;
     }
   }

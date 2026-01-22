@@ -35,7 +35,7 @@ export class CartService {
     cutoffDate.setDate(cutoffDate.getDate() - daysOld);
 
     try {
-      const result = await (this.prisma.cart as any).deleteMany({
+      const result = await this.prisma.cart.deleteMany({
         where: {
           updatedAt: { lt: cutoffDate },
         },
@@ -67,7 +67,7 @@ export class CartService {
 
     try {
       // Upsert: Tìm hoặc tạo mới trong 1 thao tác DB
-      const cart = await (this.prisma.cart as any).upsert({
+      const cart = await this.prisma.cart.upsert({
         where: {
           userId_tenantId: {
             userId,
@@ -161,7 +161,7 @@ export class CartService {
     return await this.prisma.$transaction(
       async (tx) => {
         // 1. Kiểm tra SKU (Nguyên tử trong transaction)
-        const sku: any = await (tx.sku as any).findUnique({
+        const sku = await tx.sku.findUnique({
           where: { id: dto.skuId },
           select: {
             id: true,
@@ -213,31 +213,55 @@ export class CartService {
           },
         });
 
-        // 3. Upsert Cart Item (Cộng dồn số lượng nếu đã có)
-        const cartItem = await (tx.cartItem as any).upsert({
+        // 3. [FIX C5] Upsert Cart Item with Optimistic Locking (version field)
+        // This prevents race conditions when multiple requests update the same cart item concurrently
+        const existingItem = await tx.cartItem.findUnique({
           where: {
             cartId_skuId: {
               cartId: cart.id,
               skuId: dto.skuId,
             },
           },
-          update: {
-            quantity: {
-              increment: dto.quantity,
-            },
-          },
-          create: {
-            cartId: cart.id,
-            skuId: dto.skuId,
-            quantity: dto.quantity,
-            tenantId: tenant.id,
-          },
+          select: { id: true, quantity: true, version: true },
         });
+
+        let cartItem;
+        if (existingItem) {
+          // Update with version check (optimistic lock)
+          try {
+            cartItem = await tx.cartItem.update({
+              where: {
+                id: existingItem.id,
+                version: existingItem.version, // Optimistic lock: only update if version matches
+              },
+              data: {
+                quantity: existingItem.quantity + dto.quantity,
+                version: { increment: 1 },
+              },
+            });
+          } catch (error) {
+            // If version mismatch, another request modified this item
+            throw new BadRequestException(
+              'Cart was modified by another request. Please try again.',
+            );
+          }
+        } else {
+          // Create new item
+          cartItem = await tx.cartItem.create({
+            data: {
+              cartId: cart.id,
+              skuId: dto.skuId,
+              quantity: dto.quantity,
+              tenantId: tenant.id,
+              version: 1,
+            },
+          });
+        }
 
         // 4. Kiểm tra lại lần cuối: Nếu tổng số lượng trong giỏ > Tồn kho -> Cắt xuống bằng tồn kho
         if (cartItem.quantity > sku.stock) {
           // Cap at maximum available stock
-          const capped = await (tx.cartItem as any).update({
+          const capped = await tx.cartItem.update({
             where: { id: cartItem.id },
             data: { quantity: sku.stock },
           });
@@ -252,7 +276,7 @@ export class CartService {
         return { ...cartItem, capped: false };
       },
       {
-        isolationLevel: 'Serializable', // Mức cô lập cao nhất để đảm bảo an toàn tuyệt đối
+        isolationLevel: 'ReadCommitted', // [FIX C5] Faster than Serializable, optimistic locking handles conflicts
         timeout: 5000,
       },
     );
@@ -263,7 +287,7 @@ export class CartService {
    */
   async updateItem(userId: string, itemId: string, dto: UpdateCartItemDto) {
     // 1. Check quyền sở hữu: Item này có phải của User này không?
-    const item = await (this.prisma.cartItem as any).findUnique({
+    const item = await this.prisma.cartItem.findUnique({
       where: { id: itemId },
       include: { cart: true, sku: true },
     });
@@ -283,7 +307,7 @@ export class CartService {
       });
     }
 
-    return (this.prisma.cartItem as any).update({
+    return this.prisma.cartItem.update({
       where: { id: itemId },
       data: { quantity: dto.quantity },
     });
@@ -293,7 +317,7 @@ export class CartService {
    * Xóa một item khỏi giỏ hàng.
    */
   async removeItem(userId: string, itemId: string) {
-    const item = await (this.prisma.cartItem as any).findUnique({
+    const item = await this.prisma.cartItem.findUnique({
       where: { id: itemId },
       include: { cart: true },
     });
@@ -302,7 +326,7 @@ export class CartService {
       throw new NotFoundException('Không tìm thấy sản phẩm trong giỏ');
     }
 
-    return (this.prisma.cartItem as any).delete({ where: { id: itemId } });
+    return this.prisma.cartItem.delete({ where: { id: itemId } });
   }
 
   /**
@@ -312,7 +336,7 @@ export class CartService {
     const tenant = getTenant();
     if (!tenant) return;
 
-    const cart = await (this.prisma.cart as any).findUnique({
+    const cart = await this.prisma.cart.findUnique({
       where: {
         userId_tenantId: {
           userId,
@@ -322,7 +346,7 @@ export class CartService {
     });
     if (!cart) return;
 
-    return (this.prisma.cartItem as any).deleteMany({
+    return this.prisma.cartItem.deleteMany({
       where: { cartId: cart.id },
     });
   }
@@ -374,7 +398,7 @@ export class CartService {
 
         // 2. Fetch tất cả SKU một lần để tối ưu (Bulk Read)
         const skuIds = items.map((i) => i.skuId);
-        const skus = await (tx.sku as any).findMany({
+        const skus = await tx.sku.findMany({
           where: { id: { in: skuIds } },
           select: {
             id: true,
@@ -389,7 +413,7 @@ export class CartService {
         // 3. Xử lý từng item
         for (const item of items) {
           try {
-            const sku: any = skuMap.get(item.skuId);
+            const sku = skuMap.get(item.skuId);
             if (!sku) throw new Error('Sản phẩm (SKU) không tồn tại');
             if (sku.status !== 'ACTIVE')
               throw new Error('Sản phẩm không còn được bán');
@@ -415,7 +439,7 @@ export class CartService {
 
             // Validate lại số lượng sau khi cộng dồn
             if (cartItem.quantity > sku.stock) {
-              const capped = await (tx.cartItem as any).update({
+              const capped = await tx.cartItem.update({
                 where: { id: cartItem.id },
                 data: { quantity: sku.stock },
               });

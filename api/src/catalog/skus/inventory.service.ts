@@ -28,26 +28,41 @@ export class InventoryService {
    * Giữ tồn kho (Reserve Stock) cho đơn hàng (Khi user bấm Checkout).
    * - Giảm `stock` (tồn kho khả dụng).
    * - Tăng `reservedStock` (hàng đã đặt nhưng chưa giao).
-   * - Sử dụng "Atomic Update" để tránh race condition.
+   * - B2 FIX: Sử dụng SELECT FOR UPDATE để lock row, ngăn race condition.
    */
   async reserveStock(skuId: string, quantity: number, tx?: any) {
     const prisma = tx || this.prisma;
 
-    // Cập nhật nguyên tử: chỉ giảm nếu stock >= quantity
-    const result = await prisma.sku.updateMany({
-      where: {
-        id: skuId,
-        stock: { gte: quantity },
-      },
+    // B2 FIX: Lock the SKU row to prevent race conditions
+    // Use SELECT FOR UPDATE to ensure atomic stock check + update
+    const lockedSku = await prisma.$queryRaw<any[]>`
+      SELECT id, "skuCode", stock, "reservedStock", "tenantId" 
+      FROM "Sku" 
+      WHERE id = ${skuId}
+      FOR UPDATE
+    `;
+
+    if (!lockedSku || lockedSku.length === 0) {
+      throw new Error(`SKU ${skuId} không tồn tại`);
+    }
+
+    const sku = lockedSku[0];
+
+    // Atomic stock validation - no race condition possible
+    if (sku.stock < quantity) {
+      throw new Error(
+        `Không đủ tồn kho cho SKU ${sku.skuCode} (Yêu cầu: ${quantity}, Còn: ${sku.stock})`,
+      );
+    }
+
+    // Update stock atomically (row is locked)
+    await prisma.sku.update({
+      where: { id: skuId },
       data: {
         stock: { decrement: quantity },
         reservedStock: { increment: quantity },
       },
     });
-
-    if (result.count === 0) {
-      throw new Error(`Không đủ tồn kho cho SKU ${skuId}`);
-    }
 
     this.notifyStockUpdate(skuId);
     await this.checkLowStock(skuId, tx);
@@ -124,10 +139,19 @@ export class InventoryService {
       select: { stock: true, skuCode: true, tenantId: true },
     });
 
-    // Ngưỡng cảnh báo: < 5 sản phẩm
-    if (sku && sku.stock < 5) {
+    // [FIX H1] Configurable Low Stock Threshold
+    // Fetch tenant settings to get configurable threshold
+    const settings = await prisma.tenantSettings.findUnique({
+      where: { tenantId: sku.tenantId },
+      select: { lowStockThreshold: true },
+    });
+
+    const threshold = settings?.lowStockThreshold ?? 5;
+
+    // Ngưỡng cảnh báo configurable
+    if (sku && sku.stock < threshold) {
       this.logger.debug(
-        `Queuing LOW_STOCK_ALERT for SKU ${sku.skuCode} (Stock: ${sku.stock})`,
+        `Queuing LOW_STOCK_ALERT for SKU ${sku.skuCode} (Stock: ${sku.stock} < Threshold: ${threshold})`,
       );
 
       await prisma.outboxEvent.create({

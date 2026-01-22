@@ -2,6 +2,7 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
+  Logger,
   NestInterceptor,
 } from '@nestjs/common';
 import { Decimal } from '@prisma/client/runtime/library';
@@ -27,6 +28,8 @@ export class TransformInterceptor<T> implements NestInterceptor<
   T,
   Response<T>
 > {
+  private readonly logger = new Logger(TransformInterceptor.name);
+
   intercept(
     context: ExecutionContext,
     next: CallHandler,
@@ -53,7 +56,7 @@ export class TransformInterceptor<T> implements NestInterceptor<
             meta, // Bao gồm meta trong phản hồi
           } as any;
         } catch (err) {
-          console.error('[TransformInterceptor] Error:', err);
+          this.logger.error('[TransformInterceptor] Error:', err.stack);
           throw err;
         }
       }),

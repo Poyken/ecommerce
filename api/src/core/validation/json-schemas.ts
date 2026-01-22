@@ -1,4 +1,7 @@
 import { z } from 'zod';
+import { Logger } from '@nestjs/common';
+
+const logger = new Logger('JSONSchemas');
 
 /**
  * =================================================================================================
@@ -64,13 +67,13 @@ export const PageBlocksSchema = z.array(BlockSchema);
 export type PageBlock = z.infer<typeof BlockSchema>;
 
 /**
- * Helper to validate data safe
+ * Helper to validate data safely
  */
 export function safeParseJson<T>(schema: z.ZodSchema<T>, data: any): T | null {
   const result = schema.safeParse(data);
   if (result.success) {
     return result.data;
   }
-  console.warn('JSON Validation Failed:', result.error);
+  logger.warn('JSON Validation Failed:', result.error);
   return null;
 }

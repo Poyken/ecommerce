@@ -796,7 +796,7 @@ export class ProductsService {
     });
   }
   async getTranslations(productId: string) {
-    return (this.prisma.productTranslation as any).findMany({
+    return this.prisma.productTranslation.findMany({
       where: { productId },
     });
   }
@@ -807,7 +807,7 @@ export class ProductsService {
   ) {
     const { locale, name, description } = data;
 
-    return (this.prisma.productTranslation as any).upsert({
+    return this.prisma.productTranslation.upsert({
       where: {
         productId_locale: {
           productId,
@@ -863,7 +863,7 @@ export class ProductsService {
       cacheKey,
       async () => {
         // 1. Lấy thông tin cơ bản để biết Category của sản phẩm hiện tại
-        const product = await (this.prisma.product as any).findFirst({
+        const product = await this.prisma.product.findFirst({
           where: { id: productId },
           select: {
             categories: {
@@ -877,7 +877,7 @@ export class ProductsService {
         const mainCategoryId = product.categories[0].categoryId;
 
         // 2. Tìm các sản phẩm khác trong cùng Category
-        const related = await (this.prisma.product as any).findMany({
+        const related = await this.prisma.product.findMany({
           where: {
             categories: {
               some: {
@@ -947,13 +947,13 @@ export class ProductsService {
    * Internal helper to recalculate ratings for reconciliation
    */
   private async recalculateProductRating(productId: string) {
-    const aggregate = await (this.prisma.review as any).aggregate({
+    const aggregate = await this.prisma.review.aggregate({
       where: { productId, isApproved: true, deletedAt: null },
       _avg: { rating: true },
       _count: true,
     });
 
-    await (this.prisma.product as any).update({
+    await this.prisma.product.update({
       where: { id: productId },
       data: {
         avgRating: aggregate._avg?.rating || 0,
@@ -972,7 +972,7 @@ export class ProductsService {
     this.logger.log('Starting full catalog reconciliation...');
 
     // 1. Quét toàn bộ ID sản phẩm (Chỉ lấy ID để tiết kiệm RAM)
-    const products = await (this.prisma.product as any).findMany({
+    const products = await this.prisma.product.findMany({
       where: { deletedAt: null },
       select: { id: true },
     });
@@ -1047,7 +1047,7 @@ export class ProductsService {
 
     // Fallback to PostgreSQL fulltext search (no vector yet)
     // This is a graceful degradation when pgvector is not available
-    const results = await (this.prisma.product as any).findMany({
+    const results = await this.prisma.product.findMany({
       where: {
         OR: [
           { name: { contains: query, mode: 'insensitive' } },

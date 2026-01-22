@@ -50,17 +50,19 @@ export class AuthService {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  private readonly USER_PERMISSION_SELECT = {
+  // [SECURITY FIX C2] Split into safe and internal selectors to prevent credential leakage
+  // This constant is for PUBLIC API responses - NEVER includes password or secrets
+  private readonly USER_SELECT_SAFE = {
     id: true,
     email: true,
     firstName: true,
     lastName: true,
     avatarUrl: true,
     socialId: true,
-    password: true,
+    // ❌ NO password: true - NEVER expose this
+    // ❌ NO twoFactorSecret: true - NEVER expose this
     tenantId: true,
     twoFactorEnabled: true,
-    twoFactorSecret: true,
     permissions: {
       select: {
         permission: {
@@ -84,6 +86,13 @@ export class AuthService {
         },
       },
     },
+  };
+
+  // INTERNAL USE ONLY - For authentication operations that need password validation
+  private readonly USER_SELECT_WITH_SECRETS = {
+    ...this.USER_SELECT_SAFE,
+    password: true,
+    twoFactorSecret: true,
   };
 
   async register(dto: RegisterDto, fingerprint?: string) {
@@ -178,7 +187,7 @@ export class AuthService {
         email,
         tenantId: tenant?.id,
       },
-      select: this.USER_PERMISSION_SELECT,
+      select: this.USER_SELECT_WITH_SECRETS, // Need password for social login validation
     });
 
     if (user) {
@@ -225,7 +234,7 @@ export class AuthService {
       // Reload để lấy đủ permission
       user = await this.prisma.user.findFirst({
         where: { id: newUser.id },
-        select: this.USER_PERMISSION_SELECT,
+        select: this.USER_SELECT_WITH_SECRETS, // Need password for social login validation
       });
 
       if (user) {
@@ -248,9 +257,7 @@ export class AuthService {
     }
 
     // Tổng hợp quyền hạn (Permissions)
-    const allPermissions = this.permissionService.aggregatePermissions(
-      user as any as UserWithPermissions,
-    );
+    const allPermissions = this.permissionService.aggregatePermissions(user);
 
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
@@ -307,7 +314,7 @@ export class AuthService {
     // 3. Tổng hợp quyền hạn (Roles & Permissions)
     const roles = user.roles.map((r) => r.role.name);
     const allPermissions = this.permissionService.aggregatePermissions(
-      user as any, // TODO: Define strict type for aggregation
+      user, // User from query has proper type with permissions
     );
 
     // 4. Kiểm tra quyền truy cập (Quan trọng cho Multi-tenancy)
@@ -360,7 +367,7 @@ export class AuthService {
           email: { equals: email, mode: 'insensitive' },
           deletedAt: null,
         },
-        select: this.USER_PERMISSION_SELECT,
+        select: this.USER_SELECT_WITH_SECRETS, // Need password for social login validation
       }),
     );
   }
@@ -428,7 +435,7 @@ export class AuthService {
   async verify2FALogin(userId: string, token: string, fingerprint?: string) {
     const user = await this.prisma.user.findFirst({
       where: { id: userId },
-      select: this.USER_PERMISSION_SELECT,
+      select: this.USER_SELECT_WITH_SECRETS, // Need password for social login validation
     });
 
     if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
@@ -444,9 +451,7 @@ export class AuthService {
     }
 
     // Tổng hợp quyền hạn khi 2FA thành công
-    const allPermissions = this.permissionService.aggregatePermissions(
-      user as any,
-    );
+    const allPermissions = this.permissionService.aggregatePermissions(user);
 
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
@@ -509,7 +514,7 @@ export class AuthService {
 
     const user = await this.prisma.user.findFirst({
       where: { id: userId },
-      select: this.USER_PERMISSION_SELECT,
+      select: this.USER_SELECT_WITH_SECRETS, // Need password for social login validation
     });
 
     if (!user) {
@@ -517,9 +522,7 @@ export class AuthService {
     }
 
     // Luôn update quyền hạn mới nhất mỗi khi refresh token
-    const allPermissions = this.permissionService.aggregatePermissions(
-      user as any,
-    );
+    const allPermissions = this.permissionService.aggregatePermissions(user);
 
     const tokens = this.tokenService.generateTokens(
       userId,
@@ -586,7 +589,7 @@ export class AuthService {
     const user = await this.prisma.user.findFirst({
       where: { id: userId },
       select: {
-        ...this.USER_PERMISSION_SELECT,
+        ...this.USER_SELECT_SAFE, // Safe for public API response
         addresses: true,
       },
     });
@@ -654,7 +657,7 @@ export class AuthService {
   async getUserWithSecrets(userId: string) {
     const user = await this.prisma.user.findFirst({
       where: { id: userId },
-      select: this.USER_PERMISSION_SELECT,
+      select: this.USER_SELECT_WITH_SECRETS, // Need password for social login validation
     });
     if (!user) throw new NotFoundException('User not found');
     return user;

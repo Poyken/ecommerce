@@ -67,7 +67,7 @@ export class ReviewsService extends BaseCrudService<
 
     try {
       await this.cacheManager.del(`/api/products/${productId}`);
-      const store = (this.cacheManager as any).store;
+      const store = (this.cacheManager as any).store; // Cache manager store API not fully typed
       if (store.keys) {
         const keys = await store.keys('products_filter_*');
         if (Array.isArray(keys) && keys.length > 0) {
@@ -104,7 +104,7 @@ export class ReviewsService extends BaseCrudService<
       whereOrderItems.skuId = dto.skuId;
     }
 
-    const orderHistory = await (this.prisma.order as any).findFirst({
+    const orderHistory = await this.prisma.order.findFirst({
       where: {
         userId,
         status: 'DELIVERED',
@@ -122,7 +122,7 @@ export class ReviewsService extends BaseCrudService<
 
     /* Transaction đảm bảo tính nhất quán: Tạo review -> Cập nhật điểm rating của Product ngay lập tức */
     const review = await this.prisma.$transaction(async (tx) => {
-      const newReview = await (tx.review as any).create({
+      const newReview = await tx.review.create({
         data: {
           userId,
           productId: dto.productId,
@@ -159,7 +159,7 @@ export class ReviewsService extends BaseCrudService<
     if (!productId) {
       throw new BadRequestException('productId is required');
     }
-    const orderItems = await (this.prisma.orderItem as any).findMany({
+    const orderItems = await this.prisma.orderItem.findMany({
       where: {
         order: {
           userId,
@@ -234,7 +234,7 @@ export class ReviewsService extends BaseCrudService<
    * - Trả về kèm thông tin người dùng và biến thể sản phẩm họ đã mua.
    */
   async findAllByProduct(productId: string, cursor?: string, limit = 10) {
-    const reviews = await (this.model as any).findMany({
+    const reviews = await this.model.findMany({
       where: { productId, isApproved: true },
       take: limit + 1,
       skip: cursor ? 1 : 0,
@@ -286,7 +286,7 @@ export class ReviewsService extends BaseCrudService<
       nextCursor = nextItem!.id;
     }
 
-    const productStats = await (this.prisma.product as any).findUnique({
+    const productStats = await this.prisma.product.findUnique({
       where: { id: productId },
       select: { avgRating: true, reviewCount: true },
     });

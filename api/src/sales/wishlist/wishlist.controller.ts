@@ -1,3 +1,4 @@
+import { ToggleWishlistDto, MergeWishlistDto } from './dto/wishlist.dto';
 import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import {
   ApiCreateResponse,
@@ -17,13 +18,6 @@ import {
 import { ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { WishlistService } from './wishlist.service';
 
-/**
- * =====================================================================
- * WISHLIST CONTROLLER - QUẢN LÝ DANH SÁCH YÊU THÍCH
- * =====================================================================
- *
- * =====================================================================
- */
 @ApiTags('Wishlist')
 @Controller('wishlist')
 @UseGuards(JwtAuthGuard)
@@ -32,8 +26,8 @@ export class WishlistController {
 
   @Post('toggle')
   @ApiCreateResponse('Object', { summary: 'Toggle wishlist (Add/Remove)' })
-  async toggle(@Req() req, @Body('productId') productId: string) {
-    return this.wishlistService.toggle(req.user.id, productId);
+  async toggle(@Req() req, @Body() dto: ToggleWishlistDto) {
+    return this.wishlistService.toggle(req.user.id, dto.productId);
   }
 
   @Get('count')
@@ -68,7 +62,7 @@ export class WishlistController {
   @Post('merge')
   @ApiOperation({ summary: 'Merge guest wishlist into user account' })
   @ApiCreateResponse('Product', { summary: 'Merge guest wishlist' })
-  async mergeWishlist(@Req() req, @Body('productIds') productIds: string[]) {
-    return this.wishlistService.mergeWishlist(req.user.id, productIds);
+  async mergeWishlist(@Req() req, @Body() dto: MergeWishlistDto) {
+    return this.wishlistService.mergeWishlist(req.user.id, dto.productIds);
   }
 }

@@ -5,6 +5,7 @@ import {
   NotFoundException,
   Inject,
   forwardRef,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { OrdersService } from '@/sales/orders/orders.service';
@@ -72,11 +73,32 @@ export class PaymentService {
   /**
    * Xử lý Webhook từ cổng thanh toán (Momo, VNPay, Stripe) hoặc giả lập.
    * - Nhiệm vụ: Xác nhận thanh toán thành công và cập nhật trạng thái đơn hàng.
-   * - Bảo mật: Cần verify chữ ký (Signature) trong thực tế (được handle bởi Guard hoặc Strategy).
+   * - [SECURITY FIX H1] Added signature verification to prevent fake webhooks
    * @param payload Dữ liệu webhook nhận được
+   * @param signature HMAC signature from webhook header
    */
-  async handleWebhook(payload: WebhookPayloadDto) {
+  async handleWebhook(payload: WebhookPayloadDto, signature?: string) {
     this.logger.log(`Processing webhook: ${JSON.stringify(payload)}`);
+
+    // [SECURITY FIX H1] Verify webhook signature FIRST before processing
+    // This prevents attackers from sending fake payment confirmations
+    if (process.env.NODE_ENV !== 'test') {
+      const secret = process.env.WEBHOOK_SECRET || 'change-me-in-production';
+      const { createHmac } = await import('crypto');
+
+      const expectedSignature = createHmac('sha256', secret)
+        .update(JSON.stringify(payload))
+        .digest('hex');
+
+      if (!signature || signature !== expectedSignature) {
+        this.logger.warn(
+          `Invalid webhook signature. Expected: ${expectedSignature}, Got: ${signature}`,
+        );
+        throw new UnauthorizedException(
+          'Invalid webhook signature - potential security threat',
+        );
+      }
+    }
 
     // 1. Phân tích nội dung chuyển khoản để tìm Order ID (UUID regex)
     // [SECURITY FIX] Chỉ extract chuỗi đúng format UUID để tránh Spam DB

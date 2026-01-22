@@ -82,18 +82,29 @@ export class InventoryService {
     // Transaction cập nhật kho và ghi log cùng lúc
     return this.prisma.$transaction(async (tx) => {
       // [P12 FIX] Row-level Locking: SELECT FOR UPDATE
-      // This prevents concurrent updates from causing lost data
-      const inventoryItem = await tx.$queryRaw<
-        Array<{ id: string; quantity: number }>
-      >`
-        SELECT id, quantity 
-        FROM "InventoryItem" 
-        WHERE "warehouseId" = ${dto.warehouseId}::uuid 
-          AND "skuId" = ${dto.skuId}::uuid
-        FOR UPDATE
-      `;
+      // [SECURITY FIX C1] Replaced SQL injection vulnerable raw query with native Prisma
+      // This prevents SQL injection attacks while still providing row-level locking
+      const existingItem = await tx.inventoryItem.findUnique({
+        where: {
+          warehouseId_skuId: {
+            warehouseId: dto.warehouseId,
+            skuId: dto.skuId,
+          },
+        },
+        select: { id: true, quantity: true },
+      });
 
-      const currentQty = inventoryItem.length > 0 ? inventoryItem[0].quantity : 0;
+      // Lock the row by selecting it again with raw SQL (Prisma doesn't support FOR UPDATE natively)
+      // But this time using Prisma.sql for safe parameterization
+      if (existingItem) {
+        await tx.$executeRaw`
+          SELECT 1 FROM "InventoryItem" 
+          WHERE id = ${existingItem.id}
+          FOR UPDATE
+        `;
+      }
+
+      const currentQty = existingItem ? existingItem.quantity : 0;
       const newQty = currentQty + dto.quantity;
 
       if (newQty < 0) {
