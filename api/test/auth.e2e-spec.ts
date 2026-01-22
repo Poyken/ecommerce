@@ -13,7 +13,8 @@
  *
  * =====================================================================
  */
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
+import { ZodValidationPipe } from 'nestjs-zod';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
@@ -38,13 +39,7 @@ describe('AuthController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
-    app.useGlobalPipes(
-      new ValidationPipe({
-        whitelist: true,
-        forbidNonWhitelisted: true,
-        transform: true,
-      }),
-    );
+    app.useGlobalPipes(new ZodValidationPipe());
     await app.init();
   });
 
@@ -114,7 +109,7 @@ describe('AuthController (e2e)', () => {
           accessToken = res.body.data.accessToken;
           // Refresh token might be in cookies
           const cookies = res.headers['set-cookie'];
-          if (cookies) {
+          if (Array.isArray(cookies)) {
             const refreshCookie = cookies.find((c: string) =>
               c.startsWith('refreshToken='),
             );
@@ -177,7 +172,7 @@ describe('AuthController (e2e)', () => {
   });
 
   describe('/auth/logout (POST)', () => {
-    it('should logout successfully', () => {
+    it('should logout successfully', async () => {
       if (!accessToken) {
         console.warn('Skipping - no access token available');
         return;

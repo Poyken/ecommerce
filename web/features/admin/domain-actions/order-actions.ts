@@ -24,6 +24,7 @@
 import { ActionResult } from "@/types/dtos";
 import { Order } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
+import { PaginationParams } from "@/lib/utils";
 
 import { adminOrderService } from "../services/admin-order.service";
 
@@ -34,7 +35,7 @@ import { adminOrderService } from "../services/admin-order.service";
  */
 
 export async function getOrdersAction(
-  paramsOrPage: any = {},
+  paramsOrPage: number | PaginationParams = {},
   limit?: number,
   search?: string
 ): Promise<ActionResult<Order[]>> {

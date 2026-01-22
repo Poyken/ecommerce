@@ -13,6 +13,7 @@ import { useTranslations } from "next-intl";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import { m } from "framer-motion";
+import { Page } from "@/types/cms";
 
 const CreatePageDialog = dynamic(
   () =>
@@ -31,13 +32,13 @@ const DeleteConfirmDialog = dynamic(
 );
 
 interface PagesListClientProps {
-  initialPages: any[];
+  initialPages: Page[];
 }
 
 export function PagesListClient({ initialPages }: PagesListClientProps) {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [selectedPage, setSelectedPage] = useState<any>(null);
+  const [selectedPage, setSelectedPage] = useState<Page | null>(null);
   const t = useTranslations("admin.pages");
   const { isPending } = useAdminTable("/admin/pages");
 
@@ -60,7 +61,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
     return res;
   };
 
-  const openDelete = (page: any) => {
+  const openDelete = (page: Page) => {
     setSelectedPage(page);
     setIsDeleteOpen(true);
   };
@@ -86,7 +87,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
 
       {filteredPages.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPages.map((page: any, index) => (
+          {filteredPages.map((page: Page, index) => (
             <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -115,7 +116,7 @@ export function PagesListClient({ initialPages }: PagesListClientProps) {
                 <div className="flex flex-col gap-2 mb-6">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
                       <Clock className="h-3.5 w-3.5" />
-                      Updated {format(new Date(page.updatedAt), "MMM dd, yyyy")}
+                      Updated {format(new Date(page.updatedAt || Date.now()), "MMM dd, yyyy")}
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
                       <Globe className="h-3.5 w-3.5" />

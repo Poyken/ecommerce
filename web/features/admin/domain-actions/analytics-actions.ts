@@ -63,7 +63,13 @@ export async function getTopProductsAction(): Promise<
   );
 }
 
-export async function getBlogStatsAction(): Promise<ActionResult<any>> {
+export async function getBlogStatsAction(): Promise<
+  ActionResult<{
+    totalPosts: number;
+    totalViews: number;
+    avgReadTime: number;
+  }>
+> {
   return wrapServerAction(
     () => adminAnalyticsService.getBlogStats(),
     "Failed to fetch blog stats"

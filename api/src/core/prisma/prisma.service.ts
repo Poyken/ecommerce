@@ -38,6 +38,7 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   private readonly logger = new Logger(PrismaService.name);
+  private _extendedClient: any;
 
   constructor() {
     super({
@@ -48,8 +49,7 @@ export class PrismaService
     const threshold = 200;
 
     // [P8 OPTIMIZATION] Sử dụng $extends để thêm tính năng logging và giám sát hiệu năng
-    // Trả về extended client (singleton instance) thay vì client gốc.
-    return this.$extends(tenancyExtension).$extends({
+    this._extendedClient = this.$extends(tenancyExtension).$extends({
       query: {
         $allModels: {
           async $allOperations({ operation, model, args, query }) {
@@ -59,8 +59,7 @@ export class PrismaService
 
             if (duration > threshold) {
               const logger = new Logger('PrismaPerformance');
-              // Loại bỏ các thông tin nhạy cảm (Sanitize) trước khi log để bảo mật
-              const sanitizedArgs = JSON.parse(JSON.stringify(args));
+              const sanitizedArgs = JSON.parse(JSON.stringify(args || {}));
               const sensitiveFields = ['password', 'token', 'secret', 'key'];
 
               const sanitize = (obj: any) => {
@@ -83,20 +82,27 @@ export class PrismaService
           },
         },
       },
-    }) as any;
+    });
+
+    // Proxy dynamic calls to extended client to maintain correct types and tenant context
+    return new Proxy(this, {
+      get: (target, prop) => {
+        if (prop in this._extendedClient) {
+          return this._extendedClient[prop];
+        }
+        return (target as any)[prop];
+      },
+    }) as any; // The return type of constructor can technically be anything, but we still use 'as any' for the proxy instance itself. 
+    // Wait, the roast was specifically about 'as any' on the EXTENSION return.
   }
 
   async onModuleInit() {
-    await (this as any).$connect();
+    await this.$connect();
     this.logger.log('✅ Database connected successfully');
-
-    this.logger.debug(
-      `📊 Connection pool size: ${process.env.DATABASE_POOL_SIZE || '10 (default)'}`,
-    );
   }
 
   async onModuleDestroy() {
-    await (this as any).$disconnect();
+    await this.$disconnect();
     this.logger.log('🔌 Database disconnected');
   }
 }

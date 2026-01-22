@@ -37,6 +37,8 @@ import { OrdersProcessor } from './orders.processor';
 import { OrdersExportService } from './orders-export.service';
 import { OrdersRepository } from './orders.repository';
 
+import { OrderSubscriber } from './order.subscriber';
+
 @Module({
   imports: [
     PrismaModule,
@@ -57,8 +59,8 @@ import { OrdersRepository } from './orders.repository';
     InvoiceService,
     OrdersProcessor,
     OrdersExportService,
+    OrderSubscriber,
   ],
   exports: [OrdersRepository, InvoiceService, BullModule],
 })
 export class OrdersModule {}
-

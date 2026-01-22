@@ -45,6 +45,7 @@ import { cn } from "@/lib/utils";
 import { DynamicIcon } from "@/components/shared/dynamic-icon";
 import dynamicIconImports from "lucide-react/dist/esm/dynamicIconImports.js";
 import Image from "next/image";
+import { Page, Block } from "@/types/cms";
 
 /**
  * =================================================================================================
@@ -75,11 +76,7 @@ import Image from "next/image";
  * =================================================================================================
  */
 
-interface Block {
-  id: string;
-  type: string;
-  props: Record<string, any>;
-}
+// Local components use types from types/cms
 
 const FlexibleIcon = ({
   source,
@@ -119,16 +116,7 @@ const FlexibleIcon = ({
   return null;
 };
 
-interface Page {
-  id: string;
-  title: string;
-  slug: string;
-  blocks: Block[];
-  isPublished: boolean;
-  metaDescription?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+// Page interface moved to @/types/cms
 
 interface PageBuilderClientProps {
   page: Page;

@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { memo, useMemo } from "react";
 import { formatVND, formatNumber } from "@/lib/utils";
+import Image from "next/image";
 import type {
   UISchemaType,
   UISchema,
@@ -189,11 +190,14 @@ const TableWidget = memo(function TableWidget({ schema }: { schema: UISchema }) 
                 {columns?.map((col: TableColumn) => (
                   <TableCell key={col.key}>
                     {col.key === "image" && row[col.key] ? (
-                      <img
-                        src={row[col.key] as string}
-                        alt=""
-                        className="h-10 w-10 rounded object-cover"
-                      />
+                      <div className="relative h-10 w-10 rounded overflow-hidden">
+                        <Image
+                          src={row[col.key] as string}
+                          alt=""
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
                     ) : col.key === "price" ? (
                       formatVND(row[col.key] as number)
                     ) : (

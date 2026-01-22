@@ -25,6 +25,7 @@ import { adminReviewService } from "../services/admin-review.service";
 import { ActionResult } from "@/types/dtos";
 import { Review } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
+import { PaginationParams } from "@/lib/utils";
 
 /**
  * =====================================================================
@@ -33,7 +34,7 @@ import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
  */
 
 export async function getReviewsAction(
-  paramsOrPage: any = {},
+  paramsOrPage: number | PaginationParams = {},
   limit?: number,
   search?: string
 ): Promise<ActionResult<Review[]>> {
@@ -76,7 +77,12 @@ export async function updateReviewStatusAction(
 
 export async function analyzeReviewSentimentAction(
   text: string
-): Promise<ActionResult<any>> {
+): Promise<
+  ActionResult<{
+    sentiment: "POSITIVE" | "NEGATIVE" | "NEUTRAL";
+    score: number;
+  }>
+> {
   return wrapServerAction(async () => {
     const res = await adminReviewService.analyzeSentiment(text);
     REVALIDATE.admin.reviews();

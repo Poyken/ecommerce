@@ -1,5 +1,5 @@
 import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
+import { normalizePaginationParams, PaginationParams } from "@/lib/utils";
 import { ApiResponse } from "@/types/dtos";
 import { Order } from "@/types/models";
 
@@ -11,7 +11,7 @@ import { Order } from "@/types/models";
 
 export const adminOrderService = {
   getOrders: async (
-    paramsOrPage: any = {},
+    paramsOrPage: number | PaginationParams = {},
     limit?: number,
     search?: string
   ) => {

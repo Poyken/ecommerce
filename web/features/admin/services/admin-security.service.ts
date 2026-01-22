@@ -1,5 +1,5 @@
 import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
+import { normalizePaginationParams, PaginationParams } from "@/lib/utils";
 import { ApiResponse, SecurityStats } from "@/types/dtos";
 import { AuditLog } from "@/types/models";
 
@@ -21,7 +21,7 @@ export const adminSecurityService = {
   },
 
   toggleLockdown: async (isEnabled: boolean) => {
-    return http.post<ApiResponse<any>>("/admin/security/lockdown", {
+    return http.post<ApiResponse<{ isLockdown: boolean }>>("/admin/security/lockdown", {
       isEnabled,
     });
   },
@@ -38,8 +38,9 @@ export const adminSecurityService = {
     return http.get<ApiResponse<{ ip: string }>>("/admin/security/my-ip");
   },
 
-  getAuditLogs: async (paramsOrPage: any = {}) => {
-    const { roles, ...rest } = paramsOrPage;
+  getAuditLogs: async (paramsOrPage: number | (PaginationParams & { roles?: string | string[] }) = {}) => {
+    const paramsMap = typeof paramsOrPage === 'object' ? paramsOrPage : { page: paramsOrPage };
+    const { roles, ...rest } = paramsMap;
     const params = normalizePaginationParams(rest);
     if (roles) {
       params.roles = Array.isArray(roles) ? roles.join(",") : roles;

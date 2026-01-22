@@ -17,7 +17,8 @@
 
  * =====================================================================
  */
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
+import { ZodValidationPipe } from 'nestjs-zod';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
@@ -33,7 +34,7 @@ describe('ProductsController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+    app.useGlobalPipes(new ZodValidationPipe());
     await app.init();
 
     // Login to get token (assuming clear DB or known seed user, standard practice in e2e is to seed first)

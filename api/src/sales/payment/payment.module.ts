@@ -29,7 +29,7 @@ import { VNPayStrategy } from './strategies/vnpay.strategy';
 
 import { PaymentController } from './payment.controller';
 import { PaymentWebhookController } from './payment.webhook.controller';
-import { AnalyticsModule } from '@/analytics/analytics.module';
+import { AnalyticsModule } from '@/platform/analytics/analytics.module';
 import { OrdersModule } from '@/sales/orders/orders.module';
 
 @Module({

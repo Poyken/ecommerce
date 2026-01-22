@@ -1,5 +1,5 @@
 import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
+import { normalizePaginationParams, PaginationParams } from "@/lib/utils";
 import { ApiResponse } from "@/types/dtos";
 import { Permission, Role } from "@/types/models";
 
@@ -38,7 +38,11 @@ export const adminRoleService = {
 
   // --- ROLES ---
 
-  getRoles: async (paramsOrPage: any = {}, limit?: number, search?: string) => {
+  getRoles: async (
+    paramsOrPage: number | PaginationParams = {},
+    limit?: number,
+    search?: string
+  ) => {
     const params = normalizePaginationParams(paramsOrPage, limit, search);
     return http.get<ApiResponse<Role[]>>("/roles", { params });
   },

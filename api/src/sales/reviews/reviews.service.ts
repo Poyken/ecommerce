@@ -6,7 +6,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Review } from '@prisma/client';
 import type { Cache } from 'cache-manager';
-import { BaseCrudService } from '../common/base-crud.service';
+import { BaseCrudService } from '@/common/base-crud.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { AiSentimentService } from './ai-sentiment.service';

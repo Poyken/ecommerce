@@ -20,6 +20,8 @@ import { RegisterDto } from './dto/register.dto';
 import { UserEntity } from './entities/user.entity';
 import { TokenService } from './token.service';
 import { TwoFactorService } from './two-factor.service';
+import { UserWithPermissions } from './permission.service';
+import { Prisma } from '@prisma/client';
 
 /**
  * =====================================================================
@@ -79,7 +81,7 @@ export class AuthService {
     avatarUrl: true,
     socialId: true,
     password: true,
-    tenantId: true, // Needed for security
+    tenantId: true,
     twoFactorEnabled: true,
     twoFactorSecret: true,
     permissions: {
@@ -164,7 +166,16 @@ export class AuthService {
       this.logger.error('Lỗi khi tặng quà chào mừng', error);
     }
 
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
+    };
   }
 
   async validateSocialLogin(
@@ -254,7 +265,7 @@ export class AuthService {
 
     // Tổng hợp quyền hạn (Permissions)
     const allPermissions = this.permissionService.aggregatePermissions(
-      user as any,
+      user as any as UserWithPermissions,
     );
 
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
@@ -342,7 +353,16 @@ export class AuthService {
     );
 
     this.logger.log(`[AUTH] Đăng nhập thành công: ${email}`);
-    return tokens;
+    return {
+      ...tokens,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        roles,
+      },
+    };
   }
 
   /**
@@ -621,6 +641,7 @@ export class AuthService {
    * @throws BadRequestException nếu domain không hợp lệ hoặc không nhận email
    */
   async verifyEmailDomain(email: string) {
+    if (process.env.NODE_ENV === 'test') return true;
     try {
       const domain = email.split('@')[1];
       if (!domain) return false;

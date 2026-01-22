@@ -21,7 +21,10 @@
  */
 "use server";
 
-import { adminNotificationService } from "../services/admin-notification.service";
+import {
+  adminNotificationService,
+  CreateNotificationDto,
+} from "../services/admin-notification.service";
 import { ActionResult } from "@/types/dtos";
 import { wrapServerAction } from "@/lib/safe-action";
 
@@ -32,7 +35,7 @@ import { wrapServerAction } from "@/lib/safe-action";
  */
 
 export async function broadcastNotificationAction(
-  data: any
+  data: CreateNotificationDto
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await adminNotificationService.broadcastNotification(data);
@@ -41,7 +44,7 @@ export async function broadcastNotificationAction(
 
 export async function sendNotificationToUserAction(
   userId: string,
-  data: any
+  data: CreateNotificationDto
 ): Promise<ActionResult<void>> {
   return wrapServerAction(async () => {
     await adminNotificationService.sendNotificationToUser(userId, data);

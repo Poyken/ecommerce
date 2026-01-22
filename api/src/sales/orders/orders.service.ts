@@ -58,6 +58,10 @@ import { Logger } from '@nestjs/common';
  * =====================================================================
  */
 
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { OrderCreatedEvent } from './events/order-created.event';
+import { OrderStatusUpdatedEvent } from './events/order-status-updated.event';
+
 @Injectable()
 export class OrdersService {
   private readonly logger = new Logger(OrdersService.name);
@@ -70,18 +74,15 @@ export class OrdersService {
 
   constructor(
     private readonly prisma: PrismaService,
+    private readonly eventEmitter: EventEmitter2,
     @Inject(forwardRef(() => PaymentService))
     private readonly paymentService: PaymentService,
-    @InjectQueue('email-queue') private readonly emailQueue: Queue,
-    @InjectQueue('orders-queue') private readonly ordersQueue: Queue, // Added orders-queue
     private readonly shippingService: ShippingService,
     private readonly inventoryService: InventoryService,
-    private readonly emailService: EmailService,
-    private readonly notificationsService: NotificationsService,
-    private readonly notificationsGateway: NotificationsGateway,
     private readonly loyaltyService: LoyaltyService,
     private readonly promotionsService: PromotionsService,
     private readonly ordersRepo: OrdersRepository,
+    @InjectQueue('orders-queue') private readonly ordersQueue: Queue,
   ) {}
 
   /**
@@ -418,65 +419,52 @@ export class OrdersService {
       },
     );
 
+    // 11. [PAYMENT] Synchronous Payment Processing (to return Redirect URL to UI)
     let paymentUrl: string | undefined;
-    let providerTransactionId: string | undefined;
+    if (createOrderDto.paymentMethod && createOrderDto.paymentMethod !== 'COD') {
+       try {
+         const paymentResult = await this.paymentService.processPayment(
+           createOrderDto.paymentMethod,
+           {
+             amount: Number(order.totalAmount),
+             orderId: order.id,
+             returnUrl: createOrderDto.returnUrl,
+           },
+         );
 
-    // Xử lý thanh toán Online (Momo, VNPAY...) sau khi transaction DB thành công
-    try {
-      if (createOrderDto.paymentMethod) {
-        const paymentResult = await this.paymentService.processPayment(
-          createOrderDto.paymentMethod,
-          {
-            amount: Number(order.totalAmount),
-            orderId: order.id,
-            returnUrl: createOrderDto.returnUrl,
-          },
-        );
-
-        // 5. Cập nhật trạng thái thanh toán (nếu có)
-        if (paymentResult.success) {
-          paymentUrl = paymentResult.paymentUrl;
-          providerTransactionId = paymentResult.transactionId;
-
-          // Tạo bản ghi lịch sử thanh toán
-          await (this.prisma as any).payment.create({
-            data: {
-              orderId: order.id,
-              amount: order.totalAmount,
-              paymentMethod: createOrderDto.paymentMethod,
-              status: paymentUrl ? 'PENDING' : 'PAID',
-              providerTransactionId: providerTransactionId,
-              tenantId: tenant.id,
-            },
-          });
-
-          // Nếu thanh toán thành công ngay lập tức (không cần redirect URL) -> Update đơn thành PAID
-          if (!paymentUrl) {
-            await this.ordersRepo.update(order.id, {
-              paymentStatus: 'PAID',
-              transactionId: providerTransactionId,
-            });
-            order.paymentStatus = 'PAID';
-          }
-        }
-      } else if (createOrderDto.paymentMethod === 'COD') {
-        // Log transaction COD
-        await (this.prisma as any).payment.create({
-          data: {
-            orderId: order.id,
-            amount: order.totalAmount,
-            paymentMethod: createOrderDto.paymentMethod,
-            status: 'PAID', // COD is considered paid at the time of order creation for internal tracking
-            providerTransactionId: 'COD-' + order.id, // Unique ID for COD
-            tenantId: tenant.id,
-          },
-        });
-      }
-    } catch (error) {
-      this.logger.error(`Lỗi xử lý thanh toán cho đơn hàng ${order.id}`, error);
-      // Không throw lỗi ở đây để tránh làm user hoang mang, đơn hàng đã tạo thành công
-      // User có thể thanh toán lại sau.
+         if (paymentResult.success) {
+           paymentUrl = paymentResult.paymentUrl;
+           await (this.prisma as any).payment.create({
+             data: {
+               orderId: order.id,
+               amount: order.totalAmount,
+               paymentMethod: createOrderDto.paymentMethod,
+               status: paymentUrl ? 'PENDING' : 'PAID',
+               providerTransactionId: paymentResult.transactionId,
+               tenantId: tenant.id,
+             },
+           });
+         }
+       } catch (error) {
+         this.logger.error(`Error processing payment for order ${order.id}`, error);
+       }
     }
+
+    // 12. [DISPATCH] Emit Event for Asynchronous Side-Effects (Email, Notifications, etc.)
+    this.eventEmitter.emit(
+      'order.created',
+      new OrderCreatedEvent(
+        order.id,
+        userId,
+        Number(order.totalAmount),
+        order.paymentMethod,
+        tenant.id,
+        {
+          paymentMethod: createOrderDto.paymentMethod,
+          returnUrl: createOrderDto.returnUrl,
+        }
+      )
+    );
 
     return { ...order, paymentUrl };
   }
@@ -890,139 +878,23 @@ export class OrdersService {
           OrderStatus.DELIVERED,
           OrderStatus.CANCELLED,
         ];
-
-        if ((emailStatuses as any[]).includes(newStatus)) {
-          // 🚀 TỐI ƯU: Fire-and-forget (Gửi background)
-          this.emailService.sendOrderStatusUpdate(updatedOrder).catch((e) => {
-            this.logger.error('Lỗi gửi email cập nhật trạng thái', e);
-          });
-        }
-
-        try {
-          let title = 'Cập nhật đơn hàng';
-          let message = `Đơn hàng #${id.slice(-8)} đã chuyển sang trạng thái ${newStatus}`;
-
-          let notiType = 'ORDER';
-          switch (newStatus) {
-            case OrderStatus.PROCESSING:
-              title = 'Đơn hàng đang xử lý';
-              message = `Đơn hàng #${id.slice(-8)} của bạn đang được chuẩn bị.`;
-              notiType = 'ORDER_PROCESSING';
-              break;
-            // SHIPPED được xử lý bởi webhook riêng
-            case OrderStatus.DELIVERED:
-              title = 'Giao hàng thành công';
-              message = `Đơn hàng #${id.slice(-8)} đã được giao thành công. Cảm ơn bạn đã mua sắm!`;
-              notiType = 'ORDER_DELIVERED';
-              break;
-            case OrderStatus.CANCELLED:
-              title = 'Đơn hàng đã hủy';
-              message = `Đơn hàng #${id.slice(-8)} của bạn đã bị hủy.${dto.cancellationReason ? ` Lý do: ${dto.cancellationReason}` : ''}`;
-              notiType = 'ORDER_CANCELLED';
-              break;
-            case 'RETURNED' as any:
-              title = 'Đơn hàng đã hoàn';
-              message = `Đơn hàng #${id.slice(-8)} của bạn đã được hoàn trả.`;
-              notiType = 'ORDER_RETURNED';
-              break;
-          }
-
-          const notification = await this.notificationsService.create({
-            userId: updatedOrder.userId,
-            type: notiType,
-            title,
-            message,
-            link: `/orders/${id}`,
-          });
-
-          this.notificationsGateway.sendNotificationToUser(
-            updatedOrder.userId,
-            notification,
-          );
-
-          // ĐỒNG THỜI: Thông báo cho tất cả Admin về sự thay đổi này
-          // Đáp ứng yêu cầu: "admin yes order đó thì nên có 1 noti cho admin"
-          try {
-            const adminUsers = await this.prisma.user.findMany({
-              where: {
-                roles: {
-                  some: {
-                    role: {
-                      name: 'ADMIN',
-                    },
-                  },
-                },
-              },
-              select: { id: true },
-            });
-
-            const adminIds = adminUsers.map((u) => u.id);
-            if (adminIds.length > 0) {
-              const adminNotiType =
-                newStatus === OrderStatus.PROCESSING
-                  ? 'ADMIN_ORDER_ACCEPTED'
-                  : `ADMIN_ORDER_${newStatus}`;
-
-              // 🚀 TỐI ƯU: Broadcast không chặn (Non-blocking)
-              this.notificationsService
-                .broadcastToUserIds(adminIds, {
-                  type: adminNotiType,
-                  title: `[Admin] ${title}`,
-                  message: `Admin notification: ${message}`,
-                  link: `/admin/orders/${id}`,
-                })
-                .catch((e) =>
-                  this.logger.error('Lỗi broadcast thông báo cho admin', e),
-                );
-
-              // Gửi qua Socket trực tiếp cho Admin đang online
-              adminIds.forEach((adminId) => {
-                this.notificationsGateway.sendNotificationToUser(adminId, {
-                  type: adminNotiType,
-                  title: `[Admin] ${title}`,
-                  message,
-                  link: `/admin/orders/${id}`,
-                  createdAt: new Date(),
-                } as any);
-              });
-            }
-          } catch (adminNotiError) {
-            this.logger.error('Lỗi thông báo cho admin', adminNotiError);
-          }
-        } catch (error) {
-          this.logger.error('Lỗi tạo thông báo cập nhật trạng thái', error);
-        }
       }
+
+      // 10. [DISPATCH] Emit Event for Status Change
+      const tenantInfo = getTenant();
+      this.eventEmitter.emit(
+        'order.status.updated',
+        new OrderStatusUpdatedEvent(
+          id,
+          updatedOrder.userId,
+          currentStatus,
+          newStatus as OrderStatus,
+          tenantInfo!.id
+        )
+      );
 
       return updatedOrder;
     });
-
-    // 🚀 TỐI ƯU HÓA: Đưa việc gọi API bên thứ 3 (GHN) ra KHỎI Transaction
-    // VÀ: Chạy ngầm (Non-blocking)
-    if (newStatus === OrderStatus.PROCESSING) {
-      // Tự động đồng bộ với GHN nếu có địa chỉ
-      if (transactionResult.addressId) {
-        // Fire and forget GHN sync
-        this.syncWithGHN(transactionResult as any).catch((e) => {
-          this.logger.error(
-            `Đồng bộ GHN nền thất bại cho đơn ${transactionResult.id}`,
-            e,
-          );
-        });
-      }
-    }
-
-    // 🎁 AUTO-EARN LOYALTY POINTS khi đơn hàng được giao thành công
-    if (newStatus === OrderStatus.DELIVERED) {
-      const tenant = getTenant();
-      if (tenant) {
-        this.loyaltyService.earnPointsFromOrder(tenant.id, id).catch((e) => {
-          this.logger.error(
-            `Lỗi tích điểm loyalty cho đơn ${id}: ${e.message}`,
-          );
-        });
-      }
-    }
 
     return transactionResult;
   }

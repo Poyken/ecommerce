@@ -39,7 +39,7 @@ import { VNPayUtils } from './vnpay.utils';
 
  * =====================================================================
  */
-import { CommissionService } from '@/analytics/commission.service';
+import { CommissionService } from '@/platform/analytics/commission.service';
 
 @ApiTags('Payment')
 @Controller('payment')
