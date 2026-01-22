@@ -125,6 +125,34 @@ export default async function proxy(request: NextRequest) {
 
   let response: NextResponse;
 
+  // ==========================================
+  // ROUTING RESTRUCTURE - Backward Compatibility Redirects
+  // ==========================================
+  const locale = currentLocale;
+  const pathWithoutLocale = pathname.replace(new RegExp(`^/${locale}`), '');
+  
+  const routeRedirects: Record<string, string> = {
+    // Customer account pages moved to /account/*
+    '/profile': '/account/profile',
+    '/orders': '/account/orders',
+    '/wishlist': '/account/wishlist',
+    '/notifications': '/account/notifications',
+    
+    // Admin renamed to merchant
+    '/admin': '/merchant/dashboard',
+    
+    // Auth unification (tenant-auth merged into auth)
+    '/tenant-login': '/auth/signin?type=merchant',
+    '/tenant-register': '/auth/signup?type=merchant',
+  };
+
+  // Check for redirect
+  if (routeRedirects[pathWithoutLocale]) {
+    const newPath = `/${locale}${routeRedirects[pathWithoutLocale]}`;
+    return NextResponse.redirect(new URL(newPath, request.url));
+  }
+  // ==========================================
+
   // 3. Thực thi intlMiddleware (Xử lý đa ngôn ngữ)
   response = intlMiddleware(request);
 

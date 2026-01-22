@@ -8,7 +8,7 @@ import {
 } from '@/common/decorators/crud.decorators';
 import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/identity/auth/permissions.guard';
-import { EmailService } from '@integrations/email/email.service';
+import { EmailService } from '@/platform/integrations/external/email/email.service';
 import {
   Body,
   Controller,

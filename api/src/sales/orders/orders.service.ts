@@ -22,7 +22,7 @@ import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { ShippingService } from '@/sales/shipping/shipping.service';
 import { InventoryService } from '@/catalog/skus/inventory.service';
-import { EmailService } from '@integrations/email/email.service';
+import { EmailService } from '@/platform/integrations/external/email/email.service';
 import { LoyaltyService } from '@/marketing/loyalty/loyalty.service';
 import { Logger } from '@nestjs/common';
 

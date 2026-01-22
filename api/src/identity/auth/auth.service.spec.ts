@@ -5,7 +5,7 @@ import { RedisService } from '@core/redis/redis.service';
 import { TokenService } from './token.service';
 import { TwoFactorService } from './two-factor.service';
 import { PermissionService } from './permission.service';
-import { EmailService } from '@integrations/email/email.service';
+import { EmailService } from '@/platform/integrations/external/email/email.service';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';

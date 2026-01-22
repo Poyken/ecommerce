@@ -4,6 +4,9 @@ import { CartModule } from './cart/cart.module';
 import { PaymentModule } from './payment/payment.module';
 import { InvoicesModule } from './invoices/invoices.module';
 import { ShippingModule } from './shipping/shipping.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { TaxModule } from './tax/tax.module';
 
 /**
  * =====================================================================
@@ -32,6 +35,9 @@ import { ShippingModule } from './shipping/shipping.module';
     PaymentModule,
     InvoicesModule,
     ShippingModule,
+    ReviewsModule,
+    WishlistModule,
+    TaxModule,
   ],
   exports: [
     OrdersModule,
@@ -39,6 +45,9 @@ import { ShippingModule } from './shipping/shipping.module';
     PaymentModule,
     InvoicesModule,
     ShippingModule,
+    ReviewsModule,
+    WishlistModule,
+    TaxModule,
   ],
 })
 export class SalesModule {}

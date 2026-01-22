@@ -6,7 +6,7 @@ import { ShippingCronService } from './shipping.cron.service';
 import { ShippingService } from './shipping.service';
 
 import { NotificationsModule } from '@/notifications/notifications.module';
-import { EmailModule } from '@integrations/email/email.module';
+import { EmailModule } from '@/platform/integrations/external/email/email.module';
 
 @Module({
   imports: [HttpModule, NotificationsModule, EmailModule],

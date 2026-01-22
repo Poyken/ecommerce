@@ -71,18 +71,45 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
 - **ADR-006**: Frontend dùng **Next.js Server Actions** + `next-safe-action` wrapper cho bảo mật.
 - **ADR-007**: **Transactional Outbox Pattern**: Đảm bảo Zero Data Loss khi đẩy jobs vào BullMQ.
 - **ADR-008**: **Domain Modules Consolidation**: Gom nhóm tính năng thành `CatalogModule`, `SalesModule`, `AiModule`.
+- **ADR-009**: **Feature Module Restructuring** (2026-01-22): Consolidated 32 standalone modules into 7 Feature Modules + 8 Infrastructure modules (Platform, CMS created; Sales, Operations, Identity extended). Zero breaking changes to API routes. Microservices-ready architecture.
 
 ---
 
-## 5. Các API Modules Hiện Có
+## 5. API Module Structure (Post-Consolidation)
 
-| Domain       | Modules                                                                                         |
-| ------------ | ----------------------------------------------------------------------------------------------- |
-| **Catalog**  | `catalog` (categories, brands, products, skus)                                                  |
-| **Sales**    | `sales` (orders, cart, payment, invoices, shipping)                                             |
-| **AI**       | `ai` (chat, agent, insights, rag, images)                                                       |
-| **Identity** | `auth`, `users`, `tenants`, `roles`                                                             |
-| **Others**   | `promotions`, `return-requests`, `inventory`, `loyalty`, `reviews`, `webhooks`, `blog`, `pages` |
+**Total**: 17 top-level modules (down from 32)
+
+### Feature Modules (Domain Layer)
+
+| Domain         | Sub-Modules                                                                       |
+| -------------- | --------------------------------------------------------------------------------- |
+| **Identity**   | `auth`, `users`, `roles`, `tenants`, `addresses`                                  |
+| **Catalog**    | `categories`, `brands`, `products`, `skus`                                        |
+| **Sales**      | `orders`, `cart`, `payment`, `invoices`, `shipping`, `reviews`, `wishlist`, `tax` |
+| **Operations** | `fulfillment`, `procurement`, `return-requests`, `inventory`                      |
+| **Marketing**  | `promotions`, `loyalty`, `customer-groups`                                        |
+| **Platform**   | `admin`, `super-admin`, `analytics`, `subscriptions`, `integrations`              |
+| **CMS**        | `blog`, `pages`, `media`                                                          |
+| **AI**         | `ai-chat`, `agent`, `insights`, `rag`, `images`                                   |
+
+### Infrastructure Modules
+
+| Module          | Purpose                             |
+| --------------- | ----------------------------------- |
+| `core`          | Prisma, Redis, Guards, Interceptors |
+| `common`        | Logger, Utils, Feature Flags        |
+| `notifications` | Email, SMS, Push (cross-cutting)    |
+| `audit`         | Audit logs (cross-cutting)          |
+| `worker`        | BullMQ background jobs              |
+| `chat`          | Real-time chat (Socket.IO)          |
+| `dev-tools`     | Development utilities               |
+
+**Benefits**:
+
+- Easier to maintain and navigate
+- Microservices-ready (each Feature Module can be extracted)
+- Clear domain boundaries
+- Reduced cognitive load
 
 ---
 
@@ -134,3 +161,4 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
 - [2026-01-22] Module Consolidation & Structure Refactoring:
   - **API**: Created Domain Modules (`Identity`, `Marketing`, `Operations`) and consolidated ~10 sub-modules. Updated `AppModule` and fixed all broken imports. Build passes.
   - **Web**: Created `(dashboard)` route group. Moved `admin` and `super-admin` routes into it for cleaner root structure. Build passes.
+- [2026-01-22] **Major API Restructuring**: Consolidated 32 modules → 17 modules (47% reduction). Created `Platform` (admin, super-admin, analytics, subscriptions, integrations) and `CMS` (blog, pages, media) Feature Modules. Extended `Sales` (+reviews, +wishlist, +tax), `Operations` (+inventory), and `Identity` (+addresses). Zero API breaking changes. All import paths updated globally. Build verification: ✅ PASSED.

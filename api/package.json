@@ -66,6 +66,8 @@
     "exceljs": "^4.4.0",
     "helmet": "^8.1.0",
     "ioredis": "^5.8.2",
+    "isomorphic-dompurify": "^2.35.0",
+    "nestjs-cls": "^6.2.0",
     "nestjs-zod": "^5.1.1",
     "nodemailer": "^7.0.12",
     "otplib": "^12.0.1",

@@ -24,7 +24,7 @@ import { PrismaModule } from '@core/prisma/prisma.module';
 import { SkusController } from './skus.controller';
 import { SkusService } from './skus.service';
 
-import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
+import { CloudinaryModule } from '@/platform/integrations/external/cloudinary/cloudinary.module';
 
 import { ProductsModule } from '@/catalog/products/products.module';
 

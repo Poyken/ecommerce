@@ -1,5 +1,5 @@
 import { PrismaModule } from '@core/prisma/prisma.module';
-import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
+import { CloudinaryModule } from '@/platform/integrations/external/cloudinary/cloudinary.module';
 import { Module } from '@nestjs/common';
 
 /**

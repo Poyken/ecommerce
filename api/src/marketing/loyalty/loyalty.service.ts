@@ -42,7 +42,7 @@ import {
   RefundPointsDto,
   LoyaltyPointType,
 } from './dto/loyalty.dto';
-import { EmailService } from '@/integrations/email/email.service';
+import { EmailService } from '@/platform/integrations/external/email/email.service';
 
 // Configuration - có thể move ra Settings/Config sau
 const LOYALTY_CONFIG = {

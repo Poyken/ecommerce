@@ -21,7 +21,7 @@
 import { Module } from '@nestjs/common';
 import { ImageProcessorService } from './image-processor.service';
 import { ImageProcessorController } from './image-processor.controller';
-import { CloudinaryModule } from '@/integrations/cloudinary/cloudinary.module';
+import { CloudinaryModule } from '@/platform/integrations/external/cloudinary/cloudinary.module';
 
 /**
  * =============================================================================

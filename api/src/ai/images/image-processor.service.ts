@@ -3,7 +3,7 @@ import sharp from 'sharp';
 
 import * as path from 'path';
 import * as fs from 'fs';
-import { CloudinaryService } from '@/integrations/cloudinary/cloudinary.service';
+import { CloudinaryService } from '@/platform/integrations/external/cloudinary/cloudinary.service';
 
 /**
  * =============================================================================

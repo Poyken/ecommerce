@@ -25,38 +25,19 @@
  * =====================================================================
  */
 
-import { AddressesModule } from '@/addresses/addresses.module';
-import { AdminModule } from '@/admin/admin.module';
-import { AnalyticsModule } from '@/analytics/analytics.module';
 import { AuditInterceptor } from '@/audit/audit.interceptor';
 import { AuditModule } from '@/audit/audit.module';
-import { BlogModule } from '@/blog/blog.module';
-import { CatalogModule } from '@/catalog/catalog.module'; // NEW
+import { CatalogModule } from '@/catalog/catalog.module';
+import { CmsModule } from '@/cms/cms.module';
 import { CommonModule } from '@/common/common.module';
 import { FeatureFlagsModule } from '@/common/feature-flags/feature-flags.module';
-// import { PromotionsModule } from '@/marketing/promotions/promotions.module'; -> Moved
-// import { RmaModule } from '@/rma/rma.module'; // REMOVED
-import { InventoryModule } from '@/inventory/inventory.module';
-import { MediaModule } from '@/media/media.module';
-// import { CustomerGroupsModule } from '@/marketing/customer-groups/customer-groups.module'; -> Moved
 import { NotificationsModule } from '@/notifications/notifications.module';
-
-import { PagesModule } from '@/pages/pages.module';
-import { SalesModule } from '@/sales/sales.module'; // NEW
-import { PlansModule } from '@/plans/plans.module';
-import { ReviewsModule } from '@/reviews/reviews.module';
-// import { RolesModule } from '@/identity/roles/roles.module'; -> Moved
-// import { TenantsModule } from '@/identity/tenants/tenants.module'; -> Moved
-// import { UsersModule } from '@/identity/users/users.module'; -> Moved
-import { WishlistModule } from '@/wishlist/wishlist.module';
+import { SalesModule } from '@/sales/sales.module';
 import { AppThrottlerGuard } from '@core/guards/app.throttler.guard';
 
 import { CsrfGuard } from '@core/guards/csrf.guard';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { RedisModule } from '@core/redis/redis.module';
-import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
-import { NewsletterModule } from '@integrations/newsletter/newsletter.module';
-import { SitemapModule } from '@integrations/sitemap/sitemap.module';
 import { BullModule } from '@nestjs/bullmq';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -86,19 +67,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { SentryModule } from '@core/sentry/sentry.module';
 import { DataLoaderModule } from '@core/dataloader/dataloader.module';
 import { MetricsModule } from '@core/metrics/metrics.module';
-import { SuperAdminModule } from '@/super-admin/super-admin.module';
-// import { ReturnRequestsModule } from './return-requests/return-requests.module'; -> Moved
-
-// import { ProcurementModule } from './procurement/procurement.module'; -> Moved
-// import { FulfillmentModule } from './fulfillment/fulfillment.module'; -> Moved
 import { TaxModule } from './tax/tax.module';
-// import { LoyaltyModule } from './loyalty/loyalty.module'; -> Moved
-import { WebhooksModule } from './webhooks/webhooks.module';
+import { PlatformModule } from '@/platform/platform.module';
 
 import { DevToolsModule } from './dev-tools/dev-tools.module';
-import { SubscriptionModule } from './subscription/subscription.module';
-import { ReportsModule } from './reports/reports.module';
-// InventoryAlertsModule merged into InventoryModule
 
 import { z } from 'zod';
 
@@ -112,10 +84,14 @@ const envSchema = z.object({
   // Database
   DATABASE_URL: z.string().min(1),
 
-  // Authentication
-  JWT_ACCESS_SECRET: z.string().min(1),
+  // Authentication - STRICT: Minimum 32 characters for security
+  JWT_ACCESS_SECRET: z
+    .string()
+    .min(32, 'JWT_ACCESS_SECRET must be at least 32 characters for security'),
   JWT_ACCESS_EXPIRED: z.string().default('15m'),
-  JWT_REFRESH_SECRET: z.string().min(1),
+  JWT_REFRESH_SECRET: z
+    .string()
+    .min(32, 'JWT_REFRESH_SECRET must be at least 32 characters for security'),
   JWT_REFRESH_EXPIRED: z.string().default('7d'),
 
   // Redis
@@ -123,14 +99,35 @@ const envSchema = z.object({
 
   // Frontend
   FRONTEND_URL: z.string().min(1),
+
+  // Cloudinary - Required in production
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
 });
 
 function validate(config: Record<string, unknown>) {
   const result = envSchema.safeParse(config);
   if (!result.success) {
-    throw new Error('Config validation error: ' + result.error.message);
+    throw new Error('❌ Config validation error: ' + result.error.message);
   }
-  return result.data;
+
+  const data = result.data;
+
+  // Additional production validation for Cloudinary
+  if (data.NODE_ENV === 'production') {
+    if (
+      !data.CLOUDINARY_CLOUD_NAME ||
+      !data.CLOUDINARY_API_KEY ||
+      !data.CLOUDINARY_API_SECRET
+    ) {
+      throw new Error(
+        '❌ CLOUDINARY credentials are REQUIRED in production. Please set CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET environment variables.',
+      );
+    }
+  }
+
+  return data;
 }
 
 @Module({
@@ -194,56 +191,30 @@ function validate(config: Record<string, unknown>) {
     // UsersModule, -> Moved to IdentityModule
     // TenantsModule, -> Moved to IdentityModule
 
-    // === DOMAIN MODULES ===
-    IdentityModule, // Auth, Users, Roles, Tenants
+    IdentityModule, // Auth, Users, Roles, Tenants, Addresses
     MarketingModule, // Promotions, Loyalty, CustomerGroups
-    OperationsModule, // Fulfillment, Procurement, ReturnRequests
-
-    // AddressesModule - Quản lý địa chỉ
-    AddressesModule,
-
-    // 7. RolesModule - Quản lý vai trò & quyền hạn (RBAC)
-    // RolesModule, -> Moved to IdentityModule
+    OperationsModule, // Fulfillment, Procurement, ReturnRequests, Inventory
 
     // 8. Catalog Domain
     CatalogModule,
-    PlansModule,
 
-    // 9. Sales Domain (Orders, Cart, Payment, Invoices, Shipping)
+    // 9. Sales Domain (Orders, Cart, Payment, Invoices, Shipping, Reviews, Wishlist, Tax)
     SalesModule,
 
-    PagesModule,
+    // Platform Domain (Admin, SuperAdmin, Analytics, Subscriptions, Integrations)
+    PlatformModule,
 
-    // 12. NotificationsModule - Thông báo (Email, Push)
+    // Common Infrastructure
+    RedisModule,
+    CommonModule,
+    AuditModule,
+    
+    // CMS Domain (Blog, Pages, Media)
+    CmsModule,
+    
+    // Domain Modules
     NotificationsModule,
 
-    // 13. ReviewsModule - Đánh giá sản phẩm
-    ReviewsModule,
-
-    // 14. RedisModule - Cache & Session
-    RedisModule,
-
-    // 15. CommonModule - Logger & Cache Services
-    CommonModule,
-
-    // 16. NewsletterModule - Đăng ký nhận bản tin
-    NewsletterModule,
-
-    // 17. CloudinaryModule - Upload ảnh
-    CloudinaryModule,
-
-    AnalyticsModule,
-
-    AuditModule,
-
-    SitemapModule,
-
-    AdminModule,
-    SuperAdminModule,
-
-    WishlistModule,
-
-    BlogModule,
     FeatureFlagsModule,
     WorkerModule,
     ScheduleModule.forRoot(),
@@ -255,21 +226,7 @@ function validate(config: Record<string, unknown>) {
     SentryModule, // Error Tracking & Performance Monitoring
     DataLoaderModule, // N+1 Query Prevention
     MetricsModule, // Prometheus Metrics
-    // PromotionsModule, -> Moved to MarketingModule
-    // RmaModule REMOVED
-    InventoryModule,
-    MediaModule,
-    // CustomerGroupsModule, -> Moved to MarketingModule
-    // ReturnRequestsModule, -> Moved to OperationsModule
-    // ProcurementModule, -> Moved to OperationsModule
-    // FulfillmentModule, -> Moved to OperationsModule
-    TaxModule,
-    // LoyaltyModule, -> Moved to MarketingModule
-    WebhooksModule,
     DevToolsModule,
-    SubscriptionModule,
-    ReportsModule,
-    // InventoryAlertsModule merged into InventoryModule
   ],
   controllers: [HealthController],
   providers: [
@@ -318,4 +275,3 @@ export class AppModule implements NestModule {
     consumer.apply(TenantMiddleware).forRoutes('*');
   }
 }
-

@@ -86,6 +86,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
+  @Throttle({ default: { limit: 3, ttl: 60000 } }) // Max 3 registrations per minute per IP
   @ApiCreateResponse('User', { summary: 'Đăng ký tài khoản mới' })
   async register(
     @Body() dto: RegisterDto,
@@ -101,7 +102,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
-  @Throttle({ default: { limit: 10, ttl: 60000 } })
+  @Throttle({ default: { limit: 5, ttl: 60000 } }) // SECURITY: Reduced from 10 to 5 attempts/min
   @ApiCreateResponse('Object', { summary: 'Đăng nhập (Return Token)' })
   async login(
     @Body() dto: LoginDto,
@@ -174,6 +175,7 @@ export class AuthController {
 
   @Post('forgot-password')
   @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: 3, ttl: 3600000 } }) // Max 3 attempts per hour (prevent email spam)
   @ApiCreateResponse('Boolean', { summary: 'Yêu cầu reset mật khẩu' })
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
     const data = await this.authService.forgotPassword(dto.email);

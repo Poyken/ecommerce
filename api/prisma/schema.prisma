@@ -1,6 +1,6 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearchPostgres"]
+  provider = "prisma-client-js"
+  // REMOVED: previewFeatures = ["fullTextSearchPostgres"] - Not stable for production
 }
 
 datasource db {
@@ -38,7 +38,6 @@ model User {
   referrals              User[]                  @relation("UserReferrals")
   commissionTransactions CommissionTransaction[]
   loyaltyPoints          LoyaltyPoint[]
-
 
   // Media Reference
   avatarId String?
@@ -566,6 +565,9 @@ model CartItem {
   @@unique([cartId, skuId]) // Trong 1 giỏ, một SKU chỉ xuất hiện 1 dòng
   @@index([skuId]) // Tham chiếu ngược
   @@index([tenantId])
+  // PERFORMANCE: Composite indexes for common queries
+  @@index([tenantId, cartId]) // Query: Get cart items for tenant
+  @@index([tenantId, skuId]) // Query: Check if SKU in cart
 }
 
 // =====================================================================
@@ -802,7 +804,7 @@ model LoyaltyPoint {
   id        String           @id @default(uuid())
   userId    String
   orderId   String?
-  order     Order? @relation(fields: [orderId], references: [id])
+  order     Order?           @relation(fields: [orderId], references: [id])
   amount    Int // Dương: tích điểm, Âm: tiêu điểm
   type      LoyaltyPointType @default(EARNED)
   reason    String?
@@ -964,6 +966,9 @@ model OrderItem {
   @@unique([orderId, skuId]) // Một SKU chỉ xuất hiện 1 lần trong đơn
   @@index([skuId]) // Tham chiếu
   @@index([tenantId])
+  // PERFORMANCE: Composite indexes for common queries
+  @@index([tenantId, orderId]) // Query: Get order items for tenant
+  @@index([tenantId, skuId]) // Query: Top-selling products report
 }
 
 model Review {
@@ -1411,8 +1416,8 @@ model Tenant {
   address      String? // Địa chỉ kinh doanh
 
   // Lifecycle & Status
-  plan             TenantPlan @default(BASIC) // Gói dịch vụ
-  isActive         Boolean    @default(true) // Trạng thái hoạt động
+  plan             TenantPlan      @default(BASIC) // Gói dịch vụ
+  isActive         Boolean         @default(true) // Trạng thái hoạt động
   suspendedAt      DateTime? // Thời điểm bị treo
   suspensionReason String? // Lý do treo (nợ cước, vi phạm...)
   deletedAt        DateTime? // Thời điểm xóa mềm (Soft delete). Chỉ SuperAdmin mới có quyền xóa cứng.
@@ -1427,7 +1432,7 @@ model Tenant {
   onboardingStep      Int     @default(0) // Bước hiện tại trong wizard (0-4)
 
   // Trial Period
-  trialEndsAt DateTime? // Ngày kết thúc trial (14 ngày sau đăng ký)
+  trialEndsAt    DateTime? // Ngày kết thúc trial (14 ngày sau đăng ký)
   trialStartedAt DateTime? // Ngày bắt đầu trial
 
   // ===================== PLAN LIMITS =====================
@@ -1442,11 +1447,11 @@ model Tenant {
   currentStaffCount   Int @default(0) // Số nhân viên hiện tại
 
   // ===================== ADDITIONAL INFO =====================
-  businessType     String? // Loại hình kinh doanh: fashion, electronics, food...
-  businessSize     String? // Quy mô: small, medium, large
-  monthlyRevenue   String? // Doanh thu hàng tháng (dự kiến)
-  referralCode     String? @unique // Mã giới thiệu của tenant này
-  referredByCode   String? // Mã giới thiệu của người đã mời
+  businessType   String? // Loại hình kinh doanh: fashion, electronics, food...
+  businessSize   String? // Quy mô: small, medium, large
+  monthlyRevenue String? // Doanh thu hàng tháng (dự kiến)
+  referralCode   String? @unique // Mã giới thiệu của tenant này
+  referredByCode String? // Mã giới thiệu của người đã mời
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1516,16 +1521,16 @@ model Tenant {
 }
 
 model TenantSettings {
-  id        String   @id @default(uuid())
-  tenantId  String   @unique
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id       String @id @default(uuid())
+  tenantId String @unique
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   // Loyalty Points Configuration
-  loyaltyPointRatio  Decimal @default(1000) // 1 pt per X amount
-  isLoyaltyEnabled   Boolean @default(true)
+  loyaltyPointRatio Decimal @default(1000) // 1 pt per X amount
+  isLoyaltyEnabled  Boolean @default(true)
 
   // Shipping Configuration
-  defaultShippingFee    Decimal @default(30000)
+  defaultShippingFee    Decimal  @default(30000)
   freeShippingThreshold Decimal? // Threshold for free shipping
 
   updatedAt DateTime @updatedAt
@@ -1724,12 +1729,12 @@ model SubscriptionPlan {
   features Json? @default("[]") // ["Custom Domain", "AI Chatbot", "B2B Price Lists"]
 
   // Display Settings
-  sortOrder    Int     @default(0) // Thứ tự hiển thị trên pricing page
-  badge        String? // Badge text: "Phổ biến nhất", "Tiết kiệm 20%"
-  isPopular    Boolean @default(false) // Highlight gói này
-  isActive     Boolean @default(true) // Trạng thái đang bán
-  isPublic     Boolean @default(true) // Hiển thị công khai trên bảng giá
-  trialDays    Int     @default(14) // Số ngày trial cho gói này
+  sortOrder Int     @default(0) // Thứ tự hiển thị trên pricing page
+  badge     String? // Badge text: "Phổ biến nhất", "Tiết kiệm 20%"
+  isPopular Boolean @default(false) // Highlight gói này
+  isActive  Boolean @default(true) // Trạng thái đang bán
+  isPublic  Boolean @default(true) // Hiển thị công khai trên bảng giá
+  trialDays Int     @default(14) // Số ngày trial cho gói này
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1784,5 +1789,3 @@ enum CommissionStatus {
   COMPLETED // Đã hoàn thành
   CANCELLED // Đã hủy (do user refund)
 }
-
-

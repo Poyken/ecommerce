@@ -40,7 +40,7 @@ import {
   CreatePurchaseOrderDto,
   UpdatePurchaseOrderStatusDto,
 } from './dto/procurement.dto';
-import { InventoryService } from '@/inventory/inventory.service';
+import { InventoryService } from '@/operations/inventory/inventory.service';
 import { PurchaseOrderStatus } from '@prisma/client';
 
 @Injectable()

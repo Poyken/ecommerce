@@ -1,7 +1,7 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { RedisService } from '@core/redis/redis.service';
 import { getTenant, tenantStorage } from '@core/tenant/tenant.context'; // Import getTenant, tenantStorage
-import { EmailService } from '@integrations/email/email.service';
+import { EmailService } from '@/platform/integrations/external/email/email.service';
 import { InjectQueue } from '@nestjs/bullmq';
 import {
   BadRequestException,

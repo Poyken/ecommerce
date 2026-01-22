@@ -34,7 +34,7 @@ import { JwtModule } from '@nestjs/jwt';
  */
 import { EmailProcessor } from './processors/email.processor';
 
-import { EmailModule } from '@integrations/email/email.module';
+import { EmailModule } from '@/platform/integrations/external/email/email.module';
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { NotificationsController } from './notifications.controller';
 import { NotificationsGateway } from './notifications.gateway';

@@ -2,7 +2,7 @@ import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { InventoryService } from '@/catalog/skus/inventory.service';
 import { PrismaService } from '@core/prisma/prisma.service';
-import { EmailService } from '@integrations/email/email.service';
+import { EmailService } from '@/platform/integrations/external/email/email.service';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';

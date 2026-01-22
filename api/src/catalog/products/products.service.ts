@@ -222,18 +222,21 @@ export class ProductsService {
       AND: [],
     };
 
-    // 1. Search text (Full Text Search - Tiếng Việt không dấu/có dấu)
+    // 1. Search text (Case-insensitive ILIKE - Stable Prisma feature)
+    // Note: Replaced `search:` (preview feature) with `contains + mode` for production stability
     if (search) {
       where.AND.push({
         OR: [
           {
             name: {
-              search: search.trim().split(/\s+/).join(' & '),
+              contains: search.trim(),
+              mode: 'insensitive', // PostgreSQL ILIKE
             },
           },
           {
             description: {
-              search: search.trim().split(/\s+/).join(' & '),
+              contains: search.trim(),
+              mode: 'insensitive',
             },
           },
         ],

@@ -1,7 +1,7 @@
 import { CacheService } from '@core/cache/cache.service';
 import { LoggerService } from '@core/logger/logger.service';
 import { RedisModule } from '@core/redis/redis.module';
-import { EmailService } from '@integrations/email/email.service';
+import { EmailService } from '@/platform/integrations/external/email/email.service';
 import { Global, Module } from '@nestjs/common';
 import { CacheL1Service } from './cache-l1.service';
 import { EncryptionService } from '@core/security/encryption.service';
