@@ -637,10 +637,41 @@
      */
     scrollbar-gutter: stable !important;
     background-color: var(--background);
+
+    /* WEB-DESIGN-GUIDELINES: Touch optimization */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+
+    /* WEB-DESIGN-GUIDELINES: Smooth scroll with reduced motion support */
+    scroll-behavior: smooth;
+  }
+
+  /* WEB-DESIGN-GUIDELINES: Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* WEB-DESIGN-GUIDELINES: Dark mode color-scheme for native inputs */
+  .dark {
+    color-scheme: dark;
   }
 
   body {
     @apply bg-background text-foreground tracking-tight leading-relaxed;
+
+    /* WEB-DESIGN-GUIDELINES: Prevent horizontal scroll on mobile */
+    overflow-x: hidden;
   }
 
   /* 
