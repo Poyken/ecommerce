@@ -19,19 +19,19 @@ import {
   Product,
   ProductOption,
   ProductImage,
-} from '../../domain/entities/product.entity';
+} from '../../../domain/entities/product.entity';
 import {
   IProductRepository,
   PRODUCT_REPOSITORY,
-} from '../../domain/repositories/product.repository.interface';
+} from '../../../domain/repositories/product.repository.interface';
 import {
   ICategoryRepository,
   CATEGORY_REPOSITORY,
-} from '../../domain/repositories/category.repository.interface';
+} from '../../../domain/repositories/category.repository.interface';
 import {
   IBrandRepository,
   BRAND_REPOSITORY,
-} from '../../domain/repositories/brand.repository.interface';
+} from '../../../domain/repositories/brand.repository.interface';
 import {
   EntityNotFoundError,
   BusinessRuleViolationError,

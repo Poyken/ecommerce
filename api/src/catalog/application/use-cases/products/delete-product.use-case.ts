@@ -13,7 +13,7 @@ import { Result } from '@core/application/result';
 import {
   IProductRepository,
   PRODUCT_REPOSITORY,
-} from '../../domain/repositories/product.repository.interface';
+} from '../../../domain/repositories/product.repository.interface';
 import { EntityNotFoundError } from '@core/domain/errors/domain.error';
 import { Inject, Injectable } from '@nestjs/common';
 

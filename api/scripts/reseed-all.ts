@@ -139,6 +139,7 @@ async function main() {
     brand = await prisma.brand.create({
       data: {
         name: brandName,
+        slug: brandName.toLowerCase().replace(/ /g, '-'),
         tenantId: tenant.id,
       },
     });
@@ -157,7 +158,14 @@ async function main() {
         slug: productSlug,
         description: 'Comfortable test sofa',
         tenantId: tenant.id,
-        categoryId: category.id,
+        categories: {
+          create: [
+            {
+              categoryId: category.id,
+              tenantId: tenant.id,
+            },
+          ],
+        },
         brandId: brand.id,
         skus: {
           create: {

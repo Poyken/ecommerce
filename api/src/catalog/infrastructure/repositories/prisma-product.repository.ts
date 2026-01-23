@@ -335,9 +335,7 @@ export class PrismaProductRepository implements IProductRepository {
   private async invalidateCache(productId: string): Promise<void> {
     const tenant = getTenant();
     await Promise.all([
-      this.cacheService.delete(
-        `product:${tenant?.id || 'public'}:${productId}`,
-      ),
+      this.cacheService.del(`product:${tenant?.id || 'public'}:${productId}`),
       this.cacheService.invalidatePattern(
         `products:filter:${tenant?.id || 'public'}:*`,
       ),

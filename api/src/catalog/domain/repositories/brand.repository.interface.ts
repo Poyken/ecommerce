@@ -21,31 +21,31 @@ export interface BrandQueryOptions extends PaginationParams {
 /**
  * Brand Repository Interface
  */
-export interface IBrandRepository {
+export abstract class IBrandRepository {
   /**
    * Find brand by ID
    */
-  findById(id: string): Promise<Brand | null>;
+  abstract findById(id: string): Promise<Brand | null>;
 
   /**
    * Find brand by ID or throw
    */
-  findByIdOrFail(id: string): Promise<Brand>;
+  abstract findByIdOrFail(id: string): Promise<Brand>;
 
   /**
    * Find brand by slug within tenant
    */
-  findBySlug(tenantId: string, slug: string): Promise<Brand | null>;
+  abstract findBySlug(tenantId: string, slug: string): Promise<Brand | null>;
 
   /**
    * Check if brand exists
    */
-  exists(id: string): Promise<boolean>;
+  abstract exists(id: string): Promise<boolean>;
 
   /**
    * Check if slug is unique within tenant
    */
-  isSlugUnique(
+  abstract isSlugUnique(
     tenantId: string,
     slug: string,
     excludeId?: string,
@@ -54,7 +54,7 @@ export interface IBrandRepository {
   /**
    * Find all brands with filtering
    */
-  findAll(
+  abstract findAll(
     tenantId: string,
     options?: BrandQueryOptions,
   ): Promise<PaginatedResult<Brand>>;
@@ -62,27 +62,27 @@ export interface IBrandRepository {
   /**
    * Find active brands
    */
-  findActive(tenantId: string): Promise<Brand[]>;
+  abstract findActive(tenantId: string): Promise<Brand[]>;
 
   /**
    * Count brands for tenant
    */
-  countByTenant(tenantId: string): Promise<number>;
+  abstract countByTenant(tenantId: string): Promise<number>;
 
   /**
    * Save brand
    */
-  save(brand: Brand): Promise<Brand>;
+  abstract save(brand: Brand): Promise<Brand>;
 
   /**
    * Delete brand
    */
-  delete(id: string): Promise<void>;
+  abstract delete(id: string): Promise<void>;
 
   /**
    * Batch find by IDs
    */
-  findByIds(ids: string[]): Promise<Brand[]>;
+  abstract findByIds(ids: string[]): Promise<Brand[]>;
 }
 
 /**

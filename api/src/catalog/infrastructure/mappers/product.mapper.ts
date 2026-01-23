@@ -21,7 +21,7 @@ import {
   Product as PrismaProduct,
   ProductOption as PrismaOption,
   ProductImage as PrismaImage,
-  ProductOptionValue as PrismaOptionValue,
+  OptionValue as PrismaOptionValue,
 } from '@prisma/client';
 
 // Prisma model with relations
@@ -42,7 +42,7 @@ export class ProductMapper {
       (opt) => ({
         id: opt.id,
         name: opt.name,
-        displayOrder: opt.displayOrder,
+        displayOrder: opt.displayOrder ?? 0,
         values: (opt.values ?? []).map((val) => ({
           id: val.id,
           value: val.value,

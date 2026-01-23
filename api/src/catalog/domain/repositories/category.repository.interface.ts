@@ -22,31 +22,31 @@ export interface CategoryQueryOptions extends PaginationParams {
 /**
  * Category Repository Interface
  */
-export interface ICategoryRepository {
+export abstract class ICategoryRepository {
   /**
    * Find category by ID
    */
-  findById(id: string): Promise<Category | null>;
+  abstract findById(id: string): Promise<Category | null>;
 
   /**
    * Find category by ID or throw
    */
-  findByIdOrFail(id: string): Promise<Category>;
+  abstract findByIdOrFail(id: string): Promise<Category>;
 
   /**
    * Find category by slug within tenant
    */
-  findBySlug(tenantId: string, slug: string): Promise<Category | null>;
+  abstract findBySlug(tenantId: string, slug: string): Promise<Category | null>;
 
   /**
    * Check if category exists
    */
-  exists(id: string): Promise<boolean>;
+  abstract exists(id: string): Promise<boolean>;
 
   /**
    * Check if slug is unique within tenant
    */
-  isSlugUnique(
+  abstract isSlugUnique(
     tenantId: string,
     slug: string,
     excludeId?: string,
@@ -55,7 +55,7 @@ export interface ICategoryRepository {
   /**
    * Find all categories with filtering
    */
-  findAll(
+  abstract findAll(
     tenantId: string,
     options?: CategoryQueryOptions,
   ): Promise<PaginatedResult<Category>>;
@@ -63,42 +63,42 @@ export interface ICategoryRepository {
   /**
    * Find root categories (no parent)
    */
-  findRoots(tenantId: string): Promise<Category[]>;
+  abstract findRoots(tenantId: string): Promise<Category[]>;
 
   /**
    * Find children of a category
    */
-  findChildren(parentId: string): Promise<Category[]>;
+  abstract findChildren(parentId: string): Promise<Category[]>;
 
   /**
    * Find full category tree
    */
-  findTree(tenantId: string): Promise<Category[]>;
+  abstract findTree(tenantId: string): Promise<Category[]>;
 
   /**
    * Get ancestor chain (path from root to category)
    */
-  findAncestors(categoryId: string): Promise<Category[]>;
+  abstract findAncestors(categoryId: string): Promise<Category[]>;
 
   /**
    * Count categories for tenant
    */
-  countByTenant(tenantId: string): Promise<number>;
+  abstract countByTenant(tenantId: string): Promise<number>;
 
   /**
    * Save category
    */
-  save(category: Category): Promise<Category>;
+  abstract save(category: Category): Promise<Category>;
 
   /**
    * Delete category
    */
-  delete(id: string): Promise<void>;
+  abstract delete(id: string): Promise<void>;
 
   /**
    * Batch find by IDs
    */
-  findByIds(ids: string[]): Promise<Category[]>;
+  abstract findByIds(ids: string[]): Promise<Category[]>;
 }
 
 /**

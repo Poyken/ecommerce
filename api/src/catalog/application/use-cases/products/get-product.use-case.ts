@@ -10,11 +10,11 @@
 
 import { QueryUseCase } from '@core/application/use-case.interface';
 import { Result } from '@core/application/result';
-import { Product } from '../../domain/entities/product.entity';
+import { Product } from '../../../domain/entities/product.entity';
 import {
   IProductRepository,
   PRODUCT_REPOSITORY,
-} from '../../domain/repositories/product.repository.interface';
+} from '../../../domain/repositories/product.repository.interface';
 import { EntityNotFoundError } from '@core/domain/errors/domain.error';
 import { Inject, Injectable } from '@nestjs/common';
 

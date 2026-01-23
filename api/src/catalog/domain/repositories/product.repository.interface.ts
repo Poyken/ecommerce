@@ -51,31 +51,31 @@ export interface ProductQueryOptions extends PaginationParams {
 /**
  * Product Repository Interface
  */
-export interface IProductRepository {
+export abstract class IProductRepository {
   /**
    * Find product by ID
    */
-  findById(id: string): Promise<Product | null>;
+  abstract findById(id: string): Promise<Product | null>;
 
   /**
    * Find product by ID or throw
    */
-  findByIdOrFail(id: string): Promise<Product>;
+  abstract findByIdOrFail(id: string): Promise<Product>;
 
   /**
    * Find product by slug within tenant
    */
-  findBySlug(tenantId: string, slug: string): Promise<Product | null>;
+  abstract findBySlug(tenantId: string, slug: string): Promise<Product | null>;
 
   /**
    * Check if product exists
    */
-  exists(id: string): Promise<boolean>;
+  abstract exists(id: string): Promise<boolean>;
 
   /**
    * Check if slug is unique within tenant
    */
-  isSlugUnique(
+  abstract isSlugUnique(
     tenantId: string,
     slug: string,
     excludeId?: string,
@@ -84,7 +84,7 @@ export interface IProductRepository {
   /**
    * Find all products with filtering and pagination
    */
-  findAll(
+  abstract findAll(
     tenantId: string,
     options: ProductQueryOptions,
   ): Promise<PaginatedResult<Product>>;
@@ -92,7 +92,7 @@ export interface IProductRepository {
   /**
    * Find related products (same category)
    */
-  findRelated(
+  abstract findRelated(
     productId: string,
     categoryIds: string[],
     limit?: number,
@@ -101,27 +101,27 @@ export interface IProductRepository {
   /**
    * Count products for tenant
    */
-  countByTenant(tenantId: string): Promise<number>;
+  abstract countByTenant(tenantId: string): Promise<number>;
 
   /**
    * Save product (create or update)
    */
-  save(product: Product): Promise<Product>;
+  abstract save(product: Product): Promise<Product>;
 
   /**
    * Delete product (soft delete)
    */
-  delete(id: string): Promise<void>;
+  abstract delete(id: string): Promise<void>;
 
   /**
    * Hard delete product (permanent)
    */
-  hardDelete(id: string): Promise<void>;
+  abstract hardDelete(id: string): Promise<void>;
 
   /**
    * Batch find by IDs
    */
-  findByIds(ids: string[]): Promise<Product[]>;
+  abstract findByIds(ids: string[]): Promise<Product[]>;
 }
 
 /**

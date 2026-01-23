@@ -224,12 +224,20 @@ async function main() {
   const tenantData = [
     { name: 'Luxe Home', domain: TENANT_DOMAIN, plan: 'ENTERPRISE' as const },
     { name: 'Fashion Hub', domain: 'fashion.localhost', plan: 'PRO' as const },
-    { name: 'Gadget World', domain: 'gadgets.localhost', plan: 'BASIC' as const },
-    { name: 'Organic Foods', domain: 'organic.localhost', plan: 'PRO' as const },
+    {
+      name: 'Gadget World',
+      domain: 'gadgets.localhost',
+      plan: 'BASIC' as const,
+    },
+    {
+      name: 'Organic Foods',
+      domain: 'organic.localhost',
+      plan: 'PRO' as const,
+    },
     { name: 'Pet Care Plus', domain: 'pets.localhost', plan: 'BASIC' as const },
   ];
 
-  const tenants = [];
+  const tenants: any[] = [];
   for (const data of tenantData) {
     const t = await prisma.tenant.upsert({
       where: { domain: data.domain },

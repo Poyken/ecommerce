@@ -11,13 +11,13 @@
 import { QueryUseCase } from '@core/application/use-case.interface';
 import { Result } from '@core/application/result';
 import { PaginatedResult } from '@core/application/pagination';
-import { Product } from '../../domain/entities/product.entity';
+import { Product } from '../../../domain/entities/product.entity';
 import {
   IProductRepository,
   PRODUCT_REPOSITORY,
   ProductQueryOptions,
   ProductSortOption,
-} from '../../domain/repositories/product.repository.interface';
+} from '../../../domain/repositories/product.repository.interface';
 import { Inject, Injectable } from '@nestjs/common';
 
 // =====================================================================
