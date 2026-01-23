@@ -84,9 +84,25 @@ features/<feature-name>/
 
 ### 2026-01-23
 
-- [DOCS] Created CONTEXT.md for Web project
-- [DOCS] Created feature-structure.md guidelines
-- [REFACTOR] API side Clean Architecture completed
+**Documentation:**
+
+- Created CONTEXT.md for Web project
+- Created feature-structure.md guidelines
+- Created architecture.md documentation
+
+**Skills:**
+
+- Added `web-design-guidelines` skill from Vercel
+- Comprehensive UI/UX review guidelines
+- Accessibility checklist (focus states, ARIA, etc.)
+
+**Accessibility Improvements (per web-design-guidelines):**
+
+- Added `prefers-reduced-motion` support in globals.css
+- Added `color-scheme: dark` for native inputs in dark mode
+- Added `touch-action: manipulation` for better mobile UX
+- Added `-webkit-tap-highlight-color: transparent`
+- Added `overflow-x: hidden` to prevent mobile horizontal scroll
 
 ---
 
