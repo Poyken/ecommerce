@@ -61,6 +61,14 @@ import { ProductsExportService } from './products-export.service';
 import { ProductsImportService } from './products-import.service';
 import { ProductsService } from './products.service';
 import { BulkUpdateSkusDto } from './dto/bulk-update-skus.dto';
+import { Req } from '@nestjs/common';
+import { CreateProductUseCase } from '@/catalog/application/use-cases/products/create-product.use-case';
+import { GetProductUseCase } from '@/catalog/application/use-cases/products/get-product.use-case';
+import { UpdateProductUseCase } from '@/catalog/application/use-cases/products/update-product.use-case';
+import { DeleteProductUseCase } from '@/catalog/application/use-cases/products/delete-product.use-case';
+import { ListProductsUseCase } from '@/catalog/application/use-cases/products/list-products.use-case';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { ProductMapper } from '@/catalog/infrastructure/mappers/product.mapper';
 
 @ApiTags('Products')
 @Controller('products')
@@ -69,6 +77,11 @@ export class ProductsController {
     private readonly productsService: ProductsService,
     private readonly exportService: ProductsExportService,
     private readonly importService: ProductsImportService,
+    private readonly createProductUseCase: CreateProductUseCase,
+    private readonly listProductsUseCase: ListProductsUseCase,
+    private readonly getProductUseCase: GetProductUseCase,
+    private readonly updateProductUseCase: UpdateProductUseCase,
+    private readonly deleteProductUseCase: DeleteProductUseCase,
   ) {}
 
   /**
@@ -79,8 +92,21 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('product:create')
   @ApiCreateResponse('Product', { summary: 'Tạo sản phẩm mới (Admin)' })
-  async create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  async create(@Body() createProductDto: CreateProductDto, @Req() req: any) {
+    const tenantId = req.user?.tenantId;
+    if (!tenantId) throw new BadRequestException('Tenant ID missing');
+
+    const result = await this.createProductUseCase.execute({
+      ...createProductDto,
+      tenantId,
+      categoryIds: createProductDto.categoryIds || [], // Ensure array
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return ProductMapper.toPersistence(result.value.product); // Returning legacy format for now
   }
 
   /**
@@ -93,8 +119,32 @@ export class ProductsController {
   @ApiListResponse('Product', {
     summary: 'Lấy danh sách sản phẩm (có phân trang & lọc)',
   })
-  findAll(@Query() query: FilterProductDto) {
-    return this.productsService.findAll(query);
+  async findAll(@Query() query: FilterProductDto, @Req() req: any) {
+    // For public endpoints, try to get tenant from domain/headers if not authenticated
+    // But for now assume a default or extracted from request
+    const tenantId =
+      req.user?.tenantId || req.headers['x-tenant-id'] || 'default'; // Simplification
+
+    const result = await this.listProductsUseCase.execute({
+      tenantId,
+      page: query.page,
+      limit: query.limit,
+      search: query.search,
+      categoryId: query.categoryId,
+      brandId: query.brandId,
+      minPrice: query.minPrice,
+      maxPrice: query.maxPrice,
+      sortBy: query.sortBy as any,
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return {
+      data: ProductMapper.toDomainList(result.value.products.data as any), // TODO: Fix mapper types
+      meta: result.value.products.meta,
+    };
   }
 
   /**
@@ -121,7 +171,13 @@ export class ProductsController {
   @Cached(300000)
   @ApiGetOneResponse('Product', { summary: 'Lấy chi tiết sản phẩm' })
   async findOne(@Param('id') id: string) {
-    return this.productsService.findOne(id);
+    const result = await this.getProductUseCase.execute({ productId: id });
+
+    if (result.isFailure) {
+      throw new NotFoundException(result.error.message);
+    }
+
+    return ProductMapper.toPersistence(result.value.product);
   }
 
   /**
@@ -146,7 +202,16 @@ export class ProductsController {
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
   ) {
-    return this.productsService.update(id, updateProductDto);
+    const result = await this.updateProductUseCase.execute({
+      productId: id,
+      ...updateProductDto,
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return ProductMapper.toPersistence(result.value.product);
   }
 
   /**
@@ -171,7 +236,13 @@ export class ProductsController {
   @RequirePermissions('product:delete')
   @ApiDeleteResponse('Product', { summary: 'Xóa sản phẩm (Admin)' })
   async remove(@Param('id') id: string) {
-    return this.productsService.remove(id);
+    const result = await this.deleteProductUseCase.execute({ productId: id });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return { success: true };
   }
 
   /**
@@ -251,4 +322,3 @@ export class ProductsController {
     return this.importService.generateTemplate(res);
   }
 }
-
