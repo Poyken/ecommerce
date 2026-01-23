@@ -84,4 +84,3 @@ export class WishlistController {
     return this.wishlistService.mergeWishlist(req.user.id, productIds);
   }
 }
-

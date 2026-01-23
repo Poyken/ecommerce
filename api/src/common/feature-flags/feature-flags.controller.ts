@@ -87,4 +87,3 @@ export class FeatureFlagsController {
     return { data: result };
   }
 }
-

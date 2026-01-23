@@ -225,4 +225,3 @@ export class ReviewsController {
     return this.reviewsService.replyToReview(id, reply);
   }
 }
-

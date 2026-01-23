@@ -49,4 +49,3 @@ import { TenantsModule } from '@/identity/tenants/tenants.module';
   exports: [ProductsService, SkuManagerService, InventoryService, StockGateway],
 })
 export class ProductsModule {}
-

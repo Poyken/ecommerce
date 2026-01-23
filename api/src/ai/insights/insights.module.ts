@@ -29,4 +29,3 @@ import { PrismaModule } from '@core/prisma/prisma.module';
   exports: [InsightsService],
 })
 export class InsightsModule {}
-

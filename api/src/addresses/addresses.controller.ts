@@ -84,4 +84,3 @@ export class AddressesController {
     return await this.addressesService.remove(req.user.id, id);
   }
 }
-

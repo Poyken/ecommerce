@@ -130,4 +130,3 @@ export class BulkController {
     return { data: result };
   }
 }
-

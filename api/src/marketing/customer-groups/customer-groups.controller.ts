@@ -236,4 +236,3 @@ export class CustomerGroupsController {
     return this.service.getB2BStats();
   }
 }
-

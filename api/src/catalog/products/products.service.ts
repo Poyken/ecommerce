@@ -1107,4 +1107,3 @@ export class ProductsService {
     return results;
   }
 }
-

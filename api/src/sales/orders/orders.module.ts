@@ -61,4 +61,3 @@ import { OrdersRepository } from './orders.repository';
   exports: [OrdersRepository, InvoiceService, BullModule],
 })
 export class OrdersModule {}
-

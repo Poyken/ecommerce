@@ -45,4 +45,3 @@ export class InsightsController {
     return { success: true, data };
   }
 }
-

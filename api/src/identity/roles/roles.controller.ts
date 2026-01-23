@@ -154,4 +154,3 @@ export class RolesController {
     return { data };
   }
 }
-

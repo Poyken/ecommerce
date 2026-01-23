@@ -327,4 +327,3 @@ export class TenantRegistrationController {
     };
   }
 }
-

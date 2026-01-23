@@ -220,4 +220,3 @@ export class LoyaltyController {
     return this.loyaltyService.getOrderPoints(tenant!.id, orderId);
   }
 }
-

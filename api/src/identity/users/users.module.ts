@@ -43,4 +43,3 @@ import { UsersRepository } from './users.repository';
   exports: [UsersService, UsersRepository],
 })
 export class UsersModule {}
-

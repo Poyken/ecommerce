@@ -96,4 +96,3 @@ export class TaxController {
     return this.taxService.removeOrderTaxDetail(tenant!.id, id);
   }
 }
-

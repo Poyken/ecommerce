@@ -36,4 +36,3 @@ export class SuperAdminController {
     return this.service.impersonate(id);
   }
 }
-

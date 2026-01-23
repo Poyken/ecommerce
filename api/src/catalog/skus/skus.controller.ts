@@ -126,4 +126,3 @@ export class SkusController {
     return this.skusService.remove(id);
   }
 }
-

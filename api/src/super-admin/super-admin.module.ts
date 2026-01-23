@@ -29,4 +29,3 @@ import { PlatformAnalyticsController } from '@/platform/platform-analytics.contr
   providers: [SuperAdminService],
 })
 export class SuperAdminModule {}
-

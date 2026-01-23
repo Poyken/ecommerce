@@ -58,4 +58,3 @@ export class AuditController {
     return result; // Result already has { data, meta }
   }
 }
-

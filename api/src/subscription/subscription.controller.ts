@@ -99,4 +99,3 @@ export class SubscriptionController {
     return this.subscriptionService.simulatePaymentSuccess(subscriptionId);
   }
 }
-

@@ -81,5 +81,3 @@ export class ChatController {
     return { data };
   }
 }
-
-

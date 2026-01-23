@@ -37,4 +37,3 @@ export class MediaController {
     return this.mediaService.remove(id);
   }
 }
-

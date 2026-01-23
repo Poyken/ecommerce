@@ -136,4 +136,3 @@ export class CartController {
     return this.cartService.mergeCart(req.user.id, items);
   }
 }
-

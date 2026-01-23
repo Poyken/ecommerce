@@ -405,4 +405,3 @@ export class PlatformAnalyticsController {
     };
   }
 }
-

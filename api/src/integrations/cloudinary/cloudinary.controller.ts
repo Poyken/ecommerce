@@ -37,4 +37,3 @@ export class CloudinaryController {
     return this.cloudinaryService.generateSignature(targetFolder);
   }
 }
-

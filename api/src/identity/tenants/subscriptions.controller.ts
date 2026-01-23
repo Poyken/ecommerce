@@ -167,4 +167,3 @@ export class SubscriptionsController {
     return { data: result };
   }
 }
-

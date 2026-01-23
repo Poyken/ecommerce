@@ -66,4 +66,3 @@ export class AnalyticsController {
     return this.analyticsService.getOrdersByStatus(tenant!.id);
   }
 }
-

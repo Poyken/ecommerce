@@ -142,7 +142,9 @@ export class ProductsController {
     }
 
     return {
-      data: ProductMapper.toDomainList(result.value.products.data as any), // TODO: Fix mapper types
+      data: result.value.products.data.map((p) =>
+        ProductMapper.toPersistence(p),
+      ),
       meta: result.value.products.meta,
     };
   }
