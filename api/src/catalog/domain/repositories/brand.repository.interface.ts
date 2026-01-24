@@ -14,7 +14,6 @@ import { Brand } from '../entities/brand.entity';
  * Brand query options
  */
 export interface BrandQueryOptions extends PaginationParams {
-  isActive?: boolean;
   search?: string;
 }
 
@@ -58,11 +57,6 @@ export abstract class IBrandRepository {
     tenantId: string,
     options?: BrandQueryOptions,
   ): Promise<PaginatedResult<Brand>>;
-
-  /**
-   * Find active brands
-   */
-  abstract findActive(tenantId: string): Promise<Brand[]>;
 
   /**
    * Count brands for tenant

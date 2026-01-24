@@ -30,7 +30,7 @@ export const chatService = {
       `/chat/conversations?limit=${limit}`,
       {
         skipRedirectOn401: true,
-      }
+      },
     );
   },
 
@@ -54,5 +54,23 @@ export const chatService = {
         ? { headers: { Authorization: `Bearer ${accessToken}` } }
         : {}),
     });
+  },
+
+  /**
+   * Send message to AI Chatbot
+   */
+  sendAiMessage: async (message: string, guestId?: string) => {
+    return http.post<{
+      data: { response: string; sessionId: string };
+    }>("/ai-chat/message", { message, guestId });
+  },
+
+  /**
+   * Get AI Chat history
+   */
+  getAiHistory: async () => {
+    return http.get<{
+      data: any[];
+    }>("/ai-chat/history");
   },
 };

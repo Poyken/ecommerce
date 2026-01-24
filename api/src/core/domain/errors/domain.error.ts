@@ -113,3 +113,14 @@ export class InsufficientResourceError extends DomainError {
     );
   }
 }
+
+/**
+ * Permission denied for specific resource
+ */
+export class ForbiddenError extends DomainError {
+  readonly code = 'FORBIDDEN';
+
+  constructor(message: string) {
+    super(message);
+  }
+}

@@ -10,8 +10,8 @@ import {
   DefaultValuePipe,
   ParseIntPipe,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
-import { PromotionsService } from './promotions.service';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
 import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
@@ -21,24 +21,48 @@ import {
   ApiTags,
   ApiBearerAuth,
   ApiOperation,
-  ApiResponse,
   ApiQuery,
 } from '@nestjs/swagger';
+import { getTenant } from '@core/tenant/tenant.context';
+
+// Use Cases
+import {
+  CreatePromotionUseCase,
+  ListPromotionsUseCase,
+  GetPromotionUseCase,
+  UpdatePromotionUseCase,
+  DeletePromotionUseCase,
+} from './application/use-cases';
 
 @ApiTags('Coupons')
 @Controller('coupons')
 export class CouponsController {
-  constructor(private readonly promotionsService: PromotionsService) {}
+  constructor(
+    private readonly createUseCase: CreatePromotionUseCase,
+    private readonly listUseCase: ListPromotionsUseCase,
+    private readonly getUseCase: GetPromotionUseCase,
+    private readonly updateUseCase: UpdatePromotionUseCase,
+    private readonly deleteUseCase: DeletePromotionUseCase,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('promotion:create')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new coupon (Promotion with code)' })
-  async create(@Body() createPromotionDto: CreatePromotionDto) {
-    // Force having a code if it's hitting the /coupons endpoint?
-    // Or just let the service handle it.
-    return this.promotionsService.create(createPromotionDto);
+  async create(@Body() dto: CreatePromotionDto) {
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.createUseCase.execute({
+      ...dto,
+      tenantId: tenant.id,
+      startDate: new Date(dto.startDate),
+      endDate: new Date(dto.endDate),
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value.promotion.toPersistence() };
   }
 
   @Get()
@@ -54,10 +78,23 @@ export class CouponsController {
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('search') search?: string,
   ) {
-    // Reuse findAll from promotions.
-    // Ideally we filter by having a 'code' here, but the service might not support it yet.
-    // For now, mapping /coupons to /promotions logic is the fix.
-    return this.promotionsService.findAll({ page, limit, search });
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.listUseCase.execute({
+      tenantId: tenant.id,
+      page,
+      limit,
+      search,
+      // Ideally we filter by having a 'code' here in the use case or repository
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+
+    return {
+      data: result.value.data.map((p) => p.toPersistence()),
+      meta: result.value.meta,
+    };
   }
 
   @Get(':id')
@@ -66,7 +103,13 @@ export class CouponsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get coupon details' })
   async findOne(@Param('id') id: string) {
-    return this.promotionsService.findOne(id);
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.getUseCase.execute({ id, tenantId: tenant.id });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value.promotion.toPersistence() };
   }
 
   @Patch(':id')
@@ -74,11 +117,20 @@ export class CouponsController {
   @RequirePermissions('promotion:update')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update coupon' })
-  async update(
-    @Param('id') id: string,
-    @Body() updatePromotionDto: UpdatePromotionDto,
-  ) {
-    return this.promotionsService.update(id, updatePromotionDto);
+  async update(@Param('id') id: string, @Body() dto: UpdatePromotionDto) {
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.updateUseCase.execute({
+      ...dto,
+      id,
+      tenantId: tenant.id,
+      startDate: dto.startDate ? new Date(dto.startDate) : undefined,
+      endDate: dto.endDate ? new Date(dto.endDate) : undefined,
+    } as any);
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value.promotion.toPersistence() };
   }
 
   @Delete(':id')
@@ -87,6 +139,15 @@ export class CouponsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete coupon' })
   async remove(@Param('id') id: string) {
-    return this.promotionsService.remove(id);
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.deleteUseCase.execute({
+      id,
+      tenantId: tenant.id,
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { success: true };
   }
 }

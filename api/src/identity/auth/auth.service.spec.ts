@@ -205,8 +205,8 @@ describe('AuthService', () => {
 
       // Assert
       expect(result).toBeDefined();
-      expect(result.accessToken).toBe(mockTokens.accessToken);
-      expect(result.refreshToken).toBe(mockTokens.refreshToken);
+      expect((result as any).accessToken).toBe(mockTokens.accessToken);
+      expect((result as any).refreshToken).toBe(mockTokens.refreshToken);
     });
 
     it('should throw UnauthorizedException for wrong password', async () => {
@@ -277,8 +277,9 @@ describe('AuthService', () => {
       const result = await service.register(registerDto, 'fingerprint');
 
       // Assert
-      expect(result.accessToken).toBeDefined();
-      expect(result.refreshToken).toBeDefined();
+      expect((result as any).accessToken).toBeDefined();
+      expect((result as any).refreshToken).toBeDefined();
+
       expect(prismaService.user.create).toHaveBeenCalled();
     });
 
@@ -347,8 +348,8 @@ describe('AuthService', () => {
       );
 
       // Assert
-      expect(result.accessToken).toBe(mockTokens.accessToken);
-      expect(result.refreshToken).toBe(mockTokens.refreshToken);
+      expect((result as any).accessToken).toBe(mockTokens.accessToken);
+      expect((result as any).refreshToken).toBe(mockTokens.refreshToken);
     });
 
     it('should throw UnauthorizedException for invalid refresh token', async () => {

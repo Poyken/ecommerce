@@ -2,24 +2,8 @@
  * =====================================================================
  * ORDERS CONTROLLER - API xử lý Đơn hàng
  * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PHÂN QUYỀN (Auth & RBAC):
- * - Controller này phục vụ cả USER thường và ADMIN.
- * - Route `my-orders`: User chỉ xem được đơn của chính mình (`req.user.id`).
- * - Route `findAll` (Admin): Cần quyền `order:read`, xem được tất cả đơn.
- *
- * 2. CÁC TÍNH NĂNG CHÍNH:
- * - `create`: Tạo đơn hàng (Checkout).
- * - `updateStatus`: Admin cập nhật trạng thái (Duyệt, Giao, Hủy).
- * - `cancelMyOrder`: User tự hủy đơn (nếu đơn chưa được xử lý).
- * - `getInvoice`: Xuất dữ liệu hóa đơn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Cổng tiếp nhận đơn hàng từ khách hàng, cho phép admin theo dõi trạng thái thanh toán và điều phối quá trình đóng gói/giao hàng.
-
- * =====================================================================
  */
+
 import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import * as requestWithUserInterface from '@/identity/auth/interfaces/request-with-user.interface';
 import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
@@ -40,6 +24,7 @@ import {
   Query,
   Request,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -51,10 +36,19 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderStatusDto } from './dto/update-order-status.dto';
 import { InvoiceService } from './invoice.service';
 import { OrdersExportService } from './orders-export.service';
-import { OrdersService } from './orders.service';
 import { Res } from '@nestjs/common';
 import type { Response } from 'express';
 import { OrderFilterDto } from './dto/order-filter.dto';
+import { getTenant } from '@core/tenant/tenant.context';
+
+import {
+  PlaceOrderUseCase,
+  UpdateOrderStatusUseCase,
+  ListOrdersUseCase,
+  GetOrderUseCase,
+  CancelOrderUseCase,
+} from './application/use-cases';
+import { InitiatePaymentUseCase } from '../payment/application/use-cases';
 
 @ApiTags('Orders')
 @Controller('orders')
@@ -62,7 +56,12 @@ import { OrderFilterDto } from './dto/order-filter.dto';
 @ApiBearerAuth()
 export class OrdersController {
   constructor(
-    private readonly ordersService: OrdersService,
+    private readonly placeOrderUseCase: PlaceOrderUseCase,
+    private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
+    private readonly listOrdersUseCase: ListOrdersUseCase,
+    private readonly getOrderUseCase: GetOrderUseCase,
+    private readonly cancelOrderUseCase: CancelOrderUseCase,
+    private readonly initiatePaymentUseCase: InitiatePaymentUseCase,
     private readonly invoiceService: InvoiceService,
     private readonly exportService: OrdersExportService,
   ) {}
@@ -81,93 +80,132 @@ export class OrdersController {
     @Request() req: requestWithUserInterface.RequestWithUser,
     @Body() createOrderDto: CreateOrderDto,
   ) {
-    const data = await this.ordersService.create(req.user.id, createOrderDto);
-    return { data };
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.placeOrderUseCase.execute({
+      userId: req.user.id,
+      tenantId: tenant.id,
+      items: createOrderDto.items as any,
+      shipping: {
+        recipientName: createOrderDto.recipientName,
+        phoneNumber: createOrderDto.phoneNumber,
+        address: createOrderDto.shippingAddress,
+        fee: 0,
+      },
+      paymentMethod: createOrderDto.paymentMethod || 'COD',
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    // NEW: Trigger Payment if not COD
+    let paymentUrl: string | undefined;
+    if (
+      createOrderDto.paymentMethod &&
+      createOrderDto.paymentMethod !== 'COD'
+    ) {
+      const paymentResult = await this.initiatePaymentUseCase.execute({
+        orderId: result.value.orderId,
+        method: createOrderDto.paymentMethod,
+        returnUrl: createOrderDto.returnUrl,
+        ipAddr: req.ip,
+      });
+      if (paymentResult.isSuccess) {
+        paymentUrl = paymentResult.value.paymentUrl;
+      }
+    }
+
+    return {
+      orderId: result.value.orderId,
+      totalAmount: result.value.totalAmount,
+      paymentUrl,
+    };
   }
 
-  @Get('my-orders')
-  @ApiListResponse('Order', {
-    summary: 'Lấy lịch sử đơn hàng của người dùng hiện tại',
-  })
-  async findMyOrders(
-    @Request() req: requestWithUserInterface.RequestWithUser,
-    @Query('page') page = 1,
-    @Query('limit') limit = 10,
-  ) {
-    return this.ordersService.findAllByUser(
-      req.user.id,
-      Number(page),
-      Number(limit),
-    );
-  }
-
-  @Get('my-orders/:id')
-  @ApiGetOneResponse('Order', { summary: 'Lấy chi tiết một đơn hàng cụ thể' })
-  async findOneMyOrder(
-    @Request() req: requestWithUserInterface.RequestWithUser,
-    @Param('id') id: string,
-  ) {
-    // TODO: Thêm kiểm tra quyền sở hữu bên trong service (đã có check owner)
-    const data = await this.ordersService.findOne(id, req.user.id);
-    return { data };
-  }
-
-  // Các route Admin
   @Get()
-  @UseGuards(PermissionsGuard)
-  @RequirePermissions('order:read')
-  @ApiListResponse('Order', { summary: 'Lấy tất cả đơn hàng (Admin)' })
-  @ApiQuery({ name: 'search', required: false, type: String })
-  @ApiQuery({ name: 'status', required: false, type: String })
-  @ApiQuery({ name: 'userId', required: false, type: String })
-  findAll(@Query() filters: OrderFilterDto) {
-    return this.ordersService.findAll(filters);
+  @ApiListResponse('Order', { summary: 'Danh sách đơn hàng (Filter)' })
+  @ApiQuery({ type: OrderFilterDto })
+  async findAll(
+    @Request() req: requestWithUserInterface.RequestWithUser,
+    @Query() filters: OrderFilterDto,
+  ) {
+    const result = await this.listOrdersUseCase.execute({
+      ...filters,
+      userId: req.user.id,
+    });
+
+    if (result.isFailure) return { data: [] };
+
+    return { data: result.value.orders };
   }
 
   @Get(':id')
-  @UseGuards(PermissionsGuard)
-  @RequirePermissions('order:read')
-  @ApiGetOneResponse('Order', { summary: 'Lấy chi tiết đơn hàng (Admin)' })
-  async findOne(@Param('id') id: string) {
-    const data = await this.ordersService.findOneAdmin(id);
-    return { data };
+  @ApiGetOneResponse('Order', { summary: 'Chi tiết đơn hàng' })
+  async findOne(
+    @Param('id') id: string,
+    @Request() req: requestWithUserInterface.RequestWithUser,
+  ) {
+    const result = await this.getOrderUseCase.execute({
+      id,
+      userId: req.user.id,
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return { data: result.value.order };
+  }
+
+  @Get('my-orders/:id')
+  @ApiGetOneResponse('Order', { summary: 'Chi tiết đơn hàng của tôi' })
+  async findMyOrder(
+    @Param('id') id: string,
+    @Request() req: requestWithUserInterface.RequestWithUser,
+  ) {
+    return this.findOne(id, req);
   }
 
   @Patch(':id/status')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('order:update')
-  @ApiUpdateResponse('Order', {
-    summary: 'Cập nhật trạng thái đơn hàng (Admin)',
-  })
+  @ApiUpdateResponse('Order', { summary: 'Cập nhật trạng thái đơn hàng' })
   async updateStatus(
     @Param('id') id: string,
-    @Body() dto: UpdateOrderStatusDto,
+    @Body() updateStatusDto: UpdateOrderStatusDto,
   ) {
-    const data = await this.ordersService.updateStatus(id, dto);
-    return { data };
+    const result = await this.updateOrderStatusUseCase.execute({
+      orderId: id,
+      status: updateStatusDto.status,
+      reason: updateStatusDto.note,
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return { data: result.value };
   }
 
-  @Patch('my-orders/:id/cancel')
-  @ApiUpdateResponse('Order', { summary: 'Hủy đơn hàng của chính mình (User)' })
-  async cancelMyOrder(
-    @Request() req: requestWithUserInterface.RequestWithUser,
+  @Patch(':id/cancel')
+  @ApiUpdateResponse('Order', { summary: 'Hủy đơn hàng' })
+  async cancel(
     @Param('id') id: string,
-    @Body() dto: { cancellationReason: string },
+    @Body('reason') reason: string,
+    @Request() req: any,
   ) {
-    const data = await this.ordersService.cancelMyOrder(
-      req.user.id,
-      id,
-      dto.cancellationReason,
-    );
-    return { data };
-  }
+    const result = await this.cancelOrderUseCase.execute({
+      orderId: id,
+      reason,
+      userId: req.user.id,
+    });
 
-  @Get(':id/invoice')
-  @UseGuards(PermissionsGuard)
-  @RequirePermissions('order:read')
-  @ApiGetOneResponse('Invoice', { summary: 'Lấy dữ liệu hóa đơn (Admin)' })
-  async getInvoice(@Param('id') id: string) {
-    const data = await this.invoiceService.generateInvoiceData(id);
-    return { data };
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return { success: true };
   }
 }

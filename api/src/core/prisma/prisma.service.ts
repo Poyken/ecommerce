@@ -44,46 +44,6 @@ export class PrismaService
       log: ['error', 'warn'],
       errorFormat: 'pretty',
     });
-
-    const threshold = 200;
-
-    // [P8 OPTIMIZATION] Sử dụng $extends để thêm tính năng logging và giám sát hiệu năng
-    // Trả về extended client (singleton instance) thay vì client gốc.
-    return this.$extends(tenancyExtension).$extends({
-      query: {
-        $allModels: {
-          async $allOperations({ operation, model, args, query }) {
-            const start = Date.now();
-            const result = await query(args);
-            const duration = Date.now() - start;
-
-            if (duration > threshold) {
-              const logger = new Logger('PrismaPerformance');
-              // Loại bỏ các thông tin nhạy cảm (Sanitize) trước khi log để bảo mật
-              const sanitizedArgs = JSON.parse(JSON.stringify(args));
-              const sensitiveFields = ['password', 'token', 'secret', 'key'];
-
-              const sanitize = (obj: any) => {
-                if (!obj || typeof obj !== 'object') return;
-                for (const key in obj) {
-                  if (sensitiveFields.includes(key.toLowerCase())) {
-                    obj[key] = '[REDACTED]';
-                  } else if (typeof obj[key] === 'object') {
-                    sanitize(obj[key]);
-                  }
-                }
-              };
-              sanitize(sanitizedArgs);
-
-              logger.warn(
-                `🐢 Slow Query [${model}.${operation}] - ${duration}ms\nArgs: ${JSON.stringify(sanitizedArgs)}`,
-              );
-            }
-            return result;
-          },
-        },
-      },
-    }) as any;
   }
 
   async onModuleInit() {

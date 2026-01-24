@@ -2,16 +2,6 @@
  * =====================================================================
  * CATEGORY ENTITY - Domain Layer
  * =====================================================================
- *
- * Clean Architecture: Domain Layer
- *
- * Category represents a product classification in the catalog.
- * Categories can be hierarchical (parent-child relationship).
- *
- * Business Rules:
- * 1. Category slug must be unique within tenant
- * 2. Parent category must exist if specified
- * 3. Category cannot be its own parent (no cycles)
  */
 
 import { BaseEntity, EntityProps } from '@core/domain/entities/base.entity';
@@ -25,12 +15,10 @@ export interface CategoryProps extends EntityProps {
   tenantId: string;
   name: string;
   slug: Slug;
-  description?: string;
   imageUrl?: string;
   parentId?: string;
-  displayOrder: number;
-  isActive: boolean;
-  metadata?: Record<string, unknown>;
+  productCount?: number;
+  deletedAt?: Date;
 }
 
 // =====================================================================
@@ -46,19 +34,14 @@ export class Category extends BaseEntity<CategoryProps> {
   // FACTORY METHODS
   // =====================================================================
 
-  /**
-   * Create a new Category
-   */
   static create(props: {
     id: string;
     tenantId: string;
     name: string;
     slug?: string;
-    description?: string;
     imageUrl?: string;
     parentId?: string;
-    displayOrder?: number;
-    metadata?: Record<string, unknown>;
+    productCount?: number;
   }): Category {
     const slug = props.slug
       ? Slug.create(props.slug)
@@ -69,20 +52,15 @@ export class Category extends BaseEntity<CategoryProps> {
       tenantId: props.tenantId,
       name: props.name,
       slug,
-      description: props.description,
       imageUrl: props.imageUrl,
       parentId: props.parentId,
-      displayOrder: props.displayOrder ?? 0,
-      isActive: true,
-      metadata: props.metadata,
+      productCount: props.productCount ?? 0,
       createdAt: new Date(),
       updatedAt: new Date(),
+      deletedAt: undefined,
     });
   }
 
-  /**
-   * Reconstitute from persistence
-   */
   static fromPersistence(props: CategoryProps): Category {
     return new Category(props);
   }
@@ -103,10 +81,6 @@ export class Category extends BaseEntity<CategoryProps> {
     return this.props.slug;
   }
 
-  get description(): string | undefined {
-    return this.props.description;
-  }
-
   get imageUrl(): string | undefined {
     return this.props.imageUrl;
   }
@@ -115,58 +89,35 @@ export class Category extends BaseEntity<CategoryProps> {
     return this.props.parentId;
   }
 
-  get displayOrder(): number {
-    return this.props.displayOrder;
-  }
-
-  get isActive(): boolean {
-    return this.props.isActive;
-  }
-
-  get metadata(): Record<string, unknown> | undefined {
-    return this.props.metadata;
+  get productCount(): number {
+    return this.props.productCount ?? 0;
   }
 
   get isRootCategory(): boolean {
     return !this.props.parentId;
   }
 
+  get deletedAt(): Date | undefined {
+    return this.props.deletedAt;
+  }
+
   // =====================================================================
   // BUSINESS METHODS
   // =====================================================================
 
-  /**
-   * Update category information
-   */
-  updateInfo(params: {
-    name?: string;
-    description?: string;
-    imageUrl?: string;
-    metadata?: Record<string, unknown>;
-  }): void {
+  updateInfo(params: { name?: string; imageUrl?: string }): void {
     if (params.name && params.name !== this.props.name) {
       this.props.name = params.name;
       this.props.slug = Slug.fromText(params.name);
-    }
-
-    if (params.description !== undefined) {
-      this.props.description = params.description;
     }
 
     if (params.imageUrl !== undefined) {
       this.props.imageUrl = params.imageUrl;
     }
 
-    if (params.metadata !== undefined) {
-      this.props.metadata = params.metadata;
-    }
-
     this.touch();
   }
 
-  /**
-   * Move to different parent
-   */
   moveToParent(parentId: string | undefined): void {
     if (parentId === this.id) {
       throw new Error('Category cannot be its own parent');
@@ -176,51 +127,21 @@ export class Category extends BaseEntity<CategoryProps> {
     this.touch();
   }
 
-  /**
-   * Update display order
-   */
-  setDisplayOrder(order: number): void {
-    this.props.displayOrder = order;
-    this.touch();
-  }
-
-  /**
-   * Activate category
-   */
-  activate(): void {
-    this.props.isActive = true;
-    this.touch();
-  }
-
-  /**
-   * Deactivate category
-   */
-  deactivate(): void {
-    this.props.isActive = false;
-    this.touch();
-  }
-
   // =====================================================================
   // SERIALIZATION
   // =====================================================================
 
-  /**
-   * Convert to plain object for persistence
-   */
   toPersistence(): Record<string, unknown> {
     return {
       id: this.id,
       tenantId: this.tenantId,
       name: this.name,
       slug: this.slug.value,
-      description: this.description,
       imageUrl: this.imageUrl,
       parentId: this.parentId,
-      displayOrder: this.displayOrder,
-      isActive: this.isActive,
-      metadata: this.metadata,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      deletedAt: this.deletedAt,
     };
   }
 }

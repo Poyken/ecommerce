@@ -285,4 +285,86 @@ export class InventoryService {
       include: { warehouse: true },
     });
   }
+
+  /**
+   * Tự động giảm kho (thường dùng khi có đơn hàng)
+   */
+  async reduceStockAuto(
+    userId: string,
+    tenantId: string,
+    skuId: string,
+    quantity: number,
+    reason: string,
+  ) {
+    // Tìm kho mặc định của tenant
+    const defaultWarehouse = await (this.prisma as any).warehouse.findFirst({
+      where: { tenantId, isDefault: true },
+    });
+
+    if (!defaultWarehouse) {
+      // Nếu không có kho mặc định, lấy kho đầu tiên
+      const firstWarehouse = await (this.prisma as any).warehouse.findFirst({
+        where: { tenantId },
+      });
+      if (!firstWarehouse) throw new Error('Cửa hàng chưa cấu hình kho hàng');
+
+      return this.updateStockInternal(
+        this.prisma,
+        userId,
+        {
+          warehouseId: firstWarehouse.id,
+          skuId,
+          quantity: -quantity,
+          reason,
+        },
+        tenantId,
+      );
+    }
+
+    return this.updateStockInternal(
+      this.prisma,
+      userId,
+      {
+        warehouseId: defaultWarehouse.id,
+        skuId,
+        quantity: -quantity,
+        reason,
+      },
+      tenantId,
+    );
+  }
+
+  /**
+   * Tự động hoàn kho (thường dùng khi hủy đơn hàng)
+   */
+  async restoreStockAuto(
+    userId: string,
+    tenantId: string,
+    skuId: string,
+    quantity: number,
+    reason: string,
+  ) {
+    // Logic tương tự reduceStockAuto nhưng quantity là dương
+    const defaultWarehouse =
+      (await (this.prisma as any).warehouse.findFirst({
+        where: { tenantId, isDefault: true },
+      })) ||
+      (await (this.prisma as any).warehouse.findFirst({
+        where: { tenantId },
+      }));
+
+    if (!defaultWarehouse) throw new Error('Cửa hàng chưa cấu hình kho hàng');
+
+    return this.updateStockInternal(
+      this.prisma,
+      userId,
+      {
+        warehouseId: defaultWarehouse.id,
+        skuId,
+        quantity,
+        reason,
+      },
+      tenantId,
+    );
+  }
 }

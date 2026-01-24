@@ -1,0 +1,9 @@
+src/catalog/skus/skus.controller.ts(184,56): error TS2345: Argument of type '{ id: string; tenantId: any; imageUrl: string | undefined; skuCode?: string | undefined; price?: number | undefined; stock?: number | undefined; productId?: string | undefined; optionValueIds?: string[] | undefined; status?: string | undefined; }' is not assignable to parameter of type 'UpdateSkuInput'.
+  Types of property 'status' are incompatible.
+    Type 'string | undefined' is not assignable to type 'SkuStatus | undefined'.
+      Type 'string' is not assignable to type 'SkuStatus | undefined'.
+src/identity/auth/auth.service.spec.ts(208,21): error TS2339: Property 'accessToken' does not exist on type '{ accessToken: string; refreshToken: string; } | { mfaRequired: boolean; userId: string; }'.
+  Property 'accessToken' does not exist on type '{ mfaRequired: boolean; userId: string; }'.
+src/identity/auth/auth.service.spec.ts(209,21): error TS2339: Property 'refreshToken' does not exist on type '{ accessToken: string; refreshToken: string; } | { mfaRequired: boolean; userId: string; }'.
+  Property 'refreshToken' does not exist on type '{ mfaRequired: boolean; userId: string; }'.
+src/sales/application/use-cases/cart/add-to-cart.use-case.ts(79,27): error TS2554: Expected 3 arguments, but got 1.

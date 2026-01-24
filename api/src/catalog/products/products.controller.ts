@@ -134,7 +134,7 @@ export class ProductsController {
       brandId: query.brandId,
       minPrice: query.minPrice,
       maxPrice: query.maxPrice,
-      sortBy: query.sortBy as any,
+      sortBy: query.sort as any,
     });
 
     if (result.isFailure) {

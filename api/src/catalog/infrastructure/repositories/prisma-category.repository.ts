@@ -10,24 +10,33 @@ import {
   ICategoryRepository,
   CategoryQueryOptions,
 } from '../../domain/repositories/category.repository.interface';
-import { Category, CategoryProps } from '../../domain/entities/category.entity';
+import { Category } from '../../domain/entities/category.entity';
 import {
   PaginatedResult,
   createPaginatedResult,
   calculateSkip,
 } from '@core/application/pagination';
-import { Slug } from '@core/domain/value-objects/slug.vo';
 import { getTenant } from '@core/tenant/tenant.context';
+import { CategoryMapper } from '../mappers/category.mapper';
 
 @Injectable()
 export class PrismaCategoryRepository implements ICategoryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  private get includeCount() {
+    return {
+      _count: {
+        select: { products: true },
+      },
+    };
+  }
+
   async findById(id: string): Promise<Category | null> {
     const data = await (this.prisma.category as any).findUnique({
       where: { id },
+      include: this.includeCount,
     });
-    return data ? this.toDomain(data) : null;
+    return data ? CategoryMapper.toDomain(data) : null;
   }
 
   async findByIdOrFail(id: string): Promise<Category> {
@@ -41,8 +50,9 @@ export class PrismaCategoryRepository implements ICategoryRepository {
   async findBySlug(tenantId: string, slug: string): Promise<Category | null> {
     const data = await (this.prisma.category as any).findFirst({
       where: { tenantId, slug },
+      include: this.includeCount,
     });
-    return data ? this.toDomain(data) : null;
+    return data ? CategoryMapper.toDomain(data) : null;
   }
 
   async exists(id: string): Promise<boolean> {
@@ -67,7 +77,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
     tenantId: string,
     options?: CategoryQueryOptions,
   ): Promise<PaginatedResult<Category>> {
-    const { page = 1, limit = 50, parentId, isActive, search } = options || {};
+    const { page = 1, limit = 50, parentId, search } = options || {};
     const skip = calculateSkip(page, limit);
 
     const where: any = { tenantId };
@@ -76,9 +86,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
       where.parentId = parentId;
     }
 
-    if (isActive !== undefined) {
-      where.isActive = isActive;
-    }
+    // isActive removed as it doesn't exist in schema
 
     if (search) {
       where.name = { contains: search, mode: 'insensitive' };
@@ -89,38 +97,41 @@ export class PrismaCategoryRepository implements ICategoryRepository {
         where,
         skip,
         take: limit,
-        orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
+        orderBy: [{ name: 'asc' }], // Removed displayOrder
+        include: this.includeCount,
       }),
       (this.prisma.category as any).count({ where }),
     ]);
 
-    const categories = data.map((d: any) => this.toDomain(d));
+    const categories = CategoryMapper.toDomainList(data);
     return createPaginatedResult(categories, total, page, limit);
   }
 
   async findRoots(tenantId: string): Promise<Category[]> {
     const data = await (this.prisma.category as any).findMany({
-      where: { tenantId, parentId: null, isActive: true },
-      orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
+      where: { tenantId, parentId: null }, // Removed isActive
+      orderBy: [{ name: 'asc' }],
+      include: this.includeCount,
     });
-    return data.map((d: any) => this.toDomain(d));
+    return CategoryMapper.toDomainList(data);
   }
 
   async findChildren(parentId: string): Promise<Category[]> {
     const data = await (this.prisma.category as any).findMany({
-      where: { parentId, isActive: true },
-      orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
+      where: { parentId }, // Removed isActive
+      orderBy: [{ name: 'asc' }],
+      include: this.includeCount,
     });
-    return data.map((d: any) => this.toDomain(d));
+    return CategoryMapper.toDomainList(data);
   }
 
   async findTree(tenantId: string): Promise<Category[]> {
-    // Fetch all categories and build tree in memory
     const data = await (this.prisma.category as any).findMany({
-      where: { tenantId, isActive: true },
-      orderBy: [{ displayOrder: 'asc' }, { name: 'asc' }],
+      where: { tenantId }, // Removed isActive
+      orderBy: [{ name: 'asc' }],
+      include: this.includeCount,
     });
-    return data.map((d: any) => this.toDomain(d));
+    return CategoryMapper.toDomainList(data);
   }
 
   async findAncestors(categoryId: string): Promise<Category[]> {
@@ -145,7 +156,7 @@ export class PrismaCategoryRepository implements ICategoryRepository {
   }
 
   async save(category: Category): Promise<Category> {
-    const data = category.toPersistence();
+    const data = CategoryMapper.toPersistence(category);
     const tenant = getTenant();
 
     const existing = await (this.prisma.category as any).findUnique({
@@ -159,14 +170,15 @@ export class PrismaCategoryRepository implements ICategoryRepository {
         data: {
           name: data.name,
           slug: data.slug,
-          description: data.description,
+          // description: data.description, // Removed
           imageUrl: data.imageUrl,
           parentId: data.parentId,
-          displayOrder: data.displayOrder,
-          isActive: data.isActive,
-          metadata: data.metadata as any,
+          // displayOrder: data.displayOrder, // Removed
+          // isActive: data.isActive, // Removed
+          // metadata: data.metadata as any, // Removed
           updatedAt: new Date(),
         },
+        include: this.includeCount,
       });
     } else {
       saved = await (this.prisma.category as any).create({
@@ -175,17 +187,18 @@ export class PrismaCategoryRepository implements ICategoryRepository {
           tenantId: tenant?.id || data.tenantId,
           name: data.name,
           slug: data.slug,
-          description: data.description,
+          // description: data.description,
           imageUrl: data.imageUrl,
           parentId: data.parentId,
-          displayOrder: data.displayOrder || 0,
-          isActive: true,
-          metadata: data.metadata as any,
+          // displayOrder: data.displayOrder || 0,
+          // isActive: true,
+          // metadata: data.metadata as any,
         } as any,
+        include: this.includeCount,
       });
     }
 
-    return this.toDomain(saved);
+    return CategoryMapper.toDomain(saved);
   }
 
   async delete(id: string): Promise<void> {
@@ -197,30 +210,9 @@ export class PrismaCategoryRepository implements ICategoryRepository {
 
     const data = await (this.prisma.category as any).findMany({
       where: { id: { in: ids } },
+      include: this.includeCount,
     });
 
-    return data.map((d: any) => this.toDomain(d));
-  }
-
-  // =====================================================================
-  // MAPPER
-  // =====================================================================
-
-  private toDomain(data: any): Category {
-    const props: CategoryProps = {
-      id: data.id,
-      tenantId: data.tenantId,
-      name: data.name,
-      slug: Slug.create(data.slug),
-      description: data.description,
-      imageUrl: data.imageUrl,
-      parentId: data.parentId,
-      displayOrder: data.displayOrder,
-      isActive: data.isActive,
-      metadata: data.metadata,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    };
-    return Category.fromPersistence(props);
+    return CategoryMapper.toDomainList(data);
   }
 }

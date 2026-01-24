@@ -10,7 +10,19 @@ const CreateOrderSchema = z.object({
   shippingDistrict: z.string().optional().describe('Hoan Kiem'),
   shippingWard: z.string().optional().describe('Hang Bac'),
   shippingPhone: z.string().optional().describe('0987654321'),
-  itemIds: z.array(z.string()).optional().describe('["item-uuid-1"]'),
+  // itemIds: z.array(z.string()).optional().describe('["item-uuid-1"]'),
+  items: z
+    .array(
+      z.object({
+        skuId: z.string(),
+        quantity: z.number().int().positive(),
+        price: z.number().nonnegative(),
+        productId: z.string(),
+        skuName: z.string(),
+        productName: z.string(),
+      }),
+    )
+    .min(1),
   couponCode: z.string().optional().describe('SUMMER2025'),
   returnUrl: z.string().optional().describe('http://localhost:3000/orders'),
   addressId: z.string().optional().describe('address-uuid'),

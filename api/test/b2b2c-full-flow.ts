@@ -59,6 +59,8 @@ async function main() {
   let customerToken = '';
   let orderId = '';
   let skuId = '';
+  let product: any = null;
+  let fullProduct: any = null;
 
   // =====================================================================
   // PHASE 1: SUPER ADMIN LOGIN
@@ -97,14 +99,14 @@ async function main() {
       log('❌ No products found. Please run seed first.', 'ERROR');
       process.exit(1);
     }
-    const product = products[0];
+    product = products[0];
     log(`✅ Found product: ${product.name}`, 'SUCCESS');
 
     // Get SKU
     const detailRes = await axios.get(`${API_URL}/products/${product.id}`, {
       headers: adminHeaders,
     });
-    const fullProduct = detailRes.data.data;
+    fullProduct = detailRes.data.data;
     if (fullProduct.skus && fullProduct.skus.length > 0) {
       skuId = fullProduct.skus[0].id;
       log(
@@ -182,6 +184,7 @@ async function main() {
     log(`✅ Cart total: ${cartRes.data.data?.totalAmount || 'N/A'}`, 'SUCCESS');
 
     // Create order with COD
+    // Note: The API PlaceOrderInput requires detailed item snapshots
     const orderRes = await axios.post(
       `${API_URL}/orders`,
       {
@@ -192,13 +195,24 @@ async function main() {
         shippingDistrict: 'District 1',
         shippingWard: 'Ben Nghe',
         paymentMethod: 'COD',
+        items: [
+          {
+            skuId,
+            quantity: 2,
+            productId: product.id,
+            skuName: fullProduct.skus[0].skuCode,
+            productName: fullProduct.name,
+            price: Number(fullProduct.skus[0].price),
+          },
+        ],
       },
       { headers: customerHeaders },
     );
-    orderId = orderRes.data.data.id;
-    const orderNumber = orderRes.data.data.orderNumber;
-    const totalAmount = orderRes.data.data.totalAmount;
-    log(`✅ Order created: ${orderNumber}`, 'SUCCESS');
+    // TransformInterceptor wraps response in { success: true, data: ... }
+    const orderData = orderRes.data.data;
+    orderId = orderData.orderId || orderData.id;
+    const totalAmount = orderData.totalAmount;
+    log(`✅ Order created successfully`, 'SUCCESS');
     log(`   - Order ID: ${orderId}`, 'INFO');
     log(`   - Total: ${totalAmount} VND`, 'INFO');
     log(`   - Status: PENDING`, 'INFO');

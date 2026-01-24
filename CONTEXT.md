@@ -71,6 +71,7 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
 - **ADR-006**: Frontend dùng **Next.js Server Actions** + `next-safe-action` wrapper cho bảo mật.
 - **ADR-007**: **Transactional Outbox Pattern**: Đảm bảo Zero Data Loss khi đẩy jobs vào BullMQ.
 - **ADR-008**: **Domain Modules Consolidation**: Gom nhóm tính năng thành `CatalogModule`, `SalesModule`, `AiModule`.
+- **ADR-009**: **Abstract Classes for Repository Interfaces**: Sử dụng `abstract class` thay vì `interface` cho Repository Ports để tương thích tốt nhất với NestJS DI và tránh lỗi `emitDecoratorMetadata` khi enable `isolatedModules` (Fix TS1272).
 
 ---
 
@@ -134,3 +135,67 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
 - [2026-01-22] Module Consolidation & Structure Refactoring:
   - **API**: Created Domain Modules (`Identity`, `Marketing`, `Operations`) and consolidated ~10 sub-modules. Updated `AppModule` and fixed all broken imports. Build passes.
   - **Web**: Created `(dashboard)` route group. Moved `admin` and `super-admin` routes into it for cleaner root structure. Build passes.
+- [2026-01-24] API Clean Architecture Refactoring (Catalog Module):
+  - **Build Fixes**: Resolved TS1272 issue by converting Repository Interfaces to Abstract Classes (cleaner NestJS DI). Fixed types in seeding scripts.
+  - **Use Case Integration**: Refactored `ProductsController` to use `CreateProduct`, `ListProducts`, `GetProduct`, `UpdateProduct`, `DeleteProduct` Use Cases instead of direct Service/Repository calls.
+  - **Unit Testing**: Added comprehensive unit tests for `CreateProductUseCase` with mocked repositories.
+  - **Web UI**: Improved `Button` component with better touch targets (44px/48px) and micro-interactions (active scale).
+- [2026-01-24] API Clean Architecture Refactoring (Catalog - Categories/Brands):
+  - **Categories**: Refactored to use specialist Use Cases (`Create`, `List`, `Get`, `Update`, `Delete`). Implemented `CategoryMapper` and updated `PrismaCategoryRepository` to support product count aggregation and derived properties.
+  - **Brands**: Refactored to use specialist Use Cases and Domain Entity. Synced `Brand` entity and repository with Prisma schema (removed non-existent fields like `isActive`, `description` from entity code to prevent build errors).
+  - **Build Integrity**: Fixed TS1016 (parameter order in controllers) and various type mismatches in Use Case results. Build is now stable and passing.
+- [2026-01-24] API Clean Architecture Refactoring (Sales - Orders/Cart):
+  - **Orders**: Refactored to use specialist Use Cases (`Create`, `List`, `GetById`, `UpdateStatus`, `Cancel`). Implemented `Order` aggregate with historical snapshots and state machine transitions.
+  - **Cart**: Refactored to use specialist Use Cases (`Get`, `Add`, `Update`, `Remove`, `Merge`, `Clear`). Integrated stock-aware logic directly into `Cart` domain entity.
+  - **SKU Enhancement**: Added `productName` and `variantLabel` snapshots to `Sku` entity to support the "Historical Snapshots" rule in sales transactions. Populate these fields automatically during SKU creation/update.
+  - **Stability**: Fixed various type-casts in `PrismaOrderRepository` and `AuthService` tests. Standardized error handling across Sales controllers using domain-specific exceptions.
+- [2026-01-24] API Clean Architecture Refactoring (Inventory):
+  - **Inventory**: Refactored to use specialist Use Cases (`CreateWarehouse`, `UpdateStock`, `TransferStock`, etc.). Implemented `Warehouse` and `InventoryItem` domain entities.
+  - **Data Integrity**: Enforced `Serializable` transactions for stock updates to prevent race conditions.
+- [2026-01-24] API Clean Architecture Refactoring (Shipping):
+  - **Shipment**: Implemented `Shipment` aggregate and `UpdateShipmentStatus` Use Case.
+  - **Logistics Integration**: Refactored `ShippingService` webhook handling to use the new domain-driven approach, improving maintainability of third-party integrations (GHN).
+- [2026-01-24] API Clean Architecture Refactoring (Marketing - Promotions):
+  - **Promotions**: Implemented `Promotion` aggregate with complex Rule-Action evaluation engine inside the domain model.
+  - **Use Cases**: Created `ValidatePromotion`, `ApplyPromotion`, and full CRUD Use Cases. Standardized discount calculation logic.
+- [2026-01-24] API Clean Architecture Refactoring (Marketing - Loyalty):
+  - **Loyalty**: Implemented `LoyaltyPoint` entity and `LoyaltyConfig` constants.
+  - **Rewards logic**: Refactored `EarnPoints`, `RedeemPoints`, and `RefundPoints` into specialized Use Cases with idempotency checks.
+- [2026-01-24] API Clean Architecture Refactoring (Identity):
+  - **Auth**: Refactored `Register`, `Login`, `RefreshToken`, `Logout` logic into UseCases.
+  - **Tenants**: Implemented `RegisterTenant` and `GetTenant` UseCases with Domain Entities.
+  - **Security**: Centralized Password Hashing and Token Management. Updated `AuthModule` and `TenantsModule`.
+- [2026-01-24] E2E Testing Suite & Multi-Tenant Pass:
+  - **Tooling**: Built `run-all-e2e.ts` master runner.
+  - **Logic Fixes**: Corrected B2B2C, B2C, and SaaS onboarding payloads to match current API Domain model (Transaction snapshots, UUIDs, Multi-tenancy isolation).
+  - **Status**: Code verified (TSC pass). Blocked by local Docker Desktop service being stopped.
+- [2026-01-24] AI Chatbot Enhancement & Gemini Integration:
+  - **Enhanced AI Persona**: Refined system prompt to transform AI into a "Luxury Butler" with decor expertise.
+  - **RAG Refinement**: Improved product data context formatting for cleaner AI responses.
+  - **Frontend Refactoring**: Centralized AI API calls into `chatService` and refactored `useAiChat` hook for better maintainability.
+  - **Real-time Product Advice**: AI now actively prompts for space/style requirements before recommending premium furniture.
+- [2026-01-24] Inventory Management Synchronization & Stock Reservation:
+  - **Stock Lifecycle**: Implemented 3-step stock handling (Reservation on Placed -> Final Deduction on Paid -> Release on Cancel).
+  - **Use Cases**: Added `ReserveStock`, `FinalizeStockDeduction`, `ReleaseStockReservation`, and `CheckStockAvailability`.
+  - **Integration**: `PlaceOrderUseCase` now validates stock before creating orders to prevent overselling.
+  - **Event-Driven**: Updated `OrderEventsHandler` in inventory module to respond to `order.placed`, `payment.successful`, and `order.cancelled`.
+- [2026-01-24] Web Frontend Integration for Payment & Orders:
+  - **Checkout**: Enhanced `CheckoutClient` with real-time payment notification using WebSockets.
+  - **Real-time**: Implemented `useSocket` and `usePaymentNotifier` hooks to handle auto-redirects after payment.
+  - **Premium UI**: Refined `OrderSuccess` and `OrderFailed` pages with cinematic animations and cinematic design.
+  - **Translations**: Added multi-language support (EN/VI) for order confirmations and payment statuses.
+- [2026-01-24] Payment Module Clean Architecture Refactoring:
+  - **Payment**: Implemented `InitiatePayment`, `ConfirmPayment`, `HandleVNPayIPN`, and `HandleMomoIPN` Use Cases.
+  - **Domain**: Defined `Payment` Aggregate and `PaymentStatus` enum. Created `PaymentSuccessfulEvent`.
+  - **Integration**: Linked `OrdersController` to automatically initiate payment via gateway (VNPay/Momo).
+  - **Analytics**: Auto-calculate commissions on `payment.successful` event.
+  - **Infrastructure**: Added `PrismaPaymentRepository` for cross-module payment tracking.
+- [2026-01-24] API Clean Architecture & Order Lifecycle Completion:
+  - **Orders**: Implement 5 core Use Cases (`PlaceOrder`, `UpdateOrderStatus`, `GetOrder`, `ListOrders`, `CancelOrder`).
+  - **Domain**: Created `Order` Aggregate and Event-Driven events (`OrderPlaced`, `OrderCancelled`, `OrderStatusUpdated`).
+  - **Inventory**: Atomic stock sync handler for order events.
+  - **Notifications**: Real-time user alerts for order status changes.
+  - **Cart**: Automated cart clear upon order placement.
+  - **Frontend**: Full integration of Checkout with snapshotted items.
+  - **Infrastructure**: New `PrismaOrderRepository` with transaction support.
+  - **Verification**: All modules build successfully (API & Web).

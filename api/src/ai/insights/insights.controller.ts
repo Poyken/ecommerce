@@ -26,8 +26,11 @@ import { InsightsService } from './insights.service';
 // import { Roles } from '@/identity/auth/roles.decorator';
 // import { Role } from '@prisma/client';
 
+import { RequireTenant } from '@core/tenant/tenant.decorator';
+
 @ApiTags('Insights')
 @Controller('insights')
+@RequireTenant()
 export class InsightsController {
   constructor(private readonly insightsService: InsightsService) {}
 

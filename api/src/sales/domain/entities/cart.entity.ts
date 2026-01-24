@@ -2,16 +2,6 @@
  * =====================================================================
  * CART ENTITY - Domain Layer (Aggregate Root)
  * =====================================================================
- *
- * Clean Architecture: Domain Layer
- *
- * Cart represents a customer's shopping session.
- * It contains items with references to SKUs and handles quantity management.
- *
- * Business Rules:
- * 1. Cannot add item with quantity <= 0
- * 2. Cart item quantity cannot exceed available stock
- * 3. Abandoned carts should be cleaned up after X days
  */
 
 import {
@@ -56,7 +46,7 @@ export class CartClearedEvent extends BaseDomainEvent {
 // =====================================================================
 
 export interface CartItem {
-  readonly id: string;
+  id: string; // Changed from readonly to allow ID assignment if needed
   readonly skuId: string;
   readonly productId: string;
   readonly productName: string;
@@ -145,10 +135,6 @@ export class Cart extends AggregateRoot<CartProps> {
     return this.props.items.reduce((sum, item) => sum + item.quantity, 0);
   }
 
-  get uniqueItemCount(): number {
-    return this.props.items.length;
-  }
-
   get subtotal(): Money {
     return this.props.items.reduce(
       (sum, item) => sum.add(item.unitPrice.multiply(item.quantity)),
@@ -164,10 +150,6 @@ export class Cart extends AggregateRoot<CartProps> {
     return this.props.items.length === 0;
   }
 
-  get isGuest(): boolean {
-    return !this.props.customerId;
-  }
-
   get lastActivityAt(): Date {
     return this.props.lastActivityAt;
   }
@@ -177,9 +159,14 @@ export class Cart extends AggregateRoot<CartProps> {
   // =====================================================================
 
   /**
-   * Add item to cart
+   * Add item to cart with stock validation.
+   * Returns true if quantity was capped to available stock.
    */
-  addItem(item: Omit<CartItem, 'quantity'>, quantity: number): void {
+  addItem(
+    item: Omit<CartItem, 'quantity'>,
+    quantity: number,
+    stockAvailable: number,
+  ): boolean {
     if (quantity <= 0) {
       throw new BusinessRuleViolationError(
         'Quantity must be positive',
@@ -191,27 +178,57 @@ export class Cart extends AggregateRoot<CartProps> {
       (i) => i.skuId === item.skuId,
     );
 
+    let capped = false;
+    let finalQuantity = quantity;
+
     if (existingIndex >= 0) {
-      // Update existing item
-      this.props.items[existingIndex].quantity += quantity;
+      const currentQty = this.props.items[existingIndex].quantity;
+      finalQuantity = currentQty + quantity;
+
+      if (finalQuantity > stockAvailable) {
+        finalQuantity = stockAvailable;
+        capped = true;
+      }
+
+      this.props.items[existingIndex].quantity = finalQuantity;
     } else {
-      // Add new item
-      this.props.items.push({ ...item, quantity });
+      if (finalQuantity > stockAvailable) {
+        finalQuantity = stockAvailable;
+        capped = true;
+      }
+
+      this.props.items.push({
+        ...item,
+        quantity: finalQuantity,
+      });
     }
 
     this.updateActivity();
     this.addDomainEvent(
-      new ItemAddedToCartEvent(this.id, item.skuId, quantity),
+      new ItemAddedToCartEvent(this.id, item.skuId, finalQuantity),
     );
+
+    return capped;
   }
 
   /**
    * Update item quantity
    */
-  updateItemQuantity(skuId: string, quantity: number): void {
+  updateItemQuantity(
+    skuId: string,
+    quantity: number,
+    stockAvailable: number,
+  ): void {
     if (quantity <= 0) {
       this.removeItem(skuId);
       return;
+    }
+
+    if (quantity > stockAvailable) {
+      throw new BusinessRuleViolationError(
+        'Not enough stock',
+        `Attempted to set ${quantity}, but only ${stockAvailable} available`,
+      );
     }
 
     const item = this.props.items.find((i) => i.skuId === skuId);
@@ -246,35 +263,14 @@ export class Cart extends AggregateRoot<CartProps> {
   }
 
   /**
-   * Apply coupon code
-   */
-  applyCoupon(code: string): void {
-    this.props.couponCode = code;
-    this.updateActivity();
-  }
-
-  /**
-   * Remove coupon
-   */
-  removeCoupon(): void {
-    this.props.couponCode = undefined;
-    this.updateActivity();
-  }
-
-  /**
-   * Assign cart to customer (after login)
-   */
-  assignToCustomer(customerId: string): void {
-    this.props.customerId = customerId;
-    this.props.sessionId = undefined;
-    this.updateActivity();
-  }
-
-  /**
    * Merge another cart into this one
+   * Note: Merging should ideally handle stock checks too, but usually
+   * done in Use Case with full context.
    */
   mergeFrom(otherCart: Cart): void {
     for (const item of otherCart.items) {
+      // In merge, we don't necessarily have current stock here,
+      // so we use a large value or handle it in Use Case.
       this.addItem(
         {
           id: item.id,
@@ -287,36 +283,21 @@ export class Cart extends AggregateRoot<CartProps> {
           unitPrice: item.unitPrice,
         },
         item.quantity,
+        Infinity, // Capping handled by caller if needed
       );
     }
   }
 
-  /**
-   * Get item by SKU ID
-   */
-  getItem(skuId: string): CartItem | undefined {
-    return this.props.items.find((i) => i.skuId === skuId);
+  assignToCustomer(customerId: string): void {
+    this.props.customerId = customerId;
+    this.props.sessionId = undefined;
+    this.updateActivity();
   }
-
-  /**
-   * Check if cart contains a specific SKU
-   */
-  containsSku(skuId: string): boolean {
-    return this.props.items.some((i) => i.skuId === skuId);
-  }
-
-  // =====================================================================
-  // PRIVATE METHODS
-  // =====================================================================
 
   private updateActivity(): void {
     this.props.lastActivityAt = new Date();
     this.touch();
   }
-
-  // =====================================================================
-  // SERIALIZATION
-  // =====================================================================
 
   toPersistence(): Record<string, unknown> {
     return {

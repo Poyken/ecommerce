@@ -58,6 +58,7 @@ import {
   PaymentMethodSelector,
   PaymentMethodType,
 } from "@/features/checkout/components/payment-method-selector";
+import { usePaymentNotifier } from "@/lib/hooks/use-payment-notifier";
 import { Link, useRouter } from "@/i18n/routing";
 import { m } from "@/lib/animations";
 import { formatCurrency } from "@/lib/utils";
@@ -130,6 +131,9 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
     createdAt: string;
     qrUrl?: string;
   } | null>(null);
+
+  // Hook for real-time payment notification
+  usePaymentNotifier(tempOrderData?.id);
 
   // Derived State
   const itemIdsParam = searchParams.get("items");
@@ -336,7 +340,14 @@ export function CheckoutClient({ cart, addresses = [] }: CheckoutClientProps) {
         shippingAddress: addressString,
         addressId: selectedAddress.id,
         paymentMethod: paymentMethod,
-        itemIds: items.map((i) => i.id),
+        items: items.map((i) => ({
+          skuId: i.skuId,
+          quantity: i.quantity,
+          price: Number(i.sku?.salePrice || i.sku?.price || 0),
+          productId: (i.sku as any)?.productId || "",
+          skuName: (i.sku as any)?.name || "",
+          productName: (i.sku as any)?.product?.name || "",
+        })),
         couponCode: appliedCoupon?.code,
       });
 

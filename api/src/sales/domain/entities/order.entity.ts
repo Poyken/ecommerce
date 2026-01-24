@@ -364,6 +364,34 @@ export class Order extends AggregateRoot<OrderProps> {
     return this.props.shipping;
   }
 
+  get billingAddress(): ShippingAddressSnapshot | undefined {
+    return this.props.billingAddress;
+  }
+
+  get couponCode(): string | undefined {
+    return this.props.couponCode;
+  }
+
+  get customerNote(): string | undefined {
+    return this.props.customerNote;
+  }
+
+  get internalNote(): string | undefined {
+    return this.props.internalNote;
+  }
+
+  get confirmedAt(): Date | undefined {
+    return this.props.confirmedAt;
+  }
+
+  get cancelledAt(): Date | undefined {
+    return this.props.cancelledAt;
+  }
+
+  get cancelReason(): string | undefined {
+    return this.props.cancelReason;
+  }
+
   get isPending(): boolean {
     return this.props.status === OrderStatus.PENDING;
   }
@@ -520,6 +548,18 @@ export class Order extends AggregateRoot<OrderProps> {
       couponCode: this.props.couponCode,
       customerNote: this.props.customerNote,
       internalNote: this.props.internalNote,
+      items: this.items.map((item) => ({
+        ...item,
+        priceAtPurchase: item.priceAtPurchase.amount,
+        subtotal: item.subtotal.amount,
+      })),
+      shippingAddress: this.shippingAddress,
+      billingAddress: this.billingAddress,
+      payment: this.payment,
+      shipping: {
+        ...this.shipping,
+        shippingCost: this.shipping.shippingCost.amount,
+      },
       confirmedAt: this.props.confirmedAt,
       cancelledAt: this.props.cancelledAt,
       cancelReason: this.props.cancelReason,

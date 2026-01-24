@@ -34,14 +34,6 @@ import { catalogProviders } from './catalog.providers';
 
 @Module({
   imports: [CategoriesModule, BrandsModule, ProductsModule, SkusModule],
-  providers: [...catalogProviders],
-  exports: [
-    CategoriesModule,
-    BrandsModule,
-    ProductsModule,
-    SkusModule,
-    // Export use cases for other modules to use
-    ...catalogProviders,
-  ],
+  exports: [CategoriesModule, BrandsModule, ProductsModule, SkusModule],
 })
 export class CatalogModule {}

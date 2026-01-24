@@ -2,17 +2,6 @@
  * =====================================================================
  * SKU ENTITY - Domain Layer (Entity within Product Aggregate)
  * =====================================================================
- *
- * Clean Architecture: Domain Layer
- *
- * SKU (Stock Keeping Unit) represents a specific variant of a product.
- * For example: "iPhone 15 - Red - 256GB" is one SKU.
- *
- * Business Rules:
- * 1. SKU code must be unique within tenant
- * 2. Price must be positive
- * 3. Stock cannot be negative
- * 4. SKU belongs to exactly one Product
  */
 
 import { BaseEntity, EntityProps } from '@core/domain/entities/base.entity';
@@ -26,7 +15,6 @@ import { InsufficientResourceError } from '@core/domain/errors/domain.error';
 export enum SkuStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
-  OUT_OF_STOCK = 'OUT_OF_STOCK',
 }
 
 // =====================================================================
@@ -35,9 +23,8 @@ export enum SkuStatus {
 
 export interface SkuOptionValue {
   readonly optionId: string;
-  readonly optionName: string;
   readonly valueId: string;
-  readonly value: string;
+  readonly value: string; // The text value (e.g., "Red")
 }
 
 export interface SkuImage {
@@ -74,8 +61,9 @@ export interface SkuProps extends EntityProps {
   imageUrl?: string;
   images: SkuImage[];
 
-  // Weight for shipping calculation
-  weight?: number;
+  productName?: string;
+  variantLabel?: string;
+  metadata?: Record<string, unknown>;
 }
 
 // =====================================================================
@@ -105,7 +93,9 @@ export class Sku extends BaseEntity<SkuProps> {
     optionValues: SkuOptionValue[];
     imageUrl?: string;
     images?: SkuImage[];
-    weight?: number;
+    productName?: string;
+    variantLabel?: string;
+    metadata?: Record<string, unknown>;
   }): Sku {
     return new Sku({
       id: props.id,
@@ -116,14 +106,13 @@ export class Sku extends BaseEntity<SkuProps> {
       salePrice: props.salePrice,
       stock: props.stock ?? 0,
       reservedStock: 0,
-      status:
-        props.stock && props.stock > 0
-          ? SkuStatus.ACTIVE
-          : SkuStatus.OUT_OF_STOCK,
+      status: SkuStatus.INACTIVE, // Default to inactive until activated
       optionValues: props.optionValues,
       imageUrl: props.imageUrl,
       images: props.images ?? [],
-      weight: props.weight,
+      productName: props.productName,
+      variantLabel: props.variantLabel,
+      metadata: props.metadata,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -186,6 +175,10 @@ export class Sku extends BaseEntity<SkuProps> {
     return this.props.status;
   }
 
+  get isActive(): boolean {
+    return this.props.status === SkuStatus.ACTIVE;
+  }
+
   get optionValues(): readonly SkuOptionValue[] {
     return Object.freeze([...this.props.optionValues]);
   }
@@ -198,12 +191,16 @@ export class Sku extends BaseEntity<SkuProps> {
     return Object.freeze([...this.props.images]);
   }
 
-  get weight(): number | undefined {
-    return this.props.weight;
+  get productName(): string | undefined {
+    return this.props.productName;
   }
 
-  get isActive(): boolean {
-    return this.props.status === SkuStatus.ACTIVE;
+  get variantLabel(): string | undefined {
+    return this.props.variantLabel;
+  }
+
+  get metadata(): Record<string, unknown> | undefined {
+    return this.props.metadata;
   }
 
   get isInStock(): boolean {
@@ -215,11 +212,29 @@ export class Sku extends BaseEntity<SkuProps> {
   // =====================================================================
 
   /**
-   * Update price
+   * Update SKU info
    */
-  updatePrice(price: Money, salePrice?: Money): void {
-    this.props.price = price;
-    this.props.salePrice = salePrice;
+  updateInfo(params: {
+    skuCode?: string;
+    price?: Money;
+    salePrice?: Money;
+    imageUrl?: string;
+    metadata?: Record<string, unknown>;
+    status?: SkuStatus;
+    optionValues?: SkuOptionValue[];
+    productName?: string;
+    variantLabel?: string;
+  }): void {
+    if (params.skuCode) this.props.skuCode = params.skuCode;
+    if (params.price) this.props.price = params.price;
+    if (params.salePrice !== undefined) this.props.salePrice = params.salePrice;
+    if (params.imageUrl !== undefined) this.props.imageUrl = params.imageUrl;
+    if (params.metadata !== undefined) this.props.metadata = params.metadata;
+    if (params.status) this.props.status = params.status;
+    if (params.optionValues) this.props.optionValues = params.optionValues;
+    if (params.productName) this.props.productName = params.productName;
+    if (params.variantLabel) this.props.variantLabel = params.variantLabel;
+
     this.touch();
   }
 
@@ -230,47 +245,8 @@ export class Sku extends BaseEntity<SkuProps> {
     if (newStock < 0) {
       throw new InsufficientResourceError('stock', 0, newStock);
     }
-
     this.props.stock = newStock;
-
-    // Update status based on stock
-    if (newStock === 0 && this.props.status === SkuStatus.ACTIVE) {
-      this.props.status = SkuStatus.OUT_OF_STOCK;
-    } else if (newStock > 0 && this.props.status === SkuStatus.OUT_OF_STOCK) {
-      this.props.status = SkuStatus.ACTIVE;
-    }
-
     this.touch();
-  }
-
-  /**
-   * Add stock (relative)
-   */
-  addStock(quantity: number): void {
-    if (quantity < 0) {
-      throw new Error('Use removeStock for negative quantities');
-    }
-
-    this.updateStock(this.props.stock + quantity);
-  }
-
-  /**
-   * Remove stock (relative)
-   */
-  removeStock(quantity: number): void {
-    if (quantity < 0) {
-      throw new Error('Quantity must be positive');
-    }
-
-    if (this.availableStock < quantity) {
-      throw new InsufficientResourceError(
-        'stock',
-        quantity,
-        this.availableStock,
-      );
-    }
-
-    this.updateStock(this.props.stock - quantity);
   }
 
   /**
@@ -290,7 +266,7 @@ export class Sku extends BaseEntity<SkuProps> {
   }
 
   /**
-   * Release reserved stock (order cancelled)
+   * Release reserved stock
    */
   releaseReservedStock(quantity: number): void {
     this.props.reservedStock = Math.max(0, this.props.reservedStock - quantity);
@@ -298,39 +274,27 @@ export class Sku extends BaseEntity<SkuProps> {
   }
 
   /**
-   * Confirm reserved stock (order confirmed -> reduce actual stock)
+   * Confirm reserved stock
    */
   confirmReservedStock(quantity: number): void {
     const toConfirm = Math.min(quantity, this.props.reservedStock);
     this.props.reservedStock -= toConfirm;
-    this.removeStock(toConfirm);
+    this.updateStock(this.props.stock - toConfirm);
   }
 
   /**
    * Activate SKU
    */
   activate(): void {
-    if (this.props.stock > 0) {
-      this.props.status = SkuStatus.ACTIVE;
-    } else {
-      this.props.status = SkuStatus.OUT_OF_STOCK;
-    }
+    this.props.status = SkuStatus.ACTIVE;
     this.touch();
   }
 
   /**
-   * Deactivate SKU (hide from storefront)
+   * Deactivate SKU
    */
   deactivate(): void {
     this.props.status = SkuStatus.INACTIVE;
-    this.touch();
-  }
-
-  /**
-   * Update image
-   */
-  updateImage(imageUrl: string): void {
-    this.props.imageUrl = imageUrl;
     this.touch();
   }
 
@@ -340,33 +304,6 @@ export class Sku extends BaseEntity<SkuProps> {
   setImages(images: SkuImage[]): void {
     this.props.images = [...images];
     this.touch();
-  }
-
-  /**
-   * Update weight
-   */
-  updateWeight(weight: number): void {
-    this.props.weight = weight;
-    this.touch();
-  }
-
-  // =====================================================================
-  // HELPER METHODS
-  // =====================================================================
-
-  /**
-   * Get variant label (e.g., "Red / XL")
-   */
-  getVariantLabel(): string {
-    return this.props.optionValues.map((ov) => ov.value).join(' / ');
-  }
-
-  /**
-   * Check if this SKU matches given option values
-   */
-  matchesOptions(optionValueIds: string[]): boolean {
-    const myValueIds = new Set(this.props.optionValues.map((ov) => ov.valueId));
-    return optionValueIds.every((id) => myValueIds.has(id));
   }
 
   // =====================================================================
@@ -388,7 +325,9 @@ export class Sku extends BaseEntity<SkuProps> {
       reservedStock: this.reservedStock,
       status: this.status,
       imageUrl: this.imageUrl,
-      weight: this.weight,
+      productName: this.productName,
+      variantLabel: this.variantLabel,
+      metadata: this.metadata,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     };

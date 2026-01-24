@@ -2,29 +2,6 @@
  * =====================================================================
  * CART CONTROLLER - Điều khiển Giỏ hàng
  * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Controller này xử lý tất cả các request liên quan đến Giỏ hàng.
- * Nó nhận request từ client, xác thực user, rồi gọi CartService để
- * thực hiện business logic.
- *
- * FLOW XỬ LÝ:
- * Client → Controller → Service → Database
- *
- * CÁC CHỨC NĂNG CHÍNH:
- * 1. Xem giỏ hàng (GET /cart)
- * 2. Thêm sản phẩm vào giỏ (POST /cart)
- * 3. Cập nhật số lượng (PATCH /cart/items/:id)
- * 4. Xóa một sản phẩm (DELETE /cart/items/:id)
- * 5. Xóa toàn bộ giỏ hàng (DELETE /cart)
- * 6. Gộp giỏ hàng guest vào tài khoản (POST /cart/merge)
- *
- * ⚠️ LƯU Ý: Tất cả các endpoint đều yêu cầu đăng nhập (JwtAuthGuard) *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
- * =====================================================================
  */
 
 import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
@@ -44,46 +21,74 @@ import {
   Post,
   Request,
   UseGuards,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { RequestWithUser } from '@/identity/auth/interfaces/request-with-user.interface';
-import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
+import { getTenant } from '@core/tenant/tenant.context';
+
+// Use Cases
+import {
+  GetCartUseCase,
+  AddToCartUseCase,
+  UpdateCartItemUseCase,
+  RemoveCartItemUseCase,
+  MergeCartUseCase,
+  ClearCartUseCase,
+} from '../application/use-cases';
 
 @ApiTags('Shopping Cart')
 @Controller('cart')
-@UseGuards(JwtAuthGuard) // Bảo vệ tất cả route - Yêu cầu JWT Token hợp lệ
-@ApiBearerAuth() // Hiển thị nút nhập Token trên Swagger UI
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class CartController {
-  constructor(private readonly cartService: CartService) {}
+  constructor(
+    private readonly getCartUseCase: GetCartUseCase,
+    private readonly addToCartUseCase: AddToCartUseCase,
+    private readonly updateCartItemUseCase: UpdateCartItemUseCase,
+    private readonly removeCartItemUseCase: RemoveCartItemUseCase,
+    private readonly mergeCartUseCase: MergeCartUseCase,
+    private readonly clearCartUseCase: ClearCartUseCase,
+  ) {}
 
-  /**
-   * Lấy thông tin giỏ hàng của user hiện tại.
-   * Trả về danh sách items, tổng tiền và tổng số lượng.
-   */
   @Get()
   @ApiGetOneResponse('Cart', {
     summary: 'Lấy giỏ hàng của người dùng hiện tại',
   })
   async getCart(@Request() req: RequestWithUser) {
-    return this.cartService.getCart(req.user.id);
+    const tenant = getTenant();
+    const result = await this.getCartUseCase.execute({
+      userId: req.user.id,
+      tenantId: tenant?.id || '',
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return result.value;
   }
 
-  /**
-   * Thêm sản phẩm (SKU) vào giỏ hàng.
-   * Nếu SKU đã có trong giỏ → Cộng dồn số lượng.
-   */
   @Post()
   @ApiCreateResponse('CartItem', { summary: 'Thêm sản phẩm vào giỏ hàng' })
   async addToCart(@Request() req: RequestWithUser, @Body() dto: AddToCartDto) {
-    return this.cartService.addToCart(req.user.id, dto);
+    const tenant = getTenant();
+    const result = await this.addToCartUseCase.execute({
+      userId: req.user.id,
+      tenantId: tenant?.id || '',
+      ...dto,
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return result.value;
   }
 
-  /**
-   * Cập nhật số lượng của một item trong giỏ.
-   * Được gọi khi user tăng/giảm số lượng ở trang giỏ hàng.
-   */
   @Patch('items/:id')
   @ApiUpdateResponse('CartItem', {
     summary: 'Cập nhật số lượng sản phẩm trong giỏ',
@@ -93,38 +98,51 @@ export class CartController {
     @Param('id') itemId: string,
     @Body() dto: UpdateCartItemDto,
   ) {
-    return this.cartService.updateItem(req.user.id, itemId, dto);
+    const result = await this.updateCartItemUseCase.execute({
+      userId: req.user.id,
+      itemId,
+      ...dto,
+    });
+
+    if (result.isFailure) {
+      return this.handleError(result.error);
+    }
+
+    return result.value;
   }
 
-  /**
-   * Xóa một item khỏi giỏ hàng.
-   */
   @Delete('items/:id')
   @ApiDeleteResponse('CartItem', { summary: 'Xóa một sản phẩm khỏi giỏ hàng' })
   async removeItem(
     @Request() req: RequestWithUser,
     @Param('id') itemId: string,
   ) {
-    return this.cartService.removeItem(req.user.id, itemId);
+    const result = await this.removeCartItemUseCase.execute({
+      userId: req.user.id,
+      itemId,
+    });
+
+    if (result.isFailure) {
+      return this.handleError(result.error);
+    }
+
+    return result.value;
   }
 
-  /**
-   * Xóa toàn bộ giỏ hàng (Clear Cart).
-   */
   @Delete()
   @ApiDeleteResponse('Cart', { summary: 'Xóa toàn bộ giỏ hàng' })
   async clearCart(@Request() req: RequestWithUser) {
-    return this.cartService.clearCart(req.user.id);
+    const result = await this.clearCartUseCase.execute({
+      userId: req.user.id,
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return result.value;
   }
 
-  /**
-   * Gộp giỏ hàng của Guest vào tài khoản User sau khi đăng nhập.
-   *
-   * FLOW:
-   * 1. User chưa đăng nhập → Thêm sản phẩm vào localStorage (Guest Cart)
-   * 2. User đăng nhập → Frontend gọi API này để merge vào DB
-   * 3. Service xử lý từng item: check tồn kho, cộng dồn nếu trùng SKU
-   */
   @Post('merge')
   @ApiCreateResponse('Cart', {
     summary: 'Gộp giỏ hàng guest vào tài khoản user',
@@ -133,6 +151,27 @@ export class CartController {
     @Request() req: RequestWithUser,
     @Body() items: { skuId: string; quantity: number }[],
   ) {
-    return this.cartService.mergeCart(req.user.id, items);
+    const tenant = getTenant();
+    const result = await this.mergeCartUseCase.execute({
+      userId: req.user.id,
+      tenantId: tenant?.id || '',
+      items,
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return result.value;
+  }
+
+  private handleError(error: any): never {
+    if (
+      error.name === 'EntityNotFoundError' ||
+      error instanceof NotFoundException
+    ) {
+      throw new NotFoundException(error.message);
+    }
+    throw new BadRequestException(error.message);
   }
 }

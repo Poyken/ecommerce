@@ -1,36 +1,63 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { PrismaModule } from '@core/prisma/prisma.module';
+import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
+import { ProductsModule } from '@/catalog/products/products.module';
 
-/**
- * =====================================================================
- * SKUS MODULE - Module quản lý biến thể sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. GRANULAR PRODUCT MANAGEMENT:
- * - Trong khi `ProductsModule` quản lý thông tin chung, `SkusModule` quản lý các mặt hàng cụ thể mà khách hàng thực sự mua.
- *
- * 2. CLOUDINARY INTEGRATION:
- * - Import `CloudinaryModule` vì mỗi SKU có thể có hình ảnh riêng (VD: iPhone màu đỏ có ảnh khác iPhone màu xanh).
- *
- * 3. ARCHITECTURE:
- * - Tách biệt SKU giúp hệ thống dễ dàng quản lý tồn kho (Stock) và giá (Price) cho từng biến thể một cách chính xác. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
- * =====================================================================
- */
 import { SkusController } from './skus.controller';
 import { SkusService } from './skus.service';
 
-import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
+// Use Cases
+import {
+  CreateSkuUseCase,
+  ListSkusUseCase,
+  GetSkuUseCase,
+  UpdateSkuUseCase,
+  DeleteSkuUseCase,
+} from '../application/use-cases/skus';
 
-import { ProductsModule } from '@/catalog/products/products.module';
+// Tokens
+import { SKU_REPOSITORY, PRODUCT_REPOSITORY } from '../domain/repositories';
+
+// Infrastructure
+import {
+  PrismaSkuRepository,
+  PrismaProductRepository,
+} from '../infrastructure/repositories';
 
 @Module({
-  imports: [PrismaModule, CloudinaryModule, ProductsModule],
+  imports: [PrismaModule, CloudinaryModule, forwardRef(() => ProductsModule)],
   controllers: [SkusController],
-  providers: [SkusService],
+  providers: [
+    // Legacy Service
+    SkusService,
+
+    // Use Cases
+    CreateSkuUseCase,
+    ListSkusUseCase,
+    GetSkuUseCase,
+    UpdateSkuUseCase,
+    DeleteSkuUseCase,
+
+    // Repositories
+    PrismaSkuRepository,
+    PrismaProductRepository,
+    {
+      provide: SKU_REPOSITORY,
+      useClass: PrismaSkuRepository,
+    },
+    {
+      provide: PRODUCT_REPOSITORY,
+      useClass: PrismaProductRepository,
+    },
+  ],
+  exports: [
+    SkusService,
+    SKU_REPOSITORY,
+    CreateSkuUseCase,
+    ListSkusUseCase,
+    GetSkuUseCase,
+    UpdateSkuUseCase,
+    DeleteSkuUseCase,
+  ],
 })
 export class SkusModule {}

@@ -5,10 +5,10 @@ import {
   Body,
   Param,
   UseGuards,
-  Req,
   Query,
   DefaultValuePipe,
   ParseIntPipe,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -29,56 +29,60 @@ import { GetUser } from '@/identity/auth/decorators/get-user.decorator';
 import { getTenant } from '@/core/tenant/tenant.context';
 import { AppPermission } from '@/common/enums/permissions.enum';
 
-/**
- * =====================================================================
- * LOYALTY CONTROLLER - QUẢN LÝ ĐIỂM THƯỞNG
- * =====================================================================
- *
- * Endpoints:
- *
- * User:
- * - GET  /loyalty/my-points          - Xem số dư điểm của tôi
- * - GET  /loyalty/my-points/summary  - Tổng quan điểm (balance, expiring, etc.)
- * - GET  /loyalty/my-points/history  - Lịch sử tích/tiêu điểm
- * - POST /loyalty/redeem             - Đổi điểm (khi checkout)
- *
- * Admin:
- * - GET  /loyalty/stats              - Thống kê chung
- * - POST /loyalty/admin/earn         - Tích điểm cho user
- * - POST /loyalty/admin/refund       - Hoàn điểm
- * - GET  /loyalty/users/:userId/balance  - Xem điểm user
- * - GET  /loyalty/users/:userId/history  - Xem lịch sử user
- *
- * =====================================================================
- */
+// Use Cases
+import {
+  EarnPointsUseCase,
+  RedeemPointsUseCase,
+  RefundPointsUseCase,
+  GetLoyaltySummaryUseCase,
+  GetLoyaltyHistoryUseCase,
+} from './application/use-cases';
+import { LOYALTY_CONFIG } from './domain/entities/loyalty-config';
+
 @ApiTags('Loyalty')
 @ApiBearerAuth()
 @Controller('loyalty')
 @UseGuards(JwtAuthGuard)
 export class LoyaltyController {
-  constructor(private readonly loyaltyService: LoyaltyService) {}
-
-  // =====================================================================
-  // USER ENDPOINTS (Current User)
-  // =====================================================================
+  constructor(
+    private readonly loyaltyService: LoyaltyService,
+    private readonly earnPointsUseCase: EarnPointsUseCase,
+    private readonly redeemPointsUseCase: RedeemPointsUseCase,
+    private readonly refundPointsUseCase: RefundPointsUseCase,
+    private readonly getSummaryUseCase: GetLoyaltySummaryUseCase,
+    private readonly getHistoryUseCase: GetLoyaltyHistoryUseCase,
+  ) {}
 
   @Get('my-points')
   @ApiOperation({ summary: 'Xem số dư điểm của tôi' })
   async getMyBalance(@GetUser('id') userId: string) {
     const tenant = getTenant();
-    return {
-      balance: await this.loyaltyService.getAvailableBalance(
-        tenant!.id,
-        userId,
-      ),
-    };
+    if (!tenant) throw new BadRequestException('Tenant missing');
+
+    const result = await this.getSummaryUseCase.execute({
+      tenantId: tenant.id,
+      userId,
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+
+    return { balance: result.value.balance };
   }
 
   @Get('my-points/summary')
   @ApiOperation({ summary: 'Tổng quan điểm của tôi' })
   async getMySummary(@GetUser('id') userId: string) {
     const tenant = getTenant();
-    return this.loyaltyService.getUserLoyaltySummary(tenant!.id, userId);
+    if (!tenant) throw new BadRequestException('Tenant missing');
+
+    const result = await this.getSummaryUseCase.execute({
+      tenantId: tenant.id,
+      userId,
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+
+    return { data: result.value };
   }
 
   @Get('my-points/history')
@@ -91,10 +95,21 @@ export class LoyaltyController {
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
   ) {
     const tenant = getTenant();
-    return this.loyaltyService.getUserPointHistory(tenant!.id, userId, {
+    if (!tenant) throw new BadRequestException('Tenant missing');
+
+    const result = await this.getHistoryUseCase.execute({
+      tenantId: tenant.id,
+      userId,
       page,
       limit,
     });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+
+    return {
+      data: result.value.data.map((p) => p.toPersistence()),
+      meta: result.value.meta,
+    };
   }
 
   @Post('redeem')
@@ -104,12 +119,16 @@ export class LoyaltyController {
     @Body() body: { amount: number; orderId: string; orderTotal?: number },
   ) {
     const tenant = getTenant();
-    return this.loyaltyService.redeemPoints(tenant!.id, {
+    if (!tenant) throw new BadRequestException('Tenant missing');
+
+    const result = await this.redeemPointsUseCase.execute({
+      tenantId: tenant.id,
       userId,
-      amount: body.amount,
-      orderId: body.orderId,
-      orderTotal: body.orderTotal,
+      ...body,
     });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value };
   }
 
   @Get('calculate')
@@ -118,7 +137,7 @@ export class LoyaltyController {
   calculateRedemption(@Query('points', ParseIntPipe) points: number) {
     return {
       points,
-      discountValue: this.loyaltyService.calculateRedemptionValue(points),
+      discountValue: points * LOYALTY_CONFIG.POINT_VALUE,
     };
   }
 
@@ -139,36 +158,64 @@ export class LoyaltyController {
   @UseGuards(PermissionsGuard)
   @RequirePermissions(AppPermission.LOYALTY_MANAGE)
   @ApiOperation({ summary: '[Admin] Tích điểm cho user' })
-  earnPoints(@Body() dto: EarnPointsDto) {
+  async earnPoints(@Body() dto: EarnPointsDto) {
     const tenant = getTenant();
-    return this.loyaltyService.earnPoints(tenant!.id, dto);
+    const result = await this.earnPointsUseCase.execute({
+      tenantId: tenant!.id,
+      ...dto,
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value.loyaltyPoint.toPersistence() };
   }
 
   @Post('admin/redeem')
   @UseGuards(PermissionsGuard)
   @RequirePermissions(AppPermission.LOYALTY_MANAGE)
   @ApiOperation({ summary: '[Admin] Tiêu điểm cho user' })
-  adminRedeemPoints(@Body() dto: RedeemPointsDto) {
+  async adminRedeemPoints(@Body() dto: RedeemPointsDto) {
     const tenant = getTenant();
-    return this.loyaltyService.redeemPoints(tenant!.id, dto);
+    const result = await this.redeemPointsUseCase.execute({
+      tenantId: tenant!.id,
+      ...dto,
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value };
   }
 
   @Post('admin/refund')
   @UseGuards(PermissionsGuard)
   @RequirePermissions(AppPermission.LOYALTY_MANAGE)
   @ApiOperation({ summary: '[Admin] Hoàn điểm cho user' })
-  refundPoints(@Body() dto: RefundPointsDto) {
+  async refundPoints(@Body() dto: RefundPointsDto) {
     const tenant = getTenant();
-    return this.loyaltyService.refundPoints(tenant!.id, dto);
+    if (!dto.orderId)
+      throw new BadRequestException('Order ID is required for refund');
+
+    const result = await this.refundPointsUseCase.execute({
+      tenantId: tenant!.id,
+      ...dto,
+      orderId: dto.orderId,
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value.loyaltyPoint?.toPersistence() };
   }
 
   @Post('admin/earn-from-order/:orderId')
   @UseGuards(PermissionsGuard)
   @RequirePermissions(AppPermission.LOYALTY_MANAGE)
   @ApiOperation({ summary: '[Admin] Tích điểm từ đơn hàng' })
-  earnPointsFromOrder(@Param('orderId') orderId: string) {
+  async earnPointsFromOrder(@Param('orderId') orderId: string) {
     const tenant = getTenant();
-    return this.loyaltyService.earnPointsFromOrder(tenant!.id, orderId);
+    const result = await this.earnPointsUseCase.execute({
+      tenantId: tenant!.id,
+      orderId,
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value.loyaltyPoint.toPersistence() };
   }
 
   @Get('users/:userId/balance')
@@ -177,38 +224,55 @@ export class LoyaltyController {
   @ApiOperation({ summary: '[Admin] Xem số dư điểm của user' })
   async getUserBalance(@Param('userId') userId: string) {
     const tenant = getTenant();
-    return {
+    const result = await this.getSummaryUseCase.execute({
+      tenantId: tenant!.id,
       userId,
-      balance: await this.loyaltyService.getAvailableBalance(
-        tenant!.id,
-        userId,
-      ),
-    };
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+
+    return { userId, balance: result.value.balance };
   }
 
   @Get('users/:userId/summary')
   @UseGuards(PermissionsGuard)
   @RequirePermissions(AppPermission.LOYALTY_READ)
   @ApiOperation({ summary: '[Admin] Tổng quan điểm của user' })
-  getUserSummary(@Param('userId') userId: string) {
+  async getUserSummary(@Param('userId') userId: string) {
     const tenant = getTenant();
-    return this.loyaltyService.getUserLoyaltySummary(tenant!.id, userId);
+    const result = await this.getSummaryUseCase.execute({
+      tenantId: tenant!.id,
+      userId,
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+
+    return { data: result.value };
   }
 
   @Get('users/:userId/history')
   @UseGuards(PermissionsGuard)
   @RequirePermissions(AppPermission.LOYALTY_READ)
   @ApiOperation({ summary: '[Admin] Lịch sử điểm của user' })
-  getUserHistory(
+  async getUserHistory(
     @Param('userId') userId: string,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
   ) {
     const tenant = getTenant();
-    return this.loyaltyService.getUserPointHistory(tenant!.id, userId, {
+    const result = await this.getHistoryUseCase.execute({
+      tenantId: tenant!.id,
+      userId,
       page,
       limit,
     });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+
+    return {
+      data: result.value.data.map((p) => p.toPersistence()),
+      meta: result.value.meta,
+    };
   }
 
   @Get('orders/:orderId')

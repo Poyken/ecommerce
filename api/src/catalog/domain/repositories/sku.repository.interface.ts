@@ -18,6 +18,7 @@ export interface SkuQueryOptions extends PaginationParams {
   status?: SkuStatus;
   inStock?: boolean;
   search?: string;
+  stockLimit?: number;
 }
 
 /**
@@ -32,31 +33,31 @@ export interface StockUpdate {
 /**
  * SKU Repository Interface
  */
-export interface ISkuRepository {
+export abstract class ISkuRepository {
   /**
    * Find SKU by ID
    */
-  findById(id: string): Promise<Sku | null>;
+  abstract findById(id: string): Promise<Sku | null>;
 
   /**
    * Find SKU by ID or throw
    */
-  findByIdOrFail(id: string): Promise<Sku>;
+  abstract findByIdOrFail(id: string): Promise<Sku>;
 
   /**
    * Find SKU by code within tenant
    */
-  findByCode(tenantId: string, skuCode: string): Promise<Sku | null>;
+  abstract findByCode(tenantId: string, skuCode: string): Promise<Sku | null>;
 
   /**
    * Check if SKU exists
    */
-  exists(id: string): Promise<boolean>;
+  abstract exists(id: string): Promise<boolean>;
 
   /**
    * Check if SKU code is unique within tenant
    */
-  isCodeUnique(
+  abstract isCodeUnique(
     tenantId: string,
     skuCode: string,
     excludeId?: string,
@@ -65,12 +66,12 @@ export interface ISkuRepository {
   /**
    * Find all SKUs for a product
    */
-  findByProduct(productId: string, status?: SkuStatus): Promise<Sku[]>;
+  abstract findByProduct(productId: string, status?: SkuStatus): Promise<Sku[]>;
 
   /**
    * Find all SKUs with filtering
    */
-  findAll(
+  abstract findAll(
     tenantId: string,
     options?: SkuQueryOptions,
   ): Promise<PaginatedResult<Sku>>;
@@ -78,52 +79,52 @@ export interface ISkuRepository {
   /**
    * Find SKUs with low stock
    */
-  findLowStock(tenantId: string, threshold: number): Promise<Sku[]>;
+  abstract findLowStock(tenantId: string, threshold: number): Promise<Sku[]>;
 
   /**
    * Count SKUs for product
    */
-  countByProduct(productId: string): Promise<number>;
+  abstract countByProduct(productId: string): Promise<number>;
 
   /**
    * Save SKU
    */
-  save(sku: Sku): Promise<Sku>;
+  abstract save(sku: Sku): Promise<Sku>;
 
   /**
    * Batch save SKUs
    */
-  saveMany(skus: Sku[]): Promise<Sku[]>;
+  abstract saveMany(skus: Sku[]): Promise<Sku[]>;
 
   /**
    * Delete SKU
    */
-  delete(id: string): Promise<void>;
+  abstract delete(id: string): Promise<void>;
 
   /**
    * Delete all SKUs for a product
    */
-  deleteByProduct(productId: string): Promise<void>;
+  abstract deleteByProduct(productId: string): Promise<void>;
 
   /**
    * Batch find by IDs
    */
-  findByIds(ids: string[]): Promise<Sku[]>;
+  abstract findByIds(ids: string[]): Promise<Sku[]>;
 
   /**
    * Update stock in batch
    */
-  updateStockBatch(updates: StockUpdate[]): Promise<void>;
+  abstract updateStockBatch(updates: StockUpdate[]): Promise<void>;
 
   /**
    * Reserve stock for order
    */
-  reserveStock(skuId: string, quantity: number): Promise<void>;
+  abstract reserveStock(skuId: string, quantity: number): Promise<void>;
 
   /**
    * Release reserved stock
    */
-  releaseStock(skuId: string, quantity: number): Promise<void>;
+  abstract releaseStock(skuId: string, quantity: number): Promise<void>;
 }
 
 /**

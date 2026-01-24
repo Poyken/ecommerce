@@ -343,12 +343,23 @@ async function main() {
         shippingDistrict: 'District 1',
         shippingWard: 'Ben Nghe',
         paymentMethod: 'COD',
+        items: [
+          {
+            skuId,
+            quantity: 1,
+            productId,
+            skuName: `SAAS-SKU-${UNIQUE_ID}`,
+            productName: `SaaS Demo Product ${UNIQUE_ID}`,
+            price: 2500000,
+          },
+        ],
       },
       { headers: customerHeaders },
     );
-    orderId = orderRes.data.data.id;
+    const orderData = orderRes.data.data;
+    orderId = orderData.orderId || orderData.id;
     log(`✅ Order created: ${orderId}`, 'SUCCESS');
-    log(`   Total: ${orderRes.data.data.totalAmount} VND`, 'INFO');
+    log(`   Total: ${orderData.totalAmount} VND`, 'INFO');
     log(`   Status: PENDING`, 'INFO');
   } catch (error: any) {
     log(

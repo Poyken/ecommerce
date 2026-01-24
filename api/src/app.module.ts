@@ -58,6 +58,7 @@ import { CloudinaryModule } from '@integrations/cloudinary/cloudinary.module';
 import { NewsletterModule } from '@integrations/newsletter/newsletter.module';
 import { SitemapModule } from '@integrations/sitemap/sitemap.module';
 import { BullModule } from '@nestjs/bullmq';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
@@ -246,13 +247,14 @@ function validate(config: Record<string, unknown>) {
     BlogModule,
     FeatureFlagsModule,
     WorkerModule,
+    EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),
     ChatModule,
 
     // AI Domain
     AiModule,
 
-    SentryModule, // Error Tracking & Performance Monitoring
+    // SentryModule, // Error Tracking & Performance Monitoring
     DataLoaderModule, // N+1 Query Prevention
     MetricsModule, // Prometheus Metrics
     // PromotionsModule, -> Moved to MarketingModule

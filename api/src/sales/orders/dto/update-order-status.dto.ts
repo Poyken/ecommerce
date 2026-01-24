@@ -10,6 +10,7 @@ const UpdateOrderStatusSchema = z.object({
   force: z.boolean().optional().describe('Force status update (Admin only)'),
   cancellationReason: z.string().optional(),
   paymentStatus: z.nativeEnum(PaymentStatus).optional(),
+  note: z.string().optional().describe('Reason or note'),
 });
 
 export class UpdateOrderStatusDto extends createZodDto(

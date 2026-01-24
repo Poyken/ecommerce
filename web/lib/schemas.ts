@@ -52,17 +52,17 @@ export const BaseSchema = {
     .string()
     .min(
       VALIDATION.PASSWORD_MIN_LENGTH,
-      `Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters`
+      `Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters`,
     ),
   strongPassword: z
     .string()
     .min(
       VALIDATION.PASSWORD_MIN_LENGTH,
-      `Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters`
+      `Password must be at least ${VALIDATION.PASSWORD_MIN_LENGTH} characters`,
     )
     .regex(
       ValidationPatterns.password,
-      "Password must contain at least 1 uppercase, 1 lowercase and 1 number"
+      "Password must contain at least 1 uppercase, 1 lowercase and 1 number",
     ),
   phoneVN: z
     .string()
@@ -71,18 +71,18 @@ export const BaseSchema = {
     .string()
     .min(
       VALIDATION.NAME_MIN_LENGTH,
-      `Name must be at least ${VALIDATION.NAME_MIN_LENGTH} characters`
+      `Name must be at least ${VALIDATION.NAME_MIN_LENGTH} characters`,
     )
     .max(
       VALIDATION.NAME_MAX_LENGTH,
-      `Name must be at most ${VALIDATION.NAME_MAX_LENGTH} characters`
+      `Name must be at most ${VALIDATION.NAME_MAX_LENGTH} characters`,
     ),
   slug: z
     .string()
     .min(1, "Slug is required")
     .regex(
       ValidationPatterns.slug,
-      "Slug only contains lowercase letters, numbers and hyphens"
+      "Slug only contains lowercase letters, numbers and hyphens",
     ),
   price: z.number().min(0, "Price cannot be negative"),
   rating: z.number().int().min(1).max(5),
@@ -90,7 +90,7 @@ export const BaseSchema = {
     .string()
     .min(
       VALIDATION.REVIEW_MIN_LENGTH,
-      `Content must be at least ${VALIDATION.REVIEW_MIN_LENGTH} characters`
+      `Content must be at least ${VALIDATION.REVIEW_MIN_LENGTH} characters`,
     ),
   uuid: z.string().uuid("Invalid ID format"),
   url: z.string().url("Invalid URL").optional().or(z.literal("")),
@@ -133,7 +133,7 @@ export const ProfileUpdateSchema = z
     {
       message: "Both current and new password are required to change password",
       path: ["newPassword"],
-    }
+    },
   );
 
 export const ReviewSchema = z.object({
@@ -156,6 +156,18 @@ export const CheckoutSchema = z.object({
   shippingAddress: z.string().min(5, "Address is too short"),
   paymentMethod: z.enum(["COD", "CARD", "BANKING", "VNPAY", "MOMO", "VIETQR"]),
   itemIds: z.array(z.string()).optional(),
+  items: z
+    .array(
+      z.object({
+        skuId: z.string(),
+        quantity: z.number().int().positive(),
+        price: z.number().nonnegative(),
+        productId: z.string(),
+        skuName: z.string(),
+        productName: z.string(),
+      }),
+    )
+    .optional(),
   couponCode: z.string().optional(),
   returnUrl: z.string().url().optional(),
   addressId: z.string().optional(),
@@ -203,7 +215,7 @@ export const ReturnRequestSchema = z.object({
       z.object({
         orderItemId: z.string().min(1, "Order Item ID is required"),
         quantity: z.number().int().min(1, "Quantity must be at least 1"),
-      })
+      }),
     )
     .min(1, "At least one item must be returned"),
   returnMethod: z.enum(["PICKUP", "SELF_SHIP", "AT_COUNTER"]),

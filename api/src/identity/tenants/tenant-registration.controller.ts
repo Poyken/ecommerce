@@ -76,11 +76,17 @@ export class UpdateOnboardingDto extends createZodDto(UpdateOnboardingSchema) {}
  *
  * =================================================================================================
  */
+import {
+  RegisterTenantUseCase,
+  GetTenantUseCase,
+} from '../application/use-cases/tenants';
+
 @ApiTags('Tenant Registration (Public)')
 @Controller('tenants')
 export class TenantRegistrationController {
   constructor(
-    private readonly tenantsService: TenantsService,
+    private readonly registerUseCase: RegisterTenantUseCase,
+    private readonly getTenantUseCase: GetTenantUseCase,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -98,161 +104,28 @@ export class TenantRegistrationController {
   @ApiResponse({ status: 400, description: 'Dữ liệu không hợp lệ' })
   @ApiResponse({ status: 409, description: 'Subdomain hoặc email đã tồn tại' })
   async register(@Body() dto: RegisterTenantDto) {
-    // 1. Validate subdomain format (chỉ chữ thường, số và gạch ngang)
-    const subdomainRegex = /^[a-z0-9]([a-z0-9-]{1,61}[a-z0-9])?$/;
-    if (!subdomainRegex.test(dto.subdomain)) {
+    const result = await this.registerUseCase.execute({
+      name: dto.storeName,
+      subdomain: dto.subdomain,
+      email: dto.email,
+      password: dto.password,
+      plan: dto.plan,
+      referralCode: dto.referralCode,
+    });
+
+    if (result.isFailure) {
       throw new HttpException(
         {
-          message:
-            'Subdomain không hợp lệ. Chỉ sử dụng chữ thường, số và gạch ngang.',
-          code: 'INVALID_SUBDOMAIN',
+          message: result.error.message,
+          code: (result.error as any).code || 'REGISTRATION_FAILED',
         },
         HttpStatus.BAD_REQUEST,
       );
     }
-
-    // 2. Check reserved subdomains
-    const reservedSubdomains = [
-      'www',
-      'api',
-      'admin',
-      'app',
-      'mail',
-      'ftp',
-      'cdn',
-      'assets',
-      'static',
-      'help',
-      'support',
-      'docs',
-      'blog',
-    ];
-    if (reservedSubdomains.includes(dto.subdomain.toLowerCase())) {
-      throw new HttpException(
-        {
-          message: 'Subdomain này đã được đặt trước',
-          code: 'RESERVED_SUBDOMAIN',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-
-    // 3. Check if subdomain already exists
-    const existingTenant = await this.prisma.tenant.findFirst({
-      where: {
-        OR: [{ subdomain: dto.subdomain }, { domain: dto.subdomain }],
-      },
-    });
-
-    if (existingTenant) {
-      throw new HttpException(
-        {
-          message: 'Subdomain đã được sử dụng',
-          code: 'SUBDOMAIN_TAKEN',
-        },
-        HttpStatus.CONFLICT,
-      );
-    }
-
-    // 4. Check if email already exists as a store owner
-    const existingOwner = await this.prisma.user.findFirst({
-      where: {
-        email: dto.email.toLowerCase(),
-        tenant: {
-          ownerId: { not: null },
-        },
-      },
-    });
-
-    // Note: Email can exist in multiple tenants as customer, but not as owner
-    // For simplicity, we just check if email exists at all
-    // In production, you might want more sophisticated logic
-
-    // 5. Create Tenant and Owner User in a transaction
-    const result = await this.prisma.$transaction(async (tx) => {
-      // Calculate trial end date (14 days from now)
-      const trialEndsAt = new Date();
-      trialEndsAt.setDate(trialEndsAt.getDate() + 14);
-
-      // Generate referral code for this tenant
-      const referralCode = `REF${dto.subdomain.toUpperCase().slice(0, 4)}${Date.now().toString(36).toUpperCase()}`;
-
-      // Create Tenant first (without owner)
-      const tenant = await tx.tenant.create({
-        data: {
-          name: dto.storeName,
-          subdomain: dto.subdomain.toLowerCase(),
-          domain: dto.subdomain.toLowerCase(), // Can be updated to custom domain later
-          plan: 'BASIC',
-          isActive: true,
-          onboardingCompleted: false,
-          onboardingStep: 0,
-          trialEndsAt,
-          trialStartedAt: new Date(),
-          referralCode,
-          referredByCode: dto.referralCode || null,
-          // Default limits for BASIC plan
-          productLimit: 100,
-          storageLimit: 1024,
-          staffLimit: 2,
-        },
-      });
-
-      // Hash password (you should import your actual password hashing utility)
-      const bcrypt = await import('bcrypt');
-      const hashedPassword = await bcrypt.hash(dto.password, 10);
-
-      // Create Owner User
-      const owner = await tx.user.create({
-        data: {
-          email: dto.email.toLowerCase(),
-          password: hashedPassword,
-          tenantId: tenant.id,
-        },
-      });
-
-      // Update tenant with owner
-      const updatedTenant = await tx.tenant.update({
-        where: { id: tenant.id },
-        data: { ownerId: owner.id },
-      });
-
-      // Create default Admin role for owner
-      const adminRole = await tx.role.create({
-        data: {
-          name: 'Admin',
-          // description: 'Full access to store management',
-          tenantId: tenant.id,
-        },
-      });
-
-      // Assign Admin role to owner
-      await tx.userRole.create({
-        data: {
-          userId: owner.id,
-          roleId: adminRole.id,
-        },
-      });
-
-      return {
-        tenant: {
-          id: updatedTenant.id,
-          name: updatedTenant.name,
-          subdomain: updatedTenant.subdomain,
-          domain: updatedTenant.domain,
-          plan: updatedTenant.plan,
-          trialEndsAt: updatedTenant.trialEndsAt,
-        },
-        owner: {
-          id: owner.id,
-          email: owner.email,
-        },
-      };
-    });
 
     return {
       message: 'Đăng ký thành công! Vui lòng hoàn thành thiết lập cửa hàng.',
-      data: result,
+      data: result.value,
     };
   }
 
@@ -308,19 +181,13 @@ export class TenantRegistrationController {
       };
     }
 
-    // Check in database
-    const existing = await this.prisma.tenant.findFirst({
-      where: {
-        OR: [
-          { subdomain: subdomain.toLowerCase() },
-          { domain: subdomain.toLowerCase() },
-        ],
-      },
+    const result = await this.getTenantUseCase.execute({
+      subdomain: subdomain.toLowerCase(),
     });
 
     return {
-      available: !existing,
-      message: existing
+      available: result.isFailure, // Inverted logic: if failed to find, then it is available
+      message: result.isSuccess
         ? 'Subdomain đã được sử dụng'
         : 'Subdomain có thể sử dụng',
       subdomain: subdomain.toLowerCase(),

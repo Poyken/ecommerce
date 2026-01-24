@@ -10,14 +10,14 @@ import {
   IBrandRepository,
   BrandQueryOptions,
 } from '../../domain/repositories/brand.repository.interface';
-import { Brand, BrandProps } from '../../domain/entities/brand.entity';
+import { Brand } from '../../domain/entities/brand.entity';
 import {
   PaginatedResult,
   createPaginatedResult,
   calculateSkip,
 } from '@core/application/pagination';
-import { Slug } from '@core/domain/value-objects/slug.vo';
 import { getTenant } from '@core/tenant/tenant.context';
+import { BrandMapper } from '../mappers/brand.mapper';
 
 @Injectable()
 export class PrismaBrandRepository implements IBrandRepository {
@@ -27,7 +27,7 @@ export class PrismaBrandRepository implements IBrandRepository {
     const data = await (this.prisma.brand as any).findUnique({
       where: { id },
     });
-    return data ? this.toDomain(data) : null;
+    return data ? BrandMapper.toDomain(data) : null;
   }
 
   async findByIdOrFail(id: string): Promise<Brand> {
@@ -42,7 +42,7 @@ export class PrismaBrandRepository implements IBrandRepository {
     const data = await (this.prisma.brand as any).findFirst({
       where: { tenantId, slug },
     });
-    return data ? this.toDomain(data) : null;
+    return data ? BrandMapper.toDomain(data) : null;
   }
 
   async exists(id: string): Promise<boolean> {
@@ -67,14 +67,10 @@ export class PrismaBrandRepository implements IBrandRepository {
     tenantId: string,
     options?: BrandQueryOptions,
   ): Promise<PaginatedResult<Brand>> {
-    const { page = 1, limit = 50, isActive, search } = options || {};
+    const { page = 1, limit = 50, search } = options || {};
     const skip = calculateSkip(page, limit);
 
     const where: any = { tenantId };
-
-    if (isActive !== undefined) {
-      where.isActive = isActive;
-    }
 
     if (search) {
       where.name = { contains: search, mode: 'insensitive' };
@@ -85,21 +81,13 @@ export class PrismaBrandRepository implements IBrandRepository {
         where,
         skip,
         take: limit,
-        orderBy: { name: 'asc' },
+        orderBy: [{ name: 'asc' }],
       }),
       (this.prisma.brand as any).count({ where }),
     ]);
 
-    const brands = data.map((d: any) => this.toDomain(d));
+    const brands = BrandMapper.toDomainList(data);
     return createPaginatedResult(brands, total, page, limit);
-  }
-
-  async findActive(tenantId: string): Promise<Brand[]> {
-    const data = await (this.prisma.brand as any).findMany({
-      where: { tenantId, isActive: true },
-      orderBy: { name: 'asc' },
-    });
-    return data.map((d: any) => this.toDomain(d));
   }
 
   async countByTenant(tenantId: string): Promise<number> {
@@ -107,7 +95,7 @@ export class PrismaBrandRepository implements IBrandRepository {
   }
 
   async save(brand: Brand): Promise<Brand> {
-    const data = brand.toPersistence();
+    const data = BrandMapper.toPersistence(brand);
     const tenant = getTenant();
 
     const existing = await (this.prisma.brand as any).findUnique({
@@ -121,11 +109,7 @@ export class PrismaBrandRepository implements IBrandRepository {
         data: {
           name: data.name,
           slug: data.slug,
-          description: data.description,
           imageUrl: data.imageUrl,
-          website: data.website,
-          isActive: data.isActive,
-          metadata: data.metadata as any,
           updatedAt: new Date(),
         },
       });
@@ -136,16 +120,12 @@ export class PrismaBrandRepository implements IBrandRepository {
           tenantId: tenant?.id || data.tenantId,
           name: data.name,
           slug: data.slug,
-          description: data.description,
           imageUrl: data.imageUrl,
-          website: data.website,
-          isActive: true,
-          metadata: data.metadata as any,
         } as any,
       });
     }
 
-    return this.toDomain(saved);
+    return BrandMapper.toDomain(saved);
   }
 
   async delete(id: string): Promise<void> {
@@ -159,27 +139,6 @@ export class PrismaBrandRepository implements IBrandRepository {
       where: { id: { in: ids } },
     });
 
-    return data.map((d: any) => this.toDomain(d));
-  }
-
-  // =====================================================================
-  // MAPPER
-  // =====================================================================
-
-  private toDomain(data: any): Brand {
-    const props: BrandProps = {
-      id: data.id,
-      tenantId: data.tenantId,
-      name: data.name,
-      slug: Slug.create(data.slug),
-      description: data.description,
-      imageUrl: data.imageUrl,
-      website: data.website,
-      isActive: data.isActive,
-      metadata: data.metadata,
-      createdAt: data.createdAt,
-      updatedAt: data.updatedAt,
-    };
-    return Brand.fromPersistence(props);
+    return BrandMapper.toDomainList(data);
   }
 }

@@ -114,7 +114,7 @@ describe('AuthController (e2e)', () => {
           accessToken = res.body.data.accessToken;
           // Refresh token might be in cookies
           const cookies = res.headers['set-cookie'];
-          if (cookies) {
+          if (cookies && Array.isArray(cookies)) {
             const refreshCookie = cookies.find((c: string) =>
               c.startsWith('refreshToken='),
             );
@@ -177,13 +177,13 @@ describe('AuthController (e2e)', () => {
   });
 
   describe('/auth/logout (POST)', () => {
-    it('should logout successfully', () => {
+    it('should logout successfully', async () => {
       if (!accessToken) {
         console.warn('Skipping - no access token available');
         return;
       }
 
-      return request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/api/auth/logout')
         .set('Authorization', `Bearer ${accessToken}`)
         .expect(200);

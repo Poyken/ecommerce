@@ -65,7 +65,7 @@ async function runTest() {
     // 4. Add to Cart
     console.log(`${LOG_PREFIX} 4. Adding to cart...`);
     await axios.post(
-      `${API_URL}/cart/items`,
+      `${API_URL}/cart`,
       {
         skuId: skuId,
         quantity: 2,
@@ -83,17 +83,26 @@ async function runTest() {
         phoneNumber: '0900000000',
         shippingAddress: '123 Tenant Street, SaaS City',
         paymentMethod: 'COD',
+        items: [
+          {
+            skuId,
+            quantity: 2,
+            productId: product.id,
+            skuName: product.skus[0].skuCode,
+            productName: product.name,
+            price: Number(product.skus[0].price || product.minPrice),
+          },
+        ],
       },
       { headers: authHeaders },
     );
 
-    const orderId = orderRes.data.data.id;
+    const orderData = orderRes.data.data;
+    const orderId = orderData.orderId || orderData.id;
     console.log(
       `${LOG_PREFIX}    🎉 ORDER PLACED SUCCESSFULLY! ID: ${orderId}`,
     );
-    console.log(
-      `${LOG_PREFIX}       Total: ${orderRes.data.data.totalAmount} VND`,
-    );
+    console.log(`${LOG_PREFIX}       Total: ${orderData.totalAmount} VND`);
 
     // 6. Verify Tenant Admin sees the order
     console.log(`${LOG_PREFIX} 6. Verifying Order in Admin Panel...`);

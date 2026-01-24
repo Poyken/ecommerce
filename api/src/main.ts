@@ -1,5 +1,4 @@
-// QUAN TRỌNG: Import Sentry đầu tiên trước mọi thứ khác để đảm bảo bắt trọn lỗi!
-import './core/sentry/instrument';
+// import './core/sentry/instrument';
 
 /**
  * =====================================================================
@@ -46,7 +45,7 @@ async function bootstrap() {
   // Tạo instance ứng dụng NestJS
   // bufferLogs: true => Chỉ ghi log sau khi logger custom đã khởi tạo xong, tránh mất log lúc khởi động
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    bufferLogs: true,
+    bufferLogs: false,
   });
 
   // Enable trust proxy để lấy đúng IP người dùng khi chạy sau Nginx/Load Balancer
@@ -54,7 +53,7 @@ async function bootstrap() {
 
   // Khởi tạo LoggerService (sử dụng Winston) thay thế cho logger mặc định
   const logger = app.get(LoggerService);
-  app.useLogger(logger);
+  // app.useLogger(logger);
 
   // Bật Graceful Shutdown (Quan trọng cho Production)
   // Đảm bảo đóng kết nối DB, Redis... an toàn hủy các process cũ khi deploy mới

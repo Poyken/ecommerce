@@ -88,6 +88,19 @@ import {
       useClass: PrismaBrandRepository,
     },
   ],
-  exports: [ProductsService, SkuManagerService, InventoryService, StockGateway],
+  exports: [
+    ProductsService,
+    SkuManagerService,
+    InventoryService,
+    StockGateway,
+    PRODUCT_REPOSITORY,
+    CATEGORY_REPOSITORY,
+    BRAND_REPOSITORY,
+    CreateProductUseCase,
+    GetProductUseCase,
+    ListProductsUseCase,
+    UpdateProductUseCase,
+    DeleteProductUseCase,
+  ],
 })
 export class ProductsModule {}

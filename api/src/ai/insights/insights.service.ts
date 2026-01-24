@@ -1,33 +1,9 @@
-/**
- * =====================================================================
- * AI INSIGHTS SERVICE - PHÂN TÍCH DỮ LIỆU KINH DOANH THÔNG MINH
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. QUY TRÌNH TỔNG HỢP (Aggregation Flow):
- * - Hệ thống quét qua các bảng dữ liệu quan trọng: `Orders` (Doanh thu), `Sku` (Tồn kho), `User` (Khách hàng).
- * - Sử dụng các hàm `count`, `aggregate` của Prisma để tính toán chỉ số sức khỏe của cửa hàng.
- *
- * 2. CHIẾN LƯỢC CACHING (4-Hour Window):
- * - Do việc truy vấn và tính toán trên hàng ngàn đơn hàng rất tốn tài nguyên (Performance Heavy).
- * - Kết quả được lưu vào Redis (`CACHE_MANAGER`) với thời gian sống (TTL) là 4 tiếng.
- * - Admin chỉ tốn công tính toán 1 lần, các lần vào Dashboard sau sẽ lấy "vèo" từ Cache ra.
- *
- * 3. NGƯỠNG CẢNH BÁO (Thresholds):
- * - Hệ thống đặt ra các mốc cứng (VD: Tồn kho < 5 là Warning) để AI đưa ra khuyến nghị chính xác.
- *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Cung cấp "trợ lý ảo" cho chủ shop, tự động nhắc nhở nhập hàng khi sắp hết hoặc chúc mừng khi doanh thu vượt mục tiêu.
- * =====================================================================
- */
-
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { PrismaService } from '@core/prisma/prisma.service';
-import { CacheService } from '@core/cache/cache.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject } from '@nestjs/common';
 import type { Cache } from 'cache-manager';
+import { GeminiService } from '../ai-chat/gemini.service';
+import { getTenant } from '@core/tenant/tenant.context';
 
 export interface Insight {
   type: 'warning' | 'success' | 'info';
@@ -45,84 +21,180 @@ export interface DailyInsights {
 @Injectable()
 export class InsightsService {
   private readonly logger = new Logger(InsightsService.name);
-  private readonly CACHE_KEY = 'daily_insights';
+  private readonly CACHE_KEY_PREFIX = 'daily_insights:';
 
   constructor(
     private readonly prisma: PrismaService,
+    private readonly geminiService: GeminiService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
+  private getTenantId(): string {
+    const tenant = getTenant();
+    if (!tenant?.id) {
+      // For demo/development purpose, we might fallback to a default if not in context
+      // but in production tenant context is mandatory for insights
+      return 'default';
+    }
+    return tenant.id;
+  }
+
   async getDailyInsights(): Promise<DailyInsights | null> {
-    const cached = await this.cacheManager.get<DailyInsights>(this.CACHE_KEY);
+    const tenantId = this.getTenantId();
+    const cacheKey = `${this.CACHE_KEY_PREFIX}${tenantId}`;
+
+    const cached = await this.cacheManager.get<DailyInsights>(cacheKey);
     if (!cached) {
-      return this.generateInsights();
+      return this.generateInsights(tenantId);
     }
     return cached;
   }
 
   async refreshInsights(): Promise<DailyInsights> {
-    return this.generateInsights();
+    const tenantId = this.getTenantId();
+    return this.generateInsights(tenantId);
   }
 
-  private async generateInsights(): Promise<DailyInsights> {
-    this.logger.log('Generating AI Insights...');
-    const insights: Insight[] = [];
+  private async generateInsights(tenantId: string): Promise<DailyInsights> {
+    this.logger.log(`Generating AI Insights for tenant: ${tenantId}...`);
 
-    // 1. Check Sales Trend (Today vs Yesterday) - Mock simple logic
-    const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
+    try {
+      // 1. Gather Data
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-    // In real app, query Orders table.
-    // Mocking for robustness without dependent services
-    const salesGrowth = 15; // Mock
-    if (salesGrowth > 0) {
-      insights.push({
-        type: 'success',
-        title: 'Doanh thu tăng trưởng',
-        message: `Doanh thu hôm nay tăng ${salesGrowth}% so với hôm qua.`,
-        action: 'Xem báo cáo',
-      });
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+
+      const startOfWeek = new Date(today);
+      startOfWeek.setDate(today.getDate() - today.getDay());
+
+      const lastWeek = new Date(startOfWeek);
+      lastWeek.setDate(startOfWeek.getDate() - 7);
+
+      // Aggregations
+      const [
+        todayData,
+        yesterdayData,
+        weekData,
+        lastWeekData,
+        lowStockProducts,
+        topViewedProducts, // Using top rated as proxy
+        pendingOrders,
+        customers,
+      ] = await Promise.all([
+        // Today Revenue
+        this.prisma.order.aggregate({
+          where: {
+            tenantId,
+            createdAt: { gte: today },
+            status: { not: 'CANCELLED' },
+          },
+          _sum: { totalAmount: true },
+        }),
+        // Yesterday Revenue
+        this.prisma.order.aggregate({
+          where: {
+            tenantId,
+            createdAt: { gte: yesterday, lt: today },
+            status: { not: 'CANCELLED' },
+          },
+          _sum: { totalAmount: true },
+        }),
+        // Weekly Revenue
+        this.prisma.order.aggregate({
+          where: {
+            tenantId,
+            createdAt: { gte: startOfWeek },
+            status: { not: 'CANCELLED' },
+          },
+          _sum: { totalAmount: true },
+        }),
+        // Last Week Revenue
+        this.prisma.order.aggregate({
+          where: {
+            tenantId,
+            createdAt: { gte: lastWeek, lt: startOfWeek },
+            status: { not: 'CANCELLED' },
+          },
+          _sum: { totalAmount: true },
+        }),
+        // Low Stock (using Sku)
+        this.prisma.sku.findMany({
+          where: { tenantId, status: 'ACTIVE', stock: { lt: 10 } },
+          select: { skuCode: true, stock: true },
+          take: 5,
+        }),
+        // Top Rated Products (proxy for top viewed)
+        this.prisma.product.findMany({
+          where: { tenantId, deletedAt: null },
+          orderBy: [{ avgRating: 'desc' }, { reviewCount: 'desc' }],
+          select: { name: true, avgRating: true, reviewCount: true },
+          take: 5,
+        }),
+        // Pending Orders
+        this.prisma.order.count({
+          where: { tenantId, status: 'PENDING' },
+        }),
+        // Customers
+        this.prisma.user.count({
+          where: { tenantId },
+        }),
+      ]);
+
+      const businessData = {
+        todayRevenue: Number(todayData._sum.totalAmount || 0),
+        yesterdayRevenue: Number(yesterdayData._sum.totalAmount || 0),
+        weekRevenue: Number(weekData._sum.totalAmount || 0),
+        lastWeekRevenue: Number(lastWeekData._sum.totalAmount || 0),
+        lowStockProducts: lowStockProducts.map((s) => ({
+          name: s.skuCode,
+          stock: s.stock,
+        })),
+        topViewedProducts: topViewedProducts.map((p) => ({
+          name: p.name,
+          views: p.reviewCount, // proxy
+          stock: 100, // placeholder since not easily fetched in same query
+        })),
+        pendingOrders,
+        totalCustomers: customers,
+        newCustomersToday: 0, // Simplified
+      };
+
+      // 2. Call Gemini
+      const aiResult =
+        await this.geminiService.generateBusinessInsights(businessData);
+
+      const result: DailyInsights = {
+        insights: aiResult.insights.map((i) => ({
+          type: i.type as any,
+          title: i.title,
+          message: i.message,
+          action: i.action,
+        })),
+        summary: aiResult.summary,
+        generatedAt: new Date().toISOString(),
+      };
+
+      // 3. Cache for 4 hours
+      const cacheKey = `${this.CACHE_KEY_PREFIX}${tenantId}`;
+      await this.cacheManager.set(cacheKey, result, 4 * 60 * 60 * 1000);
+
+      return result;
+    } catch (error) {
+      this.logger.error('Failed to generate insights', error);
+      // Fallback
+      return {
+        insights: [
+          {
+            type: 'info',
+            title: 'Đang cập nhật',
+            message: 'Hệ thống đang tổng hợp dữ liệu, vui lòng quay lại sau.',
+          },
+        ],
+        summary: 'Dữ liệu Insights đang được chuẩn bị.',
+        generatedAt: new Date().toISOString(),
+      };
     }
-
-    // 2. Check Inventory (Low Stock)
-    const lowStockCount = await this.prisma.sku.count({
-      where: { stock: { lt: 5 }, status: 'ACTIVE' },
-    });
-
-    if (lowStockCount > 0) {
-      insights.push({
-        type: 'warning',
-        title: 'Cảnh báo tồn kho',
-        message: `Có ${lowStockCount} sản phẩm sắp hết hàng.`,
-        action: 'Nhập hàng ngay',
-      });
-    } else {
-      insights.push({
-        type: 'info',
-        title: 'Tồn kho ổn định',
-        message: 'Tất cả sản phẩm đều đủ hàng.',
-      });
-    }
-
-    // 3. New Customers
-    // Mock
-    insights.push({
-      type: 'info',
-      title: 'Khách hàng mới',
-      message: 'Có 5 khách hàng mới đăng ký hôm nay.',
-    });
-
-    const result: DailyInsights = {
-      insights,
-      summary:
-        'Tình hình kinh doanh hôm nay khả quan. Cần chú ý nhập hàng kịp thời.',
-      generatedAt: new Date().toISOString(),
-    };
-
-    // Cache for 4 hours
-    await this.cacheManager.set(this.CACHE_KEY, result, 4 * 60 * 60 * 1000);
-
-    return result;
   }
 }

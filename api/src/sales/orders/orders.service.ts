@@ -127,11 +127,14 @@ export class OrdersService {
         }
 
         // 3. Lọc ra các sản phẩm user muốn mua (nếu chọn checkbox) hoặc mua tất cả
+        // 3. Filter items
+        // Refactored DTO uses 'items' array of objects now.
+        // Legacy support: extract itemIds from items if needed or assume itemsToProcess based on logic.
+        // For legacy service compile fix:
+        const itemIds = createOrderDto.items?.map((i) => i.skuId) || [];
         const itemsToProcess =
-          createOrderDto.itemIds && createOrderDto.itemIds.length > 0
-            ? cart.items.filter((item) =>
-                createOrderDto.itemIds!.includes(item.id),
-              )
+          itemIds.length > 0
+            ? cart.items.filter((item) => itemIds.includes(item.skuId))
             : cart.items;
 
         if (itemsToProcess.length === 0) {

@@ -61,14 +61,17 @@ async function main() {
     process.exit(1);
   }
 
-  const authHeaders = { headers: { Authorization: `Bearer ${accessToken}` } };
+  const authHeaders = {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'x-tenant-domain': 'localhost',
+    },
+  };
 
   // 3. Search/List Products
   try {
     console.log(`${LOG_PREFIX} 3. Searching for products...`);
-    const res = await axios.get(`${API_URL}/v1/products?limit=1`, {
-      ...authHeaders,
-    } as any); // Public but verify auth works too
+    const res = await axios.get(`${API_URL}/v1/products?limit=1`, authHeaders);
     const products = res.data.data;
     if (products.length === 0) {
       console.error(`${LOG_PREFIX} ❌ No products found. Please seed data.`);
@@ -82,9 +85,10 @@ async function main() {
 
     // Get SKU (Assuming product has skus or we fetch details)
     // Fetch detail to get SKUs
-    const detailRes = await axios.get(`${API_URL}/v1/products/${product.id}`, {
-      ...authHeaders,
-    } as any);
+    const detailRes = await axios.get(
+      `${API_URL}/v1/products/${product.id}`,
+      authHeaders,
+    );
     const fullProduct = detailRes.data.data;
     if (fullProduct.skus && fullProduct.skus.length > 0) {
       skuId = fullProduct.skus[0].id;
@@ -134,7 +138,16 @@ async function main() {
       shippingDistrict: 'Ba Dinh',
       shippingWard: 'Kim Ma',
       paymentMethod: 'COD',
-      // itemIds: [] // Optional: checkout all
+      items: [
+        {
+          skuId,
+          quantity: 1,
+          productId,
+          skuName: 'Legacy SKU',
+          productName: 'Legacy Product',
+          price: 100000,
+        },
+      ],
     };
 
     const res = await axios.post(
@@ -142,14 +155,14 @@ async function main() {
       orderPayload,
       authHeaders,
     );
-    const order = res.data.data;
-    console.log(`${LOG_PREFIX} ✅ Order Created! ID: ${order.id}`);
-    console.log(`${LOG_PREFIX}    Status: ${order.status}`);
-    console.log(`${LOG_PREFIX}    Total: ${order.totalAmount}`);
+    const orderData = res.data.data;
+    const orderId = orderData.orderId || orderData.id;
+    console.log(`${LOG_PREFIX} ✅ Order Created! ID: ${orderId}`);
+    console.log(`${LOG_PREFIX}    Total: ${orderData.totalAmount}`);
 
-    if (order.status !== 'PENDING') {
+    if (orderData.status !== 'PENDING') {
       console.warn(
-        `${LOG_PREFIX} ⚠️ Expected status PENDING, got ${order.status}`,
+        `${LOG_PREFIX} ⚠️ Expected status PENDING, got ${orderData.status}`,
       );
     }
   } catch (error: any) {

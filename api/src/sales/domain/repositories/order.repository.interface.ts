@@ -24,21 +24,21 @@ export interface OrderQueryOptions extends PaginationParams {
 /**
  * Order Repository Interface
  */
-export interface IOrderRepository {
+export abstract class IOrderRepository {
   /**
    * Find order by ID
    */
-  findById(id: string): Promise<Order | null>;
+  abstract findById(id: string): Promise<Order | null>;
 
   /**
    * Find order by ID or throw
    */
-  findByIdOrFail(id: string): Promise<Order>;
+  abstract findByIdOrFail(id: string): Promise<Order>;
 
   /**
    * Find order by order number
    */
-  findByOrderNumber(
+  abstract findByOrderNumber(
     tenantId: string,
     orderNumber: string,
   ): Promise<Order | null>;
@@ -46,12 +46,12 @@ export interface IOrderRepository {
   /**
    * Check if order exists
    */
-  exists(id: string): Promise<boolean>;
+  abstract exists(id: string): Promise<boolean>;
 
   /**
    * Find all orders with filtering
    */
-  findAll(
+  abstract findAll(
     tenantId: string,
     options?: OrderQueryOptions,
   ): Promise<PaginatedResult<Order>>;
@@ -59,7 +59,7 @@ export interface IOrderRepository {
   /**
    * Find orders by customer
    */
-  findByCustomer(
+  abstract findByCustomer(
     customerId: string,
     options?: PaginationParams,
   ): Promise<PaginatedResult<Order>>;
@@ -67,32 +67,34 @@ export interface IOrderRepository {
   /**
    * Find recent orders
    */
-  findRecent(tenantId: string, limit?: number): Promise<Order[]>;
+  abstract findRecent(tenantId: string, limit?: number): Promise<Order[]>;
 
   /**
    * Count orders by status
    */
-  countByStatus(tenantId: string): Promise<Record<OrderStatus, number>>;
+  abstract countByStatus(
+    tenantId: string,
+  ): Promise<Record<OrderStatus, number>>;
 
   /**
    * Generate next order number
    */
-  generateOrderNumber(tenantId: string): Promise<string>;
+  abstract generateOrderNumber(tenantId: string): Promise<string>;
 
   /**
    * Save order
    */
-  save(order: Order): Promise<Order>;
+  abstract save(order: Order): Promise<Order>;
 
   /**
    * Batch find by IDs
    */
-  findByIds(ids: string[]): Promise<Order[]>;
+  abstract findByIds(ids: string[]): Promise<Order[]>;
 
   /**
    * Get order statistics for dashboard
    */
-  getStatistics(
+  abstract getStatistics(
     tenantId: string,
     fromDate: Date,
     toDate: Date,

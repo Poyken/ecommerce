@@ -4,9 +4,11 @@ import { AnalyticsController } from './analytics.controller';
 import { PrismaModule } from '@/core/prisma/prisma.module';
 import { CommissionService } from './commission.service';
 
+import { PaymentEventsHandler } from './application/handlers/payment-events.handler';
+
 @Module({
   imports: [PrismaModule],
-  providers: [AnalyticsService, CommissionService],
+  providers: [AnalyticsService, CommissionService, PaymentEventsHandler],
   controllers: [AnalyticsController],
   exports: [AnalyticsService, CommissionService],
 })

@@ -11,6 +11,7 @@ import {
   Patch,
   ParseIntPipe,
   DefaultValuePipe,
+  BadRequestException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -20,7 +21,6 @@ import {
   ApiQuery,
   ApiParam,
 } from '@nestjs/swagger';
-import { PromotionsService } from './promotions.service';
 import { CreatePromotionDto } from './dto/create-promotion.dto';
 import { UpdatePromotionDto } from './dto/update-promotion.dto';
 import {
@@ -31,40 +31,54 @@ import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import { RequirePermissions } from '@/common/decorators/crud.decorators';
 import { GetUser } from '@/identity/auth/decorators/get-user.decorator';
+import { getTenant } from '@core/tenant/tenant.context';
 
-/**
- * =====================================================================
- * PROMOTIONS CONTROLLER - QUẢN LÝ KHUYẾN MÃI
- * =====================================================================
- *
- * Module quản lý các chương trình khuyến mãi, mã giảm giá.
- * Hỗ trợ rule-based engine với nhiều loại điều kiện và hành động.
- *
- * =====================================================================
- */
+// Use Cases
+import {
+  CreatePromotionUseCase,
+  ListPromotionsUseCase,
+  GetPromotionUseCase,
+  UpdatePromotionUseCase,
+  DeletePromotionUseCase,
+  ValidatePromotionUseCase,
+  ApplyPromotionUseCase,
+  GetPromotionStatsUseCase,
+  GetAvailablePromotionsUseCase,
+} from './application/use-cases';
+
 @ApiTags('Promotions')
 @Controller('promotions')
 export class PromotionsController {
-  constructor(private readonly promotionsService: PromotionsService) {}
-
-  // ============================================================
-  // ADMIN ENDPOINTS
-  // ============================================================
+  constructor(
+    private readonly createUseCase: CreatePromotionUseCase,
+    private readonly listUseCase: ListPromotionsUseCase,
+    private readonly getUseCase: GetPromotionUseCase,
+    private readonly updateUseCase: UpdatePromotionUseCase,
+    private readonly deleteUseCase: DeletePromotionUseCase,
+    private readonly validateUseCase: ValidatePromotionUseCase,
+    private readonly applyUseCase: ApplyPromotionUseCase,
+    private readonly statsUseCase: GetPromotionStatsUseCase,
+    private readonly availableUseCase: GetAvailablePromotionsUseCase,
+  ) {}
 
   @Post()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('promotion:create')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Tạo chương trình khuyến mãi mới' })
-  @ApiResponse({ status: 201, description: 'Tạo thành công' })
-  @ApiResponse({
-    status: 400,
-    description: 'Dữ liệu không hợp lệ hoặc mã đã tồn tại',
-  })
-  @ApiResponse({ status: 401, description: 'Chưa đăng nhập' })
-  @ApiResponse({ status: 403, description: 'Không có quyền' })
-  async create(@Body() createPromotionDto: CreatePromotionDto) {
-    return this.promotionsService.create(createPromotionDto);
+  async create(@Body() dto: CreatePromotionDto) {
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.createUseCase.execute({
+      ...dto,
+      tenantId: tenant.id,
+      startDate: new Date(dto.startDate),
+      endDate: new Date(dto.endDate),
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value.promotion.toPersistence() };
   }
 
   @Get()
@@ -72,158 +86,181 @@ export class PromotionsController {
   @RequirePermissions('promotion:read')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Lấy danh sách chương trình khuyến mãi' })
-  @ApiQuery({
-    name: 'page',
-    required: false,
-    type: Number,
-    description: 'Trang (mặc định: 1)',
-  })
-  @ApiQuery({
-    name: 'limit',
-    required: false,
-    type: Number,
-    description: 'Số lượng/trang (mặc định: 20)',
-  })
-  @ApiQuery({
-    name: 'search',
-    required: false,
-    type: String,
-    description: 'Tìm theo tên hoặc mã',
-  })
-  @ApiQuery({
-    name: 'isActive',
-    required: false,
-    type: String,
-    description: 'Lọc theo trạng thái (true/false)',
-  })
-  @ApiResponse({ status: 200, description: 'Danh sách khuyến mãi' })
   async findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
     @Query('search') search?: string,
     @Query('isActive') isActive?: string,
   ) {
-    return this.promotionsService.findAll({
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.listUseCase.execute({
+      tenantId: tenant.id,
       page,
       limit,
       search,
       isActive: isActive ? isActive === 'true' : undefined,
     });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+
+    return {
+      data: result.value.data.map((p) => p.toPersistence()),
+      meta: result.value.meta,
+    };
   }
 
   @Get('available')
-  @ApiOperation({
-    summary: 'Lấy danh sách khuyến mãi đang có hiệu lực (cho storefront)',
-  })
-  @ApiQuery({
-    name: 'totalAmount',
-    required: false,
-    type: String,
-    description: 'Tổng giá trị đơn hàng để lọc',
-  })
-  @ApiResponse({ status: 200, description: 'Danh sách khuyến mãi khả dụng' })
+  @ApiOperation({ summary: 'Lấy danh sách khuyến mãi khả dụng' })
   async getAvailable(
     @Query('totalAmount') totalAmount?: string,
     @GetUser('id') userId?: string,
   ) {
-    return this.promotionsService.getAvailablePromotions({
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.availableUseCase.execute({
+      tenantId: tenant.id,
       totalAmount: totalAmount ? parseFloat(totalAmount) : undefined,
       userId,
     });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+
+    return { data: result.value.promotions.map((p) => p.toPersistence()) };
   }
 
   @Post('validate')
-  @ApiOperation({ summary: 'Kiểm tra mã khuyến mãi với giỏ hàng' })
-  @ApiResponse({
-    status: 200,
-    description: 'Kết quả kiểm tra (valid, discountAmount, ...)',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'Mã không hợp lệ hoặc không thỏa điều kiện',
-  })
-  @ApiResponse({ status: 404, description: 'Không tìm thấy mã khuyến mãi' })
+  @ApiOperation({ summary: 'Kiểm tra mã khuyến mãi' })
   async validate(@Body() dto: ValidatePromotionDto) {
-    return this.promotionsService.validatePromotion(dto);
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.validateUseCase.execute({
+      tenantId: tenant.id,
+      ...dto,
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value };
   }
 
   @Post('apply')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Áp dụng mã khuyến mãi vào đơn hàng' })
-  @ApiResponse({ status: 200, description: 'Áp dụng thành công' })
-  @ApiResponse({ status: 400, description: 'Không thể áp dụng' })
-  @ApiResponse({ status: 401, description: 'Chưa đăng nhập' })
+  @ApiOperation({ summary: 'Áp dụng mã khuyến mãi' })
   async apply(@Body() dto: ApplyPromotionDto, @GetUser('id') userId: string) {
-    return this.promotionsService.applyPromotion({
-      ...dto,
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.applyUseCase.execute({
+      tenantId: tenant.id,
       userId,
+      ...dto,
     });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value };
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('promotion:read')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Lấy chi tiết chương trình khuyến mãi' })
-  @ApiParam({ name: 'id', description: 'ID khuyến mãi' })
-  @ApiResponse({ status: 200, description: 'Chi tiết khuyến mãi' })
-  @ApiResponse({ status: 404, description: 'Không tìm thấy' })
+  @ApiOperation({ summary: 'Lấy chi tiết khuyến mãi' })
   async findOne(@Param('id') id: string) {
-    return this.promotionsService.findOne(id);
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.getUseCase.execute({ id, tenantId: tenant.id });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value.promotion.toPersistence() };
   }
 
   @Get(':id/stats')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('promotion:read')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Thống kê sử dụng khuyến mãi' })
-  @ApiParam({ name: 'id', description: 'ID khuyến mãi' })
-  @ApiResponse({
-    status: 200,
-    description: 'Thống kê (totalUsages, totalDiscount, ...)',
-  })
+  @ApiOperation({ summary: 'Thống kê sử dụng' })
   async getStats(@Param('id') id: string) {
-    return this.promotionsService.getPromotionStats(id);
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.statsUseCase.execute({ id, tenantId: tenant.id });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return {
+      data: {
+        promotion: result.value.promotion.toPersistence(),
+        stats: result.value.stats,
+      },
+    };
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('promotion:update')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Cập nhật chương trình khuyến mãi' })
-  @ApiParam({ name: 'id', description: 'ID khuyến mãi' })
-  @ApiResponse({ status: 200, description: 'Cập nhật thành công' })
-  @ApiResponse({ status: 404, description: 'Không tìm thấy' })
+  @ApiOperation({ summary: 'Cập nhật khuyến mãi' })
   async update(@Param('id') id: string, @Body() dto: UpdatePromotionDto) {
-    return this.promotionsService.update(id, dto);
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.updateUseCase.execute({
+      ...dto,
+      id,
+      tenantId: tenant.id,
+      startDate: dto.startDate ? new Date(dto.startDate) : undefined,
+      endDate: dto.endDate ? new Date(dto.endDate) : undefined,
+    } as any);
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value.promotion.toPersistence() };
   }
 
   @Patch(':id/toggle')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('promotion:update')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Bật/Tắt chương trình khuyến mãi' })
-  @ApiParam({ name: 'id', description: 'ID khuyến mãi' })
-  @ApiResponse({ status: 200, description: 'Đổi trạng thái thành công' })
-  @ApiResponse({ status: 404, description: 'Không tìm thấy' })
+  @ApiOperation({ summary: 'Bật/Tắt khuyến mãi' })
   async toggleActive(@Param('id') id: string) {
-    return this.promotionsService.toggleActive(id);
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const promoResult = await this.getUseCase.execute({
+      id,
+      tenantId: tenant.id,
+    });
+    if (promoResult.isFailure)
+      throw new BadRequestException(promoResult.error.message);
+
+    const result = await this.updateUseCase.execute({
+      id,
+      tenantId: tenant.id,
+      isActive: !promoResult.value.promotion.isActive,
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value.promotion.toPersistence() };
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @RequirePermissions('promotion:delete')
   @ApiBearerAuth()
-  @ApiOperation({ summary: 'Xóa chương trình khuyến mãi' })
-  @ApiParam({ name: 'id', description: 'ID khuyến mãi' })
-  @ApiResponse({ status: 200, description: 'Xóa thành công' })
-  @ApiResponse({
-    status: 400,
-    description: 'Không thể xóa (đã có lượt sử dụng)',
-  })
-  @ApiResponse({ status: 404, description: 'Không tìm thấy' })
+  @ApiOperation({ summary: 'Xóa khuyến mãi' })
   async remove(@Param('id') id: string) {
-    return this.promotionsService.remove(id);
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context missing');
+
+    const result = await this.deleteUseCase.execute({
+      id,
+      tenantId: tenant.id,
+    });
+
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { success: true };
   }
 }

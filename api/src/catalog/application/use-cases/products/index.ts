@@ -7,3 +7,4 @@ export * from './get-product.use-case';
 export * from './list-products.use-case';
 export * from './update-product.use-case';
 export * from './delete-product.use-case';
+export * from './get-related-products.use-case';

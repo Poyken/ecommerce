@@ -20,10 +20,10 @@ import { Module } from '@nestjs/common';
 import { InsightsService } from './insights.service';
 import { InsightsController } from './insights.controller';
 import { PrismaModule } from '@core/prisma/prisma.module';
-// import { AuthModule } from '@/identity/auth/auth.module'; // If needed for guards
+import { AiChatModule } from '../ai-chat/ai-chat.module';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AiChatModule],
   controllers: [InsightsController],
   providers: [InsightsService],
   exports: [InsightsService],

@@ -82,7 +82,7 @@ export class PrismaOrderRepository implements IOrderRepository {
     const where: any = { tenantId };
 
     if (customerId) {
-      where.customerId = customerId;
+      where.userId = customerId;
     }
 
     if (status) {
@@ -101,6 +101,7 @@ export class PrismaOrderRepository implements IOrderRepository {
       where.OR = [
         { orderNumber: { contains: search, mode: 'insensitive' } },
         { customerEmail: { contains: search, mode: 'insensitive' } },
+        { recipientName: { contains: search, mode: 'insensitive' } },
       ];
     }
 
@@ -232,6 +233,24 @@ export class PrismaOrderRepository implements IOrderRepository {
           total: data.total,
           couponCode: data.couponCode,
           customerNote: data.customerNote,
+          internalNote: data.internalNote,
+          items: {
+            create: order.items.map((item) => ({
+              id: item.id,
+              skuId: item.skuId,
+              productName: item.productNameSnapshot,
+              skuCode: item.skuCodeSnapshot,
+              variantLabel: item.variantLabelSnapshot,
+              price: item.priceAtPurchase.amount,
+              imageUrl: item.imageUrlSnapshot,
+              quantity: item.quantity,
+              subtotal: item.subtotal.amount,
+            })),
+          },
+          shippingAddress: order.shippingAddress as any,
+          billingAddress: order.billingAddress as any,
+          paymentMethod: order.payment.method,
+          paymentStatus: order.payment.status,
         } as any,
         include: this.getOrderIncludes(),
       });
@@ -288,7 +307,7 @@ export class PrismaOrderRepository implements IOrderRepository {
   private getOrderIncludes() {
     return {
       items: true,
-      customer: {
+      user: {
         select: { id: true, email: true, firstName: true, lastName: true },
       },
     };
@@ -310,13 +329,14 @@ export class PrismaOrderRepository implements IOrderRepository {
       ),
     }));
 
-    const shippingAddress: ShippingAddressSnapshot = data.shippingAddress || {
-      fullName: data.shippingName || '',
-      phone: data.shippingPhone || '',
-      addressLine1: data.shippingAddress1 || '',
-      city: data.shippingCity || '',
-      country: data.shippingCountry || 'VN',
-    };
+    const shippingAddress: ShippingAddressSnapshot =
+      (data.shippingAddress as any) || {
+        fullName: data.recipientName || '',
+        phone: data.phoneNumber || '',
+        addressLine1: data.shippingAddressText || '',
+        city: data.shippingCity || '',
+        country: 'VN',
+      };
 
     const payment: PaymentInfo = {
       paymentId: data.paymentId,
@@ -328,25 +348,25 @@ export class PrismaOrderRepository implements IOrderRepository {
 
     const shipping: ShippingInfo = {
       carrier: data.shippingCarrier,
-      trackingNumber: data.trackingNumber,
+      trackingNumber: data.trackingNumber || data.shippingCode,
       shippedAt: data.shippedAt,
       deliveredAt: data.deliveredAt,
-      shippingCost: Money.create(Number(data.shippingCost || 0)),
+      shippingCost: Money.create(Number(data.shippingFee || 0)),
     };
 
     const props: OrderProps = {
       id: data.id,
       tenantId: data.tenantId,
       orderNumber: data.orderNumber,
-      customerId: data.customerId,
-      customerEmail: data.customerEmail || data.customer?.email || '',
+      customerId: data.userId || data.customerId,
+      customerEmail: data.customerEmail || data.user?.email || '',
       status: data.status as OrderStatus,
       items,
-      subtotal: Money.create(Number(data.subtotal)),
+      subtotal: Money.create(Number(data.subtotal || data.totalAmount)),
       discount: Money.create(Number(data.discount || 0)),
-      shippingCost: Money.create(Number(data.shippingCost || 0)),
+      shippingCost: Money.create(Number(data.shippingFee || 0)),
       tax: Money.create(Number(data.tax || 0)),
-      total: Money.create(Number(data.total)),
+      total: Money.create(Number(data.totalAmount || data.total)),
       couponCode: data.couponCode,
       shippingAddress,
       payment,
