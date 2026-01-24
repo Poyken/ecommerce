@@ -10,6 +10,7 @@ Tài liệu này chứa toàn bộ kiến thức về Database Schema của dự
 - **Database**: PostgreSQL + pgvector (vector search)
 - **Pattern**: Multi-tenant (Shared Database với `tenantId`)
 - **Soft Delete**: Tất cả entity quan trọng có `deletedAt`
+- **Missing Models**: None. (Synced)
 
 ---
 
@@ -104,13 +105,14 @@ Tài liệu này chứa toàn bộ kiến thức về Database Schema của dự
 
 ### Infrastructure
 
-| Model          | Mô tả                                     |
-| -------------- | ----------------------------------------- |
-| `Media`        | Quản lý file upload.                      |
-| `AuditLog`     | Nhật ký hoạt động (partitioned by month). |
-| `OutboxEvent`  | Transactional Outbox Pattern.             |
-| `FeatureFlag`  | Feature toggles.                          |
-| `Notification` | Push/Email notifications.                 |
+| Model             | Mô tả                                     |
+| ----------------- | ----------------------------------------- |
+| `Media`           | Quản lý file upload.                      |
+| `AuditLog`        | Nhật ký hoạt động (partitioned by month). |
+| `OutboxEvent`     | Transactional Outbox Pattern.             |
+| `FeatureFlag`     | Feature toggles.                          |
+| `Notification`    | Push/Email notifications.                 |
+| `PlatformSetting` | System-wide settings (Json value).        |
 
 ### SaaS Billing
 

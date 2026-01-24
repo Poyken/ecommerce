@@ -8,28 +8,7 @@ import { Role } from "@/types/models";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState, useTransition } from "react";
 
-/**
- * =====================================================================
- * ASSIGN ROLES DIALOG - Gán vai trò cho người dùng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RBAC (Role-Based Access Control):
- * - Thay vì gán từng quyền lẻ tẻ, ta gán "Vai trò" (Admin, Manager, Customer) cho người dùng.
- * - Một người dùng có thể có nhiều vai trò cùng lúc.
- *
- * 2. DYNAMIC FETCHING:
- * - Khi mở Dialog, hệ thống load danh sách tất cả các Role hiện có từ database.
- *
- * 3. CHECKBOX LOGIC:
- * - `toggleRole`: Thêm hoặc xóa tên vai trò khỏi danh sách `selectedRoleNames` khi click vào checkbox.
- * - `currentRoles`: Dùng để check mặc định các vai trò mà user đang có. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface AssignRolesDialogProps {
   userId: string;

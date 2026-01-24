@@ -287,6 +287,7 @@ export class CreateOrderUseCase extends CommandUseCase<
               aggregateId: order.id,
               type: 'ORDER_CREATED',
               payload: { orderId: order.id },
+              tenantId: input.tenantId, // Ensure tenant isolation
             },
           });
         },

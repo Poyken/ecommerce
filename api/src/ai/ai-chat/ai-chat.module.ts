@@ -10,17 +10,6 @@ import { GeminiService } from './gemini.service';
  * AI CHAT MODULE - Module cho tính năng chat AI
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Module này đóng gói toàn bộ logic liên quan đến AI Chat:
- * - GeminiService: Kết nối Google Gemini API
- * - AiChatService: Business logic (RAG, session, history)
- * - AiChatController: REST API endpoints
- *
- * Để sử dụng, import module này vào AppModule. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

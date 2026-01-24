@@ -3,17 +3,6 @@
  * SERVICE INTERFACES - DEPENDENCY INVERSION PRINCIPLE
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Đây là các interface định nghĩa contract cho services.
- * Thay vì phụ thuộc trực tiếp vào implementation cụ thể,
- * các module sẽ phụ thuộc vào interfaces này.
- *
- * LỢI ÍCH:
- * 1. Dễ dàng mock trong unit tests
- * 2. Có thể swap implementation without changing consumers
- * 3. Decoupled architecture
- *
  * =====================================================================
  */
 

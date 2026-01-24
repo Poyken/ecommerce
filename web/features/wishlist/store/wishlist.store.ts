@@ -1,22 +1,4 @@
-/**
- * =====================================================================
- * WISHLIST STORE - Quản lý danh sách yêu thích
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CENTRALIZED STATE:
- * - Quản lý số lượng sản phẩm user đã thả tim.
- * - Giảm thiểu việc props drilling (truyền data qua nhiều cấp component).
- *
- * 2. SIMPLE SYNC:
- * - `refreshWishlist` cho phép đồng bộ lại với Database khi cần thiết. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Global Badge: Hiển thị số lượng sản phẩm yêu thích trên Header/Icon Trái tim ở mọi trang mà không cần gọi API liên tục.
- * - Instant Feedback: Cập nhật trạng thái "đã thích" ngay lập tức trên UI khi user bấm nút, mang lại cảm giác ứng dụng phản hồi cực nhanh.
 
- * =====================================================================
- */
 
 import { getWishlistCountAction } from "@/features/wishlist/actions";
 import { create } from "zustand";

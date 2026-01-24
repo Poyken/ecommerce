@@ -1,25 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * FEATURED BRANDS - Section thương hiệu nổi bật
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DATA FETCHING PATTERN:
- * - Component nhận `brandsPromise` thay vì data trực tiếp.
- * - Sử dụng `use(brandsPromise)` để suspend component cho đến khi data sẵn sàng.
- * - Pattern này cho phép Streaming SSR: Các phần khác của trang load trước, phần này load sau.
- *
- * 2. ANIMATION STAGGER:
- * - `staggerChildren: 0.1`: Các phần tử con sẽ xuất hiện lần lượt cách nhau 0.1s.
- * - Tạo hiệu ứng domino mượt mà thay vì hiện tất cả cùng lúc. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 import { BrandCard } from "@/features/brands/components/brand-card";
 import { Link } from "@/i18n/routing";
 import { fadeInUp, itemScaleVariant, staggerContainer } from "@/lib/animations";

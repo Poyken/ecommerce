@@ -15,31 +15,7 @@ import { AlertTriangle, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 
-/**
- * =====================================================================
- * DELETE CONFIRM DIALOG - Dialog xác nhận xóa (Enhanced)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DESTRUCTIVE ACTION:
- * - Đây là hành động nguy hiểm (xóa dữ liệu), nên cần một bước xác nhận trung gian.
- * - Sử dụng `AlertDialog` từ Shadcn UI để ngăn người dùng vô tình click nhầm.
- *
- * 2. GENERIC ACTION:
- * - Nhận vào một `action` là một Promise. Điều này cho phép component này dùng được cho việc xóa bất kỳ thực thể nào (Product, User, Brand...).
- *
- * 3. LOADING STATE:
- * - Hiển thị spinner và vô hiệu hóa nút bấm khi đang trong quá trình xóa để tránh gửi yêu cầu trùng lặp.
- *
- * 4. ENHANCED UI:
- * - Icon warning để làm rõ đây là hành động nguy hiểm
- * - Better styling cho buttons *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface DeleteConfirmDialogProps {
   open: boolean;

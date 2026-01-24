@@ -22,26 +22,6 @@ import { createPaginatedResult } from '@/common/dto/base.dto';
  * USERS SERVICE - Logic nghiệp vụ quản lý người dùng
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PAGINATION & SEARCH (Phân trang và Tìm kiếm):
- * - `findAll`: Sử dụng `skip` và `take` của Prisma để lấy đúng số lượng bản ghi cần thiết.
- * - `Promise.all`: Chạy song song việc đếm tổng số bản ghi và lấy dữ liệu trang hiện tại để tối ưu hiệu năng.
- * - `mode: 'insensitive'`: Giúp tìm kiếm không phân biệt chữ hoa chữ thường.
- *
- * 2. DATABASE TRANSACTIONS:
- * - `assignRoles`: Sử dụng `$transaction` để đảm bảo tính toàn vẹn dữ liệu.
- * - Nếu việc xóa role cũ thành công nhưng thêm role mới bị lỗi, toàn bộ quá trình sẽ được "Rollback" (hủy bỏ), tránh tình trạng user bị mất hết role.
- *
- * 3. DATA SERIALIZATION:
- * - Mọi dữ liệu trả về đều được bọc trong `new UserEntity(user)`.
- * - Constructor của `UserEntity` sẽ tự động xử lý việc ẩn mật khẩu và làm phẳng (Flatten) các quan hệ Roles/Permissions.
- *
- * 4. ERROR HANDLING:
- * - Sử dụng các Exception chuẩn của NestJS (`ConflictException`, `NotFoundException`) để trả về mã lỗi HTTP và thông báo rõ ràng cho Client. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Quản lý thông tin hồ sơ, phân quyền truy cập (RBAC) và theo dõi lịch sử hoạt động của khách hàng/nhân viên.
-
  * =====================================================================
  */
 

@@ -3,30 +3,7 @@
 import { cn } from "@/lib/utils";
 import { Check, CreditCard, Package, ShoppingBag, Truck } from "lucide-react";
 
-/**
- * =====================================================================
- * CHECKOUT PROGRESS - Thanh tiến trình thanh toán
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. STEPPER LOGIC:
- * - `isCompleted`: Các bước có ID nhỏ hơn `currentStep`.
- * - `isCurrent`: Bước có ID bằng `currentStep`.
- * - Giúp người dùng định vị được mình đang ở đâu trong quy trình 4 bước.
- *
- * 2. VISUAL FEEDBACK:
- * - Màu xanh (`emerald-500`) báo hiệu bước đã hoàn thành.
- * - Icon thay đổi thành dấu `Check` khi bước đó xong.
- * - Đường kẻ nối giữa các bước cũng đổi màu tương ứng.
- *
- * 3. ACCESSIBILITY:
- * - Sử dụng thẻ `<nav>` và `<ol>` để cấu trúc hóa danh sách các bước, tốt cho trình đọc màn hình. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface CheckoutStepsProps {
   currentStep: number;

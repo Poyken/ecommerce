@@ -27,32 +27,7 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
 import { useEffect, useState } from "react";
 
-/**
- * =================================================================================================
- * SUPER ADMIN SIDEBAR - THANH ĐIỀU HƯỚNG QUẢN TRỊ VIÊN CẤP CAO
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PHÂN QUYỀN (PERMISSION BASED ENGINE):
- *    - Sidebar này không fix cứng (hardcode) tất cả các mục.
- *    - Nó kiểm tra quyền của User thông qua `useAuth().hasPermission()`.
- *    - Dù là Super Admin (có full quyền), ta vẫn viết code check quyền để tái sử dụng logic này
- *      cho các vai trò thấp hơn sau này (VD: Support, Moderator).
- *
- * 2. CẤU TRÚC 2 LỚP (GROUP -> ITEMS):
- *    - `sidebarItems` là mảng các nhóm (Overview, Tenancy, Platform System).
- *    - Mỗi nhóm chứa nhiều items con.
- *    - Logic render: Map Group -> Map Items.
- *
- * 3. RESPONSIVE (COLLAPSIBLE):
- *    - Sidebar có thể thu gọn (`isCollapsed`) để tiết kiệm diện tích trên màn hình nhỏ.
- *    - Khi thu gọn, chỉ hiện Icon, ẩn Text. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =================================================================================================
- */
 export function SuperAdminSidebar() {
   // We might want specific translations for super-admin or reuse admin
   const t = useTranslations("admin.sidebar");

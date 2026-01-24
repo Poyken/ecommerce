@@ -1,23 +1,4 @@
-/**
- * =====================================================================
- * PRODUCT DETAIL SKELETON - Skeleton cho trang Chi tiết sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. GALLERY & INFO SPLIT:
- * - Mô phỏng bố cục 2 cột: Bộ sưu tập ảnh (trái) và Thông tin chi tiết/Chọn biến thể (phải).
- *
- * 2. VARIANT SELECTOR MOCK:
- * - Giả lập các nút chọn Size, Color bằng các hình tròn/bo góc nhỏ để người dùng hình dung được giao diện.
- *
- * 3. BREADCRUMB MOCK:
- * - Hiển thị đường dẫn phân cấp giả ở trên cùng để duy trì cấu trúc trang. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import { Skeleton } from "@/components/ui/skeleton";
 

@@ -1,21 +1,4 @@
-/**
- * =====================================================================
- * POPOVER - Thành phần hiển thị nội dung nổi (Floating Content)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. FLOATING UI:
- * - Popover dùng để hiển thị thông tin bổ sung hoặc các điều khiển nhỏ khi click vào một phần tử.
- * - Khác với Tooltip (hiển thị khi hover), Popover thường chứa nội dung tương tác được (VD: Form nhỏ, Menu chọn).
- *
- * 2. RADIX UI:
- * - Xây dựng trên `@radix-ui/react-popover`, tự động xử lý vị trí và đóng khi click ra ngoài. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

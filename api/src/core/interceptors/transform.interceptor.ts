@@ -2,6 +2,7 @@ import {
   CallHandler,
   ExecutionContext,
   Injectable,
+  Logger,
   NestInterceptor,
 } from '@nestjs/common';
 import { Decimal } from '@prisma/client/runtime/library';
@@ -13,26 +14,6 @@ import { map } from 'rxjs/operators';
  * TRANSFORM INTERCEPTOR - Chuẩn hóa dữ liệu phản hồi (Response)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. UNIFIED RESPONSE FORMAT:
- * - Đảm bảo mọi API đều trả về một cấu trúc chung: `{ statusCode, message, data, meta }`.
- * - Giúp team Frontend dễ dàng xử lý dữ liệu vì cấu trúc luôn nhất quán.
- *
- * 2. PRISMA DECIMAL HANDLING:
- * - Prisma trả về kiểu `Decimal` cho các trường tiền tệ (Price). Tuy nhiên, JSON không hỗ trợ kiểu này.
- * - Interceptor này tự động duyệt qua dữ liệu và chuyển đổi tất cả các giá trị `Decimal` thành `Number` trước khi gửi về Client.
- *
- * 3. RECURSIVE TRANSFORMATION:
- * - Hàm `transformData` sử dụng đệ quy để xử lý mọi cấp độ của Object hoặc Array, đảm bảo không bỏ sót bất kỳ trường dữ liệu nào cần chuẩn hóa.
- *
- * 4. SEPARATION OF CONCERNS:
- * - Controller chỉ việc trả về dữ liệu thô từ Service. Việc "đóng gói" dữ liệu vào format chuẩn được giao cho Interceptor này. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Data Consistency: Frontend không bao giờ phải lo việc API A trả về `{ result: ... }` còn API B trả về `{ data: ... }`.
- * - Precision Handling: Xử lý vấn đề độ chính xác số học (Decimal vs Float) giúp hiển thị giá tiền không bị sai lệch.
- * - Simplified Integration: Giảm bớt code xử lý lỗi và map dữ liệu ở phía Client.
-
  * =====================================================================
  */
 
@@ -47,6 +28,8 @@ export class TransformInterceptor<T> implements NestInterceptor<
   T,
   Response<T>
 > {
+  private readonly logger = new Logger(TransformInterceptor.name);
+
   intercept(
     context: ExecutionContext,
     next: CallHandler,
@@ -73,7 +56,7 @@ export class TransformInterceptor<T> implements NestInterceptor<
             meta, // Bao gồm meta trong phản hồi
           } as any;
         } catch (err) {
-          console.error('[TransformInterceptor] Error:', err);
+          this.logger.error('[TransformInterceptor] Error:', err.stack);
           throw err;
         }
       }),

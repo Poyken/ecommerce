@@ -1,22 +1,4 @@
-/**
- * =====================================================================
- * I18N REQUEST CONFIGURATION - Cấu hình xử lý request đa ngôn ngữ
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. getRequestConfig:
- * - Hàm này chạy ở Server-side cho mỗi request.
- * - Nhiệm vụ: Xác định locale hiện tại và load file dịch (.json) tương ứng.
- *
- * 2. Dynamic Messages:
- * - Sử dụng dynamic import để chỉ load file ngôn ngữ cần thiết, giúp giảm memory và tăng tốc độ. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Dynamic Localization: Tự động chuyển đổi toàn bộ nội dung website (menu, nút, nhãn) sang ngôn ngữ người dùng yêu thích ngay khi trang vừa tải xong.
- * - White-labeling ready: Cho phép ghi đè (override) các bản dịch mặc định của hệ thống bằng các bản dịch riêng cho từng Tenant (khách hàng doanh nghiệp) từ Database.
 
- * =====================================================================
- */
 
 import { set } from "lodash";
 

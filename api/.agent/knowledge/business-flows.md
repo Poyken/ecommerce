@@ -26,8 +26,8 @@ Hệ thống hoạt động theo mô hình 4-Tier Resolution để định tuy�
 
 **Cơ chế thực thi**:
 
-- `TenantMiddleware` trích xuất thông tin host và lookup trong Redis/DB để gán `tenantId` vào `AsyncLocalStorage`.
-- Nếu không tìm thấy Tenant hợp lệ cho request dạng store -> Trả về 404.
+- `TenantMiddleware` trích xuất thông tin host và lookup trong Redis/Cache -> DB để gán `tenantId` vào `AsyncLocalStorage` (thông qua `tenantStorage.run()`).
+- Nếu không tìm thấy Tenant hợp lệ cho các domain không phải platform -> Trả về 403 (Unauthorized Tenant).
 
 ### 1.2 Permission-based RBAC & Security
 
@@ -71,9 +71,9 @@ Hệ thống quản lý kho hàng với độ chính xác cao nhờ cơ chế **
   - `Reserved Stock`: Số lượng đã được giữ cho các đơn hàng chưa hoàn tất.
   - `Available Stock` (trường `stock` trong DB): Số lượng khách có thể mua. Công thức: `Available = OnHand - Reserved`.
 - **Atomic Operations**:
-  - **Đặt hàng**: `UPDATE Sku SET stock = stock - N, reservedStock = reservedStock + N WHERE stock >= N`.
+  - **Đặt hàng**: `InventoryService.reserveStock()` thực hiện `SELECT ... FOR UPDATE` để lock row, sau đó cập nhật `stock = stock - N, reservedStock = reservedStock + N`.
   - **Hủy đơn**: Hoàn trả tồn kho (`releaseStock`).
-  - **Hoàn tất (Completed)**: Trừ `reservedStock` vĩnh viễn.
+  - **Hoàn tất (Completed)**: Trừ `reservedStock` vĩnh viễn (`deductStock`).
 - **Traceability**: Mọi biến động đều được ghi vào `InventoryLog` kèm `reason` và `userId` để đối soát (Audit trail).
 
 ---
@@ -139,8 +139,7 @@ Hệ thống sử dụng Gemini AI với mô hình **RAG (Retrieval-Augmented Ge
 
 ### 5.2 Search & Insights
 
-- Sử dụng **pgvector** cho tìm kiếm ngữ nghĩa (Semantic Search) bổ trợ cho Full-text search truyền thống.
-- Nhật ký hành vi (`UserBehaviorLog`) hỗ trợ gợi ý sản phẩm cá nhân hóa.
+- Nhật ký hành vi người dùng hỗ trợ gợi ý sản phẩm cá nhân hóa (Planned).
 
 ---
 

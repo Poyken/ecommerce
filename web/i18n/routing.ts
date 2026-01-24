@@ -1,23 +1,4 @@
-/**
- * =====================================================================
- * I18N ROUTING CONFIGURATION - Cấu hình điều hướng đa ngôn ngữ
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. defineRouting:
- * - Định nghĩa các ngôn ngữ được hỗ trợ (locales) và ngôn ngữ mặc định.
- * - Next-intl sẽ dựa vào đây để tạo ra các đường dẫn như /vi/about hoặc /en/about.
- *
- * 2. createNavigation:
- * - Tạo ra các bản sao của Link, useRouter, usePathname... nhưng có hiểu biết về locale.
- * - Khi dùng Link từ đây, bạn không cần truyền /vi/ vào href, nó sẽ tự động thêm dựa trên ngôn ngữ hiện tại. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Global Reach: Cho phép website tiếp cận khách hàng trên toàn thế giới bằng cách tự động quản lý URL đa ngôn ngữ thông minh.
- * - Developer Experience (DX): Giúp lập trình viên không phải lo lắng về việc quản lý prefix `/vi` hay `/en` trong code, mọi thứ được xử lý tự động qua Link component.
 
- * =====================================================================
- */
 
 import { createNavigation } from "next-intl/navigation";
 import { defineRouting } from "next-intl/routing";

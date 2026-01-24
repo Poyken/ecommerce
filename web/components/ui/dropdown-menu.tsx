@@ -6,27 +6,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * DROPDOWN MENU - Menu thả xuống
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RADIX UI PRIMITIVES:
- * - Xây dựng trên `@radix-ui/react-dropdown-menu`.
- * - Hỗ trợ đầy đủ Keyboard Navigation (Arrow keys, Enter, Esc).
- * - Tự động tính toán vị trí hiển thị (Positioning) để không bị che khuất.
- *
- * 2. SUB-COMPONENTS:
- * - `DropdownMenuItem`: Mục menu cơ bản.
- * - `DropdownMenuCheckboxItem`: Mục menu có trạng thái on/off.
- * - `DropdownMenuSeparator`: Đường kẻ phân cách. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 function DropdownMenu({
   ...props

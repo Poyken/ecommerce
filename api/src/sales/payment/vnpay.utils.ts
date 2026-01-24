@@ -5,17 +5,6 @@ import * as crypto from 'crypto';
  * VNPAY UTILS - TIỆN ÍCH MÃ HÓA & XÁC THỰC VNPAY
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ALPHABET SORTING:
- * - VNPay yêu cầu mọi tham số query string phải được sắp xếp theo bảng chữ cái (A-Z) trước khi tạo chữ ký.
- * - Nếu sai thứ tự, chữ ký tạo ra sẽ không khớp với chữ ký của VNPay.
- *
- * 2. HMAC-SHA512:
- * - Đây là thuật toán băm dùng để tạo Chữ ký số (Secure Hash). Thuật toán này sử dụng một Secret Key (chỉ có ta và VNPay biết) để đảm bảo tính toàn vẹn của dữ liệu. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Cung cấp các hàm tiện ích dùng chung, giúp code gọn gàng và tái sử dụng hiệu quả.
-
  * =====================================================================
  */
 export class VNPayUtils {

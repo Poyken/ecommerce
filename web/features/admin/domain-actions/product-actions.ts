@@ -1,28 +1,4 @@
-/**
- * =====================================================================
- * PRODUCT SERVER ACTIONS - Xử lý logic nghiệp vụ Sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. "use server":
- * - Đánh dấu file này chỉ chạy trên Server. Các export functions ở đây có thể được gọi
- *   trực tiếp từ Client Components (RPC - Remote Procedure Call).
- *
- * 2. ACTION WRAPPER (`wrapServerAction`):
- * - Wrap mọi action trong `try-catch` để xử lý lỗi tập trung.
- * - Đảm bảo trả về format thống nhất `ActionResult<T>`.
- *
- * 3. REVALIDATION (Cache Invalidation):
- * - Khi Thêm/Sửa/Xóa (`create`, `update`, `delete`), ta phải gọi `REVALIDATE`.
- * - Mục đích: Xóa cache cũ của Next.js để user thấy dữ liệu mới ngay lập tức.
- * - VD: `REVALIDATE.admin.products()` sẽ báo Next.js fetch lại list sản phẩm ở trang Admin. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - AI Content Generation: Tích hợp AI để tự động tạo mô tả sản phẩm và dịch thuật đa ngôn ngữ (Localization), giúp tiết kiệm thời gian chuẩn bị dữ liệu bán hàng.
- * - Omni-channel Inventory Management: Theo dõi và cập nhật trạng thái kho hàng (SKUs) theo thời gian thực, đảm bảo dữ liệu sản phẩm luôn đồng nhất trên mọi kênh bán hàng.
- *
- * =====================================================================
- */
+
 "use server";
 
 import {
@@ -34,13 +10,15 @@ import {
 } from "@/types/dtos";
 import { Product, ProductTranslation, Sku } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
+import { PaginationParams } from "@/lib/utils";
+import { FileExportResult } from "@/types/feature-types/admin.types";
 
 import { adminProductService } from "../services/admin-product.service";
 
 // --- PRODUCTS ---
 
 export async function getProductsAction(
-  paramsOrPage?: any,
+  paramsOrPage?: number | PaginationParams,
   limit?: number,
   search?: string
 ): Promise<ActionResult<Product[]>> {
@@ -84,7 +62,7 @@ export async function deleteProductAction(
 // --- SKUS ---
 
 export async function getSkusAction(
-  paramsOrPage: any = 1,
+  paramsOrPage: number | PaginationParams = 1,
   limit: number = 10,
   status?: string,
   search?: string,
@@ -106,7 +84,7 @@ export async function getSkusAction(
 export async function updateSkuAction(
   id: string,
   data: UpdateSkuDto | FormData
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<Sku>> {
   return wrapServerAction(async () => {
     const res = await adminProductService.updateSku(id, data);
     REVALIDATE.admin.products();
@@ -127,7 +105,7 @@ export async function getProductTranslationsAction(
 
 export async function updateProductTranslationAction(
   id: string,
-  data: any
+  data: Partial<ProductTranslation>
 ): Promise<ActionResult<ProductTranslation>> {
   return wrapServerAction(async () => {
     const res = await adminProductService.updateProductTranslation(id, data);
@@ -142,7 +120,13 @@ export async function generateProductContentAction(data: {
   productName: string;
   categoryName: string;
   brandName?: string;
-}): Promise<ActionResult<any>> {
+}): Promise<
+  ActionResult<{
+    description: string;
+    metaTitle: string;
+    metaDescription: string;
+  }>
+> {
   return wrapServerAction(
     () => adminProductService.generateProductContent(data),
     "Failed to generate content"
@@ -162,20 +146,21 @@ export async function translateTextAction(data: {
 // --- IMPORT & EXPORT ---
 
 export async function exportProductsAction(): Promise<
-  ActionResult<{ base64: string; filename: string }>
+  ActionResult<FileExportResult>
 > {
   return wrapServerAction(async () => {
-    const res = await adminProductService.exportProducts();
+    const buffer = await adminProductService.exportProducts();
+    const base64 = Buffer.from(buffer).toString("base64");
     return {
-      base64: res.base64,
-      filename: res.filename || "products_export.xlsx",
+      base64,
+      filename: `products_export_${Date.now()}.xlsx`,
     };
   }, "Failed to export products");
 }
 
 export async function importProductsAction(
   formData: FormData
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<{ imported: number }>> {
   return wrapServerAction(async () => {
     const res = await adminProductService.importProducts(formData);
     REVALIDATE.admin.products();
@@ -185,7 +170,7 @@ export async function importProductsAction(
 
 export async function previewProductsImportAction(
   formData: FormData
-): Promise<ActionResult<any[]>> {
+): Promise<ActionResult<Product[]>> {
   return wrapServerAction(async () => {
     const res = await adminProductService.previewProductsImport(formData);
     return res.data;
@@ -193,13 +178,14 @@ export async function previewProductsImportAction(
 }
 
 export async function downloadProductTemplateAction(): Promise<
-  ActionResult<{ base64: string; filename: string }>
+  ActionResult<FileExportResult>
 > {
   return wrapServerAction(async () => {
-    const res = await adminProductService.downloadProductTemplate();
+    const buffer = await adminProductService.downloadProductTemplate();
+    const base64 = Buffer.from(buffer).toString("base64");
     return {
-      base64: res.base64,
-      filename: res.filename || "product_import_template.xlsx",
+      base64,
+      filename: "product_import_template.xlsx",
     };
   }, "Failed to download template");
 }

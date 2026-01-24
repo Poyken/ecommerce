@@ -39,26 +39,7 @@ export interface ProductCardBaseProps {
   onMouseEnter?: () => void;
 }
 
-/**
- * =====================================================================
- * PRODUCT CARD BASE - Card sản phẩm dùng chung
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PREDICTIVE PREFETCHING:
- * - `onMouseEnter`: Khi user hover vào card, ta đoán 80% user sẽ click.
- * - Gọi `router.prefetch()` để tải trước trang chi tiết. Khi click sẽ chuyển trang NGAY LẬP TỨC.
- *
- * 2. SLOT PATTERN (Render Props):
- * - Prop `actions` nhận vào ReactNode (nút Wishlist, QuickView...).
- * - Giúp Card này tái sử dụng được ở nhiều nơi với các nút bấm khác nhau mà không cần
- *   hard-code logic cụ thể. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 export function ProductCardBase({
   id,
   name,

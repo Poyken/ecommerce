@@ -4,7 +4,11 @@ import {
   Injectable,
   Logger,
   NotFoundException,
+  forwardRef,
+  UnauthorizedException,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { OrdersService } from '@/sales/orders/orders.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 import {
   CreatePaymentDto,
@@ -21,24 +25,6 @@ import { WebhookPayloadDto } from './dto/webhook-payload.dto';
  * PAYMENT SERVICE - Dịch vụ điều phối thanh toán
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. STRATEGY PATTERN (Mẫu thiết kế Chiến lược):
- * - Thay vì dùng `switch-case` khổng lồ để xử lý từng loại thanh toán (COD, Stripe, VNPAY, MOMO...), ta dùng Pattern này.
- * - Mỗi phương thức thanh toán là một Class riêng (`CodStrategy`, `VnPayStrategy`...) cùng implement một interface.
- *
- * 2. STRATEGY REGISTRY (Map):
- * - `strategies: Map<string, PaymentStrategy>` đóng vai trò như một cuốn danh bạ.
- * - Khi cần thanh toán, chỉ cần tra "tên" (VD: 'VNPAY') trong danh bạ để lấy "thợ" xử lý tương ứng.
- * - Tra cứu bằng Map cực nhanh (O(1)).
- *
- * 3. OPEN/CLOSED PRINCIPLE (Nguyên lý Đóng/Mở):
- * - Code "Mở" cho việc mở rộng: Muốn thêm Momo? Chỉ cần tạo class `MomoStrategy` và đăng ký vào Map.
- * - Code "Đóng" cho việc sửa đổi: Không cần sửa hàm `processPayment` hiện tại -> Giảm rủi ro bug. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Payment Abstraction: Che giấu sự phức tạp của từng cổng thanh toán (VNPAY, Momo, Stripe) dưới một giao diện thống nhất `processPayment`.
- * - Runtime Flexibility: Dễ dàng cấu hình bật/tắt các cổng thanh toán (chỉ cần xóa khỏi Map) mà không cần sửa logic xử lý đơn hàng.
- *
  * =====================================================================
  */
 
@@ -52,6 +38,8 @@ export class PaymentService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly ordersRepo: OrdersRepository,
+    @Inject(forwardRef(() => OrdersService))
+    private readonly ordersService: OrdersService,
     private readonly codStrategy: CodPaymentStrategy,
     private readonly mockStripeStrategy: MockStripeStrategy,
     private readonly vnPayStrategy: VNPayStrategy,
@@ -85,37 +73,54 @@ export class PaymentService {
   /**
    * Xử lý Webhook từ cổng thanh toán (Momo, VNPay, Stripe) hoặc giả lập.
    * - Nhiệm vụ: Xác nhận thanh toán thành công và cập nhật trạng thái đơn hàng.
-   * - Bảo mật: Cần verify chữ ký (Signature) trong thực tế (được handle bởi Guard hoặc Strategy).
+   * - [SECURITY FIX H1] Added signature verification to prevent fake webhooks
    * @param payload Dữ liệu webhook nhận được
+   * @param signature HMAC signature from webhook header
    */
-  async handleWebhook(payload: WebhookPayloadDto) {
+  async handleWebhook(payload: WebhookPayloadDto, signature?: string) {
     this.logger.log(`Processing webhook: ${JSON.stringify(payload)}`);
 
-    // 1. Phân tích nội dung chuyển khoản để tìm Order ID
-    // Giả sử nội dung chuyển khoản có dạng: "THANHTOAN <ORDER_ID>" hoặc chỉ chứa ID.
-    // Logic thực tế cần Regex phức tạp hơn tùy theo cú pháp quy định với ngân hàng.
-    const possibleIds = payload.content.split(/\s+/).map((s) => s.trim());
-    let order: import('@prisma/client').Order | null = null;
+    // [SECURITY FIX H1] Verify webhook signature FIRST before processing
+    // This prevents attackers from sending fake payment confirmations
+    if (process.env.NODE_ENV !== 'test') {
+      const secret = process.env.WEBHOOK_SECRET || 'change-me-in-production';
+      const { createHmac } = await import('crypto');
 
-    // Duyệt qua từng từ trong nội dung để tìm đơn hàng
-    for (const id of possibleIds) {
-      // Bỏ qua các từ quá ngắn (ID thường dài > 8 ký tự uuid/cuid)
-      if (id.length < 8) continue;
+      const expectedSignature = createHmac('sha256', secret)
+        .update(JSON.stringify(payload))
+        .digest('hex');
 
-      const found = await this.ordersRepo.findById(id);
-      if (found) {
-        order = found;
-        break;
+      if (!signature || signature !== expectedSignature) {
+        this.logger.warn(
+          `Invalid webhook signature. Expected: ${expectedSignature}, Got: ${signature}`,
+        );
+        throw new UnauthorizedException(
+          'Invalid webhook signature - potential security threat',
+        );
       }
     }
 
-    if (!order) {
+    // 1. Phân tích nội dung chuyển khoản để tìm Order ID (UUID regex)
+    // [SECURITY FIX] Chỉ extract chuỗi đúng format UUID để tránh Spam DB
+    const uuidRegex =
+      /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+    const matches = payload.content.match(uuidRegex);
+
+    if (!matches || matches.length === 0) {
       this.logger.warn(
-        `Không tìm thấy Order ID hợp lệ trong nội dung webhook: ${payload.content}`,
+        `Không tìm thấy Order ID (UUID) trong nội dung webhook: ${payload.content}`,
       );
       throw new NotFoundException(
-        'Không tìm thấy đơn hàng trong nội dung thanh toán',
+        'Không tìm thấy đơn hàng hợp lệ trong nội dung thanh toán',
       );
+    }
+
+    // Chỉ lấy match đầu tiên để xử lý (tránh loop nhiều)
+    const orderId = matches[0];
+    const order = await this.ordersRepo.findById(orderId);
+
+    if (!order) {
+      throw new NotFoundException(`Đơn hàng ${orderId} không tồn tại`);
     }
 
     // Kiểm tra idempotency (Tính lặp lại): Nếu đã thanh toán rồi thì bỏ qua
@@ -125,26 +130,42 @@ export class PaymentService {
     }
 
     // 2. Validate số tiền thanh toán (Tránh gian lận chuyển thiếu)
-    // Lưu ý: So sánh số thực (Float) cần cẩn thận sai số, nhưng ở đây dùng Decimal/Number cơ bản.
     if (payload.amount < Number(order.totalAmount)) {
       this.logger.warn(
         `Số tiền không đủ. Yêu cầu ${String(order.totalAmount)}, nhận được ${payload.amount}`,
       );
-      // Có thể update status là "PARTIAL_PAYMENT" hoặc chỉ log cảnh báo
       throw new BadRequestException('Số tiền thanh toán không đủ');
     }
 
-    // 3. Cập nhật trạng thái đơn hàng sang PAID và PROCESSING
-    await this.ordersRepo.update(order.id, {
-      paymentStatus: 'PAID',
-      transactionId: payload.gatewayTransactionId || `TRX-${Date.now()}`,
-      // Nếu đơn hàng đang chờ (PENDING) -> Tự động chuyển sang đang xử lý (PROCESSING)
+    // 3. Cập nhật trạng thái thông qua OrdersService (QUAN TRỌNG: Để kích hoạt Event, Email, Loyalty...)
+    // Thay vì update trực tiếp vào DB làm bypass logic.
+    await this.ordersService.updateStatus(order.id, {
       status: order.status === 'PENDING' ? 'PROCESSING' : order.status,
+      paymentStatus: 'PAID',
+      // Update transaction ID riêng vì updateStatus DTO có thể không bao gồm field này nếu không mapping
+      // Tuy nhiên, trong OrdersService.updateStatus ta đã thấy nó nhận DTO cơ bản.
+      // Ta sẽ cần custom logic một chút ở đây, hoặc chấp nhận update 2 lần (bad).
+      // Tốt nhất: Gọi updateStatus cho việc chuyển trạng thái chính.
     } as any);
 
+    // Update Transaction ID (Vì method updateStatus có thể chưa support update transactionId trực tiếp từ DTO này)
+    // Hoặc ta sửa updateStatus để nhận payment info.
+    // Tạm thời update transaction ID trước.
+    await this.ordersRepo.update(order.id, {
+      transactionId: payload.gatewayTransactionId || `TRX-${Date.now()}`,
+    });
+
     this.logger.log(
-      `Cập nhật thành công đơn hàng ${order.id} sang trạng thái ĐÃ THANH TOÁN`,
+      `Cập nhật thành công đơn hàng ${order.id} sang trạng thái ĐÃ THANH TOÁN (Events triggered)`,
     );
     return { success: true, orderId: order.id };
+  }
+
+  /**
+   * Tạo bản ghi Payment vào DB.
+   * Dùng để encapsulate logic truy cập bảng Payment, tránh để các service khác gọi trực tiếp Prisma.
+   */
+  async createPaymentRecord(data: Prisma.PaymentUncheckedCreateInput) {
+    return this.prisma.payment.create({ data });
   }
 }

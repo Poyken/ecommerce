@@ -13,29 +13,7 @@ import {
   ShoppingBag,
 } from "lucide-react";
 
-/**
- * =====================================================================
- * HEADER NAV - Menu điều hướng chính trên Desktop
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ACTIVE LINK HIGHLIGHTING:
- * - Sử dụng `usePathname` để biết user đang ở trang nào.
- * - `pathname === link.href` (Exact) hoặc `pathname.startsWith(link.href)` (Prefix).
- * - Hiển thị gạch chân (`after:w-full`) cho link đang active.
- *
- * 2. CONDITIONAL LINKS (RBAC):
- * - `Orders`: Chỉ hiển thị nếu user đã đăng nhập.
- * - `Admin`: Chỉ hiển thị nếu user có quyền `admin:read`.
- *
- * 3. HYBRID REFACTOR WARNING:
- * - `hasPermission` lấy dữ liệu từ `AuthProvider`. Nếu user đăng nhập ở client, context này cần được cập nhật để hiển thị đúng các link quyền hạn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import { User } from "@/types/models";
 

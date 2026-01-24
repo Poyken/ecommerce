@@ -5,28 +5,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * TOAST COMPONENT - Thông báo nổi
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ARCHITECTURE:
- * - `ToastProvider`: Wrap toàn bộ ứng dụng (thường ở Root Layout).
- * - `ToastViewport`: Nơi các toast sẽ xuất hiện (thường là góc màn hình).
- * - `Toast`: Component hiển thị từng thông báo cụ thể.
- *
- * 2. VARIANTS (CVA):
- * - Sử dụng `class-variance-authority` để định nghĩa các kiểu toast:
- *   - `default`: Thông báo thường (trắng/đen).
- *   - `destructive`: Lỗi (đỏ).
- *   - `success`: Thành công (xanh lá). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 const ToastProvider = ToastPrimitives.Provider;
 

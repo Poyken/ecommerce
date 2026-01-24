@@ -1,23 +1,4 @@
-/**
- * =====================================================================
- * TYPE UTILITIES - Các type helpers cho TypeScript
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. UTILITY TYPES:
- * - TypeScript có sẵn Partial, Required, Pick, Omit...
- * - Đây là bộ thêm các utility types hữu ích khác.
- *
- * 2. WHY USE THESE?
- * - Giúp code type-safe hơn.
- * - Giảm boilerplate khi định nghĩa types. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Type Flexibility: Tạo ra các kiểu dữ liệu biến linh hoạt (vd: làm một object có tất cả các field đều có thể null) giúp xử lý data từ DB dễ dàng hơn.
- * - DX (Developer Experience): Giảm bớt lượng code thủ công (boilerplate) khi định nghĩa các props phức tạp cho React Component.
- *
- * =====================================================================
- */
+
 
 // ============================================================================
 // BASIC UTILITY TYPES

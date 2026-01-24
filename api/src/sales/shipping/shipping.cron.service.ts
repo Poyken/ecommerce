@@ -9,22 +9,6 @@ import { GHNService } from './ghn.service';
  * SHIPPING CRON SERVICE - ĐỒNG BỘ TRẠNG THÁI VẬN CHUYỂN TỰ ĐỘNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. BACKUP SYNC (Đồng bộ dự phòng):
- * - Thông thường, GHN sẽ gửi Webhook khi đơn hàng đổi trạng thái.
- * - Tuy nhiên, thỉnh thoảng Webhook bị lỗi hoặc thất bại. Cron Job này đóng vai trò "người quét rác" quét lại các đơn đang vận chuyển để đảm bảo dữ liệu luôn mới nhất.
- *
- * 2. STALE ORDERS (Đơn hàng cũ):
- * - Ta chỉ quét những đơn đã lâu (> 30 phút) chưa có cập nhật gì.
- * - Điều này giúp tránh việc spam API của GHN và tránh conflict nếu Webhook vừa mới xử lý xong.
- *
- * 3. FIFO PROCESSING:
- * - Ưu tiên xử lý những đơn hàng có `updatedAt` cũ nhất trước để đảm bảo tính công bằng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tự động kiểm tra và đồng bộ trạng thái đơn hàng với đơn vị vận chuyển (GHN).
- * - Giảm thiểu sai sót dữ liệu khi Webhook của đối tác gặp sự cố.
-
  * =====================================================================
  */
 

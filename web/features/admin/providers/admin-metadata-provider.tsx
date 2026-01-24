@@ -18,31 +18,7 @@ const AdminMetadataContext = createContext<
   AdminMetadataContextType | undefined
 >(undefined);
 
-/**
- * =====================================================================
- * ADMIN METADATA PROVIDER - Cung cấp dữ liệu dùng chung trong Admin
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HYBRID STRATEGY (SWR):
- * - Sử dụng thư viện `swr` để thực hiện chiến lược "Stale-While-Revalidate".
- * - Khi mở dialog hoặc chuyển trang, dữ liệu CŨ sẽ được hiển thị ngay lập tức (instant UI),
- *   trong khi hệ thống âm thầm gọi API để cập nhật dữ liệu mới nhất.
- *
- * 2. GLOBAL CACHING:
- * - Dữ liệu Brands và Categories được fetch một lần tại Layout và dùng cho TOÀN BỘ các dialog
- *   ở các trang khác nhau (Products, SKUs, v.v.).
- * - Loại bỏ việc prop-drilling (truyền props qua nhiều tầng) vốn gây khó bảo trì.
- *
- * 3. SERVER ACTION INTEGRATION:
- * - Kết hợp mượt mà với Server Actions (`getBrandsAction`, `getCategoriesAction`). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Management Efficiency: Admin có thể chọn nhanh Thương hiệu/Danh mục khi tạo sản phẩm mà không cần chờ load dữ liệu từ API cho mỗi lần mở form.
- * - Instant UI: Nhờ cơ chế SWR Cache, các dropdown list xuất hiện "tức thì", tạo cảm giác ứng dụng cực kỳ chuyên nghiệp và mượt mà cho nhân viên vận hành.
 
- * =====================================================================
- */
 
 export function AdminMetadataProvider({
   children,

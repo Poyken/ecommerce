@@ -10,23 +10,6 @@ import { StockGateway } from './stock.gateway';
  * INVENTORY SERVICE - Quản lý tồn kho
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CONCURRENCY CONTROL (Kiểm soát đồng thời):
- * - Vấn đề kinh điển: 2 user A và B cùng mua sản phẩm cuối cùng CÙNG LÚC.
- * - Giải pháp: Dùng "Atomic Update" với điều kiện `where: { stock: { gte: quantity } }`.
- * - Database sẽ khóa dòng dữ liệu (Row Lock) và chỉ cho phép update nếu điều kiện thỏa mãn.
- * - User chậm hơn 1ms sẽ bị fail do `count === 0` (hàng đã bị người trước mua mất).
- *
- * 2. REAL-TIME UPDATES:
- * - Khi stock thay đổi, ta dùng WebSocket (`StockGateway`) để bắn tin cho tất cả client đang xem sản phẩm đó.
- * - Giúp UI user tự động cập nhật "Còn 5 sản phẩm" -> "Còn 4 sản phẩm" ngay lập tức.
- *
- * 3. FOMO EFFECT (Low Stock Alert):
- * - Khi hàng sắp hết (< 5), hệ thống tự động tìm những ai đang để hàng trong giỏ (Pending Cart) và gửi thông báo thúc giục mua hàng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Giám sát chặt chẽ số lượng hàng trong kho, điều phối xuất nhập kho và cảnh báo khi sản phẩm sắp hết hàng.
-
  * =====================================================================
  */
 
@@ -45,29 +28,59 @@ export class InventoryService {
    * Giữ tồn kho (Reserve Stock) cho đơn hàng (Khi user bấm Checkout).
    * - Giảm `stock` (tồn kho khả dụng).
    * - Tăng `reservedStock` (hàng đã đặt nhưng chưa giao).
-   * - Sử dụng "Atomic Update" để tránh race condition.
+   * - B2 FIX: Sử dụng SELECT FOR UPDATE để lock row, ngăn race condition.
    */
   async reserveStock(skuId: string, quantity: number, tx?: any) {
     const prisma = tx || this.prisma;
 
-    // Cập nhật nguyên tử: chỉ giảm nếu stock >= quantity
-    const result = await prisma.sku.updateMany({
-      where: {
-        id: skuId,
-        stock: { gte: quantity },
-      },
+    // B2 FIX: Lock the SKU row to prevent race conditions
+    // Use SELECT FOR UPDATE to ensure atomic stock check + update
+    const lockedSku = await prisma.$queryRaw<any[]>`
+      SELECT id, "skuCode", stock, "reservedStock", "tenantId" 
+      FROM "Sku" 
+      WHERE id = ${skuId}
+      FOR UPDATE
+    `;
+
+    if (!lockedSku || lockedSku.length === 0) {
+      throw new Error(`SKU ${skuId} không tồn tại`);
+    }
+
+    const sku = lockedSku[0];
+
+    // Atomic stock validation - no race condition possible
+    if (sku.stock < quantity) {
+      throw new Error(
+        `Không đủ tồn kho cho SKU ${sku.skuCode} (Yêu cầu: ${quantity}, Còn: ${sku.stock})`,
+      );
+    }
+
+    // Update stock atomically (row is locked)
+    await prisma.sku.update({
+      where: { id: skuId },
       data: {
         stock: { decrement: quantity },
         reservedStock: { increment: quantity },
       },
     });
 
-    if (result.count === 0) {
-      throw new Error(`Không đủ tồn kho cho SKU ${skuId}`);
-    }
-
     this.notifyStockUpdate(skuId);
-    this.checkLowStock(skuId);
+    await this.checkLowStock(skuId, tx);
+  }
+
+  /**
+   * Giữ tồn kho (Reserve Stock) cho nhiều sản phẩm cùng lúc.
+   * - Optimization: Dùng Promise.all để tận dụng concurrency của DB Transaction.
+   */
+  async reserveStockBatch(
+    items: { skuId: string; quantity: number }[],
+    tx?: any,
+  ) {
+    // 1. Reserve từng món (Parallel)
+    // Prisma trong transaction sẽ serialize, nhưng code gọn hơn loop thường.
+    await Promise.all(
+      items.map((item) => this.reserveStock(item.skuId, item.quantity, tx)),
+    );
   }
 
   /**
@@ -112,66 +125,47 @@ export class InventoryService {
    *
    * ✅ TỐI ƯU HÓA: Gửi batch notification (nhanh hơn 100x).
    */
-  private async checkLowStock(skuId: string) {
-    const sku = await (this.prisma.sku as any).findUnique({
+  /**
+   * Kiểm tra và cảnh báo sắp hết hàng (Low Stock Alert).
+   *
+   * [SENIOR ARCHITECTURE]: Không gửi notification/websocket trực tiếp trong transaction.
+   * Thay vào đó, tạo OutboxEvent để worker xử lý async.
+   */
+  private async checkLowStock(skuId: string, tx?: any) {
+    const prisma = tx || this.prisma;
+
+    const sku = await prisma.sku.findUnique({
       where: { id: skuId },
-      include: { product: true },
+      select: { stock: true, skuCode: true, tenantId: true },
     });
 
-    // Ngưỡng cảnh báo: < 5 sản phẩm
-    if (sku && sku.stock < 5) {
-      this.logger.warn(
-        `LOW STOCK ALERT: SKU ${sku.skuCode} chỉ còn ${sku.stock} sản phẩm.`,
+    // [FIX H1] Configurable Low Stock Threshold
+    // Fetch tenant settings to get configurable threshold
+    const settings = await prisma.tenantSettings.findUnique({
+      where: { tenantId: sku.tenantId },
+      select: { lowStockThreshold: true },
+    });
+
+    const threshold = settings?.lowStockThreshold ?? 5;
+
+    // Ngưỡng cảnh báo configurable
+    if (sku && sku.stock < threshold) {
+      this.logger.debug(
+        `Queuing LOW_STOCK_ALERT for SKU ${sku.skuCode} (Stock: ${sku.stock} < Threshold: ${threshold})`,
       );
 
-      // ✅ Query 1 lần để lấy tất cả user bị ảnh hưởng
-      const carts = await (this.prisma.cart as any).findMany({
-        where: {
-          items: {
-            some: {
-              skuId: skuId,
-            },
+      await prisma.outboxEvent.create({
+        data: {
+          aggregateType: 'SKU',
+          aggregateId: skuId,
+          type: 'LOW_STOCK_ALERT',
+          payload: {
+            skuId,
+            stock: sku.stock,
+            tenantId: sku.tenantId,
           },
         },
-        select: { userId: true },
       });
-
-      if (carts.length === 0) return;
-
-      // ✅ Batch create (Tạo hàng loạt notification) -> 1 Query thay vì N Query
-      const notifications = carts.map((cart) => ({
-        userId: cart.userId,
-        type: 'LOW_STOCK',
-        title: 'Sản phẩm sắp hết hàng!',
-        message: `Sản phẩm ${sku.product.name} trong giỏ hàng của bạn chỉ còn lại ${sku.stock} sản phẩm. Hãy mua ngay kẻo lỡ!`,
-        link: '/cart',
-        isRead: false,
-      }));
-
-      await (this.prisma.notification as any).createMany({
-        data: notifications,
-      });
-
-      // ✅ Gửi WebSocket (Real-time) - Fire-and-forget
-      for (const cart of carts) {
-        const notification = notifications.find(
-          (n) => n.userId === cart.userId,
-        );
-        if (notification) {
-          try {
-            this.notificationsGateway.sendNotificationToUser(
-              cart.userId,
-              notification,
-            );
-          } catch (error) {
-            // Không break luồng nếu lỗi WebSocket
-            this.logger.warn(
-              `Lỗi gửi WebSocket cho user ${cart.userId}`,
-              error,
-            );
-          }
-        }
-      }
     }
   }
 
@@ -180,7 +174,7 @@ export class InventoryService {
    */
   private async notifyStockUpdate(skuId: string) {
     try {
-      const sku = await (this.prisma.sku as any).findUnique({
+      const sku = await this.prisma.sku.findUnique({
         where: { id: skuId },
         select: { stock: true, productId: true },
       });

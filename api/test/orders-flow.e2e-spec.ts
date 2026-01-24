@@ -1,4 +1,5 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
+import { ZodValidationPipe } from 'nestjs-zod';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
@@ -23,7 +24,7 @@ describe('Orders Flow (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api');
-    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.useGlobalPipes(new ZodValidationPipe());
     await app.init();
 
     // 1. Get Access Token (assuming admin@example.com / Admin@123 exists from seed)

@@ -1,17 +1,4 @@
-/**
- * =====================================================================
- * CART BADGE TEST - Example Vitest + RTL Test
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Đây là ví dụ test component React với:
- * 1. Vitest - Test runner (thay Jest)
- * 2. React Testing Library - Utilities để test components
- * 3. Mock Zustand store - Mock state để test isolated
- *
- * =====================================================================
- */
+
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";

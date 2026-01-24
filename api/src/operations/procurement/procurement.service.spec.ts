@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProcurementService } from './procurement.service';
 import { PrismaService } from '@/core/prisma/prisma.service';
-import { InventoryService } from '@/inventory/inventory.service';
+import { InventoryService } from '@/operations/inventory/inventory.service';
 import { PurchaseOrderStatus } from '@prisma/client';
 
 jest.mock('@/core/tenant/tenant.context', () => ({

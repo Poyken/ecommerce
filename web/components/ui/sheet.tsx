@@ -8,29 +8,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * SHEET - Thành phần ngăn kéo (Drawer/Side Menu)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. OVERLAY & PORTAL:
- * - `SheetPortal`: Đưa nội dung ra ngoài cây DOM hiện tại (thường là cuối thẻ body) để tránh các vấn đề về `z-index` và `overflow: hidden`.
- * - `SheetOverlay`: Lớp nền mờ phía sau để tập trung sự chú ý vào ngăn kéo.
- *
- * 2. DIRECTIONAL ANIMATION:
- * - Hỗ trợ trượt từ 4 hướng: `top`, `right`, `bottom`, `left`.
- * - Sử dụng các class `data-[state=open]:slide-in-from-...` để tạo hiệu ứng mượt mà.
- *
- * 3. ACCESSIBILITY:
- * - Tự động quản lý focus (Focus Trap) khi mở ngăn kéo.
- * - Nhấn `ESC` hoặc click ra ngoài để đóng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;

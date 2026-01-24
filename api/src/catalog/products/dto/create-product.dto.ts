@@ -1,5 +1,6 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
+import { sanitizeHtml } from '@/common/utils/sanitize.util';
 
 /**
  * =====================================================================
@@ -30,7 +31,12 @@ export class CreateProductImageDto extends createZodDto(
 export const CreateProductSchema = z.object({
   name: z.string().min(1, 'Name is required').describe('iPhone 15 Pro Max'),
   slug: z.string().optional().describe('iphone-15-pro-max'),
-  description: z.string().optional().describe('Flagship phone from Apple...'),
+  // SECURITY: Auto-sanitize HTML to prevent XSS attacks
+  description: z
+    .string()
+    .optional()
+    .transform(sanitizeHtml)
+    .describe('Flagship phone from Apple...'),
   categoryIds: z
     .array(z.string().uuid())
     .min(1, 'At least one category is required')

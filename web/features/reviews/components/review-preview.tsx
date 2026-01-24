@@ -3,30 +3,7 @@
 import { Star } from "lucide-react";
 import Image from "next/image";
 
-/**
- * =====================================================================
- * REVIEW PREVIEW - Hiển thị đánh giá và bằng chứng xã hội
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SOCIAL PROOF (Bằng chứng xã hội):
- * - Rating và Review là yếu tố then chốt để tăng tỷ lệ chuyển đổi (Conversion Rate).
- * - Hiển thị tên và ảnh của người review thật giúp tăng độ tin cậy.
- *
- * 2. STAR RENDERING LOGIC:
- * - `fullStars`: Số lượng sao vàng nguyên vẹn.
- * - `hasHalfStar`: Kiểm tra nếu phần dư >= 0.5 để hiển thị nửa ngôi sao.
- * - Kỹ thuật hiển thị nửa sao: Sử dụng `relative` container và `overflow-hidden` trên một layer sao vàng đè lên sao xám.
- *
- * 3. UI OPTIMIZATION:
- * - `line-clamp-2`: Giới hạn nội dung review tối đa 2 dòng để không làm vỡ layout của Product Card.
- * - `CompactRating`: Một phiên bản rút gọn dùng cho các không gian hẹp. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 interface ReviewPreviewProps {
   rating: number;
   reviewCount: number;

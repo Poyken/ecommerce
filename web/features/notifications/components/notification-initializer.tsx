@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * NOTIFICATION INITIALIZER - Khởi tạo Socket và Đồng bộ Thông báo
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SIDE EFFECT ENCAPSULATION:
- * - Phân tách việc quản lý Socket/Polling ra khỏi Layout hoặc App component.
- * - Chỉ cần mount 1 lần ở Root Layout để theo dõi thông báo xuyên suốt các trang.
- *
- * 2. SOCKET & POLLING HYBRID:
- * - Ưu tiên Socket để cập nhật Real-time (độ trễ thấp).
- * - Fallback Polling (mỗi 120s) và Visibility Check để đảm bảo data không bị "stale" nếu mất kết nối socket.
- *
- * 3. AUTH SYNC:
- * - Tự động connect socket khi có `accessToken` và dọn dẹp (cleanup) khi User logout. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

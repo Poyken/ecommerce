@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * WISHLIST BADGE - Huy hiệu hiển thị số lượng sản phẩm yêu thích
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HYBRID SYNC:
- * - Nếu user chưa đăng nhập: Lấy số lượng từ `useGuestWishlist` (LocalStorage).
- * - Nếu user đã đăng nhập: Gọi Server Action `getWishlistCountAction` để lấy dữ liệu từ database.
- *
- * 2. REAL-TIME EVENTS:
- * - Lắng nghe các event `wishlist_updated` và `guest_wishlist_updated` để cập nhật con số ngay lập tức khi user nhấn nút Tim.
- *
- * 3. PERFORMANCE:
- * - React.memo để prevent unnecessary re-renders
- * - useCallback để stabilize event handlers *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

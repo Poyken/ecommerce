@@ -16,25 +16,7 @@ import { Check, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-/**
- * =====================================================================
- * UPDATE ORDER STATUS DIALOG - Cập nhật trạng thái đơn hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. STATE TRANSITION LOGIC (`allowedTransitions`):
- * - Đây là phần quan trọng nhất. Đơn hàng không thể chuyển trạng thái tùy tiện (VD: Không thể chuyển từ PENDING sang DELIVERED ngay lập tức).
- * - Ta định nghĩa một "State Machine" đơn giản để giới hạn các lựa chọn hợp lệ cho Admin.
- * - Giúp tránh lỗi logic trong vận hành kho vận.
- *
- * 2. DISABLED OPTIONS:
- * - `isOptionDisabled`: Kiểm tra xem trạng thái mới có nằm trong danh sách "được phép" của trạng thái hiện tại hay không. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function UpdateOrderStatusDialog({
   orderId,

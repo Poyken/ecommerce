@@ -1,24 +1,4 @@
-/**
- * =====================================================================
- * USER ADMIN ACTIONS - Quản lý Người dùng (Admin Context)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SCOPE:
- * - Các actions này dành riêng cho Admin (có quyền quản lý user).
- * - KHÁC với các actions user profile (user tự sửa thông tin của mình).
- *
- * 2. CHỨC NĂNG:
- * - CRUD Users: Lấy danh sách, tạo mới (nhân viên), cập nhật role, xóa/khóa user.
- * - Assign Roles: Gán quyền cho user quản trị.
- * - Tất cả đều wrap trong `wrapServerAction` để xử lý lỗi và format trả về chuẩn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Granular Access Control: Quản lý quyền hạn cho toàn bộ nhân viên trong hệ thống, đảm bảo đúng người đúng việc (vd: nhân viên kho chỉ xem được đơn hàng).
- * - Personnel Management: Giám sát và quản lý tài khoản người dùng tập trung, hỗ trợ việc khóa/mở tài khoản tức thì khi có biến cố bảo mật.
 
- * =====================================================================
- */
 "use server";
 
 import {

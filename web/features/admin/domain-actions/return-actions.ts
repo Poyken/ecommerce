@@ -1,19 +1,4 @@
-/**
- * =====================================================================
- * RETURN ADMIN ACTIONS - Xử lý Trả hàng (Admin Side)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RMA MANAGEMENT:
- * - Lấy danh sách yêu cầu trả hàng (`getAdminReturnsAction`).
- * - Cập nhật trạng thái và ghi chú kiểm hàng (`updateReturnStatusAction`).
- *
- * 2. LIFECYCLE:
- * - Admin duyệt yêu cầu (Approved), nhận hàng (Received), và hoàn tiền (Refunded).
- * - Mọi thay đổi đều được revalidate để UI cập nhật realtime.
- * =====================================================================
- */
+
 "use server";
 
 import { adminReturnService } from "../services/admin-return.service";

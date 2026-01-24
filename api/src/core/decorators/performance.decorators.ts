@@ -3,14 +3,6 @@
  * PERFORMANCE DECORATORS - ĐO LƯỜNG VÀ TỐI ƯU HIỆU SUẤT
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Các decorators này giúp đo lường và tối ưu hiệu suất tự động:
- * 1. @LogExecutionTime: Ghi log thời gian thực thi
- * 2. @Cacheable: Cache kết quả tự động
- * 3. @Retry: Tự động retry khi lỗi
- * 4. @RateLimit: Giới hạn số lần gọi
- *
  * =====================================================================
  */
 

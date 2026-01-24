@@ -18,6 +18,7 @@ export class OrderNotificationsHandler {
 
     await this.notificationsService.create({
       userId: event.userId,
+      tenantId: event.tenantId,
       title: '🎉 Đặt hàng thành công!',
       message: `Đơn hàng #${event.orderId.substring(0, 8)} đã được tạo thành công và đang chờ xác nhận.`,
       type: 'ORDER',
@@ -30,6 +31,7 @@ export class OrderNotificationsHandler {
 
     await this.notificationsService.create({
       userId: event.userId,
+      tenantId: event.tenantId,
       title: '❌ Đơn hàng đã bị hủy',
       message: `Đơn hàng #${event.orderId.substring(0, 8)} đã bị hủy. Lý do: ${event.reason || 'Không có'}`,
       type: 'ORDER',
@@ -44,6 +46,7 @@ export class OrderNotificationsHandler {
 
     await this.notificationsService.create({
       userId: event.userId,
+      tenantId: event.tenantId,
       title: '📦 Cập nhật trạng thái đơn hàng',
       message: `Đơn hàng #${event.orderId.substring(0, 8)} đã chuyển sang trạng thái: ${event.newStatus}.`,
       type: 'ORDER',
@@ -56,6 +59,7 @@ export class OrderNotificationsHandler {
 
     await this.notificationsService.create({
       userId: event.userId,
+      tenantId: event.tenantId,
       title: '💰 Thanh toán thành công!',
       message: `Đơn hàng #${event.orderId.substring(0, 8)} đã được thanh toán thành công.`,
       type: 'ORDER',

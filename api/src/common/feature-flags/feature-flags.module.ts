@@ -13,15 +13,6 @@ import { FeatureFlagsService } from './feature-flags.service';
  * FEATURE FLAGS MODULE
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DUAL CONTROLLER STRATEGY:
- * - `FeatureFlagsController`: Dành cho Admin (Tạo, Sửa, Xóa cờ). Cần Auth Guard.
- * - `FeatureFlagsPublicController`: Dành cho Client App (Check xem tính năng bật hay tắt). Không cần Auth (hoặc Auth lỏng).
- * - -> Tách biệt rõ ràng quyền hạn ngay từ lớp Controller. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 export class FeatureFlagsModule {}

@@ -7,17 +7,6 @@ import { PrismaService } from '@core/prisma/prisma.service';
  * INVOICE SERVICE - Tạo hóa đơn cho đơn hàng
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. INVOICE DATA:
- * - Tổng hợp thông tin đơn hàng: Khách hàng, Sản phẩm, Giá, Thuế.
- * - Trả về dữ liệu JSON để frontend render hoặc tạo PDF.
- *
- * 2. INVOICE NUMBER:
- * - Tự động sinh mã hóa đơn dạng INV-YYYYMMDD-XXXXX. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

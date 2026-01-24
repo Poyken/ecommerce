@@ -10,34 +10,7 @@ import { Link } from "@/i18n/routing";
 import { Heart, ShoppingCart } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-/**
- * =====================================================================
- * HEADER COMPONENT - Thanh điều hướng chính
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CHIẾN LƯỢC FETCH DATA (Data Fetching Strategy):
- * - Vấn đề: Header cần thông tin User, Cart, Wishlist.
- * - Sai lầm thường gặp: Fetch API trực tiếp trong Header -> Gây ra "Waterfall" (Layout fetch xong mới render Header -> Header mới fetch).
- * - Giải pháp: Fetch dữ liệu ở tầng cao nhất (`layout.tsx`) và truyền xuống qua Props.
- *   -> Header trở thành "Dumb Component" (chỉ nhận và hiển thị), giúp render cực nhanh.
- *
- * 2. COMPOSITION PATTERN:
- * - Header không tự làm mọi thứ. Nó ghép nối các components nhỏ hơn:
- *   + `HeaderNav`: Menu điều hướng.
- *   + `HeaderActions`: Login/Logout/Profile menu.
- *   + `CartBadge`, `WishlistBadge`: Icon kèm số lượng.
- * - Giúp code gọn gàng, dễ bảo trì.
- *
- * 3. FALLBACK & SKELETON:
- * - `HeaderFallback`: Hiển thị khung xương khi component động đang load.
- * - Ngăn chặn Layout Shift (CLS) - hiện tượng giao diện bị giật cục khi load. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface HeaderProps {
   initialUser?: any; // Thông tin user (được truyền từ server component cha)

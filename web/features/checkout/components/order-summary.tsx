@@ -1,29 +1,4 @@
-/**
- * =====================================================================
- * ORDER SUMMARY - Tóm tắt đơn hàng (Checkout)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPOSITION PATTERN (SLOTS):
- * - Component này sử dụng pattern "Slots" (truyền ReactNode qua props `couponSlot`, `actionSlot`).
- * - Lợi ích: Tái sử dụng khung UI tóm tắt cho cả trang Cart và trang Checkout.
- *   + Trang Cart truyền nút "Proceed to Checkout".
- *   + Trang Checkout truyền nút "Place Order".
- * -> Không cần viết 2 components riêng biệt.
- *
- * 2. STICKY UI UX:
- * - Class `sticky top-24` giúp bảng này luôn trôi theo khi cuộn.
- * - Tại sao quan trọng? User luôn cần thấy Tổng tiền khi đang điền form địa chỉ dài ngoằng.
- *
- * 3. LOADING STATE UX:
- * - Khi phí Ship đang tính (gọi API), ta dùng Skeleton (loading placeholder) thay vì hiện số 0.
- * - Tránh gây hiểu lầm là Miễn phí vận chuyển. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

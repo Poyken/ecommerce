@@ -28,7 +28,11 @@ import {
 export function TenantLoginPageContent() {
   const t = useTranslations("auth.login");
   const tToast = useTranslations("common.toast");
-  const [state, action, isPending] = useActionState(loginAction, null);
+  const [state, action, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    return loginAction({ email, password });
+  }, null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
@@ -99,11 +103,11 @@ export function TenantLoginPageContent() {
       
       console.log('[CLIENT DEBUG] Login State Return:', state); // Log full state
 
-      if (state.errors) {
-        setLocalErrors(state.errors);
+      if ((state as any).errors) {
+        setLocalErrors((state as any).errors);
       }
 
-      if (state.error && !state.mfaRequired) {
+      if (state.error && !(state as any).mfaRequired) {
         toast({
           variant: "destructive",
           title: tToast("error"),
@@ -111,9 +115,9 @@ export function TenantLoginPageContent() {
         });
       }
 
-      if (state.mfaRequired && state.userId) {
+      if ((state as any).mfaRequired && (state as any).userId) {
         setMfaRequired(true);
-        setTempUserId(state.userId);
+        setTempUserId((state as any).userId);
         return;
       }
 
@@ -144,7 +148,7 @@ export function TenantLoginPageContent() {
           } catch (e) { console.error(e) }
 
           // Redirect
-          const permissions = state.permissions || [];
+          const permissions = (state as any).permissions || [];
           console.log('[LOGIN DEBUG] Permissions received:', permissions);
           
           const isSuperAdmin = permissions.includes("superAdmin:read");

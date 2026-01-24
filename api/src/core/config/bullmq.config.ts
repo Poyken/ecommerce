@@ -6,23 +6,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
  * BULLMQ CONFIGURATION - QUẢN LÝ TÁC VỤ CHẠY NGẦM
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. BACKGROUND JOBS (Tác vụ chạy ngầm):
- * - Dùng để xử lý các việc tốn thời gian mà không bắt khách hàng phải chờ (VD: Gửi mail, xử lý ảnh, tính toán báo cáo).
- * - BullMQ sử dụng Redis để lưu trữ danh sách các công việc (`Queue`).
- *
- * 2. PRIORITY (Độ ưu tiên):
- * - `priority: 1` là cao nhất: Mail xác nhận đơn hàng phải được gửi ngay.
- * - `priority: 10` là thấp nhất: Tính toán Analytics có thể chậm một chút cũng không sao.
- *
- * 3. RETRY STRATEGY (Cơ chế thử lại):
- * - Nếu một job bị lỗi (VD: Server gửi mail bị tèo), BullMQ sẽ tự động thử lại (`attempts`).
- * - `backoff` giúp tăng dần thời gian chờ giữa các lần thử lại để tránh làm nghẽn hệ thống. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Reliability: Đảm bảo email quan trọng (đăng ký, đơn hàng) được gửi 100% bằng cách thử lại 3-5 lần nếu lỗi.
- * - Traffic Smoothing: Tránh làm sập Server Email/SMS khi có chiến dịch Marketing (gửi 1 triệu mail) nhờ cơ chế hàng đợi (Queue) hạn chế số lượng gửi mỗi giây (`limiter`).
-
  * =====================================================================
  */
 

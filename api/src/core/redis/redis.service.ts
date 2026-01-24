@@ -11,27 +11,6 @@ import Redis, { Cluster } from 'ioredis';
  * REDIS SERVICE - HỆ THỐNG CACHING & LƯU TRỮ TẠM THỜI
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TẠI SAO DÙNG REDIS?
- * - DB (PostgreSQL) truy xuất ổ cứng nên khá chậm. Redis lưu dữ liệu trên RAM nên tốc độ cực nhanh (Microseconds).
- * - Dùng để cache kết quả API, session người dùng, hoặc các biến đếm (Throttling).
- *
- * 2. CLUSTER VS SINGLE:
- * - Local/Dev: Dùng 1 instance duy nhất cho đơn giản.
- * - Production: Dùng Redis Cluster (nhiều node) để đảm bảo High Availability (Hệ thống vẫn chạy nếu 1 node chết).
- *
- * 3. SCAN VS KEYS (CỰC KỲ QUAN TRỌNG):
- * - TUYỆT ĐỐI không dùng lệnh `KEYS *` trong production vì nó sẽ quét toàn bộ RAM, làm treo Redis (Single-threaded).
- * - Luôn dùng `SCAN` để duyệt key theo từng đợt nhỏ (Batching), đảm bảo không gây nghẽn hệ thống.
- *
- * 4. RETRY STRATEGY:
- * - Khi mất kết nối, hệ thống tự động thử lại (Retry) với độ trễ tăng dần để tránh làm quá tải server khi nó vừa sống dậy. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Session Management: Lưu trạng thái đăng nhập của user (JWT blacklist) để logout tức thì trên mọi thiết bị.
- * - API Rate Limiting: Đếm số lần request từ 1 IP để chặn các cuộc tấn công DDoS.
- * - Leaderboard: Dùng Redis Sorted Set để xếp hạng game thủ/người mua nhiều nhất theo thời gian thực (Real-time).
-
  * =====================================================================
  */
 @Injectable()

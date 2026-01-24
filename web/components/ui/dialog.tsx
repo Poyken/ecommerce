@@ -5,29 +5,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * DIALOG COMPONENT - Modal/Popup
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RADIX UI PRIMITIVES:
- * - Xây dựng trên nền tảng `@radix-ui/react-dialog`.
- * - Radix xử lý các vấn đề phức tạp như: Focus trap (giữ focus trong modal),
- *   Keyboard navigation (ESC để đóng), Screen reader support.
- *
- * 2. PORTAL:
- * - `DialogPortal` render nội dung modal ra ngoài DOM tree hiện tại (thường là cuối `body`).
- * - Giúp tránh lỗi `z-index` và `overflow: hidden` của container cha.
- *
- * 3. ANIMATION:
- * - Sử dụng `tailwindcss-animate` với các class `animate-in`, `fade-in`, `zoom-in`. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 function Dialog({
   ...props

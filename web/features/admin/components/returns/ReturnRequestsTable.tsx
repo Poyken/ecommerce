@@ -12,6 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 import {
   Select,
   SelectContent,
@@ -375,11 +376,14 @@ export function ReturnRequestsTable() {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           {request.items[0]?.orderItem?.imageUrl && (
-                            <img
-                              src={request.items[0].orderItem.imageUrl}
-                              alt=""
-                              className="w-10 h-10 rounded object-cover"
-                            />
+                            <div className="relative w-10 h-10 rounded overflow-hidden">
+                              <Image
+                                src={request.items[0].orderItem.imageUrl}
+                                alt=""
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
                           )}
                           <div>
                             <p className="font-medium text-sm truncate max-w-[150px]">
@@ -454,6 +458,20 @@ export function ReturnRequestsTable() {
                                   Từ chối
                                 </DropdownMenuItem>
                               </>
+                            )}
+                            {request.images && request.images.length > 0 && (
+                              <div className="flex -space-x-2 overflow-hidden">
+                                {request.images.slice(0, 3).map((img, i) => (
+                                  <div key={i} className="relative inline-block h-8 w-8 rounded-full ring-2 ring-background overflow-hidden">
+                                    <Image
+                                      src={img}
+                                      alt=""
+                                      fill
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                ))}
+                              </div>
                             )}
 
                             {request.status === ReturnStatus.IN_TRANSIT && (

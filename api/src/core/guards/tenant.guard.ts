@@ -17,35 +17,6 @@ import {
  * TENANT GUARD - BẢO VỆ ENDPOINTS DỰA TRÊN TENANT CONTEXT
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. GUARD LÀ GÌ?
- *    - Guard là "người gác cổng" của request.
- *    - Chạy SAU Middleware nhưng TRƯỚC Controller.
- *    - Quyết định request có được đi tiếp hay bị chặn (return true/false).
- *
- * 2. NHIỆM VỤ CỦA TENANT GUARD:
- *    - Kiểm tra xem endpoint có yêu cầu tenant context không (@RequireTenant).
- *    - Nếu yêu cầu nhưng không có tenant -> Block request (403 Forbidden).
- *    - Ghi log các trường hợp vi phạm để monitoring.
- *
- * 3. CÁCH HOẠT ĐỘNG:
- *    a. Guard đọc metadata từ decorator trên controller/method.
- *    b. Nếu có @SkipTenantCheck -> Bỏ qua, cho phép request.
- *    c. Nếu có @RequireTenant -> Kiểm tra getTenant() có giá trị không.
- *    d. Nếu không có tenant -> Throw ForbiddenException.
- *
- * 4. SỬ DỤNG:
- *    Guard này được đăng ký GLOBAL trong AppModule:
- *    ```typescript
- *    providers: [{ provide: APP_GUARD, useClass: TenantGuard }]
- *    ```
- *
- * 🎯 ỨNG DỤNG THỰC TẾ:
- * - Ngăn chặn request không có tenant context truy cập vào private APIs.
- * - Cho phép linh hoạt skip check cho super-admin endpoints.
- * - Logging để phát hiện lỗi cấu hình hoặc tấn công.
- *
  * =====================================================================
  */
 @Injectable()

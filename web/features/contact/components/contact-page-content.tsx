@@ -7,28 +7,7 @@ import { FAQGrid } from "@/features/marketing/components/faq-grid";
 import { m } from "@/lib/animations";
 import { useTranslations } from "next-intl";
 
-/**
- * =====================================================================
- * CONTACT PAGE CONTENT - Trang liên hệ và phản hồi
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * ATOMIC DESIGN REFACTOR:
- * - Page này đóng vai trò là Template, lắp ghép các Organisms lại với nhau.
- * - Logic phức tạp (Form handling, Map rendering) được đẩy xuống các Organisms.
- * - Template chỉ lo việc layout và animations cấp cao.
- *
- * COMPONENTS:
- * 1. ContactInfoCards: Hiển thị thông tin liên hệ (Email, Phone, Address).
- * 2. ContactForm: Form gửi tin nhắn.
- * 3. ContactMap: Bản đồ Google Map.
- * 4. FAQGrid: Các câu hỏi thường gặp. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function ContactPageContent() {
   const t = useTranslations("contact");

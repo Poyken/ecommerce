@@ -5,29 +5,7 @@ import { Link, usePathname } from "@/i18n/routing";
 import { TypedLink, appRoutes } from "@/lib/typed-navigation";
 import { Facebook, Instagram, Twitter, Youtube } from "lucide-react";
 
-/**
- * =====================================================================
- * FOOTER COMPONENT - Chân trang
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CONDITIONAL RENDERING:
- * - Footer không cần hiển thị ở các trang tập trung vào hành động (Checkout, Login...).
- * - Dùng `usePathname` để check URL và return `null` nếu cần ẩn.
- *
- * 2. CSS GRID LAYOUT:
- * - Sử dụng Grid System của Tailwind để chia cột linh hoạt.
- * - `grid-cols-1` (Mobile) -> `md:grid-cols-2` (Tablet) -> `lg:grid-cols-12` (Desktop).
- * - `lg:col-span-4`: Chiếm 4/12 cột (1/3 chiều rộng).
- *
- * 3. VISUAL EFFECTS:
- * - Các thẻ `div` absolute với `blur-[120px]` tạo hiệu ứng nền phát sáng (Glow Effect) hiện đại. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 import { useTranslations } from "next-intl";
 
 export function Footer() {

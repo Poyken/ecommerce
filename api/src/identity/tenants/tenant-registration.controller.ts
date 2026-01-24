@@ -59,21 +59,6 @@ export class UpdateOnboardingDto extends createZodDto(UpdateOnboardingSchema) {}
  * TENANT REGISTRATION CONTROLLER - QUẢN LÝ ĐĂNG KÝ CỬA HÀNG MỚI (CÔNG KHAI)
  * =================================================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PUBLIC ENDPOINTS:
- *    - Các API này KHÔNG yêu cầu authentication vì phục vụ quá trình đăng ký.
- *    - Client có thể gọi trực tiếp từ trang Marketing.
- *
- * 2. REGISTRATION FLOW:
- *    a. POST /register: Tạo tenant mới + user owner + gán gói BASIC
- *    b. GET /check-subdomain: Kiểm tra subdomain có sẵn không
- *    c. POST /:id/onboarding: Cập nhật thông tin onboarding
- *
- * 3. SECURITY:
- *    - Validate input chặt chẽ (email format, subdomain pattern)
- *    - Rate limiting nên được áp dụng ở tầng Infrastructure (NGINX/Cloudflare)
- *
  * =================================================================================================
  */
 import {

@@ -12,29 +12,7 @@ import { Heart, Home, LogIn, Menu, ShoppingBag, User, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-/**
- * =====================================================================
- * MOBILE BOTTOM NAV - Thanh điều hướng dưới cùng cho Mobile
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MOBILE-FIRST UX (Trải nghiệm ưu tiên di động):
- * - Trên điện thoại, ngón cái dễ chạm vào cạnh dưới ("Thumb Zone") hơn cạnh trên.
- * - Bottom Nav giúp trải nghiệm chuyển trang tiện lợi như Native App.
- *
- * 2. FRAMER MOTION "SHARED LAYOUT":
- * - `layoutId="activeTab"`: Magic của Framer Motion.
- * - Khi `isActive` chuyển từ tab này sang tab khác, dấu chấm tròn (indicator) sẽ "bay" sang vị trí mới thay vì ẩn/hiện thô thiển.
- *
- * 3. PORTAL & OVERLAY:
- * - Menu mở rộng ("More") sử dụng `AnimatePresence` để animate lúc mount/unmount.
- * - `safe-area-pb`: Class utility (custom) để tránh bị che bởi thanh Home Indicator của iPhone X+. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import { AppRoute } from "@/lib/typed-navigation";
 

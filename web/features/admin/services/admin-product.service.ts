@@ -1,5 +1,5 @@
 import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
+import { normalizePaginationParams, PaginationParams } from "@/lib/utils";
 import {
   ApiResponse,
   CreateProductDto,
@@ -17,7 +17,11 @@ import { Product, ProductTranslation, Sku } from "@/types/models";
 export const adminProductService = {
   // --- PRODUCTS ---
 
-  getProducts: async (paramsOrPage?: any, limit?: number, search?: string) => {
+  getProducts: async (
+    paramsOrPage?: number | PaginationParams,
+    limit?: number,
+    search?: string
+  ) => {
     const params = normalizePaginationParams(paramsOrPage, limit, search);
     return http.get<ApiResponse<Product[]>>("/products", { params });
   },
@@ -37,7 +41,7 @@ export const adminProductService = {
   // --- SKUS ---
 
   getSkus: async (
-    paramsOrPage: any = 1,
+    paramsOrPage: number | PaginationParams = 1,
     limit: number = 10,
     status?: string,
     search?: string,
@@ -53,9 +57,9 @@ export const adminProductService = {
   updateSku: async (id: string, data: UpdateSkuDto | FormData) => {
     // If FormData, let browser set Content-Type
     if (data instanceof FormData) {
-      return http.patch<ApiResponse<any>>(`/skus/${id}`, data);
+      return http.patch<ApiResponse<Sku>>(`/skus/${id}`, data);
     }
-    return http.patch<ApiResponse<any>>(`/skus/${id}`, data);
+    return http.patch<ApiResponse<Sku>>(`/skus/${id}`, data);
   },
 
   // --- TRANSLATIONS (Product-specific) ---
@@ -66,7 +70,10 @@ export const adminProductService = {
     );
   },
 
-  updateProductTranslation: async (id: string, data: any) => {
+  updateProductTranslation: async (
+    id: string,
+    data: Partial<ProductTranslation>
+  ) => {
     return http.post<ApiResponse<ProductTranslation>>(
       `/products/${id}/translations`,
       data
@@ -80,7 +87,7 @@ export const adminProductService = {
     categoryName: string;
     brandName?: string;
   }) => {
-    return http.post<ApiResponse<any>>(
+    return http.post<ApiResponse<{ description: string; metaTitle: string; metaDescription: string }>>(
       "/ai-automation/generate-product-content",
       data
     );
@@ -96,26 +103,36 @@ export const adminProductService = {
   // --- IMPORT & EXPORT ---
 
   exportProducts: async () => {
-    return http.get<any>("/products/export/excel");
+    return http.get<ArrayBuffer>("/products/export/excel", {
+      responseType: "arraybuffer",
+    });
   },
 
   importProducts: async (formData: FormData) => {
-    return http.post<ApiResponse<any>>("/products/import/excel", formData);
+    return http.post<ApiResponse<{ imported: number }>>(
+      "/products/import/excel",
+      formData
+    );
   },
 
   previewProductsImport: async (formData: FormData) => {
-    return http.post<ApiResponse<any[]>>("/products/import/preview", formData);
+    return http.post<ApiResponse<Product[]>>(
+      "/products/import/preview",
+      formData
+    );
   },
 
   downloadProductTemplate: async () => {
-    return http.get<any>("/products/import/template");
+    return http.get<ArrayBuffer>("/products/import/template", {
+      responseType: "arraybuffer",
+    });
   },
 
   /**
    * Get low stock SKUs for dashboard
    */
   getLowStockSkus: async (limit = 5, stockLimit = 5) => {
-    return http.get<{ data: any[]; meta: { total: number } }>(
+    return http.get<{ data: Sku[]; meta: { total: number } }>(
       `/skus?limit=${limit}&stockLimit=${stockLimit}&includeProduct=true`
     );
   },

@@ -8,29 +8,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect } from "react";
 
-/**
- * =====================================================================
- * TESTIMONIALS CAROUSEL - Slider đánh giá của khách hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HEADLESS CAROUSEL (Embla):
- * - Khác với Slick hay Swiper có sẵn UI, Embla chỉ cung cấp Logic (API).
- * - Ưu điểm: Siêu nhẹ, mượt (dùng native scroll), và ta có thể tùy biến UI 100% theo ý thích.
- *
- * 2. MOUSE WHEEL CONTROL:
- * - Một tính năng UX cao cấp: Cho phép user cuộn chuột (Mouse Wheel) hoặc vuốt touchpad để lướt slider ngang.
- * - Logic `wheelListener`: Chuyển đổi sự kiện cuộn dọc (`deltaY`) thành lệnh cuộn ngang (`scrollNext/Prev`).
- *
- * 3. VISUAL POLISH (Gradient Masks):
- * - Hai lớp overlay mờ dần ở 2 cạnh trái phải (`bg-linear-to-r`).
- * - Tạo cảm giác "Vô tận" (Infinity), che đi điểm cắt đột ngột của các card ở mép màn hình. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface Testimonial {
   text: string;

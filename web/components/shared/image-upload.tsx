@@ -23,24 +23,7 @@ export function ImageUpload({
   label,
   disabled,
 }: ImageUploadProps) {
-/**
- * =====================================================================
- * IMAGE UPLOAD - Component upload ảnh đa năng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DUAL MODE (FILE & URL):
- * - Cho phép user upload file từ máy HOẶC paste link ảnh trực tiếp.
- * - `URL.createObjectURL(file)` tạo link preview tạm thời ngay tại browser trước khi upload thật.
- *
- * 2. CONTROLLED COMPONENT:
- * - Nhận `value` và `onChange` từ React Hook Form (thường thấy). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
   const t = useTranslations("admin.media");
   const [preview, setPreview] = useState<string>(value || "");
   const [mode, setMode] = useState<"url" | "file">("file");

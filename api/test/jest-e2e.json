@@ -10,6 +10,9 @@
     "^src/(.*)$": "<rootDir>/../src/$1",
     "^@/(.*)$": "<rootDir>/../src/$1",
     "^@core/(.*)$": "<rootDir>/../src/core/$1",
-    "^@integrations/(.*)$": "<rootDir>/../src/integrations/$1"
-  }
+    "^isomorphic-dompurify$": "<rootDir>/mocks/dompurify.mock.ts"
+  },
+  "transformIgnorePatterns": [
+    "/node_modules/(?!(@exodus|isomorphic-dompurify)/)"
+  ]
 }

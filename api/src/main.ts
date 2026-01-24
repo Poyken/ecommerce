@@ -5,21 +5,6 @@
  * MAIN BOOTSTRAP - ĐIỂM KHỞI CHẠY ỨNG DỤNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Đây là file quan trọng nhất (Entry Point) của ứng dụng NestJS.
- * Nó chịu trách nhiệm:
- * 1. Khởi tạo instance ứng dụng (`NestFactory.create`).
- * 2. Cấu hình Middleware toàn cục (Global Middleware):
- *    - Security (Helmet, CORS): Bảo mật HTTP headers và chặn request trái phép.
- *    - Performance (Compression): Nén Gzip response để giảm dung lượng tải.
- *    - Logging: Ghi log chuẩn format JSON để dễ debug và trace.
- * 3. Cấu hình Pipes & Interceptors toàn cục:
- *    - ZodValidationPipe: Tự động kiểm tra và convert dữ liệu đầu vào (DTO) dùng Zod schema.
- *    - TransformInterceptor: Chuẩn hóa format trả về { data, message, statusCode }.
- *    - AllExceptionsFilter: Bắt lỗi tập trung và trả về lỗi đẹp thay vì stack trace thô.
- * 4. Tạo tài liệu API (Swagger) tự động tại `/docs`.
- * 5. [NEW] Sentry error tracking và performance monitoring (Theo dõi lỗi và hiệu năng).
  * =====================================================================
  */
 
@@ -146,15 +131,16 @@ async function bootstrap() {
         return callback(null, true);
       }
 
-      // 3. Cho phép dynamic Localhost & Local Network (cho Dev environment)
-      // Giúp developers chạy trên IP mạng LAN (ví dụ view trên điện thoại)
-      // VÀ cũng cho phép các Tenant Domain động (*.localhost:3000)
-      if (
-        origin.startsWith('http://localhost:') ||
-        origin.startsWith('http://192.168.') ||
-        /^http:\/\/[a-z0-9-]+\.localhost:3000$/.test(origin) // Allow tenant subdomains
-      ) {
-        return callback(null, true);
+      // 3. Cho phép dynamic Localhost & Local Network - CHỈ TRONG DEVELOPMENT
+      // SECURITY FIX: Không cho phép dynamic origins trong production (CSRF risk)
+      if (process.env.NODE_ENV !== 'production') {
+        if (
+          origin.startsWith('http://localhost:') ||
+          origin.startsWith('http://192.168.') ||
+          /^http:\/\/[a-z0-9-]+\.localhost:3000$/.test(origin) // Allow tenant subdomains in dev
+        ) {
+          return callback(null, true);
+        }
       }
 
       // 4. Chặn (Block)

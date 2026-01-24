@@ -1,5 +1,5 @@
 import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
+import { normalizePaginationParams, PaginationParams } from "@/lib/utils";
 import { ApiResponse } from "@/types/dtos";
 import { Review } from "@/types/models";
 
@@ -11,7 +11,7 @@ import { Review } from "@/types/models";
 
 export const adminReviewService = {
   getReviews: async (
-    paramsOrPage: any = {},
+    paramsOrPage: number | PaginationParams = {},
     limit?: number,
     search?: string
   ) => {
@@ -34,9 +34,11 @@ export const adminReviewService = {
   },
 
   analyzeSentiment: async (text: string) => {
-    return http.post<ApiResponse<any>>(
-      "/ai-automation/analyze-review-sentiment",
-      { text }
-    );
+    return http.post<
+      ApiResponse<{
+        sentiment: "POSITIVE" | "NEGATIVE" | "NEUTRAL";
+        score: number;
+      }>
+    >("/ai-automation/analyze-review-sentiment", { text });
   },
 };

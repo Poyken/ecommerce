@@ -9,29 +9,7 @@ import Image from "next/image";
 import { TypedLink, AppRoute } from "@/lib/typed-navigation";
 import { getProductImage } from "@/lib/product-helper";
 
-/**
- * =====================================================================
- * ADMIN ALERTS - Hệ thống cảnh báo và xu hướng quản trị
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. INVENTORY MONITORING (Low Stock):
- * - Hệ thống tự động lọc ra các SKU có số lượng tồn kho thấp (`lowStockSkus`).
- * - Sử dụng màu Đỏ (`red-500`) để gây sự chú ý ngay lập tức, giúp admin kịp thời nhập hàng.
- *
- * 2. TRENDING LOGIC:
- * - Hiển thị các sản phẩm bán chạy nhất trong thời gian gần đây.
- * - Sử dụng Progress Bar để so sánh tương quan doanh số giữa các sản phẩm (dựa trên sản phẩm bán chạy nhất làm mốc 100%).
- *
- * 3. UI POLISH:
- * - Sử dụng `blur-3xl` cho các đốm màu nền (`bg-red-500/5`, `bg-blue-500/5`) tạo cảm giác chiều sâu và hiện đại.
- * - `group-hover/item`: Kỹ thuật CSS lồng nhau để thay đổi style của số thứ tự khi hover vào dòng tương ứng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface AdminAlertsProps {
   lowStockSkus: (Sku & { product?: Product })[];

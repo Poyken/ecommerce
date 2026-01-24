@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { Upload, X, Package, ArrowLeft, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 interface OrderItem {
   id: string;
@@ -228,11 +229,14 @@ export function CreateReturnForm({
                 />
 
                 {item.imageUrl && (
-                  <img
-                    src={item.imageUrl}
-                    alt=""
-                    className="w-16 h-16 rounded object-cover"
-                  />
+                  <div className="relative w-16 h-16 rounded overflow-hidden">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.productName || 'Product'}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                 )}
 
                 <div className="flex-1">
@@ -312,11 +316,14 @@ export function CreateReturnForm({
             <div className="flex flex-wrap gap-2">
               {images.map((url, index) => (
                 <div key={index} className="relative">
-                  <img
-                    src={url}
-                    alt=""
-                    className="w-20 h-20 rounded object-cover"
-                  />
+                  <div className="relative w-20 h-20 rounded overflow-hidden">
+                    <Image
+                      src={url}
+                      alt=""
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                   <Button
                     type="button"
                     variant="destructive"

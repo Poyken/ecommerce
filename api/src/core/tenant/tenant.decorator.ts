@@ -11,26 +11,6 @@ import { Tenant } from '@prisma/client';
  * TENANT DECORATORS - DECORATOR CHO MULTI-TENANCY
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DECORATOR LÀ GÌ?
- *    - Decorator là một cách "gắn nhãn" cho class, method, hoặc parameter.
- *    - NestJS sử dụng decorator để thêm metadata vào code.
- *    - Ví dụ: @Controller(), @Get(), @Injectable() đều là decorator.
- *
- * 2. CÁC DECORATOR TRONG FILE NÀY:
- *    - @RequireTenant(): Đánh dấu endpoint BẮT BUỘC phải có tenant context.
- *    - @TenantScoped(): Đánh dấu service/controller chỉ hoạt động trong scope tenant.
- *    - @CurrentTenant(): Lấy tenant hiện tại inject vào parameter.
- *
- * 3. CÁCH HOẠT ĐỘNG:
- *    - SetMetadata() lưu một key-value vào class/method.
- *    - Guard hoặc Interceptor sẽ đọc metadata này để quyết định hành vi.
- *
- * 🎯 ỨNG DỤNG THỰC TẾ:
- * - Dùng @RequireTenant trên Controller để tự động block request không có tenant.
- * - Dùng @CurrentTenant() để inject tenant vào handler thay vì gọi getTenant().
- *
  * =====================================================================
  */
 

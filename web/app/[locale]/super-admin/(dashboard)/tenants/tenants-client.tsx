@@ -42,29 +42,7 @@ import {
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-/**
- * =================================================================================================
- * TENANTS CLIENT - QUẢN LÝ DANH SÁCH CHI NHÁNH (STORE)
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SUPER ADMIN CAPABILITIES:
- *    - Đây là màn hình dành riêng cho Super Admin để quản lý toàn bộ hệ thống SaaS.
- *    - Nó liệt kê tất cả các Store (Tenants) đang hoạt động trên nền tảng.
- *
- * 2. PERMISSION-BASED ACTIONS:
- *    - `hasPermission` kiểm tra quyền hạn cụ thể (create, update, delete) trước khi hiện nút bấm.
- *    - `useAdminTable`: Hook dùng chung để xử lý Tìm kiếm, Phân trang và Loading state.
- *
- * 3. MULTI-TENANCY LAUNCHING:
- *    - `Launch New Store`: Khi tạo Tenant mới, hệ thống sẽ tự động cấp phát Database schema
- *      và khởi tạo cấu hình mặc định cho Store đó. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =================================================================================================
- */
 export function TenantsClient({
   tenants,
   total,

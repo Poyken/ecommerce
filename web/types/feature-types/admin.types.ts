@@ -1,17 +1,4 @@
-/**
- * =====================================================================
- * ADMIN FEATURE TYPES - Type definitions cho Admin Dashboard
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * File này định nghĩa các types riêng cho Admin feature để:
- * 1. Type Safety: Tránh dùng `any` trong các domain actions
- * 2. Reusability: Dùng chung cho nhiều components/actions
- * 3. Documentation: Rõ ràng về data structure
- *
- * =====================================================================
- */
+
 
 // =============================================================================
 // 📊 PAGINATION & QUERY PARAMS

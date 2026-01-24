@@ -47,26 +47,7 @@ import { useTranslations } from "next-intl";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 
-/**
- * =====================================================================
- * ROLES PAGE CLIENT - Giao diện Quản lý Role & Permission
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SEARCH WITH URL SYNC:
- * - Khi user search, URL sẽ được update (`?search=...`).
- * - Debounce 500ms để tránh spam URL update liên tục.
- * - `useTransition` giúp UI không bị freeze khi navigate.
- *
- * 2. PERMISSION CHECKING:
- * - `canCreate`, `canUpdate`... được check qua `useAuth().hasPermission`.
- * - Ẩn/Hiện nút bấm dựa trên quyền của Admin đang login. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Đóng vai trò quan trọng trong kiến trúc hệ thống, hỗ trợ các chức năng nghiệp vụ cụ thể.
 
- * =====================================================================
- */
 export function RolesPageClient({
   roles,
   meta,

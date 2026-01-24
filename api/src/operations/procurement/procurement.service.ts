@@ -3,27 +3,6 @@
  * PROCUREMENT SERVICE - QUẢN LÝ NHẬP HÀNG (MUA HÀNG)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Module này xử lý quy trình nhập hàng từ nhà cung cấp (Suppliers) vào kho.
- *
- * 1. NHÀ CUNG CẤP (Supplier):
- *    - Lưu thông tin đối tác cung cấp hàng hóa.
- *    - Chú ý: Dữ liệu Supplier được tách biệt theo `tenantId`.
- *
- * 2. ĐƠN NHẬP HÀNG (Purchase Order - PO):
- *    - Khi cần nhập hàng, ta tạo một PO ở trạng thái PENDING.
- *    - PO chứa danh sách các SKU, số lượng nhập và giá vốn (Cost Price).
- *
- * 3. QUY TRÌNH NHẬP KHO (Stock-in):
- *    - Khi PO chuyển sang trạng thái DELIVERED (Đã giao tới kho) -> Hệ thống tự động:
- *      a. Cộng số lượng vào kho mặc định của Tenant.
- *      b. Tạo link InventoryItem (SKU <-> Warehouse).
- *      c. Ghi log lịch sử biến động kho (InventoryLog).
- *      d. Cập nhật `stock` tổng của SKU để hiển thị ra Website nhanh.
- *
- * 4. TRANSACTION:
- *    - Việc cập nhật PO status và tăng kho phải nằm trong Transaction ($transaction) để tránh sai lệch dữ liệu.
  * =====================================================================
  */
 
@@ -40,7 +19,7 @@ import {
   CreatePurchaseOrderDto,
   UpdatePurchaseOrderStatusDto,
 } from './dto/procurement.dto';
-import { InventoryService } from '@/inventory/inventory.service';
+import { InventoryService } from '@/operations/inventory/inventory.service';
 import { PurchaseOrderStatus } from '@prisma/client';
 
 @Injectable()

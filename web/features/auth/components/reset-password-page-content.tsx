@@ -16,28 +16,7 @@ import { useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 
-/**
- * =====================================================================
- * RESET PASSWORD CONTENT - Xử lý UI Đặt lại mật khẩu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TOKEN VALIDATION:
- * - Token được lấy từ URL query string (`?token=...`).
- * - Nếu không có token, hiển thị màn hình lỗi "Invalid Link".
- *
- * 2. PASSWORD CONFIRMATION:
- * - Form yêu cầu nhập mật khẩu mới 2 lần.
- * - `resetPasswordAction` sẽ kiểm tra xem 2 mật khẩu này có khớp nhau không trước khi cập nhật vào DB.
- *
- * 3. SECURITY:
- * - Token này thường chỉ có hiệu lực trong thời gian ngắn (vd: 1 giờ) và chỉ dùng được 1 lần. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function ResetPasswordPageContent() {
   const searchParams = useSearchParams();
@@ -46,7 +25,12 @@ export function ResetPasswordPageContent() {
 
   const t = useTranslations("auth.resetPassword");
   const tToast = useTranslations("common.toast");
-  const [state, action, isPending] = useActionState(resetPasswordAction, null);
+  const [state, action, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+    const token = formData.get("token") as string;
+    const newPassword = formData.get("newPassword") as string;
+    const confirmPassword = formData.get("confirmPassword") as string;
+    return resetPasswordAction({ token, newPassword, confirmPassword });
+  }, null);
 
   const [localErrors, setLocalErrors] = useState<Record<string, string[]>>({});
   const submissionCount = useRef(0);
@@ -61,8 +45,8 @@ export function ResetPasswordPageContent() {
     if (state && submissionCount.current > lastProcessedCount.current) {
       lastProcessedCount.current = submissionCount.current;
 
-      if (state.errors) {
-        requestAnimationFrame(() => setLocalErrors(state.errors || {}));
+      if ((state as any).errors) {
+        requestAnimationFrame(() => setLocalErrors((state as any).errors || {}));
       } else {
         requestAnimationFrame(() => setLocalErrors({})); // Clear errors if state has no errors
       }
@@ -140,7 +124,7 @@ export function ResetPasswordPageContent() {
             <div className="text-center">
               <p className="font-black text-2xl">{t("successTitle")}</p>
               <p className="text-sm text-primary/70 mt-2 font-medium">
-                {state.message}
+                {(state as any).message}
               </p>
             </div>
             <Link href="/login" className="mt-4">

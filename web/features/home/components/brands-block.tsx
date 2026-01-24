@@ -1,18 +1,4 @@
-/**
- * =====================================================================
- * BRANDS BLOCK - HIỂN THỊ THƯƠNG HIỆU ĐỐI TÁC
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Một Block trên trang chủ dùng để list danh sách logo các thương hiệu.
- * - Hỗ trợ Mock Data khi ở chế độ Preview trong Admin.
- * - Sử dụng Suspense để loading data từ API mượt mà. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

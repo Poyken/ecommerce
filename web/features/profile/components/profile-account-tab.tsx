@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * PROFILE ACCOUNT TAB - Tab quản lý thông tin tài khoản
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. AVATAR MANAGEMENT:
- * - Hỗ trợ xem trước ảnh (preview) ngay khi chọn file.
- * - Cho phép xóa avatar hiện tại hoặc tải lên ảnh mới.
- *
- * 2. FORM STATE (`isDirty`):
- * - Nút "Save Changes" chỉ sáng lên khi người dùng thực sự có thay đổi thông tin (tên hoặc ảnh).
- * - Giúp tránh việc gọi API không cần thiết.
- *
- * 3. SERVER ACTIONS:
- * - Sử dụng `updateProfileAction` để cập nhật thông tin lên server một cách an toàn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

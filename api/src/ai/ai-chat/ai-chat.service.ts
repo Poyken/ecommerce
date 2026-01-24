@@ -10,36 +10,6 @@ import { GeminiService } from './gemini.service';
  *
  * =================================================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. QUY TRÌNH HOẠT ĐỘNG (WORKFLOW):
- *    - Bước 1: Nhận tin nhắn từ User.
- *    - Bước 2: "Hiểu" tin nhắn -> Tìm kiếm sản phẩm liên quan trong Database (Kỹ thuật RAG).
- *    - Bước 3: Tạo "System Prompt" chứa thông tin sản phẩm vừa tìm được.
- *    - Bước 4: Gọi Gemini API với (System Prompt + Lịch sử Chat + Tin nhắn mới).
- *    - Bước 5: Lưu câu trả lời của AI vào Database và trả về cho User.
- *
- * 2. CÁC KHÁI NIỆM QUAN TRỌNG:
- *
- *    A. RAG (Retrieval Augmented Generation - Thế hệ tăng cường truy xuất):
- *       - Vấn đề: AI (Gemini) không hề biết gì về sản phẩm trong kho của ta.
- *       - Giải pháp: Trước khi hỏi AI, ta phải "lục lọi" (Retrieve) trong Database xem có sản phẩm nào
- *         khớp với câu hỏi của khách không, rồi "mớm" (Augment) thông tin đó cho AI.
- *       - Ví dụ: Khách hỏi "Có ghế sofa không?", ta tìm được "Sofa Da Bò, Sofa Nỉ".
- *         Ta bảo AI: "Hiện shop có Sofa Da Bò giá 5tr và Sofa Nỉ giá 3tr. Hãy trả lời khách đi."
- *
- *    B. SESSION (PHIÊN LÀM VIỆC):
- *       - Khách vãng lai (Guest): Dùng `guestId` (Lưu ở localStorage trình duyệt) để định danh.
- *       - Khách đã đăng nhập: Dùng `userId` thật sự.
- *       - Mục đích: Để lưu lại lịch sử chat, giúp AI nhớ được khách đã hỏi gì trước đó.
- *
- *    C. CONTEXT WINDOW (CỬA SỔ NGỮ CẢNH):
- *       - AI có giới hạn bộ nhớ (Token limit). Ta chỉ nên gửi kèm 10-20 tin nhắn gần nhất
- *         để tiết kiệm chi phí và đảm bảo tốc độ.
- * *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =================================================================================================
  */
 

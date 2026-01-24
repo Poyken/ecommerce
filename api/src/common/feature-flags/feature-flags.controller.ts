@@ -3,23 +3,6 @@
  * FEATURE FLAGS CONTROLLER - Quản lý Cờ tính năng
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. KHI NÀO DÙNG?
- * - Khi cần quản lý bật/tắt các tính năng (features) trong hệ thống mà không cần deploy lại code.
- * - Ví dụ: Bật/tắt cổng thanh toán mới, banner khuyến mãi, hoặc module đang bảo trì.
- *
- * 2. CHỨC NĂNG CHÍNH:
- * - CRUD (Create, Read, Update, Delete) các Feature Flags.
- * - API này chỉ dành cho Admin (yêu cầu quyền `admin:read`, `admin:update`).
- *
- * 3. KIẾN TRÚC:
- * - Controller này nhận request HTTP -> Gọi xuống `FeatureFlagsService` để xử lý logic -> Trả về kết quả.
- * - Sử dụng các Decorators tùy chỉnh (`@RequirePermissions`, `@ApiListResponse`...) để chuẩn hóa code.
- * *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 import {

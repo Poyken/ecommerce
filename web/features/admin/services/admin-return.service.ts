@@ -1,5 +1,5 @@
 import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
+import { normalizePaginationParams, PaginationParams } from "@/lib/utils";
 import { ApiResponse } from "@/types/dtos";
 import { ReturnRequest } from "@/types/models";
 
@@ -11,7 +11,7 @@ import { ReturnRequest } from "@/types/models";
 
 export const adminReturnService = {
   getReturns: async (
-    paramsOrPage: any = {},
+    paramsOrPage: number | PaginationParams = {},
     limit?: number,
     search?: string
   ) => {

@@ -1,24 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * ADMIN NOTIFICATION ITEM - Item thông báo cho Admin với Quick Actions
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. QUICK ACTIONS:
- * - Cho phép Admin Accept/Reject đơn hàng trực tiếp từ notification popover.
- * - Chỉ hiển thị actions khi notification liên quan đến đơn hàng PENDING.
- *
- * 2. ORDER DETECTION:
- * - Parse link để lấy orderId nếu notification có link đến /orders/[id].
- * - Nếu type là ORDER và status là PENDING thì hiển thị quick actions. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import { Button } from "@/components/ui/button";
 import { updateOrderStatusAction } from "@/features/admin/actions";

@@ -12,18 +12,6 @@ import type { Response } from 'express';
  * HEALTH CONTROLLER - GIÁM SÁT SỨC KHỎE HỆ THỐNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. LIVENESS vs READINESS:
- * - API `/health` dùng để biết server có đang sống (`Liveness`) hay không.
- * - API `/health/ready` khắt khe hơn: Phải kết nối được Database, Redis và các Queue (`Readiness`) thì Web mới được coi là sẵn sàng phục vụ.
- *
- * 2. MONITORING (Giám sát):
- * - Hàm `info` trả về các thông số kỹ thuật như: Lượng RAM đang dùng, CPU, Uptime (thời gian server đã chạy liên tục).
- * - Giúp phát hiện sớm các lỗi tràn bộ nhớ (Memory Leak). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 @ApiTags('Health')
@@ -153,9 +141,6 @@ export class HealthController {
 
   /**
    * [P18 OPTIMIZATION] Measure Event Loop Lag
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   * Nếu giá trị này cao (> 100ms), nghĩa là Server đang bị quá tải CPU
-   * hoặc có logic đồng bộ (Sync) tốn quá nhiều thời gian, làm nghẽn hàng đợi.
    */
   private getEventLoopLag(): number {
     const start = Date.now();

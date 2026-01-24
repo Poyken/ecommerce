@@ -6,18 +6,6 @@ import { Request } from 'express';
  * FINGERPRINT UTILITY - ĐỊNH DANH THIẾT BỊ NGƯỜI DÙNG
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TẠI SAO CẦN FINGERPRINT?
- * - Nếu hacker ăn trộm được `accessToken` của bạn, họ có thể giả mạo bạn.
- * - Fingerprint giúp ngăn chặn điều này bằng cách gắn chặt Token với thiết bị cụ thể (dựa trên IP và User-Agent).
- * - Nếu Token bị dùng ở một thiết bị có IP/UA khác -> Hệ thống sẽ từ chối.
- *
- * 2. SHA-256 HASHING:
- * - Ta không lưu trực tiếp thông tin thô mà băm (Hash) nó thành một chuỗi ký tự duy nhất để bảo mật thông tin người dùng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Cung cấp các hàm tiện ích dùng chung, giúp code gọn gàng và tái sử dụng hiệu quả.
-
  * =====================================================================
  */
 export function getFingerprint(req: Request): string {

@@ -3,21 +3,6 @@
  * SUBSCRIPTIONS.SERVICE SERVICE
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Service này chịu trách nhiệm xử lý logic nghiệp vụ.
- *
- * 1. NHIỆM VỤ CHÍNH:
- *    - [Mô tả chức năng chính của service]
- *
- * 2. CÁC PHƯƠNG THỨC QUAN TRỌNG:
- *    - [Liệt kê các method chính]
- *
- * 3. LƯU Ý KHI SỬ DỤNG:
- *    - [Các lưu ý quan trọng] *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

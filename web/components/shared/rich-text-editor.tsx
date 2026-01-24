@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * RICH TEXT EDITOR - Trình soạn thảo văn bản phong phú
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TIPTAP EDITOR:
- * - Sử dụng thư viện Tiptap (dựa trên ProseMirror) để tạo trình soạn thảo WYSIWYG.
- * - Headless: Tiptap không có giao diện mặc định, ta phải tự build UI (nút Bold, Italic...) -> Linh hoạt tối đa.
- *
- * 2. PROSE STYLING (@tailwindcss/typography):
- * - Class `prose`: Một bộ style mặc định cực đẹp của Tailwind cho nội dung văn bản.
- * - Giúp các thẻ `h1, h2, p, ul` bên trong editor có style chuẩn typography mà không cần viết CSS thủ công.
- *
- * 3. CONTROL BAR:
- * - Các nút điều khiển (`editor.chain().focus().toggleBold().run()`) thực hiện lệnh format một cách programmatic. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

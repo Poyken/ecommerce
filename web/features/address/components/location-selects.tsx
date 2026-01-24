@@ -1,23 +1,4 @@
-/**
- * =====================================================================
- * LOCATION SELECTS - Component chọn địa chỉ hành chính VN
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DEPENDENT DROPDOWNS (Dropdown phụ thuộc):
- * - Logic: Chọn Tỉnh -> Load Huyện -> Chọn Huyện -> Load Xã.
- * - Sử dụng `useEffect` để lắng nghe sự thay đổi của `provinceId`, `districtId`
- *   và gọi API tương ứng.
- *
- * 2. GHN API:
- * - Dữ liệu Tỉnh/Huyện/Xã thường được lấy từ API của đơn vị vận chuyển (Giao Hàng Nhanh)
- *   để đảm bảo đồng bộ ID khi tính phí ship. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */ 
+ 
 "use client";
 
 import { useEffect, useState } from "react";

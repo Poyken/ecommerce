@@ -5,29 +5,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * SCROLL AREA - Vùng cuộn nội dung tùy chỉnh
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CUSTOM SCROLLBARS:
- * - Trình duyệt mặc định có thanh cuộn khá thô và khác nhau giữa các OS (Windows vs macOS).
- * - `ScrollArea` giúp ta có thanh cuộn đồng nhất, đẹp mắt và có thể tùy chỉnh CSS dễ dàng.
- *
- * 2. RADIX PRIMITIVE:
- * - Sử dụng `@radix-ui/react-scroll-area` để xử lý logic cuộn phức tạp, đảm bảo hiệu năng và hỗ trợ cảm ứng (touch-friendly).
- *
- * 3. STRUCTURE:
- * - `Viewport`: Vùng chứa nội dung thực tế.
- * - `ScrollBar`: Thanh cuộn (có thể là dọc hoặc ngang).
- * - `Thumb`: Phần cục trượt trên thanh cuộn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 function ScrollArea({
   className,

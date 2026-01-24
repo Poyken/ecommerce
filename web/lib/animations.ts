@@ -2,28 +2,7 @@ import { m, Variants } from "framer-motion";
 
 export { m };
 
-/**
- * =====================================================================
- * ANIMATIONS LIBRARY - Thư viện hiệu ứng chuyển động
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. FRAMER MOTION VARIANTS:
- * - Variants là các object định nghĩa trạng thái animation (hidden, visible, exit...).
- * - Giúp tách biệt logic animation ra khỏi UI component -> Code sạch hơn.
- *
- * 2. ORCHESTRATION (Điều phối):
- * - `staggerChildren`: Giúp các phần tử con xuất hiện lần lượt thay vì cùng lúc.
- *
- * 3. REUSABILITY:
- * - Định nghĩa một lần, dùng mọi nơi (FadeIn, SlideIn, ZoomIn...). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Perceived Performance: Các hiệu ứng chuyển động mượt mà giúp người dùng cảm thấy ứng dụng nhanh hơn thực tế (giảm cảm giác chờ đợi khi load dữ liệu).
- * - Brand Identity: Tạo ra các hiệu ứng mang bản sắc riêng (vd: hiệu ứng "hoàng gia" cho theme Luxury) giúp tăng tính chuyên nghiệp cho website.
 
- * =====================================================================
- */
 
 // ============================================
 // TIMING CONSTANTS

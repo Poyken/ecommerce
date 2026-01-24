@@ -1,26 +1,4 @@
-/**
- * =====================================================================
- * HERO SECTION COMPONENT - Banner chính trang chủ
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. KIẾN TRÚC UI:
- * - Đây là component quan trọng nhất trang Home ("First fold").
- * - Sử dụng `framer-motion` (`m.div`, `AnimatePresence`) để tạo hiệu ứng xuất hiện mượt mà.
- *
- * 2. PERFORMANCE TIPS:
- * - Dùng `m` từ `@/lib/animations` thay vì `motion` để giảm bundle size (Lazy Load).
- * - `Image` component của Next.js có `priority={true}` vì đây là ảnh LCP (Largest Contentful Paint).
- * - Dùng `sizes` prop để browser tải đúng kích thước ảnh theo thiết bị (Mobile/Desktop).
- *
- * 3. CUSTOMIZATION:
- * - Props linh hoạt (`HeroSectionProps`) cho phép tái sử dụng ở các trang khác hoặc A/B Testing. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 "use client";
 
 import { GlassButton } from "@/components/shared/glass-button";

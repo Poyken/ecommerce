@@ -13,19 +13,6 @@ import { Server, Socket } from 'socket.io';
  * STOCK GATEWAY - Cập nhật tồn kho thời gian thực
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REAL-TIME INVENTORY:
- * - Khi có sự thay đổi tồn kho (đặt hàng, hủy đơn, nhập hàng), server sẽ
- *   broadcast sự thay đổi đó đến tất cả các client đang xem sản phẩm.
- *
- * 2. ROOM-BASED UPDATES (Optimized):
- * - Thay vì gửi cho tất cả mọi người, ta có thể chia room theo productId.
- * - Client vào trang sản phẩm sẽ join room `product:id`.
- * - Tiết kiệm băng thông cho client không quan tâm sản phẩm đó. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @WebSocketGateway({

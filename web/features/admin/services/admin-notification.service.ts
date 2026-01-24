@@ -1,4 +1,5 @@
 import { http } from "@/lib/http";
+import { ApiResponse } from "@/types/dtos";
 
 /**
  * =====================================================================
@@ -6,12 +7,22 @@ import { http } from "@/lib/http";
  * =====================================================================
  */
 
+export interface CreateNotificationDto {
+  title: string;
+  message: string;
+  type: string;
+  link?: string;
+}
+
 export const adminNotificationService = {
-  broadcastNotification: async (data: any) => {
-    return http.post("/notifications/admin/broadcast", data);
+  broadcastNotification: async (data: CreateNotificationDto) => {
+    return http.post<ApiResponse<void>>("/notifications/admin/broadcast", data);
   },
 
-  sendNotificationToUser: async (userId: string, data: any) => {
-    return http.post("/notifications/admin/send", { ...data, userId });
+  sendNotificationToUser: async (userId: string, data: CreateNotificationDto) => {
+    return http.post<ApiResponse<void>>("/notifications/admin/send", {
+      ...data,
+      userId,
+    });
   },
 };

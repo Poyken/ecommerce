@@ -13,21 +13,7 @@ import { m } from "@/lib/animations";
 import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 
-/**
- * =====================================================================
- * COUPON FORM FIELDS - Các trường form cho Coupon (Create/Edit)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPONENT REUSE:
- * - Tách các trường form ra thành component riêng để dùng chung cho cả Create và Edit dialog.
- * - Giảm code duplication và đảm bảo tính đồng nhất giữa các form. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export interface CouponFormData {
   code: string;

@@ -39,29 +39,7 @@ import { BusinessTab } from "@/features/super-admin/components/dashboard/busines
 import { TechOpsTab } from "@/features/super-admin/components/dashboard/tech-ops-tab";
 import { TenantsTab } from "@/features/super-admin/components/dashboard/tenants-tab";
 
-/**
- * =================================================================================================
- * SUPER ADMIN DASHBOARD PAGE - TRANG TỔNG QUAN HỆ THỐNG (PLATFORM OVERVIEW)
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MULTI-TENANT ANALYTICS:
- *    - `getAnalyticsStatsAction`: Lấy dữ liệu tổng hợp từ tất cả các Store (Tenants).
- *    - `getTenantsAction`: Lấy danh sách các Store mới nhất để hiển thị tình trạng sức khỏe.
- *
- * 2. SYSTEM MONITORING:
- *    - "System Status" Card: Hiển thị trạng thái giả lập của hạ tầng (API, DB, Worker).
- *    - Trong thực tế, các chỉ số này sẽ được lấy từ Prometheus hoặc AWS CloudWatch.
- *
- * 3. TENANT MANAGEMENT:
- *    - Cung cấp lối tắt "Launch New Tenant" để nhanh chóng provisioning một cửa hàng mới. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - System Health Dashboard: Cung cấp cái nhìn nhanh về tình trạng hoạt động của toàn bộ hạ tầng (Server, DB, Workers) để đội ngũ DevOps kịp thời xử lý khi có sự cố.
- * - SaaS Vital Statistics: Theo dõi mức độ tăng trưởng của nền tảng thông qua số lượng Store (Tenants) mới và tổng doanh thu hợp nhất từ tất cả các cửa hàng.
 
- * =================================================================================================
- */
 export default async function SuperAdminDashboardPage() {
   const t = await getTranslations("superAdmin.dashboard");
 

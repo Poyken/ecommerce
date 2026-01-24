@@ -6,26 +6,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * SELECT COMPONENT - Dropdown chọn giá trị
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. NATIVE VS CUSTOM SELECT:
- * - Đây là Custom Select (dùng Radix UI), không phải thẻ `<select>` native.
- * - Ưu điểm: Style được thoải mái, UX tốt hơn (search, grouping).
- * - Nhược điểm: Phức tạp hơn, cần xử lý kỹ vấn đề Mobile/Touch.
- *
- * 2. POPPER POSITIONING:
- * - Sử dụng thuật toán Popper để hiển thị menu đè lên các element khác (`z-index` cao).
- * - `SelectScrollUpButton` / `DownButton`: Nút scroll khi danh sách quá dài. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 function Select({
   ...props

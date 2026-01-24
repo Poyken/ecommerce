@@ -33,24 +33,6 @@ import { UsersService } from './users.service';
  * USERS CONTROLLER - Quản lý người dùng (Dành cho Admin)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ADMIN ONLY ACCESS:
- * - Toàn bộ Controller này được bảo vệ bởi `JwtAuthGuard` và `PermissionsGuard`.
- * - Khác với `AuthController` (nơi người dùng tự quản lý mình), đây là nơi Admin quản lý TẤT CẢ người dùng trong hệ thống.
- *
- * 2. GRANULAR PERMISSIONS:
- * - Mỗi API yêu cầu một quyền cụ thể: `user:read`, `user:create`, `user:update`, `user:delete`.
- * - Giúp phân chia công việc: Nhân viên hỗ trợ chỉ có quyền `read`, trong khi Quản lý có quyền `update/delete`.
- *
- * 3. ROLE ASSIGNMENT:
- * - API `:id/roles` cho phép Admin gán các vai trò (Role) cho người dùng, từ đó thay đổi quyền hạn của họ trong hệ thống.
- *
- * 4. PAGINATION & SEARCH:
- * - Hỗ trợ phân trang và tìm kiếm để Admin dễ dàng quản lý khi số lượng người dùng lên đến hàng ngàn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 

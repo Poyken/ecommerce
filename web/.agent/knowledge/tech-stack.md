@@ -38,7 +38,7 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 | ----------------- | ---------- | --------------------------- |
 | `joi`             | ❌ REMOVED | Đã loại bỏ hoàn toàn        |
 | `class-validator` | ❌ REMOVED | Đã loại bỏ hoàn toàn        |
-| `zod`             | 3.x        | ✅ Chuẩn duy nhất API + Web |
+| `zod`             | ^4.2.1     | ✅ Chuẩn duy nhất API + Web |
 
 ### Utilities
 
@@ -73,18 +73,18 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 
 | Package     | Version | Mục đích        |
 | ----------- | ------- | --------------- |
-| `next`      | 16.1.x  | React Framework |
-| `react`     | 19.2.x  | UI Library      |
-| `react-dom` | 19.2.x  | DOM Rendering   |
+| `next`      | 16.1.1  | React Framework |
+| `react`     | 19.2.3  | UI Library      |
+| `react-dom` | 19.2.3  | DOM Rendering   |
 
 ### State & Data
 
 | Package     | Version | Mục đích                             |
 | ----------- | ------- | ------------------------------------ |
-| `zustand`   |         | Global State Management              |
-| `swr`       |         | Data Fetching & Caching              |
-| `nuqs`      | 2.8.x   | URL State Management (Search Params) |
-| `next-intl` | 4.6.x   | Internationalization (i18n)          |
+| `zustand`   | 5.0.9   | Global State Management              |
+| `swr`       | 2.3.8   | Data Fetching & Caching              |
+| `nuqs`      | 2.8.6   | URL State Management (Search Params) |
+| `next-intl` | 4.6.1   | Internationalization (i18n)          |
 
 ### Forms
 
@@ -116,7 +116,7 @@ Tài liệu này chứa toàn bộ thông tin về Tech Stack, dependencies và 
 | `@radix-ui/*`              | Headless UI (Accessible) |
 | `lucide-react`             | Icons                    |
 | `framer-motion`            | Animations               |
-| `tailwindcss`              | 4.x (CSS-first)          |
+| `tailwindcss`              | 4.1.18 (CSS-first)       |
 | `class-variance-authority` | Variant Styling          |
 | `tailwind-merge`           | Class Merging            |
 

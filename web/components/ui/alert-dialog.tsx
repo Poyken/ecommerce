@@ -7,29 +7,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Loader2 } from "lucide-react";
 
-/**
- * =====================================================================
- * ALERT DIALOG - Hộp thoại xác nhận hành động quan trọng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DESTRUCTIVE ACTIONS:
- * - Khác với Dialog thông thường, Alert Dialog dùng cho các hành động không thể hoàn tác (VD: Xóa sản phẩm, Hủy đơn hàng).
- * - Nó yêu cầu user phải tương tác (Xác nhận hoặc Hủy) để đóng hộp thoại, không cho phép click ra ngoài để đóng (mặc định).
- *
- * 2. COMPONENT STRUCTURE:
- * - `AlertDialogAction`: Nút thực hiện hành động (thường có màu nổi bật).
- * - `AlertDialogCancel`: Nút hủy bỏ hành động.
- *
- * 3. ACCESSIBILITY:
- * - Tự động focus vào nút `Cancel` khi mở để tránh việc user lỡ tay nhấn `Enter` xóa nhầm dữ liệu.
- * - Sử dụng `role="alertdialog"` để thông báo mức độ quan trọng cho trình đọc màn hình. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 function AlertDialog({
   ...props

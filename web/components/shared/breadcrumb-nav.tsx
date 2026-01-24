@@ -10,29 +10,7 @@ import { Link } from "@/i18n/routing";
 import { Home } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-/**
- * =====================================================================
- * BREADCRUMB NAV - Thanh điều hướng phân cấp
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. UX & SEO:
- * - Breadcrumb giúp người dùng biết họ đang ở đâu trong cấu trúc website.
- * - Hỗ trợ Google Index tốt hơn (Search Console thường báo lỗi nếu thiếu Breadcrumb).
- *
- * 2. COMPONENT STRUCTURE:
- * - Luôn bắt đầu bằng `Home` icon để user dễ dàng quay lại trang chủ.
- * - Tự động render `BreadcrumbSeparator` giữa các item.
- *
- * 3. CONDITIONAL RENDERING:
- * - Nếu item có `href`: Render `BreadcrumbLink` (có thể click).
- * - Nếu không có `href`: Render `BreadcrumbPage` (trang hiện tại, không click được). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export interface BreadcrumbNavItem {
   label: string;

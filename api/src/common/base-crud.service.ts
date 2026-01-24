@@ -30,21 +30,6 @@ export interface CrudDelegate<T> {
  * BASE CRUD SERVICE - LỚP CƠ SỞ CHO CÁC DỊCH VỤ CRUD
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CHIẾN THUẬT REUSE (Tái sử dụng):
- * - Hầu hết các service (Product, Order, User...) đều có các thao tác cơ bản: Tìm tất cả, Tìm theo ID, Xóa soft-delete.
- * - `BaseCrudService` gom các logic này lại một chỗ để tránh lặp code (DRY - Don't Repeat Yourself).
- *
- * 2. DYNAMIC FIELDS (Truy vấn động):
- * - Hàm `parseFields` cho phép frontend yêu cầu chỉ lấy những trường dữ liệu cần thiết (VD: `select=id,name`).
- * - Giảm tải cho database và băng thông mạng (Network Payload).
- *
- * 3. STANDARDIZED PAGINATION:
- * - Tự động tính toán `skip`, `take` và trả về metadata (total, lastPage) theo một format nhất định cho mọi API. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()

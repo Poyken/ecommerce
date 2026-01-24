@@ -15,22 +15,6 @@ import { PrismaService } from '@core/prisma/prisma.service';
  * PLATFORM ANALYTICS CONTROLLER - API THỐNG KÊ TOÀN NỀN TẢNG (SUPER ADMIN)
  * =================================================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PURPOSE:
- *    - Cung cấp các chỉ số quan trọng về tình hình kinh doanh của nền tảng SaaS.
- *    - Dashboard Super Admin sử dụng các API này để hiển thị real-time metrics.
- *
- * 2. KEY METRICS:
- *    - MRR (Monthly Recurring Revenue): Doanh thu định kỳ hàng tháng
- *    - Churn Rate: Tỷ lệ khách hàng rời bỏ
- *    - Tenant Growth: Tăng trưởng số lượng cửa hàng
- *    - Plan Distribution: Phân bố gói dịch vụ
- *
- * 3. SECURITY:
- *    - Tất cả APIs yêu cầu permission 'platform:analytics:read'
- *    - Chỉ Super Admin mới có quyền này.
- *
  * =================================================================================================
  */
 @ApiTags('Platform Analytics (Super Admin)')

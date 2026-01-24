@@ -1,27 +1,4 @@
-/**
- * =====================================================================
- * REVIEW ITEM & SKELETON - Component hiển thị đánh giá tối ưu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REACT.MEMO OPTIMIZATION (Tối ưu hiệu năng):
- * - Danh sách review có thể rất dài (hàng trăm items).
- * - Nếu cha re-render (VD: do filter thay đổi), ta không muốn hàng trăm con re-render theo.
- * - `memo()` giúp chặn việc re-render thừa nếu props `review` không đổi.
- *
- * 2. SKELETON LOADING (Hiệu ứng khung xương):
- * - Thay vì hiện "Loading..." nhàm chán, ta vẽ ra các khối xám (`Skeleton`) có hình dạng giống hệt nội dung thật.
- * - Giúp giảm CLS (Cumulative Layout Shift) - hiện tượng giao diện bị giật cục khi ảnh/text load xong.
- *
- * 3. COMPONENT CO-LOCATION:
- * - Ta đặt cả `ReviewItem` và `ReviewItemSkeleton` trong cùng 1 file.
- * - Vì chúng có cấu trúc HTML tương tự nhau, khi sửa layout item thật, ta dễ nhớ sửa luôn skeleton. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

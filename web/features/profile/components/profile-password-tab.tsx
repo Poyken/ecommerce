@@ -1,24 +1,4 @@
-/**
- * =====================================================================
- * PROFILE PASSWORD TAB - Tab đổi mật khẩu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SECURE INPUT:
- * - Sử dụng `PasswordInput` để ẩn mật khẩu khi nhập, đảm bảo tính riêng tư.
- *
- * 2. VALIDATION:
- * - Yêu cầu nhập cả mật khẩu hiện tại và mật khẩu mới.
- * - Tích hợp với `useTransition` để hiển thị trạng thái "Changing..." khi đang xử lý.
- *
- * 3. FEEDBACK:
- * - Thông báo thành công hoặc lỗi được hiển thị qua hệ thống Toast của ứng dụng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

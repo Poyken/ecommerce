@@ -7,35 +7,6 @@ import { getTenant } from './tenant.context';
  * PRISMA TENANCY EXTENSION - EXTENSION TỰ ĐỘNG HÓA MULTI-TENANCY
  * =================================================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MỤC ĐÍCH:
- *    - Đây là "Trái tim" của hệ thống Multi-tenancy. Nó giúp ta không bao giờ quên `where: { tenantId }`.
- *    - Thay vì phải viết thủ công `db.product.findMany({ where: { tenantId: id } })` ở khắp mọi nơi,
- *      extension này sẽ TỰ ĐỘNG chèn điều kiện đó vào mọi câu lệnh database.
- *
- * 2. CƠ CHẾ HOẠT ĐỘNG (INTERCEPTOR):
- *    - Sử dụng tính năng `$extends` của Prisma (giống như Middleware).
- *    - `$allOperations`: Chặn (Intercept) TẤT CẢ các thao tác (find, create, update, delete...) trên TẤT CẢ các bảng ($allModels).
- *
- * 3. LOGIC XỬ LÝ:
- *    - Bước 1: Lấy `tenant` hiện tại từ Context (xem `tenant.context.ts`).
- *    - Bước 2: Kiểm tra xem Model đang thao tác có phải là "Shared Data" (dữ liệu dùng chung) hay không.
- *      - Nếu là Shared (VD: User, Category...), thì KHÔNG lọc -> Cho phép thấy toàn bộ.
- *      - Nếu là Private (VD: Order, Product, Cart...), thì BẮT BUỘC lọc theo `tenantId`.
- *    - Bước 3:
- *      - Với lệnh ĐỌC (Read): Tự động thêm `where: { tenantId: tenant.id }`.
- *      - Với lệnh GHI (Write): Tự động gán `data: { tenantId: tenant.id }`.
- *
- * 4. LƯU Ý QUAN TRỌNG (BẢO MẬT):
- *    - Các model như User, Page, Cart BẮT BUỘC phải được lọc theo tenantId (không để trong SHARED_MODELS).
- *    - Điều này đảm bảo User của Tenant A không bao giờ có thể thấy dữ liệu của Tenant B.
- *    - Nếu bạn đang viết API cho Super Admin (người quản lý toàn sàn), tenantId sẽ là null/undefined -> Extension sẽ bỏ qua bộ lọc này (đúng mong muốn). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Data Isolation: "Bức tường lửa" ngăn chặn việc lộ dữ liệu giữa các cửa hàng khác nhau (Tenant Leakage).
- * - Developer Productivity: Dev không cần nhớ viết `where: { tenantId }` trong mỗi câu query, giảm thiểu bug do quên sót.
- * - Compliance: Đáp ứng tiêu chuẩn bảo mật doanh nghiệp (Enterprise Grade Security).
-
  * =================================================================================================
  */
 

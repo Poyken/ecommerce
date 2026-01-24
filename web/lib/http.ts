@@ -2,253 +2,70 @@ import { redirect } from "next/navigation";
 import { API_CONFIG, HTTP_STATUS } from "./constants";
 import { env } from "./env";
 
-/**
- * =====================================================================
- * HTTP CLIENT UTILITY
- * =====================================================================
- */
-
-export type FetchOptions = RequestInit & {
-  params?: Record<string, string | number | boolean | undefined>;
+export interface FetchOptions extends RequestInit {
+  params?: Record<string, string | number | boolean | undefined | null>;
   skipAuth?: boolean;
-  next?: NextFetchRequestConfig;
   skipRedirectOn401?: boolean;
-  timeout?: number;
-  responseType?: "json" | "blob" | "text" | "arraybuffer";
-};
+  responseType?: "json" | "blob" | "arraybuffer" | "text";
+}
 
-let refreshTokenPromise: Promise<boolean> | null = null;
-
-async function fetcher<T>(
+const fetcher = async <T = any>(
   path: string,
   options: FetchOptions = {}
-): Promise<T> {
-  const { params, headers, skipAuth, timeout, ...rest } = options;
+): Promise<T> => {
+  const { params, skipAuth, responseType = "json", ...init } = options;
 
-  let csrfToken: string | undefined;
-  let accessToken: string | undefined;
-  let forwardedUserAgent: string | undefined;
-  let forwardedIp: string | undefined;
-  let forwardedHost: string | undefined;
-
-  const isStateChanging = ["POST", "PUT", "PATCH", "DELETE"].includes(
-    rest.method?.toUpperCase() || "GET"
-  );
-
-  if (typeof window === "undefined") {
-    if (!skipAuth || isStateChanging) {
-      try {
-        const { cookies, headers } = await import("next/headers");
-        const cookieStore = await cookies();
-        const headersList = await headers();
-
-        if (!skipAuth) {
-          accessToken = cookieStore.get("accessToken")?.value;
-        }
-        if (isStateChanging) {
-          csrfToken = cookieStore.get("csrf-token")?.value;
-        }
-
-        forwardedUserAgent = headersList.get("user-agent") || undefined;
-        forwardedIp = headersList.get("x-forwarded-for") || undefined;
-        forwardedHost = headersList.get("host") || undefined;
-      } catch {
-        // use cache context
-      }
-    }
-  } else {
-    if (isStateChanging) {
-      const match = document.cookie.match(/csrf-token=([^;]+)/);
-      csrfToken = match ? match[1] : undefined;
-    }
-  }
-
-  const apiUrl = env.NEXT_PUBLIC_API_URL;
-  const baseUrl = apiUrl.endsWith("/") ? apiUrl : `${apiUrl}/`;
-  const cleanPath = path.startsWith("/") ? path.slice(1) : path;
-  const url = new URL(cleanPath, baseUrl);
+  const baseUrl = env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api/v1";
+  // If path is absolute, use it. Otherwise prepend baseUrl.
+  const urlString = path.startsWith("http") ? path : `${baseUrl}${path.startsWith("/") ? "" : "/"}${path}`;
+  const url = new URL(urlString);
 
   if (params) {
     Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined) {
+      if (value !== undefined && value !== null) {
         url.searchParams.append(key, String(value));
       }
     });
   }
 
-  const requestHeaders: Record<string, string> = {
-    "X-CSRF-Token": csrfToken || "",
-    Cookie: csrfToken ? `csrf-token=${csrfToken}` : "",
-    ...(forwardedUserAgent ? { "User-Agent": forwardedUserAgent } : {}),
-    ...(forwardedIp ? { "X-Forwarded-For": forwardedIp } : {}),
-  };
-
-  const tenantDomain =
-    typeof window !== "undefined"
-      ? window.location.hostname
-      : forwardedHost
-      ? forwardedHost.split(":")[0]
-      : undefined;
-
-  if (tenantDomain) {
-    requestHeaders["X-Tenant-Domain"] = tenantDomain;
+  const headers = new Headers(init.headers);
+  if (!(init.body instanceof FormData) && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
   }
 
-  if (accessToken) {
-    requestHeaders["Authorization"] = `Bearer ${accessToken}`;
-  }
+  const response = await fetch(url.toString(), {
+    ...init,
+    headers,
+  });
 
-  if (headers) {
-    Object.entries(headers).forEach(([key, value]) => {
-      requestHeaders[key] = String(value);
-    });
-  }
-
-  if (!(rest.body instanceof FormData)) {
-    requestHeaders["Content-Type"] = "application/json";
-  }
-
-  const isGet = rest.method?.toUpperCase() === "GET" || !rest.method;
-  const isClient = typeof window !== "undefined";
-  const dedupKey = `${url.toString()}-${JSON.stringify(requestHeaders)}`;
-
-  if (isClient && isGet) {
-    const existingRequest = (window as any)._pendingRequests?.get(dedupKey);
-    if (existingRequest) return existingRequest;
-  }
-
-  if (isClient && !(window as any)._pendingRequests) {
-    (window as any)._pendingRequests = new Map<string, Promise<any>>();
-  }
-
-  const executeFetch = async (): Promise<T> => {
-    let res: Response;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(
-      () => controller.abort(),
-      timeout ?? API_CONFIG.DEFAULT_TIMEOUT
-    );
-
+  if (!response.ok) {
+    // Attempt to parse error JSON
+    let errorMessage = "An error occurred";
     try {
-      res = await fetch(url.toString(), {
-        headers: requestHeaders,
-        credentials: "include",
-        signal: controller.signal,
-        ...rest,
-      });
-    } catch (error) {
-      if ((error as Error).name === "AbortError") {
-        console.warn(`[HTTP Fetch Timeout] ${url} after ${timeout ?? 10000}ms`);
-      } else {
-        console.warn(`[HTTP Fetch Error] Failed to reach ${url}:`, error);
-      }
-      return {
-        data: [],
-        meta: { total: 0, page: 1, limit: 10, lastPage: 0 },
-      } as T;
-    } finally {
-      clearTimeout(timeoutId);
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorData.error || errorMessage;
+    } catch {
+      // Ignore JSON parse error, use status text
+      errorMessage = response.statusText;
     }
-
-    if (!res.ok) {
-      if (
-        res.status === HTTP_STATUS.UNAUTHORIZED &&
-        !options.skipRedirectOn401
-      ) {
-        if (typeof window !== "undefined") {
-          if (!refreshTokenPromise) {
-            refreshTokenPromise = fetch(`${baseUrl}auth/refresh`, {
-              method: "POST",
-              credentials: "include",
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-Token": csrfToken || "",
-              },
-            })
-              .then((r) => r.ok)
-              .catch(() => false)
-              .finally(() => {
-                refreshTokenPromise = null;
-              });
-          }
-
-          const isRefreshed = await refreshTokenPromise;
-          if (isRefreshed) {
-            return await fetcher<T>(path, {
-              ...options,
-              skipRedirectOn401: true,
-            });
-          }
-          window.location.href = "/login";
-          return new Promise<T>(() => {});
-        } else {
-          redirect("/login");
-        }
-      }
-
-      let errorMessage = `API Error: ${res.status} ${res.statusText}`;
-      try {
-        const errorBody = await res.json();
-        if (errorBody && typeof errorBody === "object") {
-          const body = errorBody as Record<string, any>;
-          // Extract error message, handling nested objects
-          let msg: any = body.message || body.error || errorMessage;
-          
-          // If message is an object, try to extract nested message
-          if (msg && typeof msg === "object") {
-            if (typeof msg.message === "string") {
-              msg = msg.message;
-            } else if (typeof msg.error === "string") {
-              msg = msg.error;
-            } else {
-              // Fallback: stringify the object
-              msg = JSON.stringify(msg);
-            }
-          }
-          
-          // Convert to string if not already
-          if (Array.isArray(msg)) {
-            errorMessage = msg.join(", ");
-          } else {
-            errorMessage = String(msg || errorMessage);
-          }
-        }
-      } catch {
-        // ignore
-      }
-
-      const error = new Error(errorMessage) as any;
-      error.status = res.status;
-      throw error;
-    }
-
-    if (res.status === HTTP_STATUS.NO_CONTENT) return null as T;
-
-    const type = options.responseType || "json";
-    if (type === "json") return await res.json();
-    if (type === "blob") return (await res.blob()) as any;
-    if (type === "text") return (await res.text()) as any;
-    if (type === "arraybuffer") return (await res.arrayBuffer()) as any;
-
-    return await res.json();
-  };
-
-  if (isClient && isGet) {
-    const promise = executeFetch().finally(() => {
-      (window as any)._pendingRequests?.delete(dedupKey);
-    });
-    (window as any)._pendingRequests?.set(dedupKey, promise);
-    return promise;
+    
+    // Throw error or handle specific status codes
+    const error = new Error(errorMessage);
+    (error as any).status = response.status;
+    throw error;
   }
 
-  return executeFetch();
-}
+  if (response.status === HTTP_STATUS.NO_CONTENT) {
+    return {} as T;
+  }
 
-/**
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- * Ta gắn sẵn các method vào hàm http để gọi nặc danh nhanh hơn:
- * VD: http.post("/url", { data }) thay vì http("/url", { method: "POST", body: ... })
- */
+  if (responseType === "blob") return response.blob() as unknown as T;
+  if (responseType === "arraybuffer") return response.arrayBuffer() as unknown as T;
+  if (responseType === "text") return response.text() as unknown as T;
+
+  return response.json();
+};
+
 export const http = Object.assign(fetcher, {
   get: <T>(path: string, options: FetchOptions = {}) =>
     fetcher<T>(path, { ...options, method: "GET" }),

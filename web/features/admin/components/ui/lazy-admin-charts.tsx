@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * LAZY ADMIN CHARTS - Dynamic Import wrapper cho Recharts
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CODE SPLITTING:
- * - Recharts là thư viện nặng (~200KB gzipped khi bundle đầy đủ).
- * - Lazy load để giảm First Load JS, chỉ load khi user vào trang Dashboard.
- *
- * 2. SKELETON DESIGN:
- * - Chart skeletons mô phỏng layout thực tế của biểu đồ.
- * - Tránh layout shift và cải thiện perceived performance.
- *
- * 3. SSR:
- * - Recharts hỗ trợ SSR, nhưng lazy load vẫn giúp giảm bundle. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

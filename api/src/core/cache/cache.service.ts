@@ -7,25 +7,6 @@ import * as zlib from 'zlib';
  * CACHE SERVICE - Dịch vụ quản lý bộ nhớ đệm (Redis)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PERFORMANCE OPTIMIZATION:
- * - Caching giúp giảm tải cho Database chính bằng cách lưu trữ các kết quả truy vấn thường xuyên vào RAM (Redis).
- * - Tốc độ đọc từ RAM nhanh hơn hàng trăm lần so với đọc từ ổ cứng (Disk).
- *
- * 2. CACHE-ASIDE PATTERN:
- * - Hàm `getOrSet` triển khai mẫu thiết kế Cache-aside: Kiểm tra trong Cache trước, nếu không có mới gọi Database và lưu lại vào Cache cho lần sau.
- *
- * 3. TTL (Time To Live):
- * - Mỗi dữ liệu trong cache đều có thời gian sống (`DEFAULT_TTL`). Sau thời gian này, dữ liệu tự động bị xóa để đảm bảo tính cập nhật.
- *
- * 4. CACHE INVALIDATION:
- * - `invalidatePattern`: Dùng để xóa hàng loạt cache khi dữ liệu gốc thay đổi (VD: Khi cập nhật sản phẩm, ta xóa toàn bộ cache liên quan đến sản phẩm đó). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - High Traffic Handling: Chịu tải hàng chục nghìn request/giây nhờ cơ chế L1 (RAM) cực nhanh.
- * - Database Cost Optimization: Thay vì tốn tiền nâng cấp DB server, ta dùng cache để trả kết quả có sẵn.
- * - Cache Stampede Prevention: Kỹ thuật Jitter giúp tránh việc 1000 user cùng chọc vào DB đúng giây cache hết hạn.
-
  * =====================================================================
  */
 @Injectable()
@@ -39,10 +20,6 @@ export class CacheService {
 
   /**
    * [P17 OPTIMIZATION] L1 CACHE (Server Memory)
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   * - L1 Cache lưu ngay trong RAM của Node.js instance.
-   * - Tốc độ truy xuất gần như = 0ms vì không mất công truyền qua mạng tới Redis.
-   * - Tuy nhiên, RAM server có hạn và không đồng bộ giữa các instance, nên ta chỉ lưu Hot Data trong thời gian cực ngắn (L1_TTL).
    */
   private readonly l1Cache = new Map<string, { value: any; expiry: number }>();
   private readonly L1_TTL = 10; // 10 giây

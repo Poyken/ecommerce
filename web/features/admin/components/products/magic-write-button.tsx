@@ -6,27 +6,7 @@ import { Sparkles, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { generateProductContentAction } from "@/features/admin/actions";
 
-/**
- * =====================================================================
- * MAGIC WRITE BUTTON - Nút tạo nội dung AI cho sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. AI CONTENT GENERATION:
- * - Nút này gọi API AI để tự động tạo description, meta title, meta description.
- * - Giúp Admin tiết kiệm thời gian nhập liệu thủ công.
- *
- * 2. PROPS:
- * - productName: Tên sản phẩm để AI hiểu context
- * - category: Danh mục sản phẩm
- * - brand: Thương hiệu (optional)
- * - onApply: Callback khi có kết quả từ AI *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface MagicWriteResult {
   description: string;

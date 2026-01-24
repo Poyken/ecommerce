@@ -3,18 +3,6 @@
  * AI INSIGHTS CONTROLLER - ĐIỀU HƯỚNG BÁO CÁO THÔNG MINH
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DASHBOARD DATA (Dữ liệu bảng điều khiển):
- * - Controller này cung cấp "linh hồn" cho trang Dashboard của Admin.
- * - Thay vì trả về hàng ngàn dòng log, nó trả về các Insight đã được cô đọng.
- *
- * 2. FORCE REFRESH (Làm mới thủ công):
- * - Endpoint `@Post('refresh')` cho phép Admin chủ động tính toán lại dữ liệu
- *   ngay lập tức (VD: sau khi vừa chốt một đợt Flash Sale lớn) thay vì đợi Cache hết hạn.
- *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Giúp Admin đưa ra quyết định kinh doanh dựa trên dữ liệu thực tế (Data-driven decisions) một cách nhanh chóng.
  * =====================================================================
  */
 

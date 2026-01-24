@@ -11,26 +11,7 @@ interface UserAvatarProps {
   className?: string;
 }
 
-/**
- * =====================================================================
- * USER AVATAR - Standardized Avatar Component
- * =====================================================================
- * 
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. FALLBACK STRATEGY:
- * - Ưu tiên hiển thị ảnh (src).
- * - Nếu không có ảnh hoặc lỗi tải -> Hiển thị Fallback (Initials: "AB").
- * - Wrapper `validSrc` check kỹ các trường hợp "null" string do API trả về.
- *
- * 2. MEMOIZATION:
- * - `memo` giúp tránh render lại không cần thiết khi parent re-render,
- *   vì Avatar thường nằm trong Header/List item tĩnh. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 export const UserAvatar = memo(function UserAvatar({
   src,
   alt = "User",

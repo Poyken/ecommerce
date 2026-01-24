@@ -7,19 +7,6 @@ import { ThrottlerStorage } from '@nestjs/throttler';
  * REDIS THROTTLER STORAGE - LƯU TRỮ GIỚI HẠN TỐC ĐỘ TRÊN REDIS
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DISTRIBUTED RATE LIMITING (Chống Spam phân tán):
- * - Nếu ta lưu số lần gọi API trong RAM của server, thì khi chạy 10 server (Load Balance), một user có thể gọi gấp 10 lần giới hạn cho phép.
- * - Vì vậy, ta dùng Redis làm kho lưu trữ CHUNG cho tất cả server. Mọi server đều kiểm tra số lần gọi từ một nguồn (Redis).
- *
- * 2. ATOMIC OPERATIONS (Thao tác nguyên tử):
- * - Dùng `multi`, `incr`, `ttl` của Redis để đảm bảo việc đếm số lần gọi chính xác tuyệt đối ngay cả khi có hàng ngàn request cùng lúc.
- * - `ttl` giúp tự động reset số lần đếm sau một khoảng thời gian (VD: Sau 1 phút được gọi lại tiếp). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Distributed Protection: Bảo vệ API khỏi DDoS khi chạy trên nhiều server (Scale Out) nhờ sử dụng Redis làm bộ đếm trung gian.
- * - Cost Saving: Ngăn chặn bot scan API quá mức, giúp giảm chi phí server và băng thông.
-
  * =====================================================================
  */
 

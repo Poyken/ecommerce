@@ -33,25 +33,7 @@ interface FAQBlockProps {
   };
 }
 
-/**
- * =================================================================================================
- * FAQ BLOCK - KHỐI CÂU HỎI THƯỜNG GẶP
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REUSABILITY (TÁI SỬ DỤNG):
- *    - Logic Accordion (đóng/mở) được tách riêng ra `FAQAccordion` để code gọn hơn.
- *    - `FAQBlock` chỉ đóng vai trò "Container" để xử lý Layout và Animation.
- *
- * 2. ANIMATION VARIANTS:
- *    - Sử dụng `fadeInUp` từ `lib/animations` để tạo hiệu ứng trồi lên thống nhất.
- *    - `staggerChildren`: Giúp các item bên trong xuất hiện lần lượt (nếu có config). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =================================================================================================
- */
 export function FAQBlock({ title, subtitle, items, styles }: FAQBlockProps) {
   const t = useTranslations("home");
 

@@ -1,26 +1,4 @@
-/**
- * =====================================================================
- * NOTIFICATION STORE - Quản lý trạng thái thông báo toàn ứng dụng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ZUSTAND STATE MANAGEMENT:
- * - Thay thế Context API cũ để tối ưu hiệu năng (chỉ re-render những component thực sự dùng dữ liệu).
- * - Tách biệt logic xử lý data (`actions`) khỏi UI components.
- *
- * 2. OPTIMISTIC UPDATES:
- * - `addNotification`: Khi có thông báo mới từ Socket, ta cập nhật store ngay lập tức để user thấy badge nhảy số mà không cần load lại trang.
- * - Store tự động slice list thông báo để giữ bộ nhớ nhẹ (tối đa 10 cái mới nhất).
- *
- * 3. REFRESH LOGIC:
- * - Cung cấp hàm `refresh` để đồng bộ dữ liệu thủ công hoặc khi user quay lại app (visibility change). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Real-time Engagement: Đảm bảo khách hàng nhận được tin vui (vd: "Đơn hàng đã được xác nhận") ngay giây phút Backend xử lý xong, tăng tính tương tác.
- * - Instant Feedback: Cập nhật trạng thái "đã đọc" trên giao diện ngay lập tức khi user click (Optimistic Update), mang lại trải nghiệm mượt mà không độ trễ.
 
- * =====================================================================
- */
 
 import {
   markAllAsReadAction,

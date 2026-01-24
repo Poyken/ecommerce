@@ -1,23 +1,4 @@
-/**
- * =====================================================================
- * SHOP SKELETON - Skeleton cho trang Cửa hàng (Danh sách sản phẩm)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SIDEBAR FILTERS MOCK:
- * - Giả lập bộ lọc sản phẩm bên trái với các danh mục và khoảng giá.
- *
- * 2. TOOLBAR MOCK:
- * - Hiển thị thanh công cụ giả bao gồm thanh tìm kiếm, bộ chọn sắp xếp và tổng số sản phẩm.
- *
- * 3. PRODUCT GRID INTEGRATION:
- * - Tái sử dụng `ProductsSkeleton` để hiển thị lưới 12 sản phẩm giả lập. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { ProductsSkeleton } from "@/features/home/components/skeletons/home-skeleton";

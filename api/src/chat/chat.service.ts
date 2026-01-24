@@ -8,21 +8,6 @@ import { SenderType } from '@prisma/client';
  * CHAT SERVICE - HỆ THỐNG CHĂM SÓC KHÁCH HÀNG TRỰC TUYẾN
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MÔ HÌNH HỘI THOẠI (Conversation Model):
- * - Mỗi User sẽ có 1 `ChatConversation` duy nhất với Admin.
- * - Mọi tin nhắn (`ChatMessage`) đều thuộc về hội thoại này.
- *
- * 2. CÁC LOẠI TIN NHẮN (Message Types):
- * - Hệ thống hỗ trợ nhiều loại tin nhắn: TEXT, IMAGE, PRODUCT (gửi thông tin sản phẩm), ORDER (gửi thông tin đơn hàng).
- * - Metadata field (JSON) được dùng để lưu chi tiết sp/đơn hàng kèm theo.
- *
- * 3. DỌN DẸP DỮ LIỆU (Data Pruning):
- * - Chat sinh ra rất nhiều dữ liệu rác. Hàm `pruneOldMessages` chạy định kỳ hàng tuần để xóa các tin nhắn cũ hơn 180 ngày, giữ cho DB luôn nhẹ nhàng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()

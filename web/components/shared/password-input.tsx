@@ -6,29 +6,7 @@ import * as React from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * PASSWORD INPUT - Ô nhập mật khẩu có nút ẩn/hiện
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. STATE MANAGEMENT:
- * - `showPassword` (boolean) điều khiển thuộc tính `type` của thẻ input.
- * - `type="password"`: Hiển thị dấu chấm bảo mật.
- * - `type="text"`: Hiển thị mật khẩu rõ ràng.
- *
- * 2. UI/UX:
- * - Nút toggle được đặt tuyệt đối (`absolute`) ở góc phải của input.
- * - Sử dụng `Eye` và `EyeOff` từ Lucide để biểu thị trạng thái trực quan.
- *
- * 3. ACCESSIBILITY:
- * - `aria-label` giúp người dùng sử dụng trình đọc màn hình (Screen Reader) hiểu được chức năng của nút này. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 function PasswordInput({ className, ...props }: React.ComponentProps<"input">) {
   const [showPassword, setShowPassword] = React.useState(false);

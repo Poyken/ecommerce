@@ -24,18 +24,6 @@ import { ChatService } from './chat.service';
  * CHAT MODULE - Hệ thống chat realtime
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. WEBSOCKET GATEWAY (`ChatGateway`):
- * - Thay vì HTTP truyền thống (Req/Res), Chat cần kết nối 2 chiều liên tục (WebSocket).
- * - `ChatGateway` đóng vai trò như "Controller" cho các sự kiện Socket.io.
- *
- * 2. JWT AUTH IN SOCKET:
- * - Socket cũng cần bảo mật (Biết ai đang chat).
- * - Cần import `JwtModule` để verify token gửi kèm trong handshake của Socket kết nối. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 export class ChatModule {}

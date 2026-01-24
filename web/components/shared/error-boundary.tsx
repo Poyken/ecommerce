@@ -15,22 +15,7 @@ interface State {
   error?: Error;
 }
 
-/**
- * =====================================================================
- * ERROR BOUNDARY - Chốt chặn an toàn cho ứng dụng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- * - Error Boundary là một Component "đặc biệt" dùng để bắt các lỗi runtime
- *   xảy ra ở các component con của nó.
- * - Nó giúp lỗi ở một phần (vd: Widget Chat) không làm crash toàn bộ trang web.
- * - Hiện tại React vẫn yêu cầu viết bằng Class Component để dùng được lifecycle
- *   componentDidCatch và getDerivedStateFromError. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,

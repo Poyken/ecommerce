@@ -10,31 +10,7 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * CAROUSEL - Thành phần trình chiếu (Slider)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. EMBLA CAROUSEL:
- * - Sử dụng thư viện `embla-carousel-react` - một thư viện carousel nhẹ, mượt mà và không phụ thuộc vào framework CSS nào.
- * - `useEmblaCarousel`: Hook chính để khởi tạo và điều khiển carousel.
- *
- * 2. CONTEXT API:
- * - Sử dụng `CarouselContext` để chia sẻ trạng thái (`api`, `canScrollPrev`, `canScrollNext`) giữa các sub-components (`Previous`, `Next`, `Content`).
- * - Giúp code sạch hơn, không cần truyền props lòng vòng (Prop Drilling).
- *
- * 3. KEYBOARD NAVIGATION:
- * - Hỗ trợ điều khiển bằng phím mũi tên trái/phải (`handleKeyDown`) để tăng trải nghiệm người dùng.
- *
- * 4. ACCESSIBILITY:
- * - `role="region"` & `aria-roledescription="carousel"`: Giúp trình đọc màn hình hiểu đây là một vùng trình chiếu. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 type CarouselApi = UseEmblaCarouselType[1];
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>;

@@ -6,28 +6,7 @@ import { type HTMLMotionProps } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { forwardRef } from "react";
 
-/**
- * =====================================================================
- * GLASS BUTTON - Nút bấm hiệu ứng kính mờ (Glassmorphism)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. FRAMER MOTION INTEGRATION:
- * - Kế thừa `HTMLMotionProps<"button">` để có thể nhận các props animation như `whileHover`, `whileTap`.
- * - Mặc định có hiệu ứng `scale` nhẹ khi hover/click để tăng tính tương tác.
- *
- * 2. GLASSMORPHISM STYLE:
- * - Sử dụng `backdrop-blur-md` kết hợp với nền trắng có độ trong suốt thấp (`bg-white/10`).
- * - Border cũng có độ trong suốt (`border-white/10`) để tạo cảm giác cạnh kính sắc nét.
- *
- * 3. FORWARD REF:
- * - Sử dụng `forwardRef` để các thư viện khác (như Radix UI hoặc Tooltip) có thể truy cập trực tiếp vào DOM element. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface GlassButtonProps extends HTMLMotionProps<"button"> {
   variant?: "primary" | "secondary" | "glass" | "ghost" | "outline";

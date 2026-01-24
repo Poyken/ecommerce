@@ -49,30 +49,7 @@ interface TenantDialogProps {
   mode?: "create" | "edit" | "view";
 }
 
-/**
- * =================================================================================================
- * TENANT DIALOG - FORM QUẢN LÝ CỬA HÀNG (TENANT)
- * =================================================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MỤC ĐÍCH:
- *    - Component này đa năng: Vừa là form Tạo mới (Create), Sửa (Edit), vừa là Xem chi tiết (View).
- *    - Được điều khiển qua prop `mode`.
- *
- * 2. LOGIC TÊN MIỀN (DOMAIN):
- *    - Mỗi Tenant (Cửa hàng) chạy trên một Subdomain (VD: store1.flatform.com) hoặc Custom Domain.
- *    - Trong môi trường DEV (Localhost), việc map domain hơi phức tạp (cần sửa file hosts).
- *    - Dialog này hiển thị hướng dẫn suffix `.local` để dễ test.
- *
- * 3. TẠO ADMIN (AUTO-PROVISIONING):
- *    - Khi tạo Tenant mới, ta đồng thời tạo luôn 1 tài khoản Admin cho Tenant đó.
- *    - Backend sẽ sử dụng Transaction để đảm bảo cả 2 việc này thành công hoặc cùng thất bại (Atomic). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =================================================================================================
- */
 
 export function TenantDialog({
   open,

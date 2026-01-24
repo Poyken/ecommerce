@@ -23,24 +23,7 @@ import { useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 import { LocationSelects } from "@/features/address/components/location-selects";
 
-/**
- * =====================================================================
- * ADD ADDRESS DIALOG - Form thêm/sửa địa chỉ giao hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DEPENDENT DROPDOWNS:
- * - Tỉnh/Thành -> Quận/Huyện -> Phường/Xã.
- * - Logic fetch dữ liệu địa lý đã được tách ra component `LocationSelects` để tái sử dụng.
- *
- * 2. UX IMPROVEMENTS:
- * - Framer Motion (`AnimatePresence`) giúp các thông báo lỗi xuất hiện/biến mất mượt mà. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface AddAddressDialogProps {
   open: boolean;

@@ -3,19 +3,6 @@
  * CRUD DECORATORS - Decorators cho các Controller patterns phổ biến
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DECORATOR COMPOSITION:
- * - NestJS sử dụng decorators để khai báo metadata cho routes.
- * - File này tạo các composite decorators để giảm boilerplate.
- *
- * 2. API DOCUMENTATION:
- * - Tự động thêm Swagger decorators cho documentation. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Documentation Standardization: Đảm bảo 100% API có docs trên Swagger mà không cần dev phải thuộc lòng từng mã lỗi (201, 400, 401, 403).
- * - Code Consistency: Dev chỉ cần gõ `@ApiCreateResponse` là xong, thay vì copy-paste 10 dòng code decorator mỗi khi tạo API mới.
- * - QA Testing: Tester nhìn vào Swagger biết ngay API này cần quyền gì, trả về cái gì để viết Test Case.
- *
  * =====================================================================
  */
 

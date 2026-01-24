@@ -7,25 +7,6 @@ import Redis from 'ioredis';
  * ENHANCED REDIS SERVICE - QUẢN LÝ CƠ SỞ DỮ LIỆU TẠM THỜI (CACHE)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CACHE-ASIDE PATTERN:
- * - Hệ thống sẽ kiểm tra trong Redis trước. Nếu có dữ liệu (`Cache Hit`) -> Trả về ngay.
- * - Nếu không có (`Cache Miss`) -> Lấy từ Database -> Lưu ngược lại vào Redis -> Trả về.
- *
- * 2. CIRCUIT BREAKER (Cầu chì bảo vệ):
- * - Nếu Redis bị sập (lỗi kết nối liên tục), "cầu chì" sẽ ngắt.
- * - Hệ thống sẽ tự động bypass Redis và gọi trực tiếp vào Database để web không bị chết hoàn toàn.
- *
- * 3. PUB/SUB (Thông báo phân tán):
- * - Khi dữ liệu ở Server A thay đổi, nó sẽ `Publish` một tin nhắn.
- * - Server B (nếu đang chạy song song) sẽ `Subscribe` để biết đường xóa Cache cũ của mình đi. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tăng tốc độ phản hồi API (Low Latency): Giúp các API đọc dữ liệu tĩnh (như danh mục, cấu hình, sản phẩm hot) trả về < 10ms.
- * - Bảo vệ Database (Database Protection): Giảm tải cho DB chính trong những đợt cao điểm nhờ cơ chế Cache-Aside.
- * - Đồng bộ dữ liệu phân tán (Distributed Event Bus): Dùng Pub/Sub để xóa cache đồng loạt trên tất cả các instance server khi dữ liệu gốc thay đổi.
- * - Resiliency (Khả năng phục hồi): Circuit Breaker giúp hệ thống vẫn hoạt động (chậm hơn chút) ngay cả khi Redis chết, thay vì sập toàn bộ.
-
  * =====================================================================
  */
 

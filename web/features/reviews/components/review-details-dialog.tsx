@@ -12,27 +12,7 @@ import { Product, Review, Sku, User } from "@/types/models";
 import { Star } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-/**
- * =====================================================================
- * REVIEW DETAILS DIALOG - Xem chi tiết đánh giá (Dành cho Admin)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPREHENSIVE VIEW:
- * - Hiển thị đầy đủ thông tin: Người đánh giá (Email), Ngày giờ, Sản phẩm/SKU cụ thể.
- * - Giúp Admin kiểm soát nội dung đánh giá của khách hàng.
- *
- * 2. EXTERNAL LINKING:
- * - Cung cấp nút "View Product" để Admin có thể xem nhanh sản phẩm đang bị phản ánh.
- *
- * 3. WHITESPACE PRESERVATION:
- * - `whitespace-pre-wrap`: Giúp hiển thị đúng các dấu xuống dòng mà user đã nhập trong nội dung đánh giá. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface ReviewDetailsDialogProps {
   review: Review & {

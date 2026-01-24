@@ -1,30 +1,11 @@
-/**
- * =====================================================================
- * REVIEW ACTIONS - Tương tác với API Đánh giá
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. AI INTEGRATION:
- * - `analyzeReviewSentimentAction`: Gọi AI endpoint để phân tích cảm xúc
- *   (Tích cực, Tiêu cực, Trung tính) dựa trên nội dung text của review.
- * - Giúp Admin lọc nhanh các review tiêu cực để ưu tiên xử lý.
- *
- * 2. MODERATION FLOW:
- * - `updateReviewStatusAction`: Duyệt (Approve) hoặc Ẩn (Hide) review.
- * - Chỉ review đã duyệt mới được hiện ngoài Storefront. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - AI-powered Moderation: Tích hợp trí tuệ nhân tạo để tự động gắn nhãn cảm xúc cho hàng nghìn đánh giá, giúp Admin tiết kiệm 80% thời gian lọc và phản hồi khách hàng.
- * - Brand Reputation Management: Giúp doanh nghiệp phản ứng nhanh với các phản hồi tiêu cực (Negative sentiment), biến thách thức thành cơ hội cải thiện dịch vụ.
 
- * =====================================================================
- */
 "use server";
 
 import { adminReviewService } from "../services/admin-review.service";
 import { ActionResult } from "@/types/dtos";
 import { Review } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
+import { PaginationParams } from "@/lib/utils";
 
 /**
  * =====================================================================
@@ -33,7 +14,7 @@ import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
  */
 
 export async function getReviewsAction(
-  paramsOrPage: any = {},
+  paramsOrPage: number | PaginationParams = {},
   limit?: number,
   search?: string
 ): Promise<ActionResult<Review[]>> {
@@ -76,7 +57,12 @@ export async function updateReviewStatusAction(
 
 export async function analyzeReviewSentimentAction(
   text: string
-): Promise<ActionResult<any>> {
+): Promise<
+  ActionResult<{
+    sentiment: "POSITIVE" | "NEGATIVE" | "NEUTRAL";
+    score: number;
+  }>
+> {
   return wrapServerAction(async () => {
     const res = await adminReviewService.analyzeSentiment(text);
     REVALIDATE.admin.reviews();

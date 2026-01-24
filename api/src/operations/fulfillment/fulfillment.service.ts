@@ -3,21 +3,6 @@
  * FULFILLMENT SERVICE - QUẢN LÝ GIAO VẬN VÀ TÁCH ĐƠN (PARTIAL SHIPMENT)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Module này xử lý việc đưa hàng từ kho đến tay khách hàng.
- * Tại sao cần "Giao hàng từng phần" (Partial Fulfillment) dù đã check stock lúc order?
- *
- * 1. ĐA KHO (Multi-warehouse): Sản phẩm A ở kho HN, B ở kho HCM. Phải tách 2 Shipment.
- * 2. SAI LỆCH KHO THỰC TẾ: Hệ thống báo còn hàng, nhưng khi ra kệ lấy thì hàng bị hỏng
- *    hoặc thất thoát. Cần giao những gì đang có trước để giữ chân khách.
- * 3. HÀNG CỒNG KỀNH: Một số món cần đơn vị vận chuyển chuyên dụng (như xe tải),
- *    số còn lại đi xe máy.
- *
- * QUY TRÌNH:
- * - createShipment(): Kiểm tra số lượng còn lại (Remaining = Ordered - Already Shipped).
- * - updateShipmentStatus(): Khi 1 kiện được DELIVERED, check tổng số lượng toàn đơn.
- * - Nếu ĐỦ -> Order sang COMPLETED.
  * =====================================================================
  */
 

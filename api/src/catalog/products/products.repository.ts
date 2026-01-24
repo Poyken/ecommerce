@@ -12,24 +12,6 @@ import { Product, Prisma } from '@prisma/client';
  * PRODUCTS REPOSITORY - TRUY CẬP DỮ LIỆU SẢN PHẨM
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MỤC ĐÍCH:
- *    - Tập trung tất cả các queries liên quan đến Product vào một nơi.
- *    - ProductsService sẽ gọi repository này thay vì gọi Prisma trực tiếp.
- *    - Giúp code clean hơn và dễ test hơn.
- *
- * 2. CÁC METHODS:
- *    - findWithFilters(): Query phức tạp với search, filter, sort.
- *    - findBySlug(): Tìm sản phẩm theo slug (URL friendly).
- *    - findByBrand(): Lọc theo thương hiệu.
- *    - findByCategories(): Lọc theo danh mục.
- *
- * 🎯 ỨNG DỤNG THỰC TẾ:
- * - Tách biệt data access logic ra khỏi business logic.
- * - Dễ dàng optimize queries ở một nơi tập trung.
- * - Có thể switch sang database khác mà không ảnh hưởng services.
- *
  * =====================================================================
  */
 
@@ -279,7 +261,7 @@ export class ProductsRepository extends BaseRepository<Product> {
    * Update min/max prices cho product (denormalization)
    */
   async updatePriceRange(productId: string): Promise<Product> {
-    const skuPrices = await (this.prisma.sku as any).aggregate({
+    const skuPrices = await this.prisma.sku.aggregate({
       where: { productId, status: 'ACTIVE' },
       _min: { price: true, salePrice: true },
       _max: { price: true, salePrice: true },

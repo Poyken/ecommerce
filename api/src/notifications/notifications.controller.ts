@@ -8,7 +8,8 @@ import {
 } from '@/common/decorators/crud.decorators';
 import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/identity/auth/permissions.guard';
-import { EmailService } from '@integrations/email/email.service';
+import { EmailService } from '@/platform/integrations/external/email/email.service';
+import { getTenant } from '@core/tenant/tenant.context';
 import {
   Body,
   Controller,
@@ -33,24 +34,6 @@ import { NotificationsService } from './notifications.service';
  * NOTIFICATIONS CONTROLLER - API endpoints cho thông báo
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. USER ENDPOINTS (Authenticated):
- * - GET / : Lấy danh sách thông báo của user
- * - GET /unread-count : Đếm số thông báo chưa đọc
- * - PATCH /:id/read : Đánh dấu một thông báo đã đọc
- * - PATCH /read-all : Đánh dấu tất cả đã đọc
- * - DELETE /:id : Xóa một thông báo
- * - DELETE /read-all : Xóa tất cả thông báo đã đọc
- *
- * 2. ADMIN ENDPOINTS (Require permissions):
- * - POST /admin/broadcast : Gửi thông báo cho tất cả users
- * - POST /admin/send : Gửi thông báo cho user cụ thể
- * - GET /admin : Xem tất cả thông báo (với filters)
- * - GET /admin/:id : Xem chi tiết thông báo *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 
@@ -152,7 +135,9 @@ export class NotificationsController {
   @ApiCreateResponse('Notification')
   @ApiOperation({ summary: 'Gửi thông báo cho TẤT CẢ users (Broadcast)' })
   async broadcast(@Body() data: BroadcastNotificationDto) {
+    const tenant = getTenant();
     const result = await this.notificationsService.broadcast({
+      tenantId: tenant!.id,
       type: data.type,
       title: data.title,
       message: data.message,
@@ -177,8 +162,10 @@ export class NotificationsController {
   @ApiOperation({ summary: 'Gửi thông báo cho user cụ thể' })
   async sendToUser(@Body() data: SendToUserDto) {
     try {
+      const tenant = getTenant();
       const result = await this.notificationsService.create({
         userId: data.userId,
+        tenantId: tenant!.id,
         type: data.type,
         title: data.title,
         message: data.message,

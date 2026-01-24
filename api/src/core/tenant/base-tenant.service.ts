@@ -8,40 +8,6 @@ import { Tenant } from '@prisma/client';
  * BASE TENANT SERVICE - LỚP CƠ SỞ CHO CÁC SERVICE ĐA TENANT
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MỤC ĐÍCH:
- *    - Đây là abstract class (lớp trừu tượng) mà các Service khác sẽ kế thừa.
- *    - Giúp giảm code trùng lặp (DRY - Don't Repeat Yourself).
- *    - Cung cấp các helper methods để thao tác với Tenant context.
- *
- * 2. LỢI ÍCH:
- *    - Không cần viết `getTenant()` ở mỗi service.
- *    - Có sẵn validation và error handling.
- *    - Logging tự động cho debugging.
- *
- * 3. CÁCH SỬ DỤNG:
- *    ```typescript
- *    @Injectable()
- *    export class ProductsService extends BaseTenantService {
- *      constructor(prisma: PrismaService) {
- *        super(prisma);
- *      }
- *
- *      async findAll() {
- *        // this.tenantId đã có sẵn
- *        return this.prisma.product.findMany({
- *          where: { tenantId: this.tenantId }
- *        });
- *      }
- *    }
- *    ```
- *
- * 🎯 ỨNG DỤNG THỰC TẾ:
- * - Giảm 50% boilerplate code trong các service.
- * - Đảm bảo nhất quán trong cách xử lý tenant context.
- * - Dễ dàng thêm logging, monitoring cho tất cả services.
- *
  * =====================================================================
  */
 export abstract class BaseTenantService {

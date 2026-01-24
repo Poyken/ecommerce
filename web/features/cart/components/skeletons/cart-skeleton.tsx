@@ -1,25 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * =====================================================================
- * CART SKELETON - Skeleton cho trang Giỏ hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPLEX LAYOUT MOCKUP:
- * - Mô phỏng chính xác bố cục 2 cột của trang giỏ hàng: Danh sách sản phẩm (trái) và Tóm tắt đơn hàng (phải).
- *
- * 2. INTERACTIVE ELEMENTS MOCK:
- * - Giả lập các thành phần như thanh tiến trình Free Shipping, checkbox chọn tất cả, và các nút điều chỉnh số lượng.
- *
- * 3. LUXE THEME CONSISTENCY:
- * - Giữ nguyên các lớp gradient nền (`primary/10`, `amber-500/10`) để đảm bảo trải nghiệm thị giác đồng nhất ngay cả khi đang loading. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function CartSkeleton() {
   return (

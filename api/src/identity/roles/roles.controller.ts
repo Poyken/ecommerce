@@ -33,22 +33,6 @@ import { RolesService } from './roles.service';
  * ROLES CONTROLLER - Quản lý vai trò và quyền hạn (RBAC)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RBAC (Role-Based Access Control):
- * - Đây là trung tâm quản lý phân quyền của toàn bộ hệ thống.
- * - `@Permissions('role:create')`: Kiểm tra xem user có quyền cụ thể để thực hiện hành động này không.
- *
- * 2. PERMISSION MANAGEMENT:
- * - Không chỉ quản lý vai trò (Role), controller này còn quản lý cả danh sách các quyền (Permission) thô.
- * - Cho phép Admin tạo mới, cập nhật hoặc xóa các quyền hạn trong hệ thống.
- *
- * 3. RESPONSE STANDARDIZATION:
- * - Các API trả về object được wrap trong `{ data: ... }` để đồng bộ với Frontend.
- * - Ngoại trừ API List có phân trang trả về `{ data, meta }` trực tiếp. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 @ApiTags('Roles (Admin)')

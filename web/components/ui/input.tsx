@@ -2,30 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * INPUT COMPONENT - Ô nhập liệu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * BASIC UI COMPONENT:
- * - Đây là wrapper quanh thẻ `<input>` gốc của HTML.
- * - Mục đích: Áp dụng styles mặc định (Tailwind) để đồng bộ giao diện.
- *
- * PROP SPREADING `{...props}`:
- * - `React.ComponentProps<"input">`: Cho phép component nhận tất cả props chuẩn của thẻ input (type, placeholder, onChange...).
- * - `{...props}`: Truyền tất cả các props đó xuống thẻ input bên dưới.
- * - Giúp component linh hoạt, sử dụng được như thẻ input thường.
- *
- * CN UTILITY:
- * - Dùng `cn()` để merge class mặc định với class truyền từ ngoài vào (`className`).
- * - Cho phép override styles khi cần thiết. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   return (

@@ -10,24 +10,7 @@ import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
-/**
- * =====================================================================
- * CREATE ROLE DIALOG - Dialog tạo vai trò mới (Admin, Staff, etc.)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ROLE NAMING:
- * - Tên vai trò thường được viết hoa toàn bộ (VD: `MANAGER`).
- * - Hệ thống tự động gọi `toUpperCase()` khi Admin nhập liệu.
- *
- * 2. SERVER ACTION:
- * - `createRoleAction` xử lý việc lưu vai trò mới vào database. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface CreateRoleDialogProps {
   open: boolean;

@@ -5,29 +5,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * BREADCRUMB PRIMITIVES - Các thành phần cơ bản của Breadcrumb
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPOSABLE ARCHITECTURE:
- * - Chia nhỏ Breadcrumb thành nhiều sub-components (`List`, `Item`, `Link`, `Separator`).
- * - Giúp lập trình viên linh hoạt trong việc sắp xếp và tùy chỉnh giao diện.
- *
- * 2. ACCESSIBILITY (A11y):
- * - `aria-label="breadcrumb"`: Giúp trình đọc màn hình nhận diện đây là thanh điều hướng.
- * - `aria-current="page"`: Đánh dấu trang hiện tại cho user khiếm thị.
- * - `role="presentation"` & `aria-hidden="true"`: Ẩn các icon trang trí (như dấu mũi tên) khỏi trình đọc màn hình để tránh gây nhiễu.
- *
- * 3. RADIX SLOT:
- * - `BreadcrumbLink` sử dụng `Slot` để cho phép "truyền" thuộc tính sang component con (thường là `next/link`). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 function Breadcrumb({ ...props }: React.ComponentProps<"nav">) {
   return <nav aria-label="breadcrumb" data-slot="breadcrumb" {...props} />;

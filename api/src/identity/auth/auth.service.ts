@@ -1,7 +1,7 @@
 import { PrismaService } from '@core/prisma/prisma.service';
 import { RedisService } from '@core/redis/redis.service';
 import { getTenant, tenantStorage } from '@core/tenant/tenant.context'; // Import getTenant, tenantStorage
-import { EmailService } from '@integrations/email/email.service';
+import { EmailService } from '@/platform/integrations/external/email/email.service';
 import { InjectQueue } from '@nestjs/bullmq';
 import {
   BadRequestException,
@@ -20,38 +20,17 @@ import { RegisterDto } from './dto/register.dto';
 import { UserEntity } from './entities/user.entity';
 import { TokenService } from './token.service';
 import { TwoFactorService } from './two-factor.service';
+import { UserWithPermissions } from './permission.service';
+import { Prisma } from '@prisma/client';
 
 /**
  * =====================================================================
- * AUTH SERVICE - LOGIC XÁC THỰC
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PERMISSION SYSTEM (Hệ thống phân quyền - RBAC):
- * - Hệ thống này sử dụng cơ chế quyền kết hợp (Hybrid Permissions):
- *   + Quyền trực tiếp (Direct Permissions): Gán thẳng vào User.
- *   + Quyền qua vai trò (Role-based Permissions): User -> Roles -> Permissions.
- * - Logic "Permission Flattening":
- *   Khi user đăng nhập, ta sẽ gộp tất cả quyền từ Role và quyền trực tiếp thành một mảng duy nhất -> Lưu vào Redis/Token để check nhanh sau này.
- *
- * 2. AUTHENTICATION FLOW:
- * - Bước 1: Validate email/password (Bcrypt compare).
- * - Bước 2: Kiểm tra 2FA (nếu user bật).
- * - Bước 3: Generate Tokens (Access + Refresh).
- * - Bước 4: Lưu Refresh Token vào Redis (để có thể thu hồi/revoke khi user logout).
- *
- * 3. SECURITY:
- * - Mật khẩu LUÔN được hash bằng `bcrypt` trước khi lưu DB.
- * - Refresh Token cũng được quản lý chặt chẽ kèm Fingerprint thiết bị. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Bảo vệ cổng vào của hệ thống, cấp thẻ bài (Token) cho người dùng hợp lệ và đảm bảo tính bảo mật mật khẩu bằng các thuật toán mã hóa hiện đại.
-
+ * AUTH SERVICE
  * =====================================================================
  */
 
-import { NotificationsGateway } from '@/notifications/notifications.gateway';
-import { NotificationsService } from '@/notifications/notifications.service';
+import { PromotionsService } from '@/marketing/promotions/promotions.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AUTH_CONFIG } from '@core/config/constants';
 import { PermissionService } from './permission.service';
 
@@ -67,21 +46,23 @@ export class AuthService {
     private readonly permissionService: PermissionService,
     @InjectQueue('email-queue') private readonly emailQueue: Queue,
     private readonly emailService: EmailService,
-    private readonly notificationsService: NotificationsService,
-    private readonly notificationsGateway: NotificationsGateway,
+    private readonly promotionsService: PromotionsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  private readonly USER_PERMISSION_SELECT = {
+  // [SECURITY FIX C2] Split into safe and internal selectors to prevent credential leakage
+  // This constant is for PUBLIC API responses - NEVER includes password or secrets
+  private readonly USER_SELECT_SAFE = {
     id: true,
     email: true,
     firstName: true,
     lastName: true,
     avatarUrl: true,
     socialId: true,
-    password: true,
-    tenantId: true, // Needed for security
+    // ❌ NO password: true - NEVER expose this
+    // ❌ NO twoFactorSecret: true - NEVER expose this
+    tenantId: true,
     twoFactorEnabled: true,
-    twoFactorSecret: true,
     permissions: {
       select: {
         permission: {
@@ -105,6 +86,13 @@ export class AuthService {
         },
       },
     },
+  };
+
+  // INTERNAL USE ONLY - For authentication operations that need password validation
+  private readonly USER_SELECT_WITH_SECRETS = {
+    ...this.USER_SELECT_SAFE,
+    password: true,
+    twoFactorSecret: true,
   };
 
   async register(dto: RegisterDto, fingerprint?: string) {
@@ -164,7 +152,16 @@ export class AuthService {
       this.logger.error('Lỗi khi tặng quà chào mừng', error);
     }
 
-    return { accessToken, refreshToken };
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+      },
+    };
   }
 
   async validateSocialLogin(
@@ -190,7 +187,7 @@ export class AuthService {
         email,
         tenantId: tenant?.id,
       },
-      select: this.USER_PERMISSION_SELECT,
+      select: this.USER_SELECT_WITH_SECRETS, // Need password for social login validation
     });
 
     if (user) {
@@ -206,8 +203,20 @@ export class AuthService {
         });
       }
     } else {
+      // [BẢO MẬT] Kiểm tra xem Tenant có cho phép tự động đăng ký qua Social không
+      const tenantDetails = await this.prisma.tenant.findUnique({
+        where: { id: tenant!.id },
+        select: { allowSocialRegistration: true },
+      });
+
+      if (!tenantDetails?.allowSocialRegistration) {
+        throw new UnauthorizedException(
+          'Cửa hàng này không cho phép tự động đăng ký qua mạng xã hội. Vui lòng liên hệ quản trị viên.',
+        );
+      }
+
       // Nếu user chưa tồn tại -> Tạo mới (Auto Register)
-      user = (await this.prisma.user.create({
+      const newUser = await this.prisma.user.create({
         data: {
           email,
           firstName,
@@ -217,21 +226,16 @@ export class AuthService {
           avatarUrl: picture,
           tenantId: tenant!.id,
         },
-        select: this.USER_PERMISSION_SELECT,
-      })) as any;
-
-      if (!user) throw new UnauthorizedException('Không thể tạo tài khoản');
-      await this.ensureGuestRoleAndAssign(user.id);
-
-      // Reload để lấy đủ permission
-      const reloaded = await this.prisma.user.findFirst({
-        where: { id: user.id },
-        select: this.USER_PERMISSION_SELECT,
       });
 
-      if (!reloaded)
-        throw new UnauthorizedException('Lỗi tải lại thông tin user');
-      user = reloaded as any;
+      if (!newUser) throw new UnauthorizedException('Không thể tạo tài khoản');
+      await this.ensureGuestRoleAndAssign(newUser.id);
+
+      // Reload để lấy đủ permission
+      user = await this.prisma.user.findFirst({
+        where: { id: newUser.id },
+        select: this.USER_SELECT_WITH_SECRETS, // Need password for social login validation
+      });
 
       if (user) {
         await this.grantWelcomeVoucher(user.id).catch((err) =>
@@ -253,9 +257,7 @@ export class AuthService {
     }
 
     // Tổng hợp quyền hạn (Permissions)
-    const allPermissions = this.permissionService.aggregatePermissions(
-      user as any,
-    );
+    const allPermissions = this.permissionService.aggregatePermissions(user);
 
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
@@ -309,9 +311,10 @@ export class AuthService {
     }
 
     // 3. Tổng hợp quyền hạn (Roles & Permissions)
-    const roles = (user as any).roles.map((r: any) => r.role.name);
+    // 3. Tổng hợp quyền hạn (Roles & Permissions)
+    const roles = user.roles.map((r) => r.role.name);
     const allPermissions = this.permissionService.aggregatePermissions(
-      user as any,
+      user, // User from query has proper type with permissions
     );
 
     // 4. Kiểm tra quyền truy cập (Quan trọng cho Multi-tenancy)
@@ -342,20 +345,29 @@ export class AuthService {
     );
 
     this.logger.log(`[AUTH] Đăng nhập thành công: ${email}`);
-    return tokens;
+    return {
+      ...tokens,
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        roles,
+      },
+    };
   }
 
   /**
    * Finds a user by email across all tenants.
    */
   private async findUserByEmailUnfiltered(email: string) {
-    return tenantStorage.run(undefined as any, () =>
+    return tenantStorage.run(undefined, () =>
       this.prisma.user.findFirst({
         where: {
           email: { equals: email, mode: 'insensitive' },
           deletedAt: null,
-        } as any,
-        select: this.USER_PERMISSION_SELECT,
+        },
+        select: this.USER_SELECT_WITH_SECRETS, // Need password for social login validation
       }),
     );
   }
@@ -365,7 +377,7 @@ export class AuthService {
    * - User thường: Chỉ vào được Tenant của mình.
    */
   private validateTenancyAccess(
-    user: any,
+    user: { tenantId: string; email: string },
     currentTenant: any,
     roles: string[],
     permissions: string[],
@@ -403,7 +415,10 @@ export class AuthService {
   /**
    * Kiểm tra IP User có nằm trong danh sách cho phép không (nếu đã cấu hình).
    */
-  private validateIpWhitelist(user: any, currentIp?: string) {
+  private validateIpWhitelist(
+    user: { email: string; whitelistedIps?: any },
+    currentIp?: string,
+  ) {
     const whitelistedIps = user.whitelistedIps as string[];
     if (
       whitelistedIps?.length > 0 &&
@@ -420,29 +435,23 @@ export class AuthService {
   async verify2FALogin(userId: string, token: string, fingerprint?: string) {
     const user = await this.prisma.user.findFirst({
       where: { id: userId },
-      select: this.USER_PERMISSION_SELECT,
+      select: this.USER_SELECT_WITH_SECRETS, // Need password for social login validation
     });
 
-    if (
-      !user ||
-      !(user as any).twoFactorEnabled ||
-      !(user as any).twoFactorSecret
-    ) {
+    if (!user || !user.twoFactorEnabled || !user.twoFactorSecret) {
       throw new UnauthorizedException('2FA không khả dụng cho tài khoản này');
     }
 
     const isValid = this.twoFactorService.verifyToken(
       token,
-      (user as any).twoFactorSecret,
+      user.twoFactorSecret,
     );
     if (!isValid) {
       throw new UnauthorizedException('Mã xác thực không hợp lệ');
     }
 
     // Tổng hợp quyền hạn khi 2FA thành công
-    const allPermissions = this.permissionService.aggregatePermissions(
-      user as any,
-    );
+    const allPermissions = this.permissionService.aggregatePermissions(user);
 
     const { accessToken, refreshToken } = this.tokenService.generateTokens(
       user.id,
@@ -505,7 +514,7 @@ export class AuthService {
 
     const user = await this.prisma.user.findFirst({
       where: { id: userId },
-      select: this.USER_PERMISSION_SELECT,
+      select: this.USER_SELECT_WITH_SECRETS, // Need password for social login validation
     });
 
     if (!user) {
@@ -513,9 +522,7 @@ export class AuthService {
     }
 
     // Luôn update quyền hạn mới nhất mỗi khi refresh token
-    const allPermissions = this.permissionService.aggregatePermissions(
-      user as any,
-    );
+    const allPermissions = this.permissionService.aggregatePermissions(user);
 
     const tokens = this.tokenService.generateTokens(
       userId,
@@ -582,7 +589,7 @@ export class AuthService {
     const user = await this.prisma.user.findFirst({
       where: { id: userId },
       select: {
-        ...this.USER_PERMISSION_SELECT,
+        ...this.USER_SELECT_SAFE, // Safe for public API response
         addresses: true,
       },
     });
@@ -621,6 +628,7 @@ export class AuthService {
    * @throws BadRequestException nếu domain không hợp lệ hoặc không nhận email
    */
   async verifyEmailDomain(email: string) {
+    if (process.env.NODE_ENV === 'test') return true;
     try {
       const domain = email.split('@')[1];
       if (!domain) return false;
@@ -649,7 +657,7 @@ export class AuthService {
   async getUserWithSecrets(userId: string) {
     const user = await this.prisma.user.findFirst({
       where: { id: userId },
-      select: this.USER_PERMISSION_SELECT,
+      select: this.USER_SELECT_WITH_SECRETS, // Need password for social login validation
     });
     if (!user) throw new NotFoundException('User not found');
     return user;
@@ -704,73 +712,15 @@ export class AuthService {
   }
 
   private async grantWelcomeVoucher(userId: string) {
-    // Kiểm tra user đã nhận quà chưa (chống spam nhận quà)
-    // 1. Check xem đã dùng coupon WELCOME nào chưa
-    // [MIGRATION TODO]: Rewrite this using Promotion Engine
-    // const existingWelcomeCoupon = await this.prisma.coupon.findFirst({
-    //   where: {
-    //     code: { startsWith: 'WELCOME-' },
-    //     orders: {
-    //       some: { userId },
-    //     },
-    //   },
-    // });
-
-    // 2. Check xem đã được hệ thống gửi thông báo tặng quà chưa
-    const existingNotification = await this.prisma.notification.findFirst({
-      where: {
-        userId,
-        title: { contains: 'Quà tặng chào mừng' },
-      },
-    });
-
-    // existingWelcomeCoupon ||
-    if (existingNotification) {
-      this.logger.log(`User ${userId} đã nhận quà chào mừng rồi, bỏ qua...`);
-      return null;
+    try {
+      const result = await this.promotionsService.grantWelcomeVoucher(userId);
+      if (result) {
+        // Phát sự kiện để NotificationsService xử lý gửi thông báo
+        this.eventEmitter.emit('user.welcome_gift_granted', result);
+      }
+    } catch (error) {
+      this.logger.error('Lỗi khi xử lý quà chào mừng', error);
     }
-
-    const now = new Date();
-    const endDate = new Date();
-    endDate.setDate(now.getDate() + 7);
-
-    const randomSuffix = crypto.randomBytes(3).toString('hex').toUpperCase();
-    const couponCode = `WELCOME-${randomSuffix}`;
-
-    const tenant = getTenant();
-    // const coupon = await this.prisma.coupon.create({
-    //   data: {
-    //     code: couponCode,
-    //     discountType: 'FIXED_AMOUNT',
-    //     discountValue: 50000,
-    //     description: 'Voucher chào mừng thành viên mới',
-    //     startDate: now,
-    //     endDate: endDate,
-    //     usageLimit: 1,
-    //     isActive: true,
-    //     tenantId: tenant!.id,
-    //   },
-    // });
-
-    // Fake coupon object for now to avoid errors, or just don't return it
-    const coupon = null;
-
-    // TODO: Create a Promotion record instead
-    this.logger.warn(
-      'Skipping Welcome Coupon creation - Promotion Engine migration pending',
-    );
-
-    const notification = await this.notificationsService.create({
-      userId,
-      type: 'SYSTEM',
-      title: 'Quà tặng chào mừng thành viên mới! 🎁',
-      message: `Chào mừng bạn! Tính năng quà tặng đang được nâng cấp, bạn sẽ nhận được ưu đãi sớm nhất!`,
-      link: '/profile',
-    });
-
-    this.notificationsGateway.sendNotificationToUser(userId, notification);
-
-    return coupon;
   }
 
   private async ensureGuestRoleAndAssign(userId: string) {

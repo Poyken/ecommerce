@@ -1,24 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * ADMIN NOTIFICATION BELL - Chuông thông báo cho trang Admin
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. KHÁC BIỆT VỚI USER BELL:
- * - Sử dụng AdminNotificationItem với quick actions (Accept/Reject).
- * - Tối ưu cho workflow xử lý đơn hàng của Admin.
- *
- * 2. ORDER DETAIL DIALOG:
- * - Khi click vào notification, mở dialog chi tiết đơn hàng.
- * - Admin có thể xem thông tin và xử lý ngay tại dialog. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import { Button } from "@/components/ui/button";
 import {

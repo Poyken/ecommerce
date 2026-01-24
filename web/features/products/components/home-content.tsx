@@ -63,27 +63,7 @@ export function HomeContent({
   categories,
   brands,
 }: HomeContentProps) {
-  /**
-   * =====================================================================
-   * HOME CONTENT - Container chính trang chủ
-   * =====================================================================
-   *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   *
-   * 1. LAZY LOADING & SUSPENSE:
-   * - Các component nặng (Testimonials, FAQ) được `dynamic import` để không block
-   *   Render ban đầu.
-   * - Các component data (Products, Categories) được bọc trong `Suspense` để hiển thị
-   *   Skeleton loading trong khi chờ setup client-side hydration.
-   *
-   * 2. VIEWPORT ANIMATIONS:
-   * - `whileInView="visible"` + `viewport={{ once: true }}`: Chỉ chạy animation
-   *   khi user scroll tới vị trí đó (Scroll Trigger). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
-   * =====================================================================
-   */
+  
   const t = useTranslations("home");
 
   return (

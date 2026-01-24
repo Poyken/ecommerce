@@ -15,17 +15,6 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
  * BRANDS SERVICE - QUẢN LÝ THƯƠNG HIỆU
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CRUD STANDARDIZATION:
- * - `BrandsService` kế thừa `BaseCrudService` để tái sử dụng các hàm tìm kiếm, phân trang chuẩn.
- *
- * 2. BUSINESS CONSTRAINTS (Ràng buộc nghiệp vụ):
- * - Trước khi tạo mới: Kiểm tra trùng tên thương hiệu (Conflict check).
- * - Trước khi xóa: Phải kiểm tra xem thương hiệu đó có đang chứa sản phẩm nào không. Nếu có -> KHÔNG được xóa để đảm bảo toàn vẹn dữ liệu (Integrity). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Quản lý các đối tác cung cấp, nhãn hiệu sản phẩm và xây dựng uy tín cho shop thông qua các thương hiệu nổi tiếng.
-
  * =====================================================================
  */
 
@@ -51,7 +40,7 @@ export class BrandsService extends BaseCrudService<
   async create(createBrandDto: CreateBrandDto) {
     // Kiểm tra trùng tên thương hiệu
     const tenant = getTenant();
-    const existing = await (this.model as any).findFirst({
+    const existing = await this.model.findFirst({
       where: {
         name: createBrandDto.name,
         tenantId: tenant?.id,
@@ -62,8 +51,8 @@ export class BrandsService extends BaseCrudService<
       throw new ConflictException('Thương hiệu này đã tồn tại');
     }
 
-    return (this.model as any).create({
-      data: createBrandDto,
+    return this.model.create({
+      data: createBrandDto as any, // DTO missing tenant/slug fields - added by Prisma middleware
     });
   }
 
@@ -83,7 +72,7 @@ export class BrandsService extends BaseCrudService<
     // So we put _count directly inside select.
     // Use direct Prisma call to avoid potential BaseCrudService complexity for now
     const [data, total] = await Promise.all([
-      (this.prisma.brand as any).findMany({
+      this.prisma.brand.findMany({
         where,
         take: limit,
         skip: (page - 1) * limit,
@@ -94,7 +83,7 @@ export class BrandsService extends BaseCrudService<
           },
         },
       }),
-      (this.prisma.brand as any).count({ where }),
+      this.prisma.brand.count({ where }),
     ]);
 
     return {
@@ -120,7 +109,7 @@ export class BrandsService extends BaseCrudService<
     // Nếu đổi tên, phải check trùng
     if (updateBrandDto.name) {
       const tenant = getTenant();
-      const existingName = await (this.model as any).findFirst({
+      const existingName = await this.model.findFirst({
         where: {
           name: updateBrandDto.name,
           tenantId: tenant?.id,
@@ -131,9 +120,9 @@ export class BrandsService extends BaseCrudService<
       }
     }
 
-    return (this.model as any).update({
+    return this.model.update({
       where: { id },
-      data: updateBrandDto as any,
+      data: updateBrandDto,
     });
   }
 
@@ -143,7 +132,7 @@ export class BrandsService extends BaseCrudService<
    * - Mục đích: Tránh làm hỏng dữ liệu sản phẩm (Orphaned products).
    */
   async remove(id: string) {
-    const hasProducts = await (this.prisma.product as any).findFirst({
+    const hasProducts = await this.prisma.product.findFirst({
       where: { brandId: id },
     });
     if (hasProducts) {

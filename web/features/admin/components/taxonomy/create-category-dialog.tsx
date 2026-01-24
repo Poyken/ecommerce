@@ -1,27 +1,4 @@
-/**
- * =====================================================================
- * CREATE CATEGORY DIALOG - Form tạo danh mục sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. AUTO-SLUG:
- * - Khi user nhập Tên danh mục (Name), hệ thống tự động generate Slug (đường dẫn).
- * - VD: Nhập "Điện thoại iPhone" -> Slug: "dien-thoai-iphone".
- * - Giúp SEO tốt hơn và user đỡ phải nhập tay.
- *
- * 2. PARENT SELECTION:
- * - Hỗ trợ cây danh mục đa cấp (Parent - Child).
- * - User có thể chọn danh mục cha hoặc "None" (nếu là danh mục gốc).
- *
- * 3. HÌNH ẢNH (`ImageUpload`):
- * - Component upload ảnh được tách riêng để tái sử dụng.
- * - Xử lý preview ảnh và upload file (multipart/form-data). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
-
- * =====================================================================
- */ 
+ 
 "use client";
 
 import { FormDialog } from "@/components/shared/form-dialog";

@@ -3,25 +3,6 @@
  * AGENT.SERVICE SERVICE
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Service này chịu trách nhiệm xử lý logic nghiệp vụ cho AI Agent.
- *
- * 1. NHIỆM VỤ CHÍNH:
- *    - Đóng vai trò là "Bộ não" trung tâm, nhận lệnh từ người dùng (Natural Language) và chuyển thành hành động cụ thể.
- *    - Điều phối các service khác (Products, Orders, Email...) để thực hiện tác vụ.
- *
- * 2. CÁC PHƯƠNG THỨC QUAN TRỌNG:
- *    - `processUserRequest(userId, message)`: Nhận tin nhắn chat, phân tích ý định (Intent Analysis) và lập kế hoạch thực hiện (Task Planning).
- *    - `executeTask(task)`: Thực thi từng bước trong kế hoạch (VD: Query DB, gửi mail, update giá).
- *
- * 3. LƯU Ý KHI SỬ DỤNG:
- *    - Luôn kiểm tra quyền (Permission) trước khi thực hiện các task nhạy cảm như Update/Delete.
- *    - Kết quả của bước trước có thể là input của bước sau (Chaining).
- *    - Xử lý lỗi (Error Handling) phải chặt chẽ để Agent không "chết" giữa chừng khi đang chạy chuỗi task. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

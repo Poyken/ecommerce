@@ -8,20 +8,6 @@ import { Strategy, VerifyCallback } from 'passport-google-oauth20';
  * GOOGLE STRATEGY - ĐĂNG NHẬP QUA GOOGLE (OAUTH2)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. OAUTH 2.0 FLOW:
- * - Thay vì bắt user nhập mật khẩu (nguy hiểm), ta chuyển hướng họ sang Google.
- * - Sau khi user đồng ý, Google gửi về một `profile` chứa: Email, Tên, Ảnh đại diện.
- *
- * 2. SCOPE:
- * - Ta chỉ xin quyền lấy `email` và `profile`. Đây là những thông tin tối thiểu cần thiết để tạo tài khoản.
- *
- * 3. VALIDATE:
- * - Sau khi lấy được dữ liệu từ Google, ta "đóng gói" lại thành một Object User chuẩn của hệ thống để chuyển giao cho AuthService xử lý tiếp (Tạo mới hoặc đăng nhập). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()

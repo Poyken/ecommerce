@@ -3,23 +3,6 @@
  * MASKING HELPER - BẢO VỆ DỮ LIỆU NHẠY CẢM TRONG LOGS
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TẠI SAO PHẢI MASKING?
- * - Trong quá trình phát triển, chúng ta thường log lại toàn bộ Request Body để debug.
- * - Tuy nhiên, Body có thể chứa thông tin cực kỳ nhạy cảm: Password, Token, Số thẻ tín dụng...
- * - Nếu log những thứ này ra Console hoặc lưu vào File ròng, chúng ta đang vi phạm bảo mật (Security Breach).
- *
- * 2. CÁCH HOẠT ĐỘNG:
- * - Hàm `maskSensitiveData` nhận vào một Object (JSON).
- * - Nó sẽ duyệt đệ quy qua các key của Object.
- * - Nếu gặp các key nằm trong "Blacklist" (như password, accessToken), nó sẽ thay thế giá trị bằng chuỗi '********'.
- *
- * 3. IMMUTABILITY (Tính bất biến):
- * - Chúng ta luôn clone object gốc trước khi mask để không làm hỏng dữ liệu đang xử lý trong ứng dụng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Cung cấp các hàm tiện ích dùng chung, giúp code gọn gàng và tái sử dụng hiệu quả.
-
  * =====================================================================
  */
 

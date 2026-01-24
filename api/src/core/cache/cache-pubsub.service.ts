@@ -3,27 +3,6 @@
  * CACHE PUBSUB SERVICE - ĐỒNG BỘ CACHE GIỮA CÁC INSTANCES
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Vấn đề: Khi chạy nhiều server instances (horizontal scaling):
- * - Instance A cập nhật product -> invalidate cache local
- * - Instance B vẫn còn cache cũ -> trả về data lỗi thời!
- *
- * Giải pháp: Redis Pub/Sub
- * - Instance A publish message: "product:123 changed"
- * - Tất cả instances subscribe và nhận message
- * - Mỗi instance tự invalidate cache local
- *
- * Channels:
- * - cache:invalidate:product => Invalidate product cache
- * - cache:invalidate:category => Invalidate category cache
- * - cache:invalidate:order => Invalidate order cache
- * - cache:invalidate:all => Clear all cache (emergency) *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Horizontal Scaling Support: Cho phép chạy nhiều server cùng lúc (Load Balancing) mà không lo user A thấy giá cũ, user B thấy giá mới.
- * - Real-time Cache Clearing: Admin bấm "Cập nhật giá" -> Ngay lập tức cache biến mất trên tất cả server để hiển thị giá mới.
- * - Event Driven Architecture: Làm nền tảng để xây dựng các tính năng đồng bộ khác trong tương lai.
-
  * =====================================================================
  */
 

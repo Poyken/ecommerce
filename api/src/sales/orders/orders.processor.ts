@@ -2,7 +2,7 @@ import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { InventoryService } from '@/catalog/skus/inventory.service';
 import { PrismaService } from '@core/prisma/prisma.service';
-import { EmailService } from '@integrations/email/email.service';
+import { EmailService } from '@/platform/integrations/external/email/email.service';
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Logger } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
@@ -11,27 +11,6 @@ import { Job } from 'bullmq';
 /**
  * =====================================================================
  * ORDERS PROCESSOR - Xử lý tác vụ nền cho đơn hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. WORKER/PROCESSOR (BullMQ):
- * - Đây là một "công nhân" chạy ngầm (Background Worker), độc lập với luồng request chính của user.
- * - Nhiệm vụ: Lắng nghe hàng đợi `orders-queue` và xử lý các Jobs được đẩy vào.
- *
- * 2. CÁC LOẠI JOB:
- * - `check-stock-release`:
- *     + Job này được lên lịch (Scheduled) chạy sau 15 phút kể từ khi tạo đơn.
- *     + Logic: Nếu sau 15p mà đơn vẫn `PENDING` (chưa thanh toán) -> Hủy đơn và hoàn lại tồn kho (Release Stock).
- *     + Mục đích: Tránh việc user "giữ chỗ" sản phẩm mà không mua ("Inventory Hoarding").
- *
- * - `order-created-post-process`:
- *     + Chạy ngay sau khi đơn tạo thành công.
- *     + Gửi email xác nhận cho khách.
- *     + Bắn thông báo (Notification) cho khách và Admin. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 
@@ -55,6 +34,8 @@ export class OrdersProcessor extends WorkerHost {
         return this.handleCheckStockRelease(job.data);
       case 'order-created-post-process':
         return this.handleOrderCreatedPostProcess(job.data);
+      case 'low-stock-alert':
+        return this.handleLowStockAlert(job.data);
       default:
         this.logger.warn(`Unknown job name: ${job.name}`);
     }
@@ -139,6 +120,7 @@ export class OrdersProcessor extends WorkerHost {
     try {
       const notification = await this.notificationsService.create({
         userId: data.userId,
+        tenantId: order.tenantId,
         type: 'ORDER_PLACED',
         title: 'Đặt hàng thành công',
         message: `Đơn hàng #${order.id.slice(-8)} đã được tạo thành công.`,
@@ -183,22 +165,23 @@ export class OrdersProcessor extends WorkerHost {
 
         // Create notifications in DB
         await this.notificationsService.broadcastToUserIds(
+          order.tenantId,
           adminIds,
           adminNotification,
         );
 
         // Send Real-time
-        // sendNotificationToUser expects 2 args: userId and notification
-        // We construct a complete notification object with temp ID for real-time display
-        adminIds.forEach((adminId) => {
-          this.notificationsGateway.sendNotificationToUser(adminId, {
-            ...adminNotification,
-            id: `temp-${Date.now()}`,
-            createdAt: new Date(),
-            isRead: false,
-            userId: adminId,
-          });
-        });
+        await Promise.all(
+          adminIds.map((adminId) =>
+            this.notificationsGateway.sendNotificationToUser(adminId, {
+              ...adminNotification,
+              id: `temp-${Date.now()}`,
+              createdAt: new Date(),
+              isRead: false,
+              userId: adminId,
+            }),
+          ),
+        );
       }
     } catch (e) {
       this.logger.error(
@@ -206,5 +189,71 @@ export class OrdersProcessor extends WorkerHost {
         e,
       );
     }
+  }
+
+  /**
+   * [P11 OPTIMIZATION]: Xử lý cảnh báo hết hàng ngoài luồng transaction checkout.
+   */
+  private async handleLowStockAlert(data: {
+    skuId: string;
+    stock: number;
+    tenantId: string;
+  }) {
+    const { skuId, stock, tenantId } = data;
+    this.logger.log(
+      `[Job] Processing LOW_STOCK_ALERT for SKU ${skuId} (Stock: ${stock})`,
+    );
+
+    const sku = await this.prisma.sku.findUnique({
+      where: { id: skuId },
+      include: { product: true },
+    });
+
+    if (!sku) return;
+
+    // 1. Tìm tất cả giỏ hàng có chứa SKU này
+    const carts = await this.prisma.cart.findMany({
+      where: {
+        tenantId,
+        items: {
+          some: { skuId },
+        },
+      },
+      select: { userId: true },
+    });
+
+    if (carts.length === 0) return;
+
+    const userIds = carts.map((c) => c.userId);
+    const notificationData = {
+      type: 'LOW_STOCK',
+      title: 'Sản phẩm sắp hết hàng!',
+      message: `Sản phẩm ${sku.product.name} trong giỏ hàng của bạn chỉ còn ${stock} sản phẩm. Mua ngay kẻo lỡ!`,
+      link: '/cart',
+    };
+
+    // 2. Broadcast qua DB (Batch)
+    await this.notificationsService.broadcastToUserIds(
+      tenantId,
+      userIds,
+      notificationData,
+    );
+
+    // 3. Gửi WebSocket (Parallel)
+    // [P11 FIX]: Use Promise.all to avoid blocking the worker thread with sequential emits
+    // For very large numbers (e.g. > 1000), we should ideally use a chunked Promise.all or a specialized broadcast.
+    await Promise.all(
+      userIds.map((uid) =>
+        this.notificationsGateway.sendNotificationToUser(uid, {
+          ...notificationData,
+          id: `temp-${Date.now()}`,
+          isRead: false,
+          createdAt: new Date(),
+          userId: uid,
+        }),
+      ),
+    );
+
+    this.logger.log(`[Job] Sent low stock alerts to ${userIds.length} users.`);
   }
 }

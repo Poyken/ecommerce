@@ -1,22 +1,4 @@
-/**
- * =====================================================================
- * USE TRACK PRODUCT VIEW - Hook để track sản phẩm đã xem
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MỤC ĐÍCH:
- * - Tự động thêm sản phẩm vào danh sách "Đã xem gần đây" khi user vào trang chi tiết.
- * - Sử dụng useEffect để chỉ track một lần khi component mount.
- *
- * 2. SỬ DỤNG:
- * - Gọi hook này trong ProductDetail component với thông tin sản phẩm.
- * - Hook sẽ tự động lưu vào Zustand store (persist to localStorage). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
 
- * =====================================================================
- */
 
 "use client";
 

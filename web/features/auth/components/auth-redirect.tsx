@@ -2,26 +2,7 @@
 
 import { useEffect } from "react";
 
-/**
- * =====================================================================
- * AUTH REDIRECT - Chuyển hướng đăng nhập thông minh
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CALLBACK URL HANDLING:
- * - Khi user truy cập trang cấm (VD: /admin) mà chưa login.
- * - Ta lưu lại URL hiện tại vào `callbackUrl` query param.
- * - Sau khi login xong, hệ thống sẽ redirect user quay lại đúng trang đó.
- *
- * 2. CLIENT-SIDE REDIRECT:
- * - Dùng `window.location.replace` thay vì `router.push` để thay thế lịch sử duyệt web,
- *   tránh việc user ấn Back lại quay về trang Loading này. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 export function AuthRedirect() {
   useEffect(() => {
     // Determine the current path to use as callback

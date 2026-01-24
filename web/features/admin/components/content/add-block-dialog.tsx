@@ -41,24 +41,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 
-/**
- * =====================================================================
- * ADD BLOCK DIALOG - Dialog thêm blocks với categories
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. BLOCK CATEGORIES:
- *    - Blocks được chia thành các nhóm để dễ tìm kiếm
- *    - Mỗi category có label, description và icon riêng
- *
- * 2. BLOCK TYPES:
- *    - type: Định danh duy nhất (dùng trong BlockRenderer)
- *    - category: Nhóm mà block thuộc về
- *    - defaultProps: Dữ liệu mẫu ban đầu
- *
- * =====================================================================
- */
+
 
 export type BlockCategory =
   | "layout"

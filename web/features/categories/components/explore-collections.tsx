@@ -12,28 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-/**
- * =====================================================================
- * EXPLORE COLLECTIONS - Section khám phá Danh mục & Thương hiệu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TABS INTERACTION:
- * - Sử dụng `Tabs` component từ Radix UI.
- * - `activeTab` state giúp xác định link "View All" sẽ dẫn đến đâu (Category hay Brand).
- *
- * 2. DYNAMIC IMAGES:
- * - Sử dụng Unsplash API với các từ khóa tìm kiếm dựa trên tên danh mục.
- * - `group-hover:scale-110`: Hiệu ứng zoom nhẹ khi di chuột vào card.
- *
- * 3. RESPONSIVE GRID:
- * - `grid-cols-2 md:grid-cols-4`: Hiển thị 2 cột trên mobile và 4 cột trên desktop. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface Category {
   id: string;

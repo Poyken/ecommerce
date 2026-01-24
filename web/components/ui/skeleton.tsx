@@ -2,25 +2,7 @@
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * SKELETON - Khung xương giả lập trạng thái loading
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. UX LOADING STRATEGY:
- * - Thay vì dùng Spinner xoay tròn truyền thống, Skeleton tạo cảm giác trang web load nhanh hơn.
- * - Giảm bớt sự khó chịu của người dùng khi phải chờ đợi dữ liệu từ API.
- *
- * 2. ANIMATION:
- * - Shimmer effect: Hiệu ứng luồng sáng chạy qua để báo hiệu đang tải.
- *
- * 3. FLEXIBILITY (NEW):
- * - Thêm các variant `glass` và `luxury` để phù hợp với hệ thống Quiet Luxury mới.
- *
- * =====================================================================
- */
+
 
 interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "glass" | "luxury";

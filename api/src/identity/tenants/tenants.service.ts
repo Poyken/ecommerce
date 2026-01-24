@@ -11,25 +11,6 @@ import { UpdateTenantDto } from './dto/update-tenant.dto';
  * TENANTS SERVICE - LOGIC NGHIỆP VỤ QUẢN LÝ CỬA HÀNG (MULTI-TENANCY)
  * =================================================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TRANSACTION (GIAO DỊCH NGUYÊN TỐ):
- *    - Khi tạo mới một Tenant (`create`), ta phải làm 2 việc cùng lúc:
- *      A. Tạo dòng dữ liệu trong bảng `Tenant` (Thông tin cửa hàng).
- *      B. Tạo tài khoản `User` (Admin) quản trị cho Tenant đó.
- *    - Vấn đề: Nếu A thành công nhưng B thất bại -> Dữ liệu rác (Cửa hàng không có chủ).
- *    - Giải pháp: Dùng `prisma.$transaction`. Nếu có bất kỳ lỗi nào xảy ra ở bước B, bước A sẽ tự động bị hủy bỏ (Rollback).
- *
- * 2. MẬT KHẨU AN TOÀN (Hashing):
- *    - Mật khẩu admin TUYỆT ĐỐI KHÔNG ĐƯỢC lưu dưới dạng text (plain-text).
- *    - Bắt buộc phải mã hóa một chiều bằng `bcrypt` trước khi lưu vào DB.
- *
- * 3. CASCADE DELETION (Xóa lan truyền) - CẨN TRỌNG:
- *    - Việc xóa một Tenant là thao tác cực kỳ nguy hiểm vì nó sẽ xóa toàn bộ dữ liệu liên quan (Sản phẩm, Đơn hàng, User...).
- *    - Hãy chắc chắn rằng bạn hiểu rõ cơ chế Cascade của DB hoặc xử lý Soft Delete. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Khởi tạo "vũ trụ" riêng cho từng cửa hàng, cấu hình tên miền, giao diện và quản lý các gói đăng ký dịch vụ (SaaS).
-
  * =================================================================================================
  */
 export class TenantsService {

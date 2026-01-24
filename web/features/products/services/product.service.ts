@@ -1,33 +1,4 @@
-/**
- * =====================================================================
- * PRODUCT SERVICE - Service Layer cho sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * SERVICE LAYER LÀ GÌ?
- * - Là tầng trung gian giữa Component (UI) và API (Backend).
- * - Thay vì gọi `fetch` trực tiếp trong component (rất lộn xộn và khó test), ta gói logic vào đây.
- *
- * TẠI SAO CẦN SERVICE LAYER?
- * 1. TÁI SỬ DỤNG (Reusability): Một API `getProduct` có thể được gọi từ HomePage, ProductPage, CartPage...
- * 2. DỄ BẢO TRÌ (Maintainability): Nếu Backend đổi đường dẫn API từ `/api/v1/product` sang `/api/v2/items`, ta chỉ cần sửa trong file này, không cần tìm sửa hàng chục component.
- * 3. CACHING CONTROL: Centralized logic để điều khiển việc cache của Next.js (revalidate, tags).
- *
- * SO SÁNH VỚI SERVER ACTIONS:
- * ┌──────────────────┬─────────────────────┬────────────────────────┐
- * │                  │ Service             │ Server Action           │
- * ├──────────────────┼─────────────────────┼────────────────────────┤
- * │ Mục đích         │ Lấy dữ liệu (GET)   │ Gửi dữ liệu (POST/PUT)  │
- * │ Chạy ở           │ Server & Client     │ Chỉ chạy trên Server    │
- * │ Caching          │ Next.js fetch cache │ revalidatePath/revalidateTag|
- * └──────────────────┴─────────────────────┴────────────────────────┘ *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - SEO Optimization: Tích hợp với Next.js SSG/ISR để pre-render trang sản phẩm, giúp Google Index cực nhanh.
- * - User Experience: Cache thông minh (Category cache 24h, Product cache 60s) giúp trang load gần như tức thì nhưng giá cả vẫn cập nhật.
 
- * =====================================================================
- */
 
 import { http } from "@/lib/http";
 import { ApiResponse, PaginatedData } from "@/types/dtos";

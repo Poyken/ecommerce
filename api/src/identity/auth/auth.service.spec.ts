@@ -5,7 +5,7 @@ import { RedisService } from '@core/redis/redis.service';
 import { TokenService } from './token.service';
 import { TwoFactorService } from './two-factor.service';
 import { PermissionService } from './permission.service';
-import { EmailService } from '@integrations/email/email.service';
+import { EmailService } from '@/platform/integrations/external/email/email.service';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
@@ -16,22 +16,6 @@ import * as bcrypt from 'bcrypt';
  * =====================================================================
  * AUTH SERVICE UNIT TESTS
  * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. UNIT TEST VS INTEGRATION TEST:
- *    - Unit Test: Test từng method riêng lẻ, mock tất cả dependencies.
- *    - Integration Test: Test cả flow thực tế với DB thật.
- *    - File này là Unit Test: Nhanh, chạy độc lập, không cần DB.
- *
- * 2. MOCK:
- *    - Giả lập các service bên ngoài (Prisma, Redis, Email...).
- *    - Giúp test nhanh và kiểm soát được kết quả trả về.
- *
- * 3. ARRANGE - ACT - ASSERT (AAA):
- *    - Arrange: Chuẩn bị data, mock.
- *    - Act: Gọi method cần test.
- *    - Assert: Kiểm tra kết quả đúng mong đợi.
  *
  * =====================================================================
  */

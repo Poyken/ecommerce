@@ -11,26 +11,6 @@ import { Request } from 'express';
  * CSRF GUARD - Bảo vệ chống tấn công giả mạo (Cross-Site Request Forgery)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * CSRF là gì?
- * - Là kỹ thuật tấn công khi một trang web độc hại lừa trình duyệt của người dùng
- *   thực hiện một yêu cầu (request) trái phép đến website của chúng ta.
- *
- * CƠ CHẾ BẢO VỆ:
- * 1. Double Submit Cookie Pattern:
- *    - Server tạo 1 token ngẫu nhiên và lưu vào Cookie (HttpOnly: false).
- *    - Client đọc token này và gửi lại trong Header của request (VD: X-CSRF-Token).
- *    - Server so sánh giá trị trong Header và Cookie. Nếu khớp mới cho thực thi.
- *
- * TẠI SAO AN TOÀN?
- * - Hacker có thể khiến trình duyệt gửi Cookie đi (tự động), nhưng Hacker
- *   KHÔNG THỂ đọc được Cookie (do cùng chính sách Same-Origin) để đưa vào Header. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Bảo mật giao dịch: Ngăn chặn hacker lừa user click link lạ để chuyển tiền/đổi mật khẩu ngầm.
- * - Tuân thủ tiêu chuẩn OWASP: Đáp ứng yêu cầu bảo mật tối thiểu cho các ứng dụng Enterprise.
- * - Stateless Security: Bảo vệ API mà không cần lưu session state trên server (phù hợp mô hình Microservices).
-
  * =====================================================================
  */
 @Injectable()

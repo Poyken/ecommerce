@@ -1,6 +1,5 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["fullTextSearchPostgres"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -8,107 +7,80 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-// File này định nghĩa cấu trúc cơ sở dữ liệu (Database Schema) của hệ thống.
-// Chúng ta sử dụng Prisma ORM để quản lý Database.
-// Các quy tắc chung:
-// 1. Mỗi bảng (model) đều có tenantId để hỗ trợ đa cửa hàng (Multi-tenancy).
-// 2. Sử dụng UUID cho ID để đảm bảo tính duy nhất và bảo mật.
-// 3. Có đầy đủ các trường createdAt, updatedAt và deletedAt (cho xóa mềm).
-// 4. Các quan hệ (relation) được định nghĩa rõ ràng để đảm bảo toàn vẹn dữ liệu.
-
 model User {
-  id                     String                  @id @default(uuid()) // ID định danh duy nhất của User, tự động tạo UUID
-  email                  String // Địa chỉ email dùng để đăng nhập và liên hệ
-  firstName              String? // Tên người dùng (có thể để trống)
-  lastName               String? // Họ người dùng (có thể để trống)
-  password               String?                 @db.VarChar(255) // Mật khẩu đã được mã hóa (Hash), giới hạn 255 ký tự
-  createdAt              DateTime                @default(now()) // Thời điểm tạo tài khoản
-  updatedAt              DateTime                @updatedAt // Thời điểm cập nhật thông tin gần nhất
-  deletedAt              DateTime? // Thời điểm xóa mềm (Soft delete). Nếu có giá trị nghĩa là tài khoản đã bị vô hiệu hóa
-  avatarUrl              String? // Đường dẫn ảnh đại diện (URL)
-  provider               String? // Nhà cung cấp đăng nhập (Google, Facebook) nếu dùng Social Login
-  socialId               String? // ID định danh từ mạng xã hội (VD: Google User ID)
-  twoFactorEnabled       Boolean                 @default(false) // Cờ bật/tắt tính năng bảo mật 2 lớp (2FA)
-  twoFactorSecret        String? // Mã bí mật dùng để tạo OTP cho 2FA
-  whitelistedIps         Json?                   @default("[]") // Danh sách các địa chỉ IP được phép truy cập (lớp bảo mật thêm)
-  commissionBalance      Decimal                 @default(0) @db.Decimal(20, 2) // Số dư hoa hồng tích lũy (cho content creator/affiliate)
+  id                     String                  @id @default(uuid())
+  email                  String
+  firstName              String?
+  lastName               String?
+  password               String?                 @db.VarChar(255)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  avatarUrl              String?
+  provider               String?
+  socialId               String?
+  twoFactorEnabled       Boolean                 @default(false)
+  twoFactorSecret        String?
+  tenantId               String
+  deletedAt              DateTime?
+  whitelistedIps         Json?                   @default("[]")
+  avatarId               String?
+  customerGroupId        String?
+  commissionBalance      Decimal                 @default(0) @db.Decimal(20, 2)
   referredByUserId       String?
+  addresses              Address[]
+  aiChatSessions         AiChatSession[]
+  auditLogs              AuditLog[]
+  blogs                  Blog[]
+  carts                  Cart[]
+  conversations          ChatConversation?
+  commissionTransactions CommissionTransaction[]
+  inventoryLogs          InventoryLog[]
+  loyaltyPoints          LoyaltyPoint[]
+  notifications          Notification[]
+  orders                 Order[]
+  promotions             PromotionUsage[]
+  returnRequests         ReturnRequest[]
+  reviews                Review[]
+  ownedTenants           Tenant[]                @relation("TenantOwner")
+  avatar                 Media?                  @relation(fields: [avatarId], references: [id])
+  customerGroup          CustomerGroup?          @relation(fields: [customerGroupId], references: [id])
   referredByUser         User?                   @relation("UserReferrals", fields: [referredByUserId], references: [id])
   referrals              User[]                  @relation("UserReferrals")
-  commissionTransactions CommissionTransaction[]
-  loyaltyPoints          LoyaltyPoint[]
+  tenant                 Tenant                  @relation(fields: [tenantId], references: [id])
+  permissions            UserPermission[]
+  roles                  UserRole[]
+  wishlist               Wishlist[]
 
-
-  // Media Reference
-  avatarId String?
-  avatar   Media?  @relation(fields: [avatarId], references: [id])
-
-  // Các mối quan hệ (Relations) với các bảng khác
-  addresses      Address[] // Danh sách địa chỉ giao hàng của user
-  auditLogs      AuditLog[] // Lịch sử hoạt động/truy vết của user
-  carts          Cart[] // Giỏ hàng (thường chỉ 1 active, nhưng thiết kế mảng để mở rộng history)
-  inventoryLogs  InventoryLog[] // Log kho hàng (nếu user là nhân viên kho)
-  notifications  Notification[] // Các thông báo gửi đến user
-  orders         Order[] // Lịch sử đơn hàng đã mua
-  reviews        Review[] // Các đánh giá sản phẩm đã mua
-  permissions    UserPermission[] // Các quyền hạn cụ thể (Granular permissions)
-  roles          UserRole[] // Các vai trò của user (Admin, Staff, Customer...)
-  wishlist       Wishlist[] // Danh sách sản phẩm yêu thích
-  blogs          Blog[] // Bài viết blog (nếu user là content writer)
-  conversations  ChatConversation[] // Các cuộc hội thoại chat support
-  aiChatSessions AiChatSession[] // Lịch sử chat với AI Bot
-  ownedTenants   Tenant[]           @relation("TenantOwner")
-
-  // Multi-tenancy (Đa cửa hàng)
-  tenantId String // ID của cửa hàng mà User này thuộc về
-  tenant   Tenant @relation(fields: [tenantId], references: [id]) // Quan hệ tới bảng Tenant
-
-  // Customer Group
-  customerGroupId String?
-  customerGroup   CustomerGroup?   @relation(fields: [customerGroupId], references: [id])
-  promotions      PromotionUsage[]
-  returnRequests  ReturnRequest[]
-
-  @@unique([tenantId, email]) // Đảm bảo email là duy nhất trong phạm vi một cửa hàng
-  @@unique([id, tenantId]) // Composite Key cho bảo mật mức Tenant
-  // Các chỉ mục (Indexes) để tối ưu truy vấn
-  @@index([email]) // Tìm kiếm nhanh theo email
-  @@index([tenantId]) // Lọc nhanh user theo cửa hàng
-  @@index([tenantId, createdAt(sort: Desc)]) // Sắp xếp user mới nhất trong từng cửa hàng
-  @@index([customerGroupId]) // Index cho khóa ngoại CustomerGroup
+  @@unique([tenantId, email])
+  @@unique([id, tenantId])
+  @@index([email])
+  @@index([tenantId])
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@index([customerGroupId])
 }
 
-// =====================================================================
-// MEDIA MANAGEMENT
-// =====================================================================
-
 model Media {
-  id        String    @id @default(uuid())
-  url       String    @db.VarChar(2048) // URL của file media
-  type      String    @db.VarChar(50) // Loại file (image, video, document)
-  mimeType  String?   @db.VarChar(100) // MIME type (image/jpeg, video/mp4)
-  fileName  String?   @db.VarChar(255) // Tên file gốc
-  altText   String?   @db.VarChar(255) // Văn bản thay thế cho SEO và trợ năng
-  size      Int? // Kích thước file theo byte
-  width     Int? // Chiều rộng (đối với ảnh/video)
-  height    Int? // Chiều cao (đối với ảnh/video)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime? // Soft delete
-
-  // Multi-tenancy
-  tenantId String // ID của Tenant sở hữu media này
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  // Relations
-  users         User[]
-  categories    Category[]
-  brands        Brand[]
+  id            String         @id @default(uuid())
+  url           String         @db.VarChar(2048)
+  type          String         @db.VarChar(50)
+  mimeType      String?        @db.VarChar(100)
+  fileName      String?        @db.VarChar(255)
+  altText       String?        @db.VarChar(255)
+  size          Int?
+  width         Int?
+  height        Int?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  deletedAt     DateTime?
+  tenantId      String
   blogs         Blog[]
+  brands        Brand[]
+  categories    Category[]
+  tenant        Tenant         @relation(fields: [tenantId], references: [id])
+  optionValues  OptionValue[]
   productImages ProductImage[]
   skuImages     SkuImage[]
-  optionValues  OptionValue[]
+  users         User[]
 
   @@index([tenantId])
   @@index([tenantId, type])
@@ -116,375 +88,313 @@ model Media {
 }
 
 model CustomerGroup {
-  id          String  @id @default(uuid())
-  name        String // VIP, Wholesale
+  id          String     @id @default(uuid())
+  name        String
   description String?
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  users User[]
-
-  // Price List (B2B)
+  tenantId    String
   priceListId String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   priceList   PriceList? @relation(fields: [priceListId], references: [id])
-
-  createdAt DateTime @default(now()) // Ngày tạo
-  updatedAt DateTime @updatedAt // Ngày cập nhật
+  tenant      Tenant     @relation(fields: [tenantId], references: [id])
+  users       User[]
 
   @@unique([tenantId, name])
-  @@index([priceListId]) // Index cho khóa ngoại PriceList
+  @@index([priceListId])
 }
 
-// =====================================================================
-// B2B - PRICE LISTS
-// =====================================================================
-
 model PriceList {
-  id        String    @id @default(uuid())
-  name      String // Bảng giá đại lý, Bảng giá bán lẻ
-  currency  String    @default("VND")
-  isDefault Boolean   @default(false)
-  startDate DateTime?
-  endDate   DateTime?
-  isActive  Boolean   @default(true)
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  items          PriceListItem[]
+  id             String          @id @default(uuid())
+  name           String
+  currency       String          @default("VND")
+  isDefault      Boolean         @default(false)
+  startDate      DateTime?
+  endDate        DateTime?
+  isActive       Boolean         @default(true)
+  tenantId       String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   customerGroups CustomerGroup[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  tenant         Tenant          @relation(fields: [tenantId], references: [id])
+  items          PriceListItem[]
 
   @@index([tenantId])
 }
 
 model PriceListItem {
-  id             String   @id @default(uuid())
+  id             String    @id @default(uuid())
   priceListId    String
   skuId          String
-  price          Decimal  @db.Decimal(20, 2) // Giá áp dụng
-  compareAtPrice Decimal? @db.Decimal(20, 2) // Giá gốc (để gạch ngang)
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  priceList PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
-  sku       Sku       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  price          Decimal   @db.Decimal(20, 2)
+  compareAtPrice Decimal?  @db.Decimal(20, 2)
+  tenantId       String
+  priceList      PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+  sku            Sku       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  tenant         Tenant    @relation(fields: [tenantId], references: [id])
 
   @@unique([priceListId, skuId])
-  @@index([skuId]) // Index tối ưu truy vấn ngược từ SKU
+  @@index([skuId])
   @@index([tenantId])
 }
 
 model Role {
-  id          String           @id @default(uuid()) // ID định danh duy nhất của Role (Vai trò)
-  name        String // Tên của vai trò (VD: Admin, Staff, Viewer)
-  description String? // Mô tả vai trò
-  createdAt   DateTime         @default(now()) // Thời gian tạo
-  updatedAt   DateTime         @updatedAt // Thời gian cập nhật
-  permissions RolePermission[] // Danh sách các quyền hạn thuộc vai trò này
-  users       UserRole[] // Danh sách người dùng có vai trò này
+  id          String           @id @default(uuid())
+  name        String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  tenantId    String
+  description String?
+  tenant      Tenant           @relation(fields: [tenantId], references: [id])
+  permissions RolePermission[]
+  users       UserRole[]
 
-  // Multi-tenancy
-  tenantId String // ID của Tenant (Cửa hàng) sở hữu role này
-  tenant   Tenant @relation(fields: [tenantId], references: [id]) // Quan hệ tới model Tenant
-
-  @@unique([tenantId, name]) // Tên role phải là duy nhất trong cùng một Tenant
-  @@index([tenantId]) // Index để lọc nhanh các role của một Tenant
+  @@unique([tenantId, name])
+  @@index([tenantId])
 }
 
 model Permission {
-  id        String           @id @default(uuid()) // ID của Quyền hạn
-  name      String           @unique // Tên quyền hạn (Duy nhất toàn hệ thống, VD: PRODUCT_CREATE)
-  createdAt DateTime         @default(now()) // Thời gian tạo
-  updatedAt DateTime         @updatedAt // Thời gian cập nhật
-  roles     RolePermission[] // Danh sách các Role có quyền này
-  users     UserPermission[] // Danh sách User được gán trực tiếp quyền này
+  id        String           @id @default(uuid())
+  name      String           @unique
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  roles     RolePermission[]
+  users     UserPermission[]
 }
 
 model UserRole {
-  userId String // ID của User
-  roleId String // ID của Role
-  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade) // Link tới Role
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) // Link tới User
+  userId String
+  roleId String
+  role   Role   @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([userId, roleId]) // Khóa chính kết hợp (Một user chỉ có 1 lần role này)
-  @@index([roleId]) // Index để tìm nhanh tất cả user có role này
+  @@id([userId, roleId])
+  @@index([roleId])
 }
 
 model RolePermission {
-  roleId       String // ID Role
-  permissionId String // ID Permission
+  roleId       String
+  permissionId String
   permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
   role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
 
-  @@id([roleId, permissionId]) // Khóa chính kết hợp
-  @@index([permissionId]) // Index tìm các role có permission này
+  @@id([roleId, permissionId])
+  @@index([permissionId])
 }
 
 model UserPermission {
-  userId       String // ID User
-  permissionId String // ID Permission
-  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade) // Link permission
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade) // Link user
+  userId       String
+  permissionId String
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@id([userId, permissionId]) // Khóa chính kết hợp
-  @@index([permissionId]) // Index tìm user có permission này
+  @@id([userId, permissionId])
+  @@index([permissionId])
 }
 
 model Category {
-  id        String    @id @default(uuid()) // ID danh mục
-  name      String // Tên danh mục (VD: Điện thoại, Quần áo)
-  slug      String // Đường dẫn thân thiện SEO (VD: dien-thoai)
-  parentId  String? // ID danh mục cha (nếu là danh mục con)
-  createdAt DateTime  @default(now()) // Thời gian tạo
-  updatedAt DateTime  @updatedAt // Thời gian cập nhật
-  deletedAt DateTime? // Thời gian xóa mềm (Soft delete)
-  imageUrl  String? // Ảnh đại diện danh mục (Legacy)
-  imageId   String? // Link tới Media
-  image     Media?    @relation(fields: [imageId], references: [id])
+  id              String              @id @default(uuid())
+  name            String
+  slug            String
+  parentId        String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  imageUrl        String?
+  metaDescription String?
+  metaKeywords    String?
+  metaTitle       String?
+  deletedAt       DateTime?
+  tenantId        String
+  imageId         String?
+  image           Media?              @relation(fields: [imageId], references: [id])
+  parent          Category?           @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children        Category[]          @relation("CategoryToCategory")
+  tenant          Tenant              @relation(fields: [tenantId], references: [id])
+  products        ProductToCategory[]
 
-  metaDescription String? // Thẻ meta description cho SEO
-  metaKeywords    String? // Thẻ meta keywords cho SEO
-  metaTitle       String? // Thẻ meta title cho SEO
-  parent          Category?           @relation("CategoryToCategory", fields: [parentId], references: [id]) // Link tới danh mục cha
-  children        Category[]          @relation("CategoryToCategory") // Danh sách danh mục con
-  products        ProductToCategory[] // Danh sách sản phẩm thuộc danh mục này
-
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
-
-  @@unique([tenantId, slug]) // Slug phải duy nhất trong Tenant
-  @@unique([tenantId, name]) // Tên danh mục không trùng trong Tenant
-  @@unique([id, tenantId]) // Bảo mật ID theo Tenant
-  @@index([parentId]) // Index tìm danh mục con theo cha
-  @@index([tenantId]) // Index lọc theo Tenant
-  @@index([tenantId, parentId]) // Index lọc danh mục gốc/con của Tenant
-  @@index([tenantId, createdAt(sort: Desc)]) // Sắp xếp danh mục mới nhất
+  @@unique([tenantId, slug])
+  @@unique([tenantId, name])
+  @@unique([id, tenantId])
+  @@index([parentId])
+  @@index([tenantId])
+  @@index([tenantId, parentId])
+  @@index([tenantId, createdAt(sort: Desc)])
 }
 
 model Brand {
-  id        String    @id @default(uuid()) // ID Thương hiệu
-  name      String // Tên thương hiệu (VD: Samsung, Apple)
-  slug      String // Đường dẫn thân thiện SEO
-  createdAt DateTime  @default(now()) // Thời gian tạo
-  updatedAt DateTime  @updatedAt // Thời gian cập nhật
-  deletedAt DateTime? // Xóa mềm
-  imageUrl  String? // Logo thương hiệu (Legacy)
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  imageUrl  String?
+  deletedAt DateTime?
+  tenantId  String
   imageId   String?
+  slug      String
   image     Media?    @relation(fields: [imageId], references: [id])
+  tenant    Tenant    @relation(fields: [tenantId], references: [id])
+  products  Product[]
 
-  products Product[] // Danh sách sản phẩm thuộc thương hiệu
-
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
-
-  @@unique([tenantId, name]) // Tên thương hiệu duy nhất/Tenant
-  @@unique([tenantId, slug]) // Slug duy nhất trong Tenant
-  @@unique([id, tenantId]) // Bảo mật ID
-  @@index([tenantId]) // Index theo Tenant
-  @@index([tenantId, createdAt(sort: Desc)]) // Sắp xếp
+  @@unique([tenantId, name])
+  @@unique([tenantId, slug])
+  @@unique([id, tenantId])
+  @@index([tenantId])
+  @@index([tenantId, createdAt(sort: Desc)])
 }
 
+/// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model Product {
-  id              String              @id @default(uuid()) // ID sản phẩm
-  name            String              @db.VarChar(255) // Tên sản phẩm, giới hạn 255 ký tự
-  slug            String              @db.VarChar(255) // Slug URL thân thiện
-  description     String? // Mô tả chi tiết (HTML hoặc Markdown)
-  brandId         String // ID của thương hiệu
-  categories      ProductToCategory[] // Các danh mục chứa sản phẩm này
-  metadata        Json? // Dữ liệu mở rộng (Custom attributes)
-  createdAt       DateTime            @default(now()) // Ngày tạo
-  updatedAt       DateTime            @updatedAt // Ngày cập nhật
-  deletedAt       DateTime? // Ngày xóa mềm (nếu null là đang active)
-  metaDescription String? // SEO: Mô tả ngắn
-  metaKeywords    String? // SEO: Từ khóa
-  metaTitle       String? // SEO: Tiêu đề trang
-  maxPrice        Decimal?            @db.Decimal(20, 2) // Giá cao nhất (của biến thể) - dùng cho filter
-  minPrice        Decimal?            @db.Decimal(20, 2) // Giá thấp nhất (của biến thể) - hiển thị "Từ X đ"
-  avgRating       Float?              @default(0) // Điểm đánh giá trung bình
-  reviewCount     Int                 @default(0) // Tổng số lượt đánh giá
-  commissionRate  Decimal             @default(0) @db.Decimal(5, 2) // Tỷ lệ hoa hồng mặc định cho sản phẩm này (%)
-
-  // Vector Embedding (768 dimensions for Gemini text-embedding-004)
-  // Requires pgvector extension. Enable if available.
-  // embedding       Unsupported("vector(768)")? // Dùng cho tìm kiếm AI (Semantic Search)
-
-  products     BlogProduct[] // Được nhắc tới trong bài Blog nào
-  brand        Brand                @relation(fields: [brandId], references: [id]) // Link tới Brand
-  images       ProductImage[] // Danh sách ảnh sản phẩm
-  options      ProductOption[] // Các tùy chọn (Màu, Size...)
-  translations ProductTranslation[] // Đa ngôn ngữ
-  reviews      Review[] // Các review của sản phẩm
-  skus         Sku[] // Danh sách biến thể (SKU)
-  wishlists    Wishlist[] // Ai đã like sản phẩm này
-
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
-
-  // ============================================================
-  // PERFORMANCE INDEXES (Production-ready)
-  // ============================================================
-
-  // 5. Slug Lookup (already unique, optimized by default)
-  // No need for additional index
+  id              String               @id @default(uuid())
+  name            String               @db.VarChar(255)
+  slug            String               @db.VarChar(255)
+  description     String?
+  brandId         String
+  metadata        Json?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  deletedAt       DateTime?
+  metaDescription String?
+  metaKeywords    String?
+  metaTitle       String?
+  maxPrice        Decimal?             @db.Decimal(20, 2)
+  minPrice        Decimal?             @db.Decimal(20, 2)
+  avgRating       Float?               @default(0)
+  reviewCount     Int                  @default(0)
+  tenantId        String
+  commissionRate  Decimal              @default(0) @db.Decimal(5, 2)
+  products        BlogProduct[]
+  brand           Brand                @relation(fields: [brandId], references: [id])
+  tenant          Tenant               @relation(fields: [tenantId], references: [id])
+  images          ProductImage[]
+  options         ProductOption[]
+  categories      ProductToCategory[]
+  translations    ProductTranslation[]
+  reviews         Review[]
+  skus            Sku[]
+  wishlists       Wishlist[]
 
   @@unique([tenantId, slug])
   @@unique([id, tenantId])
-  // 1. Brand + Price Range Filter
-  // Covers: WHERE brandId = Y AND minPrice >= A AND maxPrice <= B
-  @@index([brandId, minPrice, maxPrice, createdAt(sort: Desc)], name: "idx_product_brand_price")
-  // 2. Price Range (25% of queries)
-  // Covers: WHERE minPrice >= A ORDER BY createdAt DESC
-  @@index([minPrice, maxPrice, createdAt(sort: Desc)], name: "idx_product_price_range")
-  // 3. Brand Filter (15% of queries)
-  // Covers: WHERE brandId = X ORDER BY createdAt DESC
-  @@index([brandId, createdAt(sort: Desc)], name: "idx_product_brand_created")
-  // 4. Price Sorting (10% of queries)
-  // Covers: ORDER BY minPrice ASC/DESC
-  @@index([minPrice, createdAt(sort: Desc)], name: "idx_product_price_asc")
-  @@index([maxPrice(sort: Desc), createdAt(sort: Desc)], name: "idx_product_price_desc")
-  // 6. Active Products Filter (80% of queries need this)
-  // Partial index: WHERE deletedAt IS NULL
-  @@index([deletedAt, createdAt(sort: Desc)], name: "idx_product_active")
-  // 7. Rating Filter (for "top rated" queries)
-  // Covers: WHERE avgRating >= 4 ORDER BY avgRating DESC
-  @@index([avgRating(sort: Desc), reviewCount(sort: Desc)], name: "idx_product_rating")
-  // 8. Search Optimization (B-tree indexing for common searches)
-  @@index([name]) // Tìm theo tên
-  @@index([description]) // Tìm trong mô tả (Full-text search sẽ tốt hơn)
-  @@index([metadata], type: Gin) // Tìm trong JSON metadata
-  // Legacy indexes (keep for backward compatibility, will remove in next version)
-  // No duplicate name index here
+  @@index([brandId, minPrice, maxPrice, createdAt(sort: Desc)], map: "idx_product_brand_price")
+  @@index([minPrice, maxPrice, createdAt(sort: Desc)], map: "idx_product_price_range")
+  @@index([brandId, createdAt(sort: Desc)], map: "idx_product_brand_created")
+  @@index([minPrice, createdAt(sort: Desc)], map: "idx_product_price_asc")
+  @@index([maxPrice(sort: Desc), createdAt(sort: Desc)], map: "idx_product_price_desc")
+  @@index([deletedAt, createdAt(sort: Desc)], map: "idx_product_active")
+  @@index([avgRating(sort: Desc), reviewCount(sort: Desc)], map: "idx_product_rating")
+  @@index([name])
+  @@index([description])
+  @@index([metadata], type: Gin)
   @@index([slug])
-  // @@index([deletedAt]) - REMOVED: Covered by @@index([tenantId, deletedAt])
   @@index([tenantId])
   @@index([tenantId, deletedAt])
   @@index([tenantId, brandId, deletedAt])
   @@index([tenantId, minPrice, maxPrice, deletedAt])
-  @@index([tenantId, deletedAt, createdAt]) // For Storefront listings
+  @@index([tenantId, deletedAt, createdAt])
 }
 
 model ProductToCategory {
-  productId  String // ID Sản phẩm
-  categoryId String // ID Danh mục
+  productId  String
+  categoryId String
+  tenantId   String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
 
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-
-  @@id([productId, categoryId]) // Khóa chính kết hợp
-  @@index([categoryId]) // Index lọc sản phẩm theo danh mục
-  @@index([productId]) // Index xem sản phẩm thuộc danh mục nào
+  @@id([productId, categoryId])
+  @@index([categoryId])
+  @@index([productId])
   @@index([tenantId])
 }
 
 model ProductOption {
-  id           String @id @default(uuid()) // ID tùy chọn (VD: Màu sắc)
-  name         String @db.VarChar(50) // Tên tùy chọn
-  displayOrder Int? // Thứ tự hiển thị
-  productId    String // ID sản phẩm
+  id           String        @id @default(uuid())
+  name         String        @db.VarChar(50)
+  displayOrder Int?
+  productId    String
+  tenantId     String
+  values       OptionValue[]
+  product      Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant       Tenant        @relation(fields: [tenantId], references: [id])
 
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  values  OptionValue[] // Danh sách các giá trị (Đỏ, Xanh...)
-  product Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@index([productId]) // Index theo sản phẩm
+  @@index([productId])
   @@index([tenantId])
 }
 
 model OptionValue {
-  id       String  @id @default(uuid()) // ID giá trị tùy chọn
-  value    String  @db.VarChar(50) // Giá trị (VD: Đỏ)
-  imageUrl String? // Ảnh đại diện cho giá trị này (Legacy)
-  imageId  String?
-  image    Media?  @relation(fields: [imageId], references: [id])
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  optionId    String // ID tùy chọn
+  id          String             @id @default(uuid())
+  value       String             @db.VarChar(50)
+  imageUrl    String?
+  optionId    String
+  imageId     String?
+  tenantId    String
+  image       Media?             @relation(fields: [imageId], references: [id])
   option      ProductOption      @relation(fields: [optionId], references: [id], onDelete: Cascade)
-  skuVariants SkuToOptionValue[] // Các SKU sử dụng giá trị này
+  tenant      Tenant             @relation(fields: [tenantId], references: [id])
+  skuVariants SkuToOptionValue[]
 
-  @@index([optionId]) // Index theo option
+  @@index([optionId])
   @@index([tenantId])
 }
 
 model Sku {
-  id                 String              @id @default(uuid()) // ID SKU (Đơn vị lưu kho)
-  skuCode            String              @db.VarChar(50) // Mã SKU quản lý (VD: IPHONE-13-RED-64)
-  productId          String // ID sản phẩm cha
-  price              Decimal?            @db.Decimal(20, 2) // Giá bán thường
-  salePrice          Decimal?            @db.Decimal(20, 2) // Giá khuyến mãi
-  stock              Int                 @default(0) // Số lượng tồn kho (Deprecated: Use InventoryItem)
-  imageUrl           String? // Ảnh riêng của SKU này
-  status             String              @default("INACTIVE") // Trạng thái (ACTIVE, INACTIVE)
-  metadata           Json? // Dữ liệu thêm
-  createdAt          DateTime            @default(now()) // Ngày tạo
-  updatedAt          DateTime            @updatedAt // Ngày cập nhật
-  reservedStock      Int                 @default(0) // Tồn kho đang được giữ (trong đơn hàng chưa thanh toán)
-  cartItems          CartItem[] // Các giỏ hàng đang chứa SKU này
-  inventoryLogs      InventoryLog[] // Lịch sử biến động kho
-  inventoryItems     InventoryItem[] // Đa kho hàng
-  orderItems         OrderItem[] // Các đơn hàng đã mua SKU này
-  reviews            Review[] // Review cụ thể cho SKU này
-  optionValues       SkuToOptionValue[] // Các giá trị tùy chọn (Màu Đỏ, 64GB) tạo nên SKU này
+  id                 String              @id @default(uuid())
+  skuCode            String              @db.VarChar(50)
+  productId          String
+  price              Decimal?            @db.Decimal(20, 2)
+  salePrice          Decimal?            @db.Decimal(20, 2)
+  stock              Int                 @default(0)
+  imageUrl           String?
+  status             String              @default("INACTIVE")
+  metadata           Json?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  reservedStock      Int                 @default(0)
+  tenantId           String
+  cartItems          CartItem[]
+  inventoryItems     InventoryItem[]
+  inventoryLogs      InventoryLog[]
+  orderItems         OrderItem[]
   priceListItems     PriceListItem[]
   purchaseOrderItems PurchaseOrderItem[]
-  images             SkuImage[] // Ảnh chi tiết SKU
+  reviews            Review[]
   product            Product             @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant             Tenant              @relation(fields: [tenantId], references: [id])
+  images             SkuImage[]
+  optionValues       SkuToOptionValue[]
 
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
-
-  @@unique([tenantId, skuCode]) // Mã SKU duy nhất trong Tenant
-  @@unique([id, tenantId]) // Bảo mật ID
-  @@index([productId]) // Index theo sản phẩm cha
-  @@index([skuCode]) // Tìm theo mã SKU
-  @@index([tenantId]) // Lọc theo Tenant
-  @@index([metadata], type: Gin) // Tìm trong metadata
-  @@index([tenantId, productId, status]) // Lọc SKU active của sản phẩm
+  @@unique([tenantId, skuCode])
+  @@unique([id, tenantId])
+  @@index([productId])
+  @@index([skuCode])
+  @@index([tenantId])
+  @@index([metadata], type: Gin)
+  @@index([tenantId, productId, status])
 }
 
 model Warehouse {
   id             String          @id @default(uuid())
-  name           String // Tên kho (Kho HCM, Kho HN)
-  address        String? // Địa chỉ kho
-  isDefault      Boolean         @default(false) // Là kho mặc định?
+  name           String
+  address        String?
+  isDefault      Boolean         @default(false)
   tenantId       String
-  tenant         Tenant          @relation(fields: [tenantId], references: [id])
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
   inventoryItems InventoryItem[]
-
-  createdAt DateTime @default(now()) // Ngày tạo
-  updatedAt DateTime @updatedAt
+  tenant         Tenant          @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId])
 }
 
 model InventoryItem {
-  id            String @id @default(uuid())
+  id            String    @id @default(uuid())
   warehouseId   String
   skuId         String
-  quantity      Int    @default(0)
-  minStockLevel Int    @default(0) // Ngưỡng cảnh báo tồn kho thấp
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  warehouse Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
-  sku       Sku       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  quantity      Int       @default(0)
+  minStockLevel Int       @default(0)
+  tenantId      String
+  sku           Sku       @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  tenant        Tenant    @relation(fields: [tenantId], references: [id])
+  warehouse     Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
 
   @@unique([warehouseId, skuId])
   @@index([skuId])
@@ -492,164 +402,141 @@ model InventoryItem {
 }
 
 model SkuToOptionValue {
-  skuId         String // ID SKU
-  optionValueId String // ID Giá trị tùy chọn
+  skuId         String
+  optionValueId String
+  tenantId      String
+  optionValue   OptionValue @relation(fields: [optionValueId], references: [id], onDelete: Cascade)
+  sku           Sku         @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  tenant        Tenant      @relation(fields: [tenantId], references: [id])
 
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  optionValue OptionValue @relation(fields: [optionValueId], references: [id], onDelete: Cascade)
-  sku         Sku         @relation(fields: [skuId], references: [id], onDelete: Cascade)
-
-  @@id([skuId, optionValueId]) // Khóa chính kết hợp
+  @@id([skuId, optionValueId])
   @@index([tenantId])
 }
 
 model Address {
-  id            String   @id @default(uuid()) // ID địa chỉ
-  userId        String // ID người dùng sở hữu
-  isDefault     Boolean  @default(false) // Có phải địa chỉ mặc định không
-  recipientName String // Tên người nhận
-  phoneNumber   String // Số điện thoại người nhận
-  street        String // Địa chỉ chi tiết (Số nhà, đường)
-  city          String // Tỉnh/Thành phố
-  district      String // Quận/Huyện
-  ward          String? // Phường/Xã
-  postalCode    String? // Mã bưu điện
-  country       String?  @db.VarChar(100) // Quốc gia
-  createdAt     DateTime @default(now()) // Ngày tạo
-  updatedAt     DateTime @updatedAt // Ngày cập nhật
-  districtId    Int? // ID Quận/Huyện (cho tích hợp GHN/GHTK)
-  provinceId    Int? // ID Tỉnh/Thành (cho tích hợp GHN/GHTK)
-  wardCode      String? // Mã Phường/Xã (cho tích hợp GHN/GHTK)
+  id            String   @id @default(uuid())
+  userId        String
+  isDefault     Boolean  @default(false)
+  recipientName String
+  phoneNumber   String
+  street        String
+  city          String
+  district      String
+  ward          String?
+  postalCode    String?
+  country       String?  @db.VarChar(100)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  districtId    Int?
+  provinceId    Int?
+  wardCode      String?
+  tenantId      String
+  tenant        Tenant   @relation(fields: [tenantId], references: [id])
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orders        Order[]
 
-  orders Order[] // Các đơn hàng dùng địa chỉ này
-
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
-
-  @@index([userId]) // Lọc địa chỉ theo User
-  @@index([tenantId]) // Lọc theo Tenant
-}
-
-model Cart {
-  id        String     @id @default(uuid()) // ID Giỏ hàng
-  userId    String // ID User sở hữu
-  createdAt DateTime   @default(now()) // Ngày tạo
-  updatedAt DateTime   @updatedAt // Ngày cập nhật
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items     CartItem[] // Danh sách sản phẩm trong giỏ
-
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
-
-  @@unique([userId, tenantId]) // Mỗi user chỉ có 1 giỏ hàng trong 1 Tenant
-}
-
-model CartItem {
-  id        String   @id @default(uuid()) // ID mục trong giỏ
-  cartId    String // ID Giỏ hàng
-  skuId     String // ID SKU sản phẩm
-  quantity  Int      @default(1) // Số lượng mua
-  createdAt DateTime @default(now()) // Ngày thêm vào
-  updatedAt DateTime @updatedAt // Ngày cập nhật
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
-  sku  Sku  @relation(fields: [skuId], references: [id], onDelete: Cascade)
-
-  @@unique([cartId, skuId]) // Trong 1 giỏ, một SKU chỉ xuất hiện 1 dòng
-  @@index([skuId]) // Tham chiếu ngược
+  @@index([userId])
   @@index([tenantId])
 }
 
-// =====================================================================
-// PROMOTION ENGINE (Advanced)
-// =====================================================================
+model Cart {
+  id        String     @id @default(uuid())
+  userId    String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  tenantId  String
+  tenant    Tenant     @relation(fields: [tenantId], references: [id])
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     CartItem[]
+
+  @@unique([userId, tenantId])
+}
+
+model CartItem {
+  id        String   @id @default(uuid())
+  cartId    String
+  skuId     String
+  quantity  Int      @default(1)
+  version   Int      @default(0) // [RACE CONDITION FIX C5] Optimistic locking
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenantId  String
+  cart      Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  sku       Sku      @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@unique([cartId, skuId])
+  @@index([skuId])
+  @@index([tenantId])
+  @@index([tenantId, cartId])
+  @@index([tenantId, skuId])
+}
 
 model Promotion {
-  id          String  @id @default(uuid())
-  name        String // Tên chương trình
-  code        String? // Mã nhập (nếu có)
+  id          String            @id @default(uuid())
+  name        String
+  code        String?
   description String?
-
-  startDate DateTime
-  endDate   DateTime
-  isActive  Boolean  @default(true) // Trạng thái kích hoạt
-  priority  Int      @default(0) // Độ ưu tiên (Số càng lớn càng ưu tiên cao)
-
-  usageLimit Int? // Giới hạn số lần sử dụng tổng cộng
-  usedCount  Int  @default(0) // Số lần đã sử dụng
-
-  // Rules & Actions
-  rules   PromotionRule[]
-  actions PromotionAction[]
-  usages  PromotionUsage[]
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  createdAt DateTime @default(now()) // Ngày tạo
-  updatedAt DateTime @updatedAt
+  startDate   DateTime
+  endDate     DateTime
+  isActive    Boolean           @default(true)
+  priority    Int               @default(0)
+  usageLimit  Int?
+  usedCount   Int               @default(0)
+  tenantId    String
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  tenant      Tenant            @relation(fields: [tenantId], references: [id])
+  actions     PromotionAction[]
+  rules       PromotionRule[]
+  usages      PromotionUsage[]
 
   @@unique([tenantId, code])
   @@index([tenantId])
   @@index([code])
-  @@index([startDate, endDate]) // Index cho tìm kiếm theo khoảng thời gian
+  @@index([startDate, endDate])
 }
 
 model PromotionRule {
-  id          String @id @default(uuid())
+  id          String    @id @default(uuid())
   promotionId String
-  type        String // Loại điều kiện (MIN_ORDER_VALUE, SPECIFIC_CATEGORY, CUSTOMER_GROUP...)
-  operator    String // Toán tử so sánh (GTE, EQ, IN...)
-  value       String // Giá trị so sánh (VD: "500000", "cat_123", "vip_group")
+  type        String
+  operator    String
+  value       String
+  tenantId    String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  tenant      Tenant    @relation(fields: [tenantId], references: [id])
 
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  promotion Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
-
-  @@index([promotionId]) // Index Foreign Key
+  @@index([promotionId])
   @@index([tenantId])
 }
 
 model PromotionAction {
-  id                String   @id @default(uuid())
+  id                String    @id @default(uuid())
   promotionId       String
-  type              String // Loại hành động (DISCOUNT_FIXED, DISCOUNT_PERCENT, FREE_SHIPPING, GIFT...)
-  value             String // Giá trị giảm (VD: "50000", "10")
-  maxDiscountAmount Decimal? @db.Decimal(20, 2) // Số tiền giảm tối đa (cho loại %)
+  type              String
+  value             String
+  maxDiscountAmount Decimal?  @db.Decimal(20, 2)
+  tenantId          String
+  promotion         Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  tenant            Tenant    @relation(fields: [tenantId], references: [id])
 
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  promotion Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
-
-  @@index([promotionId]) // Index Foreign Key
+  @@index([promotionId])
   @@index([tenantId])
 }
 
 model PromotionUsage {
-  id             String  @id @default(uuid())
+  id             String    @id @default(uuid())
   promotionId    String
   userId         String
-  orderId        String // Link to Order
-  discountAmount Decimal @db.Decimal(20, 2)
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  promotion Promotion @relation(fields: [promotionId], references: [id])
-  user      User      @relation(fields: [userId], references: [id])
-  order     Order     @relation(fields: [orderId], references: [id])
-
-  createdAt DateTime @default(now())
+  orderId        String
+  discountAmount Decimal   @db.Decimal(20, 2)
+  createdAt      DateTime  @default(now())
+  tenantId       String
+  order          Order     @relation(fields: [orderId], references: [id])
+  promotion      Promotion @relation(fields: [promotionId], references: [id])
+  tenant         Tenant    @relation(fields: [tenantId], references: [id])
+  user           User      @relation(fields: [userId], references: [id])
 
   @@index([promotionId])
   @@index([userId])
@@ -658,508 +545,386 @@ model PromotionUsage {
 }
 
 model Order {
-  id                        String                  @id @default(uuid()) // ID Đơn hàng
-  userId                    String // ID Người mua
-  status                    OrderStatus             @default(PENDING) // Trạng thái đơn hàng
-  totalAmount               Decimal                 @db.Decimal(20, 2) // Tổng tiền
-  shippingFee               Decimal                 @default(0.00) @db.Decimal(20, 2) // Phí vận chuyển
-  recipientName             String // Tên người nhận
-  phoneNumber               String // SĐT người nhận
-  shippingAddress           String? // Địa chỉ giao hàng (Text)
-  shippingCity              String? // Thành phố
-  shippingDistrict          String? // Quận/Huyện
-  shippingWard              String? // Phường/Xã
-  shippingPhone             String? // SĐT giao hàng (nếu khác)
-  shippingAddressSnapshot   Json? // Snapshot địa chỉ đầy đủ lúc đặt (tránh user sửa address sau này làm sai data đơn cũ)
-  paymentMethod             String? // Phương thức thanh toán (COD, MOMO...)
-  paymentStatus             PaymentStatus           @default(UNPAID) // Trạng thái thanh toán
-  transactionId             String? // Mã giao dịch (Legacy)
-  payments                  Payment[] // Lịch sử thanh toán chi tiết
-  orderDate                 DateTime                @default(now()) // Ngày đặt hàng
-  updatedAt                 DateTime                @updatedAt // Ngày cập nhật
-  createdAt                 DateTime                @default(now()) // Ngày tạo bản ghi
-  deletedAt                 DateTime? // Xóa mềm
-  referredByBlogId          String? // ID bài viết giới thiệu dẫn đến đơn hàng này
-  platformFeeAmount         Decimal?                @db.Decimal(20, 2) // Số tiền phí sàn thu từ tenant cho đơn này
-  affiliateCommissionAmount Decimal?                @db.Decimal(20, 2) // Số tiền hoa hồng trả cho người viết blog
+  id                        String                  @id @default(uuid())
+  userId                    String
+  status                    OrderStatus             @default(PENDING)
+  totalAmount               Decimal                 @db.Decimal(20, 2)
+  shippingFee               Decimal                 @default(0.00) @db.Decimal(20, 2)
+  recipientName             String
+  phoneNumber               String
+  shippingAddress           String?
+  paymentMethod             String?
+  paymentStatus             PaymentStatus           @default(UNPAID)
+  transactionId             String?
+  orderDate                 DateTime                @default(now())
+  updatedAt                 DateTime                @updatedAt
+  createdAt                 DateTime                @default(now())
+  addressId                 String?
+  shippingCode              String?
+  cancellationReason        String?
+  expectedDeliveryTime      DateTime?
+  ghnStatus                 String?
+  tenantId                  String
+  deletedAt                 DateTime?
+  shippingAddressSnapshot   Json?
+  shippingCity              String?
+  shippingDistrict          String?
+  shippingPhone             String?
+  shippingWard              String?
+  affiliateCommissionAmount Decimal?                @db.Decimal(20, 2)
+  platformFeeAmount         Decimal?                @db.Decimal(20, 2)
+  referredByBlogId          String?
+  vatCompanyAddress         String?
+  vatCompanyName            String?
+  vatTaxId                  String?
   commissionTransactions    CommissionTransaction[]
-  shipments                 Shipment[]
+  loyaltyPoints             LoyaltyPoint[]
+  address                   Address?                @relation(fields: [addressId], references: [id])
+  referredByBlog            Blog?                   @relation("BlogReferrals", fields: [referredByBlogId], references: [id])
+  tenant                    Tenant                  @relation(fields: [tenantId], references: [id])
+  user                      User                    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  items                     OrderItem[]
   taxDetails                OrderTaxDetail[]
-
-  // VAT & Red Invoice Support (Hóa đơn đỏ)
-  vatCompanyName    String?
-  vatCompanyAddress String?
-  vatTaxId          String?
-
-  promotions     PromotionUsage[]
-  returnRequests ReturnRequest[]
-  loyaltyPoints  LoyaltyPoint[]
-
-  addressId            String? // ID địa chỉ đã chọn
-  shippingCode         String? // Mã vận đơn
-  ghnStatus            String? // Trạng thái từ GHN/GHTK
-  expectedDeliveryTime DateTime? // Thời gian giao hàng dự kiến
-  cancellationReason   String? // Lý do hủy đơn
-
-  address Address?    @relation(fields: [addressId], references: [id])
-  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  items   OrderItem[] // Danh sách sản phẩm trong đơn
-
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
-
-  referredByBlog Blog? @relation("BlogReferrals", fields: [referredByBlogId], references: [id])
-
-  // ============================================================
-  // PERFORMANCE INDEXES (Production-ready)
-  // ============================================================
+  payments                  Payment[]
+  promotions                PromotionUsage[]
+  returnRequests            ReturnRequest[]
+  shipments                 Shipment[]
+  webhookEvents             WebhookEvent[]
 
   @@unique([id, tenantId])
-  // 1. User Order History (50% of queries)
-  // Covers: WHERE userId = X ORDER BY createdAt DESC
-  @@index([userId, createdAt(sort: Desc)], name: "idx_order_user_history")
-  // 2. User + Status Filter (30% of queries)
-  // Covers: WHERE userId = X AND status IN ('PENDING', 'PROCESSING')
-  @@index([userId, status, createdAt(sort: Desc)], name: "idx_order_user_status")
-  // 3. Admin Dashboard (15% of queries)
-  // Covers: WHERE status = 'PENDING' ORDER BY createdAt DESC
-  @@index([status, createdAt(sort: Desc)], name: "idx_order_status_date")
-  // 4. Payment Status Filter (5% of queries)
-  // Covers: WHERE paymentStatus = 'UNPAID' AND createdAt < X (for auto-cancel)
-  @@index([paymentStatus, createdAt], name: "idx_order_payment_created")
-  // 5. Shipping Code Lookup
-  @@index([shippingCode], name: "idx_order_shipping_code")
+  @@index([userId, createdAt(sort: Desc)], map: "idx_order_user_history")
+  @@index([userId, status, createdAt(sort: Desc)], map: "idx_order_user_status")
+  @@index([status, createdAt(sort: Desc)], map: "idx_order_status_date")
+  @@index([paymentStatus, createdAt], map: "idx_order_payment_created")
+  @@index([shippingCode], map: "idx_order_shipping_code")
   @@index([tenantId])
-  @@index([tenantId, status, createdAt]) // For Tenant Admin Dashboard
+  @@index([tenantId, status, createdAt])
 }
-
-// =====================================================================
-// 2. PARTIAL FULFILLMENT & LOGISTICS (GIAO VẬN TÁCH ĐƠN)
-// =====================================================================
 
 model Shipment {
   id           String         @id @default(uuid())
   orderId      String
   status       ShipmentStatus @default(PENDING)
-  carrier      String? // GHN, GHTK, DHL, Grab
+  carrier      String?
   trackingCode String?
   shippedAt    DateTime?
   deliveredAt  DateTime?
-
-  order    Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  tenantId String
-  tenant   Tenant         @relation(fields: [tenantId], references: [id])
-  items    ShipmentItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  tenantId     String
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  order        Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  tenant       Tenant         @relation(fields: [tenantId], references: [id])
+  items        ShipmentItem[]
 
   @@index([orderId])
   @@index([tenantId])
 }
 
-// =====================================================================
-// 3. TAX & COMPLIANCE (THUẾ & PHÁP LÝ)
-// =====================================================================
-
 model TaxRate {
-  id       String  @id @default(uuid())
-  name     String // VAT 10%, VAT 5%
-  rate     Decimal @db.Decimal(5, 2)
-  isActive Boolean @default(true)
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
+  id        String   @id @default(uuid())
+  name      String
+  rate      Decimal  @db.Decimal(5, 2)
+  isActive  Boolean  @default(true)
+  tenantId  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId])
 }
 
 model OrderTaxDetail {
-  id      String  @id @default(uuid())
-  orderId String
-  name    String
-  rate    Decimal @db.Decimal(5, 2)
-  amount  Decimal @db.Decimal(20, 2)
-
+  id       String  @id @default(uuid())
+  orderId  String
+  name     String
+  rate     Decimal @db.Decimal(5, 2)
+  amount   Decimal @db.Decimal(20, 2)
   tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order    Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  tenant   Tenant  @relation(fields: [tenantId], references: [id])
 
   @@index([orderId])
   @@index([tenantId])
 }
-
-// =====================================================================
-// 4. LOYALTY & CUSTOMER CARE (TÍCH ĐIỂM & CHĂM SÓC)
-// =====================================================================
 
 model LoyaltyPoint {
   id        String           @id @default(uuid())
   userId    String
   orderId   String?
-  order     Order? @relation(fields: [orderId], references: [id])
-  amount    Int // Dương: tích điểm, Âm: tiêu điểm
+  amount    Int
   type      LoyaltyPointType @default(EARNED)
   reason    String?
-  expiresAt DateTime? // Ngày hết hạn điểm (thường 1-2 năm)
-
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  createdAt DateTime @default(now())
+  expiresAt DateTime?
+  tenantId  String
+  createdAt DateTime         @default(now())
+  order     Order?           @relation(fields: [orderId], references: [id])
+  tenant    Tenant           @relation(fields: [tenantId], references: [id])
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([tenantId])
-  @@index([expiresAt]) // Index để lọc điểm hết hạn
-}
-
-enum LoyaltyPointType {
-  EARNED
-  REDEEMED
-  REFUNDED
+  @@index([expiresAt])
 }
 
 model ShipmentItem {
-  id          String @id @default(uuid())
+  id          String    @id @default(uuid())
   shipmentId  String
   orderItemId String
   quantity    Int
-
-  shipment  Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
-  orderItem OrderItem @relation(fields: [orderItemId], references: [id])
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+  shipment    Shipment  @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
 
   @@index([shipmentId])
   @@index([orderItemId])
 }
 
-enum ShipmentStatus {
-  PENDING
-  READY_TO_SHIP
-  SHIPPED
-  DELIVERED
-  FAILED
-  RETURNED
-}
-
-// =====================================================================
-// 2. PARTIAL FULFILLMENT & LOGISTICS (GIAO VẬN TÁCH ĐƠN)
-// =====================================================================
-
-// =====================================================================
-// RMA - RETURN MERCHANDISE AUTHORIZATION
-// =====================================================================
-
 model ReturnRequest {
-  id           String       @id @default(uuid())
-  orderId      String
-  userId       String
-  status       ReturnStatus @default(PENDING) // Trạng thái yêu cầu
-  reason       String // Lý do đổi trả
-  description  String? // Mô tả chi tiết
-  refundAmount Decimal?     @db.Decimal(20, 2) // Số tiền hoàn lại dự kiến
-  images       String[] // Danh sách ảnh bằng chứng
-
-  // 1. Classification
-  type ReturnType @default(RETURN_AND_REFUND)
-
-  // 2. Logistics (How the item gets back)
-  returnMethod  ReturnMethod @default(SELF_SHIP)
-  trackingCode  String? // Mã vận đơn user gửi trả
-  carrier       String? // Đơn vị vận chuyển (GHN, GHTK)
-  pickupAddress Json? // Địa chỉ lấy hàng (nếu Shop đến lấy)
-
-  // 3. Finance
-  refundMethod RefundMethod @default(ORIGINAL_PAYMENT)
-  bankAccount  Json? // { bankName, number, owner } if refunding via Bank Transfer
-
-  // 4. Processing
-  inspectionNotes String? // Ghi chú kiểm hàng của Admin
-  rejectedReason  String? // Lý do từ chối (nếu có)
-
-  tenantId String
-  tenant   Tenant       @relation(fields: [tenantId], references: [id])
-  order    Order        @relation(fields: [orderId], references: [id])
-  user     User         @relation(fields: [userId], references: [id])
-  items    ReturnItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              String       @id @default(uuid())
+  orderId         String
+  userId          String
+  status          ReturnStatus @default(PENDING)
+  reason          String
+  description     String?
+  refundAmount    Decimal?     @db.Decimal(20, 2)
+  images          String[]
+  tenantId        String
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  bankAccount     Json?
+  carrier         String?
+  inspectionNotes String?
+  pickupAddress   Json?
+  refundMethod    RefundMethod @default(ORIGINAL_PAYMENT)
+  rejectedReason  String?
+  returnMethod    ReturnMethod @default(SELF_SHIP)
+  trackingCode    String?
+  type            ReturnType   @default(RETURN_AND_REFUND)
+  items           ReturnItem[]
+  order           Order        @relation(fields: [orderId], references: [id])
+  tenant          Tenant       @relation(fields: [tenantId], references: [id])
+  user            User         @relation(fields: [userId], references: [id])
 
   @@index([orderId])
   @@index([userId])
   @@index([tenantId])
-  @@index([status]) // Thêm index trạng thái để lọc nhanh
+  @@index([status])
 }
 
 model ReturnItem {
-  id              String @id @default(uuid())
+  id              String        @id @default(uuid())
   returnRequestId String
   orderItemId     String
   quantity        Int
-
-  returnRequest ReturnRequest @relation(fields: [returnRequestId], references: [id], onDelete: Cascade)
-  orderItem     OrderItem     @relation(fields: [orderItemId], references: [id])
+  orderItem       OrderItem     @relation(fields: [orderItemId], references: [id])
+  returnRequest   ReturnRequest @relation(fields: [returnRequestId], references: [id], onDelete: Cascade)
 
   @@index([returnRequestId])
 }
 
-enum ReturnStatus {
-  PENDING // Chờ duyệt
-  APPROVED // Đã duyệt (Chờ khách gửi)
-  WAITING_FOR_RETURN // Đang đợi hàng về
-  IN_TRANSIT // Đang vận chuyển về
-  RECEIVED // Shop đã nhận
-  INSPECTING // Đang kiểm hàng
-  REFUNDED // Đã hoàn tiền
-  REJECTED // Từ chối
-  CANCELLED // Khách hủy
-}
-
-enum ReturnType {
-  REFUND_ONLY // Hoàn tiền không cần trả hàng
-  RETURN_AND_REFUND // Trả hàng rồi hoàn tiền
-  EXCHANGE // Đổi hàng (Future)
-}
-
-enum ReturnMethod {
-  AT_COUNTER // Mang ra cửa hàng
-  PICKUP // Shipper đến lấy
-  SELF_SHIP // Tự gửi bưu điện
-}
-
-enum RefundMethod {
-  ORIGINAL_PAYMENT // Về thẻ/Ví ban đầu
-  BANK_TRANSFER // Chuyển khoản (cho đơn COD)
-  WALLET // Hoàn về ví tích điểm
-}
-
 model OrderItem {
-  id              String  @id @default(uuid()) // ID dòng chi tiết đơn hàng
-  orderId         String // ID Đơn hàng
-  skuId           String // ID SKU
-  quantity        Int // Số lượng mua
-  priceAtPurchase Decimal @db.Decimal(20, 2) // Giá tại thời điểm mua (quan trọng để không bị đổi khi giá gốc đổi)
+  id              String         @id @default(uuid())
+  orderId         String
+  skuId           String
+  quantity        Int
+  priceAtPurchase Decimal        @db.Decimal(20, 2)
+  imageUrl        String?        // Original URL (may break if deleted)
+  imageSnapshotUrl String?       // [DATA INTEGRITY FIX C4] Permanent snapshot URL
+  productName     String?
+  productSlug     String?
+  skuNameSnapshot String?
+  tenantId        String
+  order           Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  sku             Sku            @relation(fields: [skuId], references: [id])
+  tenant          Tenant         @relation(fields: [tenantId], references: [id])
+  returnItems     ReturnItem[]
+  shipmentItems   ShipmentItem[]
 
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  sku   Sku   @relation(fields: [skuId], references: [id])
-
-  // Denormalized Data for Historial Integrity & Performance
-  productName     String? // Tên sản phẩm lúc mua (Lưu cứng)
-  skuNameSnapshot String? // Tên SKU lúc mua (Lưu cứng)
-  productSlug     String? // Slug lúc mua
-  imageUrl        String? // Ảnh lúc mua
-
-  shipmentItems ShipmentItem[]
-  returnItems   ReturnItem[]
-
-  @@unique([orderId, skuId]) // Một SKU chỉ xuất hiện 1 lần trong đơn
-  @@index([skuId]) // Tham chiếu
+  @@unique([orderId, skuId])
+  @@index([skuId])
   @@index([tenantId])
+  @@index([tenantId, orderId])
+  @@index([tenantId, skuId])
 }
 
 model Review {
-  id         String    @id @default(uuid()) // ID đánh giá
-  userId     String // ID người đánh giá
-  productId  String // ID sản phẩm được đánh giá
-  rating     Int       @db.SmallInt // Số sao (1-5)
-  content    String? // Nội dung đánh giá
-  isApproved Boolean   @default(false) // Trạng thái duyệt (chống spam)
-  createdAt  DateTime  @default(now()) // Ngày đánh giá
-  updatedAt  DateTime  @updatedAt // Ngày cập nhật
-  deletedAt  DateTime? // Xóa mềm
-  skuId      String? // Review cho biến thể nào
-  images     String[] // Ảnh đính kèm
-  reply      String? // Phản hồi của shop
-  replyAt    DateTime? // Thời gian phản hồi
-  product    Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  sku        Sku?      @relation(fields: [skuId], references: [id])
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id         String     @id @default(uuid())
+  userId     String
+  productId  String
+  rating     Int        @db.SmallInt
+  content    String?
+  isApproved Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  skuId      String?
+  images     String[]
+  reply      String?
+  replyAt    DateTime?
+  tenantId   String
+  deletedAt  DateTime?
+  autoTags   String[]
+  sentiment  Sentiment?
+  product    Product    @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku        Sku?       @relation(fields: [skuId], references: [id])
+  tenant     Tenant     @relation(fields: [tenantId], references: [id])
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Multi-tenancy (Đa cửa hàng) - Mỗi review thuộc về một tenant cụ thể
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
-
-  // AI Analysis
-  sentiment Sentiment? // Cảm xúc tích cực/tiêu cực (AI phân tích)
-  autoTags  String[] // Tag tự động (VD: ["shipping_issue", "product_quality", "service"])
-
-  @@unique([userId, productId, skuId]) // Mỗi user chỉ đánh giá 1 lần/SKU
-  @@index([productId, rating]) // Lọc review theo sao
+  @@unique([userId, productId, skuId])
+  @@index([productId, rating])
   @@index([skuId])
   @@index([tenantId])
-  @@index([tenantId, productId, isApproved, createdAt(sort: Desc)]) // Lấy review hiển thị cho khách
+  @@index([tenantId, productId, isApproved, createdAt(sort: Desc)])
   @@index([sentiment])
 }
 
-enum Sentiment {
-  POSITIVE // Tích cực
-  NEGATIVE // Tiêu cực
-  NEUTRAL // Trung tính
-}
-
-// Bảng lưu nhật ký hoạt động (Audit Log)
-// Strategy: Partitioning by Month (Native Postgres)
-// This table should be converted to a partitioned table in migration.
 model AuditLog {
-  id        String   @default(uuid()) // ID định danh log
-  userId    String? // ID người thực hiện hành động (có thể null nếu là system/anonymous)
-  action    String // Tên hành động (VD: "CREATE_PRODUCT", "DELETE_ORDER", "LOGIN")
-  resource  String // Tài nguyên bị tác động (VD: "Product", "Order", "System")
-  payload   Json? // Chi tiết dữ liệu thay đổi (Lưu snapshot dữ liệu cũ/mới để so sánh)
-  ipAddress String? // Địa chỉ IP của người thực hiện
-  userAgent String? // Thông tin trình duyệt/thiết bị của người thực hiện
-  createdAt DateTime @default(now()) // Thời điểm ghi log
+  id        String   @default(uuid())
+  userId    String?
+  action    String
+  resource  String
+  payload   Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
 
-  user User? @relation(fields: [userId], references: [id]) // Link tới bảng User để biết ai làm
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
 
-  // Composite ID is REQUIRED for time-based partitioning in Prisma/Postgres
   @@id([id, createdAt])
   @@index([userId])
   @@index([resource])
   @@index([action])
   @@index([payload], type: Gin)
+  @@index([tenantId])
 }
 
 model ProductTranslation {
-  id          String  @id @default(uuid()) // ID
-  productId   String // ID sản phẩm
-  locale      String // Ngôn ngữ (en, vi...)
-  name        String  @db.VarChar(255) // Tên dịch
-  description String? // Mô tả dịch
+  id          String  @id @default(uuid())
+  productId   String
+  locale      String
+  name        String  @db.VarChar(255)
+  description String?
   product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([productId, locale]) // Mỗi sản phẩm chỉ có 1 bản dịch cho 1 ngôn ngữ
+  @@unique([productId, locale])
   @@index([productId])
   @@index([locale])
 }
 
 model ProductImage {
-  id      String  @id @default(uuid()) // ID ảnh
-  url     String // URL ảnh (Legacy or Direct Link)
-  mediaId String?
-
-  alt          String? // Văn bản thay thế (SEO)
-  displayOrder Int     @default(0) // Thứ tự hiển thị
-  productId    String // ID sản phẩm
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  media   Media?  @relation(fields: [mediaId], references: [id])
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id           String  @id @default(uuid())
+  url          String
+  alt          String?
+  displayOrder Int     @default(0)
+  productId    String
+  mediaId      String?
+  tenantId     String
+  media        Media?  @relation(fields: [mediaId], references: [id])
+  product      Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant       Tenant  @relation(fields: [tenantId], references: [id])
 
   @@index([productId])
   @@index([tenantId])
 }
 
 model SkuImage {
-  id      String  @id @default(uuid()) // ID ảnh biến thể
-  url     String // URL ảnh
-  mediaId String?
-
-  alt          String? // SEO
-  displayOrder Int     @default(0) // Thứ tự
-  skuId        String // ID SKU
-
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id])
-
-  media Media? @relation(fields: [mediaId], references: [id])
-  sku   Sku    @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  id           String  @id @default(uuid())
+  url          String
+  alt          String?
+  displayOrder Int     @default(0)
+  skuId        String
+  mediaId      String?
+  tenantId     String
+  media        Media?  @relation(fields: [mediaId], references: [id])
+  sku          Sku     @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  tenant       Tenant  @relation(fields: [tenantId], references: [id])
 
   @@index([skuId])
   @@index([tenantId])
 }
 
 model Notification {
-  id        String   @id @default(uuid()) // ID thông báo
-  type      String // Loại (ORDER_UPDATE, PROMOTION...)
-  title     String // Tiêu đề
-  message   String // Nội dung
-  isRead    Boolean  @default(false) // Đã đọc chưa
-  link      String? // Link điều hướng khi click
-  createdAt DateTime @default(now()) // Ngày tạo
-  userId    String // Người nhận
+  id        String   @id @default(uuid())
+  type      String
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+  userId    String
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([tenantId])
   @@index([isRead])
+  @@index([tenantId, userId, isRead])
 }
 
 model InventoryLog {
-  id            String   @id @default(uuid()) // ID log kho
-  skuId         String // ID SKU
-  changeAmount  Int // Số lượng thay đổi (+ nhập, - xuất)
-  previousStock Int // Tồn trước khi đổi
-  newStock      Int // Tồn sau khi đổi
-  reason        String // Lý do (Nhập hàng, Bán hàng, Hoàn trả...)
-  userId        String? // Người thực hiện
-  createdAt     DateTime @default(now()) // Ngày ghi
-  sku           Sku      @relation(fields: [skuId], references: [id], onDelete: Cascade)
-  user          User?    @relation(fields: [userId], references: [id])
-
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+  id            String           @id @default(uuid())
+  skuId         String
+  changeAmount  Int
+  previousStock Int
+  newStock      Int
+  actionType    InventoryLogType @default(ADJUSTMENT)
+  reason        String
+  metadata      Json?
+  userId        String?
+  createdAt     DateTime         @default(now())
+  tenantId      String
+  sku           Sku              @relation(fields: [skuId], references: [id], onDelete: Restrict)
+  tenant        Tenant           @relation(fields: [tenantId], references: [id])
+  user          User?            @relation(fields: [userId], references: [id])
 
   @@index([skuId])
   @@index([userId])
   @@index([tenantId])
+  @@index([skuId, createdAt(sort: Desc)])
+  @@index([actionType])
 }
 
 model Wishlist {
-  id        String   @id @default(uuid()) // ID bản ghi yêu thích
-  userId    String // ID User
-  productId String // ID Sản phẩm
-  createdAt DateTime @default(now()) // Ngày like
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+  tenantId  String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
-
-  @@unique([userId, productId]) // User chỉ like 1 lần/sp
+  @@unique([userId, productId])
   @@index([userId])
   @@index([tenantId])
   @@index([tenantId, userId, createdAt(sort: Desc)])
+  @@index([userId, createdAt(sort: Desc)])
 }
 
 model Blog {
-  id        String  @id @default(uuid()) // ID bài viết
-  title     String  @db.VarChar(255) // Tiêu đề
-  slug      String  @db.VarChar(255) // URL thân thiện
-  excerpt   String // Đoạn trích dẫn ngắn
-  content   String // Nội dung bài viết (HTML)
-  image     String? @db.VarChar(500) // Ảnh đại diện bài viết (Legacy)
-  imageId   String?
-  blogMedia Media?  @relation(fields: [imageId], references: [id])
-
-  category       String        @db.VarChar(100) // Danh mục bài viết
-  author         String        @db.VarChar(100) // Tác giả
-  language       String        @default("en") @db.VarChar(5) // Ngôn ngữ
-  readTime       String?       @db.VarChar(20) // Thời gian đọc ước tính
-  publishedAt    DateTime? // Ngày xuất bản
-  createdAt      DateTime      @default(now()) // Ngày tạo
-  updatedAt      DateTime      @updatedAt // Cập nhật
-  deletedAt      DateTime? // Xóa mềm
-  userId         String? // Người viết
+  id             String        @id @default(uuid())
+  title          String        @db.VarChar(255)
+  slug           String        @db.VarChar(255)
+  excerpt        String
+  content        String
+  image          String?       @db.VarChar(500)
+  category       String        @db.VarChar(100)
+  author         String        @db.VarChar(100)
+  language       String        @default("en") @db.VarChar(5)
+  readTime       String?       @db.VarChar(20)
+  publishedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+  userId         String?
+  tenantId       String
+  imageId        String?
+  blogMedia      Media?        @relation(fields: [imageId], references: [id])
+  tenant         Tenant        @relation(fields: [tenantId], references: [id])
   user           User?         @relation(fields: [userId], references: [id])
-  products       BlogProduct[] // Các sản phẩm được nhắc đến
-  referredOrders Order[]       @relation("BlogReferrals") // Các đơn hàng được giới thiệu từ bài viết này
-
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+  products       BlogProduct[]
+  referredOrders Order[]       @relation("BlogReferrals")
 
   @@unique([tenantId, slug])
   @@index([slug])
@@ -1186,58 +951,60 @@ model BlogProduct {
 }
 
 model FeatureFlag {
-  id          String   @id @default(uuid()) // ID cờ tính năng
-  key         String   @unique // Khóa định danh (VD: NEW_CHECKOUT_FLOW)
-  description String? // Mô tả
-  isEnabled   Boolean  @default(false) // Bật/Tắt
-  rules       Json? // Quy tắc áp dụng (VD: chỉ bật cho user beta)
+  id          String   @id @default(uuid())
+  key         String   @unique
+  description String?
+  isEnabled   Boolean  @default(false)
+  rules       Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
 
   @@index([key])
   @@index([tenantId])
 }
 
-enum OrderStatus {
-  PENDING // Chờ xử lý
-  PROCESSING // Đang xử lý
-  SHIPPED // Đang giao hàng
-  DELIVERED // Đã giao hàng
-  CANCELLED // Đã hủy
-  RETURNED // Đã trả hàng
-  COMPLETED // Hoàn thành (Sau khi đã giao và hết hạn đổi trả)
-}
+// =====================================================================
+// WEBHOOK EVENT TRACKING - Idempotency & Replay Protection
+// =====================================================================
+model WebhookEvent {
+  id             String   @id @default(uuid())
+  webhookId      String   @unique // Payment gateway's transaction/request ID
+  orderId        String
+  provider       String   // "VNPAY" | "MOMO" | "STRIPE"
+  payloadHash    String?  // SHA256 hash of payload for duplicate detection
+  status         String   // "PROCESSED" | "FAILED" | "IGNORED"
+  responseCode   String?  // Payment gateway response code
+  processedAt    DateTime @default(now())
+  attemptCount   Int      @default(1)
+  lastAttemptAt  DateTime @default(now())
+  tenantId       String
+  
+  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id])
 
-enum PaymentStatus {
-  UNPAID // Chưa thanh toán
-  PENDING // Đang chờ thanh toán
-  PAID // Đã thanh toán
-  FAILED // Thanh toán thất bại
-  REFUNDED // Đã hoàn tiền
+  @@index([webhookId, orderId])
+  @@index([orderId, provider])
+  @@index([tenantId, processedAt(sort: Desc)])
+  @@index([payloadHash])
 }
 
 model Payment {
-  id                    String        @id @default(uuid()) // ID bản ghi thanh toán
-  orderId               String // ID Đơn hàng
-  amount                Decimal       @db.Decimal(20, 2) // Số tiền thanh toán
-  currency              String        @default("VND") // Đơn vị tiền tệ
-  status                PaymentStatus @default(PENDING) // Trạng thái
-  paymentMethod         String // Phương thức (MOMO, VNPAY, STRIPE, COD)
-  providerTransactionId String? // ID từ phía cổng thanh toán (VD: Mã giao dịch Momo)
-  metadata              Json? // Lưu log response từ Gateway (để debug)
-  paidAt                DateTime? // Thời điểm thanh toán thành công
+  id                    String        @id @default(uuid())
+  orderId               String
+  amount                Decimal       @db.Decimal(20, 2)
+  currency              String        @default("VND")
+  status                PaymentStatus @default(PENDING)
+  paymentMethod         String
+  providerTransactionId String?
+  metadata              Json?
+  paidAt                DateTime?
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
-
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+  tenantId              String
+  order                 Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  tenant                Tenant        @relation(fields: [tenantId], references: [id])
 
   @@index([orderId])
   @@index([status])
@@ -1245,15 +1012,13 @@ model Payment {
 }
 
 model NewsletterSubscriber {
-  id        String   @id @default(uuid()) // ID người đăng ký
-  email     String // Email
-  isActive  Boolean  @default(true) // Còn đăng ký không
+  id        String   @id @default(uuid())
+  email     String
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  // Multi-tenancy
-  tenantId String // ID Tenant
-  tenant   Tenant? @relation(fields: [tenantId], references: [id])
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
 
   @@unique([tenantId, email])
   @@index([email])
@@ -1261,75 +1026,61 @@ model NewsletterSubscriber {
 }
 
 model ChatConversation {
-  id        String        @id @default(uuid()) // ID hội thoại
-  userId    String // ID khách hàng
-  isActive  Boolean       @default(true) // Đang hoạt động
+  id        String        @id @default(uuid())
+  userId    String        @unique
+  isActive  Boolean       @default(true)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
   user      User          @relation(fields: [userId], references: [id])
-  messages  ChatMessage[] // Các tin nhắn
+  messages  ChatMessage[]
 
-  @@unique([userId])
   @@index([userId])
   @@index([updatedAt])
 }
 
 model ChatMessage {
-  id             String           @id @default(uuid()) // ID tin nhắn
-  conversationId String // ID hội thoại
-  senderId       String // ID người gửi
-  senderType     SenderType       @default(USER) // Loại người gửi (Admin/User)
-  content        String // Nội dung tin nhắn
-  type           MessageType      @default(TEXT) // Loại tin (Text, Ảnh, Sản phẩm)
-  metadata       Json? // Dữ liệu đính kèm
-  isRead         Boolean          @default(false) // Đã đọc chưa
-  sentAt         DateTime         @default(now()) // Thời gian gửi
+  id             String           @id @default(uuid())
+  conversationId String
+  senderId       String
+  senderType     SenderType       @default(USER)
+  content        String
+  isRead         Boolean          @default(false)
+  sentAt         DateTime         @default(now())
+  metadata       Json?
+  type           MessageType      @default(TEXT)
   conversation   ChatConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
   @@index([conversationId])
   @@index([sentAt])
 }
 
-enum SenderType {
-  USER // Khách hàng
-  ADMIN // Quản trị viên
-}
-
-enum MessageType {
-  TEXT // Văn bản
-  IMAGE // Hình ảnh
-  PRODUCT // Gửi sản phẩm tư vấn
-  ORDER // Gửi thông tin đơn hàng
-}
-
 model PerformanceMetric {
   id             String   @default(uuid())
-  name           String // Tên chỉ số (LCP, FID, CLS, FCP, TTFB, INP)
-  value          Float // Giá trị đo được
-  rating         String // Xếp hạng (good, needs-improvement, poor)
-  url            String // URL trang web đo
-  userAgent      String? // Trình duyệt của user
-  navigationType String? // Kiểu điều hướng (navigate, reload...)
+  name           String
+  value          Float
+  rating         String
+  url            String
+  userAgent      String?
+  navigationType String?
   createdAt      DateTime @default(now())
+
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
 
   @@id([id, createdAt])
   @@index([name])
   @@index([createdAt])
+  @@index([tenantId])
 }
 
-// =====================================================================
-// AI CHAT - Tính năng chat với AI sử dụng Google Gemini
-// =====================================================================
-
 model AiChatSession {
-  id        String          @id @default(uuid()) // ID phiên chat
-  userId    String? // ID User (nếu đã đăng nhập)
-  guestId   String? // UUID lưu local storage (nếu là khách)
+  id        String          @id @default(uuid())
+  userId    String?
+  guestId   String?
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
-  messages  AiChatMessage[] // Danh sách tin nhắn
-
-  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages  AiChatMessage[]
+  user      User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([guestId])
@@ -1337,214 +1088,157 @@ model AiChatSession {
 }
 
 model AiChatMessage {
-  id        String     @id @default(uuid()) // ID tin nhắn
-  sessionId String // ID phiên chat
-  role      AiChatRole // Vai trò (Người dùng / Trợ lý ảo)
-  content   String     @db.Text // Nội dung chat (có thể dài)
-  metadata  Json? // Metadata (sản phẩm gợi ý, tokens...)
-  createdAt DateTime   @default(now())
-
-  session AiChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  id        String        @id @default(uuid())
+  sessionId String
+  role      AiChatRole
+  content   String
+  metadata  Json?
+  createdAt DateTime      @default(now())
+  session   AiChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@index([sessionId])
   @@index([createdAt])
 }
 
-enum AiChatRole {
-  USER // Người dùng
-  ASSISTANT // Trợ lý ảo
-}
-
-// =====================================================================
-// RELIABILITY - Transactional Outbox Pattern
-// =====================================================================
-
 model OutboxEvent {
   id            String       @id @default(uuid())
-  aggregateType String // Loại đối tượng (VD: "ORDER")
-  aggregateId   String // ID đối tượng (VD: Order ID)
-  type          String // Loại sự kiện (VD: "ORDER_CREATED")
-  payload       Json // Dữ liệu sự kiện
+  aggregateType String
+  aggregateId   String
+  type          String
+  payload       Json
   createdAt     DateTime     @default(now())
-  processedAt   DateTime? // Thời gian xử lý xong
-  status        OutboxStatus @default(PENDING) // Trạng thái
-  error         String? // Lỗi nếu có
+  processedAt   DateTime?
+  status        OutboxStatus @default(PENDING)
+  error         String?
+
+  tenantId      String
 
   @@index([status, createdAt])
+  @@index([tenantId])
 }
-
-enum OutboxStatus {
-  PENDING // Chưa xử lý
-  PROCESSING // Đang xử lý
-  COMPLETED // Đã xong
-  FAILED // Thất bại
-}
-
-// =====================================================================
-// MULTI-TENANCY
-// =====================================================================
 
 model Tenant {
-  id      String  @id @default(uuid()) // ID định danh Tenant (Cửa hàng)
-  name    String // Tên cửa hàng
-  ownerId String?
-  owner   User?   @relation("TenantOwner", fields: [ownerId], references: [id])
-
-  // Domain Management
-  subdomain    String? @unique // Subdomain hệ thống (shop-a.platform.com)
-  customDomain String? @unique // Tên miền riêng (mycustomstore.com)
-  domain       String  @unique // Domain chính (để định tuyến)
-
-  // Settings & Localization
-  currency String @default("VND") // Đơn vị tiền tệ chính
-  timezone String @default("Asia/Ho_Chi_Minh") // Múi giờ mặc định
-  locale   String @default("vi-VN") // Ngôn ngữ/Vùng mặc định
-
-  // Branding & Assets
-  themeConfig Json? // Cấu hình giao diện (Màu sắc, Font...)
-  logoUrl     String? // Logo
-  faviconUrl  String? // Favicon
-
-  // Business Information
-  contactEmail String? // Email liên hệ
-  contactPhone String? // SĐT liên hệ
-  address      String? // Địa chỉ kinh doanh
-
-  // Lifecycle & Status
-  plan             TenantPlan @default(BASIC) // Gói dịch vụ
-  isActive         Boolean    @default(true) // Trạng thái hoạt động
-  suspendedAt      DateTime? // Thời điểm bị treo
-  suspensionReason String? // Lý do treo (nợ cước, vi phạm...)
-  deletedAt        DateTime? // Thời điểm xóa mềm (Soft delete). Chỉ SuperAdmin mới có quyền xóa cứng.
-  settings         TenantSettings?
-
-  // Infrastructure
-  dbUrl String? // URL Database riêng (Chế độ Silo)
-
-  // ===================== SAAS ONBOARDING =====================
-  // Onboarding Status
-  onboardingCompleted Boolean @default(false) // Đã hoàn thành setup?
-  onboardingStep      Int     @default(0) // Bước hiện tại trong wizard (0-4)
-
-  // Trial Period
-  trialEndsAt DateTime? // Ngày kết thúc trial (14 ngày sau đăng ký)
-  trialStartedAt DateTime? // Ngày bắt đầu trial
-
-  // ===================== PLAN LIMITS =====================
-  // Limits from SubscriptionPlan (cached for quick access)
-  productLimit Int @default(100) // Giới hạn số sản phẩm
-  storageLimit Int @default(1024) // Giới hạn dung lượng (MB)
-  staffLimit   Int @default(2) // Giới hạn số nhân viên
-
-  // ===================== USAGE STATS =====================
-  currentProductCount Int @default(0) // Số sản phẩm hiện tại
-  currentStorageUsed  Int @default(0) // Dung lượng đã dùng (MB)
-  currentStaffCount   Int @default(0) // Số nhân viên hiện tại
-
-  // ===================== ADDITIONAL INFO =====================
-  businessType     String? // Loại hình kinh doanh: fashion, electronics, food...
-  businessSize     String? // Quy mô: small, medium, large
-  monthlyRevenue   String? // Doanh thu hàng tháng (dự kiến)
-  referralCode     String? @unique // Mã giới thiệu của tenant này
-  referredByCode   String? // Mã giới thiệu của người đã mời
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  users                 User[]
-  products              Product[]
-  orders                Order[]
-  blogs                 Blog[]
-  reviews               Review[]
-  carts                 Cart[]
-  wishlists             Wishlist[]
+  id                    String                 @id @default(uuid())
+  name                  String
+  domain                String                 @unique
+  themeConfig           Json?
+  plan                  TenantPlan             @default(BASIC)
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  address               String?
+  contactEmail          String?
+  contactPhone          String?
+  currency              String                 @default("VND")
+  customDomain          String?                @unique
+  faviconUrl            String?
+  isActive              Boolean                @default(true)
+  locale                String                 @default("vi-VN")
+  logoUrl               String?
+  subdomain             String?                @unique
+  suspendedAt           DateTime?
+  suspensionReason      String?
+  timezone              String                 @default("Asia/Ho_Chi_Minh")
+  dbUrl                 String?
+  ownerId               String?
+  deletedAt             DateTime?
+  businessSize          String?
+  businessType          String?
+  currentProductCount   Int                    @default(0)
+  currentStaffCount     Int                    @default(0)
+  currentStorageUsed    Int                    @default(0)
+  monthlyRevenue        String?
+  onboardingCompleted   Boolean                @default(false)
+  onboardingStep        Int                    @default(0)
+  productLimit          Int                    @default(100)
+  referralCode          String?                @unique
+  referredByCode        String?
+  staffLimit            Int                    @default(2)
+  storageLimit          Int                    @default(1024)
+  trialEndsAt           DateTime?
+  trialStartedAt        DateTime?
+  allowSocialRegistration Boolean @default(true)
   addresses             Address[]
-  inventoryLogs         InventoryLog[]
-  featureFlags          FeatureFlag[]
-  pages                 Page[]
-  translations          Translation[]
-  categories            Category[]
+  auditLogs             AuditLog[]
+  blogs                 Blog[]
   brands                Brand[]
-  payments              Payment[]
-  skus                  Sku[]
-  roles                 Role[]
+  carts                 Cart[]
+  cartItems             CartItem[]
+  categories            Category[]
+  commissionTransactions CommissionTransaction[]
+  customerGroups        CustomerGroup[]
+  featureFlags          FeatureFlag[]
+  inventoryItems        InventoryItem[]
+  inventoryLogs         InventoryLog[]
+  invoices              Invoice[]
+  loyaltyPoints         LoyaltyPoint[]
+  media                 Media[]
   newsletterSubscribers NewsletterSubscriber[]
+  notifications         Notification[]
+  optionValues          OptionValue[]
+  orders                Order[]
+  orderItems            OrderItem[]
+  orderTaxDetails       OrderTaxDetail[]
+  pages                 Page[]
+  payments              Payment[]
+  performanceMetrics    PerformanceMetric[]
+  priceLists            PriceList[]
+  priceListItems        PriceListItem[]
+  products              Product[]
+  productImages         ProductImage[]
+  productOptions        ProductOption[]
+  productToCategories   ProductToCategory[]
+  promotions            Promotion[]
+  promotionActions      PromotionAction[]
+  promotionRules        PromotionRule[]
+  promotionUsages       PromotionUsage[]
+  purchaseOrders        PurchaseOrder[]
+  returnRequests        ReturnRequest[]
+  reviews               Review[]
+  roles                 Role[]
+  shipments             Shipment[]
+  skus                  Sku[]
+  skuImages             SkuImage[]
+  skuToOptionValues     SkuToOptionValue[]
+  metrics               StoreMetrics[]
+  subscription          Subscription?
+  suppliers             Supplier[]
+  taxRates              TaxRate[]
+  owner                 User?                  @relation("TenantOwner", fields: [ownerId], references: [id])
+  settings              TenantSettings?
+  translations          Translation[]
+  users                 User[]
+  warehouses            Warehouse[]
+  webhookEvents         WebhookEvent[]
+  wishlists             Wishlist[]
 
-  // Core features
-  warehouses     Warehouse[]
-  promotions     Promotion[]
-  customerGroups CustomerGroup[]
-  returnRequests ReturnRequest[]
-  priceLists     PriceList[]
-  media          Media[]
-
-  // Step 1: Procurement
-  suppliers      Supplier[]
-  purchaseOrders PurchaseOrder[]
-
-  // Step 2: Fulfillment
-  shipments Shipment[]
-
-  // Step 3: Tax
-  taxRates TaxRate[]
-
-  // Step 4: Loyalty
-  loyaltyPoints LoyaltyPoint[]
-
-  // Analytics
-  metrics StoreMetrics[]
-
-  // Billing
-  subscription        Subscription?
-  invoices            Invoice[]
-  priceListItems      PriceListItem[]
-  productToCategories ProductToCategory[]
-  productOptions      ProductOption[]
-  optionValues        OptionValue[]
-  inventoryItems      InventoryItem[]
-  skuToOptionValues   SkuToOptionValue[]
-  cartItems           CartItem[]
-  promotionRules      PromotionRule[]
-  promotionActions    PromotionAction[]
-  promotionUsages     PromotionUsage[]
-  orderTaxDetails     OrderTaxDetail[]
-  orderItems          OrderItem[]
-  productImages       ProductImage[]
-  skuImages           SkuImage[]
-
-  @@index([deletedAt]) // Index giúp lọc nhanh các tenant chưa bị xóa
+  @@index([deletedAt])
 }
 
 model TenantSettings {
-  id        String   @id @default(uuid())
-  tenantId  String   @unique
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  // Loyalty Points Configuration
-  loyaltyPointRatio  Decimal @default(1000) // 1 pt per X amount
-  isLoyaltyEnabled   Boolean @default(true)
-
-  // Shipping Configuration
-  defaultShippingFee    Decimal @default(30000)
-  freeShippingThreshold Decimal? // Threshold for free shipping
-
-  updatedAt DateTime @updatedAt
+  id                    String   @id @default(uuid())
+  tenantId              String   @unique
+  loyaltyPointRatio     Decimal  @default(1000)
+  isLoyaltyEnabled      Boolean  @default(true)
+  defaultShippingFee    Decimal  @default(30000)
+  freeShippingThreshold Decimal?
+  lowStockThreshold     Int      @default(5)
+  updatedAt             DateTime @updatedAt
+  tenant                Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
 
 model Supplier {
-  id        String    @id @default(uuid())
-  name      String
-  email     String?
-  phone     String?
-  address   String?
-  notes     String?
-  tenantId  String
-  tenant    Tenant    @relation(fields: [tenantId], references: [id])
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
+  id             String          @id @default(uuid())
+  name           String
+  email          String?
+  phone          String?
+  address        String?
+  notes          String?
+  tenantId       String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
   purchaseOrders PurchaseOrder[]
+  tenant         Tenant          @relation(fields: [tenantId], references: [id])
 
   @@index([tenantId])
 }
@@ -1558,27 +1252,250 @@ model PurchaseOrder {
   totalAmount Decimal             @default(0) @db.Decimal(20, 2)
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
-
-  supplier Supplier            @relation(fields: [supplierId], references: [id])
-  tenant   Tenant              @relation(fields: [tenantId], references: [id])
-  items    PurchaseOrderItem[]
+  supplier    Supplier            @relation(fields: [supplierId], references: [id])
+  tenant      Tenant              @relation(fields: [tenantId], references: [id])
+  items       PurchaseOrderItem[]
 
   @@index([supplierId])
   @@index([tenantId])
 }
 
 model PurchaseOrderItem {
-  id              String  @id @default(uuid())
+  id              String        @id @default(uuid())
   purchaseOrderId String
   skuId           String
   quantity        Int
-  costPrice       Decimal @db.Decimal(20, 2)
-
-  purchaseOrder PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
-  sku           Sku           @relation(fields: [skuId], references: [id])
+  costPrice       Decimal       @db.Decimal(20, 2)
+  purchaseOrder   PurchaseOrder @relation(fields: [purchaseOrderId], references: [id], onDelete: Cascade)
+  sku             Sku           @relation(fields: [skuId], references: [id])
 
   @@index([purchaseOrderId])
   @@index([skuId])
+}
+
+model StoreMetrics {
+  id             String   @id @default(uuid())
+  tenantId       String
+  date           DateTime @default(now())
+  totalOrders    Int      @default(0)
+  totalRevenue   Decimal  @default(0) @db.Decimal(20, 2)
+  totalVisits    Int      @default(0)
+  conversionRate Float    @default(0)
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, date])
+  @@index([tenantId])
+}
+
+model Translation {
+  id        String   @id @default(uuid())
+  tenantId  String
+  locale    String
+  key       String
+  value     String
+  updatedAt DateTime @updatedAt
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, locale, key])
+  @@index([tenantId, locale])
+}
+
+model Page {
+  id          String    @id @default(uuid())
+  tenantId    String
+  slug        String
+  title       String
+  isPublished Boolean   @default(true)
+  blocks      Json      @default("[]")
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+  tenant      Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
+}
+
+model Subscription {
+  id                String            @id @default(uuid())
+  tenantId          String            @unique
+  plan              TenantPlan
+  billingFrequency  BillingFrequency  @default(MONTHLY)
+  startDate         DateTime          @default(now())
+  nextBillingDate   DateTime
+  isActive          Boolean           @default(true)
+  cancelAtPeriodEnd Boolean           @default(false)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  planId            String?
+  invoices          Invoice[]
+  subscriptionPlan  SubscriptionPlan? @relation(fields: [planId], references: [id])
+  tenant            Tenant            @relation(fields: [tenantId], references: [id])
+}
+
+model Invoice {
+  id             String        @id @default(uuid())
+  tenantId       String
+  subscriptionId String?
+  amount         Decimal       @db.Decimal(10, 2)
+  currency       String        @default("VND")
+  status         InvoiceStatus @default(PENDING)
+  description    String?
+  paidAt         DateTime?
+  dueDate        DateTime
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  tenant         Tenant        @relation(fields: [tenantId], references: [id])
+
+  @@index([tenantId])
+  @@index([status])
+}
+
+model SubscriptionPlan {
+  id             String         @id @default(uuid())
+  name           String
+  slug           String         @unique
+  description    String?
+  priceMonthly   Decimal        @default(0) @db.Decimal(10, 2)
+  priceYearly    Decimal        @default(0) @db.Decimal(10, 2)
+  currency       String         @default("VND")
+  maxProducts    Int            @default(100)
+  maxStorage     Int            @default(1024)
+  transactionFee Decimal        @default(0.0) @db.Decimal(5, 2)
+  features       Json?          @default("[]")
+  isActive       Boolean        @default(true)
+  isPublic       Boolean        @default(true)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  badge          String?
+  isPopular      Boolean        @default(false)
+  maxStaff       Int            @default(2)
+  maxWarehouses  Int            @default(1)
+  sortOrder      Int            @default(0)
+  trialDays      Int            @default(14)
+  subscriptions  Subscription[]
+}
+
+model PlatformSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       Json
+  description String?
+  type        String   @default("string")
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CommissionTransaction {
+  id        String           @id @default(uuid())
+  userId    String
+  orderId   String?
+  amount    Decimal          @db.Decimal(20, 2)
+  type      CommissionType
+  status    CommissionStatus @default(COMPLETED)
+  note      String?
+  createdAt DateTime         @default(now())
+  tenantId  String
+  order     Order?           @relation(fields: [orderId], references: [id])
+  tenant    Tenant           @relation(fields: [tenantId], references: [id])
+  user      User             @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+}
+
+enum LoyaltyPointType {
+  EARNED
+  REDEEMED
+  REFUNDED
+}
+
+enum ShipmentStatus {
+  PENDING
+  READY_TO_SHIP
+  SHIPPED
+  DELIVERED
+  FAILED
+  RETURNED
+}
+
+enum ReturnStatus {
+  PENDING
+  APPROVED
+  RECEIVED
+  REFUNDED
+  REJECTED
+  CANCELLED
+  WAITING_FOR_RETURN
+  IN_TRANSIT
+  INSPECTING
+}
+
+enum ReturnType {
+  REFUND_ONLY
+  RETURN_AND_REFUND
+  EXCHANGE
+}
+
+enum ReturnMethod {
+  AT_COUNTER
+  PICKUP
+  SELF_SHIP
+}
+
+enum RefundMethod {
+  ORIGINAL_PAYMENT
+  BANK_TRANSFER
+  WALLET
+}
+
+enum Sentiment {
+  POSITIVE
+  NEGATIVE
+  NEUTRAL
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURNED
+  COMPLETED
+}
+
+enum PaymentStatus {
+  UNPAID
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum SenderType {
+  USER
+  ADMIN
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  PRODUCT
+  ORDER
+}
+
+enum AiChatRole {
+  USER
+  ASSISTANT
+}
+
+enum OutboxStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
 }
 
 enum PurchaseOrderStatus {
@@ -1588,201 +1505,44 @@ enum PurchaseOrderStatus {
   CANCELLED
 }
 
-model StoreMetrics {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-
-  date           DateTime @default(now()) // Ngày thống kê
-  totalOrders    Int      @default(0) // Tổng số đơn hàng
-  totalRevenue   Decimal  @default(0) @db.Decimal(20, 2) // Tổng doanh thu (sau chiết khấu)
-  totalVisits    Int      @default(0) // Tổng lượt truy cập
-  conversionRate Float    @default(0) // Tỷ lệ chuyển đổi (%)
-
-  @@unique([tenantId, date])
-  @@index([tenantId])
-}
-
-model Translation {
-  id       String @id @default(uuid())
-  tenantId String
-  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  locale   String // Ngôn ngữ (en, vi)
-  key      String // Khóa dịch (VD: home.welcome)
-  value    String // Giá trị dịch (VD: "Chào mừng bạn")
-
-  updatedAt DateTime @updatedAt
-
-  @@unique([tenantId, locale, key])
-  @@index([tenantId, locale])
-}
-
 enum TenantPlan {
-  BASIC // Cơ bản
-  PRO // Chuyên nghiệp
-  ENTERPRISE // Doanh nghiệp lớn
-}
-
-model Page {
-  id          String  @id @default(uuid()) // ID trang
-  tenantId    String // ID Tenant
-  tenant      Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  slug        String // URL (/, /about-us)
-  title       String // Tiêu đề trang
-  isPublished Boolean @default(true) // Trạng thái xuất bản
-
-  // The magic: JSON-based Block Structure
-  // [ { "type": "Hero", "props": { ... } }, { "type": "ProductGrid", "props": { ... } } ]
-  blocks Json @default("[]") // Cấu trúc nội dung dạng khối (CMS)
-
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  deletedAt DateTime?
-
-  @@unique([tenantId, slug]) // Slug duy nhất trong Tenant
-  @@index([tenantId])
-}
-
-// =====================================================================
-// BILLING & SUBSCRIPTIONS
-// =====================================================================
-
-model Subscription {
-  id       String     @id @default(uuid())
-  tenantId String     @unique // 1 Tenant chỉ có 1 Subscription active
-  plan     TenantPlan // Gói hiện tại
-
-  planId           String?
-  subscriptionPlan SubscriptionPlan? @relation(fields: [planId], references: [id])
-
-  billingFrequency  BillingFrequency @default(MONTHLY) // Chu kỳ thanh toán (Tháng/Năm)
-  startDate         DateTime         @default(now()) // Ngày bắt đầu gói
-  nextBillingDate   DateTime // Ngày thanh toán tiếp theo
-  isActive          Boolean          @default(true) // Trạng thái gói (Đang hoạt động?)
-  cancelAtPeriodEnd Boolean          @default(false) // Hủy gia hạn khi hết kỳ
-
-  tenant   Tenant    @relation(fields: [tenantId], references: [id])
-  invoices Invoice[] // Lịch sử hóa đơn
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Invoice {
-  id             String        @id @default(uuid()) // ID hóa đơn
-  tenantId       String
-  subscriptionId String?
-  amount         Decimal       @db.Decimal(10, 2) // Số tiền thanh toán
-  currency       String        @default("VND") // Đơn vị tiền tệ
-  status         InvoiceStatus @default(PENDING) // Trạng thái hóa đơn
-  description    String? // Mô tả chi tiết
-  paidAt         DateTime? // Thời điểm thanh toán thành công
-  dueDate        DateTime // Hạn chót thanh toán
-
-  tenant       Tenant        @relation(fields: [tenantId], references: [id])
-  subscription Subscription? @relation(fields: [subscriptionId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([tenantId])
-  @@index([status])
+  BASIC
+  PRO
+  ENTERPRISE
 }
 
 enum BillingFrequency {
-  MONTHLY // Hàng tháng
-  YEARLY // Hàng năm
+  MONTHLY
+  YEARLY
 }
 
 enum InvoiceStatus {
-  PENDING // Đang chờ thanh toán
-  PAID // Đã thanh toán thành công
-  OVERDUE // Quá hạn thanh toán
-  CANCELLED // Đã hủy bỏ
-  VOID // Vô hiệu hóa
-}
-
-model SubscriptionPlan {
-  id          String  @id @default(uuid()) // ID gói
-  name        String // Tên gói (Basic, Pro, Enterprise)
-  slug        String  @unique // Slug định danh
-  description String? // Mô tả ngắn
-
-  // Pricing
-  priceMonthly Decimal @default(0) @db.Decimal(10, 2) // Giá tháng
-  priceYearly  Decimal @default(0) @db.Decimal(10, 2) // Giá năm
-  currency     String  @default("VND") // Đơn vị tiền
-
-  // Limits
-  maxProducts    Int     @default(100) // Giới hạn số lượng sản phẩm
-  maxStorage     Int     @default(1024) // Giới hạn dung lượng lưu trữ (MB)
-  maxStaff       Int     @default(2) // Giới hạn số nhân viên
-  maxWarehouses  Int     @default(1) // Giới hạn số kho
-  transactionFee Decimal @default(0.0) @db.Decimal(5, 2) // Phí giao dịch sàn (%)
-
-  // Features (JSON array of feature strings)
-  features Json? @default("[]") // ["Custom Domain", "AI Chatbot", "B2B Price Lists"]
-
-  // Display Settings
-  sortOrder    Int     @default(0) // Thứ tự hiển thị trên pricing page
-  badge        String? // Badge text: "Phổ biến nhất", "Tiết kiệm 20%"
-  isPopular    Boolean @default(false) // Highlight gói này
-  isActive     Boolean @default(true) // Trạng thái đang bán
-  isPublic     Boolean @default(true) // Hiển thị công khai trên bảng giá
-  trialDays    Int     @default(14) // Số ngày trial cho gói này
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  subscriptions Subscription[]
-}
-
-// =====================================================================
-// PLATFORM SETTINGS (Cấu hình toàn bộ platform - Super Admin only)
-// =====================================================================
-
-model PlatformSetting {
-  id    String @id @default(uuid())
-  key   String @unique // VD: "platform.name", "platform.commission_rate"
-  value Json // Giá trị dạng JSON để linh hoạt
-
-  description String? // Mô tả setting
-  type        String  @default("string") // string, number, boolean, json
-  isPublic    Boolean @default(false) // Có public qua API không
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// =====================================================================
-// COMMISSION & AFFILIATE (HOA HỒNG & TIẾP THỊ LIÊN KẾT)
-// =====================================================================
-
-model CommissionTransaction {
-  id        String           @id @default(uuid()) // ID giao dịch hoa hồng
-  userId    String // ID người nhận hoa hồng (Cộng tác viên/Content Creator)
-  orderId   String? // ID đơn hàng liên quan nếu hoa hồng từ việc bán hàng
-  amount    Decimal          @db.Decimal(20, 2) // Số tiền hoa hồng
-  type      CommissionType // Loại hoa hồng (Trực tiếp, Cấp 2, Rút tiền...)
-  status    CommissionStatus @default(COMPLETED) // Trạng thái giao dịch
-  note      String? // Ghi chú thêm
-  createdAt DateTime         @default(now()) // Ngày tạo giao dịch
-
-  user  User   @relation(fields: [userId], references: [id])
-  order Order? @relation(fields: [orderId], references: [id])
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+  VOID
 }
 
 enum CommissionType {
-  DIRECT_REFERRAL // Hoa hồng trực tiếp từ blog/link giới thiệu
-  SUBSCRIPTION_FEE // Phí sàn thu từ gói thuê của tenant
-  TIER_2_REFERRAL // Hoa hồng từ cấp dưới (Affiliate nhiều cấp)
-  WITHDRAWAL // Giao dịch rút tiền từ số dư hoa hồng
+  DIRECT_REFERRAL
+  SUBSCRIPTION_FEE
+  TIER_2_REFERRAL
+  WITHDRAWAL
 }
 
 enum CommissionStatus {
-  PENDING // Đang chờ xử lý
-  COMPLETED // Đã hoàn thành
-  CANCELLED // Đã hủy (do user refund)
+  PENDING
+  COMPLETED
+  CANCELLED
 }
 
-
+enum InventoryLogType {
+  ADJUSTMENT
+  SALE
+  TRANSFER_IN
+  TRANSFER_OUT
+  RETURN
+  PURCHASE
+  STOCKTAKE
+}

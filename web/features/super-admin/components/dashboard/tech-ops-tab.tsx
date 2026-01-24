@@ -1,22 +1,4 @@
-/**
- * =====================================================================
- * TECHOPS TAB - Giám sát Kỹ thuật (DevOps Dashboard)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SYSTEM MONITORING:
- * - Màn hình này dành cho đội kỹ thuật (Dev/Ops).
- * - Theo dõi sức khỏe hệ thống: API, Database, Worker Nodes, Storage S3.
- *
- * 2. JOB QUEUES (BullMQ):
- * - Hiển thị trạng thái các hàng đợi xử lý ngầm (Gửi mail, Resize ảnh...).
- *
- * 3. LUXURY UI (NEW):
- * - Sử dụng AdminStatsCard và Glassmorphism để đồng bộ với toàn bộ hệ thống.
- *
- * =====================================================================
- */ 
+ 
 "use client";
 
 import {

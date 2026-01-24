@@ -2,25 +2,7 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * CARD COMPONENT - Thẻ chứa nội dung
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPOSITION PATTERN:
- * - Card được chia thành nhiều sub-components: Header, Title, Content, Footer.
- * - Giúp linh hoạt trong việc sắp xếp nội dung mà không cần prop phức tạp.
- *
- * 2. STYLING (Tailwind):
- * - `bg-card text-card-foreground`: Sử dụng CSS Variables để hỗ trợ Dark Mode tự động.
- * - `shadow-sm`: Đổ bóng nhẹ tạo độ nổi. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (

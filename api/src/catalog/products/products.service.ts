@@ -3,40 +3,6 @@
  * PRODUCTS SERVICE - QUẢN LÝ SẢN PHẨM CHO E-COMMERCE
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Đây là SERVICE QUAN TRỌNG NHẤT của hệ thống E-commerce, quản lý toàn bộ
- * logic liên quan đến sản phẩm.
- *
- * 1. KIẾN TRÚC PRODUCT - SKU:
- *    - Product: Thông tin chung (Tên, Mô tả, Category, Brand)
- *    - SKU (Stock Keeping Unit): Biến thể cụ thể (Màu đỏ - Size M) có giá, tồn kho riêng
- *    - Options: Các tùy chọn (Color, Size) -> Values: Giá trị cụ thể (Red, Blue, S, M, L)
- *
- * 2. CACHING STRATEGY (Multi-layer):
- *    - L1: In-memory cache (cache-manager) - 1 phút cho listing
- *    - L2: Redis - 5 phút cho product detail
- *    - Invalidation: Khi update -> xóa cache + pre-warm (không chờ request mới)
- *
- * 3. PERFORMANCE OPTIMIZATIONS:
- *    - Cached columns: minPrice, maxPrice, avgRating được tính sẵn ở Product
- *      -> Tránh aggregate query expensive khi load listing
- *    - Smart selects: Chỉ load fields cần thiết, tránh over-fetching
- *    - Query canonicalization: Sort query params để tăng cache hit rate
- *
- * 4. MULTI-TENANCY:
- *    - getTenant() lấy context tenant hiện tại
- *    - PlanUsageService kiểm tra giới hạn số sản phẩm theo gói (BASIC/PRO/ENTERPRISE)
- *
- * 5. CÁC PHƯƠNG THỨC CHÍNH:
- *    - create(): Tạo product + auto-generate SKUs từ options
- *    - findAll(): Listing với filter, search, sort, pagination
- *    - findOne(): Chi tiết product + tất cả SKUs
- *    - update(): Smart migration SKUs khi đổi options
- *    - getRelatedProducts(): Sản phẩm liên quan cùng category *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Hiển thị danh mục sản phẩm, quản lý biến thể (SKU), tối ưu tìm kiếm và đồng bộ dữ liệu với hệ thống kho hàng.
-
  * =====================================================================
  */
 
@@ -82,6 +48,7 @@ export class ProductsService {
 
   /**
    * Tạo Sản phẩm mới (Product Base).
+   * [P12 FIX]: Atomic creation - Product and SKUs must be created together.
    */
   async create(createProductDto: CreateProductDto) {
     const { options, images, ...productData } = createProductDto;
@@ -97,10 +64,10 @@ export class ProductsService {
 
     // 2. Validate khóa ngoại: Categories và Brand phải tồn tại trong DB
     const [categories, brand] = await Promise.all([
-      (this.prisma.category as any).findMany({
+      this.prisma.category.findMany({
         where: { id: { in: createProductDto.categoryIds } },
       }),
-      (this.prisma.brand as any).findUnique({
+      this.prisma.brand.findUnique({
         where: { id: createProductDto.brandId },
       }),
     ]);
@@ -109,55 +76,60 @@ export class ProductsService {
       throw new NotFoundException('Một hoặc nhiều danh mục không tồn tại');
     if (!brand) throw new NotFoundException('Thương hiệu không tồn tại');
 
-    // 3. Tạo Product và Options (Nested Create)
-    const { categoryIds, ...dataForCreate } = productData;
-    const product = await (this.prisma.product as any).create({
-      data: {
-        ...dataForCreate,
-        slug,
-        tenantId: tenant!.id,
-        categories: {
-          create: createProductDto.categoryIds.map((categoryId) => ({
-            category: { connect: { id: categoryId } },
-            tenant: { connect: { id: tenant!.id } },
-          })),
+    // [P12 FIX] Atomic Transaction: Product + SKUs in one go
+    const product = await this.prisma.$transaction(async (tx) => {
+      // 3. Tạo Product và Options (Nested Create)
+      const { categoryIds, ...dataForCreate } = productData;
+      const newProduct = await tx.product.create({
+        data: {
+          ...dataForCreate,
+          slug,
+          tenantId: tenant!.id,
+          categories: {
+            create: createProductDto.categoryIds.map((categoryId) => ({
+              category: { connect: { id: categoryId } },
+              tenant: { connect: { id: tenant!.id } },
+            })),
+          },
+          options: {
+            create: options?.map((opt, index) => ({
+              name: opt.name,
+              displayOrder: index,
+              tenant: { connect: { id: tenant!.id } },
+              values: {
+                create: opt.values.map((val) => ({
+                  value: val,
+                  tenant: { connect: { id: tenant!.id } },
+                })),
+              },
+            })),
+          },
+          images: {
+            create: images?.map((img) => ({
+              url: img.url,
+              alt: img.alt,
+              displayOrder: img.displayOrder || 0,
+              tenant: { connect: { id: tenant!.id } },
+            })),
+          },
         },
-        options: {
-          create: options?.map((opt, index) => ({
-            name: opt.name,
-            displayOrder: index,
-            tenant: { connect: { id: tenant!.id } },
-            values: {
-              create: opt.values.map((val) => ({
-                value: val,
-                tenant: { connect: { id: tenant!.id } },
-              })),
-            },
-          })),
+        include: {
+          brand: true,
+          categories: {
+            include: { category: true },
+          },
+          options: {
+            include: { values: true },
+          },
         },
-        images: {
-          create: images?.map((img) => ({
-            url: img.url,
-            alt: img.alt,
-            displayOrder: img.displayOrder || 0,
-            tenant: { connect: { id: tenant!.id } },
-          })),
-        },
-      } as any,
-      include: {
-        brand: true,
-        categories: {
-          include: { category: true },
-        },
-        options: {
-          include: { values: true },
-        },
-      },
-    });
+      });
 
-    // 4. Tự động tạo SKUs (Giao cho SkuManager xử lý)
-    // SkuManager sẽ tạo tất cả các biến thể có thể (Red-S, Red-M, Blue-S, Blue-M...)
-    await this.skuManager.generateSkusForNewProduct(product);
+      // 4. Tự động tạo SKUs (Giao cho SkuManager xử lý TRONG transaction)
+      // SkuManager sẽ tạo tất cả các biến thể có thể (Red-S, Red-M, Blue-S, Blue-M...)
+      await this.skuManager.generateSkusForNewProduct(newProduct, tx);
+
+      return newProduct;
+    });
 
     // [PLAN LIMIT] Tăng bộ đếm usage của tenant
     if (tenant) {
@@ -183,7 +155,7 @@ export class ProductsService {
       .sort()
       .reduce(
         (acc, key) => {
-          acc[key] = (query as any)[key];
+          acc[key] = query[key as keyof FilterProductDto];
           return acc;
         },
         {} as Record<string, any>,
@@ -222,18 +194,21 @@ export class ProductsService {
       AND: [],
     };
 
-    // 1. Search text (Full Text Search - Tiếng Việt không dấu/có dấu)
+    // 1. Search text (Case-insensitive ILIKE - Stable Prisma feature)
+    // Note: Replaced `search:` (preview feature) with `contains + mode` for production stability
     if (search) {
       where.AND.push({
         OR: [
           {
             name: {
-              search: search.trim().split(/\s+/).join(' & '),
+              contains: search.trim(),
+              mode: 'insensitive', // PostgreSQL ILIKE
             },
           },
           {
             description: {
-              search: search.trim().split(/\s+/).join(' & '),
+              contains: search.trim(),
+              mode: 'insensitive',
             },
           },
         ],
@@ -299,7 +274,7 @@ export class ProductsService {
     }
 
     const [products, total] = await Promise.all([
-      (this.prisma.product as any).findMany({
+      this.prisma.product.findMany({
         where,
         skip,
         take: limit,
@@ -393,7 +368,7 @@ export class ProductsService {
           },
         },
       }),
-      (this.prisma.product as any).count({ where }),
+      this.prisma.product.count({ where }),
     ]);
 
     return createPaginatedResult(products, total, page, limit);
@@ -458,7 +433,7 @@ export class ProductsService {
     return this.cacheService.getOrSet(
       cacheKey,
       async () => {
-        const product = await (this.prisma.product as any).findFirst({
+        const product = await this.prisma.product.findFirst({
           where: { id },
           select: {
             id: true,
@@ -560,7 +535,9 @@ export class ProductsService {
 
     // 0. [SMART MIGRATION SNAPSHOT] Chụp lại trạng thái cũ trước khi thay đổi
     // Để so sánh và migrate SKU thông minh (VD: giữ nguyên giá/tồn kho nếu chỉ đổi tên Option)
-    const oldProductState = await (this.prisma.product as any).findFirst({
+    // 0. [SMART MIGRATION SNAPSHOT] Chụp lại trạng thái cũ trước khi thay đổi
+    // Để so sánh và migrate SKU thông minh (VD: giữ nguyên giá/tồn kho nếu chỉ đổi tên Option)
+    const oldProductState = await this.prisma.product.findFirst({
       where: { id },
       include: {
         skus: {
@@ -575,31 +552,29 @@ export class ProductsService {
     });
 
     const oldSkuSnapshots =
-      (oldProductState?.skus as any[])?.map((sku) => ({
+      oldProductState?.skus?.map((sku) => ({
         id: sku.id,
         price: sku.price,
         stock: sku.stock,
         values: new Set(
-          (sku.optionValues as any[]).map((ov) =>
-            ov.optionValue.value.toLowerCase(),
-          ),
+          sku.optionValues.map((ov) => ov.optionValue.value.toLowerCase()),
         ),
       })) || [];
 
     // 1. Cập nhật Thông tin cơ bản & Options (Trong Transaction)
     await this.prisma.$transaction(async (tx) => {
       // Update các trường cơ bản (Tên, Mô tả...)
-      await (tx.product as any).update({
+      await tx.product.update({
         where: { id },
-        data: data as any,
+        data: data,
       });
 
       // Update danh mục nếu có thay đổi
       if (updateProductDto.categoryIds) {
-        await (tx as any).productToCategory.deleteMany({
+        await tx.productToCategory.deleteMany({
           where: { productId: id },
         });
-        await (tx as any).product.update({
+        await tx.product.update({
           where: { id },
           data: {
             categories: {
@@ -608,20 +583,20 @@ export class ProductsService {
                 tenantId: getTenant()!.id,
               })),
             },
-          } as any,
+          },
         });
       }
 
       // Update options nếu có thay đổi (CẤU TRÚC PHỨC TẠP)
       if (options) {
         // Xóa options cũ (Cascade delete sẽ xóa values liên quan)
-        await (tx as any).productOption.deleteMany({
+        await tx.productOption.deleteMany({
           where: { productId: id },
         });
 
         // Tạo options mới
         if (options.length > 0) {
-          await (tx as any).product.update({
+          await tx.product.update({
             where: { id },
             data: {
               options: {
@@ -637,7 +612,7 @@ export class ProductsService {
                   },
                 })),
               },
-            } as any,
+            },
           });
         }
       }
@@ -645,13 +620,13 @@ export class ProductsService {
       // Update hình ảnh nếu có thay đổi
       if (images) {
         // Xóa ảnh cũ
-        await (tx as any).productImage.deleteMany({
+        await tx.productImage.deleteMany({
           where: { productId: id },
         });
 
         // Tạo ảnh mới
         if (images.length > 0) {
-          await (tx as any).product.update({
+          await tx.product.update({
             where: { id },
             data: {
               images: {
@@ -662,15 +637,14 @@ export class ProductsService {
                   tenantId: getTenant()!.id,
                 })),
               },
-            } as any,
+            },
           });
         }
       }
     });
 
     // 2. Lấy lại dữ liệu Product mới nhất kèm Options mới
-    // 2. Lấy lại dữ liệu Product mới nhất kèm Options mới
-    const freshProduct = await (this.prisma.product as any).findFirst({
+    const freshProduct = await this.prisma.product.findFirst({
       where: { id },
       include: { options: { include: { values: true } } },
     });
@@ -699,7 +673,7 @@ export class ProductsService {
   ) {
     // Validate: Ensure all SKUs belong to this product
     const skuIds = skus.map((s) => s.id);
-    const existingSkus = await (this.prisma.sku as any).findMany({
+    const existingSkus = await this.prisma.sku.findMany({
       where: {
         id: { in: skuIds },
         productId: productId,
@@ -715,13 +689,13 @@ export class ProductsService {
 
     await this.prisma.$transaction(
       skus.map((sku) =>
-        (this.prisma.sku as any).update({
+        this.prisma.sku.update({
           where: { id: sku.id },
           data: {
             price: sku.price,
             salePrice: sku.salePrice,
             stock: sku.stock,
-          } as any,
+          },
         }),
       ),
     );
@@ -735,7 +709,7 @@ export class ProductsService {
 
   async remove(id: string) {
     const result = await this.prisma.$transaction(async (tx) => {
-      const product = await (tx.product as any).findFirst({
+      const product = await tx.product.findFirst({
         where: { id },
       });
 
@@ -743,12 +717,12 @@ export class ProductsService {
         throw new NotFoundException('Product not found');
       }
 
-      const updatedProduct = await (tx.product as any).update({
+      const updatedProduct = await tx.product.update({
         where: { id },
         data: { deletedAt: new Date() },
       });
 
-      await (tx.sku as any).updateMany({
+      await tx.sku.updateMany({
         where: { productId: id },
         data: { status: 'INACTIVE' },
       });
@@ -768,7 +742,7 @@ export class ProductsService {
     const validIds = skuIds.filter((id) => id); // Remove null/undefined/empty
     if (validIds.length === 0) return [];
 
-    return (this.prisma.sku as any).findMany({
+    return this.prisma.sku.findMany({
       where: {
         id: { in: validIds },
       },
@@ -822,7 +796,7 @@ export class ProductsService {
     });
   }
   async getTranslations(productId: string) {
-    return (this.prisma.productTranslation as any).findMany({
+    return this.prisma.productTranslation.findMany({
       where: { productId },
     });
   }
@@ -833,7 +807,7 @@ export class ProductsService {
   ) {
     const { locale, name, description } = data;
 
-    return (this.prisma.productTranslation as any).upsert({
+    return this.prisma.productTranslation.upsert({
       where: {
         productId_locale: {
           productId,
@@ -889,7 +863,7 @@ export class ProductsService {
       cacheKey,
       async () => {
         // 1. Lấy thông tin cơ bản để biết Category của sản phẩm hiện tại
-        const product = await (this.prisma.product as any).findFirst({
+        const product = await this.prisma.product.findFirst({
           where: { id: productId },
           select: {
             categories: {
@@ -903,7 +877,7 @@ export class ProductsService {
         const mainCategoryId = product.categories[0].categoryId;
 
         // 2. Tìm các sản phẩm khác trong cùng Category
-        const related = await (this.prisma.product as any).findMany({
+        const related = await this.prisma.product.findMany({
           where: {
             categories: {
               some: {
@@ -954,12 +928,6 @@ export class ProductsService {
   /**
    * [P13 RECONCILIATION] - HỆ THỐNG TỰ PHỤC HỒI DỮ LIỆU
    *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   * Do chúng ta sử dụng kỹ thuật "Denormalization" (lưu giá trị min/max và rating trực tiếp ở bảng Product
-   * để tăng tốc độ load), đôi khi dữ liệu này có thể bị sai lệch so với thực tế (do lỗi logic hoặc race condition).
-   *
-   * Hàm này sẽ "quét" lại dữ liệu thực tế từ SKUs và Reviews để ghi đè lại các giá trị này,
-   * giúp hệ thống luôn đạt độ chính xác cao nhất (Data Integrity).
    */
   async reconcileProduct(productId: string) {
     this.logger.log(`Reconciling data for product ${productId}...`);
@@ -979,13 +947,13 @@ export class ProductsService {
    * Internal helper to recalculate ratings for reconciliation
    */
   private async recalculateProductRating(productId: string) {
-    const aggregate = await (this.prisma.review as any).aggregate({
+    const aggregate = await this.prisma.review.aggregate({
       where: { productId, isApproved: true, deletedAt: null },
       _avg: { rating: true },
       _count: true,
     });
 
-    await (this.prisma.product as any).update({
+    await this.prisma.product.update({
       where: { id: productId },
       data: {
         avgRating: aggregate._avg?.rating || 0,
@@ -998,16 +966,13 @@ export class ProductsService {
    * [P13 RECONCILIATION] Periodic job to heal data across the entire catalog.
    * Runs weekly to ensure high data integrity.
    *
-   * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
-   * Tại sao phải chạy lúc 2h sáng Chủ Nhật? -> Vì đây là thao tác quét toàn bộ DB (Heavy Job),
-   * ta chọn giờ ít người dùng nhất để không làm ảnh hưởng đến hiệu năng hệ thống.
    */
   @Cron('0 2 * * 0') // Sunday at 2 AM
   async reconcileAllProducts() {
     this.logger.log('Starting full catalog reconciliation...');
 
     // 1. Quét toàn bộ ID sản phẩm (Chỉ lấy ID để tiết kiệm RAM)
-    const products = await (this.prisma.product as any).findMany({
+    const products = await this.prisma.product.findMany({
       where: { deletedAt: null },
       select: { id: true },
     });
@@ -1082,7 +1047,7 @@ export class ProductsService {
 
     // Fallback to PostgreSQL fulltext search (no vector yet)
     // This is a graceful degradation when pgvector is not available
-    const results = await (this.prisma.product as any).findMany({
+    const results = await this.prisma.product.findMany({
       where: {
         OR: [
           { name: { contains: query, mode: 'insensitive' } },

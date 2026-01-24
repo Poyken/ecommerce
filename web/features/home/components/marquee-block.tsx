@@ -1,18 +1,4 @@
-/**
- * =====================================================================
- * MARQUEE BLOCK - DÒNG CHỮ CHẠY NGANG (TICKER)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Tạo hiệu ứng chữ chạy liên tục dùng cho các thông báo quan trọng
- * hoặc các Brand Values (Ví dụ: "MIỄN PHÍ VẬN CHUYỂN").
- * Sử dụng Framer Motion để xử lý chuyển động mượt mà 60fps. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

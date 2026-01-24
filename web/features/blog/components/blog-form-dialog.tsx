@@ -28,33 +28,7 @@ import { AnimatePresence } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState, useTransition } from "react";
 
-/**
- * =====================================================================
- * BLOG FORM DIALOG - Form tạo/sửa bài viết (Modal)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CONTROLLED COMPONENTS:
- * - Form này không dùng libraries như React Hook Form mà dùng Local State (`formData`).
- * - Ưu điểm: Dễ hiểu luồng dữ liệu, dễ custom logic phức tạp (như auto-slug, related products).
- * - Nhược điểm: Re-render nhiều mỗi khi gõ phím (nhưng với form nhỏ/dialog thì không đáng kể).
- *
- * 2. USE TRANSITION:
- * - `startTransition`: Đánh dấu việc submit form là "việc phụ" (low priority).
- * - Giúp UI không bị đơ (freeze) nếu logic submit quá nặng, đồng thời cung cấp biến `isPending` để hiện loading spinner.
- *
- * 3. CLIENT-SIDE VALIDATION:
- * - Hàm `validate()` kiểm tra dữ liệu trước khi gọi API.
- * - Giúp giảm tải cho Server và phản hồi tức thì cho User (Better UX).
- *
- * 4. DYNAMIC SELECTS:
- * - Categories và Products được fetch ngay khi mở Dialog (`useEffect`) để đảm bảo dữ liệu mới nhất. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 interface BlogFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;

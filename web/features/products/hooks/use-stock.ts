@@ -3,27 +3,7 @@
 import { stockSocket } from "@/lib/stock-socket";
 import { useEffect, useState } from "react";
 
-/**
- * =====================================================================
- * USE STOCK HOOK - Quản lý tồn kho Real-time
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REAL-TIME UPDATES:
- * - Hook này kết nối với `StockSocket` (Singleton) để nhận thông báo khi tồn kho thay đổi.
- * - Ví dụ: Khi một khách gác mua hàng, tồn kho giảm, hook này nhận event và cập nhật state `stock`.
- * - Giúp UI luôn hiển thị số lượng tồn kho chính xác nhất mà không cần refresh trang.
- *
- * 2. SUBSCRIPTION PATTERN:
- * - `useEffect` sẽ đăng ký (subscribe) lắng nghe sự kiện update cho SKU cụ thể.
- * - Các hàm cleanup trong `useEffect` sẽ hủy đăng ký (unsubscribe) khi component unmount
- *   để tránh memory leak. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
 
- * =====================================================================
- */
 
 /**
  * Hook lắng nghe update tồn kho cho một SKU cụ thể.

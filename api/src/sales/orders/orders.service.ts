@@ -401,6 +401,7 @@ export class OrdersService {
             aggregateId: order.id,
             type: 'ORDER_CREATED_STOCK_CHECK',
             payload: { orderId: order.id },
+            tenantId: tenant.id,
           },
         });
 
@@ -408,8 +409,9 @@ export class OrdersService {
           data: {
             aggregateType: 'ORDER',
             aggregateId: order.id,
-            type: 'ORDER_CREATED_POST_PROCESS',
+            type: 'ORDER_CREATED_EMAIL',
             payload: { orderId: order.id, userId },
+            tenantId: tenant.id,
           },
         });
 
@@ -932,6 +934,7 @@ export class OrdersService {
 
           const notification = await this.notificationsService.create({
             userId: updatedOrder.userId,
+            tenantId: updatedOrder.tenantId,
             type: notiType,
             title,
             message,
@@ -968,7 +971,7 @@ export class OrdersService {
 
               // 🚀 TỐI ƯU: Broadcast không chặn (Non-blocking)
               this.notificationsService
-                .broadcastToUserIds(adminIds, {
+                .broadcastToUserIds(updatedOrder.tenantId, adminIds, {
                   type: adminNotiType,
                   title: `[Admin] ${title}`,
                   message: `Admin notification: ${message}`,

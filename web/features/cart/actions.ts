@@ -13,29 +13,7 @@ import { Sku } from "@/types/models";
 import { cookies } from "next/headers";
 import { z } from "zod";
 
-/**
- * =====================================================================
- * CART SERVER ACTIONS - Quản lý Giỏ hàng (Server-side)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. TYPE-SAFE ACTIONS (`next-safe-action`):
- * - Sử dụng `protectedActionClient` để đảm bảo user đã login.
- * - Input được validate tự động bởi Zod schema.
- *
- * 2. WRAPPER PATTERN (`createActionWrapper`):
- * - Thay vì viết wrapper function thủ công check validation errors/server errors.
- * - Helper `createActionWrapper` tự động unwrap result thành `{ success, data, error }`.
- *
- * 3. REVALIDATION:
- * - Sử dụng `REVALIDATE.cart()` để consistency. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Data Integrity: Đảm bảo khách hàng không thể tự ý sửa giá sản phẩm bằng cách gửi request qua JS Console nhờ cơ chế validate nghiêm ngặt ở phía Server.
- * - User Persistence: Tự động giữ lại các sản phẩm mà khách hàng đã chọn khi họ chuyển đổi từ máy tính (Guest) sang điện thoại (LoggedIn).
 
- * =====================================================================
- */
 
 // --- 1. DEFINING SCHEMAS (Validation Rules) ---
 

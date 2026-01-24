@@ -1,5 +1,5 @@
 import { http } from "@/lib/http";
-import { normalizePaginationParams } from "@/lib/utils";
+import { normalizePaginationParams, PaginationParams } from "@/lib/utils";
 import {
   ApiResponse,
   CreateBrandDto,
@@ -20,7 +20,11 @@ import { Brand, Category, Coupon } from "@/types/models";
 export const adminMetadataService = {
   // --- BRANDS ---
 
-  getBrands: async (paramsOrPage?: any, limit?: number, search?: string) => {
+  getBrands: async (
+    paramsOrPage?: number | PaginationParams,
+    limit?: number,
+    search?: string
+  ) => {
     const params = normalizePaginationParams(paramsOrPage, limit, search);
     return http.get<ApiResponse<Brand[]>>("/brands", { params });
   },
@@ -46,7 +50,7 @@ export const adminMetadataService = {
   // --- CATEGORIES ---
 
   getCategories: async (
-    paramsOrPage?: any,
+    paramsOrPage?: number | PaginationParams,
     limit?: number,
     search?: string
   ) => {
@@ -74,7 +78,11 @@ export const adminMetadataService = {
 
   // --- COUPONS ---
 
-  getCoupons: async (paramsOrPage?: any, limit?: number, search?: string) => {
+  getCoupons: async (
+    paramsOrPage?: number | PaginationParams,
+    limit?: number,
+    search?: string
+  ) => {
     const params = normalizePaginationParams(paramsOrPage, limit, search);
     return http.get<ApiResponse<Coupon[]>>("/coupons", { params });
   },
@@ -94,37 +102,51 @@ export const adminMetadataService = {
   // --- IMPORT & EXPORT ---
 
   exportCategories: async () => {
-    return http.get<any>("/categories/export/excel");
+    return http.get<ArrayBuffer>("/categories/export/excel", {
+      responseType: "arraybuffer",
+    });
   },
 
   importCategories: async (formData: FormData) => {
-    return http.post<ApiResponse<any>>("/categories/import/excel", formData);
+    return http.post<ApiResponse<{ imported: number }>>(
+      "/categories/import/excel",
+      formData
+    );
   },
 
   previewCategoriesImport: async (formData: FormData) => {
-    return http.post<ApiResponse<any[]>>(
+    return http.post<ApiResponse<Category[]>>(
       "/categories/import/preview",
       formData
     );
   },
 
   downloadCategoryTemplate: async () => {
-    return http.get<any>("/categories/import/template");
+    return http.get<ArrayBuffer>("/categories/import/template", {
+      responseType: "arraybuffer",
+    });
   },
 
   exportBrands: async () => {
-    return http.get<any>("/brands/export/excel");
+    return http.get<ArrayBuffer>("/brands/export/excel", {
+      responseType: "arraybuffer",
+    });
   },
 
   importBrands: async (formData: FormData) => {
-    return http.post<ApiResponse<any>>("/brands/import/excel", formData);
+    return http.post<ApiResponse<{ imported: number }>>(
+      "/brands/import/excel",
+      formData
+    );
   },
 
   previewBrandsImport: async (formData: FormData) => {
-    return http.post<ApiResponse<any[]>>("/brands/import/preview", formData);
+    return http.post<ApiResponse<Brand[]>>("/brands/import/preview", formData);
   },
 
   downloadBrandTemplate: async () => {
-    return http.get<any>("/brands/import/template");
+    return http.get<ArrayBuffer>("/brands/import/template", {
+      responseType: "arraybuffer",
+    });
   },
 };

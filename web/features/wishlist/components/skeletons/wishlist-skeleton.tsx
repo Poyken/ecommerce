@@ -1,25 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * =====================================================================
- * WISHLIST SKELETON - Skeleton cho trang Danh sách yêu thích
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PRODUCT GRID MOCK:
- * - Hiển thị lưới sản phẩm giả lập với 5 cột trên màn hình lớn, tương ứng với giao diện thật.
- *
- * 2. CARD DETAIL MOCK:
- * - Mỗi thẻ sản phẩm giả lập bao gồm: Ảnh, Tên, Giá và nút "Add to Cart".
- *
- * 3. THEME CONSISTENCY:
- * - Sử dụng các khối gradient nền đặc trưng của trang Wishlist để tạo cảm giác liền mạch khi tải trang. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function WishlistSkeleton() {
   return (

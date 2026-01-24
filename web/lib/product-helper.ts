@@ -1,23 +1,4 @@
-/**
- * =====================================================================
- * PRODUCT HELPER - Công cụ xử lý dữ liệu sản phẩm ở Frontend
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Helper này giúp giải quyết vấn đề "Dữ liệu không đồng nhất" từ API.
- *
- * 1. CHIẾN LƯỢC TRÍCH XUẤT ẢNH:
- *    - Ưu tiên 1: Lấy ảnh của SKU đầu tiên (Ảnh biến thể).
- *    - Ưu tiên 2: Lấy ảnh trong mảng `images` của Product.
- *    - Ưu tiên 3: Dùng ảnh "Placeholder" nếu không tìm thấy gì.
- *
- * 2. TẠI SAO CẦN HELPER NÀY?
- *    - Khi dùng Prisma `select`, đôi khi structure trả về bị lồng nhìu lớp.
- *    - Tránh việc check `if (product && product.skus && ...)` lặp đi lặp lại ở React Component.
- *    - Giữ cho UI sạch sẽ, chỉ cần gọi `getProductImage(product)`.
- * =====================================================================
- */
+
 
 import { Product } from "@/types/models";
 export function getProductImage(

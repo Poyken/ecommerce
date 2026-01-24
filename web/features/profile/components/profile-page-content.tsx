@@ -5,28 +5,7 @@ import { fadeInUp, staggerContainer } from "@/lib/animations";
 import { User } from "@/types/models";
 import { m } from "@/lib/animations";
 
-/**
- * =====================================================================
- * PROFILE PAGE CONTENT - Layout trang cá nhân
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. AMBIENT BACKGROUND:
- * - Sử dụng các lớp `div` tuyệt đối với `blur-[100px]` để tạo hiệu ứng ánh sáng nền mờ ảo (Glow effect).
- * - Tạo cảm giác không gian hiện đại và cao cấp cho trang Profile.
- *
- * 2. ANIMATION VARIANTS:
- * - Sử dụng các animation variants từ `@/lib/animations` thay vì inline.
- * - Giúp code sạch hơn và dễ maintain hơn.
- *
- * 3. COMPONENT COMPOSITION:
- * - Wrap `ProfileForm` bên trong một container có `max-w-4xl` để đảm bảo form không bị quá rộng trên màn hình lớn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface ProfilePageContentProps {
   user: User;

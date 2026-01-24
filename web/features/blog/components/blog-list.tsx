@@ -9,32 +9,7 @@ import { ArrowRight, Calendar, Clock, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 
-/**
- * =====================================================================
- * BLOG LIST - Danh sách bài viết Blog
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. FEATURED POST:
- * - Bài viết đầu tiên (`posts[0]`) được hiển thị to hơn (Featured) để thu hút sự chú ý.
- * - Sử dụng `aspect-[21/9]` để tạo layout rộng rãi, chuẩn cinematic.
- *
- * 2. STAGGERED GRID:
- * - Các bài viết còn lại được hiển thị trong một Grid 3 cột (trên desktop).
- * - `whileInView`: Hiệu ứng xuất hiện khi người dùng cuộn trang tới vị trí của card.
- *
- * 3. DYNAMIC STYLING:
- * - Màu sắc của Category được thay đổi linh hoạt dựa trên dữ liệu bài viết.
- *
- * 4. LOAD MORE:
- * - Sử dụng client-side pagination đơn giản với `visibleCount`.
- * - Hiển thị nút "Load More" nếu còn bài viết chưa hiển thị. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface BlogListProps {
   posts: BlogWithProducts[];

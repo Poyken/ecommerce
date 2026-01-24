@@ -1,25 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * =====================================================================
- * PROFILE SKELETON - Skeleton cho trang Hồ sơ người dùng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. AVATAR & HEADER MOCK:
- * - Hiển thị một hình tròn lớn cho ảnh đại diện và các dòng text cho tên/email.
- *
- * 2. TAB NAVIGATION MOCK:
- * - Giả lập thanh chuyển đổi giữa các mục: Dashboard, Account, Orders, v.v.
- *
- * 3. FORM FIELDS MOCK:
- * - Hiển thị lưới các ô nhập liệu giả để mô phỏng form cập nhật thông tin cá nhân. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function ProfileSkeleton() {
   return (

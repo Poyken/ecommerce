@@ -28,6 +28,8 @@ export const adminAnalyticsService = {
   },
 
   getBlogStats: async () => {
-    return http.get<ApiResponse<any>>("/blog/stats");
+    return http.get<
+      ApiResponse<{ totalPosts: number; totalViews: number; avgReadTime: number }>
+    >("/blog/stats");
   },
 };

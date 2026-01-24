@@ -6,19 +6,6 @@ import { PrismaModule } from '@core/prisma/prisma.module';
  * USERS MODULE - Module quản lý người dùng
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. USER MANAGEMENT:
- * - Module này chịu trách nhiệm quản lý thông tin hồ sơ người dùng, phân quyền (Roles) và các thao tác quản trị.
- *
- * 2. EXPORTS:
- * - `UsersService` được export để các module khác (như Auth hoặc Order) có thể sử dụng để tìm kiếm hoặc kiểm tra thông tin người dùng.
- *
- * 3. PRISMA INTEGRATION:
- * - Sử dụng `PrismaModule` để thực hiện các truy vấn CRUD trên bảng `User`. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 import { UsersController } from './users.controller';

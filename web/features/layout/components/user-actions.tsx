@@ -20,28 +20,7 @@ import { useState } from "react";
 
 import { User } from "@/types/models";
 
-/**
- * =====================================================================
- * USER ACTIONS - Các thao tác quản lý User (Admin)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DROPDOWN MENU:
- * - Sử dụng `DropdownMenu` để ẩn các thao tác ít dùng (Edit, Assign Roles, Delete) vào một nút "Ba chấm".
- * - Giúp bảng danh sách user trông gọn gàng hơn.
- *
- * 2. DIALOG MANAGEMENT:
- * - Mỗi thao tác (Edit, Delete, Roles) được quản lý bởi một `useState` riêng để mở/đóng Dialog tương ứng.
- * - Cách tiếp cận này giúp tách biệt logic xử lý của từng tính năng.
- *
- * 3. ACCESSIBILITY:
- * - Sử dụng `sr-only` cho text "Open menu" để hỗ trợ các thiết bị đọc màn hình (Screen Readers). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface UserActionsProps {
   user: User;

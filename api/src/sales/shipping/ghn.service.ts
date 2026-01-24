@@ -8,21 +8,6 @@ import { CircuitBreaker } from '@/common/utils/circuit-breaker';
  * GHN SERVICE - TÍCH HỢP ĐỐI TÁC GIAO HÀNG NHANH
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. GHN API CORE:
- * - Đây là service chịu trách nhiệm giao tiếp với hệ thống Giao Hàng Nhanh (GHN).
- * - Nó xử lý việc lấy danh sách Tỉnh/Huyện/Xã, tính phí ship, tạo đơn và hủy đơn trên hệ thống GHN.
- *
- * 2. TIMEOUT & FALLBACK (CỰC KỲ QUAN TRỌNG):
- * - Khi gọi API bên thứ 3 (GHN), có thể xảy ra trường hợp mạng chậm hoặc server GHN bảo trì.
- * - Ta dùng `Promise.race` để set timeout 5 giây. Nếu GHN không phản hồi kịp -> Hệ thống tự động dùng mức phí ship mặc định (30,000đ) để không làm gián đoạn việc đặt hàng của khách.
- *
- * 3. TOKEN & SHOP ID:
- * - Mọi request gửi lên GHN đều phải kèm `Token` định danh và `ShopId` để GHN biết đơn hàng thuộc về shop nào. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()

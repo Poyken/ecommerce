@@ -14,21 +14,6 @@ import { maskSensitiveData } from '@/common/utils/masking';
  * AUDIT INTERCEPTOR - TỰ ĐỘNG GHI NHẬT KÝ TÁC ĐỘNG DỮ LIỆU
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. INTERCEPTOR (Bộ đánh chặn):
- * - Interceptor cho phép ta "nhảy vào" giữa quá trình xử lý request.
- * - Ở đây ta dùng nó để tự động hóa việc ghi log mà không cần viết code log ở từng Controller.
- *
- * 2. MUTATION FILTERING:
- * - Ta chỉ quan tâm đến các hành động làm thay đổi dữ liệu (POST, PUT, PATCH, DELETE).
- * - Các hành động xem dữ liệu (GET) thường được bỏ qua để tránh làm rác log.
- *
- * 3. RESOURCE EXTRACTION:
- * - Logic trong hàm `intercept` tự động bóc tách URL để biết User đang tương tác với tài nguyên nào (Sản phẩm, Đơn hàng, Người dùng...) và lưu lại kèm theo Body của request. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()

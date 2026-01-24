@@ -18,32 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
-/**
- * =====================================================================
- * BLOG POST CONTENT - Chi tiết bài viết Blog
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. AMBIENT BACKGROUND:
- * - Sử dụng các đốm màu `blur` ở background để tạo không gian nghệ thuật, không bị nhàm chán.
- *
- * 2. TYPOGRAPHY (Tailwind Typography):
- * - `prose prose-lg dark:prose-invert`: Sử dụng plugin `@tailwindcss/typography` để tự động style cho nội dung HTML (`dangerouslySetInnerHTML`).
- * - Giúp các thẻ `h1`, `p`, `img` trong bài viết trông đẹp mắt mà không cần viết CSS thủ công.
- *
- * 3. ASIDE (Sidebar):
- * - Chứa các chức năng phụ như Share bài viết và đăng ký Newsletter.
- * - `sticky top-24`: Giúp sidebar luôn hiển thị khi người dùng đọc bài viết dài.
- *
- * 4. FEATURED PRODUCTS:
- * - Hiển thị sản phẩm liên quan được gắn với bài blog.
- * - Giúp tăng conversion và trải nghiệm người dùng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface BlogPostContentProps {
   post: BlogWithProducts;

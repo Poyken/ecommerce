@@ -1,21 +1,4 @@
-/**
- * =====================================================================
- * STICKY HEADER - Hiệu ứng Header dính và đổi màu
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SCROLL DETECTION:
- * - Sử dụng `window.scrollY` để phát hiện khi người dùng cuộn trang xuống quá 100px.
- * - Thay đổi style của Header (thêm shadow, đổi màu nền) để giữ cho menu luôn hiển thị mà không gây rối mắt.
- *
- * 2. CONDITIONAL STYLING:
- * - Header có hành vi khác nhau giữa Trang chủ (trong suốt ban đầu) và các trang con (luôn có nền). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

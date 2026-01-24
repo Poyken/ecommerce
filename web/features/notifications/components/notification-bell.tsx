@@ -1,26 +1,4 @@
-/**
- * =====================================================================
- * NOTIFICATION BELL - Biểu tượng chuông thông báo
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CONTEXT INTEGRATION:
- * - Component này không tự quản lý Socket. Nó chỉ "tiêu thụ" (consume) dữ liệu từ `NotificationContext`.
- * - Tách biệt UI (Bell) và Logic (Socket/State) giúp code sạch và dễ bảo trì.
- *
- * 2. POPOVER INTERACTION (Hành vi Dropdown):
- * - Khi mở (`onOpenChange`), ta gọi `refetch()` để đảm bảo user thấy danh sách mới nhất (đôi khi Socket có thể miss nếu mạng lag).
- * - `markAsRead` được gọi khi user click vào 1 thông báo cụ thể -> UX: Giảm notification badge ngay lập tức.
- *
- * 3. BADGE LOGIC:
- * - Chỉ hiện badge đỏ nếu `unreadCount > 0`.
- * - Nếu > 99 thì hiện "99+" để tránh vỡ layout nếu user có quá nhiều thông báo. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

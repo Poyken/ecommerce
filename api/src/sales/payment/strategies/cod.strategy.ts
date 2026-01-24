@@ -5,21 +5,6 @@ import { Injectable } from '@nestjs/common';
  * COD PAYMENT STRATEGY - Chiến lược thanh toán khi nhận hàng
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. INTERFACE IMPLEMENTATION:
- * - `CodPaymentStrategy` triển khai interface `PaymentStrategy`.
- * - Điều này bắt buộc class phải có hàm `processPayment`, đảm bảo tính nhất quán giữa các phương thức thanh toán.
- *
- * 2. COD LOGIC:
- * - Thanh toán COD không cần gọi API bên thứ ba ngay lập tức.
- * - Ta chỉ cần tạo một `transactionId` giả để ghi nhận ý định thanh toán và trả về `success: true`.
- *
- * 3. ASYNCHRONOUS:
- * - Mặc dù không xử lý gì phức tạp, hàm vẫn trả về `Promise` để tương thích với các chiến lược thanh toán online (như Stripe) cần gọi mạng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 import {

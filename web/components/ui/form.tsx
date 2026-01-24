@@ -18,29 +18,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * FORM COMPONENTS - Xây dựng Form với React Hook Form
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REACT HOOK FORM INTEGRATION:
- * - Component này wrap `react-hook-form` để cung cấp context cho các field con.
- * - Giúp quản lý state form, validation, và error handling một cách tập trung.
- *
- * 2. COMPOSITION PATTERN:
- * - Form được chia nhỏ thành nhiều phần: `FormItem`, `FormLabel`, `FormControl`, `FormMessage`.
- * - Giúp dễ dàng tùy biến layout và style cho từng phần của form field.
- *
- * 3. ACCESSIBILITY (A11y):
- * - Tự động gắn các attribute ARIA (`aria-invalid`, `aria-describedby`) để hỗ trợ screen reader.
- * - `htmlFor` của Label tự động link với `id` của Input. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 const Form = FormProvider;
 

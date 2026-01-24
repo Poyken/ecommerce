@@ -1,32 +1,4 @@
-/**
- * =====================================================================
- * PRODUCT VARIANT SELECTOR - Bộ chọn thuộc tính sản phẩm (Size, Color...)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. STATE & PROPS SYNC:
- * - Component này vừa quản lý State nội bộ (`selectedOptions`) để UI mượt.
- * - Vừa phải nghe Props `selectedSkuId` từ URL để đồng bộ khi user share link.
- *
- * 2. INTELLIGENT MATCHING (Thuật toán tìm SKU thông minh):
- * - Vấn đề: User chọn "Màu Đỏ", sau đó chọn "Size XL". Nhưng có thể không có "Đỏ XL".
- * - Giải pháp:
- *   A. Tìm `Perfect Match`: Có cả Đỏ và XL -> Chọn ngay.
- *   B. Nếu không có: Tìm `Best Fit`:
- *      - Giữ nguyên "Màu Đỏ" (ưu tiên cái user vừa click chọn sau cùng).
- *      - Tự động nhảy sang Size khác còn hàng (VD: Đỏ L).
- *   -> Giúp người dùng luôn chọn được sản phẩm có thể mua được, tránh "Dead ends" (Ngõ cụt).
- *
- * 3. VISUAL FEEDBACK:
- * - Badge "Outline": Chưa chọn.
- * - Badge "Solid" (Primary): Đang chọn.
- * - Badge "Opacity-50 + Line-through": Hết hàng hoặc không tồn tại. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 import { GlassButton } from "@/components/shared/glass-button";

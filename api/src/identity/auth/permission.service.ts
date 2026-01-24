@@ -7,24 +7,6 @@ import { Injectable, Logger } from '@nestjs/common';
  * PERMISSION SERVICE - Centralized Permission Management
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SINGLE RESPONSIBILITY:
- * - Service này chỉ lo việc quản lý permissions (quyền hạn).
- * - Tách biệt khỏi AuthService để code dễ test và maintain hơn.
- *
- * 2. CACHING STRATEGY:
- * - Permissions ít thay đổi → Cache trong Redis (5 phút).
- * - Khi update quyền → Xóa cache ngay lập tức.
- * - Giảm >80% query vào database cho user authentication.
- *
- * 3. PERMISSION AGGREGATION:
- * - Gộp quyền từ 2 nguồn: Direct Permissions + Role Permissions.
- * - Loại bỏ trùng lặp bằng Set.
- * - Trả về mảng string dễ sử dụng trong Guards. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

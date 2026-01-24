@@ -6,20 +6,6 @@ import { User, UserRole } from '@prisma/client';
  * USER ENTITY - Đối tượng người dùng (Lớp trình diễn dữ liệu)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DATA SERIALIZATION (Tuần tự hóa dữ liệu):
- * - DTO này đóng gói dữ liệu trả về cho Client.
- * - Không chứa password hay các field nhạy cảm.
- * - Các field roles/permissions được làm phẳng (Flatten) để dễ sử dụng.
- *
- * 2. NO CLASS-TRANSFORMER:
- * - Chúng ta gán dữ liệu thủ công trong constructor để đảm bảo an toàn và minh bạch.
- * - Không phụ thuộc vào decorator ma thuật.
- *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
- *
  * =====================================================================
  */
 

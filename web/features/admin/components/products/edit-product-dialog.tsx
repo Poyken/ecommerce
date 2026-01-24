@@ -17,28 +17,7 @@ import { ProductMetadata } from "./product-metadata";
 import { ProductSeoInfo } from "./product-seo-info";
 import { ProductOptionsManager } from "./product-options-manager";
 
-/**
- * =====================================================================
- * EDIT PRODUCT DIALOG - Dialog chỉnh sửa thông tin sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPONENT SPLITTING:
- * - Để tránh file component quá lớn (>500 lines), ta tách ra thành các sub-components.
- * - Giúp code dễ đọc, dễ bảo trì và test hơn.
- *
- * 2. OPTION SYNCHRONIZATION:
- * - Phức tạp nhất là việc đồng bộ các tùy chọn (Options) và giá trị của chúng từ database lên form.
- * - Sử dụng `useMemo` để chuyển đổi cấu trúc dữ liệu từ model sang cấu trúc UI.
- *
- * 3. DEEP DIRTY CHECK:
- * - Kiểm tra thay đổi sâu (`JSON.stringify`) cho mảng `options` để biết khi nào cần cho phép lưu. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface EditProductDialogProps {
   product: Product;

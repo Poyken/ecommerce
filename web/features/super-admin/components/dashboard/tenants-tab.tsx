@@ -1,19 +1,4 @@
-/**
- * =====================================================================
- * TENANTS TAB - Danh sách Tenants (Super Admin)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MULTI-TENANT UI:
- * - Hiển thị danh sách các cửa hàng đang thuê hệ thống.
- * - Mỗi thẻ Tenant hiển thị các chỉ số cơ bản (User, Sản phẩm, Đơn hàng) để đánh giá nhanh quy mô.
- *
- * 2. LUXURY UI (NEW):
- * - Sử dụng AdminTableWrapper với variant luxury để đồng bộ với Admin UI.
- *
- * =====================================================================
- */ 
+ 
 "use client";
 
 import { Badge } from "@/components/ui/badge";

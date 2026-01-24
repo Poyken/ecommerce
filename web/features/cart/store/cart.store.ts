@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * CART STORE - Quản lý giỏ hàng tập trung
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PERSISTENT COUNT:
- * - Lưu trữ số lượng item trong giỏ hàng để hiển thị badge ở Header.
- * - Hạn chế việc gọi API đếm liên tục bằng cách giữ state trong RAM.
- *
- * 2. HYBRID LOGIC (Guest vs Auth):
- * - Store chỉ lưu `count`, việc quyết định lấy count từ Database hay LocalStorage (Guest) được điều phối bởi `CartInitializer`.
- *
- * 3. REACTIVE UI:
- * - Khi gọi `increment`/`decrement`, UI sẽ cập nhật ngay lập tức giúp App cảm giác mượt mà (snappy). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Frictionless Shopping: Giúp khách hàng thêm sản phẩm vào giỏ mà không bị load lại trang, tăng tỷ lệ hoàn tất đơn hàng.
- * - Real-time Badge: Luôn hiển thị chính xác số sản phẩm trong giỏ ở biểu tượng Header, nhắc nhở khách hàng về mục tiêu mua sắm của họ.
 
- * =====================================================================
- */
 
 import { getCartCountAction } from "@/features/cart/actions";
 import { create } from "zustand";

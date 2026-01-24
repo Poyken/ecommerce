@@ -6,29 +6,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { TypedLink, appRoutes } from "@/lib/typed-navigation";
 
-/**
- * =====================================================================
- * DEAL SECTION - Section hiển thị khuyến mãi giới hạn thời gian
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COUNTDOWN LOGIC:
- * - Sử dụng `setInterval` để cập nhật thời gian còn lại mỗi giây.
- * - `calculateTimeLeft`: Hàm tính toán sự chênh lệch giữa thời gian hiện tại và `targetDate`.
- * - Cleanup: Luôn gọi `clearInterval` trong return của `useEffect` để tránh memory leak.
- *
- * 2. CLIENT-SIDE STATE:
- * - `timeLeft` state lưu trữ { days, hours, minutes, seconds }.
- * - Khi state thay đổi, React sẽ re-render component để hiển thị con số mới.
- *
- * 3. TABULAR NUMS:
- * - CSS `tabular-nums` giúp các con số có độ rộng bằng nhau -> Tránh hiện tượng chữ bị "nhảy" khi số thay đổi. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface DealSectionProps {
   targetDate?: Date; // Optional: specific date to count down to

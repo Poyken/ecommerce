@@ -32,20 +32,6 @@ import { OutboxProcessor } from './processors/outbox.processor';
  * WORKER MODULE - Xử lý tác vụ nền (Background Jobs)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CACHE WARMING (Làm nóng Cache):
- * - Hệ thống eCommerce yêu cầu tốc độ hiển thị cực nhanh.
- * - Thay vì chờ user vào mới cache (Lazy Loading), ta chủ động chạy Cron Job
- *   để query dữ liệu và nạp vào Redis trước.
- *
- * 2. CRON SCHEDULE:
- * - Sử dụng BullMQ để lên lịch chạy định kỳ (VD: mỗi 15 phút update sản phẩm trang chủ).
- * - `onApplicationBootstrap`: Hook chạy ngay khi App khởi động để đăng ký lịch. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tự động hóa các tác vụ lặp đi lặp lại như làm nóng cache, tính toán hoa hồng.
- * - Đảm bảo hệ thống luôn mượt mà bằng cách xử lý các logic nặng ở Background.
-
  * =====================================================================
  */
 export class WorkerModule implements OnApplicationBootstrap {

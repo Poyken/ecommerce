@@ -29,4 +29,5 @@ Bộ quy tắc này đảm bảo mọi đoạn code bạn viết đều đạt t
 
 - **Historical Snapshots**: Đối với dữ liệu giao dịch (Orders, Invoices), **KHÔNG** reference trực tiếp đến Master Data (Product name, Price) vì nó có thể thay đổi. **PHẢI** lưu snapshot (copy) các trường quan trọng tại thời điểm tạo.
   - _Ví dụ_: `OrderItem` phải có `priceAtPurchase`, `skuNameSnapshot`, `shippingAddressSnapshot`.
+- **Transactional Outbox**: Mọi tác vụ phụ (Side effects) như gửi Email, Noti, hay Sync dữ liệu bên thứ 3 PHẢI sử dụng `OutboxEvent` để đảm bảo tính nhất quán (Eventual Consistency).
 - **Money Handling**: Luôn xử lý tiền tệ là số nguyên (Integer) hoặc dùng thư viện Decimal. Với VND, dùng `Math.round()` trước khi lưu DB.

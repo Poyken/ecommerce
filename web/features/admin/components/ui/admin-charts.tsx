@@ -21,29 +21,7 @@ import {
   CartesianGrid,
 } from "recharts";
 
-/**
- * =====================================================================
- * ADMIN CHARTS - Hệ thống biểu đồ thống kê quản trị
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RECHARTS LIB (Thư viện biểu đồ):
- * - Đây là thư viện vẽ chart phổ biến nhất cho React.
- * - Nó dùng cơ chế "Declarative" (Khai báo): Ta xếp các component `<BarChart>`, `<XAxis>`, `<Tooltip>` lồng nhau thay vì vẽ canvas thủ công.
- *
- * 2. RESPONSIVE DESIGN:
- * - Luôn bọc Chart trong `<ResponsiveContainer>`.
- * - Nó giúp chart tự động co giãn (`width="100%"`) theo kích thước màn hình cha -> Quan trọng cho Dashboard Dashboard responsive.
- *
- * 3. DATA FORMATTING (Định dạng số liệu):
- * - Trục Y và Tooltip dùng `Intl.NumberFormat` để format tiền tệ (VND).
- * - `notation: "compact"`: Biến số 1.500.000 thành "1.5Tr" -> Giúp biểu đồ thoáng và dễ đọc hơn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export interface SalesTrendData {
   name: string;

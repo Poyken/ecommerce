@@ -1,17 +1,4 @@
-/**
- * =====================================================================
- * VIDEO HERO BLOCK - BANNER VIDEO CINEMATIC
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Tạo ấn tượng mạnh đầu tiên cho trang web bằng Video chất lượng cao.
- * Có chức năng Mute/Unmute và Glassmorphism buttons cực kỳ cao cấp. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

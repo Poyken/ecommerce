@@ -9,23 +9,7 @@ export interface DistrictData {
   ProvinceID: number;
 }
 
-/**
- * =====================================================================
- * VN LOCATIONS - Mock Data Hành chính Việt Nam
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. WHY MOCK DATA?
- * - Trong thực tế, dữ liệu Tỉnh/Thành cố định và ít thay đổi.
- * - Để giảm tải cho DB, ta có thể hard-code hoặc load từ JSON file tĩnh.
- * - File này chứa data mẫu (Hà Nội, HCM, Đà Nẵng) phục vụ tính năng Địa chỉ. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Availability Fallback: Đảm bảo chức năng chọn địa chỉ luôn hoạt động ổn định kể cả khi API đơn vị vận chuyển (GHN, GHTK) gặp sự cố hoặc đang trong quá trình bảo trì.
- * - Development Speed: Cung cấp dữ liệu mẫu chuẩn hóa để lập trình viên Frontend có thể hoàn thiện giao diện Checkout mà không cần chờ kết nối API thật từ Backend.
 
- * =====================================================================
- */
 export interface WardData {
   WardCode: string;
   WardName: string;

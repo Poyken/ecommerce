@@ -26,33 +26,15 @@ import {
   useTransition,
 } from "react";
 
-/**
- * =====================================================================
- * LOGIN PAGE CONTENT - Xử lý UI Đăng nhập
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REACT 19 `useActionState`:
- * - Hook mới để quản lý trạng thái của Server Actions.
- * - `state`: Chứa dữ liệu trả về (success, error, validation errors).
- * - `isPending`: Trạng thái loading tự động khi form đang submit.
- *
- * 2. GUEST CART SYNC:
- * - Sau khi login thành công, hệ thống kiểm tra `localStorage` xem có giỏ hàng khách không.
- * - Nếu có, gọi `mergeGuestCartAction` để đồng bộ sản phẩm vào tài khoản user.
- *
- * 3. ANIMATED ERRORS:
- * - Sử dụng `AnimatePresence` và `m.p` để thông báo lỗi xuất hiện mượt mà, không làm "nhảy" layout đột ngột. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 export function LoginPageContent() {
   const t = useTranslations("auth.login");
   const tToast = useTranslations("common.toast");
-  const [state, action, isPending] = useActionState(loginAction, null);
+  const [state, action, isPending] = useActionState(async (prevState: any, formData: FormData) => {
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    return loginAction({ email, password });
+  }, null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
@@ -140,11 +122,11 @@ export function LoginPageContent() {
     if (state && submissionCount.current > lastProcessedCount.current) {
       lastProcessedCount.current = submissionCount.current;
 
-      if (state.errors) {
-        setLocalErrors(state.errors);
+      if ((state as any).errors) {
+        setLocalErrors((state as any).errors);
       }
 
-      if (state.error && !state.mfaRequired) {
+      if (state.error && !(state as any).mfaRequired) {
         toast({
           variant: "destructive",
           title: tToast("error"),
@@ -152,9 +134,9 @@ export function LoginPageContent() {
         });
       }
 
-      if (state.mfaRequired && state.userId) {
+      if ((state as any).mfaRequired && (state as any).userId) {
         setMfaRequired(true);
-        setTempUserId(state.userId);
+        setTempUserId((state as any).userId);
         // Don't show success toast yet
         return;
       }
@@ -234,7 +216,7 @@ export function LoginPageContent() {
             console.error("Failed to sync cart");
           } finally {
             // Priority-based navigation
-            const permissions = state.permissions || [];
+            const permissions = (state as any).permissions || [];
             const isSuperAdmin =
               permissions.includes("superAdmin:read") ||
               permissions.includes("dashboard:read");

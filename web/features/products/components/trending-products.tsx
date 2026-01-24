@@ -1,29 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * TRENDING PRODUCTS - Section sản phẩm xu hướng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. RESPONSIVE GRID:
- * - Sử dụng Grid System của Tailwind: `grid-cols-1` (mobile) -> `grid-cols-5` (xl).
- * - Đảm bảo hiển thị tốt trên mọi kích thước màn hình.
- *
- * 2. PRODUCT LOGIC:
- * - Hiển thị 4 sản phẩm đầu tiên (`slice(0, 4)`).
- * - Tính toán `originalPrice` để hiển thị giá gốc/giá khuyến mãi nếu có.
- * - `isHot={true}`: Hiển thị badge "Hot" trên card.
- *
- * 3. VIEWPORT ANIMATION:
- * - `viewport={{ once: true }}`: Animation chỉ chạy 1 lần khi user cuộn tới.
- * - Tránh việc animation chạy lại gây rối mắt khi user cuộn lên xuống. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 import { ProductCard } from "@/features/products/components/product-card";
 import { Link } from "@/i18n/routing";
 import { fadeInUp, itemVariant, m, staggerContainer } from "@/lib/animations";

@@ -3,17 +3,6 @@
  * AUDIT CONTROLLER - Nhật ký hoạt động hệ thống
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. AUDIT LOGGING:
- * - Ghi lại MỌI hành động quan trọng (Ai làm gì? Khi nào? Ở đâu? Giá trị cũ/mới là gì?).
- * - Controller này giúp Admin tra cứu lại lịch sử để truy vết lỗi hoặc hành vi gian lận.
- *
- * 2. PERMISSIONS:
- * - Chỉ user có quyền `auditLog:read` mới được xem. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 import {

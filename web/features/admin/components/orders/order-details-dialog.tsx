@@ -28,27 +28,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getProductImage } from "@/lib/product-helper";
 
-/**
- * =====================================================================
- * ORDER DETAILS DIALOG - Xem chi tiết đơn hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPREHENSIVE DATA:
- * - Hiển thị 3 nhóm thông tin chính: Thông tin đơn hàng (ID, Ngày, Trạng thái), Thông tin khách hàng (Tên, SĐT, Địa chỉ) và Danh sách sản phẩm đã mua.
- *
- * 2. PRICE AT PURCHASE:
- * - Quan trọng: Hiển thị `priceAtPurchase` thay vì giá hiện tại của sản phẩm. Vì giá sản phẩm có thể thay đổi theo thời gian, nhưng hóa đơn phải giữ nguyên giá tại thời điểm khách đặt hàng.
- *
- * 3. UI COMPONENTS:
- * - Sử dụng `Table` để hiển thị danh sách sản phẩm một cách ngăn nắp.
- * - `Badge` giúp làm nổi bật trạng thái đơn hàng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function OrderDetailsDialog({
   orderId,

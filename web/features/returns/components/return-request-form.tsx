@@ -39,26 +39,7 @@ import { AlertCircle, Package, Truck, Wallet, Hash } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { m } from "@/lib/animations";
 
-/**
- * =====================================================================
- * RETURN REQUEST FORM - Form tạo yêu cầu trả hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. COMPLEX FORM STATE:
- * - Sử dụng `react-hook-form` để quản lý trạng thái form phức tạp: chọn sản phẩm, lý do, phương thức hoàn tiền.
- * - `zodResolver` đảm bảo dữ liệu gửi lên server luôn match với schema (P1 security).
- *
- * 2. CONDITIONAL UI:
- * - Hiển thị các trường thông tin ngân hàng CHỈ KHI chọn phương thức "Chuyển khoản".
- * - Hiển thị phương thức vận chuyển trả hàng CHỈ KHI loại yêu cầu không phải là "Chỉ hoàn tiền".
- *
- * 3. ITEM SELECTION LOGIC:
- * - Cho phép chọn một hoặc nhiều sản phẩm trong đơn hàng để trả.
- * - Mặc định số lượng trả là số lượng tối đa đã mua.
- * =====================================================================
- */
+
 
 interface ReturnRequestFormProps {
   order: Order;

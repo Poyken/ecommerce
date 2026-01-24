@@ -8,7 +8,7 @@ import { ShippingModule } from '@/sales/shipping/shipping.module';
 import { LoyaltyModule } from '@/marketing/loyalty/loyalty.module';
 import { PromotionsModule } from '@/marketing/promotions/promotions.module';
 import { CartModule } from '@/sales/cart/cart.module';
-import { InventoryModule } from '@/inventory/inventory.module';
+import { InventoryModule } from '@/operations/inventory/inventory.module';
 import { BullModule } from '@nestjs/bullmq';
 
 import { OrdersController } from './orders.controller';

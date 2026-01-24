@@ -3,19 +3,6 @@
  * DTO HELPERS - Utilities cho Data Transfer Objects
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DTO TRANSFORMATIONS:
- * - Các helpers để transform data từ database sang DTO format.
- * - Đảm bảo consistency và type safety.
- *
- * 2. COMMON PATTERNS:
- * - Pagination DTOs
- * - Filter DTOs
- * - Sort DTOs *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

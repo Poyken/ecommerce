@@ -1,25 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-/**
- * =====================================================================
- * CONTACT SKELETON - Skeleton cho trang Liên hệ
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. FORM & INFO MOCKUP:
- * - Giả lập các thẻ thông tin liên hệ (Email, Phone, Address) và form nhập liệu lớn ở bên phải.
- *
- * 2. FAQ SECTION MOCK:
- * - Hiển thị 4 khối skeleton cho phần Câu hỏi thường gặp ở bên dưới.
- *
- * 3. RESPONSIVE LAYOUT:
- * - Sử dụng grid tương tự như trang thật để đảm bảo skeleton hiển thị đúng trên cả mobile và desktop. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function ContactSkeleton() {
   return (

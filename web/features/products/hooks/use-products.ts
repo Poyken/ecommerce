@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * USE PRODUCTS HOOK - Client-side caching với SWR
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SWR (Stale-While-Revalidate):
- * - Hiển thị data cũ (stale) ngay lập tức trong khi fetch data mới (revalidate)
- * - Cải thiện UX đáng kể vì user không phải chờ loading
- *
- * 2. DEDUPLICATION:
- * - Nếu nhiều component cùng gọi useProducts() với cùng params,
- *   SWR chỉ fetch 1 lần và share kết quả
- *
- * 3. CACHE KEY:
- * - Key được tạo từ params để cache riêng biệt cho từng filter *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Hook React tùy chỉnh để tách biệt logic khỏi UI, giúp component dễ đọc và dễ test hơn.
 
- * =====================================================================
- */
 
 "use client";
 
@@ -150,8 +129,8 @@ export function useProduct(id: string | null, initialData?: Product) {
     cacheKey,
     async () => {
       if (!id) return null;
-      const result = await getProductAction(id);
-      return result.success ? result.data : null;
+      const result = await getProductAction({ id });
+      return result.success ? (result.data as Product) : null;
     },
     {
       fallbackData: initialData,

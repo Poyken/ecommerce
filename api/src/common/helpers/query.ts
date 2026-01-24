@@ -3,20 +3,6 @@
  * QUERY HELPERS - Tối ưu Database Queries
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SELECT OPTIMIZATION:
- * - Thay vì SELECT *, chỉ lấy những field cần thiết.
- * - Giảm data transfer và memory usage.
- *
- * 2. PAGINATION HELPERS:
- * - Các helper để tạo pagination options cho Prisma một cách nhất quán.
- *
- * 3. SORT HELPERS:
- * - Parse sort string từ query params thành Prisma orderBy format. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 

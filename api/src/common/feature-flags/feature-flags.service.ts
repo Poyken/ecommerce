@@ -3,30 +3,17 @@
  * FEATURE FLAGS SERVICE - QUẢN LÝ TÍNH NĂNG ĐỘNG (BẬT/TẮT TỨC THÌ)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MULTI-LEVEL CACHING (Cấu trúc cache đa tầng):
- * - Vì Feature Flag được check liên tục ở mọi nơi, ta dùng cache 2 lớp để tối ưu:
- *   + Lớp 1 (L1 - RAM): Lưu trên bộ nhớ của Service (15 giây). Cực nhanh, không tốn network.
- *   + Lớp 2 (L2 - Redis): Lưu tập trung cho toàn bộ server (1 giờ).
- *   + Cuối cùng mới đến Database.
- *
- * 2. TARGETING RULES (Quy tắc nhắm mục tiêu):
- * - Hệ thống cho phép bật tính năng theo:
- *   + Environment: Chỉ bật ở Staging, chưa bật ở Production.
- *   + User IDs: Chỉ bật cho một nhóm tester.
- *   + Percentage (%) Rollout: Bật cho 10% người dùng ngẫu nhiên để thử nghiệm (Canary Release).
- *
- * 3. FALLBACK (Cơ chế dự phòng):
- * - Nếu hệ thống cache/DB lỗi, mặc định sẽ trả về `false` (Disabled) để đảm bảo an toàn. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
+import { getTenant } from '@core/tenant/tenant.context';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import type { Cache } from 'cache-manager';
 import { CacheL1Service } from '../cache-l1.service';
 import {
@@ -139,8 +126,14 @@ export class FeatureFlagsService {
    * Admin: Create a new flag
    */
   async create(dto: CreateFeatureFlagDto) {
+    const tenant = getTenant();
+    if (!tenant) throw new BadRequestException('Tenant context required');
+
     const flag = await this.prisma.featureFlag.create({
-      data: dto,
+      data: {
+        ...dto,
+        tenantId: tenant.id,
+      },
     });
     const cacheKey = `${this.CACHE_PREFIX}${dto.key}`;
     await this.cacheManager.del(cacheKey);

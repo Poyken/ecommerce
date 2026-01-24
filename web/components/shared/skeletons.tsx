@@ -1,19 +1,6 @@
 "use client";
 
-/**
- * =====================================================================
- * SKELETON COMPONENTS - LOADING PLACEHOLDERS
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Skeleton components hiển thị placeholder khi đang load data:
- * 1. Cải thiện Perceived Performance (cảm nhận tốc độ)
- * 2. Giảm CLS (Cumulative Layout Shift)
- * 3. UX tốt hơn so với spinner
- *
- * =====================================================================
- */
+
 
 import React from "react";
 import { cn } from "@/lib/utils";

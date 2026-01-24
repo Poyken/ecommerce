@@ -7,24 +7,6 @@ import { Job } from 'bullmq';
  * EMAIL PROCESSOR - Công nhân xử lý gửi Email (Background Worker)
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. BACKGROUND PROCESSING:
- * - Đây là một "Worker" (Công nhân) chạy ngầm. Nó không làm việc trực tiếp với người dùng.
- * - Nó liên tục lắng nghe `email-queue` trong Redis. Khi có "Job" mới, nó sẽ lấy ra và thực hiện.
- *
- * 2. ASYNC BENEFITS:
- * - Giúp API phản hồi ngay lập tức cho người dùng mà không cần chờ đợi mail server phản hồi (thường mất vài giây).
- * - Nếu mail server bị lỗi, Worker này có thể tự động thử lại (Retry) mà người dùng không hề hay biết.
- *
- * 3. JOB DATA:
- * - `job.data` chứa toàn bộ thông tin cần thiết để gửi email: Địa chỉ người nhận, loại email (Reset Password, Order Confirm), và các biến dữ liệu (Token, Order ID).
- *
- * 4. SIMULATION:
- * - Trong code này, ta sử dụng `setTimeout` để mô phỏng độ trễ của việc gửi email thật qua các dịch vụ như AWS SES hay SendGrid. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Chịu trách nhiệm gửi hàng loạt email marketing và email giao dịch (Transactional Email) thông qua các nhà cung cấp như Resend/SendGrid.
-
  * =====================================================================
  */
 

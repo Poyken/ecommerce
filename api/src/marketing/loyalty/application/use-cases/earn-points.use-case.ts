@@ -12,7 +12,7 @@ import {
 } from '../../domain/entities/loyalty-point.entity';
 import { LOYALTY_CONFIG } from '../../domain/entities/loyalty-config';
 import { v4 as uuidv4 } from 'uuid';
-import { EmailService } from '@/integrations/email/email.service';
+import { EmailService } from '@/platform/integrations/external/email/email.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 
 export interface EarnPointsInput {

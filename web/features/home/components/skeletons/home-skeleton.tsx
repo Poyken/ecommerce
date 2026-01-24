@@ -1,24 +1,4 @@
-/**
- * =====================================================================
- * HOME SKELETON - Skeleton cho trang Chủ
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. HERO SECTION MOCKUP:
- * - Giả lập phần banner lớn ở đầu trang với các khối text và nút bấm giả.
- *
- * 2. REUSABLE PRODUCT SKELETON:
- * - Cung cấp component `ProductsSkeleton` để tái sử dụng ở nhiều nơi (Home, Shop, Wishlist).
- * - Hỗ trợ tùy chỉnh số lượng item hiển thị thông qua prop `count`.
- *
- * 3. CATEGORY GRID MOCK:
- * - Giả lập các ô danh mục sản phẩm với tỷ lệ khung hình `aspect-[4/5]`. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 import { Skeleton } from "@/components/ui/skeleton";
 

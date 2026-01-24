@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * SHOP GRID - Lưới danh sách sản phẩm (Trang Cửa hàng)
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. SERVER-CLIENT HYBRID:
- * - Nhận `productsPromise` từ Server Component và sử dụng hook `use()` để giải nén dữ liệu.
- * - Cho phép hiển thị dữ liệu ngay lập tức trong khi vẫn giữ được tính tương tác của Client Component.
- *
- * 2. PAGINATION & ROUTING:
- * - Xử lý phân trang bằng cách cập nhật URL parameter (`page`).
- * - Sử dụng `useTransition` để quá trình chuyển trang mượt mà, không bị khựng UI.
- *
- * 3. EMPTY STATE & SUGGESTIONS:
- * - Nếu không tìm thấy sản phẩm, hiển thị thông báo kèm theo các sản phẩm gợi ý (`mightLike`) để giữ chân người dùng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

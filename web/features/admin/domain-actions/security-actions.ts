@@ -1,24 +1,4 @@
-/**
- * =====================================================================
- * SECURITY ACTIONS - Quản lý IP & Audit Log
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. LOCKDOWN MODE:
- * - `toggleLockdownAction`: Khi bật chế độ này, toàn bộ hệ thống sẽ từ chối
- *   mọi truy cập (trừ IP trong Whitelist).
- * - Dùng trong trường hợp khẩn cấp (bị tấn công DDoS, DB leak data...).
- *
- * 2. IP WHITELIST:
- * - Danh sách IP được phép truy cập Dashboard (Admin/SuperAdmin) để tăng bảo mật.
- * - `getMyIpAction`: Tiện ích giúp Admin lấy IP hiện tại để add nhanh vào whitelist. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Emergency Lockdown: Khả năng "đóng băng" toàn bộ website ngay lập tức khi phát hiện cuộc tấn công DDoS hoặc rò rỉ dữ liệu, giúp giảm thiểu thiệt hại tối đa.
- * - Admin Perimeter Security: Thiết lập hàng rào bảo mật bằng IP Whitelist, chỉ cho phép các máy tính tại văn phòng hoặc của Admin được phép truy cập vào Dashbaord quản trị.
 
- * =====================================================================
- */
 "use server";
 
 import { adminSecurityService } from "../services/admin-security.service";

@@ -1,29 +1,4 @@
-/**
- * =====================================================================
- * CART BADGE - Huy hiệu hiển thị số lượng sản phẩm trong giỏ hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. CART CONTEXT:
- * - Component này là một "Consumer" của `CartProvider`.
- * - Nó tự động lắng nghe sự thay đổi của `count` (số lượng item) mà không cần props truyền từ cha.
- *
- * 2. CONDITIONAL RENDERING:
- * - Nguyên tắc UX: "Don't show zero". Nếu giỏ hàng trống (`count === 0`), ta ẩn luôn badge.
- * - Giúp giao diện sạch sẽ, chỉ gây chú ý khi thực sự cần thiết.
- *
- * 3. TAILWIND ANIMATION PLUGINS:
- * - `animate-in zoom-in spin-in-90`: Các class này đến từ plugin `tailwindcss-animate`.
- * - Giúp tạo hiệu ứng xuất hiện (Entrance Animation) cực kỳ dễ dàng mà không cần viết keyframes CSS thủ công.
- *
- * 4. MEMOIZATION:
- * - Sử dụng `React.memo` để component chỉ render lại khi `count` thực sự thay đổi, tránh render thừa do cha re-render. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

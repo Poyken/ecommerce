@@ -1,19 +1,4 @@
-/**
- * =====================================================================
- * COUPONS SERVER ACTIONS - Quản lý danh sách mã giảm giá
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * File này chứa các actions liên quan đến việc lấy danh sách mã giảm giá.
- * Khác với `coupon.ts` (dùng để validate), file này tập trung vào việc
- * hiển thị các mã giảm giá có sẵn cho người dùng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Conversion Rate: Khuyến khích khách hàng chốt đơn nhanh hơn bằng cách hiển thị các mã giảm giá hấp dẫn ngay tại giỏ hàng.
- * - Loyalty Marketing: Tích hợp logic kiểm tra mã giảm giá (Validate) để đảm bảo chỉ những khách hàng thân thiết hoặc đạt điều kiện mới được hưởng ưu đãi.
 
- * =====================================================================
- */
 
 "use server";
 

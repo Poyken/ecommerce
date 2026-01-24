@@ -10,7 +10,7 @@ import { OrderItem } from '../../domain/entities/order-item.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { OrderPlacedEvent } from '../../domain/events/order-placed.event';
-import { CheckStockAvailabilityUseCase } from '@/inventory/application/use-cases/check-stock-availability.use-case';
+import { CheckStockAvailabilityUseCase } from '@/operations/inventory/application/use-cases/check-stock-availability.use-case';
 
 export interface PlaceOrderInput {
   tenantId: string;

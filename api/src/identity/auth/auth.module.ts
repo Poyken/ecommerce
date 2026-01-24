@@ -7,7 +7,9 @@ import { JwtStrategy } from './jwt.strategy';
 import { TokenService } from './token.service';
 import { TwoFactorService } from './two-factor.service';
 
-import { EmailModule } from '@integrations/email/email.module';
+import { EmailModule } from '@/platform/integrations/external/email/email.module';
+import { UsersModule } from '../users/users.module';
+import { TenantsModule } from '../tenants/tenants.module';
 import { PermissionService } from './permission.service';
 import { FacebookStrategy } from './strategies/facebook.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';

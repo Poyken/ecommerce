@@ -12,29 +12,7 @@ import { Notification } from "@/types/models";
 import { cookies } from "next/headers";
 import { z } from "zod";
 
-/**
- * =====================================================================
- * NOTIFICATIONS SERVER ACTIONS - QUẢN LÝ THÔNG BÁO
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. REAL-TIME NOTIFICATIONS:
- * - Hệ thống sử dụng cơ chế kéo (Pull) qua API này và đẩy (Push) qua WebSocket (`NotificationsGateway` ở Backend).
- * - `getNotificationsAction`: Lấy danh sách thông báo để hiển thị trong chuông thông báo.
- *
- * 2. MARK AS READ:
- * - Khi user nhấn vào thông báo, ta gọi `markAsReadAction` để DB cập nhật `isRead = true`.
- * - Việc này giúp đồng bộ số lượng tin chưa đọc (Unread Count) chính xác.
- *
- * 3. ADMIN BROADCAST:
- * - Admin có quyền gửi thông báo tới tất cả người dùng (Broadcast) hoặc một người dùng cụ thể. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Real-time Engagement: Đảm bảo khách hàng nhận được tin vui (vd: "Đơn hàng đã được xác nhận") ngay giây phút Backend xử lý xong, tăng tính tương tác.
- * - Customer Retention: Admin có thể gửi thông báo Broadcast về các chương trình khuyến mãi mới nhất, giúp lôi kéo người dùng quay lại mua sắm.
 
- * =====================================================================
- */
 
 import { notificationService } from "./services/notification.service";
 

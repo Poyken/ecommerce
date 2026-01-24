@@ -1,27 +1,4 @@
-/**
- * =====================================================================
- * ADDRESS SERVER ACTIONS - Quản lý địa chỉ giao hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * File này chứa các Server Actions cho chức năng quản lý địa chỉ.
- * User có thể:
- * - Thêm địa chỉ mới
- * - Sửa địa chỉ đã có
- * - Xóa địa chỉ
- * - Đặt địa chỉ mặc định
- *
- * QUY TẮC NGHIỆP VỤ:
- * - Mỗi user có thể có nhiều địa chỉ
- * - Chỉ 1 địa chỉ được đánh dấu mặc định (isDefault = true)
- * - Khi checkout, hệ thống ưu tiên dùng địa chỉ mặc định *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Frictionless Checkout: Giúp khách hàng hoàn tất việc mua hàng nhanh hơn bằng cách tự động áp dụng địa chỉ mặc định đã lưu, giảm bớt công đoạn nhập liệu thủ công.
- * - Logistics Accuracy: Đảm bảo dữ liệu nhận hàng luôn chính xác và đầy đủ qua hệ thống quản lý địa chỉ có chiều sâu (Tỉnh -> Huyện -> Xã).
 
- * =====================================================================
- */
 
 "use server";
 

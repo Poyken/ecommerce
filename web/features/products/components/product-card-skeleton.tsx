@@ -3,24 +3,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-/**
- * =====================================================================
- * PRODUCT CARD SKELETON - Loading state cho Product Card
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PERCEIVED PERFORMANCE:
- * - Hiển thị skeleton thay vì spinner giúp user cảm thấy page load nhanh hơn.
- * - Layout giống y hệt ProductCard thật để tránh "layout shift".
- *
- * 2. USAGE:
- * - Sử dụng trong Suspense boundaries hoặc loading states. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 interface ProductCardSkeletonProps {
   className?: string;

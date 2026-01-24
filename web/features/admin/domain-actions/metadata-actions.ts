@@ -1,24 +1,4 @@
-/**
- * =====================================================================
- * METADATA ACTIONS - Quản lý Danh mục, Thương hiệu, Coupon
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. GOM NHÓM (Aggregated Actions):
- * - Thay vì tạo 3 files `brand-actions.ts`, `category-actions.ts`, `coupon-actions.ts`,
- *   ta gom chúng vào đây vì chúng đều là "Metadata" (dữ liệu nền) của hệ thống Ecommerce.
- *
- * 2. POLYMORPHISM (Đa hình) trong API Call:
- * - Hàm `createBrandAction`, `updateBrandAction`... nhận vào `CreateBrandDto` (JSON) HOẶC `FormData`.
- * - Lý do: Nếu có upload ảnh -> phải dùng `FormData` (multipart). Nếu chỉ text -> dùng JSON.
- * - Hàm tự động check `data instanceof FormData` để gửi request đúng định dạng. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Data Centralization: Quản lý tập trung toàn bộ "xương sống" của cửa hàng điện tử bao gồm Danh mục, Thương hiệu và các mã giảm giá một cách có hệ thống.
- * - Inventory & Brand Control: Đảm bảo tính nhất quán về dữ liệu sản phẩm, giúp việc quản lý kho và phân loại hàng hóa diễn ra mượt mà và chính xác.
 
- * =====================================================================
- */
 "use server";
 
 import {
@@ -33,6 +13,8 @@ import {
 } from "@/types/dtos";
 import { Brand, Category, Coupon } from "@/types/models";
 import { REVALIDATE, wrapServerAction } from "@/lib/safe-action";
+import { PaginationParams } from "@/lib/utils";
+import { FileExportResult } from "@/types/feature-types/admin.types";
 
 import { adminMetadataService } from "../services/admin-metadata.service";
 
@@ -45,7 +27,7 @@ import { adminMetadataService } from "../services/admin-metadata.service";
 // --- BRANDS ---
 
 export async function getBrandsAction(
-  paramsOrPage?: any,
+  paramsOrPage?: number | PaginationParams,
   limit?: number,
   search?: string
 ): Promise<ActionResult<Brand[]>> {
@@ -88,7 +70,7 @@ export async function deleteBrandAction(
 // --- CATEGORIES ---
 
 export async function getCategoriesAction(
-  paramsOrPage?: any,
+  paramsOrPage?: number | PaginationParams,
   limit?: number,
   search?: string
 ): Promise<ActionResult<Category[]>> {
@@ -131,7 +113,7 @@ export async function deleteCategoryAction(
 // --- COUPONS ---
 
 export async function getCouponsAction(
-  paramsOrPage?: any,
+  paramsOrPage?: number | PaginationParams,
   limit?: number,
   search?: string
 ): Promise<ActionResult<Coupon[]>> {
@@ -174,20 +156,21 @@ export async function deleteCouponAction(
 // --- IMPORT & EXPORT (CATEGORIES) ---
 
 export async function exportCategoriesAction(): Promise<
-  ActionResult<{ base64: string; filename: string }>
+  ActionResult<FileExportResult>
 > {
   return wrapServerAction(async () => {
-    const res = await adminMetadataService.exportCategories();
+    const buffer = await adminMetadataService.exportCategories();
+    const base64 = Buffer.from(buffer).toString("base64");
     return {
-      base64: res.base64,
-      filename: res.filename || "categories_export.xlsx",
+      base64,
+      filename: `categories_export_${Date.now()}.xlsx`,
     };
   }, "Failed to export categories");
 }
 
 export async function importCategoriesAction(
   formData: FormData
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<{ imported: number }>> {
   return wrapServerAction(async () => {
     const res = await adminMetadataService.importCategories(formData);
     REVALIDATE.admin.categories();
@@ -197,7 +180,7 @@ export async function importCategoriesAction(
 
 export async function previewCategoriesImportAction(
   formData: FormData
-): Promise<ActionResult<any[]>> {
+): Promise<ActionResult<Category[]>> {
   return wrapServerAction(async () => {
     const res = await adminMetadataService.previewCategoriesImport(formData);
     return res.data;
@@ -205,13 +188,14 @@ export async function previewCategoriesImportAction(
 }
 
 export async function downloadCategoryTemplateAction(): Promise<
-  ActionResult<{ base64: string; filename: string }>
+  ActionResult<FileExportResult>
 > {
   return wrapServerAction(async () => {
-    const res = await adminMetadataService.downloadCategoryTemplate();
+    const buffer = await adminMetadataService.downloadCategoryTemplate();
+    const base64 = Buffer.from(buffer).toString("base64");
     return {
-      base64: res.base64,
-      filename: res.filename || "categories_import_template.xlsx",
+      base64,
+      filename: "categories_import_template.xlsx",
     };
   }, "Failed to download template");
 }
@@ -219,20 +203,21 @@ export async function downloadCategoryTemplateAction(): Promise<
 // --- IMPORT & EXPORT (BRANDS) ---
 
 export async function exportBrandsAction(): Promise<
-  ActionResult<{ base64: string; filename: string }>
+  ActionResult<FileExportResult>
 > {
   return wrapServerAction(async () => {
-    const res = await adminMetadataService.exportBrands();
+    const buffer = await adminMetadataService.exportBrands();
+    const base64 = Buffer.from(buffer).toString("base64");
     return {
-      base64: res.base64,
-      filename: res.filename || "brands_export.xlsx",
+      base64,
+      filename: `brands_export_${Date.now()}.xlsx`,
     };
   }, "Failed to export brands");
 }
 
 export async function importBrandsAction(
   formData: FormData
-): Promise<ActionResult<any>> {
+): Promise<ActionResult<{ imported: number }>> {
   return wrapServerAction(async () => {
     const res = await adminMetadataService.importBrands(formData);
     REVALIDATE.admin.brands();
@@ -242,7 +227,7 @@ export async function importBrandsAction(
 
 export async function previewBrandsImportAction(
   formData: FormData
-): Promise<ActionResult<any[]>> {
+): Promise<ActionResult<Brand[]>> {
   return wrapServerAction(async () => {
     const res = await adminMetadataService.previewBrandsImport(formData);
     return res.data;
@@ -250,13 +235,14 @@ export async function previewBrandsImportAction(
 }
 
 export async function downloadBrandTemplateAction(): Promise<
-  ActionResult<{ base64: string; filename: string }>
+  ActionResult<FileExportResult>
 > {
   return wrapServerAction(async () => {
-    const res = await adminMetadataService.downloadBrandTemplate();
+    const buffer = await adminMetadataService.downloadBrandTemplate();
+    const base64 = Buffer.from(buffer).toString("base64");
     return {
-      base64: res.base64,
-      filename: res.filename || "brands_import_template.xlsx",
+      base64,
+      filename: "brands_import_template.xlsx",
     };
   }, "Failed to download template");
 }

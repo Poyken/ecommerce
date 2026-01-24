@@ -71,19 +71,46 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
 - **ADR-006**: Frontend dùng **Next.js Server Actions** + `next-safe-action` wrapper cho bảo mật.
 - **ADR-007**: **Transactional Outbox Pattern**: Đảm bảo Zero Data Loss khi đẩy jobs vào BullMQ.
 - **ADR-008**: **Domain Modules Consolidation**: Gom nhóm tính năng thành `CatalogModule`, `SalesModule`, `AiModule`.
-- **ADR-009**: **Abstract Classes for Repository Interfaces**: Sử dụng `abstract class` thay vì `interface` cho Repository Ports để tương thích tốt nhất với NestJS DI và tránh lỗi `emitDecoratorMetadata` khi enable `isolatedModules` (Fix TS1272).
+- **ADR-009**: **Feature Module Restructuring** (2026-01-22): Consolidated 32 standalone modules into 7 Feature Modules + 8 Infrastructure modules (Platform, CMS created; Sales, Operations, Identity extended). Zero breaking changes to API routes. Microservices-ready architecture.
+- **ADR-010**: **Abstract Classes for Repository Interfaces**: Sử dụng `abstract class` thay vì `interface` cho Repository Ports để tương thích tốt nhất với NestJS DI và tránh lỗi `emitDecoratorMetadata` khi enable `isolatedModules` (Fix TS1272).
 
 ---
 
-## 5. Các API Modules Hiện Có
+## 5. API Module Structure (Post-Consolidation)
 
-| Domain       | Modules                                                                                         |
-| ------------ | ----------------------------------------------------------------------------------------------- |
-| **Catalog**  | `catalog` (categories, brands, products, skus)                                                  |
-| **Sales**    | `sales` (orders, cart, payment, invoices, shipping)                                             |
-| **AI**       | `ai` (chat, agent, insights, rag, images)                                                       |
-| **Identity** | `auth`, `users`, `tenants`, `roles`                                                             |
-| **Others**   | `promotions`, `return-requests`, `inventory`, `loyalty`, `reviews`, `webhooks`, `blog`, `pages` |
+**Total**: 17 top-level modules (down from 32)
+
+### Feature Modules (Domain Layer)
+
+| Domain         | Sub-Modules                                                                       |
+| -------------- | --------------------------------------------------------------------------------- |
+| **Identity**   | `auth`, `users`, `roles`, `tenants`, `addresses`                                  |
+| **Catalog**    | `categories`, `brands`, `products`, `skus`                                        |
+| **Sales**      | `orders`, `cart`, `payment`, `invoices`, `shipping`, `reviews`, `wishlist`, `tax` |
+| **Operations** | `fulfillment`, `procurement`, `return-requests`, `inventory`                      |
+| **Marketing**  | `promotions`, `loyalty`, `customer-groups`                                        |
+| **Platform**   | `admin`, `super-admin`, `analytics`, `subscriptions`, `integrations`              |
+| **CMS**        | `blog`, `pages`, `media`                                                          |
+| **AI**         | `ai-chat`, `agent`, `insights`, `rag`, `images`                                   |
+
+### Infrastructure Modules
+
+| Module          | Purpose                             |
+| --------------- | ----------------------------------- |
+| `core`          | Prisma, Redis, Guards, Interceptors |
+| `common`        | Logger, Utils, Feature Flags        |
+| `notifications` | Email, SMS, Push (cross-cutting)    |
+| `audit`         | Audit logs (cross-cutting)          |
+| `worker`        | BullMQ background jobs              |
+| `chat`          | Real-time chat (Socket.IO)          |
+| `dev-tools`     | Development utilities               |
+
+**Benefits**:
+
+- Easier to maintain and navigate
+- Microservices-ready (each Feature Module can be extracted)
+- Clear domain boundaries
+- Reduced cognitive load
 
 ---
 
@@ -135,6 +162,11 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
 - [2026-01-22] Module Consolidation & Structure Refactoring:
   - **API**: Created Domain Modules (`Identity`, `Marketing`, `Operations`) and consolidated ~10 sub-modules. Updated `AppModule` and fixed all broken imports. Build passes.
   - **Web**: Created `(dashboard)` route group. Moved `admin` and `super-admin` routes into it for cleaner root structure. Build passes.
+- [2026-01-24] **Build Fixes (Merge Resolution)**: Resolved 100+ build errors after module restructuring merge.
+  - **Modules**: Fixed imports in `Orders`, `Inventory`, `Auth`, `Analytics`, `CommissionService`.
+  - **Schema**: Verified `tenantId` in `CommissionTransaction` and `OutboxEvent`.
+  - **Dependencies**: Handled missing `isomorphic-dompurify`.
+  - **Stability**: Passed `npm run build` with clean exit.
 - [2026-01-24] API Clean Architecture Refactoring (Catalog Module):
   - **Build Fixes**: Resolved TS1272 issue by converting Repository Interfaces to Abstract Classes (cleaner NestJS DI). Fixed types in seeding scripts.
   - **Use Case Integration**: Refactored `ProductsController` to use `CreateProduct`, `ListProducts`, `GetProduct`, `UpdateProduct`, `DeleteProduct` Use Cases instead of direct Service/Repository calls.
@@ -199,3 +231,30 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
   - **Frontend**: Full integration of Checkout with snapshotted items.
   - **Infrastructure**: New `PrismaOrderRepository` with transaction support.
   - **Verification**: All modules build successfully (API & Web).
+- [2026-01-22] **Major API Restructuring**: Consolidated 32 modules → 17 modules (47% reduction). Created `Platform` (admin, super-admin, analytics, subscriptions, integrations) and `CMS` (blog, pages, media) Feature Modules. Extended `Sales` (+reviews, +wishlist, +tax), `Operations` (+inventory), and `Identity` (+addresses). Zero API breaking changes. All import paths updated globally. Build verification: ✅ PASSED.
+- [2026-01-22] **Technical Audit & Type Hardening**: Eliminated generic `any` types across 15+ Admin Services, Domain Actions, and Core Components. Standardized pagination with `PaginationParams` and centralized CMS models (`Page`, `Block`). Hardened binary data flow by replacing `Blob` with `ArrayBuffer` in Server Actions, ensuring strict type safety from API to UI. Admin core type coverage is now 100% strict.
+- [2026-01-22] **Admin Performance & Architecture Refactor**: Addressed "God Component" issues in `page-builder-client.tsx` by extracting monolithic editors into lazy-loaded sub-components. Enforced type safety in `page-actions.ts` and reduced initial bundle size via `next/dynamic`.
+- [2026-01-22] **API Core Optimization**:
+  - **OrdersService**: Eliminated N+1 query loop by implementing `inventoryService.reserveStockBatch`. Decoupled Payment persistence logic into `PaymentService`.
+  - **InventoryService**: Removed `any` casts and implemented transaction-safe batch reservation.
+  - **PaymentService**: Encapsulated direct DB access typesafe methods.
+  - **Database**: Added `idx_inventory_log_sku_date` for scalable stock history.
+  - **Security**: Hardened `AuthService` types and removed context casting hacks.
+  - **Global Build Verification**: ✅ PASSED (API & Web) [2026-01-22].
+- [2026-01-22] **Web Refactoring & Optimization Pass**:
+  - **Performance**: Optimized `middleware.ts` (TTFB reduction) and decomposed root layout data fetching. Moved non-critical widgets (Cart, Wishlist, Notifications) to parallel Suspense boundaries, improving LCP and perceived performance.
+  - **Security**: Refactored Products server actions to use `next-safe-action` with strict Zod schema validation, replacing unvalidated custom wrappers.
+  - **State Management**: Cleaned up legacy DOM event listeners in Cart synchronization, migrating to native Zustand store updates for a predictable React data flow.
+  - **Code Quality**: Programmatically removed "Intern-level" redundant comment blocks («📚 GIẢI THÍCH CHO THỰC TẬP SINH») from **470 files**, resulting in a cleaner, professional codebase.
+  - **Documentation**: Created full `walkthrough.md` and updated technical audit status.
+- [2026-01-22] **API "Poison" Architectural Fixes**:
+  - **OrdersService**: Optimized transactions by moving external GHN API calls outside the DB lock. Standardized `Decimal` usage for all money math.
+  - **PromotionsService**: Implemented Zero Trust recalculation logic; prices are now fetched directly from DB to prevent DTO exploits.
+  - **OrdersProcessor**: Scaled real-time notification broadcasts using `Promise.all` for background jobs.
+  - **Schema Hardening**: Made `Notification.tenantId` required to eliminate cross-tenant data leak risks.
+  - **AuthService**: Enforced `allowSocialRegistration` check at the tenant level.
+- [2026-01-22] Fixed Prisma Client type error by regenerating the client (missing `webhookEvent` model).
+- [2026-01-22] **Critical Schema Fixes**:
+  - **Data Safety**: Changed dangerous `onDelete: Cascade` to `Restrict` for `Order->User` and `InventoryLog->SKU` to prevent catastrophic data loss.
+  - **Multi-tenancy**: Hardened isolation by adding mandatory `tenantId` to `AuditLog`, `PerformanceMetric`, and `OutboxEvent`.
+  - **Migration**: Cleaned conflicting development data and applied migration `fix_critical_schema_issues`.

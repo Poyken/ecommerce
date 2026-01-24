@@ -1,17 +1,4 @@
-/**
- * =====================================================================
- * CHAT FEATURE TYPES - Type definitions cho Chat/Support system
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * File này định nghĩa các types cho Chat feature, bao gồm:
- * 1. Message types: Các loại tin nhắn (TEXT, IMAGE, PRODUCT, ORDER)
- * 2. UI Schema types: Cho AI-driven generative UI (Smart Widget)
- * 3. Socket response types: Responses từ WebSocket
- *
- * =====================================================================
- */
+
 
 // =============================================================================
 // 📨 MESSAGE TYPES

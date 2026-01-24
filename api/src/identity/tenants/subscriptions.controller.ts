@@ -3,21 +3,6 @@
  * SUBSCRIPTIONS.CONTROLLER CONTROLLER
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * Controller này xử lý các HTTP request từ client.
- *
- * 1. NHIỆM VỤ CHÍNH:
- *    - Nhận request từ client
- *    - Validate dữ liệu đầu vào
- *    - Gọi service xử lý logic
- *    - Trả về response cho client
- *
- * 2. CÁC ENDPOINT:
- *    - [Liệt kê các endpoint] *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Tiếp nhận request từ Client, validate dữ liệu và điều phối xử lý logic thông qua các Service tương ứng.
-
  * =====================================================================
  */
 

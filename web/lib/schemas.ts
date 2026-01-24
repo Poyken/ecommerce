@@ -1,27 +1,4 @@
-/**
- * =====================================================================
- * VALIDATION SCHEMAS - Định nghĩa cấu trúc dữ liệu và ràng buộc
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ZOD LIBRARY:
- * - Sử dụng thư viện Zod để định nghĩa schema và validate dữ liệu ở Runtime.
- * - Giúp đảm bảo dữ liệu từ Form hoặc API luôn đúng định dạng trước khi xử lý.
- *
- * 2. SHARED SCHEMAS:
- * - Các schema này được dùng chung cho cả Client (Form validation) và Server (Action validation).
- * - Giúp code DRY (Don't Repeat Yourself) và đồng nhất logic kiểm tra.
- *
- * 3. ERROR MESSAGES:
- * - Các thông báo lỗi được định nghĩa trực tiếp trong schema.
- * - Có thể kết hợp với `react-hook-form` để hiển thị lỗi lên UI một cách tự động. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Runtime Safety: Ngăn chặn lỗi "sập trang" do data từ API gửi về không đúng cấu trúc mong muốn.
- * - UI Sync: Tự động hiển thị lỗi validation ngay dưới ô input khi người dùng nhập sai format (vd: sai định dạng email).
 
- * =====================================================================
- */
 
 import { z } from "zod";
 import { PATTERNS, VALIDATION } from "./constants";

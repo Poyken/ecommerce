@@ -1,25 +1,4 @@
-/**
- * =====================================================================
- * PRODUCT IMAGE GALLERY - Bộ sưu tập ảnh sản phẩm
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. MAIN STAGE & THUMBNAILS:
- * - Hiển thị ảnh chính lớn và một dải ảnh nhỏ (thumbnails) bên dưới để người dùng chuyển đổi.
- * - Sử dụng `framer-motion` để tạo hiệu ứng chuyển ảnh mượt mà.
- *
- * 2. ZOOM & LIGHTBOX:
- * - Hỗ trợ zoom ảnh khi hover trên desktop.
- * - Click vào ảnh chính sẽ mở `ProductImageLightbox` để xem toàn màn hình.
- *
- * 3. SYNC WITH SKUS:
- * - Khi người dùng chọn một biến thể (màu sắc), gallery sẽ tự động chuyển đến ảnh tương ứng của biến thể đó. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

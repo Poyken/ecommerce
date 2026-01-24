@@ -9,31 +9,7 @@ import { useEffect, useState, useTransition } from "react";
 // Thư viện giúp xử lý debounce (trì hoãn thực thi) dễ dàng
 import { useDebouncedCallback } from "use-debounce";
 
-/**
- * =====================================================================
- * SEARCH INPUT - Ô tìm kiếm thông minh
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. DEBOUNCED SEARCH (Tìm kiếm "từ tốn"):
- * - Vấn đề: Nếu user gõ nhanh "iphone 15" -> 9 ký tự -> 9 lần gọi API search -> Server quá tải.
- * - Giải pháp: Dùng `useDebouncedCallback`. Chỉ kích hoạt hàm tìm kiếm khi user DỪNG gõ khoảng 200ms.
- *
- * 2. URL AS STATE (URL là nguồn chân lý):
- * - Thay vì lưu kết quả tìm kiếm vào State React (`const [results, setResults]`), ta đẩy từ khóa lên URL (`?search=ABC`).
- * - Lợi ích:
- *   + User F5 lại trang -> Vẫn còn tìm kiếm.
- *   + User copy link gửi bạn bè -> Bạn bè thấy đúng trang user đang xem.
- *
- * 3. UX OPTIMIZATION (`useTransition`):
- * - Khi đổi URL, Next.js sẽ fetch lại dữ liệu mới. Quá trình này có thể mất 1-2s.
- * - `startTransition` đánh dấu process này là "việc phụ". UI ô input vẫn gõ mượt mà, không bị khựng lại (blocking). *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function SearchInput({
   placeholder,

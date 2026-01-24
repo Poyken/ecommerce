@@ -9,21 +9,6 @@ import { SkuManagerService } from './sku-manager.service';
  * PRODUCTS IMPORT SERVICE - NHẬP DỮ LIỆU SẢN PHẨM TỪ EXCEL
  * =====================================================================
  *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. PRE-FETCH CACHING (Cơ chế nạp trước):
- * - Thay vì mỗi dòng trong Excel lại gọi DB để tìm Category/Brand, ta load TOÀN BỘ chúng vào RAM ngay từ đầu (`categoryMap`, `brandMap`).
- * - Việc tìm kiếm trong RAM (Map) nhanh hơn gấp hàng ngàn lần so với gọi DB liên tục (N+1 Query Problem).
- *
- * 2. GROUPING BY PRODUCT:
- * - Trong Excel, 1 sản phẩm có thể có nhiều SKU (nhiều dòng).
- * - Ta group các dòng này lại theo `productId` hoặc `slug` để chỉ thực hiện `upsert` sản phẩm 1 lần duy nhất, sau đó mới xử lý các SKU bên dưới.
- *
- * 3. UPSERT (Update or Insert):
- * - Dùng `upsert` giúp code ngắn gọn: Nếu sản phẩm đã tồn tại -> Cập nhật thông tin; Nếu chưa có -> Tạo mới. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Xử lý logic nghiệp vụ, phối hợp các service liên quan để hoàn thành yêu cầu từ Controller.
-
  * =====================================================================
  */
 @Injectable()
@@ -117,10 +102,15 @@ export class ProductsImportService {
         }
 
         // 2. Upsert Product
-        const product = await (this.prisma.product as any).upsert({
-          where: (productRow.productId
+        const product = await this.prisma.product.upsert({
+          where: productRow.productId
             ? { id: productRow.productId }
-            : { slug: productRow.productSlug }) as any,
+            : {
+                tenantId_slug: {
+                  tenantId: getTenant()!.id,
+                  slug: productRow.productSlug,
+                },
+              },
           update: {
             name: productRow.productName,
             brandId,
@@ -133,7 +123,7 @@ export class ProductsImportService {
                 },
               ],
             },
-          } as any,
+          },
           create: {
             name: productRow.productName,
             slug:
@@ -144,26 +134,26 @@ export class ProductsImportService {
             categories: {
               create: [{ categoryId, tenantId: getTenant()!.id }],
             },
-          } as any,
+          },
         });
 
         // 3. Upsert SKUs
         for (const skuRow of item.skus) {
-          await (this.prisma.sku as any).upsert({
-            where: (skuRow.skuId
+          await this.prisma.sku.upsert({
+            where: skuRow.skuId
               ? { id: skuRow.skuId }
               : {
                   tenantId_skuCode: {
                     skuCode: skuRow.skuCode as string,
                     tenantId: product.tenantId || '',
                   },
-                }) as any,
+                },
             update: {
               price: skuRow.price,
               salePrice: skuRow.salePrice,
               stock: skuRow.stock,
               status: skuRow.status,
-            } as any,
+            },
             create: {
               skuCode: skuRow.skuCode,
               price: skuRow.price,
@@ -172,7 +162,7 @@ export class ProductsImportService {
               productId: product.id,
               tenantId: product.tenantId,
               status: skuRow.status,
-            } as any,
+            },
           });
           results.success++;
         }

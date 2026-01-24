@@ -1,24 +1,4 @@
-/**
- * =====================================================================
- * PROFILE ORDERS TAB - Tab lịch sử đơn hàng
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. ORDER LISTING:
- * - Hiển thị danh sách các đơn hàng đã mua kèm theo mã đơn hàng, trạng thái, ngày đặt và tổng tiền.
- * - Sử dụng `StatusBadge` để hiển thị trạng thái đơn hàng một cách trực quan (màu sắc khác nhau cho mỗi trạng thái).
- *
- * 2. EMPTY STATE:
- * - Nếu chưa có đơn hàng, hiển thị thông báo kèm nút "Start Shopping" để dẫn dắt người dùng.
- *
- * 3. SKELETON LOADING:
- * - Hiển thị các khung placeholder (skeleton) trong khi đang tải dữ liệu từ API. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 "use client";
 

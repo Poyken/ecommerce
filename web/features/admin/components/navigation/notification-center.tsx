@@ -40,31 +40,7 @@ interface NotificationCenterProps {
   onClear?: (id: string) => void;
 }
 
-/**
- * =====================================================================
- * NOTIFICATION CENTER - Trung tâm thông báo Admin
- * =====================================================================
- *
- * 📚 GIẢI THÍCH CHO THỰC TẬP SINH:
- *
- * 1. NOTIFICATION TYPES:
- * - NEW_ORDER: Có đơn hàng mới cần xử lý.
- * - LOW_STOCK: Sản phẩm sắp hết hàng (< 5 món).
- * - REVIEW: Có đánh giá mới từ khách hàng.
- * - SYSTEM: Thông báo hệ thống (cập nhật, bảo trì).
- *
- * 2. UNREAD BADGE:
- * - Hiển thị số lượng thông báo chưa đọc bằng badge đỏ.
- *
- * 3. QUICK ACTIONS:
- * - Mark as Read: Đánh dấu đã đọc từng thông báo.
- * - Mark All Read: Đánh dấu tất cả đã đọc.
- * - Navigate: Click vào thông báo để đi đến trang liên quan. *
- * 🎯 ỨNG DỤNG THỰC TẾ (APPLICATION):
- * - Component giao diện (UI) tái sử dụng, đảm bảo tính nhất quán về thiết kế (Design System).
 
- * =====================================================================
- */
 
 export function NotificationCenter({
   notifications,
