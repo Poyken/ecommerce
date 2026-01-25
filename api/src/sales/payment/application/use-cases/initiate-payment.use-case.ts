@@ -4,7 +4,7 @@ import { Result } from '@/core/application/result';
 import {
   IOrderRepository,
   ORDER_REPOSITORY,
-} from '@/sales/orders/domain/repositories/order.repository.interface';
+} from '@/sales/domain/repositories/order.repository.interface';
 import { PaymentService } from '../../payment.service';
 import {
   IPaymentRepository,
@@ -52,7 +52,7 @@ export class InitiatePaymentUseCase extends CommandUseCase<
     const payment = Payment.create({
       id: uuidv4(),
       orderId: order.id,
-      amount: order.totalAmount,
+      amount: order.total.amount,
       paymentMethod: input.method,
       tenantId: order.tenantId,
     });
@@ -61,7 +61,7 @@ export class InitiatePaymentUseCase extends CommandUseCase<
 
     try {
       const result = await this.paymentService.processPayment(input.method, {
-        amount: order.totalAmount,
+        amount: order.total.amount,
         orderId: order.id,
         ipAddr: input.ipAddr,
         returnUrl: input.returnUrl,

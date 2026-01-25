@@ -157,6 +157,7 @@ export class PrismaOrderRepository implements IOrderRepository {
       [OrderStatus.SHIPPED]: 0,
       [OrderStatus.DELIVERED]: 0,
       [OrderStatus.CANCELLED]: 0,
+      [OrderStatus.RETURNED]: 0,
       [OrderStatus.REFUNDED]: 0,
     };
 

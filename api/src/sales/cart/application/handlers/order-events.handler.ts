@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { OrderPlacedEvent } from '@/sales/orders/domain/events/order-placed.event';
+import { OrderPlacedEvent } from '@/sales/domain/events/order-placed.event';
 import { ClearCartUseCase } from '../../../application/use-cases/cart/clear-cart.use-case';
 
 @Injectable()

@@ -37,7 +37,7 @@ export function BusinessInsightsWidget() {
         ? await adminInsightsService.refreshInsights()
         : await adminInsightsService.getInsights();
 
-      if (res.success) {
+      if (res && res.data) {
         setData(res.data);
       }
     } catch (error) {

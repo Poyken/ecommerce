@@ -28,6 +28,12 @@ import {
   ListProductsUseCase,
   UpdateProductUseCase,
   DeleteProductUseCase,
+  GetRelatedProductsUseCase,
+  SemanticSearchUseCase,
+  BulkUpdateSkusUseCase,
+  GetSkusDetailsUseCase,
+  GetProductTranslationsUseCase,
+  TranslateProductUseCase,
 } from '../application/use-cases/products';
 
 // Interface Tokens
@@ -60,6 +66,12 @@ import {
     ListProductsUseCase,
     UpdateProductUseCase,
     DeleteProductUseCase,
+    GetRelatedProductsUseCase,
+    SemanticSearchUseCase,
+    BulkUpdateSkusUseCase,
+    GetSkusDetailsUseCase,
+    GetProductTranslationsUseCase,
+    TranslateProductUseCase,
     // Repositories
     {
       provide: PRODUCT_REPOSITORY,
@@ -87,6 +99,12 @@ import {
     ListProductsUseCase,
     UpdateProductUseCase,
     DeleteProductUseCase,
+    GetRelatedProductsUseCase,
+    SemanticSearchUseCase,
+    BulkUpdateSkusUseCase,
+    GetSkusDetailsUseCase,
+    GetProductTranslationsUseCase,
+    TranslateProductUseCase,
   ],
 })
 export class ProductsModule {}

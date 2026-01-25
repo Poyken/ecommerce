@@ -26,36 +26,18 @@ import {
   InvalidEntityStateError,
   BusinessRuleViolationError,
 } from '@core/domain/errors/domain.error';
-
-// =====================================================================
-// ENUMS
-// =====================================================================
-
-export enum OrderStatus {
-  PENDING = 'PENDING', // Awaiting payment
-  CONFIRMED = 'CONFIRMED', // Payment received
-  PROCESSING = 'PROCESSING', // Being prepared
-  SHIPPED = 'SHIPPED', // In transit
-  DELIVERED = 'DELIVERED', // Delivered to customer
-  CANCELLED = 'CANCELLED', // Cancelled
-  REFUNDED = 'REFUNDED', // Refunded
-}
-
-export enum PaymentStatus {
-  PENDING = 'PENDING',
-  PAID = 'PAID',
-  FAILED = 'FAILED',
-  REFUNDED = 'REFUNDED',
-}
+import { OrderStatus, PaymentStatus } from '../enums/order-status.enum';
+export { OrderStatus, PaymentStatus };
 
 // Valid status transitions
 const VALID_TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
   [OrderStatus.PENDING]: [OrderStatus.CONFIRMED, OrderStatus.CANCELLED],
   [OrderStatus.CONFIRMED]: [OrderStatus.PROCESSING, OrderStatus.CANCELLED],
   [OrderStatus.PROCESSING]: [OrderStatus.SHIPPED, OrderStatus.CANCELLED],
-  [OrderStatus.SHIPPED]: [OrderStatus.DELIVERED],
-  [OrderStatus.DELIVERED]: [OrderStatus.REFUNDED],
+  [OrderStatus.SHIPPED]: [OrderStatus.DELIVERED, OrderStatus.RETURNED],
+  [OrderStatus.DELIVERED]: [OrderStatus.RETURNED],
   [OrderStatus.CANCELLED]: [],
+  [OrderStatus.RETURNED]: [],
   [OrderStatus.REFUNDED]: [],
 };
 
@@ -320,6 +302,10 @@ export class Order extends AggregateRoot<OrderProps> {
     return this.props.customerId;
   }
 
+  get userId(): string {
+    return this.props.customerId;
+  }
+
   get customerEmail(): string {
     return this.props.customerEmail;
   }
@@ -416,6 +402,14 @@ export class Order extends AggregateRoot<OrderProps> {
     ].includes(this.props.status);
   }
 
+  /**
+   * Validate state machine transition logic
+   */
+  canTransitionTo(newStatus: OrderStatus): boolean {
+    const validTransitions = VALID_TRANSITIONS[this.props.status];
+    return validTransitions ? validTransitions.includes(newStatus) : false;
+  }
+
   // =====================================================================
   // BUSINESS METHODS
   // =====================================================================
@@ -424,7 +418,11 @@ export class Order extends AggregateRoot<OrderProps> {
    * Confirm order after payment
    */
   confirm(paymentId: string, transactionId?: string): void {
-    this.assertCanTransitionTo(OrderStatus.CONFIRMED);
+    if (!this.canTransitionTo(OrderStatus.CONFIRMED)) {
+      throw new BusinessRuleViolationError(
+        `Invalid status transition from ${this.props.status} to ${OrderStatus.CONFIRMED}`,
+      );
+    }
 
     this.props.status = OrderStatus.CONFIRMED;
     this.props.payment = {
@@ -441,10 +439,27 @@ export class Order extends AggregateRoot<OrderProps> {
   }
 
   /**
+   * Mark as paid
+   */
+  markAsPaid(): void {
+    if (this.props.payment.status === PaymentStatus.PAID) return;
+    this.props.payment = {
+      ...this.props.payment,
+      status: PaymentStatus.PAID,
+      paidAt: new Date(),
+    };
+    this.touch();
+  }
+
+  /**
    * Start processing the order
    */
   startProcessing(): void {
-    this.assertCanTransitionTo(OrderStatus.PROCESSING);
+    if (!this.canTransitionTo(OrderStatus.PROCESSING)) {
+      throw new BusinessRuleViolationError(
+        `Invalid status transition from ${this.props.status} to ${OrderStatus.PROCESSING}`,
+      );
+    }
     this.props.status = OrderStatus.PROCESSING;
     this.touch();
   }

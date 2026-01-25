@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
-import { useSession } from "next-auth/react";
+import { useAuth } from "@/features/auth/providers/auth-provider";
 
 /**
  * =====================================================================
@@ -10,12 +10,12 @@ import { useSession } from "next-auth/react";
  * =====================================================================
  */
 export function useSocket() {
-  const { data: session } = useSession();
+  const { accessToken } = useAuth();
   const socketRef = useRef<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
-    if (!session?.accessToken) return;
+    if (!accessToken) return;
 
     const socketUrl =
       process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
@@ -23,7 +23,7 @@ export function useSocket() {
     // Khởi tạo socket
     const socket = io(`${socketUrl}/notifications`, {
       auth: {
-        token: session.accessToken,
+        token: accessToken,
       },
       transports: ["websocket"],
     });
@@ -48,7 +48,7 @@ export function useSocket() {
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [session?.accessToken]);
+  }, [accessToken]);
 
   return {
     socket: socketRef.current,

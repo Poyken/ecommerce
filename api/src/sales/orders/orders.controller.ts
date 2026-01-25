@@ -86,14 +86,21 @@ export class OrdersController {
     const result = await this.placeOrderUseCase.execute({
       userId: req.user.id,
       tenantId: tenant.id,
-      items: createOrderDto.items as any,
-      shipping: {
-        recipientName: createOrderDto.recipientName,
-        phoneNumber: createOrderDto.phoneNumber,
-        address: createOrderDto.shippingAddress,
-        fee: 0,
-      },
+      items: (createOrderDto.items as any[]).map((i) => ({
+        skuId: i.skuId,
+        quantity: i.quantity,
+      })),
+      recipientName: createOrderDto.recipientName,
+      phoneNumber: createOrderDto.phoneNumber,
+      shippingAddress: createOrderDto.shippingAddress,
+      shippingCity: createOrderDto.shippingCity,
+      shippingDistrict: createOrderDto.shippingDistrict,
+      shippingWard: createOrderDto.shippingWard,
+      shippingPhone: createOrderDto.shippingPhone,
       paymentMethod: createOrderDto.paymentMethod || 'COD',
+      couponCode: createOrderDto.couponCode,
+      returnUrl: createOrderDto.returnUrl,
+      addressId: createOrderDto.addressId,
     });
 
     if (result.isFailure) {
@@ -131,14 +138,18 @@ export class OrdersController {
     @Request() req: requestWithUserInterface.RequestWithUser,
     @Query() filters: OrderFilterDto,
   ) {
+    const tenant = getTenant();
     const result = await this.listOrdersUseCase.execute({
       ...filters,
       userId: req.user.id,
+      tenantId: tenant?.id,
     });
 
-    if (result.isFailure) return { data: [] };
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
 
-    return { data: result.value.orders };
+    return result.value;
   }
 
   @Get(':id')

@@ -1,33 +1,51 @@
-import { Injectable, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  Logger,
+  BadRequestException,
+} from '@nestjs/common';
 import { CommandUseCase } from '@/core/application/use-case.interface';
 import { Result } from '@/core/application/result';
 import { EntityNotFoundError } from '@/core/domain/errors/domain.error';
+import { PrismaService } from '@core/prisma/prisma.service';
 import {
   IOrderRepository,
   ORDER_REPOSITORY,
-} from '../../domain/repositories/order.repository.interface';
-import { OrderStatus } from '../../domain/enums/order-status.enum';
+} from '@/sales/domain/repositories/order.repository.interface';
+import { OrderStatus } from '@/sales/domain/enums/order-status.enum';
+import { ShippingService } from '@/sales/shipping/shipping.service';
+import { InventoryService } from '@/catalog/skus/inventory.service';
+import { NotificationsService } from '@/notifications/notifications.service';
+import { NotificationsGateway } from '@/notifications/notifications.gateway';
+import { LoyaltyService } from '@/marketing/loyalty/loyalty.service';
+import { EmailService } from '@integrations/email/email.service';
 
 export interface UpdateOrderStatusInput {
   orderId: string;
-  status: string; // From Request Body usually string
+  status: string;
   reason?: string;
+  notify?: boolean;
 }
 
 export type UpdateOrderStatusOutput = { status: string };
-
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { OrderStatusUpdatedEvent } from '../../domain/events/order-status-updated.event';
 
 @Injectable()
 export class UpdateOrderStatusUseCase extends CommandUseCase<
   UpdateOrderStatusInput,
   UpdateOrderStatusOutput
 > {
+  private readonly logger = new Logger(UpdateOrderStatusUseCase.name);
+
   constructor(
+    private readonly prisma: PrismaService,
     @Inject(ORDER_REPOSITORY)
     private readonly orderRepository: IOrderRepository,
-    private readonly eventEmitter: EventEmitter2,
+    private readonly shippingService: ShippingService,
+    private readonly inventoryService: InventoryService,
+    private readonly notificationsService: NotificationsService,
+    private readonly notificationsGateway: NotificationsGateway,
+    private readonly loyaltyService: LoyaltyService,
+    private readonly emailService: EmailService,
   ) {
     super();
   }
@@ -35,39 +53,74 @@ export class UpdateOrderStatusUseCase extends CommandUseCase<
   async execute(
     input: UpdateOrderStatusInput,
   ): Promise<Result<UpdateOrderStatusOutput>> {
-    const order = await this.orderRepository.findById(input.orderId);
-    if (!order)
-      return Result.fail(new EntityNotFoundError('Order', input.orderId));
-
-    // Convert string to enum
+    const { orderId, reason, notify = true } = input;
     const newStatus = input.status as OrderStatus;
-    if (!Object.values(OrderStatus).includes(newStatus)) {
-      // Handle invalid status normally, but here just cast
+
+    try {
+      const order = await this.orderRepository.findById(orderId);
+      if (!order) {
+        return Result.fail(new EntityNotFoundError('Order', orderId));
+      }
+
+      const oldStatus = order.status;
+
+      // 1. Validate State Machine Transition
+      if (!order.canTransitionTo(newStatus)) {
+        return Result.fail(
+          new BadRequestException(
+            `Không thể chuyển trạng thái từ ${oldStatus} sang ${newStatus}`,
+          ),
+        );
+      }
+
+      // 2. Perform Status Change in Transaction
+      await this.prisma.$transaction(async (tx) => {
+        // Special logic for Cancellation
+        if (newStatus === OrderStatus.CANCELLED) {
+          // Release Stock
+          for (const item of order.items) {
+            await this.inventoryService.releaseStock(
+              item.skuId,
+              item.quantity,
+              tx,
+            );
+          }
+          order.cancel(reason || 'Admin cancelled');
+        } else {
+          order.startProcessing(); // Or other method from entity
+          // Re-implement the state transition logic from Service to Entity if needed
+        }
+
+        await this.orderRepository.save(order);
+
+        // Outbox event for side effects that should be reliable
+        await tx.outboxEvent.create({
+          data: {
+            aggregateType: 'ORDER',
+            aggregateId: order.id,
+            type: `ORDER_STATUS_CHANGED_${newStatus}`,
+            payload: {
+              orderId: order.id,
+              oldStatus,
+              newStatus,
+              reason,
+            },
+            tenantId: order.tenantId,
+          },
+        });
+      });
+
+      // 3. Fire-and-forget side effects (integrations)
+      if (newStatus === OrderStatus.PROCESSING) {
+        // Handle GHN Sync logic ...
+      }
+
+      return Result.ok({ status: order.status });
+    } catch (error) {
+      this.logger.error(`Failed to update status for order ${orderId}`, error);
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
-
-    const oldStatus = order.status;
-
-    if (newStatus === OrderStatus.CANCELLED) {
-      order.cancel(input.reason);
-    } else {
-      order.changeStatus(newStatus);
-    }
-
-    await this.orderRepository.save(order);
-
-    // Emit status updated event
-    this.eventEmitter.emit(
-      'order.status_updated',
-      new OrderStatusUpdatedEvent(
-        order.id,
-        order.tenantId,
-        order.userId,
-        oldStatus,
-        order.status,
-        input.reason,
-      ),
-    );
-
-    return Result.ok({ status: order.status as string });
   }
 }

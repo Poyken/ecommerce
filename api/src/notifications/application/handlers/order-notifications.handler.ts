@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { OrderPlacedEvent } from '@/sales/orders/domain/events/order-placed.event';
-import { OrderCancelledEvent } from '@/sales/orders/domain/events/order-cancelled.event';
-import { OrderStatusUpdatedEvent } from '@/sales/orders/domain/events/order-status-updated.event';
+import { OrderPlacedEvent } from '@/sales/domain/events/order-placed.event';
+import { OrderCancelledEvent } from '@/sales/domain/events/order-cancelled.event';
+import { OrderStatusUpdatedEvent } from '@/sales/domain/events/order-status-updated.event';
 import { NotificationsService } from '../../notifications.service';
 import { PaymentSuccessfulEvent } from '@/sales/payment/domain/events/payment-successful.event';
 

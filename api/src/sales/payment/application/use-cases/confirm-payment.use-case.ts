@@ -4,12 +4,12 @@ import { Result } from '@/core/application/result';
 import {
   IOrderRepository,
   ORDER_REPOSITORY,
-} from '@/sales/orders/domain/repositories/order.repository.interface';
+} from '@/sales/domain/repositories/order.repository.interface';
 import {
   IPaymentRepository,
   PAYMENT_REPOSITORY,
 } from '../../domain/repositories/payment.repository.interface';
-import { OrderStatus } from '@/sales/orders/domain/enums/order-status.enum';
+import { OrderStatus } from '@/sales/domain/enums/order-status.enum';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PaymentSuccessfulEvent } from '../../domain/events/payment-successful.event';
 
@@ -46,7 +46,7 @@ export class ConfirmPaymentUseCase extends CommandUseCase<
     if (input.status === 'SUCCESS') {
       order.markAsPaid();
       if (order.status === OrderStatus.PENDING) {
-        order.changeStatus(OrderStatus.CONFIRMED);
+        order.confirm(payment?.id || 'ONLINE', input.gatewayTransactionId);
       }
 
       if (payment) {

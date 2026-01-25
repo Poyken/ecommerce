@@ -107,6 +107,7 @@ async function RootProviders({
         <AuthProvider
           initialPermissions={initialPermissions}
           isAuthenticated={!!accessToken}
+          accessToken={accessToken}
         >
           <TenantProvider>
             <ThemeProvider

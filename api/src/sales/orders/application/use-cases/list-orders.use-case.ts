@@ -4,19 +4,28 @@ import { Result } from '@/core/application/result';
 import {
   IOrderRepository,
   ORDER_REPOSITORY,
-} from '../../domain/repositories/order.repository.interface';
-import { Order } from '../../domain/entities/order.entity';
+} from '@/sales/domain/repositories/order.repository.interface';
+import { OrderStatus } from '@/sales/domain/enums/order-status.enum';
 
 export interface ListOrdersInput {
   userId?: string;
   status?: string;
-  tenantId?: string; // Implicitly required usually
+  tenantId?: string;
+  page?: number;
   limit?: number;
-  offset?: number;
+  search?: string;
+  fromDate?: Date;
+  toDate?: Date;
 }
 
 export type ListOrdersOutput = {
-  orders: Record<string, unknown>[];
+  orders: any[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    lastPage: number;
+  };
 };
 
 @Injectable()
@@ -32,26 +41,32 @@ export class ListOrdersUseCase extends QueryUseCase<
   }
 
   async execute(input: ListOrdersInput): Promise<Result<ListOrdersOutput>> {
-    // Repository methods for filtering need enhancement
-    // Currently IOrderRepository has finding by UserId OR Status independently.
-    // For now, assume simple logic: if userId provided, prioritize it.
+    const { tenantId = 'default', ...filters } = input;
 
-    let orders: Order[] = [];
+    try {
+      const result = await this.orderRepository.findAll(tenantId, {
+        customerId: filters.userId,
+        status: filters.status as OrderStatus,
+        page: filters.page || 1,
+        limit: filters.limit || 10,
+        search: filters.search,
+        fromDate: filters.fromDate,
+        toDate: filters.toDate,
+      });
 
-    if (input.userId) {
-      orders = await this.orderRepository.findByUserId(input.userId);
-      if (input.status) {
-        orders = orders.filter((o) => (o as any).props.status === input.status);
-      }
-    } else if (input.status) {
-      orders = await this.orderRepository.findByStatus(input.status);
+      return Result.ok({
+        orders: result.data.map((o) => o.toPersistence()),
+        meta: {
+          total: result.meta.total || 0,
+          page: result.meta.page || 1,
+          limit: result.meta.limit || 10,
+          lastPage: result.meta.lastPage || 1,
+        },
+      });
+    } catch (error) {
+      return Result.fail(
+        error instanceof Error ? error : new Error(String(error)),
+      );
     }
-
-    // Pagination logic usually belongs in Repo, but here we slice in memory for MVP
-    // Assuming simple repository implementations
-
-    return Result.ok({
-      orders: orders.map((o) => o.toPersistence()),
-    });
   }
 }

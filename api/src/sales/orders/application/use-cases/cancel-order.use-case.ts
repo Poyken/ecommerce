@@ -1,26 +1,22 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import { CommandUseCase } from '@/core/application/use-case.interface';
 import { Result } from '@/core/application/result';
-import {
-  EntityNotFoundError,
-  BusinessRuleViolationError,
-} from '@/core/domain/errors/domain.error';
+import { EntityNotFoundError } from '@/core/domain/errors/domain.error';
 import {
   IOrderRepository,
   ORDER_REPOSITORY,
-} from '../../domain/repositories/order.repository.interface';
+} from '@/sales/domain/repositories/order.repository.interface';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { OrderCancelledEvent } from '@/sales/domain/events/order-cancelled.event';
 
 export interface CancelOrderInput {
   orderId: string;
-  userId: string; // User requesting cancellation
+  userId: string;
   reason?: string;
-  isAdmin?: boolean; // Or isSupport
+  isAdmin?: boolean;
 }
 
 export type CancelOrderOutput = { success: boolean };
-
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { OrderCancelledEvent } from '../../domain/events/order-cancelled.event';
 
 @Injectable()
 export class CancelOrderUseCase extends CommandUseCase<
@@ -40,33 +36,30 @@ export class CancelOrderUseCase extends CommandUseCase<
     if (!order)
       return Result.fail(new EntityNotFoundError('Order', input.orderId));
 
-    // Authorization: User ID match or Admin
     if (!input.isAdmin && order.userId !== input.userId) {
-      return Result.fail(new EntityNotFoundError('Order', input.orderId));
+      return Result.fail(
+        new BadRequestException('Bạn không có quyền hủy đơn hàng này'),
+      );
     }
 
     try {
-      order.cancel(input.reason);
+      order.cancel(input.reason || 'User requested');
       await this.orderRepository.save(order);
 
-      // Emit event
       this.eventEmitter.emit(
         'order.cancelled',
         new OrderCancelledEvent(
           order.id,
           order.tenantId,
           order.userId,
-          order.items.map((i) => ({
-            skuId: i.skuId,
-            quantity: i.quantity,
-          })),
-          input.reason,
+          order.items.map((i) => ({ skuId: i.skuId, quantity: i.quantity })),
+          input.reason || 'User requested',
         ),
       );
 
       return Result.ok({ success: true });
     } catch (e) {
-      return Result.fail(new BusinessRuleViolationError((e as Error).message));
+      return Result.fail(e instanceof Error ? e : new Error(String(e)));
     }
   }
 }

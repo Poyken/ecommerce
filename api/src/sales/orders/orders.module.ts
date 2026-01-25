@@ -19,8 +19,8 @@ import { OrdersExportService } from './orders-export.service';
 import { OrdersRepository } from './orders.repository';
 
 // Clean Architecture
-import { ORDER_REPOSITORY } from './domain/repositories/order.repository.interface';
-import { PrismaOrderRepository } from './infrastructure/repositories/prisma-order.repository';
+import { ORDER_REPOSITORY } from '@/sales/domain/repositories/order.repository.interface';
+import { PrismaOrderRepository } from '@/sales/infrastructure/repositories/prisma-order.repository';
 import * as UseCases from './application/use-cases';
 
 @Module({

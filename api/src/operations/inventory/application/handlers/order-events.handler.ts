@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { OrderPlacedEvent } from '@/sales/orders/domain/events/order-placed.event';
-import { OrderCancelledEvent } from '@/sales/orders/domain/events/order-cancelled.event';
+import { OrderPlacedEvent } from '@/sales/domain/events/order-placed.event';
+import { OrderCancelledEvent } from '@/sales/domain/events/order-cancelled.event';
 import { PaymentSuccessfulEvent } from '@/sales/payment/domain/events/payment-successful.event';
 import { ReserveStockUseCase } from '../use-cases/reserve-stock.use-case';
 import { FinalizeStockDeductionUseCase } from '../use-cases/finalize-stock-deduction.use-case';

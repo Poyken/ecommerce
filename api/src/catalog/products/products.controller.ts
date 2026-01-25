@@ -47,6 +47,12 @@ import { GetProductUseCase } from '@/catalog/application/use-cases/products/get-
 import { UpdateProductUseCase } from '@/catalog/application/use-cases/products/update-product.use-case';
 import { DeleteProductUseCase } from '@/catalog/application/use-cases/products/delete-product.use-case';
 import { ListProductsUseCase } from '@/catalog/application/use-cases/products/list-products.use-case';
+import { GetRelatedProductsUseCase } from '@/catalog/application/use-cases/products/get-related-products.use-case';
+import { SemanticSearchUseCase } from '@/catalog/application/use-cases/products/semantic-search.use-case';
+import { BulkUpdateSkusUseCase } from '@/catalog/application/use-cases/products/bulk-update-skus.use-case';
+import { GetSkusDetailsUseCase } from '@/catalog/application/use-cases/products/get-skus-details.use-case';
+import { GetProductTranslationsUseCase } from '@/catalog/application/use-cases/products/get-product-translations.use-case';
+import { TranslateProductUseCase } from '@/catalog/application/use-cases/products/translate-product.use-case';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ProductMapper } from '@/catalog/infrastructure/mappers/product.mapper';
 
@@ -54,7 +60,6 @@ import { ProductMapper } from '@/catalog/infrastructure/mappers/product.mapper';
 @Controller('products')
 export class ProductsController {
   constructor(
-    private readonly productsService: ProductsService,
     private readonly exportService: ProductsExportService,
     private readonly importService: ProductsImportService,
     private readonly createProductUseCase: CreateProductUseCase,
@@ -62,6 +67,12 @@ export class ProductsController {
     private readonly getProductUseCase: GetProductUseCase,
     private readonly updateProductUseCase: UpdateProductUseCase,
     private readonly deleteProductUseCase: DeleteProductUseCase,
+    private readonly getRelatedProductsUseCase: GetRelatedProductsUseCase,
+    private readonly semanticSearchUseCase: SemanticSearchUseCase,
+    private readonly bulkUpdateSkusUseCase: BulkUpdateSkusUseCase,
+    private readonly getSkusDetailsUseCase: GetSkusDetailsUseCase,
+    private readonly getProductTranslationsUseCase: GetProductTranslationsUseCase,
+    private readonly translateProductUseCase: TranslateProductUseCase,
   ) {}
 
   /**
@@ -139,9 +150,21 @@ export class ProductsController {
   })
   async semanticSearch(
     @Query('q') query: string,
+    @Req() req: any,
     @Query('limit') limit?: string,
   ) {
-    return this.productsService.semanticSearch(query, Number(limit) || 10);
+    const tenantId = req.user?.tenantId || req.headers['x-tenant-id'];
+    const result = await this.semanticSearchUseCase.execute({
+      query,
+      limit: Number(limit) || 10,
+      tenantId,
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return result.value.products;
   }
 
   /**
@@ -169,7 +192,15 @@ export class ProductsController {
   @Cached(300000)
   @ApiListResponse('Product', { summary: 'Lấy danh sách sản phẩm liên quan' })
   async getRelated(@Param('id') id: string) {
-    return this.productsService.getRelatedProducts(id);
+    const result = await this.getRelatedProductsUseCase.execute({
+      productId: id,
+    });
+
+    if (result.isFailure) {
+      return []; // Silently return empty for simplified UI experience
+    }
+
+    return result.value.products.map((p) => ProductMapper.toPersistence(p));
   }
 
   /**
@@ -207,7 +238,16 @@ export class ProductsController {
     @Param('id') id: string,
     @Body() body: BulkUpdateSkusDto,
   ) {
-    return this.productsService.bulkUpdateSkus(id, body.skus);
+    const result = await this.bulkUpdateSkusUseCase.execute({
+      productId: id,
+      skus: body.skus,
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return result.value;
   }
 
   /**
@@ -236,7 +276,15 @@ export class ProductsController {
     summary: 'Lấy thông tin nhiều SKUs (cho Guest Cart)',
   })
   async getSkusDetails(@Body() body: { skuIds: string[] }) {
-    return this.productsService.getSkusByIds(body.skuIds);
+    const result = await this.getSkusDetailsUseCase.execute({
+      skuIds: body.skuIds,
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return result.value.skus;
   }
 
   @Get(':id/translations')
@@ -244,7 +292,15 @@ export class ProductsController {
   @RequirePermissions('product:read')
   @ApiListResponse('any', { summary: 'Lấy bản dịch sản phẩm' })
   async getTranslations(@Param('id') id: string) {
-    return this.productsService.getTranslations(id);
+    const result = await this.getProductTranslationsUseCase.execute({
+      productId: id,
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return result.value.translations;
   }
 
   @Post(':id/translations')
@@ -255,7 +311,16 @@ export class ProductsController {
     @Param('id') id: string,
     @Body() body: { locale: string; name: string; description?: string },
   ) {
-    return this.productsService.translate(id, body);
+    const result = await this.translateProductUseCase.execute({
+      productId: id,
+      ...body,
+    });
+
+    if (result.isFailure) {
+      throw new BadRequestException(result.error.message);
+    }
+
+    return result.value.translation;
   }
 
   /**

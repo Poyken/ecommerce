@@ -1,4 +1,4 @@
-import { OrderStatus } from '../enums/order-status.enum';
+import { OrderStatus } from '@/sales/domain/enums/order-status.enum';
 
 export class OrderStatusUpdatedEvent {
   constructor(

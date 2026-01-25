@@ -5,11 +5,13 @@ export enum OrderStatus {
   SHIPPED = 'SHIPPED', // Đang giao hàng
   DELIVERED = 'DELIVERED', // Đã giao thành công
   CANCELLED = 'CANCELLED', // Đã hủy
-  RETURNED = 'RETURNED', // Đã trả hàng/hoàn tiền
+  RETURNED = 'RETURNED', // Đã trả hàng
+  REFUNDED = 'REFUNDED', // Đã hoàn tiền
 }
 
 export enum PaymentStatus {
-  UNPAID = 'UNPAID',
+  PENDING = 'PENDING',
   PAID = 'PAID',
   REFUNDED = 'REFUNDED',
+  FAILED = 'FAILED',
 }

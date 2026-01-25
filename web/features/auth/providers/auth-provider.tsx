@@ -21,12 +21,14 @@ import {
 interface AuthContextType {
   permissions: string[]; // Danh sách các quyền của user
   isAuthenticated: boolean; // Trạng thái đã đăng nhập hay chưa
+  accessToken?: string; // Token dùng cho WebSocket hoặc API client
   hasPermission: (permission: string) => boolean; // Hàm kiểm tra quyền nhanh
 }
 
 const AuthContext = createContext<AuthContextType>({
   permissions: [],
   isAuthenticated: false,
+  accessToken: undefined,
   hasPermission: () => false,
 });
 
@@ -34,10 +36,12 @@ export function AuthProvider({
   children,
   initialPermissions,
   isAuthenticated = false,
+  accessToken,
 }: {
   children: React.ReactNode;
   initialPermissions?: string[];
   isAuthenticated?: boolean;
+  accessToken?: string;
 }) {
   const [fetchedPermissions, setFetchedPermissions] = useState<string[]>([]);
 
@@ -85,9 +89,10 @@ export function AuthProvider({
     () => ({
       permissions,
       isAuthenticated,
+      accessToken,
       hasPermission,
     }),
-    [permissions, isAuthenticated, hasPermission]
+    [permissions, isAuthenticated, accessToken, hasPermission]
   );
 
   return (
