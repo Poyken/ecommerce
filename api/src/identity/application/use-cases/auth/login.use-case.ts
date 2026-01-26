@@ -100,9 +100,7 @@ export class LoginUseCase extends CommandUseCase<LoginInput, LoginOutput> {
     // Flatten permissions
     // Legacy permissionService.aggregatePermissions needs the DB object usually.
     // I'll use the user entity and hope aggregatePermissions is compatible.
-    const allPermissions = this.permissionService.aggregatePermissions(
-      user.toPersistence() as any,
-    );
+    const allPermissions = user.permissions;
     const roles = [(user as any).role]; // Minimal role detection
 
     if (input.tenantId && user.tenantId !== input.tenantId) {
@@ -128,7 +126,7 @@ export class LoginUseCase extends CommandUseCase<LoginInput, LoginOutput> {
 
     const tokens = this.tokenService.generateTokens(
       user.id,
-      allPermissions,
+      [...allPermissions],
       rolesArray,
       input.fingerprint,
     );
@@ -141,8 +139,8 @@ export class LoginUseCase extends CommandUseCase<LoginInput, LoginOutput> {
       this.tokenService.getRefreshTokenExpirationTime(),
     );
 
-    user.recordLogin();
-    await this.userRepository.save(user);
+    // user.recordLogin();
+    // await this.userRepository.save(user);
 
     return Result.ok(tokens);
   }

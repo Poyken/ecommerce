@@ -1,4 +1,4 @@
-import { Injectable, Logger, Inject } from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { CommandUseCase } from '@/core/application/use-case.interface';
 import { Result } from '@/core/application/result';
 import {
@@ -28,6 +28,7 @@ export class UpdateShipmentStatusUseCase extends CommandUseCase<
   constructor(
     @Inject(SHIPMENT_REPOSITORY)
     private readonly shipmentRepository: IShipmentRepository,
+    @Inject(forwardRef(() => UpdateOrderStatusUseCase))
     private readonly updateOrderStatusUseCase: UpdateOrderStatusUseCase,
   ) {
     super();

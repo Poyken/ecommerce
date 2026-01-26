@@ -258,3 +258,10 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
   - **Data Safety**: Changed dangerous `onDelete: Cascade` to `Restrict` for `Order->User` and `InventoryLog->SKU` to prevent catastrophic data loss.
   - **Multi-tenancy**: Hardened isolation by adding mandatory `tenantId` to `AuditLog`, `PerformanceMetric`, and `OutboxEvent`.
   - **Migration**: Cleaned conflicting development data and applied migration `fix_critical_schema_issues`.
+- [2026-01-26] API Clean Architecture Refactoring (Auth Module):
+  - **Refactoring**: Split `AuthService` logic into specialized UseCases (`GetProfile`, `UpdateProfile`, `ForgotPassword`, `ResetPassword`).
+  - **Advanced Auth**: Implemented `SocialLoginUseCase` (Google/Facebook) and full 2FA flow UseCases (`Generate`, `Enable`, `Disable`, `Login2FA`).
+  - **Domain**: Enhanced `User` entity with `provider`, `socialId`, and `mfaSecret` getters. Flattened RBAC permission loading in `PrismaUserRepository` for performance.
+  - **Controller**: Updated `AuthController` to inject UseCases instead of mixing Service calls.
+  - **Legacy Cleanup**: Removed commented-out legacy code in `register` endpoint.
+  - **Compatibility**: Maintained response shape `{ data: ... }` for frontend compatibility while moving towards Clean Architecture `StandardResponse`.

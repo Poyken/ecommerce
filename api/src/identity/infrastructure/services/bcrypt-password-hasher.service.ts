@@ -10,7 +10,11 @@ export class BcryptPasswordHasher extends IPasswordHasher {
     return bcrypt.hash(password, this.saltRounds);
   }
 
-  async compare(password: string, hash: string): Promise<boolean> {
-    return bcrypt.compare(password, hash);
+  async compare(plain: string, hashed: string): Promise<boolean> {
+    const match = await bcrypt.compare(plain, hashed);
+    if (!match) {
+        console.log('DEBUG BCRYPT FAIL:', { plain, hashed, match });
+    }
+    return match;
   }
 }

@@ -55,6 +55,7 @@ import { GetProductTranslationsUseCase } from '@/catalog/application/use-cases/p
 import { TranslateProductUseCase } from '@/catalog/application/use-cases/products/translate-product.use-case';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { ProductMapper } from '@/catalog/infrastructure/mappers/product.mapper';
+import { getTenant } from '@/core/tenant/tenant.context';
 
 @ApiTags('Products')
 @Controller('products')
@@ -111,10 +112,15 @@ export class ProductsController {
     summary: 'Lấy danh sách sản phẩm (có phân trang & lọc)',
   })
   async findAll(@Query() query: FilterProductDto, @Req() req: any) {
-    // For public endpoints, try to get tenant from domain/headers if not authenticated
-    // But for now assume a default or extracted from request
+    // For public endpoints, try to get tenant from context first (resolved by Middleware), 
+    // then fallback to user, header, or default.
     const tenantId =
-      req.user?.tenantId || req.headers['x-tenant-id'] || 'default'; // Simplification
+      getTenant()?.id ||
+      req.user?.tenantId ||
+      req.headers['x-tenant-id'] ||
+      'default';
+    
+    console.log(`[ProductsController] findAll using tenantId: ${tenantId}, contextTenantId: ${getTenant()?.id}, reqUserTenantId: ${req.user?.tenantId}`);
 
     const result = await this.listProductsUseCase.execute({
       tenantId,
@@ -153,7 +159,8 @@ export class ProductsController {
     @Req() req: any,
     @Query('limit') limit?: string,
   ) {
-    const tenantId = req.user?.tenantId || req.headers['x-tenant-id'];
+    const contextTenant = getTenant();
+    const tenantId = req.user?.tenantId || contextTenant?.id || req.headers['x-tenant-id'];
     const result = await this.semanticSearchUseCase.execute({
       query,
       limit: Number(limit) || 10,

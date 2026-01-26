@@ -292,6 +292,18 @@ export class PrismaProductRepository implements IProductRepository {
       images: {
         orderBy: { displayOrder: 'asc' as const },
       },
+      skus: {
+        include: {
+          images: { orderBy: { displayOrder: 'asc' as const } },
+          optionValues: {
+            include: {
+              optionValue: {
+                include: { option: true },
+              },
+            },
+          },
+        },
+      },
     };
   }
 

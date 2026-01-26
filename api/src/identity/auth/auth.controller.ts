@@ -57,6 +57,15 @@ import {
   RegisterUseCase,
   RefreshTokenUseCase,
   LogoutUseCase,
+  GetProfileUseCase,
+  UpdateProfileUseCase,
+  ForgotPasswordUseCase,
+  ResetPasswordUseCase,
+  SocialLoginUseCase,
+  Generate2FAUseCase,
+  Enable2FAUseCase,
+  Disable2FAUseCase,
+  Login2FAUseCase,
 } from '../application/use-cases/auth';
 import { getTenant } from '@core/tenant/tenant.context';
 
@@ -94,6 +103,15 @@ export class AuthController {
     private readonly registerUseCase: RegisterUseCase,
     private readonly logoutUseCase: LogoutUseCase,
     private readonly refreshTokenUseCase: RefreshTokenUseCase,
+    private readonly getProfileUseCase: GetProfileUseCase,
+    private readonly updateProfileUseCase: UpdateProfileUseCase,
+    private readonly forgotPasswordUseCase: ForgotPasswordUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly socialLoginUseCase: SocialLoginUseCase,
+    private readonly generate2FAUseCase: Generate2FAUseCase,
+    private readonly enable2FAUseCase: Enable2FAUseCase,
+    private readonly disable2FAUseCase: Disable2FAUseCase,
+    private readonly login2FAUseCase: Login2FAUseCase,
   ) {}
 
   @Post('register')
@@ -104,26 +122,16 @@ export class AuthController {
     @Request() req: any,
   ) {
     const fp = getFingerprint(req);
-    // Use Case implementation
-    const tenant = (req as any).tenant; // Extracted by middleware usually, but RegisterDto might not have it if public.
-    // Usually register is for Customer in a specific Tenant Context if subdomain is there.
-    // If Global Register (like signup for new tenant), that's handled by TenantRegistrationController.
-    // This endpoint is for Customer Registration in a Store.
-
-    // We need to resolve tenantId. If standard AuthGuard is not used, we might rely on Headers or Host.
-    // Assuming Middleware resolves Tenant and puts it in Context or Request.
-    // But @Request req might not have tenant if not Authenticated?
-    // In multi-tenancy, usually tenant is resolved by domain even for public routes.
-
-    // For now, let's assume getTenant() from context works or passed in DTO?
-    // Legacy Code used: const tenant = getTenant();
     const tenantContext = getTenant();
+    
+    // Nếu không có tenant context (Global Register), cần xử lý riêng hoặc yêu cầu tenantId
     if (!tenantContext)
-      throw new BadRequestException('Tenant context required');
+       // Fallback logic or error. For now, we assume simple validation.
+       throw new BadRequestException('Tenant context required');
 
     const result = await this.registerUseCase.execute({
       email: dto.email,
-      password: dto.password, // UseCase will hash it
+      password: dto.password,
       firstName: dto.firstName,
       lastName: dto.lastName,
       tenantId: tenantContext.id,
@@ -205,8 +213,13 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiGetOneResponse('User', { summary: 'Lấy thông tin profile' })
   async getProfile(@Request() req: any) {
-    const data = await this.authService.getMe(req.user.userId);
-    return { data };
+    const result = await this.getProfileUseCase.execute(req.user.userId);
+    
+    if (result.isFailure) {
+        throw new BadRequestException(result.error.message);
+    }
+    
+    return { data: result.value };
   }
 
   @Patch('me')
@@ -214,8 +227,13 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiUpdateResponse('User', { summary: 'Cập nhật thông tin cá nhân' })
   async updateProfile(@Request() req: any, @Body() body: UpdateProfileDto) {
-    const data = await this.authService.updateProfile(req.user.userId, body);
-    return { data };
+    const result = await this.updateProfileUseCase.execute(req.user.userId, body);
+    
+    if (result.isFailure) {
+        throw new BadRequestException(result.error.message);
+    }
+
+    return { data: result.value };
   }
 
   @Post('refresh')
@@ -250,19 +268,27 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiCreateResponse('Boolean', { summary: 'Yêu cầu reset mật khẩu' })
   async forgotPassword(@Body() dto: ForgotPasswordDto) {
-    const data = await this.authService.forgotPassword(dto.email);
-    return { data };
+    const result = await this.forgotPasswordUseCase.execute(dto.email);
+    
+    if (result.isFailure) {
+        // Security: Always return success even if email not found to prevent enumeration
+        return { data: { message: 'Email sent' } };
+    }
+    
+    return { data: result.value };
   }
 
   @Post('reset-password')
   @HttpCode(HttpStatus.OK)
   @ApiUpdateResponse('Boolean', { summary: 'Reset mật khẩu' })
   async resetPassword(@Body() dto: ResetPasswordDto) {
-    const data = await this.authService.resetPassword(
-      dto.token,
-      dto.newPassword,
-    );
-    return { data };
+    const result = await this.resetPasswordUseCase.execute(dto);
+    
+    if (result.isFailure) {
+        throw new BadRequestException(result.error.message);
+    }
+
+    return { data: result.value };
   }
 
   @Get('google')
@@ -285,14 +311,30 @@ export class AuthController {
       googleId: string;
     };
 
-    const data = await this.authService.validateSocialLogin(
-      {
-        ...user,
+    // Need tenantId here. In public controller we might not have it.
+    // AuthStrategy should probably attach it or we check cookie/domain
+    const tenantContext = getTenant();
+    if (!tenantContext) {
+         // Should redirect to error page
+         return (res as Response).redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/result?error=TenantRequired`);
+    }
+
+    const result = await this.socialLoginUseCase.execute({
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        picture: user.picture,
         provider: 'google',
         socialId: user.googleId,
-      },
-      fp,
-    );
+        tenantId: tenantContext.id,
+        fingerprint: fp,
+    });
+    
+    if (result.isFailure) {
+        return (res as Response).redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/social-callback?error=${result.error.message}`);
+    }
+
+    const data = result.value;
     (res as Response).cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
     (res as Response).redirect(
       `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/social-callback?accessToken=${data.accessToken}`,
@@ -319,14 +361,27 @@ export class AuthController {
       facebookId: string;
     };
 
-    const data = await this.authService.validateSocialLogin(
-      {
-        ...user,
+    const tenantContext = getTenant();
+    if (!tenantContext) {
+         return (res as Response).redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/result?error=TenantRequired`);
+    }
+
+    const result = await this.socialLoginUseCase.execute({
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        picture: user.picture,
         provider: 'facebook',
         socialId: user.facebookId,
-      },
-      fp,
-    );
+        tenantId: tenantContext.id,
+        fingerprint: fp,
+    });
+
+    if (result.isFailure) {
+        return (res as Response).redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth/social-callback?error=${result.error.message}`);
+    }
+
+    const data = result.value;
 
     (res as Response).cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
 
@@ -344,13 +399,13 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiCreateResponse('Object', { summary: 'Tạo mã 2FA secret & QR Code' })
   async generate2FA(@Request() req: any) {
-    const user = await this.authService.getUserWithSecrets(req.user.userId);
-    const { secret, otpauthUrl } = this.twoFactorService.generateSecret(
-      user.email,
-    );
-    const qrCode =
-      await this.twoFactorService.generateQrCodeDataURL(otpauthUrl);
-    return { data: { secret, qrCode } };
+    const result = await this.generate2FAUseCase.execute(req.user.userId);
+    
+    if (result.isFailure) {
+        throw new BadRequestException(result.error.message);
+    }
+
+    return { data: result.value };
   }
 
   @Post('2fa/enable')
@@ -361,14 +416,11 @@ export class AuthController {
     @Request() req: any,
     @Body() body: { token: string; secret: string },
   ) {
-    if (!body.token || !body.secret) {
-      throw new BadRequestException('Mã xác thực và mã bí mật là bắt buộc');
+    const result = await this.enable2FAUseCase.execute(req.user.userId, body.token, body.secret);
+    
+    if (result.isFailure) {
+        throw new BadRequestException(result.error.message);
     }
-    const isValid = this.twoFactorService.verifyToken(body.token, body.secret);
-    if (!isValid) {
-      throw new UnauthorizedException('Mã xác thực không hợp lệ');
-    }
-    await this.twoFactorService.enableTwoFactor(req.user.userId, body.secret);
     return { message: 'Kích hoạt 2FA thành công' };
   }
 
@@ -377,18 +429,11 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiCreateResponse('Boolean', { summary: 'Vô hiệu hóa 2FA' })
   async disable2FA(@Request() req: any, @Body() body: { token: string }) {
-    const user = await this.authService.getUserWithSecrets(req.user.userId);
-    if (!user.twoFactorSecret) {
-      throw new UnauthorizedException('2FA chưa được kích hoạt');
+    const result = await this.disable2FAUseCase.execute(req.user.userId, body.token);
+    
+    if (result.isFailure) {
+        throw new BadRequestException(result.error.message);
     }
-    const isValid = this.twoFactorService.verifyToken(
-      body.token,
-      user.twoFactorSecret,
-    );
-    if (!isValid) {
-      throw new UnauthorizedException('Mã xác thực không hợp lệ');
-    }
-    await this.twoFactorService.disableTwoFactor(req.user.userId);
     return { message: 'Vô hiệu hóa 2FA thành công' };
   }
 
@@ -401,12 +446,13 @@ export class AuthController {
     @Request() req: any,
   ) {
     const fp = getFingerprint(req);
-    const data = await this.authService.verify2FALogin(
-      body.userId,
-      body.token,
-      fp,
-    );
+    const result = await this.login2FAUseCase.execute(body.userId, body.token, fp);
 
+    if (result.isFailure) {
+        throw new UnauthorizedException(result.error.message);
+    }
+
+    const data = result.value;
     (res as Response).cookie('refreshToken', data.refreshToken, COOKIE_OPTIONS);
     return { data };
   }

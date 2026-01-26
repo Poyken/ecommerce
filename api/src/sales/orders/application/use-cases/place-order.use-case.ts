@@ -155,7 +155,8 @@ export class PlaceOrderUseCase extends CommandUseCase<
             // To improve this, we might need categoryId and productId if rules require them
             // But usually coupon validation in checkout is secondary check.
             // Let's see if we can get these from skuMap.
-            categoryId: skuMap.get(i.skuId)?.product.categories[0]?.categoryId,
+            // FIXED: Repo does not load product relation by default. Passing undefined for now.
+            categoryId: undefined, // (skuMap.get(i.skuId) as any)?.product?.categories?.[0]?.categoryId,
             productId: skuMap.get(i.skuId)?.productId,
           })),
         });

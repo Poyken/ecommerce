@@ -27,7 +27,7 @@ import * as UseCases from './application/use-cases';
     forwardRef(() => PaymentModule),
     NotificationsModule,
     PromotionsModule,
-    ShippingModule,
+    forwardRef(() => ShippingModule),
     ProductsModule,
     SkusModule,
     CartModule,

@@ -1,5 +1,5 @@
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { GHNService } from './ghn.service';
 import { ShippingController } from './shipping.controller';
 import { ShippingCronService } from './shipping.cron.service';
@@ -13,8 +13,16 @@ import { SHIPMENT_REPOSITORY } from '../domain/repositories/shipment.repository.
 import { PrismaShipmentRepository } from '../infrastructure/repositories/prisma-shipment.repository';
 import * as UseCases from './application/use-cases';
 
+import { OrdersModule } from '../orders/orders.module';
+
 @Module({
-  imports: [HttpModule, NotificationsModule, EmailModule, PrismaModule],
+  imports: [
+    HttpModule,
+    NotificationsModule,
+    EmailModule,
+    PrismaModule,
+    forwardRef(() => OrdersModule),
+  ],
   controllers: [ShippingController],
   providers: [
     ShippingService,

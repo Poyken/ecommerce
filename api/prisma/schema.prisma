@@ -22,6 +22,8 @@ model User {
   twoFactorSecret        String?
   tenantId               String
   deletedAt              DateTime?
+  emailVerified          Boolean                 @default(false)
+  emailVerifiedAt        DateTime?
   whitelistedIps         Json?                   @default("[]")
   avatarId               String?
   customerGroupId        String?

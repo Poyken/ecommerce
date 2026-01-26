@@ -25,6 +25,7 @@ import {
 } from '@core/domain/entities/base.entity';
 import { Money } from '@core/domain/value-objects/money.vo';
 import { Slug } from '@core/domain/value-objects/slug.vo';
+import { Sku } from './sku.entity';
 
 // =====================================================================
 // DOMAIN EVENTS
@@ -118,6 +119,7 @@ export interface ProductProps extends EntityProps {
   // Media
   images: ProductImage[];
   options: ProductOption[];
+  skus: Sku[];
 
   // Metadata
   metadata?: Record<string, unknown>;
@@ -150,6 +152,7 @@ export class Product extends AggregateRoot<ProductProps> {
     categoryIds: string[];
     images?: ProductImage[];
     options?: ProductOption[];
+    skus?: Sku[];
     metadata?: Record<string, unknown>;
   }): Product {
     const slug = props.slug
@@ -170,6 +173,7 @@ export class Product extends AggregateRoot<ProductProps> {
       reviewCount: 0,
       images: props.images ?? [],
       options: props.options ?? [],
+      skus: props.skus ?? [],
       metadata: props.metadata,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -244,6 +248,10 @@ export class Product extends AggregateRoot<ProductProps> {
 
   get options(): readonly ProductOption[] {
     return Object.freeze([...this.props.options]);
+  }
+
+  get skus(): readonly Sku[] {
+    return Object.freeze([...this.props.skus]);
   }
 
   get metadata(): Record<string, unknown> | undefined {
@@ -352,6 +360,14 @@ export class Product extends AggregateRoot<ProductProps> {
    */
   setOptions(options: ProductOption[]): void {
     this.props.options = [...options];
+    this.touch();
+  }
+
+  /**
+   * Set product SKUs
+   */
+  setSkus(skus: Sku[]): void {
+    this.props.skus = [...skus];
     this.touch();
   }
 

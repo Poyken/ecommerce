@@ -13,6 +13,7 @@ import { TenantsModule } from '../tenants/tenants.module';
 import { PermissionService } from './permission.service';
 import { FacebookStrategy } from './strategies/facebook.strategy';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { PromotionsModule } from '@/marketing/promotions/promotions.module';
 
 // Clean Architecture
 import { USER_REPOSITORY } from '../domain/repositories/user.repository.interface';
@@ -30,6 +31,7 @@ import * as UseCases from '../application/use-cases/auth';
     EmailModule,
     UsersModule,
     TenantsModule,
+    PromotionsModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -40,6 +42,10 @@ import * as UseCases from '../application/use-cases/auth';
     FacebookStrategy,
     TwoFactorService,
     PermissionService,
+    {
+      provide: PASSWORD_HASHER,
+      useClass: BcryptPasswordHasher,
+    },
     ...Object.values(UseCases),
   ],
   exports: [
@@ -47,7 +53,6 @@ import * as UseCases from '../application/use-cases/auth';
     TokenService,
     TwoFactorService,
     PermissionService,
-    USER_REPOSITORY,
     PASSWORD_HASHER,
     ...Object.values(UseCases),
   ],

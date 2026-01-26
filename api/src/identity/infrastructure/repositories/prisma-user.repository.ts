@@ -30,9 +30,34 @@ import { getTenant } from '@core/tenant/tenant.context';
 export class PrismaUserRepository implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  // Common include for RBAC
+  private get rbacInclude() {
+    return {
+      roles: {
+        include: {
+          role: {
+            include: {
+              permissions: {
+                include: {
+                  permission: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      permissions: {
+        include: {
+          permission: true,
+        },
+      },
+    };
+  }
+
   async findById(id: string): Promise<User | null> {
     const data = await (this.prisma.user as any).findUnique({
       where: { id },
+      include: this.rbacInclude,
     });
     return data ? this.toDomain(data) : null;
   }
@@ -48,6 +73,7 @@ export class PrismaUserRepository implements IUserRepository {
   async findByEmail(tenantId: string, email: string): Promise<User | null> {
     const data = await (this.prisma.user as any).findFirst({
       where: { tenantId, email: email.toLowerCase() },
+      include: this.rbacInclude,
     });
     return data ? this.toDomain(data) : null;
   }
@@ -55,6 +81,7 @@ export class PrismaUserRepository implements IUserRepository {
   async findByEmailGlobal(email: string): Promise<User | null> {
     const data = await (this.prisma.user as any).findFirst({
       where: { email: email.toLowerCase() },
+      include: this.rbacInclude,
     });
     return data ? this.toDomain(data) : null;
   }
@@ -174,15 +201,13 @@ export class PrismaUserRepository implements IUserRepository {
         where: { id: user.id },
         data: {
           email: data.email,
-          passwordHash: data.passwordHash,
+          password: data.passwordHash,
           role: data.role,
           status: data.status,
           firstName: data.firstName,
           lastName: data.lastName,
           phone: data.phone,
           avatarUrl: data.avatarUrl,
-          emailVerified: data.emailVerified,
-          emailVerifiedAt: data.emailVerifiedAt,
           mfaEnabled: data.mfaEnabled,
           lastLoginAt: data.lastLoginAt,
           failedLoginAttempts: data.failedLoginAttempts,
@@ -197,13 +222,12 @@ export class PrismaUserRepository implements IUserRepository {
           id: data.id,
           tenantId: tenant?.id || data.tenantId,
           email: data.email,
-          passwordHash: data.passwordHash,
+          password: data.passwordHash,
           role: data.role,
           status: data.status,
           firstName: data.firstName,
           lastName: data.lastName,
           phone: data.phone,
-          emailVerified: false,
           mfaEnabled: false,
           failedLoginAttempts: 0,
         } as any,
@@ -242,6 +266,12 @@ export class PrismaUserRepository implements IUserRepository {
   // =====================================================================
 
   private toDomain(data: any): User {
+      console.log('DEBUG USER data:', { 
+        id: data.id, 
+        email: data.email, 
+        passwordLength: data.password ? data.password.length : 0,
+        passwordPreview: data.password ? data.password.substring(0, 15) + '...' : 'N/A'
+      });
     const profile: UserProfile = {
       firstName: data.firstName,
       lastName: data.lastName,
@@ -265,7 +295,7 @@ export class PrismaUserRepository implements IUserRepository {
       id: data.id,
       tenantId: data.tenantId,
       email: Email.create(data.email),
-      passwordHash: data.passwordHash,
+      passwordHash: data.password,
       role: data.role as UserRole,
       status: data.status as UserStatus,
       profile,
@@ -277,7 +307,24 @@ export class PrismaUserRepository implements IUserRepository {
       lastLoginAt: data.lastLoginAt,
       failedLoginAttempts: data.failedLoginAttempts || 0,
       lockedUntil: data.lockedUntil,
-      permissions: data.permissions || [],
+      permissions: (() => {
+        const perms = new Set<string>();
+        // 1. Direct Permissions
+        if (data.permissions) {
+            data.permissions.forEach((up: any) => {
+                if (up.permission?.name) perms.add(up.permission.name);
+            });
+        }
+        // 2. Role Permissions
+        if (data.roles) {
+          data.roles.forEach((ur: any) => {
+            ur.role?.permissions?.forEach((rp: any) => {
+              if (rp.permission?.name) perms.add(rp.permission.name);
+            });
+          });
+        }
+        return Array.from(perms);
+      })(),
       deletedAt: data.deletedAt,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,

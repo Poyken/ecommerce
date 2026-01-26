@@ -138,6 +138,10 @@ export interface UserProps extends EntityProps {
 
   // Soft delete
   deletedAt?: Date;
+
+  // Social Login
+  provider?: string;
+  socialId?: string;
 }
 
 // =====================================================================
@@ -162,6 +166,8 @@ export class User extends AggregateRoot<UserProps> {
     email: string;
     passwordHash: string;
     profile?: Partial<UserProfile>;
+    provider?: string;
+    socialId?: string;
   }): User {
     const user = new User({
       id: props.id,
@@ -191,6 +197,8 @@ export class User extends AggregateRoot<UserProps> {
       permissions: [],
       createdAt: new Date(),
       updatedAt: new Date(),
+      provider: props.provider,
+      socialId: props.socialId,
     });
 
     user.addDomainEvent(
@@ -271,6 +279,14 @@ export class User extends AggregateRoot<UserProps> {
     return this.props.passwordHash;
   }
 
+  get provider(): string | undefined {
+    return this.props.provider;
+  }
+
+  get socialId(): string | undefined {
+    return this.props.socialId;
+  }
+
   get role(): UserRole {
     return this.props.role;
   }
@@ -327,6 +343,10 @@ export class User extends AggregateRoot<UserProps> {
     return this.props.lastLoginAt;
   }
 
+  get mfaSecret(): string | undefined {
+    return this.props.mfaSecret;
+  }
+
   // =====================================================================
   // BUSINESS METHODS
   // =====================================================================
@@ -368,6 +388,15 @@ export class User extends AggregateRoot<UserProps> {
       ...this.props.profile,
       ...profile,
     };
+    this.touch();
+  }
+
+  /**
+   * Link social account
+   */
+  linkSocialAccount(provider: string, socialId: string): void {
+    this.props.provider = provider;
+    this.props.socialId = socialId;
     this.touch();
   }
 
@@ -535,6 +564,8 @@ export class User extends AggregateRoot<UserProps> {
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       deletedAt: this.props.deletedAt,
+      provider: this.props.provider,
+      socialId: this.props.socialId,
     };
   }
 }

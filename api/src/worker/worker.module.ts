@@ -12,14 +12,12 @@ import { OutboxProcessor } from './processors/outbox.processor';
     BullModule.registerQueue({
       name: 'cache-warming',
     }),
-    /*
     BullModule.registerQueue({
       name: 'orders-queue',
     }),
     BullModule.registerQueue({
       name: 'email-queue',
     }),
-    */
     ProductsModule,
     CategoriesModule,
     BrandsModule,

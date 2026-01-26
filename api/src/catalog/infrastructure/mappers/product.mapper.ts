@@ -23,6 +23,7 @@ import {
   ProductImage as PrismaImage,
   OptionValue as PrismaOptionValue,
 } from '@prisma/client';
+import { SkuMapper } from './sku.mapper';
 
 // Prisma model with relations
 type PrismaProductWithRelations = PrismaProduct & {
@@ -31,6 +32,7 @@ type PrismaProductWithRelations = PrismaProduct & {
   })[];
   images?: PrismaImage[];
   categories?: { categoryId: string }[];
+  skus?: any[]; // Allow any for relations
 };
 
 export class ProductMapper {
@@ -61,6 +63,8 @@ export class ProductMapper {
     const categoryIds = (prismaProduct.categories ?? []).map(
       (c) => c.categoryId,
     );
+    
+    const skus = SkuMapper.toDomainList(prismaProduct.skus ?? []);
 
     const props: ProductProps = {
       id: prismaProduct.id,
@@ -80,6 +84,7 @@ export class ProductMapper {
       reviewCount: prismaProduct.reviewCount ?? 0,
       images,
       options,
+      skus,
       metadata: prismaProduct.metadata as Record<string, unknown> | undefined,
       createdAt: prismaProduct.createdAt,
       updatedAt: prismaProduct.updatedAt,
@@ -104,6 +109,7 @@ export class ProductMapper {
       maxPrice: product.maxPrice.amount,
       avgRating: product.avgRating,
       reviewCount: product.reviewCount,
+      skus: product.skus.map(sku => SkuMapper.toPersistence(sku)),
       metadata: product.metadata,
       updatedAt: product.updatedAt,
       deletedAt: product.deletedAt,

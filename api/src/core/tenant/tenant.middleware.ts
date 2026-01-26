@@ -81,10 +81,12 @@ export class TenantMiddleware implements NestMiddleware {
     }
 
     if (tenant) {
+      console.log(`[TenantMiddleware] Resolved tenant: ${tenant.name} (${tenant.id}) for domain: ${domain}`);
       tenantStorage.run(tenant, () => {
         next();
       });
     } else {
+      console.log(`[TenantMiddleware] FAILED to resolve tenant for domain: ${domain}`);
       // [SECURITY] If a specific tenant domain was requested but not found,
       // do NOT allow bypass to global context unless it's a system-whitelisted domain.
       const requestedTenantDomain = req.headers['x-tenant-domain'];
