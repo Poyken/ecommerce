@@ -1,17 +1,15 @@
-import { PrismaService } from '@core/prisma/prisma.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { OrderStatus } from '@prisma/client';
+import { PrismaService } from '@core/prisma/prisma.service';
 import { GHNService } from './ghn.service';
+import { UpdateShipmentStatusUseCase } from './application/use-cases/update-shipment-status.use-case';
+import { ShipmentStatus } from '../domain/entities/shipment.entity';
 
 /**
  * =====================================================================
  * SHIPPING CRON SERVICE - ĐỒNG BỘ TRẠNG THÁI VẬN CHUYỂN TỰ ĐỘNG
  * =====================================================================
- *
- * =====================================================================
  */
-
 @Injectable()
 export class ShippingCronService {
   private readonly logger = new Logger(ShippingCronService.name);
@@ -19,94 +17,82 @@ export class ShippingCronService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly ghnService: GHNService,
+    private readonly updateShipmentStatusUseCase: UpdateShipmentStatusUseCase,
   ) {}
 
-  // ✅ TỐI ƯU: Chuyển sang chạy 30 phút/lần thay vì 1 phút/lần
-  // Cron job chỉ nên đóng vai trò "Backup" để vét các đơn bị lọt Webhook
   @Cron(CronExpression.EVERY_30_MINUTES)
   async handleCron() {
     this.logger.log('Starting backup shipping status sync (Cron Job)...');
 
-    // Tìm các đơn đang vận chuyển NHƯNG đã lâu không được cập nhật ( > 30 phút)
-    // Điều này giúp tránh conflict với Webhook và tránh spam API GHN
-    const orders = await this.prisma.order.findMany({
+    // Find shipments that haven't been updated in 30 minutes
+    const staleShipments = await this.prisma.shipment.findMany({
       where: {
         status: {
-          in: [OrderStatus.SHIPPED, OrderStatus.PROCESSING],
+          in: ['PENDING', 'READY_TO_SHIP', 'SHIPPED'],
         },
-        shippingCode: {
+        trackingCode: {
           not: null,
         },
         updatedAt: {
-          lt: new Date(Date.now() - 30 * 60 * 1000), // Đã > 30 phút chưa có tương tác gì
+          lt: new Date(Date.now() - 30 * 60 * 1000),
         },
       },
-      take: 20, // Giảm số lượng mỗi lần quét để tránh overload
-      orderBy: {
-        updatedAt: 'asc', // Ưu tiên xử lý đơn lâu nhất trước (FIFO)
-      },
+      take: 20,
+      orderBy: { updatedAt: 'asc' },
     });
 
-    if (orders.length === 0) {
-      // this.logger.log('No stale orders found to sync.');
-      return;
-    }
+    if (staleShipments.length === 0) return;
 
-    this.logger.log(`Found ${orders.length} stale orders to sync status.`);
+    this.logger.log(`Found ${staleShipments.length} stale shipments to sync.`);
 
-    for (const order of orders) {
-      if (!order.shippingCode) continue;
+    for (const shipment of staleShipments) {
+      if (!shipment.trackingCode) continue;
 
       try {
-        const detail = await this.ghnService.getOrderDetail(order.shippingCode);
-
-        // Update updatedAt kể cả khi status không đổi để lần quét sau (30p nữa) mới quét lại đơn này
-        // Tránh việc cứ mỗi lần chạy lại query đúng đơn này mãi nếu GHN không đổi status
-        let shouldUpdateTimestamp = true;
-
-        if (detail) {
-          const ghnStatus = detail.status.toLowerCase();
-          let newStatus: OrderStatus | null = null;
-
-          if (
-            ['picked', 'delivering', 'money_collect_delivering'].includes(
-              ghnStatus,
-            )
-          ) {
-            newStatus = OrderStatus.SHIPPED;
-          } else if (ghnStatus === 'delivered') {
-            newStatus = OrderStatus.DELIVERED;
-          } else if (ghnStatus === 'cancel') {
-            newStatus = OrderStatus.CANCELLED;
-          } else if (['return', 'returned'].includes(ghnStatus)) {
-            newStatus = OrderStatus.RETURNED;
-          }
-
-          if (newStatus && newStatus !== order.status) {
-            await this.prisma.order.update({
-              where: { id: order.id },
-              data: {
-                status: newStatus,
-                ghnStatus: ghnStatus,
-              },
-            });
-            this.logger.log(
-              `Updated order ${order.id} to ${newStatus} (GHN: ${ghnStatus})`,
-            );
-            shouldUpdateTimestamp = false; // Đã update rồi thì timestamp tự nhảy
-          }
+        const detail = await this.ghnService.getOrderDetail(
+          shipment.trackingCode,
+        );
+        if (!detail) {
+          // Toggle updateAt to prevent starvation
+          await this.prisma.shipment.update({
+            where: { id: shipment.id },
+            data: { updatedAt: new Date() },
+          });
+          continue;
         }
 
-        // Nếu không có status mới, ta vẫn "touch" vào đơn hàng để update `updatedAt`
-        // Mục đích: Đẩy đơn này xuống cuối hàng đợi, nhường chỗ cho đơn khác trong lần quét tới
-        if (shouldUpdateTimestamp) {
-          await this.prisma.order.update({
-            where: { id: order.id },
+        const ghnStatus = detail.status.toLowerCase();
+        const statusMapping: Record<string, ShipmentStatus> = {
+          ready_to_pick: ShipmentStatus.READY_TO_SHIP,
+          picking: ShipmentStatus.READY_TO_SHIP,
+          picked: ShipmentStatus.SHIPPED,
+          delivering: ShipmentStatus.SHIPPED,
+          money_collect_delivering: ShipmentStatus.SHIPPED,
+          delivered: ShipmentStatus.DELIVERED,
+          cancel: ShipmentStatus.FAILED,
+          return: ShipmentStatus.RETURNED,
+          returned: ShipmentStatus.RETURNED,
+        };
+
+        const newStatus = statusMapping[ghnStatus];
+        if (newStatus && newStatus !== shipment.status) {
+          await this.updateShipmentStatusUseCase.execute({
+            trackingCode: shipment.trackingCode,
+            status: newStatus,
+            reason: 'Cron sync',
+          });
+          this.logger.log(`Shipment ${shipment.id} updated via Cron.`);
+        } else {
+          // Mark as checked
+          await this.prisma.shipment.update({
+            where: { id: shipment.id },
             data: { updatedAt: new Date() },
           });
         }
       } catch (error) {
-        this.logger.error(`Failed to sync order ${order.id}: ${error.message}`);
+        this.logger.error(
+          `Failed to sync shipment ${shipment.id}: ${error.message}`,
+        );
       }
     }
   }

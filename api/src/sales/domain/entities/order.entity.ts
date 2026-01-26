@@ -145,6 +145,8 @@ export interface PaymentInfo {
 export interface ShippingInfo {
   readonly carrier?: string;
   readonly trackingNumber?: string;
+  readonly shippingCode?: string; // GHN/GHTK code
+  readonly ghnStatus?: string;
   readonly shippedAt?: Date;
   readonly deliveredAt?: Date;
   readonly shippingCost: Money;
@@ -350,6 +352,18 @@ export class Order extends AggregateRoot<OrderProps> {
     return this.props.shipping;
   }
 
+  get shippingCode(): string | undefined {
+    return this.props.shipping.shippingCode;
+  }
+
+  get paymentMethod(): string {
+    return this.props.payment.method;
+  }
+
+  get paymentStatus(): PaymentStatus {
+    return this.props.payment.status;
+  }
+
   get billingAddress(): ShippingAddressSnapshot | undefined {
     return this.props.billingAddress;
   }
@@ -487,7 +501,10 @@ export class Order extends AggregateRoot<OrderProps> {
   /**
    * Mark as delivered
    */
-  markDelivered(): void {
+  /**
+   * Mark as delivered
+   */
+  markAsDelivered(): void {
     this.assertCanTransitionTo(OrderStatus.DELIVERED);
 
     this.props.status = OrderStatus.DELIVERED;

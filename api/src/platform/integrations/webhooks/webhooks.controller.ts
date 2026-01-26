@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiExcludeController } from '@nestjs/swagger';
 import { PrismaService } from '@/core/prisma/prisma.service';
-import { ShipmentStatus } from '@prisma/client';
 import { Request } from 'express';
 
 // Interface cho GHN Webhook Payload
@@ -74,17 +73,22 @@ interface ShipmentUpdateData {
   deliveredAt?: Date;
 }
 
+import { ShipmentStatus } from '@/sales/domain/entities/shipment.entity';
+import { UpdateShipmentStatusUseCase } from '@/sales/shipping/application/use-cases/update-shipment-status.use-case';
+
 @ApiTags('Webhooks')
 @ApiExcludeController()
 @Controller('webhooks')
 export class WebhooksController {
   private readonly logger = new Logger(WebhooksController.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly updateShipmentStatusUseCase: UpdateShipmentStatusUseCase,
+  ) {}
 
   /**
    * Webhook endpoint cho Giao Hàng Nhanh (GHN)
-   * Được gọi tự động khi trạng thái đơn hàng thay đổi
    */
   @Post('ghn')
   @ApiOperation({ summary: 'GHN Webhook callback' })
@@ -100,19 +104,6 @@ export class WebhooksController {
       if (!OrderCode || !Status) {
         this.logger.warn('[GHN Webhook] Thiếu OrderCode hoặc Status');
         return { success: true, message: 'Missing required fields' };
-      }
-
-      // Tìm Shipment dựa trên trackingCode (OrderCode từ GHN)
-      const shipment = await this.prisma.shipment.findFirst({
-        where: { trackingCode: OrderCode },
-        include: { order: true },
-      });
-
-      if (!shipment) {
-        this.logger.warn(
-          `[GHN Webhook] Không tìm thấy shipment với trackingCode: ${OrderCode}`,
-        );
-        return { success: true, message: 'Shipment not found' };
       }
 
       // Map GHN status to ShipmentStatus
@@ -141,36 +132,28 @@ export class WebhooksController {
       const newStatus = statusMapping[Status.toLowerCase()];
 
       if (!newStatus) {
-        this.logger.log(
-          `[GHN Webhook] Trạng thái GHN không được map: ${Status}`,
-        );
+        this.logger.warn(`[GHN Webhook] Trạng thái không được map: ${Status}`);
         return { success: true, message: 'Status not mapped' };
       }
 
-      // Cập nhật Shipment
-      const updateData: ShipmentUpdateData = { status: newStatus };
-
-      if (newStatus === ShipmentStatus.SHIPPED && !shipment.shippedAt) {
-        updateData.shippedAt = new Date();
-      }
-
-      if (newStatus === ShipmentStatus.DELIVERED && !shipment.deliveredAt) {
-        updateData.deliveredAt = new Date();
-      }
-
-      await this.prisma.shipment.update({
-        where: { id: shipment.id },
-        data: updateData,
+      const result = await this.updateShipmentStatusUseCase.execute({
+        trackingCode: OrderCode,
+        status: newStatus,
+        reason: payload.Reason,
+        expectedDeliveryTime: payload.Time ? new Date(payload.Time) : undefined,
       });
 
-      this.logger.log(
-        `[GHN Webhook] Cập nhật shipment ${shipment.id} thành ${newStatus}`,
-      );
+      if (result.isFailure) {
+        this.logger.error(
+          `[GHN Webhook] Lỗi xử lý UseCase: ${result.error.message}`,
+        );
+        return { success: false, message: result.error.message };
+      }
 
-      return { success: true, message: 'Webhook processed' };
+      return { success: true, message: 'Webhook processed successfully' };
     } catch (error) {
-      this.logger.error(`[GHN Webhook] Lỗi xử lý: ${error.message}`, error);
-      return { success: false, message: 'Processing error' };
+      this.logger.error(`[GHN Webhook] Lỗi hệ thống: ${error.message}`, error);
+      return { success: false, message: 'Internal server error' };
     }
   }
 

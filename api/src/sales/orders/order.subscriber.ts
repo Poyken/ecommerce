@@ -5,7 +5,7 @@ import { OrderStatusUpdatedEvent } from './events/order-status-updated.event';
 import { EmailService } from '@/platform/integrations/external/email/email.service';
 import { NotificationsService } from '@/notifications/notifications.service';
 import { NotificationsGateway } from '@/notifications/notifications.gateway';
-import { LoyaltyService } from '@/marketing/loyalty/loyalty.service';
+import { EarnPointsUseCase } from '@/marketing/loyalty/application/use-cases/earn-points.use-case';
 import { PaymentService } from '@/sales/payment/payment.service';
 import { PrismaService } from '@core/prisma/prisma.service';
 import { OrderStatus } from '@prisma/client';
@@ -19,7 +19,7 @@ export class OrderSubscriber {
     private readonly emailService: EmailService,
     private readonly notificationsService: NotificationsService,
     private readonly notificationsGateway: NotificationsGateway,
-    private readonly loyaltyService: LoyaltyService,
+    private readonly earnPointsUseCase: EarnPointsUseCase,
     private readonly paymentService: PaymentService,
   ) {}
 
@@ -51,9 +51,9 @@ export class OrderSubscriber {
       .catch((e) => this.logger.error('Notification error', e));
   }
 
-  @OnEvent('order.status.updated')
+  @OnEvent('order.status_updated')
   async handleOrderStatusUpdated(event: OrderStatusUpdatedEvent) {
-    this.logger.log(`Handling order.status.updated for order ${event.orderId}`);
+    this.logger.log(`Handling order.status_updated for order ${event.orderId}`);
 
     const order = await this.prisma.order.findUnique({
       where: { id: event.orderId },
@@ -84,8 +84,8 @@ export class OrderSubscriber {
 
     // 3. LoyaltyPoints on DELIVERED
     if (event.newStatus === OrderStatus.DELIVERED) {
-      await this.loyaltyService
-        .earnPointsFromOrder(event.tenantId, event.orderId)
+      await this.earnPointsUseCase
+        .execute({ tenantId: event.tenantId, orderId: event.orderId })
         .catch((e) => this.logger.error('Loyalty error', e));
     }
   }

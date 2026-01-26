@@ -26,7 +26,7 @@ import {
 } from '@/sales/domain/entities/order.entity';
 import { OrderStatus } from '@/sales/domain/enums/order-status.enum';
 import { Money } from '@core/domain/value-objects/money.vo';
-import { PromotionsService } from '@/marketing/promotions/promotions.service';
+import { ValidatePromotionUseCase } from '@/marketing/promotions/application/use-cases/validate-promotion.use-case';
 import { ShippingService } from '@/sales/shipping/shipping.service';
 import { PaymentService } from '@/sales/payment/payment.service';
 import { InventoryService } from '@/catalog/skus/inventory.service';
@@ -73,7 +73,7 @@ export class PlaceOrderUseCase extends CommandUseCase<
     private readonly cartRepository: ICartRepository,
     @Inject(SKU_REPOSITORY)
     private readonly skuRepository: ISkuRepository,
-    private readonly promotionsService: PromotionsService,
+    private readonly validatePromotionUseCase: ValidatePromotionUseCase,
     private readonly shippingService: ShippingService,
     private readonly paymentService: PaymentService,
     private readonly inventoryService: InventoryService,
@@ -143,20 +143,26 @@ export class PlaceOrderUseCase extends CommandUseCase<
       let appliedPromotionId: string | undefined;
 
       if (input.couponCode) {
-        const promoResult = await this.promotionsService.validatePromotion({
+        const promoResult = await this.validatePromotionUseCase.execute({
+          tenantId: input.tenantId,
           code: input.couponCode,
           totalAmount: subtotalAmount,
           userId,
-          items: input.items.map((i) => ({
+          items: domainOrderItems.map((i) => ({
             skuId: i.skuId,
             quantity: i.quantity,
-            price: skuMap.get(i.skuId)!.price.amount,
+            price: i.priceAtPurchase.amount,
+            // To improve this, we might need categoryId and productId if rules require them
+            // But usually coupon validation in checkout is secondary check.
+            // Let's see if we can get these from skuMap.
+            categoryId: skuMap.get(i.skuId)?.product.categories[0]?.categoryId,
+            productId: skuMap.get(i.skuId)?.productId,
           })),
         });
 
-        if (promoResult.valid) {
-          appliedPromotionId = promoResult.promotionId;
-          discountAmount = promoResult.discountAmount;
+        if (promoResult.isSuccess) {
+          appliedPromotionId = promoResult.value.promotionId;
+          discountAmount = promoResult.value.discountAmount;
         }
       }
 

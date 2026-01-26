@@ -11,7 +11,7 @@ import { EmailModule } from '@/platform/integrations/external/email/email.module
 import { PrismaModule } from '@core/prisma/prisma.module';
 import { SHIPMENT_REPOSITORY } from '../domain/repositories/shipment.repository.interface';
 import { PrismaShipmentRepository } from '../infrastructure/repositories/prisma-shipment.repository';
-import { UpdateShipmentStatusUseCase } from '../application/use-cases/shipments/update-shipment-status.use-case';
+import * as UseCases from './application/use-cases';
 
 @Module({
   imports: [HttpModule, NotificationsModule, EmailModule, PrismaModule],
@@ -24,9 +24,18 @@ import { UpdateShipmentStatusUseCase } from '../application/use-cases/shipments/
       provide: SHIPMENT_REPOSITORY,
       useClass: PrismaShipmentRepository,
     },
-    UpdateShipmentStatusUseCase,
+    UseCases.UpdateShipmentStatusUseCase,
+    UseCases.GetShippingLocationUseCase,
+    UseCases.CalculateShippingFeeUseCase,
   ],
-  exports: [ShippingService, GHNService, UpdateShipmentStatusUseCase],
+  exports: [
+    ShippingService,
+    GHNService,
+    SHIPMENT_REPOSITORY,
+    UseCases.UpdateShipmentStatusUseCase,
+    UseCases.GetShippingLocationUseCase,
+    UseCases.CalculateShippingFeeUseCase,
+  ],
 })
 /**
  * =====================================================================

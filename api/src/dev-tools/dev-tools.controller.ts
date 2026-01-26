@@ -14,7 +14,7 @@ import { JwtAuthGuard } from '@/identity/auth/jwt-auth.guard';
 import { PermissionsGuard } from '@/identity/auth/permissions.guard';
 import { RequirePermissions } from '@/common/decorators/crud.decorators';
 import { getTenant } from '@/core/tenant/tenant.context';
-import { LoyaltyService } from '@/marketing/loyalty/loyalty.service';
+import { EarnPointsUseCase } from '@/marketing/loyalty/application/use-cases/earn-points.use-case';
 
 /**
  * =====================================================================
@@ -39,7 +39,7 @@ export class DevToolsController {
 
   constructor(
     private readonly prisma: PrismaService,
-    private readonly loyaltyService: LoyaltyService,
+    private readonly earnPointsUseCase: EarnPointsUseCase,
   ) {}
 
   // =====================================================================
@@ -119,17 +119,13 @@ export class DevToolsController {
 
     // Trigger auto-earn loyalty points
     const tenant = getTenant();
-    let earnedPoints = 0;
     if (tenant) {
-      try {
-        const result = await this.loyaltyService.earnPointsFromOrder(
-          tenant.id,
+      await this.earnPointsUseCase
+        .execute({
+          tenantId: tenant.id,
           orderId,
-        );
-        earnedPoints = result?.amount ?? 0;
-      } catch (error) {
-        this.logger.error(`Error earning points: ${error.message}`);
-      }
+        })
+        .catch((e) => this.logger.error(`Error earning points: ${e.message}`));
     }
 
     await Promise.resolve();

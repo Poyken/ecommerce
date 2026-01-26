@@ -12,11 +12,9 @@ import { InventoryModule } from '@/operations/inventory/inventory.module';
 import { BullModule } from '@nestjs/bullmq';
 
 import { OrdersController } from './orders.controller';
-import { OrdersService } from './orders.service';
 import { InvoiceService } from './invoice.service';
 import { OrdersProcessor } from './orders.processor';
 import { OrdersExportService } from './orders-export.service';
-import { OrdersRepository } from './orders.repository';
 
 // Clean Architecture
 import { ORDER_REPOSITORY } from '@/sales/domain/repositories/order.repository.interface';
@@ -41,8 +39,6 @@ import * as UseCases from './application/use-cases';
   ],
   controllers: [OrdersController],
   providers: [
-    OrdersService,
-    OrdersRepository,
     InvoiceService,
     OrdersProcessor,
     OrdersExportService,
@@ -52,12 +48,6 @@ import * as UseCases from './application/use-cases';
     },
     ...Object.values(UseCases),
   ],
-  exports: [
-    OrdersService,
-    OrdersRepository,
-    InvoiceService,
-    ORDER_REPOSITORY,
-    ...Object.values(UseCases),
-  ],
+  exports: [InvoiceService, ORDER_REPOSITORY, ...Object.values(UseCases)],
 })
 export class OrdersModule {}

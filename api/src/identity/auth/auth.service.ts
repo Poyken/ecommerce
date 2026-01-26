@@ -29,7 +29,7 @@ import { Prisma } from '@prisma/client';
  * =====================================================================
  */
 
-import { PromotionsService } from '@/marketing/promotions/promotions.service';
+import { GrantWelcomeVoucherUseCase } from '@/marketing/promotions/application/use-cases/grant-welcome-voucher.use-case';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { AUTH_CONFIG } from '@core/config/constants';
 import { PermissionService } from './permission.service';
@@ -46,7 +46,7 @@ export class AuthService {
     private readonly permissionService: PermissionService,
     @InjectQueue('email-queue') private readonly emailQueue: Queue,
     private readonly emailService: EmailService,
-    private readonly promotionsService: PromotionsService,
+    private readonly grantWelcomeVoucherUseCase: GrantWelcomeVoucherUseCase,
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
@@ -712,11 +712,17 @@ export class AuthService {
   }
 
   private async grantWelcomeVoucher(userId: string) {
+    const tenant = getTenant();
+    if (!tenant) return;
+
     try {
-      const result = await this.promotionsService.grantWelcomeVoucher(userId);
-      if (result) {
+      const result = await this.grantWelcomeVoucherUseCase.execute({
+        tenantId: tenant.id,
+        userId,
+      });
+      if (result.isSuccess) {
         // Phát sự kiện để NotificationsService xử lý gửi thông báo
-        this.eventEmitter.emit('user.welcome_gift_granted', result);
+        this.eventEmitter.emit('user.welcome_gift_granted', result.value);
       }
     } catch (error) {
       this.logger.error('Lỗi khi xử lý quà chào mừng', error);

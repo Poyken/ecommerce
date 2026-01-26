@@ -13,22 +13,29 @@ import { ShippingService } from './shipping.service';
  *
  * =====================================================================
  */
+import {
+  GetShippingLocationUseCase,
+  CalculateShippingFeeUseCase,
+  LocationType,
+} from './application/use-cases';
+
 @ApiTags('Shipping')
 @Controller('shipping')
 export class ShippingController {
-  /**
-   * =====================================================================
-   * SHIPPING CONTROLLER - Vận chuyển & Địa chính
-   * =====================================================================
-   *
-   * =====================================================================
-   */
-  constructor(private readonly shippingService: ShippingService) {}
+  constructor(
+    private readonly shippingService: ShippingService,
+    private readonly getShippingLocationUseCase: GetShippingLocationUseCase,
+    private readonly calculateShippingFeeUseCase: CalculateShippingFeeUseCase,
+  ) {}
 
   @Get('provinces')
   @ApiListResponse('Province', { summary: 'Lấy danh sách Tỉnh/Thành phố' })
   async getProvinces() {
-    return this.shippingService.getProvinces();
+    const result = await this.getShippingLocationUseCase.execute({
+      type: LocationType.PROVINCE,
+    });
+    if (result.isFailure) throw result.error;
+    return result.value;
   }
 
   @Get('districts/:provinceId')
@@ -36,19 +43,34 @@ export class ShippingController {
     summary: 'Lấy danh sách Quận/Huyện theo Tỉnh',
   })
   async getDistricts(@Param('provinceId') provinceId: string) {
-    return this.shippingService.getDistricts(Number(provinceId));
+    const result = await this.getShippingLocationUseCase.execute({
+      type: LocationType.DISTRICT,
+      parentId: Number(provinceId),
+    });
+    if (result.isFailure) throw result.error;
+    return result.value;
   }
 
   @Get('wards/:districtId')
   @ApiListResponse('Ward', { summary: 'Lấy danh sách Phường/Xã theo Quận' })
   async getWards(@Param('districtId') districtId: string) {
-    return this.shippingService.getWards(Number(districtId));
+    const result = await this.getShippingLocationUseCase.execute({
+      type: LocationType.WARD,
+      parentId: Number(districtId),
+    });
+    if (result.isFailure) throw result.error;
+    return result.value;
   }
 
   @Post('fee')
   @ApiGetOneResponse('Shipping Fee', { summary: 'Tính phí vận chuyển' })
   async calculateFee(@Body() body: { districtId: number; wardCode: string }) {
-    return this.shippingService.calculateFee(body.districtId, body.wardCode);
+    const result = await this.calculateShippingFeeUseCase.execute({
+      toDistrictId: body.districtId,
+      toWardCode: body.wardCode,
+    });
+    if (result.isFailure) throw result.error;
+    return result.value;
   }
 
   @Post('webhook')

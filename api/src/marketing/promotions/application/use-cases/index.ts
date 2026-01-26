@@ -7,3 +7,4 @@ export * from './validate-promotion.use-case';
 export * from './apply-promotion.use-case';
 export * from './get-promotion-stats.use-case';
 export * from './get-available-promotions.use-case';
+export * from './grant-welcome-voucher.use-case';

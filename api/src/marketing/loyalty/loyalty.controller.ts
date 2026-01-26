@@ -16,7 +16,6 @@ import {
   ApiBearerAuth,
   ApiQuery,
 } from '@nestjs/swagger';
-import { LoyaltyService } from './loyalty.service';
 import {
   EarnPointsDto,
   RedeemPointsDto,
@@ -36,6 +35,8 @@ import {
   RefundPointsUseCase,
   GetLoyaltySummaryUseCase,
   GetLoyaltyHistoryUseCase,
+  GetLoyaltyStatsUseCase,
+  GetOrderLoyaltyUseCase,
 } from './application/use-cases';
 import { LOYALTY_CONFIG } from './domain/entities/loyalty-config';
 
@@ -45,12 +46,13 @@ import { LOYALTY_CONFIG } from './domain/entities/loyalty-config';
 @UseGuards(JwtAuthGuard)
 export class LoyaltyController {
   constructor(
-    private readonly loyaltyService: LoyaltyService,
     private readonly earnPointsUseCase: EarnPointsUseCase,
     private readonly redeemPointsUseCase: RedeemPointsUseCase,
     private readonly refundPointsUseCase: RefundPointsUseCase,
     private readonly getSummaryUseCase: GetLoyaltySummaryUseCase,
     private readonly getHistoryUseCase: GetLoyaltyHistoryUseCase,
+    private readonly getStatsUseCase: GetLoyaltyStatsUseCase,
+    private readonly getOrderLoyaltyUseCase: GetOrderLoyaltyUseCase,
   ) {}
 
   @Get('my-points')
@@ -151,7 +153,9 @@ export class LoyaltyController {
   @ApiOperation({ summary: '[Admin] Thống kê điểm thưởng' })
   async getStats() {
     const tenant = getTenant();
-    return this.loyaltyService.getLoyaltyStats(tenant!.id);
+    const result = await this.getStatsUseCase.execute({ tenantId: tenant!.id });
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value };
   }
 
   @Post('admin/earn')
@@ -279,8 +283,13 @@ export class LoyaltyController {
   @UseGuards(PermissionsGuard)
   @RequirePermissions(AppPermission.LOYALTY_READ)
   @ApiOperation({ summary: '[Admin] Xem điểm liên quan đến đơn hàng' })
-  getOrderPoints(@Param('orderId') orderId: string) {
+  async getOrderPoints(@Param('orderId') orderId: string) {
     const tenant = getTenant();
-    return this.loyaltyService.getOrderPoints(tenant!.id, orderId);
+    const result = await this.getOrderLoyaltyUseCase.execute({
+      tenantId: tenant!.id,
+      orderId,
+    });
+    if (result.isFailure) throw new BadRequestException(result.error.message);
+    return { data: result.value.map((p) => p.toPersistence()) };
   }
 }
