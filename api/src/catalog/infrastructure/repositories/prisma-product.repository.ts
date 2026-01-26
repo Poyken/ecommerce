@@ -42,7 +42,7 @@ export class PrismaProductRepository implements IProductRepository {
     const tenant = getTenant();
     const cacheKey = `product:${tenant?.id || 'public'}:${id}`;
 
-    return this.cacheService.getOrSet(
+    const cachedProduct = await this.cacheService.getOrSet(
       cacheKey,
       async () => {
         const data = await (this.prisma.product as any).findFirst({
@@ -57,6 +57,14 @@ export class PrismaProductRepository implements IProductRepository {
       },
       CACHE_TTL.PRODUCT_DETAIL,
     );
+
+    if (!(cachedProduct instanceof Product)) {
+      // If it's a plain object from cache, map it back to domain entity
+      // ProductMapper.toDomain handles both Prisma and POJO formats
+      return ProductMapper.toDomain(cachedProduct as any);
+    }
+
+    return cachedProduct;
   }
 
   async findByIdOrFail(id: string): Promise<Product> {

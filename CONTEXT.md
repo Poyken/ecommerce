@@ -265,3 +265,6 @@ Tài liệu này là **Long-term Memory** của dự án. Cập nhật khi có q
   - **Controller**: Updated `AuthController` to inject UseCases instead of mixing Service calls.
   - **Legacy Cleanup**: Removed commented-out legacy code in `register` endpoint.
   - **Compatibility**: Maintained response shape `{ data: ... }` for frontend compatibility while moving towards Clean Architecture `StandardResponse`.
+- [2026-01-26] Documentation Localization:
+  - **Translation**: Translated all documentation files (01-21) in the `@docs` directory into Vietnamese to ensure accessibility for the local team.
+  - **Architecture Update**: Updated `03-TAD.md` to clarify Super Admin permissions and bypass logic for multi-tenancy.

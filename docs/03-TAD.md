@@ -1,4 +1,5 @@
 # Tài liệu Kiến trúc Kỹ thuật (TAD)
+
 ## Nền tảng E-commerce Multi-tenant
 
 ---
@@ -8,7 +9,7 @@
 **Phiên bản**: 1.0  
 **Ngày**: 22 tháng 1, 2026  
 **Tác giả**: Đội ngũ Phát triển  
-**Trạng thái**: Bản nháp  
+**Trạng thái**: Bản nháp
 
 ---
 
@@ -54,9 +55,9 @@
               └───────────────┘
 ```
 
-#### Multi-Tenant Architecture Pattern
+#### Mô hình Kiến trúc Multi-Tenant
 
-**Shared Database, Shared Schema** with tenant isolation through `tenantId` column:
+**Cơ sở dữ liệu chia sẻ, Schema chia sẻ** với sự cách ly tenant thông qua cột `tenantId`:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -64,13 +65,13 @@
 ├─────────────────────────────────────────────────────────────────┤
 │  Table: users                                                   │
 │  ├─ id (PK)                                                    │
-│  ├─ tenantId (FK) ← Tenant Isolation                           │
+│  ├─ tenantId (FK) ← Cách ly Tenant                              │
 │  ├─ email                                                      │
 │  ├─ ...                                                        │
 ├─────────────────────────────────────────────────────────────────┤
 │  Table: products                                                │
 │  ├─ id (PK)                                                    │
-│  ├─ tenantId (FK) ← Tenant Isolation                           │
+│  ├─ tenantId (FK) ← Cách ly Tenant                              │
 │  ├─ name                                                       │
 │  ├─ ...                                                        │
 └─────────────────────────────────────────────────────────────────┘
@@ -78,51 +79,51 @@
 
 ---
 
-### Technology Stack Justification
+### Lý do lựa chọn Tech Stack
 
 #### Backend Technology Stack
 
-| Technology | Version | Purpose | Justification |
-|------------|---------|---------|---------------|
-| **Node.js** | 20+ | Runtime Environment | High performance, large ecosystem, TypeScript support |
-| **NestJS** | 11 | Framework | Enterprise-grade architecture, dependency injection, modularity |
-| **TypeScript** | 5.0+ | Language | Type safety, better developer experience, maintainability |
-| **Prisma** | 6.2.1 | ORM | Type-safe database access, migrations, excellent DX |
-| **PostgreSQL** | 15+ | Database | ACID compliance, JSON support, pgvector for AI features |
-| **Redis** | 7+ | Cache/Session | High performance caching, session store, job queues |
-| **BullMQ** | Latest | Job Queue | Reliable background job processing, Redis-backed |
+| Công nghệ      | Phiên bản | Mục đích           | Lý do lựa chọn                                                    |
+| -------------- | --------- | ------------------ | ----------------------------------------------------------------- |
+| **Node.js**    | 20+       | Môi trường Runtime | Hiệu suất cao, hệ sinh thái lớn, hỗ trợ tốt TypeScript            |
+| **NestJS**     | 11        | Framework          | Kiến trúc cấp doanh nghiệp, dependency injection, tính module hóa |
+| **TypeScript** | 5.0+      | Ngôn ngữ           | Type safety, trải nghiệm dev tốt hơn, dễ bảo trì                  |
+| **Prisma**     | 6.2.1     | ORM                | Truy cập DB an toàn (type-safe), migrations, DX tuyệt vời         |
+| **PostgreSQL** | 15+       | Cơ sở dữ liệu      | Tuân thủ ACID, hỗ trợ JSON, pgvector cho các tính năng AI         |
+| **Redis**      | 7+        | Cache/Session      | Caching hiệu suất cao, lưu trữ session, hàng đợi công việc        |
+| **BullMQ**     | Mới nhất  | Hàng đợi công việc | Xử lý background job tin cậy, dựa trên Redis                      |
 
 #### Frontend Technology Stack
 
-| Technology | Version | Purpose | Justification |
-|------------|---------|---------|---------------|
-| **Next.js** | 16.1 | Framework | SSR/SSG, API routes, excellent performance |
-| **React** | 19.2 | UI Library | Component-based architecture, large ecosystem |
-| **TailwindCSS** | 4 | Styling | Utility-first, consistent design system |
-| **Zustand** | 5 | State Management | Lightweight, TypeScript-friendly |
-| **SWR** | 2.3 | Data Fetching | Caching, revalidation, optimistic updates |
-| **TypeScript** | 5.0+ | Language | Type safety across frontend/backend |
+| Công nghệ       | Phiên bản | Mục đích      | Lý do lựa chọn                                                |
+| --------------- | --------- | ------------- | ------------------------------------------------------------- |
+| **Next.js**     | 16.1      | Framework     | Hỗ trợ SSR/SSG, API routes, hiệu suất tuyệt vời               |
+| **React**       | 19.2      | Thư viện UI   | Kiến trúc dựa trên component, hệ sinh thái khổng lồ           |
+| **TailwindCSS** | 4         | Styling       | Utility-first, hệ thống thiết kế nhất quán                    |
+| **Zustand**     | 5         | Quản lý State | Nhẹ, thân thiện với TypeScript                                |
+| **SWR**         | 2.3       | Data Fetching | Caching, revalidation, cập nhật lạc quan (optimistic updates) |
+| **TypeScript**  | 5.0+      | Ngôn ngữ      | An toàn kiểu dữ liệu đồng bộ giữa frontend/backend            |
 
-#### Infrastructure & DevOps
+#### Hạ tầng & DevOps
 
-| Technology | Purpose | Justification |
-|------------|---------|---------------|
-| **Docker** | Containerization | Consistent environments, deployment |
-| **Docker Compose** | Local Development | Multi-service orchestration |
-| **GitHub Actions** | CI/CD | Integrated with repository, free for OSS |
-| **Render** | Hosting | Simple deployment, managed databases |
-| **Vercel** | Frontend Hosting | Optimized for Next.js, global CDN |
-| **Neon** | Database | Serverless PostgreSQL, auto-scaling |
+| Công nghệ          | Mục đích         | Lý do lựa chọn                             |
+| ------------------ | ---------------- | ------------------------------------------ |
+| **Docker**         | Container hóa    | Đồng nhất môi trường, đóng gói triển khai  |
+| **Docker Compose** | Phát triển Local | Điều phối đa dịch vụ (orchestration)       |
+| **GitHub Actions** | CI/CD            | Tích hợp sẵn với kho mã nguồn              |
+| **Render**         | Hosting          | Triển khai đơn giản, quản lý cơ sở dữ liệu |
+| **Vercel**         | Frontend Hosting | Tối ưu cho Next.js, CDN toàn cầu           |
+| **Neon**           | Cơ sở dữ liệu    | Serverless PostgreSQL, tự động mở rộng     |
 
 ---
 
-### System Architecture Diagrams
+### Sơ đồ Kiến trúc Hệ thống
 
-#### 1. Application Layer Architecture
+#### 1. Kiến trúc Lớp Ứng dụng (Application Layer)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Presentation Layer                      │
+│                        Lớp Hiển thị (Presentation)             │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐   │
 │  │   Web App   │  │ Admin Panel │  │   Mobile App (PWA)   │   │
@@ -135,22 +136,22 @@
 │                   (NestJS + Express)                           │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐   │
-│  │   Auth      │  │   Rate      │  │      Validation      │   │
-│  │   Guard     │  │   Limiting  │  │      (Zod)           │   │
+│  │   Hệ thống  │  │   Giới hạn  │  │      Xác thực       │   │
+│  │   Bảo vệ    │  │   Tốc độ    │  │      (Zod)           │   │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘   │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                     Business Logic Layer                        │
+│                     Lớp Logic Nghiệp vụ                         │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐   │
-│  │   Service   │  │ Repository  │  │      Domain         │   │
-│  │   Layer     │  │   Layer     │  │      Models         │   │
+│  │   Lớp       │  │   Lớp       │  │      Mô hình        │   │
+│  │   Dịch vụ   │  │  Kho lưu trữ│  │      Domain         │   │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘   │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                      Data Access Layer                         │
+│                      Lớp Truy cập Dữ liệu                      │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐   │
 │  │   Prisma    │  │   Redis     │  │    Elasticsearch    │   │
@@ -159,87 +160,89 @@
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### 2. Multi-Tenant Data Isolation
+#### 2. Cách ly Dữ liệu Multi-Tenant
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Application Layer                            │
+│                    Lớp Ứng dụng                                 │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │              Tenant Context Manager                    │   │
+│  │              Quản lý Ngữ cảnh Tenant                    │   │
 │  │                                                         │   │
 │  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐    │   │
-│  │  │   Domain    │  │   Subdomain │  │    Header   │    │   │
-│  │  │ Detection   │  │ Detection   │  │ Detection   │    │   │
+│  │  │ Nhận diện   │  │ Nhận diện   │  │ Nhận diện   │    │   │
+│  │  │ Domain      │  │ Subdomain   │  │ Header      │    │   │
 │  │  └─────────────┘  └─────────────┘  └─────────────┘    │   │
 │  └─────────────────────────────────────────────────────────┘   │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                    Middleware Layer                            │
+│                    Lớp Middleware                               │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │              Tenant Isolation Middleware               │   │
+│  │              Middleware Cách ly Tenant                  │   │
 │  │                                                         │   │
-│  │  • Extract tenantId from request                       │   │
-│  │  • Validate tenant exists and is active                 │   │
-│  │  • Set AsyncLocalStorage context                       │   │
-│  │  • Apply tenantId to all database queries              │   │
+│  │  • Trích xuất tenantId từ request                       │   │
+│  │  • Xác thực tenant tồn tại và đang hoạt động            │   │
+│  │  • Thiết lập ngữ cảnh AsyncLocalStorage                │   │
+│  │  • Áp dụng tenantId cho tất cả truy vấn DB              │   │
+│  │  • **Bypass logic cho Super Admin** (nếu cần truy cập   │   │
+│  │    xuyên tenant)                                        │   │
 │  └─────────────────────────────────────────────────────────┘   │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                     Database Layer                             │
+│                     Lớp Cơ sở Dữ liệu                          │
 │                                                                 │
 │  ┌─────────────────────────────────────────────────────────┐   │
-│  │                Shared Database Schema                    │   │
+│  │                Schema Cơ sở Dữ liệu Chia sẻ              │   │
 │  │                                                         │   │
 │  │  SELECT * FROM products WHERE tenantId = ? AND id = ?  │   │
 │  │                                                         │   │
-│  │  • All queries automatically filtered by tenantId      │   │
-│  │  • Row Level Security (RLS) for additional protection   │   │
-│  │  • Audit logging for cross-tenant access attempts      │   │
+│  │  • Truy vấn tự động được lọc theo tenantId             │   │
+│  │  • Bảo vệ bổ sung qua Row Level Security (RLS)         │   │
+│  │  • Ghi nhật ký kiểm toán cho các nỗ lực truy cập chéo   │   │
 │  └─────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### 3. Caching Architecture
+#### 3. Kiến trúc Caching
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Application                             │
+│                        Ứng dụng                                 │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                    Cache Manager                               │
+│                    Quản lý Cache                               │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐   │
 │  │     L1      │  │     L2      │  │      CDN            │   │
-│  │   (In-Memory)│  │  (Redis)   │  │   (CloudFlare)     │   │
+│  │ (Trong bộ nhớ)│  │  (Redis)   │  │   (CloudFlare)     │   │
 │  │             │  │             │  │                     │   │
-│  │ • Request   │  │ • Session   │  │ • Static Assets    │   │
-│  │ • Response  │  │ • Database  │  │ • API Responses    │   │
-│  │ • 1-5 min   │  │ • 1-24 hrs  │  │ • 1-7 days         │   │
+│  │ • Request   │  │ • Session   │  │ • Tài sản tĩnh      │   │
+│  │ • Response  │  │ • Database  │  │ • Phản hồi API      │   │
+│  │ • 1-5 phút  │  │ • 1-24 giờ  │  │ • 1-7 ngày         │   │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘   │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                    Cache Strategies                            │
+│                    Chiến lược Cache                            │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  • Cache-Aside: Database → Cache → Application                 │
-│  • Write-Through: Application → Cache → Database               │
-│  • Write-Behind: Application → Cache → Async → Database         │
-│  • Cache Invalidation: TTL + Event-driven                      │
+│  • Cache-Aside: Database → Cache → Ứng dụng                    │
+│  • Write-Through: Ứng dụng → Cache → Database                  │
+│  • Write-Behind: Ứng dụng → Cache → Async → Database           │
+│  • Cache Invalidation: TTL + Dựa trên sự kiện                  │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-### Database Schema Design
+### Thiết kế Schema Cơ sở Dữ liệu
 
-#### Core Entity Relationships
+#### Các Mối quan hệ Thực thể Chính
 
 ```mermaid
 erDiagram
@@ -247,39 +250,39 @@ erDiagram
     Tenant ||--o{ Product : owns
     Tenant ||--o{ Order : contains
     Tenant ||--o{ Category : categorizes
-    
+
     User ||--o{ Order : places
     User ||--o{ Cart : owns
     User ||--o{ Review : writes
-    
+
     Product ||--o{ SKU : has_variants
     Product }o--|| Category : belongs_to
     Product ||--o{ OrderItem : ordered_as
     Product ||--o{ Review : receives
-    
+
     SKU ||--o{ InventoryItem : tracked_in
     SKU ||--o{ OrderItem : specific_variant
-    
+
     Order ||--o{ OrderItem : contains
     Order ||--o{ Payment : has
     Order ||--o{ Shipment : ships_via
-    
+
     Category ||--o{ Category : parent_child
 ```
 
-#### Key Design Patterns
+#### Các Pattern Thiết kế Chính
 
-1. **Soft Delete**: All entities have `deletedAt` column
-2. **Audit Trail**: `createdAt`, `updatedAt`, `createdBy`, `updatedBy`
-3. **Tenant Isolation**: `tenantId` on all tenant-specific tables
-4. **Optimistic Locking**: `version` column for concurrent updates
-5. **JSON Columns**: Flexible metadata storage using PostgreSQL JSONB
+1. **Xóa mềm (Soft Delete)**: Tất cả thực thể đều có cột `deletedAt`
+2. **Nhật ký Kiểm toán (Audit Trail)**: `createdAt`, `updatedAt`, `createdBy`, `updatedBy`
+3. **Cách ly Tenant**: `tenantId` trên tất cả các bảng đặc thù của tenant
+4. **Khóa lạc quan (Optimistic Locking)**: Cột `version` cho các cập nhật đồng thời
+5. **Cột JSON**: Lưu trữ metadata linh hoạt bằng PostgreSQL JSONB
 
 ---
 
-### API Specifications (OpenAPI/Swagger)
+### Thông số API (OpenAPI/Swagger)
 
-#### API Structure
+#### Cấu trúc API
 
 ```
 /api/v1/
@@ -310,19 +313,19 @@ erDiagram
     └── DELETE /items/:id
 ```
 
-#### API Design Principles
+#### Nguyên tắc Thiết kế API
 
-1. **RESTful Design**: Proper HTTP methods and status codes
-2. **Versioning**: URL-based versioning (`/api/v1/`)
-3. **Pagination**: `limit`, `offset`, `total` in responses
-4. **Filtering**: Query parameters for filtering and sorting
-5. **Error Handling**: Consistent error response format
-6. **Rate Limiting**: Per-tenant and per-user limits
+1. **Thiết kế RESTful**: Các phương thức HTTP và mã trạng thái chuẩn
+2. **Phân phiên bản (Versioning)**: Phân phiên bản dựa trên URL (`/api/v1/`)
+3. **Phân trang**: `limit`, `offset`, `total` trong các phản hồi
+4. **Lọc dữ liệu**: Tham số truy vấn cho lọc và sắp xếp
+5. **Xử lý lỗi**: Định dạng phản hồi lỗi nhất quán
+6. **Giới hạn tốc độ**: Giới hạn cho mỗi tenant và mỗi người dùng
 
-#### Response Format Standards
+#### Tiêu chuẩn Định dạng Phản hồi
 
 ```typescript
-// Success Response
+// Phản hồi Thành công
 interface ApiResponse<T> {
   data: T;
   meta: {
@@ -337,7 +340,7 @@ interface ApiResponse<T> {
   };
 }
 
-// Error Response
+// Phản hồi Lỗi
 interface ApiError {
   error: {
     code: string;
@@ -351,34 +354,45 @@ interface ApiError {
 
 ---
 
-### Security Architecture
+### Kiến trúc Bảo mật
 
-#### Authentication & Authorization
+#### Vai trò & Phân quyền (Roles & Permissions)
+
+- **Super Admin (Cấp Hệ thống)**:
+  - Là chủ nền tảng (Platform Owner).
+  - Có toàn quyền trên tất cả các Tenant.
+  - Có khả năng bypass logic cách ly tenant để quản trị và kiểm toán.
+  - Quản lý việc tạo, đình chỉ các Tenant.
+- **Tenant Admin**: Quản trị viên của một cửa hàng/tenant cụ thể.
+- **Store Manager/Staff**: Nhân viên cửa hàng với các quyền hạn hạn chế.
+- **Customer**: Khách hàng mua sắm.
+
+#### Luồng Xác thực & Phân quyền
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Authentication Flow                          │
+│                    Luồng Xác thực                               │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                     Login Request                              │
+│                     Yêu cầu Đăng nhập                           │
 │                                                                 │
 │  POST /api/v1/auth/login                                       │
 │  { email, password, tenantId }                                 │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                   Authentication Service                       │
+│                   Dịch vụ Xác thực                             │
 │                                                                 │
-│  1. Validate credentials                                        │
-│  2. Check tenant status                                         │
-│  3. Generate JWT + Refresh Token                                │
-│  4. Create session in Redis                                     │
-│  5. Log authentication event                                   │
+│  1. Kiểm tra thông tin đăng nhập                               │
+│  2. Kiểm tra trạng thái tenant                                  │
+│  3. Tạo JWT + Refresh Token                                    │
+│  4. Tạo session trong Redis                                     │
+│  5. Ghi nhật ký sự kiện xác thực                               │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                     Token Response                             │
+│                     Phản hồi Token                              │
 │                                                                 │
 │  {                                                              │
 │    accessToken: "jwt.token",                                    │
@@ -389,52 +403,52 @@ interface ApiError {
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### Security Layers
+#### Các Lớp Bảo mật
 
-1. **Network Security**
-   - TLS 1.3 for all communications
+1. **Bảo mật Mạng**
+   - TLS 1.3 cho tất cả giao tiếp
    - WAF (Web Application Firewall)
-   - DDoS protection
-   - IP whitelisting for admin access
+   - Chống tấn công DDoS
+   - IP whitelisting cho truy cập admin
 
-2. **Application Security**
-   - Input validation with Zod schemas
-   - SQL injection prevention (Prisma ORM)
-   - XSS protection (Content Security Policy)
-   - CSRF protection (SameSite cookies)
+2. **Bảo mật Ứng dụng**
+   - Xác thực đầu vào với Zod schemas
+   - Ngăn chặn SQL injection (Prisma ORM)
+   - Chống XSS (Content Security Policy)
+   - Chống CSRF (SameSite cookies)
 
-3. **Data Security**
-   - Encryption at rest (AES-256)
-   - Encryption in transit (TLS)
-   - PII data masking in logs
-   - Regular security audits
+3. **Bảo mật Dữ liệu**
+   - Mã hóa dữ liệu tĩnh (AES-256)
+   - Mã hóa dữ liệu truyền tải (TLS)
+   - Che giấu dữ liệu PII trong nhật ký
+   - Kiểm toán bảo mật định kỳ
 
-4. **Infrastructure Security**
-   - Container security scanning
-   - Secrets management (environment variables)
-   - Network segmentation
-   - Access logging and monitoring
+4. **Bảo mật Hạ tầng**
+   - Quét bảo mật container
+   - Quản lý bí mật (biến môi trường)
+   - Phân đoạn mạng
+   - Giám sát và ghi nhật ký truy cập
 
 ---
 
-### Performance Requirements
+### Yêu cầu Hiệu suất
 
-#### Response Time Targets
+#### Mục tiêu Thời gian Phản hồi
 
-| Endpoint Type | Target (95th percentile) | Maximum |
-|---------------|--------------------------|---------|
-| Authentication | <200ms | 500ms |
-| Product Search | <500ms | 1s |
-| Order Processing | <1s | 2s |
-| Dashboard Loading | <2s | 5s |
-| File Upload | <5s | 10s |
+| Loại Endpoint     | Mục tiêu (95th percentile) | Tối đa |
+| ----------------- | -------------------------- | ------ |
+| Xác thực          | <200ms                     | 500ms  |
+| Tìm kiếm sản phẩm | <500ms                     | 1s     |
+| Xử lý đơn hàng    | <1s                        | 2s     |
+| Tải Dashboard     | <2s                        | 5s     |
+| Tải tệp lên       | <5s                        | 10s    |
 
-#### Scalability Architecture
+#### Kiến trúc Khả năng Mở rộng
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                      Load Balancer                             │
-│                   (Horizontal Scaling)                         │
+│                   (Mở rộng theo chiều ngang)                   │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
     ┌─────────────────┼─────────────────┐
@@ -447,41 +461,41 @@ interface ApiError {
     └─────────────────┼─────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                    Database Cluster                            │
+│                    Cụm Cơ sở Dữ liệu                           │
 │                   (Read Replicas)                              │
 │                                                                 │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐   │
 │  │   Primary   │  │  Replica 1  │  │     Replica N        │   │
-│  │ (Write)     │  │  (Read)     │  │     (Read)           │   │
+│  │ (Ghi)       │  │  (Đọc)      │  │     (Đọc)            │   │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### Caching Strategy
+#### Chiến lược Caching
 
-1. **Application-Level Caching**
-   - In-memory cache for frequent lookups
-   - Response caching for GET requests
-   - Query result caching
+1. **Caching cấp Ứng dụng**
+   - Cache trong bộ nhớ cho các tra cứu thường xuyên
+   - Caching phản hồi cho các yêu cầu GET
+   - Caching kết quả truy vấn
 
-2. **Database Caching**
-   - Query plan caching
-   - Connection pooling
-   - Read replicas for scaling
+2. **Caching Cơ sở Dữ liệu**
+   - Caching kế hoạch truy vấn
+   - Kết nối pooling
+   - Read replicas để mở rộng
 
-3. **CDN Caching**
-   - Static assets (images, CSS, JS)
-   - API responses (public data)
-   - Geographic distribution
+3. **Caching CDN**
+   - Tài sản tĩnh (hình ảnh, CSS, JS)
+   - Phản hồi API (dữ liệu công khai)
+   - Phân phối địa lý
 
 ---
 
-### Deployment Architecture
+### Kiến trúc Triển khai
 
-#### Container Strategy
+#### Chiến lược Container
 
 ```dockerfile
-# Multi-stage Dockerfile example
+# Ví dụ Dockerfile đa giai đoạn
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
@@ -495,33 +509,33 @@ EXPOSE 8080
 CMD ["npm", "start"]
 ```
 
-#### Environment Configuration
+#### Cấu hình Môi trường
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Environment Types                           │
+│                    Các Loại Môi trường                         │
 ├─────────────────────────────────────────────────────────────────┤
-│  Development                                                    │
-│  ├─ Local development with Docker Compose                      │
-│  ├─ Hot reload enabled                                          │
-│  ├─ Debug logging                                               │
-│  └─ Mock external services                                      │
+│  Phát triển (Development)                                       │
+│  ├─ Phát triển local với Docker Compose                         │
+│  ├─ Bật tính năng Hot reload                                    │
+│  ├─ Nhật ký gỡ lỗi (Debug logging)                             │
+│  └─ Giả lập các dịch vụ bên ngoài                               │
 ├─────────────────────────────────────────────────────────────────┤
-│  Staging                                                        │
-│  ├─ Production-like environment                                 │
-│  ├─ Real external services (sandbox mode)                       │
-│  ├─ Performance monitoring                                      │
-│  └─ Automated testing                                           │
+│  Kiểm thử (Staging)                                             │
+│  ├─ Môi trường giống hệt sản xuất                               │
+│  ├─ Dịch vụ bên ngoài thực (chế độ sandbox)                     │
+│  ├─ Giám sát hiệu suất                                          │
+│  └─ Kiểm thử tự động                                            │
 ├─────────────────────────────────────────────────────────────────┤
-│  Production                                                     │
-│  ├─ High availability setup                                     │
-│  ├─ Full monitoring and alerting                                │
-│  ├─ Auto-scaling enabled                                        │
-│  └─ Backup and disaster recovery                                │
+│  Sản xuất (Production)                                          │
+│  ├─ Thiết lập tính sẵn sàng cao                                 │
+│  ├─ Giám sát và cảnh báo đầy đủ                                 │
+│  ├─ Bật tự động mở rộng                                         │
+│  └─ Sao lưu và phục hồi sau thảm họa                            │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### CI/CD Pipeline
+#### Quy trình CI/CD
 
 ```yaml
 # GitHub Actions workflow
@@ -537,14 +551,14 @@ jobs:
       - uses: actions/checkout@v3
       - name: Run tests
         run: npm test
-  
+
   build:
     needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Build Docker image
         run: docker build -t ecommerce-api .
-  
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -555,98 +569,98 @@ jobs:
 
 ---
 
-### Monitoring & Observability
+### Giám sát & Quan sát (Monitoring & Observability)
 
-#### Monitoring Stack
+#### Hệ thống Giám sát
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Application Metrics                         │
+│                    Chỉ số Ứng dụng                             │
 │                                                                 │
-│  • Response times                                               │
-│  • Error rates                                                  │
-│  • Throughput                                                   │
-│  • Business metrics (orders, revenue)                           │
+│  • Thời gian phản hồi                                           │
+│  • Tỷ lệ lỗi                                                    │
+│  • Thông lượng                                                  │
+│  • Chỉ số kinh doanh (đơn hàng, doanh thu)                      │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                    Monitoring Stack                            │
+│                    Stack Giám sát                              │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐   │
 │  │ Prometheus  │  │ Grafana     │  │    Sentry           │   │
-│  │ (Metrics)   │  │ (Dashboards)│  │  (Error Tracking)  │   │
+│  │ (Chỉ số)    │  │ (Dashboards)│  │ (Theo dõi lỗi)      │   │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘   │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                    Alerting                                    │
+│                    Cảnh báo                                    │
 │                                                                 │
-│  • Slack notifications for critical alerts                     │
-│  • Email for non-critical issues                               │
-│  • PagerDuty for emergency incidents                            │
-│  • Automated runbooks for common issues                        │
+│  • Thông báo Slack cho các cảnh báo quan trọng                 │
+│  • Email cho các vấn đề không khẩn cấp                         │
+│  • PagerDuty cho các sự cố khẩn cấp                            │
+│  • Quy trình xử lý tự động cho các lỗi phổ biến                │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### Health Checks
+#### Kiểm tra Sức khỏe (Health Checks)
 
 ```typescript
-// Health check endpoints
-GET /health          // Basic health check
-GET /health/ready    // Readiness probe
-GET /health/live     // Liveness probe
-GET /health/info     // Application info
-GET /health/metrics  // Prometheus metrics
+// Các endpoint kiểm tra sức khỏe
+GET / health; // Kiểm tra cơ bản
+GET / health / ready; // Sẵn sàng nhận traffic
+GET / health / live; // Đang hoạt động
+GET / health / info; // Thông tin ứng dụng
+GET / health / metrics; // Chỉ số Prometheus
 ```
 
-#### Logging Strategy
+#### Chiến lược Ghi nhật ký (Logging)
 
-1. **Structured Logging**: JSON format with consistent fields
-2. **Log Levels**: ERROR, WARN, INFO, DEBUG
-3. **Correlation IDs**: Request tracking across services
-4. **Sensitive Data**: Automatic redaction of PII
-5. **Log Retention**: 30 days for logs, 1 year for audit trails
+1. **Ghi nhật ký có cấu trúc**: Định dạng JSON với các trường nhất quán
+2. **Cấp độ nhật ký**: ERROR, WARN, INFO, DEBUG
+3. **Correlation IDs**: Theo dõi yêu cầu qua các dịch vụ
+4. **Dữ liệu nhạy cảm**: Tự động lược bỏ thông tin PII
+5. **Thời gian lưu trữ**: 30 ngày cho nhật ký, 1 năm cho hồ sơ kiểm toán
 
 ---
 
-### Integration Patterns
+### Mô hình Tích hợp
 
-#### External Service Integrations
+#### Tích hợp Dịch vụ Bên ngoài
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Integration Hub                             │
+│                    Trung tâm Tích hợp                          │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                    Service Adapters                            │
+│                    Các Bộ Chuyển đổi (Adapters)                │
 ├─────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐   │
-│  │   Payment   │  │   Shipping  │  │      Email          │   │
-│  │  Gateway    │  │   Carrier   │  │     Service         │   │
+│  │ Thanh toán  │  │ Vận chuyển  │  │      Email          │   │
+│  │             │  │             │  │                     │   │
 │  │ Adapter     │  │ Adapter     │  │    Adapter          │   │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘   │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                    Message Queue                               │
+│                    Hàng đợi Thông điệp                         │
 │                   (BullMQ + Redis)                            │
 └─────────────────────┬───────────────────────────────────────────┘
                       │
 ┌─────────────────────▼───────────────────────────────────────────┐
-│                    Background Workers                          │
+│                    Công nhân nền tảng (Workers)                │
 │                                                                 │
-│  • Payment processing                                          │
-│  • Email notifications                                         │
-│  • Inventory updates                                           │
-│  • Report generation                                            │
+│  • Xử lý thanh toán                                            │
+│  • Thông báo email                                             │
+│  • Cập nhật tồn kho                                            │
+│  • Tạo báo cáo                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-#### Webhook System
+#### Hệ thống Webhook
 
 ```typescript
-// Webhook event structure
+// Cấu trúc sự kiện Webhook
 interface WebhookEvent {
   id: string;
   tenantId: string;
@@ -656,77 +670,77 @@ interface WebhookEvent {
   retryCount: number;
 }
 
-// Webhook delivery flow
-Event → Queue → Worker → HTTP POST → Response → Retry/Success
+// Luồng gửi Webhook
+Sự kiện → Hàng đợi → Worker → HTTP POST → Phản hồi → Thử lại/Thành công
 ```
 
 ---
 
-### Disaster Recovery
+### Phục hồi sau thảm họa (Disaster Recovery)
 
-#### Backup Strategy
+#### Chiến lược Sao lưu
 
-1. **Database Backups**
-   - Daily full backups
-   - Hourly incremental backups
-   - Point-in-time recovery (PITR)
-   - Cross-region replication
+1. **Sao lưu Cơ sở Dữ liệu**
+   - Sao lưu đầy đủ hàng ngày
+   - Sao lưu tăng dần hàng giờ
+   - Phục hồi tại một thời điểm (PITR)
+   - Sao chép chéo vùng (Cross-region replication)
 
-2. **Application Backups**
-   - Container image backups
-   - Configuration backups
-   - Asset storage backups
-   - Version control (Git)
+2. **Sao lưu Ứng dụng**
+   - Sao lưu hình ảnh container
+   - Sao lưu cấu hình
+   - Sao lưu tài sản lưu trữ
+   - Kiểm soát phiên bản (Git)
 
-#### Recovery Procedures
+#### Quy trình Phục hồi
 
 ```
-Incident Detection → Alert → Investigation → Recovery → Post-mortem
+Phát hiện sự cố → Cảnh báo → Điều tra → Phục hồi → Đánh giá sau sự cố
 ```
 
-1. **RTO (Recovery Time Objective)**: 4 hours
-2. **RPO (Recovery Point Objective)**: 1 hour
-3. **Failover Testing**: Monthly
-4. **Disaster Recovery Drills**: Quarterly
+1. **RTO (Mục tiêu thời gian phục hồi)**: 4 giờ
+2. **RPO (Mục tiêu điểm phục hồi)**: 1 giờ
+3. **Kiểm tra Failover**: Hàng tháng
+4. **Diễn tập phục hồi sau thảm họa**: Hàng quý
 
 ---
 
-### Technology Debt Management
+### Quản lý Nợ Kỹ thuật (Technology Debt)
 
-#### Code Quality Standards
+#### Tiêu chuẩn Chất lượng Mã nguồn
 
 1. **Linting**: ESLint + Prettier
-2. **Type Safety**: Strict TypeScript mode
-3. **Testing**: 80% code coverage minimum
-4. **Documentation**: JSDoc for all public APIs
-5. **Code Reviews**: Required for all changes
+2. **An toàn kiểu**: Chế độ TypeScript nghiêm ngặt (strict mode)
+3. **Kiểm thử**: Tối thiểu 80% độ bao phủ mã
+4. **Tài liệu**: JSDoc cho tất cả API công khai
+5. **Review mã**: Yêu cầu cho tất cả các thay đổi
 
-#### Performance Monitoring
+#### Giám sát Hiệu suất
 
-1. **Bundle Size Analysis**: Monthly
-2. **Database Query Optimization**: Quarterly
-3. **Memory Leak Detection**: Continuous
-4. **Load Testing**: Before major releases
+1. **Phân tích Bundle Size**: Hàng tháng
+2. **Tối ưu hóa Truy vấn DB**: Hàng quý
+3. **Phát hiện Rò rỉ Bộ nhớ**: Liên tục
+4. **Kiểm thử tải**: Trước các đợt phát hành lớn
 
-#### Security Reviews
+#### Đánh giá Bảo mật
 
-1. **Dependency Scanning**: Weekly
-2. **Penetration Testing**: Quarterly
-3. **Security Audits**: Annually
-4. **Compliance Checks**: Monthly
+1. **Quét phụ thuộc (Dependency Scanning)**: Hàng tuần
+2. **Kiểm thử xâm nhập (Penetration Testing)**: Hàng quý
+3. **Kiểm toán bảo mật**: Hàng năm
+4. **Kiểm tra tuân thủ**: Hàng tháng
 
 ---
 
-### Approval
+### Phê duyệt
 
-**Architecture Committee**: ___________________  
-**Date**: ___________________  
-**Signature**: ___________________  
+**Hội đồng Kiến trúc**: **\*\*\*\***\_\_\_**\*\*\*\***  
+**Ngày**: **\*\*\*\***\_\_\_**\*\*\*\***  
+**Chữ ký**: **\*\*\*\***\_\_\_**\*\*\*\***
 
-**CTO**: ___________________  
-**Date**: ___________________  
-**Signature**: ___________________  
+**CTO**: **\*\*\*\***\_\_\_**\*\*\*\***  
+**Ngày**: **\*\*\*\***\_\_\_**\*\*\*\***  
+**Chữ ký**: **\*\*\*\***\_\_\_**\*\*\*\***
 
-**Lead Engineer**: ___________________  
-**Date**: ___________________  
-**Signature**: ___________________
+**Kỹ sư trưởng**: **\*\*\*\***\_\_\_**\*\*\*\***  
+**Ngày**: **\*\*\*\***\_\_\_**\*\*\*\***  
+**Chữ ký**: **\*\*\*\***\_\_\_**\*\*\*\***

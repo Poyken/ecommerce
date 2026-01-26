@@ -1,44 +1,45 @@
-# Database Design Document
-## E-commerce Multi-tenant Platform
+# Tài liệu Thiết kế Cơ sở Dữ liệu
+
+## Nền tảng E-commerce Multi-tenant
 
 ---
 
-### Document Information
+### Thông tin Tài liệu
 
-**Version**: 1.0  
-**Date**: January 22, 2026  
-**Author**: Development Team  
-**Status**: Draft  
+**Phiên bản**: 1.0  
+**Ngày**: 22 tháng 1, 2026  
+**Tác giả**: Đội ngũ Phát triển  
+**Trạng thái**: Bản nháp
 
 ---
 
-### Database Overview
+### Tổng quan về Cơ sở Dữ liệu
 
-#### Database Technology Stack
+#### Công nghệ Cơ sở Dữ liệu
 
-| Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
-| **Primary Database** | PostgreSQL | 15+ | Main data storage with ACID compliance |
-| **Vector Extension** | pgvector | Latest | AI-powered semantic search |
-| **Cache Layer** | Redis | 7+ | Session storage, caching, job queues |
-| **Search Engine** | OpenSearch | Latest | Full-text search and analytics |
-| **ORM** | Prisma | 6.2.1 | Type-safe database access |
+| Thành phần              | Công nghệ  | Phiên bản | Mục đích                                     |
+| ----------------------- | ---------- | --------- | -------------------------------------------- |
+| **Cơ sở dữ liệu chính** | PostgreSQL | 15+       | Lưu trữ dữ liệu chính, tuân thủ ACID         |
+| **Phần mở rộng Vector** | pgvector   | Mới nhất  | Tìm kiếm ngữ nghĩa dựa trên AI               |
+| **Lớp Cache**           | Redis      | 7+        | Lưu trữ session, caching, hàng đợi công việc |
+| **Công cụ Tìm kiếm**    | OpenSearch | Mới nhất  | Tìm kiếm toàn văn và phân tích               |
+| **ORM**                 | Prisma     | 6.2.1     | Truy cập DB an toàn kiểu dữ liệu (type-safe) |
 
-#### Multi-Tenant Architecture
+#### Kiến trúc Multi-Tenant
 
-**Shared Database, Shared Schema** pattern with tenant isolation:
+Mô hình **Cơ sở dữ liệu Chia sẻ, Schema Chia sẻ** (Shared Database, Shared Schema) với tính năng cách ly tenant:
 
 ```sql
--- Every tenant-specific table includes tenantId
+-- Mọi bảng dữ liệu đặc thù của tenant đều bao gồm tenantId
 CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenantId UUID NOT NULL REFERENCES tenants(id),
     name VARCHAR(255) NOT NULL,
-    -- ... other fields
+    -- ... các trường khác
     CONSTRAINT products_tenant_check CHECK (tenantId IS NOT NULL)
 );
 
--- Row Level Security for additional protection
+-- Bảo vệ bổ sung qua Row Level Security (Bảo mật cấp dòng)
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 CREATE POLICY tenant_isolation ON products
     USING (tenantId = current_setting('app.current_tenant_id')::UUID);
@@ -46,11 +47,11 @@ CREATE POLICY tenant_isolation ON products
 
 ---
 
-### Entity Relationship Diagram
+### Sơ đồ Mối quan hệ Thực thể (ERD)
 
 ```mermaid
 erDiagram
-    %% Core Entities
+    %% Các Thực thể Cốt lõi
     Tenant {
         uuid id PK
         string name
@@ -60,7 +61,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     User {
         uuid id PK
         uuid tenantId FK
@@ -72,8 +73,8 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
-    %% Catalog Entities
+
+    %% Các Thực thể Danh mục (Catalog)
     Category {
         uuid id PK
         uuid tenantId FK
@@ -86,7 +87,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     Brand {
         uuid id PK
         uuid tenantId FK
@@ -98,7 +99,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     Product {
         uuid id PK
         uuid tenantId FK
@@ -117,7 +118,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     ProductOption {
         uuid id PK
         uuid tenantId FK
@@ -129,7 +130,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     OptionValue {
         uuid id PK
         uuid tenantId FK
@@ -140,7 +141,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     SKU {
         uuid id PK
         uuid tenantId FK
@@ -155,8 +156,8 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
-    %% Inventory Entities
+
+    %% Các Thực thể Tồn kho (Inventory)
     Warehouse {
         uuid id PK
         uuid tenantId FK
@@ -167,7 +168,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     InventoryItem {
         uuid id PK
         uuid tenantId FK
@@ -181,7 +182,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     InventoryLog {
         uuid id PK
         uuid tenantId FK
@@ -194,8 +195,8 @@ erDiagram
         uuid userId FK
         timestamp createdAt
     }
-    
-    %% Order Entities
+
+    %% Các Thực thể Đơn hàng (Order)
     Cart {
         uuid id PK
         uuid tenantId FK
@@ -210,7 +211,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     Order {
         uuid id PK
         uuid tenantId FK
@@ -231,7 +232,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     OrderItem {
         uuid id PK
         uuid tenantId FK
@@ -246,7 +247,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     Payment {
         uuid id PK
         uuid tenantId FK
@@ -261,8 +262,8 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
-    %% Shipping Entities
+
+    %% Các Thực thể Giao hàng (Shipping)
     Shipment {
         uuid id PK
         uuid tenantId FK
@@ -278,7 +279,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     ShipmentItem {
         uuid id PK
         uuid tenantId FK
@@ -288,8 +289,8 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
-    %% Marketing Entities
+
+    %% Các Thực thể Marketing
     Promotion {
         uuid id PK
         uuid tenantId FK
@@ -306,7 +307,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     LoyaltyPoint {
         uuid id PK
         uuid tenantId FK
@@ -319,7 +320,7 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
+
     CustomerGroup {
         uuid id PK
         uuid tenantId FK
@@ -330,8 +331,8 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
-    %% Review Entities
+
+    %% Các Thực thể Đánh giá (Review)
     Review {
         uuid id PK
         uuid tenantId FK
@@ -346,8 +347,8 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
-    %% System Entities
+
+    %% Các Thực thể Hệ thống
     AuditLog {
         uuid id PK
         uuid tenantId FK
@@ -361,7 +362,7 @@ erDiagram
         string userAgent
         timestamp createdAt
     }
-    
+
     OutboxEvent {
         uuid id PK
         uuid tenantId FK
@@ -373,59 +374,60 @@ erDiagram
         timestamp createdAt
         timestamp updatedAt
     }
-    
-    %% Relationships
-    Tenant ||--o{ User : has
-    Tenant ||--o{ Category : owns
-    Tenant ||--o{ Brand : owns
-    Tenant ||--o{ Product : owns
-    Tenant ||--o{ Warehouse : manages
-    Tenant ||--o{ Order : contains
-    Tenant ||--o{ Promotion : creates
-    Tenant ||--o{ AuditLog : tracks
-    
-    User ||--o{ Order : places
-    User ||--o{ Cart : owns
-    User ||--o{ Review : writes
-    User ||--o{ LoyaltyPoint : earns
-    
-    Category ||--o{ Category : parent_child
-    Category ||--o{ Product : categorizes
-    
-    Brand ||--o{ Product : brands
-    
-    Product ||--o{ SKU : has_variants
-    Product ||--o{ ProductOption : defines
-    Product ||--o{ OrderItem : ordered_as
-    Product ||--o{ Review : receives
-    
-    ProductOption ||--o{ OptionValue : contains
-    
-    SKU ||--o{ InventoryItem : tracked_in
-    SKU ||--o{ OrderItem : specific_variant
-    
-    Warehouse ||--o{ InventoryItem : stores
-    Warehouse ||--o{ InventoryLog : records
-    
-    Order ||--o{ OrderItem : contains
-    Order ||--o{ Payment : has
-    Order ||--o{ Shipment : ships_via
-    Order ||--o{ LoyaltyPoint : generates
-    
-    OrderItem ||--o{ ShipmentItem : ships
-    
-    Shipment ||--o{ ShipmentItem : contains
-    
-    CustomerGroup ||--o{ User : groups
+
+    %% Các Mối quan hệ
+    Tenant ||--o{ User : "có"
+    Tenant ||--o{ Category : "sở hữu"
+    Tenant ||--o{ Brand : "sở hữu"
+    Tenant ||--o{ Product : "sở hữu"
+    Tenant ||--o{ Warehouse : "quản lý"
+    Tenant ||--o{ Order : "chứa"
+    Tenant ||--o{ Promotion : "tạo"
+    Tenant ||--o{ AuditLog : "theo dõi"
+
+    User ||--o{ Order : "đặt hàng"
+    User ||--o{ Cart : "sở hữu"
+    User ||--o{ Review : "viết"
+    User ||--o{ LoyaltyPoint : "tích lũy"
+
+    Category ||--o{ Category : "quan hệ cha-con"
+    Category ||--o{ Product : "phân loại"
+
+    Brand ||--o{ Product : "thương hiệu cho"
+
+    Product ||--o{ SKU : "có biến thể"
+    Product ||--o{ ProductOption : "định nghĩa"
+    Product ||--o{ OrderItem : "được đặt hàng qua"
+    Product ||--o{ Review : "nhận"
+
+    ProductOption ||--o{ OptionValue : "chứa"
+
+    SKU ||--o{ InventoryItem : "theo dõi trong"
+    SKU ||--o{ OrderItem : "biến thể cụ thể"
+
+    Warehouse ||--o{ InventoryItem : "lưu trữ"
+    Warehouse ||--o{ InventoryLog : "ghi lại lịch sử"
+
+    Order ||--o{ OrderItem : "chứa"
+    Order ||--o{ Payment : "có thanh toán"
+    Order ||--o{ Shipment : "vận chuyển qua"
+    Order ||--o{ LoyaltyPoint : "tạo ra điểm"
+
+    OrderItem ||--o{ ShipmentItem : "được đóng gói"
+
+    Shipment ||--o{ ShipmentItem : "chứa"
+
+    CustomerGroup ||--o{ User : "nhóm"
 ```
 
 ---
 
-### Table Definitions
+### Định nghĩa các Bảng
 
-#### Core Tables
+#### Các Bảng Cốt lõi
 
 ##### 1. tenants
+
 ```sql
 CREATE TABLE tenants (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -444,6 +446,7 @@ CREATE INDEX idx_tenants_status ON tenants(status);
 ```
 
 ##### 2. users
+
 ```sql
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -460,7 +463,7 @@ CREATE TABLE users (
     metadata JSONB DEFAULT '{}',
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     UNIQUE(tenantId, email)
 );
 
@@ -469,9 +472,10 @@ CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_users_isActive ON users(isActive);
 ```
 
-#### Catalog Tables
+#### Các Bảng Danh mục (Catalog)
 
 ##### 3. categories
+
 ```sql
 CREATE TABLE categories (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -486,7 +490,7 @@ CREATE TABLE categories (
     metadata JSONB DEFAULT '{}',
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     UNIQUE(tenantId, slug),
     UNIQUE(tenantId, name)
 );
@@ -498,6 +502,7 @@ CREATE INDEX idx_categories_isActive ON categories(isActive);
 ```
 
 ##### 4. products
+
 ```sql
 CREATE TABLE products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -523,7 +528,7 @@ CREATE TABLE products (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deletedAt TIMESTAMP,
-    
+
     UNIQUE(tenantId, slug),
     CONSTRAINT products_price_check CHECK (
         (basePrice IS NULL OR basePrice >= 0) AND
@@ -532,12 +537,12 @@ CREATE TABLE products (
     )
 );
 
--- Full-text search index
+-- Chỉ mục tìm kiếm toàn văn (Full-text search)
 CREATE INDEX idx_products_search ON products USING gin(
     to_tsvector('english', name || ' ' || COALESCE(description, '') || ' ' || COALESCE(shortDescription, ''))
 );
 
--- Vector search index for AI
+-- Chỉ mục tìm kiếm vector cho AI
 ALTER TABLE products ADD COLUMN embedding vector(1536);
 CREATE INDEX idx_products_embedding ON products USING ivfflat (embedding vector_cosine_ops);
 
@@ -551,6 +556,7 @@ CREATE INDEX idx_products_salePrice ON products(salePrice);
 ```
 
 ##### 5. skus
+
 ```sql
 CREATE TABLE skus (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -570,7 +576,7 @@ CREATE TABLE skus (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deletedAt TIMESTAMP,
-    
+
     UNIQUE(tenantId, sku),
     CONSTRAINT skus_price_check CHECK (
         price >= 0 AND
@@ -586,9 +592,10 @@ CREATE INDEX idx_skus_price ON skus(price);
 CREATE INDEX idx_skus_isActive ON skus(isActive);
 ```
 
-#### Order Tables
+#### Các Bảng Đơn hàng
 
 ##### 6. orders
+
 ```sql
 CREATE TABLE orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -611,7 +618,7 @@ CREATE TABLE orders (
     deliveredDate TIMESTAMP,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     UNIQUE(tenantId, orderNumber),
     CONSTRAINT orders_total_check CHECK (total >= 0)
 );
@@ -625,6 +632,7 @@ CREATE INDEX idx_orders_total ON orders(total);
 ```
 
 ##### 7. order_items
+
 ```sql
 CREATE TABLE order_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -640,7 +648,7 @@ CREATE TABLE order_items (
     attributes JSONB DEFAULT '{}',
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     CONSTRAINT order_items_quantity_check CHECK (quantity > 0),
     CONSTRAINT order_items_price_check CHECK (unitPrice >= 0 AND totalPrice >= 0)
 );
@@ -650,9 +658,10 @@ CREATE INDEX idx_order_items_order_id ON order_items(orderId);
 CREATE INDEX idx_order_items_sku_id ON order_items(skuId);
 ```
 
-#### Inventory Tables
+#### Các Bảng Tồn kho
 
 ##### 8. inventory_items
+
 ```sql
 CREATE TABLE inventory_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -668,7 +677,7 @@ CREATE TABLE inventory_items (
     lastCountBy UUID REFERENCES users(id),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    
+
     UNIQUE(tenantId, skuId, warehouseId),
     CONSTRAINT inventory_items_quantity_check CHECK (quantity >= 0 AND reserved >= 0)
 );
@@ -680,9 +689,10 @@ CREATE INDEX idx_inventory_items_available ON inventory_items(available);
 CREATE INDEX idx_inventory_items_reorder_point ON inventory_items(reorderPoint);
 ```
 
-#### System Tables
+#### Các Bảng Hệ thống
 
 ##### 9. audit_logs
+
 ```sql
 CREATE TABLE audit_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -698,7 +708,7 @@ CREATE TABLE audit_logs (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) PARTITION BY RANGE (createdAt);
 
--- Create monthly partitions
+-- Tạo các partitions theo tháng
 CREATE TABLE audit_logs_2026_01 PARTITION OF audit_logs
     FOR VALUES FROM ('2026-01-01') TO ('2026-02-01');
 
@@ -710,60 +720,60 @@ CREATE INDEX idx_audit_logs_createdAt ON audit_logs(createdAt);
 
 ---
 
-### Indexes and Constraints
+### Các Chỉ mục (Indexes) và Ràng buộc (Constraints)
 
-#### Performance Indexes
+#### Chỉ mục Tối ưu Hiệu suất
 
 ```sql
--- Composite indexes for common queries
+-- Chỉ mục hỗn hợp cho các truy vấn phổ biến
 CREATE INDEX idx_products_tenant_active_category ON products(tenantId, isActive, categoryId);
 CREATE INDEX idx_orders_tenant_status_date ON orders(tenantId, status, orderDate);
 CREATE INDEX idx_order_items_order_sku ON order_items(orderId, skuId);
 CREATE INDEX idx_inventory_items_sku_warehouse ON inventory_items(skuId, warehouseId);
 
--- Partial indexes for better performance
+-- Chỉ mục một phần (Partial indexes) để tối ưu hiệu suất
 CREATE INDEX idx_products_active ON products(tenantId, slug) WHERE isActive = true AND deletedAt IS NULL;
 CREATE INDEX idx_orders_pending ON orders(tenantId, orderDate) WHERE status IN ('pending', 'processing');
 CREATE INDEX idx_users_active ON users(tenantId, email) WHERE isActive = true;
 
--- Functional indexes
+-- Chỉ mục chức năng (Functional indexes)
 CREATE INDEX idx_users_email_lower ON users(tenantId, lower(email));
 CREATE INDEX idx_products_name_lower ON products(tenantId, lower(name));
 ```
 
-#### Foreign Key Constraints
+#### Ràng buộc Khóa ngoại (Foreign Key Constraints)
 
 ```sql
--- Data integrity constraints
-ALTER TABLE products ADD CONSTRAINT fk_products_tenant 
+-- Các ràng buộc tính toàn vẹn dữ liệu
+ALTER TABLE products ADD CONSTRAINT fk_products_tenant
     FOREIGN KEY (tenantId) REFERENCES tenants(id) ON DELETE CASCADE;
 
-ALTER TABLE products ADD CONSTRAINT fk_products_category 
+ALTER TABLE products ADD CONSTRAINT fk_products_category
     FOREIGN KEY (categoryId) REFERENCES categories(id) ON DELETE SET NULL;
 
-ALTER TABLE products ADD CONSTRAINT fk_products_brand 
+ALTER TABLE products ADD CONSTRAINT fk_products_brand
     FOREIGN KEY (brandId) REFERENCES brands(id) ON DELETE SET NULL;
 
--- Prevent orphaned records
-ALTER TABLE order_items ADD CONSTRAINT fk_order_items_order 
+-- Ngăn chặn các bản ghi mồ côi
+ALTER TABLE order_items ADD CONSTRAINT fk_order_items_order
     FOREIGN KEY (orderId) REFERENCES orders(id) ON DELETE CASCADE;
 
-ALTER TABLE order_items ADD CONSTRAINT fk_order_items_sku 
+ALTER TABLE order_items ADD CONSTRAINT fk_order_items_sku
     FOREIGN KEY (skuId) REFERENCES skus(id) ON DELETE RESTRICT;
 ```
 
-#### Check Constraints
+#### Ràng buộc Kiểm tra (Check Constraints)
 
 ```sql
--- Business rule constraints
-ALTER TABLE products ADD CONSTRAINT chk_product_prices 
+-- Các ràng buộc quy tắc kinh doanh
+ALTER TABLE products ADD CONSTRAINT chk_product_prices
     CHECK (
         (basePrice IS NULL OR basePrice >= 0) AND
         (salePrice IS NULL OR salePrice >= 0) AND
         (salePrice IS NULL OR basePrice IS NULL OR salePrice <= basePrice)
     );
 
-ALTER TABLE orders ADD CONSTRAINT chk_order_totals 
+ALTER TABLE orders ADD CONSTRAINT chk_order_totals
     CHECK (
         subtotal >= 0 AND
         taxAmount >= 0 AND
@@ -772,20 +782,20 @@ ALTER TABLE orders ADD CONSTRAINT chk_order_totals
         total >= 0
     );
 
-ALTER TABLE users ADD CONSTRAINT chk_user_email 
+ALTER TABLE users ADD CONSTRAINT chk_user_email
     CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
 ```
 
 ---
 
-### Database Views
+### Các View Cơ sở Dữ liệu
 
-#### Materialized Views for Analytics
+#### Materialized Views cho Phân tích
 
 ```sql
--- Product sales summary
+-- Tổng hợp doanh số sản phẩm
 CREATE MATERIALIZED VIEW product_sales_summary AS
-SELECT 
+SELECT
     p.tenantId,
     p.id as productId,
     p.name,
@@ -803,9 +813,9 @@ GROUP BY p.tenantId, p.id, p.name, p.slug;
 CREATE INDEX idx_product_sales_summary_tenant ON product_sales_summary(tenantId);
 CREATE INDEX idx_product_sales_summary_product ON product_sales_summary(productId);
 
--- Customer order summary
+-- Tổng hợp đơn hàng khách hàng
 CREATE MATERIALIZED VIEW customer_order_summary AS
-SELECT 
+SELECT
     u.tenantId,
     u.id as userId,
     u.email,
@@ -825,10 +835,10 @@ CREATE INDEX idx_customer_order_summary_tenant ON customer_order_summary(tenantI
 CREATE INDEX idx_customer_order_summary_user ON customer_order_summary(userId);
 ```
 
-#### Refresh Strategy
+#### Chiến lược Làm mới (Refresh)
 
 ```sql
--- Function to refresh materialized views
+-- Hàm làm mới các materialized views
 CREATE OR REPLACE FUNCTION refresh_analytics_views()
 RETURNS void AS $$
 BEGIN
@@ -837,30 +847,30 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Schedule refresh every hour (requires pg_cron extension)
+-- Lập lịch làm mới mỗi giờ (yêu cầu phần mở rộng pg_cron)
 SELECT cron.schedule('refresh-analytics', '0 * * * *', 'SELECT refresh_analytics_views();');
 ```
 
 ---
 
-### Migration Scripts
+### Scripts Migration
 
-#### Initial Migration
+#### Migration Ban đầu
 
 ```sql
 -- 001_initial_schema.sql
--- Create extension for vector search
+-- Tạo phần mở rộng cho tìm kiếm vector
 CREATE EXTENSION IF NOT EXISTS vector;
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
--- Create UUID generation function
+-- Tạo hàm sinh UUID
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Enable necessary extensions
+-- Bật các phần mở rộng cần thiết
 CREATE EXTENSION IF NOT EXISTS "btree_gin";
 CREATE EXTENSION IF NOT EXISTS "btree_gist";
 
--- Create custom types
+-- Tạo các kiểu dữ liệu tùy chỉnh (Enums)
 CREATE TYPE order_status AS ENUM (
     'pending',
     'processing',
@@ -878,23 +888,21 @@ CREATE TYPE payment_status AS ENUM (
     'refunded',
     'partially_refunded'
 );
-
--- Create enums for other entities...
 ```
 
-#### Data Migration Strategy
+#### Chiến lược Migration Dữ liệu
 
 ```sql
--- Migration template for safe data updates
+-- Template migration cho việc cập nhật dữ liệu an toàn
 BEGIN;
 
--- Create backup table
+-- Tạo bảng sao lưu (backup)
 CREATE TABLE products_backup AS TABLE products;
 
--- Add new column
+-- Thêm cột mới
 ALTER TABLE products ADD COLUMN new_column VARCHAR(255);
 
--- Update data in batches
+-- Cập nhật dữ liệu theo từng lô (batch)
 DO $$
 DECLARE
     batch_size INT := 1000;
@@ -902,24 +910,24 @@ DECLARE
     affected_rows INT;
 BEGIN
     LOOP
-        UPDATE products 
+        UPDATE products
         SET new_column = generate_default_value()
         WHERE id IN (
-            SELECT id FROM products 
-            ORDER BY id 
-            LIMIT batch_size 
+            SELECT id FROM products
+            ORDER BY id
+            LIMIT batch_size
             OFFSET offset_val
         );
-        
+
         GET DIAGNOSTICS affected_rows = ROW_COUNT;
         EXIT WHEN affected_rows = 0;
-        
+
         offset_val := offset_val + batch_size;
         COMMIT;
     END LOOP;
 END $$;
 
--- Add constraints
+-- Thêm các ràng buộc (constraints)
 ALTER TABLE products ADD CONSTRAINT chk_new_column CHECK (new_column IS NOT NULL);
 
 COMMIT;
@@ -927,9 +935,9 @@ COMMIT;
 
 ---
 
-### Seed Data Strategy
+### Chiến lược Dữ liệu Mẫu (Seed Data)
 
-#### Development Seed Data
+#### Dữ liệu Mẫu cho Phát triển (Development Seed)
 
 ```sql
 -- Seed tenants
@@ -939,60 +947,60 @@ INSERT INTO tenants (id, name, domain, status) VALUES
 
 -- Seed categories
 INSERT INTO categories (tenantId, name, slug, description) VALUES
-('550e8400-e29b-41d4-a716-446655440001', 'Electronics', 'electronics', 'Electronic devices and gadgets'),
-('550e8400-e29b-41d4-a716-446655440001', 'Clothing', 'clothing', 'Fashion and apparel'),
-('550e8400-e29b-41d4-a716-446655440001', 'Books', 'books', 'Books and literature');
+('550e8400-e29b-41d4-a716-446655440001', 'Electronics', 'electronics', 'Thiết bị điện tử'),
+('550e8400-e29b-41d4-a716-446655440001', 'Clothing', 'clothing', 'Thời trang và may mặc'),
+('550e8400-e29b-41d4-a716-446655440001', 'Books', 'books', 'Sách và văn học');
 
--- Seed products with embeddings for AI search
+-- Seed products với embeddings cho tìm kiếm AI
 INSERT INTO products (tenantId, categoryId, name, slug, description, basePrice, isActive, embedding) VALUES
-('550e8400-e29b-41d4-a716-446655440001', 
+('550e8400-e29b-41d4-a716-446655440001',
  (SELECT id FROM categories WHERE slug = 'electronics'),
- 'Laptop Pro 15', 'laptop-pro-15', 
- 'High-performance laptop with 15-inch display, 16GB RAM, 512GB SSD',
+ 'Laptop Pro 15', 'laptop-pro-15',
+ 'Laptop hiệu năng cao màn hình 15-inch, 16GB RAM, 512GB SSD',
  1299.99, true,
- embedding_from_text('High-performance laptop with 15-inch display, 16GB RAM, 512GB SSD'));
+ embedding_from_text('Laptop hiệu năng cao màn hình 15-inch, 16GB RAM, 512GB SSD'));
 ```
 
-#### Production Seed Data
+#### Dữ liệu Mẫu Sản xuất (Production Seed)
 
 ```sql
--- System configuration data
+-- Dữ liệu cấu hình hệ thống
 INSERT INTO system_settings (key, value, description) VALUES
-('default_currency', 'USD', 'Default currency for new tenants'),
-('max_file_size', '10485760', 'Maximum file upload size in bytes'),
-('session_timeout', '1800', 'Session timeout in seconds');
+('default_currency', 'USD', 'Loại tiền tệ mặc định cho tenant mới'),
+('max_file_size', '10485760', 'Dung lượng tải tệp tối đa tính bằng byte'),
+('session_timeout', '1800', 'Thời gian hết hạn session tính bằng giây');
 
--- Default roles and permissions
+-- Vai trò và quyền hạn mặc định
 INSERT INTO roles (name, description, isSystem) VALUES
-('super_admin', 'Platform administrator', true),
-('store_owner', 'Store owner', false),
-('manager', 'Store manager', false),
-('staff', 'Store staff', false),
-('customer', 'End customer', false);
+('super_admin', 'Quản trị viên nền tảng', true),
+('store_owner', 'Chủ cửa hàng', false),
+('manager', 'Quản lý cửa hàng', false),
+('staff', 'Nhân viên cửa hàng', false),
+('customer', 'Khách hàng cuối', false);
 
--- Default permissions
+-- Quyền hạn mặc định
 INSERT INTO permissions (name, resource, action, description) VALUES
-('users.create', 'users', 'create', 'Create new users'),
-('users.read', 'users', 'read', 'View user information'),
-('users.update', 'users', 'update', 'Update user information'),
-('users.delete', 'users', 'delete', 'Delete users');
+('users.create', 'users', 'create', 'Tạo người dùng mới'),
+('users.read', 'users', 'read', 'Xem thông tin người dùng'),
+('users.update', 'users', 'update', 'Cập nhật thông tin người dùng'),
+('users.delete', 'users', 'delete', 'Xóa người dùng');
 ```
 
 ---
 
-### Performance Optimization
+### Tối ưu hóa Hiệu suất
 
-#### Query Optimization
+#### Tối ưu hóa Truy vấn
 
 ```sql
--- Optimized product search query
-EXPLAIN (ANALYZE, BUFFERS) 
+-- Truy vấn tìm kiếm sản phẩm đã được tối ưu
+EXPLAIN (ANALYZE, BUFFERS)
 SELECT p.*, c.name as categoryName, b.name as brandName
 FROM products p
 LEFT JOIN categories c ON p.categoryId = c.id
 LEFT JOIN brands b ON p.brandId = b.id
-WHERE p.tenantId = $1 
-  AND p.isActive = true 
+WHERE p.tenantId = $1
+  AND p.isActive = true
   AND p.deletedAt IS NULL
   AND (
     to_tsvector('english', p.name || ' ' || COALESCE(p.description, '')) @@ plainto_tsquery('english', $2)
@@ -1002,43 +1010,43 @@ ORDER BY p.sortOrder, p.name
 LIMIT 20 OFFSET $3;
 ```
 
-#### Database Configuration
+#### Cấu hình Cơ sở Dữ liệu
 
 ```sql
--- PostgreSQL configuration recommendations
+-- Khuyến nghị cấu hình PostgreSQL
 -- postgresql.conf
 
-# Memory settings
-shared_buffers = 256MB                    # 25% of RAM
-effective_cache_size = 1GB                # 75% of RAM
-work_mem = 4MB                            # Per connection
+# Cấu hình bộ nhớ
+shared_buffers = 256MB                    # 25% dung lượng RAM
+effective_cache_size = 1GB                # 75% dung lượng RAM
+work_mem = 4MB                            # Cho mỗi kết nối
 maintenance_work_mem = 64MB
 
-# Connection settings
+# Cấu hình kết nối
 max_connections = 100
 shared_preload_libraries = 'pg_stat_statements'
 
-# WAL settings
+# Cấu hình WAL
 wal_buffers = 16MB
 checkpoint_completion_target = 0.9
 
-# Query planning
-random_page_cost = 1.1                    # For SSD
-effective_io_concurrency = 200           # For SSD
+# Lập kế hoạch truy vấn
+random_page_cost = 1.1                    # Cho ổ cứng SSD
+effective_io_concurrency = 200           # Cho ổ cứng SSD
 ```
 
-#### Partitioning Strategy
+#### Chiến lược Phân vùng (Partitioning)
 
 ```sql
--- Partition audit logs by month
+-- Phân vùng nhật ký kiểm toán theo tháng
 CREATE TABLE audit_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tenantId UUID REFERENCES tenants(id),
-    -- ... other columns
+    -- ... các cột khác
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) PARTITION BY RANGE (createdAt);
 
--- Auto-create partitions function
+-- Hàm tự động tạo partition
 CREATE OR REPLACE FUNCTION create_monthly_partition(table_name text, start_date date)
 RETURNS void AS $$
 DECLARE
@@ -1047,7 +1055,7 @@ DECLARE
 BEGIN
     partition_name := table_name || '_' || to_char(start_date, 'YYYY_MM');
     end_date := start_date + interval '1 month';
-    
+
     EXECUTE format('CREATE TABLE IF NOT EXISTS %I PARTITION OF %I
                     FOR VALUES FROM (%L) TO (%L)',
                    partition_name, table_name, start_date, end_date);
@@ -1057,69 +1065,69 @@ $$ LANGUAGE plpgsql;
 
 ---
 
-### Backup and Recovery
+### Sao lưu và Phục hồi (Backup and Recovery)
 
-#### Backup Strategy
+#### Chiến lược Sao lưu
 
 ```bash
 #!/bin/bash
 # backup_database.sh
 
-# Daily full backup
+# Sao lưu đầy đủ hàng ngày
 pg_dump -h localhost -U postgres -d ecommerce \
     --format=custom \
     --compress=9 \
     --file="/backups/daily/ecommerce_$(date +%Y%m%d).backup"
 
-# Weekly schema-only backup
+# Sao lưu schema hàng tuần
 pg_dump -h localhost -U postgres -d ecommerce \
     --schema-only \
     --file="/backups/schema/ecommerce_schema_$(date +%Y%m%d).sql"
 
-# Hourly WAL archive
+# Lưu trữ WAL hàng giờ
 pg_receivewal -h localhost -U postgres -D /backups/wal
 ```
 
-#### Point-in-Time Recovery
+#### Phục hồi tại một thời điểm (Point-in-Time Recovery)
 
 ```sql
--- Recovery procedure
--- 1. Stop PostgreSQL
+-- Quy trình phục hồi
+-- 1. Dừng dịch vụ PostgreSQL
 sudo systemctl stop postgresql
 
-# 2. Restore base backup
+# 2. Phục hồi từ bản sao lưu cơ bản
 pg_restore -h localhost -U postgres -d ecommerce_restore \
     /backups/daily/ecommerce_20260122.backup
 
-# 3. Configure recovery
+# 3. Cấu hình phục hồi
 echo "restore_command = 'cp /backups/wal/%f %p'" >> postgresql.conf
 echo "recovery_target_time = '2026-01-22 15:30:00'" >> postgresql.conf
 
-# 4. Start PostgreSQL
+# 4. Khởi động lại PostgreSQL
 sudo systemctl start postgresql
 ```
 
 ---
 
-### Monitoring and Maintenance
+### Giám sát và Bảo trì
 
-#### Performance Monitoring
+#### Giám sát Hiệu suất
 
 ```sql
--- Slow query monitoring
-SELECT 
+-- Giám sát các truy vấn chậm
+SELECT
     query,
     calls,
     total_time,
     mean_time,
     rows
 FROM pg_stat_statements
-WHERE mean_time > 1000  -- queries taking more than 1 second
+WHERE mean_time > 1000  -- các truy vấn chạy lâu hơn 1 giây
 ORDER BY mean_time DESC
 LIMIT 10;
 
--- Index usage monitoring
-SELECT 
+-- Giám sát việc sử dụng chỉ mục (index)
+SELECT
     schemaname,
     tablename,
     indexname,
@@ -1129,8 +1137,8 @@ SELECT
 FROM pg_stat_user_indexes
 ORDER BY idx_scan DESC;
 
--- Table size monitoring
-SELECT 
+-- Giám sát kích thước bảng
+SELECT
     schemaname,
     tablename,
     pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size
@@ -1139,42 +1147,42 @@ WHERE schemaname = 'public'
 ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
 ```
 
-#### Maintenance Tasks
+#### Các Tác vụ Bảo trì
 
 ```sql
--- Auto-vacuum tuning
+-- Điều chỉnh Auto-vacuum
 ALTER TABLE products SET (
     autovacuum_vacuum_scale_factor = 0.1,
     autovacuum_analyze_scale_factor = 0.05
 );
 
--- Reindex fragmented indexes
+-- Tạo lại chỉ mục bị phân mảnh
 REINDEX INDEX CONCURRENTLY idx_products_search;
 
--- Update table statistics
+-- Cập nhật thống kê bảng
 ANALYZE products;
 
--- Clean up old data
-DELETE FROM audit_logs 
+-- Xóa dữ liệu cũ
+DELETE FROM audit_logs
 WHERE createdAt < NOW() - INTERVAL '2 years';
 ```
 
 ---
 
-### Security Considerations
+### Các Lưu ý về Bảo mật
 
-#### Data Encryption
+#### Mã hóa Dữ liệu
 
 ```sql
--- Enable transparent data encryption (requires enterprise version)
--- Alternative: Application-level encryption for sensitive columns
+-- Bật tính năng mã hóa dữ liệu trong suốt (yêu cầu phiên bản enterprise)
+-- Giải pháp thay thế: Mã hóa ở cấp độ ứng dụng cho các cột nhạy cảm
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- Encrypt sensitive data at application level
+-- Mã hóa dữ liệu nhạy cảm ở cấp độ ứng dụng
 ALTER TABLE users ADD COLUMN encryptedPhone bytea;
 
--- Function to encrypt/decrypt
+-- Hàm mã hóa/giải mã
 CREATE OR REPLACE FUNCTION encrypt_phone(phone text)
 RETURNS bytea AS $$
 BEGIN
@@ -1183,16 +1191,16 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 ```
 
-#### Access Control
+#### Kiểm soát Truy cập
 
 ```sql
--- Create read-only user for reporting
+-- Tạo người dùng chỉ có quyền đọc cho báo cáo
 CREATE USER reporting_user WITH PASSWORD 'secure_password';
 GRANT CONNECT ON DATABASE ecommerce TO reporting_user;
 GRANT USAGE ON SCHEMA public TO reporting_user;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO reporting_user;
 
--- Row Level Security policies
+-- Các chính sách Row Level Security (RLS)
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 CREATE POLICY tenant_isolation ON orders
     USING (tenantId = current_setting('app.current_tenant_id')::UUID);
@@ -1203,16 +1211,16 @@ CREATE POLICY admin_full_access ON orders
 
 ---
 
-### Approval
+### Phê duyệt
 
-**Database Architect**: ___________________  
-**Date**: ___________________  
-**Signature**: ___________________  
+**Kiến trúc sư Cơ sở Dữ liệu**: ********\_\_\_********  
+**Ngày**: ********\_\_\_********  
+**Chữ ký**: ********\_\_\_********
 
-**Lead Developer**: ___________________  
-**Date**: ___________________  
-**Signature**: ___________________  
+**Lập trình viên Trưởng**: ********\_\_\_********  
+**Ngày**: ********\_\_\_********  
+**Chữ ký**: ********\_\_\_********
 
-**DevOps Engineer**: ___________________  
-**Date**: ___________________  
-**Signature**: ___________________
+**Kỹ sư DevOps**: ********\_\_\_********  
+**Ngày**: ********\_\_\_********  
+**Chữ ký**: ********\_\_\_********
